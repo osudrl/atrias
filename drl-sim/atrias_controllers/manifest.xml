@@ -1,0 +1,24 @@
+<package>
+  <description brief="atrias_controllers">
+
+     atrias_controllers
+
+  </description>
+  <author>Devin Koepl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_controllers</url>
+
+	<depend package="roscpp" />
+	<depend package="gazebo" />
+	<depend package="atrias" />
+	<depend package="drl_library" />
+
+	<export>
+		<cpp cflags="-I${prefix}/include" />
+    <gazebo plugin_path="${prefix}/lib" />
+  </export>
+
+</package>
+
+

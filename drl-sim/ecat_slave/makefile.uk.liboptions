@@ -1,0 +1,92 @@
+export ECATSLAVE_PLATFORM=x86
+
+# export INSTALL_DIR_USPACE=$(ECATSLAVE_SDK_DISTR_DIR)/lib/linux-uspace/x86
+# export INSTALL_DIR_KSPACE=$(ECATSLAVE_SDK_DISTR_DIR)/lib/linux-kspace/x86/$(KERNEL_VERSION)/
+
+# KERNEL_SRC_DIR must be defined here in order to build kernel-space binaries
+# KERNEL_VERSION must be defined here in order to install  core binary
+# (compiled for linux kernel) in correct plase.
+
+# export KERNEL_VERSION=2.6.24
+# export KERNEL_SRC_DIR=/lib/modules/2.6.24.7-rt22/build/
+
+# export KERNEL_VERSION=2.6.24
+# export KERNEL_SRC_DIR=/lib/modules/2.6.24.7-rt25/build/
+
+#export KERNEL_VERSION=2.6.24
+#export KERNEL_SRC_DIR=/lib/modules/2.6.24.7-rt27/build/
+
+export KERNEL_VERSION=2.6.29
+export KERNEL_SRC_DIR=/lib/modules/`uname -r`/build/
+
+# export KERNEL_VERSION=2.6.29
+# export KERNEL_SRC_DIR=/lib/modules/2.6.29.4-rtai371/build/
+
+# export KERNEL_VERSION=2.6.29
+# export KERNEL_SRC_DIR=/usr/local/remote-fs/linux-2.6.29.4-xeno2.4.8
+
+##############################################################################
+
+# export MODE=debug
+export MODE=release
+
+##############################################################################
+
+
+export LDIRS=
+export LIBS=
+
+CCFLAGS_KSPACE =      \
+    -Wall             \
+    $(CFLAGS_GLOBAL)  \
+    $(CFLAGS_CONFIG)  \
+    $(CFLAGS_DEBUG)   \
+    -D__KERNEL__      \
+    -fno-common                 \
+    -fno-omit-frame-pointer     \
+	-fno-optimize-sibling-calls \
+	-Werror-implicit-function-declaration \
+	-O3 \
+	-fno-stack-protector -m32 -mregparm=3 -freg-struct-return -mpreferred-stack-boundary=2 \
+    -DECATSLAVE_CONFIG_LINUXKERNELSPACE
+
+CCFLAGS_USPACE =      \
+    -Wall             \
+    $(CFLAGS_GLOBAL)  \
+    $(CFLAGS_CONFIG)  \
+    $(CFLAGS_DEBUG)   \
+    -fno-common                 \
+	-Werror-implicit-function-declaration \
+	-O3 \
+	-g \
+    -DECATSLAVE_CONFIG_LINUXUSERSPACE
+
+# 	-fno-stack-protector -m32 -mregparm=3 -freg-struct-return \
+#     -fno-omit-frame-pointer     \
+# 	-fno-optimize-sibling-calls \
+
+
+# DEFLIST=-D__POSIX__ -DC99   -D_GNU_SOURCE -DECAT_CFG_SEPARATE_OSAL
+
+ifeq ($(MODE),release)
+DEFLIST+=
+CFLAGS_CONFIG+=
+STRIP_LIB=strip -g
+STRIP_APP=strip
+OBJ_DIR=./release
+else
+DEFLIST+=-D_DEBUG
+CFLAGS_CONFIG+=-g
+STRIP_LIB=@echo Omitting stripping of
+STRIP_APP=@echo Omitting stripping of
+OBJ_DIR=./debug
+endif
+
+##############################################################################
+export DEFLIST
+export CFLAGS_CONFIG
+export STRIP_LIB
+export STRIP_APP
+export OBJ_DIR
+export CCFLAGS_KSPACE
+export CCFLAGS_USPACE

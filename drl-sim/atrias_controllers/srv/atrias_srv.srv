@@ -1,0 +1,16 @@
+uint8 command
+uint8 controller_requested
+uint8[100] control_data
+---
+uint8 status
+float32 time
+float32 body_angle
+float32 motor_angleA
+float32 motor_angleB
+float32 leg_angleA
+float32 leg_angleB
+float32 motor_torqueA
+float32 motor_torqueB
+float32 hor_vel
+float32 height
+uint8[100] control_state

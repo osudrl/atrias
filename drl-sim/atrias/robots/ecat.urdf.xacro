@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot name="atrias"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+			 xmlns:xacro="http://www.ros.org/wiki/xacro"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+			 xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+			 xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+			 xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+			 xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<include filename="atrias.urdf.xacro" />
+
+  <xacro:atrias_robot></xacro:atrias_robot>
+
+ 	<gazebo>
+		<controller:ecat_interface name="ecat_interface" plugin="libecat_interface.so">
+			<alwaysOn> true </alwaysOn>
+			<updateRate> 10000 </updateRate>
+			<bodyName> body_link </bodyName>
+			<motorAName> motorA_link </motorAName>
+			<motorBName> motorB_link </motorBName>
+			<legAName> legA_link </legAName>
+			<legBName> legB_link </legBName>
+		</controller:ecat_interface>
+	</gazebo>
+
+</robot>

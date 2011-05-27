@@ -1,0 +1,9 @@
+<stack>
+  <description brief="drl-sim">drl-sim</description>
+  <author>Devin Koepl</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/drl-sim</url>
+  <depend stack="ros" />
+
+</stack>

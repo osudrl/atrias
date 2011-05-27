@@ -1,0 +1,40 @@
+# Devin Koepl
+
+CONTROLLERS=no_controller.o \
+						motor_torque_controller.o \
+						motor_position_controller.o \
+						leg_torque_controller.o \
+						leg_position_controller.o \
+						leg_angle_sin_wave.o \
+						raibert_controller.o		
+
+obj-m := rtai_controller.o 
+
+rtai_controller-objs := rtai_controller_wrapper.o control_switcher_state_machine.o hip_lut.o $(CONTROLLERS)
+													#no_controller.o \
+													#motor_torque_controller.o \
+													#motor_position_controller.o \
+													#leg_torque_controller.o \
+													#leg_position_controller.o \
+													#leg_angle_sin_wave.o \
+													#raibert_controller.o	
+
+EXTRA_CFLAGS := \
+	-I /usr/realtime/include \
+	-I /home/drl/drl-sim/drl-sim/atrias_controllers/include \
+	-I /home/drl/drl-sim/drl-sim/atrias/include \
+	-I /home/drl/drl-sim/drl-sim/drl_library/include \
+	-I /home/drl/drl-sim/drl-sim/gui/include \
+	-I /opt/etherlab/include	\
+	$(shell rtai-config --module-cflags) \
+	-I /usr/include \
+	-ffast-math \
+	-mhard-float \
+	-D COMPILE_FOR_RTAI
+
+KBUILD_EXTRA_SYMBOLS := \
+	/usr/src/ethercat-default/Module.symvers \
+	/usr/realtime/modules/Modules.symvers \
+	/usr/src/linux-`uname -r`/Module.symvers
+
+#------------------------------------------------------------------------------

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="atrias"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+			 xmlns:xacro="http://www.ros.org/wiki/xacro"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+			 xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+			 xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+			 xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+			 xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+  <link name="body_link">
+    <inertial>
+      <mass value="30" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="100" ixy="0" ixz="0"
+               iyy="100" iyz="0"
+               izz="100" />
+    </inertial>   
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="body_link">
+    <material>Gazebo/BumpyMetal</material>
+  </gazebo>
+
+	<gazebo>
+		<controller:position_body name="position_body" plugin="libposition_body.so">
+			<alwaysOn> true </alwaysOn>
+			<updateRate> 10000 </updateRate>
+			<bodyName> body_link </bodyName>
+		</controller:position_body>
+	</gazebo>
+
+</robot>

@@ -1,0 +1,15 @@
+// Devin Koepl
+
+#ifndef FUNCS_H_DISCRETIZE
+#define FUNCS_H_DISCRETIZE
+
+#define		DISCRETIZE(VAL, VAL_MIN, VAL_MAX, COUNT_MIN, COUNT_MAX) \
+	((uint32_t)((VAL - VAL_MIN) / (VAL_MAX - VAL_MIN) * ((double)COUNT_MAX - (double)COUNT_MIN) + (double)COUNT_MIN))
+
+#define		UNDISCRETIZE(COUNT, VAL_MIN, VAL_MAX, COUNT_MIN, COUNT_MAX) \
+	(((float)COUNT - (float)COUNT_MIN) * (VAL_MAX - VAL_MIN) / ((float)COUNT_MAX - (float)COUNT_MIN) + VAL_MIN)
+
+#define		DISCRETIZE_LOCATION(COUNT, COUNT_KNOWN, ANGLE_KNOWN, COUNTS_PER_REV, GEAR_RATIO) \
+	(1./(float)(GEAR_RATIO) * 2. * PI / (float)COUNTS_PER_REV * ((float)COUNT - (float)COUNT_KNOWN) + (float)ANGLE_KNOWN)
+
+#endif // FUNCS_H_DISCRETIZE
