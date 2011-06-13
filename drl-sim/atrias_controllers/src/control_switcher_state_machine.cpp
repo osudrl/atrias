@@ -5,6 +5,7 @@
 extern void control_switcher_state_machine(ControllerInput *controller_input, ControllerOutput *controller_output, 
 	ControllerState *controller_state, ControllerData *controller_data)
 {
+
 	switch (controller_state->state)
 	{
 		case STATE_DISABLED:
@@ -124,12 +125,3 @@ extern void switch_controllers(ControllerState *controller_state, ControllerData
 
 	controller_state->controller_loaded = controller_data->controller_requested;
 }
-
-/*extern unsigned char get_state()
-{
-	if ( controller_state->state == STATE_ENABLED )
-	{
-		return CMD_RUN;
-	}
-	return CMD_DISABLE;
-}*/

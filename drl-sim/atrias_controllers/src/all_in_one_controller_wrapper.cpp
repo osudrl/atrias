@@ -115,35 +115,19 @@ void AllInOneControllerWrapper::LoadChild(XMLConfigNode *node)
 // Update the controller
 void AllInOneControllerWrapper::UpdateChild()
 {
-  this->lock.lock();
+	this->lock.lock();
 
 	this->generate_controller_input();
 
-	// Keep track of last controller output, just in case the new one
-	//ControllerOutput = 
-
 	control_switcher_state_machine(this->controller_input, this->controller_output, this->controller_state, this->controller_data);
 
-	/*if ( this->controller_output->motor_torqueA != this->controller_output->motor_torqueA )
-	{
-		this->controller_output->motor_torqueA = 0.;
-
-		//ROS_WARN("maA = %.3f, mvA = %.3f", controller_input->motor_angleA, controller_input->motor_velocityA);
-	}
-
-	if ( this->controller_output->motor_torqueB != this->controller_output->motor_torqueB )
-	{
-		this->controller_output->motor_torqueB = 0.;
-		//ROS_WARN("maB = %.3f, mvB = %.3f", controller_input->motor_angleB, controller_input->motor_velocityB);
-	}*/
-
-	//this->controller_output->motor_torqueA = CLAMP( this->controller_output->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ );
-	//this->controller_output->motor_torqueB = CLAMP( this->controller_output->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ );
+	this->controller_output->motor_torqueA = CLAMP( this->controller_output->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ );
+	this->controller_output->motor_torqueB = CLAMP( this->controller_output->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ );
 
 	this->motorA->SetTorque(Vector3(0., -this->controller_output->motor_torqueA * GEAR_RATIO, 0.));
 	this->motorB->SetTorque(Vector3(0., -this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
 
-  this->lock.unlock();
+	this->lock.unlock();
 }
 
 void AllInOneControllerWrapper::generate_controller_input()

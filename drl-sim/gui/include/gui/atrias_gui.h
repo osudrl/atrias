@@ -14,9 +14,6 @@
 
 #include <drl_library/drl_math.h>
 
-#define CMD_RUN							0x80
-#define CMD_DISABLE					0x01
-
 // GUI objects
 Gtk::Window *window;
 
