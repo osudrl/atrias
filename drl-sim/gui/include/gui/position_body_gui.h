@@ -18,6 +18,14 @@ Gtk::HScale *x_position_hscale;
 Gtk::HScale *y_position_hscale;
 Gtk::HScale *z_position_hscale;
 
+Gtk::CheckButton *x_translation_checkbutton;
+Gtk::CheckButton *y_translation_checkbutton;
+Gtk::CheckButton *z_translation_checkbutton;
+
+//Gtk::CheckButton *x_rotation_checkbutton;
+//Gtk::CheckButton *y_rotation_checkbutton;
+//Gtk::CheckButton *z_rotation_checkbutton;
+
 Gtk::Button *pause_button;
 Gtk::Button *play_button;
 Gtk::Button *hold_button;
@@ -34,5 +42,4 @@ void play_simulation();
 void hold_robot();
 void release_robot();
 void get_position();
-
 void desired_pose_changed();
