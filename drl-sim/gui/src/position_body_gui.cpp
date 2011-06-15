@@ -54,10 +54,8 @@ int main(int argc, char **argv)
     //gui->get_widget("z_rotation_checkbutton", z_rotation_checkbutton);    
     gui->get_widget("z_position_hscale", z_position_hscale);
 
-    gui->get_widget("pause_button", pause_button);
-    gui->get_widget("play_button", play_button);
-    gui->get_widget("hold_button", hold_button);
-    gui->get_widget("release_button", release_button);
+    gui->get_widget("pause_play_button", pause_play_button);
+    gui->get_widget("hold_release_button", hold_release_button);
     gui->get_widget("get_position_button", get_position_button);
 
     // Initialize GUI objects
@@ -76,10 +74,8 @@ int main(int argc, char **argv)
     }*/
 
     // Connect buttons to functions.
-    pause_button->signal_clicked().connect( sigc::ptr_fun(pause_simulation) );
-    play_button->signal_clicked().connect( sigc::ptr_fun(play_simulation) );
-    hold_button->signal_clicked().connect( sigc::ptr_fun(hold_robot) );
-    release_button->signal_clicked().connect( sigc::ptr_fun(release_robot) );
+    pause_play_button->signal_toggled().connect( sigc::ptr_fun(pause_play) );
+    hold_release_button->signal_toggled().connect( sigc::ptr_fun(hold_release) );
     get_position_button->signal_clicked().connect( sigc::ptr_fun(get_position) );
 
     x_position_hscale->signal_value_changed().connect( sigc::ptr_fun(desired_pose_changed) );
@@ -94,27 +90,15 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void pause_simulation()
+void pause_play()
 {
-    simulation_srv.request.pause_simulation = true;
+    simulation_srv.request.pause_simulation = !simulation_srv.request.pause_simulation;
     while( !simulation_client.call(simulation_srv) );
 }
 
-void play_simulation()
+void hold_release()
 {
-    simulation_srv.request.pause_simulation = false;
-    while( !simulation_client.call(simulation_srv) );
-}
-
-void hold_robot()
-{
-    simulation_srv.request.hold_robot = true;
-    while( !simulation_client.call(simulation_srv) );
-}
-
-void release_robot()
-{
-    simulation_srv.request.hold_robot = false;
+    simulation_srv.request.hold_robot = !simulation_srv.request.hold_robot;
     while( !simulation_client.call(simulation_srv) );
 }
 
