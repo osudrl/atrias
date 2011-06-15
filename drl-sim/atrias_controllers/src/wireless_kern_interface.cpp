@@ -155,9 +155,13 @@ void * datalogging_task( void * argument )
 
 	while ( ros::ok() )
 	{
+		ROS_INFO("Datalog Thread");
+
 		// Check to see if there is fresh data in the ring buffer.
 		if ( to_uspace_shm[to_uspace_index].fresh )
 		{
+			ROS_INFO("Log Data");
+
 			// Load the userspace buffer with the most recent sensor information from the robot.
 			to_uspace_buffer = to_uspace_shm[to_uspace_index];
 

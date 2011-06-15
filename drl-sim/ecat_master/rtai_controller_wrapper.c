@@ -46,6 +46,8 @@ unsigned char wake_up_medullas()
 
 	rt_task_wait_period();
 
+	rt_printk("Waking up Medullas.\n");
+
 	// If all of the Medullas report the bad command, then return success.
 	if ( (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status & STATUS_BADCMD)
 		&& (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status & STATUS_BADCMD)
@@ -60,6 +62,9 @@ unsigned char wake_up_medullas()
 
 unsigned char check_medullas()
 {
+	// The result of the check.  Clear if any problems with the Medullas are detected.
+	unsigned char result = 1;
+
 	// Verify Medullas in their correct locations.
 
 	// receive process data
@@ -85,20 +90,60 @@ unsigned char check_medullas()
 	rt_task_wait_period();
 
 	// If any of the Medullas are not in their disabled state, return failure.
-	if ( (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status != STATUS_DISABLED)
-		|| (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status != STATUS_DISABLED)
-		|| (((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->status != STATUS_DISABLED)
-		|| (((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->status != STATUS_DISABLED) )
-		return false;
+	//if ( (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status != STATUS_DISABLED)
+	//	|| (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status != STATUS_DISABLED)
+	//	|| (((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->status != STATUS_DISABLED)
+	//	|| (((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->status != STATUS_DISABLED) )
+	//	return false;
+	if (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status != STATUS_DISABLED)
+	{
+		rt_printk("Medulla A not in disabled state.\n");
+		result = 0;
+	}
+	if (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status != STATUS_DISABLED)
+	{
+		rt_printk("Medulla B not in disabled state.\n");
+		result = 0;
+	}
+	if (((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->status != STATUS_DISABLED)
+	{
+		rt_printk("Medulla Hip not in disabled state.\n");
+		result = 0;
+	}
+	if (((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->status != STATUS_DISABLED)
+	{
+		rt_printk("Medulla Boom not in disabled state.\n");
+		result = 0;
+	}
 
 	// If the Medullas are reporting a configuration other than the one expected, return failure.
-	if ( ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->id != MEDULLA_A_ID )
-		|| ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_B_ID )		
-		|| ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_HIP_ID )	
-		|| ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_BOOM_ID )	)
-		return false;
+	//if ( ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->id != MEDULLA_A_ID )
+	//	|| ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_B_ID )		
+	//	|| ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_HIP_ID )	
+	//	|| ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_BOOM_ID )	)
+	//	return false;
+	if ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->id != MEDULLA_A_ID )
+	{
+		rt_printk("Medulla A reporting wrong ID.\n");
+		result = 0;
+	}
+	if ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_A_ID )
+	{
+		rt_printk("Medulla B reporting wrong ID.\n");
+		result = 0;
+	}
+	if ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_A_ID )
+	{
+		rt_printk("Medulla Hip reporting wrong ID.\n");
+		result = 0;
+	}
+	if ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_A_ID )
+	{
+		rt_printk("Medulla Boom reporting wrong ID.\n");
+		result = 0;
+	}
 
-	return true;
+	return result;
 }
 
 /*****************************************************************************/
@@ -139,6 +184,8 @@ void run(long data)
 
 	// Wait for all the Medullas to wake up.
 	while ( !check_medullas() );
+
+	rt_printk("Medullas Checked.\n");
 
 	// Initialize the encoder counters.
 
@@ -200,6 +247,8 @@ void run(long data)
 	// Now start controlling the robot
 	while (true) {
 		t_last_cycle = get_cycles();
+
+		rt_printk("In the main loop.\n");
 
 		// receive process data
 		rt_sem_wait(&master_sem);
@@ -373,6 +422,8 @@ void run(long data)
 		controller_output.motor_torqueA = 0.;
 		controller_output.motor_torqueB = 0.;			
 	
+		rt_printk("Index %u written.\n", to_uspace_index);
+
 		// Send state to user space for datalogging.
 		to_uspace_shm[to_uspace_index].controller_input = controller_input;
 		to_uspace_shm[to_uspace_index].controller_output = controller_output;
