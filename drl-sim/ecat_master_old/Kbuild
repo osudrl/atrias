@@ -14,10 +14,10 @@ rtai_controller-objs := rtai_controller_wrapper.o control_switcher_state_machine
 
 EXTRA_CFLAGS := \
 	-I /usr/realtime/include \
-	-I /home/drl/drl-sim/drl-sim/atrias_controllers/include \
-	-I /home/drl/drl-sim/drl-sim/atrias/include \
-	-I /home/drl/drl-sim/drl-sim/drl_library/include \
-	-I /home/drl/drl-sim/drl-sim/gui/include \
+	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
+	-I /home/drl/atrias/drl-sim/atrias/include \
+	-I /home/drl/atrias/drl-sim/drl_library/include \
+	-I /home/drl/atrias/drl-sim/gui/include \
 	-I /opt/etherlab/include	\
 	$(shell rtai-config --module-cflags) \
 	-I /usr/include \

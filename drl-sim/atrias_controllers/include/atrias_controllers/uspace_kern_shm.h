@@ -7,7 +7,7 @@
 
 #define SHM_TO_KERN_NAM			"SHM_TO_KERN_NAM"
 #define SHM_TO_USPACE_NAM		"SHM_TO_USPACE_NAM"
-#define SHM_TO_USPACE_ENTRIES	64
+#define SHM_TO_USPACE_ENTRIES	210
 
 // Data to the kernel.  We can just use a spin lock for data going to the kernel.
 typedef struct
@@ -26,10 +26,13 @@ typedef struct
 typedef struct
 {
 	// True when this entry has not been logged.
-	unsigned char fresh;
+	unsigned char 		fresh;
 
-	ControllerInput controller_input;
-	ControllerOutput controller_output; 
+	// Counter for debugging, incremented each write.
+	unsigned int 		cnt;
+
+	ControllerInput 	controller_input;
+	ControllerOutput 	controller_output; 
 } DataToUspace;
 
 #endif // FUNCS_H_USPACE_KERN_SHM

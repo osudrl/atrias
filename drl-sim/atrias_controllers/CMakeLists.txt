@@ -90,4 +90,4 @@ else(EXISTS "${GAZEBO_INSTALLED}")
 	message("Gazebo not detected, so not going to build the simulation.")
 endif(EXISTS "${GAZEBO_INSTALLED}")
 
-rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)
+#rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)

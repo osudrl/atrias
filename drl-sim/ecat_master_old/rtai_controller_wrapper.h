@@ -67,7 +67,7 @@
 /*****************************************************************************/
 
 static DataToKern	*to_kern_shm;
-static DataToUspace *to_uspace_shm;
+static DataToUspace *to_uspace_shm[SHM_TO_USPACE_ENTRIES];
 
 /*****************************************************************************/
 
@@ -90,11 +90,6 @@ static SEM master_sem;
 static cycles_t t_last_cycle = 0, t_critical;
 
 /*****************************************************************************/
-
-static uControllerInput			*medulla_boom;
-static uControllerInput			*medulla_B;
-static uControllerInput			*medulla_A;
-static uControllerInput			*medulla_hip;
 
 // process data
 static uint8_t *domain1_pd; // process data memory
@@ -124,9 +119,6 @@ const static ec_pdo_entry_reg_t domain_regs[] =
 };
 
 static unsigned int counter = 0;
-static unsigned int blink = 0;
-
-static unsigned int num_of_medullas;
 
 /*****************************************************************************/
 
@@ -205,8 +197,6 @@ ControllerData	 	controller_data;
 
 uint8_t				command;
 
-int					to_uspace_index = 0;
-
 uint16_t			tranA_off;
 uint16_t			tranB_off;
 
@@ -235,7 +225,9 @@ float				hor_vel_buffer[HOR_VEL_WINDOW];
 int					hor_vel_index = 0;
 
 // Keep track of the number of consecutive cycles that the program has been locked out of shm.
-int					spin_lock_cnt = 0;
+int					spin_lock_cnt 	= 0;
+int					to_uspace_index = 0;
+unsigned char		to_uspace_cnt 	= 0;
 
 /*****************************************************************************/
 

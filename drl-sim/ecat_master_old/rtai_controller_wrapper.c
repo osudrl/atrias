@@ -127,17 +127,17 @@ unsigned char check_medullas()
 		rt_printk("Medulla A reporting wrong ID.\n");
 		result = 0;
 	}
-	if ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_A_ID )
+	if ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_B_ID )
 	{
 		rt_printk("Medulla B reporting wrong ID.\n");
 		result = 0;
 	}
-	if ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_A_ID )
+	if ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_HIP_ID )
 	{
 		rt_printk("Medulla Hip reporting wrong ID.\n");
 		result = 0;
 	}
-	if ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_A_ID )
+	if ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_BOOM_ID )
 	{
 		rt_printk("Medulla Boom reporting wrong ID.\n");
 		result = 0;
@@ -247,8 +247,6 @@ void run(long data)
 	// Now start controlling the robot
 	while (true) {
 		t_last_cycle = get_cycles();
-
-		rt_printk("In the main loop.\n");
 
 		// receive process data
 		rt_sem_wait(&master_sem);
@@ -415,21 +413,20 @@ void run(long data)
 		// Controller update.
 		control_switcher_state_machine(&controller_input, &controller_output, &controller_state, &controller_data);
 		// Clamp the motor torques.
-		//controller_output.motor_torqueA = CLAMP(controller_output.motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-		//controller_output.motor_torqueB = CLAMP(controller_output.motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+		controller_output.motor_torqueA = CLAMP(controller_output.motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+		controller_output.motor_torqueB = CLAMP(controller_output.motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
 		//controller_output.motor_torqueA = CLAMP(controller_output.motor_torqueA, -3., 3.);
 		//controller_output.motor_torqueB = CLAMP(controller_output.motor_torqueB, -3., 3.);
-		controller_output.motor_torqueA = 0.;
-		controller_output.motor_torqueB = 0.;			
-	
-		rt_printk("Index %u written.\n", to_uspace_index);
+		//controller_output.motor_torqueA = 0.;
+		//controller_output.motor_torqueB = 0.;			
 
 		// Send state to user space for datalogging.
-		to_uspace_shm[to_uspace_index].controller_input = controller_input;
-		to_uspace_shm[to_uspace_index].controller_output = controller_output;
+		to_uspace_shm[to_uspace_index]->cnt					= to_uspace_cnt++;
+		to_uspace_shm[to_uspace_index]->controller_input 	= controller_input;
+		to_uspace_shm[to_uspace_index]->controller_output 	= controller_output;
+		to_uspace_shm[to_uspace_index]->fresh = true;
 		// Increment and roll the ring buffer index over, when it reaches the end of the buffer.
 		to_uspace_index = (++to_uspace_index) % SHM_TO_USPACE_ENTRIES;
-		to_uspace_shm[to_uspace_index].fresh = true;
 
 		// Send motor torques only when all of the Medullas status's are okay..
 		if ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status 
@@ -556,10 +553,10 @@ int __init init_mod(void)
 	//****************************************************************************
 
 	// To Kernel SHM
-	to_kern_shm = (DataToKern *)rtai_kmalloc(nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern));
-	to_kern_shm = (DataToKern *)rtai_kmalloc(nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern));
-	to_kern_shm = (DataToKern *)rtai_kmalloc(nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern));
-	to_kern_shm = (DataToKern *)rtai_kmalloc(nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern));
+	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
+	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
+	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
+	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
 	if (to_kern_shm == NULL)
 		return -ENOMEM;
 	memset(to_kern_shm, 0, sizeof(DataToKern));
@@ -569,13 +566,16 @@ int __init init_mod(void)
 	to_kern_shm->controller_requested	= NO_CONTROLLER;
 	
 	// To Uspace SHM
-	to_uspace_shm = (DataToUspace *)rtai_kmalloc(nam2num(SHM_TO_USPACE_NAM), SHM_TO_USPACE_ENTRIES * sizeof(DataToUspace));
-	to_uspace_shm = (DataToUspace *)rtai_kmalloc(nam2num(SHM_TO_USPACE_NAM), SHM_TO_USPACE_ENTRIES * sizeof(DataToUspace));
-	to_uspace_shm = (DataToUspace *)rtai_kmalloc(nam2num(SHM_TO_USPACE_NAM), SHM_TO_USPACE_ENTRIES * sizeof(DataToUspace));
-	to_uspace_shm = (DataToUspace *)rtai_kmalloc(nam2num(SHM_TO_USPACE_NAM), SHM_TO_USPACE_ENTRIES * sizeof(DataToUspace));
-	if (to_uspace_shm == NULL)
-		return -ENOMEM;
-	memset(to_uspace_shm, 0, sizeof(DataToUspace));
+	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
+	{
+		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
+		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
+		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
+		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
+		if (to_uspace_shm[i] == NULL)
+			return -ENOMEM;
+		memset(to_uspace_shm[i], 0, sizeof(DataToUspace));
+	}
 
 	//****************************************************************************
 
@@ -674,7 +674,7 @@ int __init init_mod(void)
 	printk(KERN_INFO PFX "RT timer started with %i/%i ticks.\n",
 		 (int) tick_period, (int) requested_ticks);
 
-	if (rt_task_init(&task, run, 0, 2000, 0, 1, NULL)) 
+	if ( rt_task_init_cpuid(&task, run, 0, 10000, 0, 1, NULL, 1) ) 
 	{
 	  printk(KERN_ERR PFX "Failed to init RTAI task!\n");
 	  goto out_stop_timer;
@@ -707,23 +707,28 @@ out_return:
 
 void __exit cleanup_mod(void)
 {
+	int i;
+
     printk(KERN_INFO PFX "Stopping...\n");
 
 	rt_busy_sleep(10000000);
 
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
-	rtai_kfree(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
 
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
-	rtai_kfree(nam2num(SHM_TO_USPACE_NAM));
+	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
+	{
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+	}
 
     rt_task_delete(&task);
     stop_rt_timer();
@@ -743,30 +748,3 @@ module_init(init_mod);
 module_exit(cleanup_mod);
 
 /*****************************************************************************/
-
-	/*
-	while ( true )
-	{
-		// receive process data
-		rt_sem_wait(&master_sem);
-		ecrt_master_receive(master);
-		ecrt_domain_process(domain1);
-		rt_sem_signal(&master_sem);
-
-		((uControllerInput *)(domain1_pd + off_medullaA_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medullaB_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medulla_boom_rx))->command = CMD_DISABLE;
-
-		((uControllerInput *)(domain1_pd + off_medullaA_rx))->MOTOR_TORQUE = PWM_OPEN;
-		((uControllerInput *)(domain1_pd + off_medullaB_rx))->MOTOR_TORQUE = PWM_OPEN;
-		((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->HIP_MTR_CMD = HIP_CMD_PIN;
-
-		rt_sem_wait(&master_sem);
-		ecrt_domain_queue(domain1);
-		rt_sem_signal(&master_sem);
-		ecrt_master_send(master);
-
-		rt_task_wait_period();
-	}
-	*/

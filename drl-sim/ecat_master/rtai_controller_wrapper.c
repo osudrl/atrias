@@ -4,6 +4,62 @@
 
 /*****************************************************************************/
 
+// Check to see if Medullas are awake by sending them a bad command (0).
+
+void wake_up(void)
+{
+	((uControllerInput *)(domain1_pd + off_medullaA_rx))->command = 0;
+	((uControllerInput *)(domain1_pd + off_medullaB_rx))->command = 0;
+	((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->command = 0;
+	((uControllerInput *)(domain1_pd + off_medulla_boom_rx))->command = 0;
+
+	// If all of the Medullas report the bad command, then return success.
+	if ( (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status & STATUS_BADCMD)
+		&& (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status & STATUS_BADCMD)
+		&& (((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->status & STATUS_BADCMD)
+		&& (((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->status & STATUS_BADCMD) )
+			next_state = RESTART;
+
+	next_state = WAKE_UP;
+}
+
+/*****************************************************************************/
+
+void restart(void)
+{
+
+}
+
+/*****************************************************************************/
+
+void check(void)
+{
+
+/*****************************************************************************/
+
+}
+
+void initialize(void)
+{
+
+}
+
+/*****************************************************************************/
+
+void run(void)
+{
+
+}
+
+/*****************************************************************************/
+
+void error(void)
+{
+
+}
+
+/*****************************************************************************/
+
 void check_master_state(void)
 {
     ec_master_state_t ms;
@@ -60,18 +116,11 @@ unsigned char wake_up_medullas()
 
 /*****************************************************************************/
 
+// Verify Medullas are in their disabled state, and in their correct locations.
+
 unsigned char check_medullas()
 {
-	// The result of the check.  Clear if any problems with the Medullas are detected.
-	unsigned char result = 1;
-
-	// Verify Medullas in their correct locations.
-
-	// receive process data
-	rt_sem_wait(&master_sem);
-	ecrt_master_receive(master);
-	ecrt_domain_process(domain1);
-	rt_sem_signal(&master_sem);
+	next_state = INITIALIZE;
 
 	((uControllerInput *)(domain1_pd + off_medullaA_rx))->command = CMD_DISABLE;
 	((uControllerInput *)(domain1_pd + off_medullaB_rx))->command = CMD_DISABLE;
@@ -82,19 +131,6 @@ unsigned char check_medullas()
 	((uControllerInput *)(domain1_pd + off_medullaB_rx))->MOTOR_TORQUE = PWM_OPEN;
 	((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->HIP_MTR_CMD = HIP_CMD_PIN;
 
-	rt_sem_wait(&master_sem);
-	ecrt_domain_queue(domain1);
-	rt_sem_signal(&master_sem);
-	ecrt_master_send(master);
-
-	rt_task_wait_period();
-
-	// If any of the Medullas are not in their disabled state, return failure.
-	//if ( (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status != STATUS_DISABLED)
-	//	|| (((uControllerOutput *)(domain1_pd + off_medullaB_tx))->status != STATUS_DISABLED)
-	//	|| (((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->status != STATUS_DISABLED)
-	//	|| (((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->status != STATUS_DISABLED) )
-	//	return false;
 	if (((uControllerOutput *)(domain1_pd + off_medullaA_tx))->status != STATUS_DISABLED)
 	{
 		rt_printk("Medulla A not in disabled state.\n");
@@ -116,12 +152,6 @@ unsigned char check_medullas()
 		result = 0;
 	}
 
-	// If the Medullas are reporting a configuration other than the one expected, return failure.
-	//if ( ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->id != MEDULLA_A_ID )
-	//	|| ( ((uControllerOutput *)(domain1_pd + off_medullaB_tx))->id != MEDULLA_B_ID )		
-	//	|| ( ((uControllerOutput *)(domain1_pd + off_medulla_hip_tx))->id != MEDULLA_HIP_ID )	
-	//	|| ( ((uControllerOutput *)(domain1_pd + off_medulla_boom_tx))->id != MEDULLA_BOOM_ID )	)
-	//	return false;
 	if ( ((uControllerOutput *)(domain1_pd + off_medullaA_tx))->id != MEDULLA_A_ID )
 	{
 		rt_printk("Medulla A reporting wrong ID.\n");
@@ -743,30 +773,3 @@ module_init(init_mod);
 module_exit(cleanup_mod);
 
 /*****************************************************************************/
-
-	/*
-	while ( true )
-	{
-		// receive process data
-		rt_sem_wait(&master_sem);
-		ecrt_master_receive(master);
-		ecrt_domain_process(domain1);
-		rt_sem_signal(&master_sem);
-
-		((uControllerInput *)(domain1_pd + off_medullaA_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medullaB_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->command = CMD_DISABLE;
-		((uControllerInput *)(domain1_pd + off_medulla_boom_rx))->command = CMD_DISABLE;
-
-		((uControllerInput *)(domain1_pd + off_medullaA_rx))->MOTOR_TORQUE = PWM_OPEN;
-		((uControllerInput *)(domain1_pd + off_medullaB_rx))->MOTOR_TORQUE = PWM_OPEN;
-		((uControllerInput *)(domain1_pd + off_medulla_hip_rx))->HIP_MTR_CMD = HIP_CMD_PIN;
-
-		rt_sem_wait(&master_sem);
-		ecrt_domain_queue(domain1);
-		rt_sem_signal(&master_sem);
-		ecrt_master_send(master);
-
-		rt_task_wait_period();
-	}
-	*/

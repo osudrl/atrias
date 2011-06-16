@@ -10,7 +10,7 @@ LXRT_LDFLAGS=$(shell rtai-config --lxrt-ldflags)
 
 MODULE_NAME=rtai_controller
 
-all: links kern install
+all: kern install
 
 kern:
 	$(MAKE) -C "$(LINUX_SOURCE_DIR)" M="$(PWD)" modules
