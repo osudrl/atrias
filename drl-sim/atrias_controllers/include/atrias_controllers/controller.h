@@ -20,8 +20,8 @@
 
 // Debugging print statements.
 
-#define DEBUG_CONTROLLERS
-//#undef	DEBUG_CONTROLLERS
+//#define DEBUG_CONTROLLERS
+#undef	DEBUG_CONTROLLERS
 
 #ifdef DEBUG_CONTROLLERS
 	#ifdef COMPILE_FOR_RTAI
