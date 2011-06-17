@@ -227,7 +227,7 @@ int					hor_vel_index = 0;
 // Keep track of the number of consecutive cycles that the program has been locked out of shm.
 int					spin_lock_cnt 	= 0;
 int					to_uspace_index = 0;
-unsigned char		to_uspace_cnt 	= 0;
+unsigned int		to_uspace_cnt 	= 0;
 
 /*****************************************************************************/
 

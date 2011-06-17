@@ -48,6 +48,8 @@ int main (int argc, char **argv)
 {
 	int i;
 
+	pthread_t datalogging_thread;
+
 	DataLogger	data_logger = DataLogger(QUOTEME(LOG_FILENAME));
 
 	//*************************************************************************
@@ -92,23 +94,13 @@ int main (int argc, char **argv)
 	// Datalog at 1kHz.
 
 	ROS_INFO("Log Filename: %s", QUOTEME(LOG_FILENAME));
-
 	ROS_INFO( "Entry size: %u", sizeof(DataToUspace) );
+
+	// Create datalogging thread.
+	pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);	
 
 	while ( ros::ok() )
 	{
-		// Check to see if there is fresh data in the ring buffer.
-		while ( to_uspace_shm[to_uspace_index]->fresh )
-		{
-			// Load the userspace buffer with the most recent sensor information from the robot.
-			to_uspace_buffer[uspace_buffer_index] = *to_uspace_shm[to_uspace_index];
-			to_uspace_shm[to_uspace_index]->fresh = false;
-
-			// Increment and roll the ring buffer index over, when it reaches the end of the buffer.
-			to_uspace_index = (++to_uspace_index) % SHM_TO_USPACE_ENTRIES;
-			uspace_buffer_index = (++uspace_buffer_index) % INTERFACE_BUFFER_SIZE;
-		}
-
 		// If the kernel shm is free, then load the kernel buffer.
 		if ( !to_kern_shm->lock )
 		{
@@ -125,8 +117,8 @@ int main (int argc, char **argv)
 			to_kern_shm->lock = false;
 		}
 
-		if ( uspace_buffer_index == INTERFACE_BUFFER_SIZE - 1 )
-			ROS_INFO("Log file grew too large.  Restarting datalogging.");
+		//if ( uspace_buffer_index == INTERFACE_BUFFER_SIZE - 1 )
+		//	ROS_INFO("Log file grew too large.  Restarting datalogging.");
 	}
 
 	//*************************************************************************
@@ -145,21 +137,51 @@ int main (int argc, char **argv)
 
 	// Disconnect from kernel's shm.
 
-	rtai_free (nam2num("SHM_TO_KERN_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_KERN_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_KERN_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_KERN_NAM"), shm);
+	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
+	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
+	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
+	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
 
-	rtai_free (nam2num("SHM_TO_USPACE_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_USPACE_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_USPACE_NAM"), shm);
-	rtai_free (nam2num("SHM_TO_USPACE_NAM"), shm);
+	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
+	{
+		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
+		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
+		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
+		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
+	}
 
 	ROS_INFO("Disconnected from SHM.");
 
 	//*************************************************************************
 
 	return 0;
+}
+
+void * datalogging_task( void * argument )
+{
+	int i;
+
+	while ( ros::ok() )
+	{
+		// Check to see if there is fresh data in the ring buffer.
+		while ( to_uspace_shm[to_uspace_index]->fresh )
+		{
+			// Load the userspace buffer with the most recent sensor information from the robot.
+			to_uspace_buffer[uspace_buffer_index] = *to_uspace_shm[to_uspace_index];
+			to_uspace_shm[to_uspace_index]->fresh = false;
+
+			//if ( to_uspace_buffer[uspace_buffer_index].controller_input.leg_angleA == 0 )
+			//	ROS_WARN( "Bad read at index %u.", to_uspace_index );
+
+			// Increment and roll the ring buffer index over, when it reaches the end of the buffer.
+			to_uspace_index = (++to_uspace_index) % SHM_TO_USPACE_ENTRIES;
+			uspace_buffer_index = (++uspace_buffer_index) % INTERFACE_BUFFER_SIZE;
+		}
+
+		//pthread_yield();
+	}
+
+	return NULL;
 }
 
 bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)

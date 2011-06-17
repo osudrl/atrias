@@ -422,9 +422,15 @@ void run(long data)
 
 		// Send state to user space for datalogging.
 		to_uspace_shm[to_uspace_index]->cnt					= to_uspace_cnt++;
+		to_uspace_shm[to_uspace_index]->index				= to_uspace_index;
 		to_uspace_shm[to_uspace_index]->controller_input 	= controller_input;
 		to_uspace_shm[to_uspace_index]->controller_output 	= controller_output;
 		to_uspace_shm[to_uspace_index]->fresh = true;
+
+		//if ( to_uspace_index == 0 )
+		//	rt_printk( "Cnt: %u\n", to_uspace_shm[0]->cnt );
+		//rt_printk( "Index: %u, Cnt: %u\n", to_uspace_index, to_uspace_cnt );
+
 		// Increment and roll the ring buffer index over, when it reaches the end of the buffer.
 		to_uspace_index = (++to_uspace_index) % SHM_TO_USPACE_ENTRIES;
 
@@ -544,7 +550,7 @@ int __init init_mod(void)
 	hor_vel;
 	hor_vel_buffer[HOR_VEL_WINDOW];
 	hor_vel_index = 0;
-	
+
 	//****************************************************************************
 
 	printk("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -553,10 +559,7 @@ int __init init_mod(void)
 	//****************************************************************************
 
 	// To Kernel SHM
-	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
-	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
-	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
-	to_kern_shm = (DataToKern *)rt_shm_alloc( nam2num(SHM_TO_KERN_NAM), sizeof(DataToKern), USE_GFP_KERNEL );
+	to_kern_shm = (DataToKern *)rt_shm_alloc( SHM_TO_KERN_KEY, sizeof(DataToKern), USE_VMALLOC );
 	if (to_kern_shm == NULL)
 		return -ENOMEM;
 	memset(to_kern_shm, 0, sizeof(DataToKern));
@@ -568,10 +571,7 @@ int __init init_mod(void)
 	// To Uspace SHM
 	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
 	{
-		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
-		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
-		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
-		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( nam2num(SHM_TO_USPACE_NAM) + i, sizeof(DataToUspace), USE_GFP_KERNEL );
+		to_uspace_shm[i] = (DataToUspace *)rt_shm_alloc( SHM_TO_USPACE_KEY + i, sizeof(DataToUspace), USE_VMALLOC );
 		if (to_uspace_shm[i] == NULL)
 			return -ENOMEM;
 		memset(to_uspace_shm[i], 0, sizeof(DataToUspace));
@@ -713,21 +713,11 @@ void __exit cleanup_mod(void)
 
 	rt_busy_sleep(10000000);
 
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
-	rt_shm_free(nam2num(SHM_TO_KERN_NAM));
+	rt_shm_free( SHM_TO_KERN_KEY );
 
 	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
 	{
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
-		rt_shm_free(nam2num(SHM_TO_USPACE_NAM) + i);
+		rt_shm_free( SHM_TO_USPACE_KEY + i );
 	}
 
     rt_task_delete(&task);

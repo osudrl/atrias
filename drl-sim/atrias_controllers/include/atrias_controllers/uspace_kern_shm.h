@@ -5,9 +5,9 @@
 
 #include <atrias_controllers/controller.h>
 
-#define SHM_TO_KERN_NAM			"SHM_TO_KERN_NAM"
-#define SHM_TO_USPACE_NAM		"SHM_TO_USPACE_NAM"
-#define SHM_TO_USPACE_ENTRIES	210
+#define SHM_TO_KERN_KEY			5000
+#define SHM_TO_USPACE_KEY		5001
+#define SHM_TO_USPACE_ENTRIES	200
 
 // Data to the kernel.  We can just use a spin lock for data going to the kernel.
 typedef struct
@@ -30,6 +30,7 @@ typedef struct
 
 	// Counter for debugging, incremented each write.
 	unsigned int 		cnt;
+	unsigned char		index;
 
 	ControllerInput 	controller_input;
 	ControllerOutput 	controller_output; 
