@@ -204,7 +204,8 @@ void cyclic_task(void)
 /****************************************************************************/
 
 void signal_handler(int signum) {
-    switch (signum) {
+    switch (signum) 
+	{
         case SIGALRM:
             sig_alarms++;
             break;
@@ -226,25 +227,52 @@ void endme(int dummy)
 
 /****************************************************************************/
 
-void controller_task( int data )
-{
-
-}
-
 void *control_thread(void *arg)
 {
+	int i = 0;
+
 	RT_TASK *task;
 
 	printf( "Control thread initialized...\n" );
 
-	start_rt_timer(0);
-	rt_make_hard_real_time();
-
  	if ( !( task = rt_task_init_schmod( nam2num( "control_task" ), 0, 1024, 0, SCHED_FIFO, 0xFF ) ) ) 
 	{
-		printf( "CANNOT INIT TASK\n" );
+		printf( "CANNOT INIT TASK: %d\n", task );
 		exit(1);
 	}
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+
+	rt_set_oneshot_mode();
+	start_rt_timer( 0 );
+	rt_make_hard_real_time();
+
+	if ( !rt_task_make_periodic( task, rt_get_time() + nano2count(1000000), nano2count(1000000) ) )
+	{
+		printf( "CANNOT CREATE PERIODIC TASK\n" );
+		exit(1);
+	}
+
+	{
+		for ( i = 0; i < 10000; i++ )
+		{		
+			// receive process data
+			ecrt_master_receive(master);
+			ecrt_domain_process(domain1);
+
+			//XXX
+
+			// send process data
+			ecrt_domain_queue(domain1);
+			ecrt_master_send(master);
+
+			rt_task_wait_period();
+		}
+	}
+
+	rt_make_soft_real_time();
+	rt_task_delete( task );
+
+	printf( "Finished task (i = %d)...\n", i );
 
 	return NULL;
 }
@@ -287,8 +315,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    if (!(sc = ecrt_master_slave_config(
-                    master, AnaOutSlavePos, Beckhoff_EL4102))) {
+    if (!(sc = ecrt_master_slave_config( master, AnaOutSlavePos, Beckhoff_EL4102)) ) 
+	{
         fprintf(stderr, "Failed to get slave configuration.\n");
         return -1;
     }
