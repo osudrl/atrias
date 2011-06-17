@@ -2,6 +2,10 @@
 
 /****************************************************************************/
 
+//#include "ec_user.h"
+
+/****************************************************************************/
+
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -233,6 +237,10 @@ void *control_thread(void *arg)
 
 	RT_TASK *task;
 
+	RTIME log[1000];
+
+	//log[0] = rt_get_cpu_time_ns();
+
 	printf( "Control thread initialized...\n" );
 
  	if ( !( task = rt_task_init_schmod( nam2num( "control_task" ), 0, 1024, 0, SCHED_FIFO, 0xFF ) ) ) 
@@ -240,37 +248,33 @@ void *control_thread(void *arg)
 		printf( "CANNOT INIT TASK: %d\n", task );
 		exit(1);
 	}
-	mlockall(MCL_CURRENT | MCL_FUTURE);
 
-	rt_set_oneshot_mode();
-	start_rt_timer( 0 );
 	rt_make_hard_real_time();
 
-	if ( !rt_task_make_periodic( task, rt_get_time() + nano2count(1000000), nano2count(1000000) ) )
-	{
-		printf( "CANNOT CREATE PERIODIC TASK\n" );
-		exit(1);
-	}
+	rt_task_make_periodic( task, rt_get_time() + nano2count(1000000), nano2count(1000000) );
 
-	{
-		for ( i = 0; i < 10000; i++ )
-		{		
-			// receive process data
-			ecrt_master_receive(master);
-			ecrt_domain_process(domain1);
+	for ( i = 0; i < 1000; i++ )
+	{		
+		// receive process data
+		ecrt_master_receive(master);
+		ecrt_domain_process(domain1);
 
-			//XXX
+		//XXX
+	
+		log[i] = rt_get_cpu_time_ns();
 
-			// send process data
-			ecrt_domain_queue(domain1);
-			ecrt_master_send(master);
+		// send process data
+		ecrt_domain_queue(domain1);
+		ecrt_master_send(master);
 
-			rt_task_wait_period();
-		}
+		rt_task_wait_period();
 	}
 
 	rt_make_soft_real_time();
 	rt_task_delete( task );
+
+	for ( i = 1; i < 1000; i++ )
+		printf( "%d\n", log[i] - log[i-1] );
 
 	printf( "Finished task (i = %d)...\n", i );
 
@@ -281,7 +285,7 @@ void *control_thread(void *arg)
 
 int main(int argc, char **argv)
 {
-	int arg;
+	int arg = 0;
 	pthread_t control_task;
 
 	// EtherCAT
@@ -290,7 +294,7 @@ int main(int argc, char **argv)
     struct sigaction sa;
     struct itimerval tv;
 
-	// Receive kill signal. 
+	// End on interrupt. 
 	signal(SIGINT, endme);
 
 	printf( "Initializing\n" );
@@ -371,6 +375,9 @@ int main(int argc, char **argv)
     }
 
 	// RTAI
+
+	rt_set_oneshot_mode();
+	start_rt_timer( 0 );
 
 	if ( ! ( control_task = rt_thread_create( control_thread, &arg, 10000 ) ) ) 
 	{
