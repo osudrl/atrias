@@ -37,7 +37,7 @@ rosbuild_add_boost_directories()
 if(EXISTS /usr/realtime)
 	# If it is, then build the wireless kernel interface.
 
-	message("RTAI detected, so building the wireless kernel interface.")
+	message("RTAI detected...")
 
 	# Get RTAI compiler flags and libraries
 	execute_process(
@@ -45,10 +45,24 @@ if(EXISTS /usr/realtime)
 		OUTPUT_VARIABLE LXRT_CFLAGS
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
+	message("LXRT_CFLAGS: ${LXRT_CFLAGS}")
+	execute_process(
+		COMMAND rtai-config --lxrt-ldflags
+		OUTPUT_VARIABLE LXRT_LDFLAGS
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	message("LXRT_LDFLAGS: ${LXRT_LDFLAGS}")
 	# Remove the -W strict-prototypes flag, because it is not a valid flag for C++.
-	string(REPLACE "-Wstrict-prototypes" "" LXRT_CFLAGS ${LXRT_CFLAGS})
-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${LXRT_CFLAGS})
-	set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}:/usr/realtime/lib)
+	#string(REPLACE "-Wstrict-prototypes" "" LXRT_CFLAGS ${LXRT_CFLAGS})
+
+	set(ECAT_CFLAGS "-I /opt/etherlab/include -L /opt/etherlab/lib -l ethercat")
+	message("ECAT FLAGS: ${ECAT_CFLAGS}")
+
+	#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${LXRT_CFLAGS})
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
+	message("CFLAGS: ${CMAKE_C_FLAGS}")
+
+	set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}:/usr/realtime/lib")
 
 	# Define path for log files, and add it as a definition.
 	execute_process(
@@ -61,7 +75,9 @@ if(EXISTS /usr/realtime)
 
 	message("Log Filename: ${LOG_FILENAME}")
 
-	rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
+	#rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
+
+	rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.c src/controller_wrapper_states.c)
 else(EXISTS /usr/realtime)
 	message("RTAI not detected, skipping building the wireless kernel interface.")
 endif(EXISTS /usr/realtime)

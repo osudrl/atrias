@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Devin Koepl
+
+modprobe -r rtai_shm
+modprobe -r rtai_mq
+modprobe -r rtai_fifos
+modprobe -r rtai_bits
+modprobe -r rtai_tbx
+modprobe -r rtai_msg
+modprobe -r rtai_mbx
+modprobe -r rtai_sem
+modprobe -r rtai_lxrt
+modprobe -r rtai_ksched
+modprobe -r rtai_sched
+modprobe -r rtai_hal

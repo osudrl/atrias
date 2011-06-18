@@ -28,9 +28,7 @@
 #include <atrias_controllers/controller.h>
 #include <atrias_controllers/control_switcher_state_machine.h>
 #include <atrias_controllers/simulation_ecat_interface.h>
-
-// Local
-#include "control_wrapper_states.h"
+#include <atrias_controllers/controller_wrapper_states.h>
 
 /*****************************************************************************/
 
