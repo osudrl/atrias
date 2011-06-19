@@ -172,7 +172,7 @@ int main(int argc, char **argv)
 	rt_set_oneshot_mode();
 	start_rt_timer( 0 );
 
-	if ( ! ( control_task = rt_thread_create( control_thread, &arg, 10000 ) ) ) 
+	if ( ! ( control_task = rt_thread_create( (void *)control_thread, &arg, 10000 ) ) ) 
 	{
 		printf( "ERROR IN CREATING THREAD\n" );
 		exit(1);

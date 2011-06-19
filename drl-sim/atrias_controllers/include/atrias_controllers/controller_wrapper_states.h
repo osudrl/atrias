@@ -15,6 +15,7 @@
 
 // ATRIAS Controllers
 #include <atrias_controllers/controller.h>
+#include <atrias_controllers/control_switcher_state_machine.h>
 
 // DRL Library
 #include <drl_library/discretize.h>
@@ -55,11 +56,12 @@ unsigned char error_state( uControllerInput **, uControllerOutput **, unsigned c
 // Controller structs.
 static ControllerInput 		controller_input[SIZE_OF_DATA_RING_BUFFER];
 static ControllerOutput 	controller_output[SIZE_OF_DATA_RING_BUFFER];
-static ControllerState 		controller_state;
-static ControllerData 		controller_data;
+static ControllerState 		controller_state[2];
+static ControllerData 		controller_data[2];
 
-static int					io_index = 0;
-static int					data_index = 0;
+static unsigned int			io_index = 0;
+static unsigned char		state_index = 0;
+static unsigned char		data_index = 0;
 
 /*****************************************************************************/
 

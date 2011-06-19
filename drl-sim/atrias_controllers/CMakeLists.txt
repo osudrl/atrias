@@ -33,13 +33,16 @@ rosbuild_gensrv()
 
 rosbuild_add_boost_directories()
 
+# List of controllers.
+set(CONTROLLERS src/no_controller.cpp src/motor_torque_controller.cpp src/motor_position_controller.cpp src/leg_torque_controller.cpp src/leg_position_controller.cpp src/leg_angle_sin_wave.cpp src/raibert_controller.cpp)
+
 # Check to see whether RTAI is installed.
 if(EXISTS /usr/realtime)
-	# If it is, then build the wireless kernel interface.
+	# If it is, then build the RT wrappers.
 
 	message("RTAI detected...")
 
-	# Get RTAI compiler flags and libraries
+	# Get RTAI compiler flags.
 	execute_process(
 		COMMAND rtai-config --lxrt-cflags
 		OUTPUT_VARIABLE LXRT_CFLAGS
@@ -53,15 +56,18 @@ if(EXISTS /usr/realtime)
 	)
 	message("LXRT_LDFLAGS: ${LXRT_LDFLAGS}")
 	# Remove the -W strict-prototypes flag, because it is not a valid flag for C++.
-	#string(REPLACE "-Wstrict-prototypes" "" LXRT_CFLAGS ${LXRT_CFLAGS})
+	string(REPLACE "-Wstrict-prototypes" "" LXRT_CFLAGS ${LXRT_CFLAGS})
 
+	# Get ECAT compiler flags.
 	set(ECAT_CFLAGS "-I /opt/etherlab/include -L /opt/etherlab/lib -l ethercat")
 	message("ECAT FLAGS: ${ECAT_CFLAGS}")
 
-	#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${LXRT_CFLAGS})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
-	message("CFLAGS: ${CMAKE_C_FLAGS}")
+	# Add RTAI and ECAT compiler flags.
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
+	#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
+	message("CFLAGS: ${CMAKE_CXX_FLAGS}")
 
+	# Add RTAI libraries to the library search path.
 	set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}:/usr/realtime/lib")
 
 	# Define path for log files, and add it as a definition.
@@ -77,7 +83,7 @@ if(EXISTS /usr/realtime)
 
 	#rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
 
-	rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.c src/controller_wrapper_states.c)
+	rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.cpp src/controller_wrapper_states.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
 else(EXISTS /usr/realtime)
 	message("RTAI not detected, skipping building the wireless kernel interface.")
 endif(EXISTS /usr/realtime)
@@ -94,8 +100,6 @@ if(EXISTS "${GAZEBO_INSTALLED}")
 	# Build the controller wrappers.
 
 	message("Building the simulator.")
-
-	set(CONTROLLERS src/no_controller.cpp src/motor_torque_controller.cpp src/motor_position_controller.cpp src/leg_torque_controller.cpp src/leg_position_controller.cpp src/leg_angle_sin_wave.cpp src/raibert_controller.cpp)
 
 	rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
 	rosbuild_link_boost(all_in_one_controller_wrapper thread)
