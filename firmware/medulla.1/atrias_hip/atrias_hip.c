@@ -167,8 +167,8 @@ int main(void) {
 	sei();
 	
 	SetDutyR(0x7FFF);
-	SetDutyG(0x000F);
-	SetDutyB(0x000F);
+	SetDutyG(0x7FFF);
+	SetDutyB(0x7FFF);
 	
 	pwm = PWM_SET;
 	dir = 1;																	// << Don't touch a direction of zero will drive the hip into the hardstops+
@@ -250,7 +250,7 @@ int main(void) {
 	
 	al_event |= readAddr(AL_STATUS, &al_status, 1);								// check to see what the et1100 is doing so we're on the same page
 	
-	if (al_status == AL_STATUS_OP) {											// store SM addresses:
+	if (al_status == AL_STATUS_OP_bm) {											// store SM addresses:
 
 
 		al_event |= readAddr(SM0_BASE, data, 2);
@@ -400,7 +400,7 @@ int main(void) {
 					
 				case 'w':
 				
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no write for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no write for you!\n"); break;}
 					
 //					printf("\tWriting %d to SM3 at 0x%X\n",ssi[0],SM3_addr);
 //					al_event |= writeAddr(SM3_addr, dummy, SM3_len);
@@ -408,7 +408,7 @@ int main(void) {
 					break;
 
 				case 'R':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 
 					al_event = readAddr(SM0_addr, data, (uint16_t)512);
@@ -423,7 +423,7 @@ int main(void) {
 					break;
 					
 				case 'r':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 //					if (SM2_len <= 8)
 //						al_event = readAddr(SM2_addr, data, SM2_len);
@@ -483,11 +483,7 @@ int main(void) {
 
 				_delay_us(10);
 
-				blinkLED();
-
-				SetDutyR(0x000F);
-				SetDutyG(0x7FFF);
-				SetDutyB(0x07FF);
+				led_solid_red();
 	
 				// Wait for the other medullas to be ready.
 				//	Error_cnt is inc. when the panic line is ok. This loop will only exit if
@@ -517,7 +513,7 @@ int main(void) {
 //////////////////////////////////
 			case STATE_START :
 			
-				
+				led_solid_orange();
 				
 				if (pwm < PWM_SET) {
 					pwm++;
@@ -543,11 +539,7 @@ int main(void) {
 
 					out.status		= STATUS_DISABLED;
 
-					solidLED();
-	
-					SetDutyR(0x7FFF);
-					SetDutyG(0x000F);
-					SetDutyB(0x000F);
+					
 					
 					// Enable the interrupts
 					PMIC.CTRL |= PMIC_HILVLEN_bm;
@@ -615,7 +607,7 @@ int main(void) {
 				TC_VEL.CNT = 0;
 
 		
-				if ((al_status == AL_STATUS_OP)) {								// Stuff to do when eCAT is in OP mode
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
 					
 					
 					// Deal with commands from the master
@@ -649,6 +641,9 @@ int main(void) {
 						setPWM(pwm);
 						#endif
 						SetDutyG( 0x000F );
+										
+						out.status |= STATUS_DISABLED;
+
 					}
 					
 					// Play with the LED colors
@@ -667,9 +662,7 @@ int main(void) {
 					setPWM(pwm);
 					#endif
 							
-					SetDutyR( 0x7FF0 );
-					SetDutyG( 0x00FF );
-					SetDutyB( 0x0FFF );
+					led_solid_purple();
 					
 				}
 
@@ -742,10 +735,10 @@ int main(void) {
 				tc_Stop();
 				tc_VelStop();
 
-				if ((al_status == AL_STATUS_OP)) {								// Stuff to do when eCAT is in OP mode
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
 					
 					// Deal with commands from the master
-					if (in.command == CMD_DISABLE) {
+					if (in.command == CMD_RESTART) {
 						global_flags.state	= STATE_READY;
 
 					}
@@ -755,11 +748,7 @@ int main(void) {
 				PWMdis();
 				#endif
 				
-				blinkLED();
-
-				SetDutyR(0x2FFF);
-				SetDutyG(0x07FF);
-				SetDutyB(0x000F);
+				led_blink_red();
 
 				break;
 				
@@ -804,7 +793,7 @@ int main(void) {
 		////////////////////////////////////////////////////////////////////////
 		// Manage EtherCAT stuff
 
-		if (al_status == AL_STATUS_OP) {										// if we're in OP mode, update the txpdo on the ET1100
+		if (al_status == AL_STATUS_OP_bm) {										// if we're in OP mode, update the txpdo on the ET1100
 			al_event |= writeAddr(SM3_addr, &out  , SM3_len);
 		}
 		else {																	// else keep updating al_event
@@ -825,7 +814,7 @@ int main(void) {
 //			printf("\n");
 			#endif
 			
-			if (al_status == AL_STATUS_OP) {									// store SM addresses:
+			if (al_status == AL_STATUS_OP_bm) {									// store SM addresses:
 				
 				al_event |= readAddr(SM0_BASE, data, 2);
 				SM0_addr = *((uint16_t*)(data+SM_PHY_ADDR));
@@ -869,10 +858,23 @@ int main(void) {
 						#endif
 						global_flags.state = STATE_RESET;	
 					}
+					else if (in.command == CMD_RESTART) {
+					
+						#ifdef ENABLE_TC_STEP
+						tc_Stop();
+						#endif
+						
+						#ifdef DEBUG
+						printf("CMD_RESTART\n");
+						#endif
+
+						toggle			= CMD_RUN_TOGGLE_bm;
+
+					}
 					else if (in.command == CMD_DISABLE) {
 					
 						tc_Stop();
-						out.status		|= STATUS_DISABLED;
+//						out.status		|= STATUS_DISABLED;
 						toggle			= CMD_RUN_TOGGLE_bm;
 
 						#ifdef DEBUG
@@ -979,16 +981,16 @@ void printMenu () {
 void printState(uint8_t state) {
 
 	switch (state) {
-		case AL_STATUS_INIT:
+		case AL_STATUS_INIT_bm:
 			printf("init");
 			break;
-		case AL_STATUS_PREOP:
+		case AL_STATUS_PREOP_bm:
 			printf("pre-op");
 			break;
-		case AL_STATUS_SAFEOP:
+		case AL_STATUS_SAFEOP_bm:
 			printf("safe op");
 			break;
-		case AL_STATUS_OP:
+		case AL_STATUS_OP_bm:
 			printf("op");
 			break;
 		default:

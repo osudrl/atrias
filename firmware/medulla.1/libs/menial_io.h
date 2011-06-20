@@ -241,6 +241,14 @@ inline void led_solid_purple() {
 	SetDutyB( 0x0FFF );
 }
 
+// disabled
+inline void led_solid_white() {
+	solidLED();
+	SetDutyR(0x7FFF);
+	SetDutyG(0x7FFF);
+	SetDutyB(0x2FFF);
+}
+
 inline void led_solid_bluegreen() {
 	solidLED();
 	SetDutyR(0x000F);

@@ -76,11 +76,16 @@ static FILE mystdout = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE)
 int main(void) {
 
 	uint8_t i, flag = 0;
-	uint8_t		tmp;
-	uint16_t	tmp16 = 0;
-	uint8_t		cnt = 0;
-	uint32_t ave_tilt	= 0;
-	uint32_t ave_pan	= 0;
+	uint8_t		tmp			= 0;
+	uint16_t	tmp16		= 0;
+	
+	uint8_t		cnt			= 0;
+	
+	uint8_t		panic_cnt	= 0;
+	uint8_t		enc_cnt		= 0;
+	
+	uint32_t	ave_tilt	= 0;
+	uint32_t	ave_pan		= 0;
 	
 	uint8_t	toggle = CMD_RUN_TOGGLE_bm;
 	
@@ -137,8 +142,8 @@ int main(void) {
 	
 	blinkLED();
 	SetDutyR(0x7FFF);
-	SetDutyG(0x00FF);
-	SetDutyB(0x00FF);
+	SetDutyG(0x7FFF);
+	SetDutyB(0x7FFF);
 	
 	initPanic();
 	
@@ -188,7 +193,7 @@ int main(void) {
 	// init the global struct
 	global_flags.status		= 0;
 	global_flags.limits		= 0;
-	global_flags.state		= STATE_READY;
+	global_flags.state		= STATE_ERROR;
 	global_flags.error_cnt	= 0;
 	
 	
@@ -197,7 +202,7 @@ int main(void) {
 // init eCat stuff
 
 	#ifdef DEBUG
-	printf("\t\tmedulla.1: ATRIAS boom controller\n\n");							// print what program we're running...
+	printf("\t\tmedulla.1: ATRIAS boom controller, ID %.2X : %s\n\n",ID,__DATE__);							// print what program we're running...
 	#endif
 	
 
@@ -207,7 +212,7 @@ int main(void) {
 	
 	al_event |= readAddr(AL_STATUS, &al_status, 1);								// check to see what the et1100 is doing so we're on the same page
 	
-	if (al_status == AL_STATUS_OP) {											// store SM addresses:
+	if (al_status == AL_STATUS_OP_bm) {											// store SM addresses:
 
 //		global_flags.state	= STATE_OP;
 
@@ -280,6 +285,14 @@ int main(void) {
 					printf("t %u	p %u\n",start_tilt, start_pan);
 					break;
 
+				case 's' :
+					printf("state: %u\n", global_flags.state);
+					break;
+				
+				case 'p':
+					printf("panic %u\n", (PORT_PANIC.IN & PANIC_SENSE_bm));
+					break;
+
 				case '0':
 				case '1':
 				case '2':
@@ -312,7 +325,7 @@ int main(void) {
 					
 				case 'w':
 				
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no write for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no write for you!\n"); break;}
 					
 //					printf("\tWriting %d to SM3 at 0x%X\n",ssi[0],SM3_addr);
 //					al_event |= writeAddr(SM3_addr, dummy, SM3_len);
@@ -320,7 +333,7 @@ int main(void) {
 					break;
 
 				case 'R':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 
 					al_event = readAddr(SM0_addr, data, (uint16_t)512);
@@ -335,7 +348,7 @@ int main(void) {
 					break;
 					
 				case 'r':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 //					if (SM2_len <= 8)
 //						al_event = readAddr(SM2_addr, data, SM2_len);
@@ -366,14 +379,17 @@ int main(void) {
 
 				// Signal the all clear
 				PanicClr();
-								
-				_delay_us(800);
+				out.status				= 0;
+				
+				led_solid_red();
+				
+				_delay_us(100);
 
 				// update the encoder values
 				tmp = getHBA4pos0(&hba4[0]);
-				while (tmp && (global_flags.error_cnt<ERROR_MAX) ) {
+				while (tmp && (enc_cnt<ERROR_MAX) ) {
 //					printf("O");
-					global_flags.error_cnt += 10;
+					enc_cnt += 10;
 					_delay_us(50);
 					tmp = getHBA4pos0(&hba4[0]);
 				}
@@ -381,11 +397,11 @@ int main(void) {
 
 
 				tmp = getHBA4pos1(&hba4[1]);
-				while (tmp && (global_flags.error_cnt<ERROR_MAX) ) {
+				while (tmp && (enc_cnt<ERROR_MAX) ) {
 //					printf("1");
-					global_flags.error_cnt += 10;
+					enc_cnt += 10;
 					_delay_us(50);
-					tmp = getHBA4pos1(&hba4[1]);								
+					tmp = getHBA4pos1(&hba4[1]);
 				}
 								
 
@@ -402,10 +418,13 @@ int main(void) {
 					global_flags.state = STATE_START;
 					out.BOOM_TILT_CNT	= (uint16_t)(ave_tilt/100);
 					out.BOOM_PAN_CNT	= (uint16_t)(ave_pan/100);
+					#ifdef DEBUG
+					printf("START\n");
+					#endif
 				}
 					
-				if (global_flags.error_cnt > 0) {								// decay the error counter
-					global_flags.error_cnt = 0;
+				if (enc_cnt > 0) {								// decay the error counter
+					enc_cnt = 0;
 				}
 				
 				
@@ -419,25 +438,19 @@ int main(void) {
 				start_tilt	= out.BOOM_TILT_CNT;
 				start_pan	= out.BOOM_PAN_CNT;
 				
-				global_flags.error_cnt	= 0;									// reset the error_cnt
+				enc_cnt					= 0;									// reset the error_cnt
+				panic_cnt				= 0;
 				global_flags.limits		= 0;
 				
 				flag		= 0;
 				cnt			= 0;
 				ave_tilt	= 0;
 				ave_pan		= 0;
-				out.status				= STATUS_DISABLED;
+				out.status				= 0;
+				global_flags.status		= 0;
 
-				#ifdef DEBUG
-				PORTH.OUTCLR = (1<<7);
-//				printf("Panic line OK\n");
-				#endif
 
-				solidLED();
-	
-				SetDutyR(0x2FFF);
-				SetDutyG(0x000F);
-				SetDutyB(0x000F); 
+				led_solid_orange();
 
 				
 				// Enable the interrupts
@@ -446,7 +459,9 @@ int main(void) {
 				PMIC.CTRL |= PMIC_LOLVLEN_bm;
 
 				global_flags.state = STATE_RUN;
-
+				#ifdef DEBUG
+				printf("RUN\n");
+				#endif
 				break;
 			
 
@@ -489,12 +504,17 @@ int main(void) {
 				
 
 
-				if ((al_status == AL_STATUS_OP)) {								// Stuff to do when eCAT is in OP mode
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
 					
 					// Deal with commands from the master
 					if ( ( in.command & (~CMD_RUN_TOGGLE_bm)) == CMD_RUN ) {
 						tc_Start();
 						out.status		&= ~STATUS_DISABLED;
+					}
+					else if (in.command == CMD_DISABLE) {
+						
+						out.status |= STATUS_DISABLED;
+
 					}
 
 					
@@ -508,22 +528,20 @@ int main(void) {
 					
 					tc_Stop();
 					
-					SetDutyR( 0x7FF0 );
-					SetDutyG( 0x00FF );
-					SetDutyB( 0x0FFF );
+					led_solid_purple();
 					
 				}
 
 
 				// Check if the error counter is too big, if it is set the panic line and GTFO
-				if ( global_flags.error_cnt >= ERROR_MAX ) {
+				if ( enc_cnt >= ERROR_MAX ) {
 					PanicSet();
-					global_flags.status |= STATUS_PANIC;
-					global_flags.state = STATE_ERROR;
+					global_flags.status |= STATUS_ENC;
+					global_flags.state	= STATE_ERROR;
 				}
 
-				if (global_flags.error_cnt > 0)									// decay the error counter
-					global_flags.error_cnt-=1;
+				if (enc_cnt > 0)									// decay the error counter
+					enc_cnt-=1;
 				
 				break;
 			
@@ -546,22 +564,27 @@ int main(void) {
 				
 				PanicSet();
 				tc_Stop();
+				
+				// set the color based on the type of problem
+				if ( out.status == STATUS_LIMITSW)
+					led_blink_orange();
+				else if ( out.status == STATUS_ENC )
+					led_blink_yellow();
+				else
+					led_blink_red();
 
-				if ((al_status == AL_STATUS_OP)) {								// Stuff to do when eCAT is in OP mode
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
 					
 					// Deal with commands from the master
-					if (in.command == CMD_DISABLE) {
+					if (in.command == CMD_RESTART) {
 						global_flags.state	= STATE_READY;
-
+						#ifdef DEBUG
+						printf("READY\n");
+						#endif
 					}
 				}
 				
-				blinkLED();
-
-
-				SetDutyR(0x1FFF);
-				SetDutyG(0x07FF);
-				SetDutyB(0x00FF);
+				led_blink_red();
 
 				break;
 				
@@ -571,7 +594,7 @@ int main(void) {
 		// Handle the hardstop
 		if ( (PORT_HS.IN & HS_bm) != 0) {	// stop is set
 			global_flags.state	= STATE_ERROR;
-			out.status			|= STATUS_PANIC;
+			out.status			|= STATUS_DANGER;
 			#ifdef DEBUG
 			printf("Kill!\n");
 			#endif
@@ -582,25 +605,34 @@ int main(void) {
 		// Manage any status changes caused by interrupts
 		if (global_flags.status != 0) {
 			
-			#ifdef DEBUG
-			if (global_flags.status & STATUS_LIMITSW)
-					printf("Limit: %X\n",global_flags.limits);
+			if (global_flags.status & STATUS_LIMITSW) {
+				printf("Limit SW: %X\n",global_flags.limits);				
+				global_flags.state		= STATE_ERROR;
+			}
 					
-			if (global_flags.status & STATUS_TCOVF)
-					printf("TOV\n");
+			if (global_flags.status & STATUS_TCOVF) {
+				printf("TOV\n");
+				global_flags.state		= STATE_ERROR;
+			}
 
-			if (global_flags.status & STATUS_PANIC)
-					printf("PANIC!!!\n");
+			if (global_flags.status & STATUS_BADPWM) {
+				printf("Bad PWM\n");
+				global_flags.state		= STATE_ERROR;
+			}
+			
+			if (global_flags.status & STATUS_ENC) {
+				printf("Bad encoder\n");
+				global_flags.state		= STATE_ERROR;
+			}
+			
+			if (global_flags.status & STATUS_BADCMD) {
+				printf("Bad cmd: 0x%.2X\n", in.command);
+				global_flags.state		= STATE_ERROR;
+			}
 
-//			if (global_flags.status & STATUS_BADCMD)
-//					printf("Bad Cmd: 0x%.2X\n", in.command);
 
-			printf("\t\t\t0x%.2X\n", global_flags.status);
-			#endif	
-
-			global_flags.state	= STATE_ERROR;
-			out.status			= global_flags.status;
-			global_flags.status	= 0;
+			out.status			   |= global_flags.status;
+			global_flags.status		= 0;
 		}
 		
 		
@@ -608,8 +640,9 @@ int main(void) {
 		
 		////////////////////////////////////////////////////////////////////////
 		// Manage EtherCAT stuff
+		PORTH.OUTTGL = (1<<2);
 
-		if (al_status == AL_STATUS_OP) {										// if we're in OP mode, update the txpdo on the ET1100
+		if (al_status == AL_STATUS_OP_bm) {										// if we're in OP mode, update the txpdo on the ET1100
 			al_event |= writeAddr(SM3_addr, &out  , SM3_len);
 		}
 		else {																	// else keep updating al_event
@@ -630,7 +663,7 @@ int main(void) {
 //			printf("\n");
 			#endif
 			
-			if (al_status == AL_STATUS_OP) {									// store SM addresses:
+			if (al_status == AL_STATUS_OP_bm) {									// store SM addresses:
 				
 				al_event |= readAddr(SM0_BASE, data, 2);
 				SM0_addr = *((uint16_t*)(data+SM_PHY_ADDR));
@@ -673,14 +706,27 @@ int main(void) {
 						#endif
 						global_flags.state = STATE_RESET;	
 					}
+					else if (in.command == CMD_RESTART) {
+					
+						#ifdef ENABLE_TC_STEP
+						tc_Stop();
+						#endif
+						
+						#ifdef DEBUG
+						printf("CMD_RESTART\n");
+						#endif
+
+						toggle			= CMD_RUN_TOGGLE_bm;
+
+					}
 					else if (in.command == CMD_DISABLE) {
 					
 						tc_Stop();
-						out.status		|= STATUS_DISABLED;
+//						out.status		|= STATUS_DISABLED;
 						toggle			= CMD_RUN_TOGGLE_bm;
 
 						#ifdef DEBUG
-						printf("CMD_DISABLE\n");
+//						printf("CMD_DISABLE\n");
 						#endif
 					}
 					else if (( in.command & (~CMD_RUN_TOGGLE_bm)) == CMD_RUN) {		// if we have a run command
@@ -697,9 +743,9 @@ int main(void) {
 							
 							// update the encoder values
 							tmp = getHBA4pos0(&hba4[0]);
-							while (tmp && (global_flags.error_cnt<ERROR_MAX) ) {
+							while (tmp && (enc_cnt<ERROR_MAX) ) {
 //								printf("O");
-								global_flags.error_cnt += 10;
+								enc_cnt += 10;
 								_delay_us(50);
 								tmp = getHBA4pos0(&hba4[0]);
 							}
@@ -707,18 +753,18 @@ int main(void) {
 
 
 							tmp = getHBA4pos1(&hba4[1]);
-							while (tmp && (global_flags.error_cnt<ERROR_MAX) ) {
+							while (tmp && (enc_cnt<ERROR_MAX) ) {
 //								printf("1");
-								global_flags.error_cnt += 10;
+								enc_cnt += 10;
 								_delay_us(50);
 								tmp = getHBA4pos1(&hba4[1]);								
 							}
 //							printf("\n");
 
 //							tmp = getHBA4pos2(&hba4[2]);
-//							while (tmp && (global_flags.error_cnt<ERROR_MAX) ) {
+//							while (tmp && (enc_cnt<ERROR_MAX) ) {
 //								printf("2");
-//								global_flags.error_cnt += 20;
+//								enc_cnt += 20;
 //								_delay_us(50);
 //								tmp = getHBA4pos2(&hba4[2]);
 //							}
@@ -735,7 +781,7 @@ int main(void) {
 								flag &= ~(1<<0);
 							}
 							else {
-								global_flags.error_cnt += 35;
+								enc_cnt += 35;
 								if ((flag & (1<<0)) == 0)
 									printf("T %u  %u\n",out.BOOM_TILT_CNT, hba4[0]);
 								flag |= (1<<0);
@@ -753,7 +799,7 @@ int main(void) {
 								flag &= ~(1<<1);
 							}
 							else {
-								global_flags.error_cnt += 35;
+								enc_cnt += 35;
 								if ((flag & (1<<1)) == 0)
 									printf("P %u  %u\n",out.BOOM_PAN_CNT, hba4[1]);
 								flag |= (1<<1);
@@ -767,9 +813,9 @@ int main(void) {
 						
 					}
 					else {
-						#ifdef DEBUG
-						printf("CMD_BAD: 0x%.2X\n", in.command);
-						#endif
+//						#ifdef DEBUG
+//						printf("CMD_BAD: 0x%.2X\n", in.command);
+//						#endif
 						global_flags.status |= STATUS_BADCMD;
 					}
 					
@@ -788,7 +834,7 @@ int main(void) {
 		
 		}
 
-		PORTH.OUTTGL = (1<<2);
+		
 		
 		#ifndef ENABLE_TC_STEP
 		TC_STEP.CNT = 0;
@@ -827,16 +873,16 @@ void printMenu () {
 void printState(uint8_t state) {
 
 	switch (state) {
-		case AL_STATUS_INIT:
+		case AL_STATUS_INIT_bm:
 			printf("init");
 			break;
-		case AL_STATUS_PREOP:
+		case AL_STATUS_PREOP_bm:
 			printf("pre-op");
 			break;
-		case AL_STATUS_SAFEOP:
+		case AL_STATUS_SAFEOP_bm:
 			printf("safe op");
 			break;
-		case AL_STATUS_OP:
+		case AL_STATUS_OP_bm:
 			printf("op");
 			break;
 		default:

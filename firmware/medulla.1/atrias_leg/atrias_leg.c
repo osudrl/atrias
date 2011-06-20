@@ -45,7 +45,7 @@
 #include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
 
 
-#define ID	MEDULLA_B_ID
+#define ID	MEDULLA_A_ID
 
 // state machine states
 #define STATE_READY		0
@@ -59,11 +59,11 @@
 #define MAX_13BIT			8192
 #define ROLLOVER_THRESHOLD	4096
 
-#define ENC_MID		((ENC_TOP+1)/2)		// ENC_TOP is defined in the menial.h
-#define PWM_LIMIT	500				// The most we can deviate from the zero torque pwm
+#define ENC_MID		((ENC_TOP+1)/2)												// ENC_TOP is defined in the menial.h
+#define PWM_LIMIT	9000														// The most we can deviate from the zero torque pwm
 
 
-#define KD_STIFF		100
+#define KD_STIFF		1000
 
 
 #if ID == MEDULLA_A_ID
@@ -96,7 +96,7 @@
 #endif
 
 
-// Interrupt handeler for the timer overflow.
+// Interrupt handeler for the timer overflow of the velocity timer.
 ISR(TC_VEL_OVF_vect) {
 
 	PWMdis();
@@ -228,6 +228,7 @@ int main(void) {
 	
 	initQuad();
 
+//	initADC();
 	
 	#ifdef DEBUG
 	PORTH.OUTCLR = (1<<1);
@@ -349,8 +350,8 @@ int main(void) {
 	while(1) {
 
 //XXX: this is a hack but should be ok now that we have a step timer...
+		PORTH.OUTTGL = (1<<7);
 		_delay_us(8);
-
 
 
 		#if 1
@@ -393,12 +394,20 @@ int main(void) {
 
 				case 'm':
 					printf("D %u,	v %u,	t %u\n", kD, (uint16_t)vel, (uint16_t)torque);
-					printf("%u	%u	%u\n", DANGER_UPPER, out.TRANS_ANGLE+tran_off, DANGER_LOWER);
+					printf("%u	%u	%u\n", DANGER_UPPER, tran_pos, DANGER_LOWER);
 					printf("PWM_OPEN %u\n",PWM_OPEN);
 					break;
 					
 				case 'n':
 					printf("o %u,	s %u,	b %lu\n", start_off, start_ssi, start_biss);
+					break;
+					
+				case 'p':
+					printf("panic in: %u\n", (PORT_PANIC.IN & PANIC_SENSE_bm));
+					break;
+					
+				case 'l':
+					printf("lim: 0x%.2X\n", (uint8_t)(~PORT_LIMIT.IN) );
 					break;
 
 				case '0':
@@ -528,6 +537,12 @@ int main(void) {
 
 
 		out.ROTOR_ANGLE			= TC_ENC.CNT;
+		
+//		if (ADC_LOGIC_FLAG) {
+//			out.therm1 = ADC_LOGIC_VAL;
+//			ADC_LOGIC_FLAG = 1;
+//			ADC_LOGIC_START;
+//		}
 
 		// update timestamp
 		out.timestep			= TC_STEP.CNT;
@@ -546,13 +561,16 @@ int main(void) {
 
 				led_solid_red();
 				
+				if ((al_status != AL_STATUS_OP_bm)) {
+					global_flags.state = STATE_ERROR;	
+				}
 
 				// Wait for the other medullas to be ready.
 				//	panic_cnt is inc. when the panic line is ok. This loop will only exit if
 				//	the panic line is ok for some consectutive checks.
-				if(panic_cnt < 100) {
+				else if(panic_cnt < 100) {
 
-					if ((PORT_PANIC.IN & PANIC_SENSE_bm) != 0) {				// if the panic is not ok, inc. error_cnt
+					if ((PORT_PANIC.IN & PANIC_SENSE_bm) != 0) {				// if the panic is ok, inc. cnt
 						panic_cnt +=10;
 					}
 					else {
@@ -578,6 +596,10 @@ int main(void) {
 					PWMen();
 					tmp_cnt16 = 0;
 					printf("PWM_OPEN %u\n",PWM_OPEN);
+					#endif
+
+					#ifdef DEBUG
+					printf("START\n");
 					#endif
 				}
 					
@@ -616,7 +638,9 @@ int main(void) {
 				// Give the motors time to open up a bit and check to see if the
 				//	transmission is good and that we're not on a hardstop.
 				#ifdef ENABLE_PWM
-				if (tmp_cnt16 > 30000) {
+				if ((al_status != AL_STATUS_OP_bm))
+					global_flags.state = STATE_ERROR;
+				else if (tmp_cnt16 > 30000) {
 					#ifdef ENABLE_LIMITS
 					limitEn();
 					#endif
@@ -636,9 +660,10 @@ int main(void) {
 					else {
 						printf("Motor good  %u\n",tmp16);
 
-						out.status		= STATUS_DISABLED;
+						global_flags.status		= 0;
+						out.status				= 0;
 						
-						panic_cnt	= 0;
+						panic_cnt				= 0;
 			
 						// Enable the interrupts
 //						PMIC.CTRL |= PMIC_HILVLEN_bm;
@@ -651,6 +676,9 @@ int main(void) {
 						TC_ENC.CNT = ENC_MID;
 						TC_VEL.CNT = 0;
 						
+						#ifdef DEBUG
+						printf("RUN\n");
+						#endif
 					}
 				}
 				else{
@@ -669,7 +697,6 @@ int main(void) {
 
 				// check to see if we're in the dange zone
 				if ( tran_pos > DANGER_UPPER ) {
-					PanicSet();
 					global_flags.state = STATE_DANGER;
 					out.status		|= STATUS_DANGER;
 					TC_ENC.CNT = ENC_MID;
@@ -686,7 +713,6 @@ int main(void) {
 				
 				}
 				else if ( tran_pos < DANGER_LOWER ) {
-					PanicSet();
 					global_flags.state = STATE_DANGER;
 					out.status		|= STATUS_DANGER;
 					TC_ENC.CNT = ENC_MID;
@@ -727,7 +753,7 @@ int main(void) {
 //						tmp16 = ((int16_t)(tran_pos - tmp16)<0)?(tmp16-tran_pos):(tran_pos-tmp16);
 //						tmp16 = 0x0000;
 //						printf("\t%u\n",tmp16);
-//						solidLED();
+						solidLED();
 						SetDutyR( tmp16+0x000F );	// more red as the spring compresses
 						SetDutyG( 0x1FFF );
 						SetDutyB( 0x0FFF );
@@ -742,7 +768,13 @@ int main(void) {
 						pwm = PWM_OPEN;
 						setPWM(pwm);
 						#endif
+						
+						led_solid_white();
 
+					}
+					else {														//XXX if we get any other cmd then we should report bad_cmd and move to error?
+//						global_flags.status |= STATUS_BADCMD;
+//						out.status |= STATUS_BADCMD;
 					}
 
 					
@@ -808,132 +840,90 @@ int main(void) {
 				break;
 				
 ////////////////////////////////////////////////////////////////////////////////
-// The following lines must happen before changing to the danger state:
+// XXX: The following lines must happen before changing to the danger state:
 //		TC_ENC.CNT = ENC_MID;
 //		TC_VEL.CNT = 0;
 //		tc_VelStart();
 //		vel = 0;
 //		torque = 0;
 //		tmp_cnt16 = 0;
-				case STATE_DANGER :
+			case STATE_DANGER :
+				
+				PanicSet();
+				
+				#ifdef ENABLE_TC_STEP
+				tc_Stop();
+				#endif
+					
+				kD = KD_STIFF;
+					
+				// dampy control time
+				if (TC_VEL.CNT != 0) {
+					vel	= ((float)(TC_ENC.CNT-(float)ENC_MID))/((float)(TC_VEL.CNT));
+				}
+				else {
+					vel = 0.0;
+				}
+				
+				if (vel == 0) {
+					tmp_cnt16++;
+				}
+				else {
+					tmp_cnt16 = 0;
+				}
+				
+				// if the system has settled down move to error state
+				if (tmp_cnt16 > 500) {
+					global_flags.state = STATE_ERROR;
+					tmp_cnt16 = 0;
+				}
+				
+				torque = ((float)kD)*vel;
 
-		
-//				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
-					
-					#ifdef ENABLE_TC_STEP
-//					tc_Start();
-					tc_Stop();
-					#endif
-										
-					
-					
-					
-					// check to see which danger zone we're in
-//					if (( out.TRANS_ANGLE+tran_off > DANGER_UPPER ) || ( out.TRANS_ANGLE+tran_off < DANGER_LOWER )) {
-						kD = KD_STIFF;
-//					}
-//					else {
-//						kD = KD_SOFT;
-//					}
-					
-					
-					// dampy control time
-					if (TC_VEL.CNT != 0) {
-						vel	= ((float)(TC_ENC.CNT-(float)ENC_MID))/((float)(TC_VEL.CNT));
-					}
-					else {
-						vel = 0.0;
-					}
-					
-					if (vel == 0) {
-						tmp_cnt16++;
-					}
-					else {
-						tmp_cnt16 = 0;
-					}
-					
-					// if the system has settled down move to error
-					if (tmp_cnt16 > 500) {
-						global_flags.state = STATE_ERROR;
-						tmp_cnt16 = 0;
-					}
-//					else if (tmp_cnt16 > 0) {
-//						tmp_cnt16--;
-//					}
-					
-					torque = ((float)kD)*vel;
+				if (torque > MTR_MAX_TRQ) {
+					torque = MTR_MAX_TRQ;
+				}
+				else if (torque < MTR_MIN_TRQ) {
+					torque = MTR_MIN_TRQ;
+				}
 
-					if (torque > MTR_MAX_TRQ) {
-						torque = MTR_MAX_TRQ;
-					}
-					else if (torque < MTR_MIN_TRQ) {
-						torque = MTR_MIN_TRQ;
-					}
-
-					#ifdef ENABLE_PWM
-					pwm = (uint16_t)(torque*(((float)(MTR_MAX_CNT-MTR_MIN_CNT))/((float)(MTR_MAX_TRQ-MTR_MIN_TRQ)))+PWM_ZERO);
+				#ifdef ENABLE_PWM
+				pwm = (uint16_t)(torque*(((float)(MTR_MAX_CNT-MTR_MIN_CNT))/((float)(MTR_MAX_TRQ-MTR_MIN_TRQ)))+PWM_ZERO);
 
 //					printf("%u\n",pwm);
 
-					if (pwm > MTR_MAX_CNT) {
-						pwm = MTR_MAX_CNT;
-					}
-					else if (pwm < MTR_MIN_CNT) {
-						pwm = MTR_MIN_CNT;
-					}
-					
-					
-					if (pwm > PWM_ZERO+PWM_LIMIT) {
-						pwm = PWM_ZERO+PWM_LIMIT;
-					}
-					else if (pwm < PWM_ZERO-PWM_LIMIT) {
-						pwm = PWM_ZERO-PWM_LIMIT;
-					}
-					#endif
-					
-
-					TC_VEL.CNT = 0;
-					TC_ENC.CNT = ENC_MID;
-
-					
-					// Play with the LED colors
-					SetDutyR( out.ROTOR_ANGLE );
-					SetDutyG( PWM );
-					SetDutyB( 0x000F );
-
-/*						
-					// if we get a disable command, stop and go back to ready
-					if (in.command == CMD_DISABLE) {
-						
-						#ifdef ENABLE_PWM
-						pwm = PWM_ZERO;
-						#endif
-						global_flags.state = STATE_READY;
-
-					}
-*/
-
-					#ifdef ENABLE_PWM
-					setPWM(pwm);
-					#endif
-					
-					
-//				}
-/*
-				else {															// Stuff to do when eCAT is NOT in OP mode
-					
-					tc_Stop();
-					tc_VelStop();
-					
-					#ifdef ENABLE_PWM
-					pwm = PWM_ZERO;
-					setPWM(pwm);
-					#endif
-					global_flags.state = STATE_READY;
-					
-					
+				if (pwm > MTR_MAX_CNT) {
+					pwm = MTR_MAX_CNT;
 				}
-*/
+				else if (pwm < MTR_MIN_CNT) {
+					pwm = MTR_MIN_CNT;
+				}
+				
+				
+				if (pwm > PWM_ZERO+PWM_LIMIT) {
+					pwm = PWM_ZERO+PWM_LIMIT;
+				}
+				else if (pwm < PWM_ZERO-PWM_LIMIT) {
+					pwm = PWM_ZERO-PWM_LIMIT;
+				}
+				#endif
+				
+
+				TC_VEL.CNT = 0;
+				TC_ENC.CNT = ENC_MID;
+
+				
+				// Play with the LED colors
+				SetDutyR( out.ROTOR_ANGLE );
+				SetDutyG( PWM );
+				SetDutyB( 0x000F );
+
+
+				#ifdef ENABLE_PWM
+				setPWM(pwm);
+				#endif
+					
+					
 
 				// Check if the encoder error counter is too big, if it is set the panic line and GTFO
 				if ( enc_cnt > 100 ) {
@@ -999,7 +989,11 @@ int main(void) {
 					// Deal with commands from the master
 					if (in.command == CMD_RESTART) {
 						global_flags.state	= STATE_READY;
-
+						panic_cnt = 0;
+						
+						#ifdef DEBUG
+						printf("READY\n");
+						#endif
 					}
 				}
 
@@ -1043,6 +1037,11 @@ int main(void) {
 			
 			if (global_flags.status & STATUS_ENC) {
 				printf("Bad encoder\n");
+				global_flags.state		= STATE_ERROR;
+			}
+			
+			if (global_flags.status & STATUS_BADCMD) {
+				printf("Bad cmd: 0x%.2X\n", in.command);
 				global_flags.state		= STATE_ERROR;
 			}
 
@@ -1139,7 +1138,7 @@ int main(void) {
 						
 						// tc_VelStop();
 						
-						out.status		|= STATUS_DISABLED;
+//						out.status		|= STATUS_DISABLED;
 						toggle			= CMD_RUN_TOGGLE_bm;
 
 
@@ -1162,10 +1161,11 @@ int main(void) {
 						
 					}
 					else {
-						#ifdef DEBUG
-						printf("CMD_BAD: 0x%.2X\n", in.command);
-						#endif
+//						#ifdef DEBUG
+//						printf("CMD_BAD: 0x%.2X\n", in.command);
+//						#endif
 						global_flags.status |= STATUS_BADCMD;
+						out.status |= STATUS_BADCMD;
 					}
 					
 				

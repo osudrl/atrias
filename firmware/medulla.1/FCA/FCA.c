@@ -1,12 +1,15 @@
 // Kevin Kemper
 //
-// This program is designed to test basic functionality of the EtherCAT system.
-//  It takes data written from an EtherCAT master, modifies it and returns it and
-//  can be used to check the full loop timing of the master system by toggling
-//  a pin when a new transmit request is received.
 ////////////////////////////////////////////////////////////////////////////////
 
+#define DEBUG
 
+#define ENABLE_LIMITS
+#define ENABLE_TC_STEP
+
+#ifdef ENABLE_LIMITS
+	#define ENABLE_PWM
+#endif
 
 // delay.h needs to know how fast the clk is rolling along at
 #define F_CPU 32000000UL
@@ -21,75 +24,140 @@
 #include "../libs/uart.h" 
 #include "../libs/ecat.h"
 #include "../libs/clock.h"
-//#include "../libs/ssi_bang.h"
-#include "../libs/ssi_spi.h"
-//#include "../libs/biss_bang.h"
-#include "../libs/biss_spi.h"
-#include "../libs/adc.h"
+#include "../libs/ssi_bang.h"
+
+#ifdef ENABLE_PWM
 #include "../libs/pwm.h"
+#endif
+
 #include "../libs/quadrature.h"
 #include "../libs/limitSW.h"
-#include "../libs/amp.h"
 #include "../libs/timer.h"
-#include "../libs/panic.h"
+#include "../libs/led.h"
 
 
+//TODO:
 #include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
 
 
+#define ID	0XFC
 
+
+// SSI encoder indices
+#define TRANS_IDX			0
+#define TRANS_HR_IDX		1
+#define SPRING_HR_IDX		2
+
+
+// state machine states
+#define STATE_READY		0
+#define STATE_START		1
+#define STATE_RUN		2
+#define STATE_ERROR		4
+#define STATE_RESET		5
+#define STATE_DANGER	6
+
+
+#define MAX_13BIT			8192
+#define ROLLOVER_THRESHOLD	4096
+
+#define ENC_MID		((ENC_TOP+1)/2)												// ENC_TOP is defined in the menial.h
+#define PWM_LIMIT	9000														// The most we can deviate from the zero torque pwm
+
+
+#define KD_STIFF		1000
+
+
+#if ID == 0xFC
+	#define LEG_MAX			800
+	#define LEG_MIN			100
+	#define TRAN_MAX		8000
+	#define TRAN_MIN		10
+#else
+	#error	"Define an ID for the device."
+#endif
+
+
+// These define the "soft" limits where the uController will take over.
+//  PERCENT_UPPER is percentag of the total range to use for the upper danger zone.
+#define PERCENT_UPPER	0.20
+#define PERCENT_LOWER	0.20
+#define DANGER_UPPER	((uint16_t)(TRAN_MAX - (TRAN_MAX-TRAN_MIN)*PERCENT_UPPER))
+#define DANGER_LOWER	((uint16_t)(TRAN_MIN + (TRAN_MAX-TRAN_MIN)*PERCENT_LOWER))
 
 
 // map the 0th usart on port E to the RS232 keyword for readability
+#ifdef DEBUG
 #define RS232	USARTE0
+#endif
 
 
+// Interrupt handeler for the timer overflow of the velocity timer.
+ISR(TC_VEL_OVF_vect) {
+
+	PWMdis();
+	global_flags.status	|= STATUS_TCOVF;
+	#ifdef DEBUG
+	printf("vel ovf\n");
+	#endif
+}
 
 
 // local functions...
+void tc_VelStop();
+void tc_VelStart();
+void initVelTimer();
+
+#ifdef DEBUG
 void		printMenu();
 void		printState(uint8_t state);
 static int	uart_putchar(char c, FILE *stream);
-
+#endif
 
 // global vars...
+#ifdef DEBUG
 static FILE mystdout = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE);
-
+#endif
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(void) {
 
-	uint8_t i;
-	uint8_t tmp;
-	uint8_t loopCnt		= 0;
+	uint8_t		i;
+	uint8_t		tmp8;
+	uint16_t	tmp16;
 
-	uint8_t 		duty_r		= 1;
-	uint8_t 		duty_g		= 16;
-	uint8_t 		duty_b		= 16;
+	uint8_t		enc_cnt		= 0;
+
+	uint16_t	tmp_cnt16 	= 0;
 	
 
-//	txpdo_struct	txpdo;
-//	rxpdo_struct	rxpdo;
-	
+	int16_t		kD			= 0;
+
+	uint16_t	tran_pos	= 0;												// is the absolute transmission position
+	uint16_t	last_tran	= 0;												// the last measured transmission encoder value	
+	uint16_t	tran_off	= 0;												// keeps track of the rollovers of the transmission encoder
+
+
+	float		torque		= 0;
+	float		vel			= 0;
+
+
 	uControllerInput	in;
 	uControllerOutput	out;
 	
-	
-	uint16_t		pwm;
-	uint8_t			dir;
+	uint16_t		pwm		= 0;
 	uint16_t		ssi[4];
-	uint8_t			biss[4];
-	uint8_t			adc[2];
+	uint8_t			status;
+	uint8_t			toggle = CMD_RUN_TOGGLE_bm;
 	
-	uint16_t		calcFreq     = 0;
-	uint16_t		calcRPM      = 0;
-
-	
+	// rs232 input data
+	#ifdef DEBUG
 	uint8_t			rs_data;
+	#endif
 	
-	// eCat vars
+	// eCat vars - Don't touch unless you know what you're doing!
 	uint8_t			data[512];
 
 	uint8_t			al_status	= 0;
@@ -106,81 +174,89 @@ int main(void) {
 	////////////////////////////////////////////////////////////////////////////
 	// init stuffs
 	CLK.PSCTRL = 0x00;															// no division on peripheral clock
-
 	Config32MHzClock();
-	Config32KHzRTC();
-	
-	cli();
-	
-	// init LEDs
-	PORT_LED.OUTSET	= LED_R_bm;													// Turn on the red LED
-	PORT_LED.OUTCLR = LED_G_bm | LED_B_bm;										// Make sure the other colors are off
-	PORT_LED.DIRSET	= LED_R_bm | LED_G_bm | LED_B_bm;							// set LED pins to outputs
 
+
+	cli();																		// Disable interrupts
+
+	_delay_ms(1000);															// Wait a sec to let everything rattle out and settle down
 	
-	stdout = &mystdout;															// attach the uart to the stdout for printf
+	#ifdef DEBUG
+	stdout = &mystdout;															// Attach uart_putchar to the stdout for printf
 	initUART(&PORTE,&RS232,1152);												// RS232 uart 115.2kb
+	#endif
 
+
+	initLED();
+	PMIC.CTRL |= PMIC_MEDLVLEN_bm;												// Enable midlevel interrupts
+	sei();																		// Global enable interrupts
 	
-	initADC();
+	led_solid_red();
 	
-	pwm = 10;
-	dir = 0;
-	SetDirection(dir);
+
+	#ifdef ENABLE_PWM
 	initPWM(pwm);
-	initAmp();
+	#endif
+
 
 	initTimer();
 	
-//	initPanic();
+	initVelTimer();
 	
-//	initLimitSW();
+	
+	#ifdef ENABLE_LIMITS
+	initLimitSW();
+	#endif
 
 	initeCAT();
 	
-	initSSI_spi();
-	
-//	initBiSS_bang();
-	initBiSS_spi();
+//	initSSI_spi();
+	initSSI_bang();
 	
 	initQuad();
 
-
-	PORTH.DIRSET = 1<<7;														// for the testing toggle
 	
-
-
-	global_flags.status	= 0;
+	// init the output values
+	out.id				= ID;
+	out.status			= 0;
+	out.enc32			= 0;
+	out.enc16[0]		= 0;
+	out.enc16[1]		= 0;
+	out.enc16[2]		= 0;
+	out.enc16[3]		= 0;
+	out.timestep		= 0;
+	out.therm1			= 0;
+	out.therm2			= 0;
+	out.therm3			= 0;
 	
-
-	out.id			= 0xA5;
-	out.status_byte = 0;
-
+	in.motor			= 0;
+	in.command			= CMD_DISABLE;
 
 
-	// init the tx and rx pdos	
-//	txpdo.ch1 = 0xEE;
-//	txpdo.ch2 = 0xABCD;
-//	txpdo.ch3 = 0x89ABCDEF;
+	// init the global struct
+	global_flags.status		= 0;
+	global_flags.limits		= 0;
+	global_flags.state		= STATE_READY;
+	global_flags.error_cnt	= 0;
 	
-//	rxpdo.ch1 = 0;
-//	rxpdo.ch2 = 0;
-	
-
-////////////////////////////////////////////////////////////////////////////////
-
 	_delay_ms(100);
-	printf("\t\tmedulla.1: FCA test\n\n");										// print what program we're running...
+
+	////////////////////////////////////////////////////////////////////////////
+	// init eCat stuff
+
+	#ifdef DEBUG
+	printf("\t\tmedulla.1: FCA controller, ID %.2X : %s\n\n",ID,__DATE__);	// print what program we're running...
+	#endif
+	
+
+	while(!(PORT_ECAT.IN) & (1<<ECAT_EEPROM_LOADED));							// The EEPROM_LOADED signal indicates that the SPI interface is operational.
 	
 	
-	// The EEPROM_LOADED signal indicates that the SPI interface is operational.
-	while(!(PORT_ECAT.IN) & (1<<ECAT_EEPROM_LOADED));
 	
+	al_event |= readAddr(AL_STATUS, &al_status, 1);								// check to see what the et1100 is doing so we're on the same page
 	
-	
-	al_event |= readAddr(AL_STATUS, &al_status, 1);		// check to see what the et1100 is doing so we're on the same page
-	
-	if (al_status == AL_STATUS_OP) {					// store SM addresses:
+	if (al_status == AL_STATUS_OP_bm) {											// if the eCAT is in OP, grab and store the SM addresses:
+
 
 		al_event |= readAddr(SM0_BASE, data, 2);
 		SM0_addr = *((uint16_t*)(data+SM_PHY_ADDR));
@@ -196,113 +272,111 @@ int main(void) {
 		SM3_addr	= *((uint16_t*)(data+SM_PHY_ADDR));
 		SM3_len		= *((uint16_t*)(data+SM_LENGTH));
 
+		#ifdef DEBUG
 		printf("SM2_len: 0x%X, SM3_len: 0x%X\n",SM2_len,SM3_len);
+		#endif
 	}
 	
 	
-	printMenu();
+	// Enable the interrupts
+	PMIC.CTRL |= PMIC_HILVLEN_bm;
+//	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
+	PMIC.CTRL |= PMIC_LOLVLEN_bm;
+
+
+	LimitDis();
 	
-	duty_r		= 8;
-	duty_g		= 16;
-	duty_b		= 15;
+	////////////////////////////////////////////////////////////////////////////
+	// Set up the transmission tracker
+	tmp8 = readSSI_bang(ssi);
+	while ((tmp8 == 0xFF) || (ssi[1] > 8191) || (ssi[1] == 0)) {
+		tmp8 = readSSI_bang(ssi);
+	}
+	out.TRANS_ANGLE = ssi[0];
+
+
+
+	tran_off = (uint16_t)((out.LEG_SEG_ANGLE-LEG_MIN)*(((float)(TRAN_MAX-TRAN_MIN))/((float)(LEG_MAX-LEG_MIN)))+TRAN_MIN);
+
+	tran_off = (tran_off / MAX_13BIT) * MAX_13BIT;
+
+	#ifdef DEBUG
+	printf("%u	%u	%u\n", out.TRANS_ANGLE, tran_off, out.TRANS_ANGLE+tran_off);
+	start_off = tran_off;
+	start_ssi = ssi[1];
+	start_biss = out.LEG_SEG_ANGLE;
+	#endif
+
+	// Keep track of the last counts for sensors that could rollover.
+	last_tran = out.TRANS_ANGLE;
 	
-	// Fire-up the timer
-//	TC_Start();
+
 	
-	// Signal the all clear
-	PanicClr();
-	PanicEn();
-	
-//	PORT_PANIC.OUTCLR = PANIC_bm;
-	
-	sei();																		// enable interrupts
-	
+
 	while(1) {
 
 //XXX: this is a hack but should be ok now that we have a step timer...
-		_delay_us(1);
+		_delay_us(8);
 
 
+
+		#if 1
 		if (RS232.STATUS&USART_RXCIF_bm) {										// do we have something from the RS232?
 			rs_data = RS232.DATA;
 
 			switch (rs_data) {
 		
 				case '~':
-					printf("\n\nRESET: GOING DOWN!!!\n\n");
-					_delay_ms(100);
-					// TODO: reset the eCAT too...
-					CCP = CCP_IOREG_gc;
-					RST.CTRL = RST_SWRST_bm;
+					global_flags.state = STATE_RESET;
 					break;
 		
-				case 's':
-					printf("SSI Values: %u\t%u\t%u\t%u\n", ssi[0],ssi[1],ssi[2],ssi[3]);
-					printf("BiSS Value: %u\t\t%.2X\t%.2X\t%.2X\t%.2X\n", ((uint16_t*)biss)[1],biss[3], biss[2], biss[1], biss[0]);
-					break;
-				
-				case 'q':
-					printf("Quadrature: %u\n", TC_ENC.CNT);
-					printf("Freq: %u\t\tRPM: %u\n", calcFreq, calcRPM);
-					break;
-					
 				case 'v':
-					printf("Voltages:\nLogic: %d\tPower: %d\n", adc[0],	adc[1]);
+					printf("\t\tmedulla.1: ATRIAS leg controller, ID %.2X : %s\n\n",ID,__DATE__);
 					break;
-					
-				case 't':
-					printf("Tempratures:\n");
-					printf("Therm 0: %d\tTherm 1: %d\tTherm 2: %d\n", adc[2], adc[3], adc[4]);
+		
+				case 'o':
+					printf("Out:\n");
+					printf("out.status:			0x%.2X\n", out.status);
+					printf("out.timestep:			%u\n", out.timestep);
+					printf("out.TRANS_ANGLE:		%u\n", out.TRANS_ANGLE);
+					printf("out.LEG_SEG_ANGLE:		%lu\n", out.LEG_SEG_ANGLE);
+					printf("out.ROTOR_ANGLE:		%u\n", out.ROTOR_ANGLE);
+					break;
+
+
+				case 'i':
+					printf("In size: %u\n",sizeof(in));
+					printf("in.command:	%u\n", in.command);
+					printf("in.motor:	%u\n", in.motor);
+					break;
+
+				case 's':
+					printf("ssi[0]:		%u\n",ssi[0]);
+					printf("ssi[1]:		%u\n",ssi[1]);
+					printf("ssi[2]:		%u\n",ssi[2]);
 					break;
 
 				case '<':
-					pwm -= 100;
-					setPWM(pwm);
-					printf("PWM: %u\n", pwm);
+					kD-=10;
 					break;
 
 				case '>':
-					pwm += 100;
-					setPWM(pwm);
-					printf("PWM: %u\n", pwm);
+					kD+=10;
 					break;
 
 				case 'm':
-					dir ^= 1;
-					SetDirection(dir);
-					printf("Direction: %u\n", dir);
+					printf("D %u,	v %u,	t %u\n", kD, (uint16_t)vel, (uint16_t)torque);
+					printf("%u	%u	%u\n", DANGER_UPPER, tran_pos, DANGER_LOWER);
+					printf("PWM_OPEN %u\n",PWM_OPEN);
 					break;
 					
-				case 'b':
-//					printf("Ask amp for Applied PWM\n");
-					botherAmp();
+				case 'n':
+					printf("o %u,	s %u,	b %lu\n", start_off, start_ssi, start_biss);
 					break;
 
-				case 'p':
-					printf("Ask amp for Applied PWM\n");
-//					readTest();
-//					readPWM();
-					break;
-
-
-				case 'e':
-					al_event |= readAddr(PDI_ERROR, data, 1);
-					printf("eCAT PDI error counter: %u\n", *data );
-					break;
-
-				case 'a':
-					al_event |= readAddr(AL_STATUS, data, 1);
-					printf("AL_Event Request:	0x%.4X\n",al_event);
-					printf("data[0]: 		0x%.2X\n",data[0]);
-					printf("stored al_status:	0x%.2X\t",al_status);
-					printState(al_status);
-					printf("\n");
-					break;
 					
-				case 'd':
-					al_event |= readAddr(DL_STATUS, data, 2);
-					printf("DL Status: 0x%.4X\n",*(uint16_t*)data);
-					printf("\n");
+				case 'l':
+					printf("lim: 0x%.2X\n", (uint8_t)(~PORT_LIMIT.IN) );
 					break;
 
 				case '0':
@@ -337,7 +411,7 @@ int main(void) {
 					
 				case 'w':
 				
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no write for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no write for you!\n"); break;}
 					
 //					printf("\tWriting %d to SM3 at 0x%X\n",ssi[0],SM3_addr);
 //					al_event |= writeAddr(SM3_addr, dummy, SM3_len);
@@ -345,7 +419,7 @@ int main(void) {
 					break;
 
 				case 'R':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 
 					al_event = readAddr(SM0_addr, data, (uint16_t)512);
@@ -358,9 +432,9 @@ int main(void) {
 					}
 					printf("\n");
 					break;
-/*					
+					
 				case 'r':
-					if (al_status != AL_STATUS_OP) { printf("eCAT not in OP... so no read for you!\n"); break;}
+					if (al_status != AL_STATUS_OP_bm) { printf("eCAT not in OP... so no read for you!\n"); break;}
 
 //					if (SM2_len <= 8)
 //						al_event = readAddr(SM2_addr, data, SM2_len);
@@ -369,199 +443,505 @@ int main(void) {
 					
 					printf("Read from SM2 at 0x%X:\n",SM2_addr);
 					
-					printf("Ch1: 0x%.2X Ch2: 0x%.4X",rxpdo.ch1, rxpdo.ch2);
+//					printf("Ch1: 0x%.2X Ch2: 0x%.4X",in.ch1, in.ch2);
 					printf("\n");
 
 					break;
-*/					
+					
 				default:
-					printMenu();
+//					printMenu();
 					break;
 			
 			}
 		}
-
-		///////////////////////////////////////////////////////////////////////
-		// update the PWM from eCat
-//		setPWM(in.motor_torque);
-		out.status_byte = in.command_byte;
-
-
-		///////////////////////////////////////////////////////////////////////
-		// update the ADC values...
-		if (ADC_LOGIC_FLAG) {
-			// read adc
-			adc[0] = ADC_LOGIC_VAL;
-				
-			// clear flag
-			ADC_LOGIC_FLAG = 1;
-
-			// start new conversion
-			ADC_LOGIC_START;
-		}
-		if (ADC_POW_FLAG) {
-			adc[1] = ADC_POW_VAL;
-			ADC_POW_FLAG = 1;
-			ADC_POW_START;
-		}
-		
-		if (THERM0_FLAG) {
-			out.thermistor1 = THERM0_VAL;
-			THERM0_FLAG = 1;
-			THERM0_START;
-		}
-		if (THERM1_FLAG) {
-			out.thermistor2 = THERM1_VAL;
-			THERM1_FLAG = 1;
-			THERM1_START;
-		}
-		if (THERM2_FLAG) {
-			out.thermistor3 = THERM2_VAL;
-			THERM2_FLAG = 1;
-			THERM2_START;
-		}
-
+		#endif
 
 		////////////////////////////////////////////////////////////////////////
-		// update the encoder values
-		readSSI_spi(ssi);
-//		PORTH.OUTTGL = (1<<7);
-//		tmp = readBiSS_bang(biss);
-		tmp = readBiSS_spi(biss);
-//		printf("%.2X\t%.2X\t%.2X\t%.2X\n", biss[3], biss[2], biss[1], biss[0]);
-		if (tmp == 0)
-			printf("BiSS: not ready - come back later.\n");
-//		else if ((tmp & BISS_ERROR_bm) == 0)
-//			printf("BiSS %.2X: error - the position data is junk.\n",tmp);
-//		else if ((tmp & BISS_WARN_bm) == 0)
-//			printf("BiSS %.2X: warning - the encoder is filthy.\n",tmp);
-			
-			
-		out.transmission_position	= ssi[1];
-		out.spring_deflection		= ssi[3];
-
-		out.rotor_position			= TC_ENC.CNT;
+		// Update Encoder values and sensors
+		tmp8 = readSSI_spi(ssi);
 		
-		duty_g = ssi[1]>>9;
-		duty_b = ssi[3]>>9;
-		duty_r = (TC_ENC.CNT>>2)>>6;
+		if (tmp8 == 0xFF) {
+//			enc_cnt+=2;
+		}
+		else if (ssi[TRANS_IDX] > 8191) {												// The ssi value is invalid (>8191)
+			enc_cnt+=2;
+		}
+		else {
+			out.TRANS_ANGLE = ssi[TRANS_IDX];
+		}
+		
+		// Transmission A rollovers.
+		if ( (out.TRANS_ANGLE > last_tran) && (out.TRANS_ANGLE - last_tran > ROLLOVER_THRESHOLD) ) {
+			tran_off -= MAX_13BIT;
+		}
+		else if ( (last_tran > out.TRANS_ANGLE) && (last_tran - out.TRANS_ANGLE > ROLLOVER_THRESHOLD) ) {
+			tran_off += MAX_13BIT;
+		}
 
-		// update quadrature velocity
-//		if ((TCF1.INTFLAGS & TC1_CCAIF_bm) !=  0) {
-//			calcFreq	= (uint16_t)((F_CPU / CLOCK_DIV) / ((float)(GetCaptureValue(TCF1) & 0xFFFC) * LINECOUNT ));
-//			calcRPM		= calcFreq*60;
-//		}
-
-
-		// load channel 2 with the encoder value
-//		txpdo.ch2 = ssi[0];
+		// Keep track of the last counts for sensors that could rollover.
+		last_tran = out.TRANS_ANGLE;
+		
+		tran_pos = out.TRANS_ANGLE+tran_off;
+		
 		
 
-		////////////////////////////////////////////////////////////////////////
+		out.ROTOR_ANGLE			= TC_ENC.CNT;
+
 		// update timestamp
-		out.timestep = TC_STEP.CNT;
+		out.timestep			= TC_STEP.CNT;
 
 
 		////////////////////////////////////////////////////////////////////////
-		if (global_flags.status != 0) {													// if a limit was hit drop the eCAT down to preop and set the led to red
-			
-			switch(global_flags.status) {
-				case STATUS_LIMITSW:
-					printf("Limit SW: %X\n",global_flags.limits);
-					break;
-					
-				case STATUS_TCOVF:
-					printf("Timer Overflow\n");
-					break;
-									
-				case STATUS_BADPWM:
-					printf("Bad PWM\n");
-					break;
-					
-				case STATUS_PANIC:
-					printf("PANIC!!!\n");
-					break;
+		switch (global_flags.state) {
 
-				default :
-					break;
-			}
+////////////////////////////////////////////////////////////////////////////////
+			case STATE_READY :
 
-			out.status_byte = 0x10;
-//			duty_r	= 1;
-//			duty_g	= 16;
-//			duty_b	= 16;
-//			al_status = AL_STATUS_PREOP;
-//			writeAddr(AL_STATUS, &al_status, 1);
-			global_flags.status = 0;
-		}
+				_delay_us(100);
 
-		////////////////////////////////////////////////////////////////////////
-		// Stuff to do when eCAT is in OP mode
-		if (al_status == AL_STATUS_OP) {										// if we're in OP mode, update the txpdo on the ET1100
-			al_event |= writeAddr(SM3_addr, &out  , SM3_len);
-			
-			// update the PWM from eCat
-//			setPWM(in.motor_torque);
-			
-			// Manage LED pwm stuff
-			if (loopCnt == 16) {															// reset the all colors to on
-				PORT_LED.OUTSET = LED_R_bm | LED_G_bm | LED_B_bm;
-				loopCnt = 0;
-			}
-			else {																		// turn off each led when loopCnt == duty
+				led_solid_red();
 	
-				if (loopCnt == duty_r) {
-					PORT_LED.OUTCLR	= LED_R_bm;
+//XXX			
+//				if ((al_status != AL_STATUS_OP_bm)) {
+//					global_flags.state = STATE_ERROR;
+//				}
+//				else {
+
+					global_flags.state = STATE_RUN;//XXX STATE_START
+					
+					// reset stuff
+					global_flags.status		= 0;
+					global_flags.error_cnt	= 0;
+					enc_cnt					= 0;
+					
+					#ifdef ENABLE_PWM
+					LimitDis();
+					tmp16 = tran_pos;
+					setPWM(PWM_OPEN);											// apply a small torque
+					PWMen();
+					tmp_cnt16 = 0;
+					printf("PWM_OPEN %u\n",PWM_OPEN);
+					#endif
+
+					#ifdef DEBUG
+					printf("START\n");
+					#endif
+//				}
+					
+				break;
+				
+////////////////////////////////////////////////////////////////////////////////
+			case STATE_START :
+			
+				led_solid_orange();
+				
+				
+				// Give the motors time to open up a bit and check to see if the
+				//	transmission is good and that we're not on a hardstop.
+				#ifdef ENABLE_PWM
+				if ((al_status != AL_STATUS_OP_bm))
+					global_flags.state = STATE_ERROR;
+				else if (tmp_cnt16 > 30000) {
+					#ifdef ENABLE_LIMITS
+					limitEn();
+					#endif
+					// The encoder should get smaller after the motor moves with positve torque.
+					if ((global_flags.limits != 0) || (tran_pos>=tmp16)) {		// If we hit a limit switch or the encoder didn't move right...
+						PWMdis();
+						LimitDis();
+						printf("\t\t\t\tMOTOR MOVED BAD!!!  %u\n",tmp16);
+						printf("\t\t\t\tLimits: 0x%.2X\n",global_flags.limits);
+	
+						global_flags.state = STATE_ERROR;
+
+						out.status	=	STATUS_BADMOTOR;
+						tmp_cnt16 = 0;
+					}
+					else {
+						printf("Motor good  %u\n",tmp16);
+
+						global_flags.status		= 0;
+						out.status				= 0;
+						
+						// Enable the interrupts
+//						PMIC.CTRL |= PMIC_HILVLEN_bm;
+//						PMIC.CTRL |= PMIC_MEDLVLEN_bm;
+//						PMIC.CTRL |= PMIC_LOLVLEN_bm;
+
+						global_flags.state = STATE_RUN;
+						tmp_cnt16 = 0;
+			
+						TC_ENC.CNT = ENC_MID;
+						TC_VEL.CNT = 0;
+						
+						#ifdef DEBUG
+						printf("RUN\n");
+						#endif
+					}
 				}
-				if (loopCnt == duty_g) {
-					PORT_LED.OUTCLR	= LED_G_bm;
+				else{
+					tmp_cnt16++;
 				}
-				if (loopCnt == duty_b) {
-					PORT_LED.OUTCLR	= LED_B_bm;
+				#endif
+				
+				
+				
+				break;
+			
+////////////////////////////////////////////////////////////////////////////////
+			case STATE_RUN :
+				
+
+
+				// check to see if we're in the dange zone
+				if ( tran_pos > DANGER_UPPER ) {
+					global_flags.state = STATE_DANGER;
+					out.status		|= STATUS_DANGER;
+					TC_ENC.CNT = ENC_MID;
+					TC_VEL.CNT = 0;
+					tc_VelStart();
+					vel = 0;
+					torque = 0;
+					tmp_cnt16 = 0;
+					#ifdef DEBUG
+					#ifdef ENABLE_LIMITS
+					printf("DANGER\n");
+					#endif
+					#endif
+				
 				}
-		
+				else if ( tran_pos < DANGER_LOWER ) {
+					global_flags.state = STATE_DANGER;
+					out.status		|= STATUS_DANGER;
+					TC_ENC.CNT = ENC_MID;
+					TC_VEL.CNT = 0;
+					tc_VelStart();
+					vel = 0;
+					torque = 0;
+					tmp_cnt16 = 0;
+					#ifdef DEBUG
+					#ifdef ENABLE_LIMITS
+					printf("DANGER\n");
+					#endif
+					#endif
+
+				}
+				else if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
+					
+					// Deal with commands from the master
+					if ( ( in.command & (~CMD_RUN_TOGGLE_bm)) == CMD_RUN ) {
+					
+						#ifdef ENABLE_TC_STEP
+						tc_Start();
+						#endif
+						
+						out.status		&= ~STATUS_DISABLED;
+						
+						pwm = in.motor;
+
+						#ifdef ENABLE_PWM
+						setPWM(pwm);
+						#endif
+						
+						// Play with the LED colors
+						tmp16 = (((uint16_t*)&out.LEG_SEG_ANGLE)[1]);
+//						printf("%u\n",tmp16);
+						tmp16 = tmp16-LEG_MIN16;
+						tmp16 = tmp16*5 + TRAN_MIN;	// translate the leg angle into the same space as the transmission position
+//						tmp16 = ((int16_t)(tran_pos - tmp16)<0)?(tmp16-tran_pos):(tran_pos-tmp16);
+//						tmp16 = 0x0000;
+//						printf("\t%u\n",tmp16);
+						solidLED();
+						SetDutyR( tmp16+0x000F );	// more red as the spring compresses
+						SetDutyG( 0x1FFF );
+						SetDutyB( 0x0FFF );
+						
+						
+					}
+					else if (in.command == CMD_DISABLE) {
+						
+						out.status |= STATUS_DISABLED;
+						
+						#ifdef ENABLE_PWM
+						pwm = PWM_OPEN;
+						setPWM(pwm);
+						#endif
+						
+						led_solid_white();
+
+					}
+					else {														//XXX if we get any other cmd then we should report bad_cmd and move to error?
+//						global_flags.status |= STATUS_BADCMD;
+//						out.status |= STATUS_BADCMD;
+					}
+
+					
+				}
+				else {															// Stuff to do when eCAT is NOT in OP mode
+					
+					tc_Stop();
+					
+					#ifdef ENABLE_PWM
+					pwm = PWM_OPEN;
+					setPWM(pwm);
+					#endif
+					
+					led_solid_purple();
+					
+				}
+
+
+
+				// Check if the error counter is too big, if it is GTFO
+				if ( enc_cnt > 100 ) {
+					#ifdef ENABLE_PWM
+					PWMdis();
+					#endif
+					out.status |= STATUS_ENC;
+					global_flags.state = STATE_ERROR;
+					
+				}
+
+				if (enc_cnt > 0)									// decay the error counter
+					enc_cnt--;
+				
+				break;
+				
+////////////////////////////////////////////////////////////////////////////////
+// XXX: The following lines must happen before changing to the danger state:
+//		TC_ENC.CNT = ENC_MID;
+//		TC_VEL.CNT = 0;
+//		tc_VelStart();
+//		vel = 0;
+//		torque = 0;
+//		tmp_cnt16 = 0;
+			case STATE_DANGER :
+				
+				#ifdef ENABLE_TC_STEP
+				tc_Stop();
+				#endif
+					
+				kD = KD_STIFF;
+					
+				// dampy control time
+				if (TC_VEL.CNT != 0) {
+					vel	= ((float)(TC_ENC.CNT-(float)ENC_MID))/((float)(TC_VEL.CNT));
+				}
+				else {
+					vel = 0.0;
+				}
+				
+				if (vel == 0) {
+					tmp_cnt16++;
+				}
+				else {
+					tmp_cnt16 = 0;
+				}
+				
+				// if the system has settled down move to error state
+				if (tmp_cnt16 > 500) {
+					global_flags.state = STATE_ERROR;
+					tmp_cnt16 = 0;
+				}
+				
+				torque = ((float)kD)*vel;
+				
+				// Clip the torque...
+				if (torque > MTR_MAX_TRQ) {
+					torque = MTR_MAX_TRQ;
+				}
+				else if (torque < MTR_MIN_TRQ) {
+					torque = MTR_MIN_TRQ;
+				}
+
+				#ifdef ENABLE_PWM
+				// translate the torque command into a pwm value
+				pwm = (uint16_t)(torque*(((float)(MTR_MAX_CNT-MTR_MIN_CNT))/((float)(MTR_MAX_TRQ-MTR_MIN_TRQ)))+PWM_ZERO);
+
+				// clip the pwm...
+				// TODO: the second set of "if"s should be good enough
+				if (pwm > MTR_MAX_CNT) {
+					pwm = MTR_MAX_CNT;
+				}
+				else if (pwm < MTR_MIN_CNT) {
+					pwm = MTR_MIN_CNT;
+				}
+				
+				// clip the pwm down to the imposed limits
+				if (pwm > PWM_ZERO+PWM_LIMIT) {
+					pwm = PWM_ZERO+PWM_LIMIT;
+				}
+				else if (pwm < PWM_ZERO-PWM_LIMIT) {
+					pwm = PWM_ZERO-PWM_LIMIT;
+				}
+				#endif
+				
+				// reset the counter values
+				TC_VEL.CNT = 0;
+				TC_ENC.CNT = ENC_MID;
+
+				
+				// Play with the LED colors
+				SetDutyR( out.ROTOR_ANGLE );
+				SetDutyG( PWM );
+				SetDutyB( 0x000F );
+
+
+				#ifdef ENABLE_PWM
+				setPWM(pwm);
+				#endif
+					
+				
+				// Check if the encoder error counter is too big, if it is, GTFO
+				if ( enc_cnt > 100 ) {
+					#ifdef ENABLE_PWM
+					PWMdis();
+					#endif
+					out.status |= STATUS_ENC;
+					global_flags.state = STATE_ERROR;					
+				}
+				else if (enc_cnt > 0)									// decay the error counter
+					enc_cnt--;
+				
+				
+				break;
+				
+//////////////////////////////////
+			case STATE_RESET :
+			
+			
+				#ifdef DEBUG
+				printf("\n\nRESET: GOING DOWN!!!\n\n");
+				#endif
+				
+				#ifdef ENABLE_PWM
+				PWMdis();
+				#endif
+				
+				_delay_ms(10);
+					
+				CCP			= CCP_IOREG_gc;
+				RST.CTRL	= RST_SWRST_bm;
+				break;
+
+//////////////////////////////////
+			case STATE_ERROR :
+			default :
+
+				#ifdef ENABLE_PWM
+				PWMdis();
+				#endif
+				
+				LimitDis();
+				tc_Stop();
+				tc_VelStop();
+
+				// set the color based on the type of problem
+				if ( out.status == STATUS_BADMOTOR )
+					led_blink_dark_purple();
+				else if ( out.status == STATUS_LIMITSW)
+					led_blink_orange();
+				else if ( out.status == STATUS_ENC )
+					led_blink_yellow();
+				else if ( out.status == STATUS_TCOVF )
+					led_blink_blue();
+				else
+					led_blink_red();
+
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
+					
+					// Deal with commands from the master
+					if (in.command == CMD_RESTART) {
+						global_flags.state	= STATE_READY;
+						
+						#ifdef DEBUG
+						printf("READY\n");
+						#endif
+					}
+				}
+
+				break;
+				
+		}
+
+
+
+		////////////////////////////////////////////////////////////////////////
+		// Manage any status changes caused by interrupts
+		if (global_flags.status != 0) {
+			
+			if (global_flags.status & STATUS_LIMITSW) {
+				printf("Limit SW: %X\n",global_flags.limits);
+				
+				// if the spring limits caused the event, move to danger state
+				if ((global_flags.limits == SPRING_LIM0_bm) || (global_flags.limits == SPRING_LIM1_bm)) {
+					global_flags.state		= STATE_DANGER;
+					TC_ENC.CNT = ENC_MID;
+					TC_VEL.CNT = 0;
+					tc_VelStart();
+					vel = 0;
+					torque = 0;
+					tmp_cnt16 = 0;
+				}
+				else {
+					global_flags.state		= STATE_ERROR;
+				}
+			}
+					
+			if (global_flags.status & STATUS_TCOVF) {
+				printf("TOV\n");
+				global_flags.state		= STATE_ERROR;
 			}
 
-			loopCnt++;
+			if (global_flags.status & STATUS_BADPWM) {
+				printf("Bad PWM\n");
+				global_flags.state		= STATE_ERROR;
+			}
+			
+			if (global_flags.status & STATUS_ENC) {
+				printf("Bad encoder\n");
+				global_flags.state		= STATE_ERROR;
+			}
+			
+			if (global_flags.status & STATUS_BADCMD) {
+				printf("Bad cmd: 0x%.2X\n", in.command);
+				global_flags.state		= STATE_ERROR;
+			}
+
+
+			out.status			   |= global_flags.status;
+			global_flags.status		= 0;
 		}
+		
+		
+		
+		
 		////////////////////////////////////////////////////////////////////////
-		// Stuff to do when eCAT is NOT in OP mode
+		// Manage EtherCAT stuff
+
+		if (al_status == AL_STATUS_OP_bm) {										// if we're in OP mode, update the txpdo on the ET1100
+			al_event |= writeAddr(SM3_addr, &out  , SM3_len);
+		}
 		else {																	// else keep updating al_event
 			al_event |= eCATnop();
-			PORT_LED.OUTSET = LED_G_bm | LED_B_bm;
-			PORT_LED.OUTCLR	= LED_R_bm;
-			
-			pwm = 10;
-			initPWM(pwm);
 		}
-
-
-
-		////////////////////////////////////////////////////////////////////////
-		// Manage EtherCAT stuf/
-
-		// play with toggling the pin on port H to get an idea of timings
-//		if (tmp != rxpdo.ch1) {
-//			PORTH.OUTTGL = (1<<7);
-//			tmp = rxpdo.ch1;
-//		}
-//		else
-//			PORTE.OUT &= ~(1<<TOGGLE);
-		
-		
 		
 		if (al_event & 0x01) {													// if al_control needs checking...
+			#if 0
 			printf("AL_Event Request:	0x%2X\n",al_event);
+			#endif
 
 			al_event = readAddr(AL_CONTROL, &al_status, 1);
 			writeAddr(AL_STATUS, &al_status, 1);
 
+			#if 0
 			printf("\t");
 			printState(al_status);
 			printf("\n");
+			#endif
 			
-			if (al_status == AL_STATUS_OP) {									// store SM addresses:
-
+			if (al_status == AL_STATUS_OP_bm) {									// store SM addresses:
+				
 				al_event |= readAddr(SM0_BASE, data, 2);
 				SM0_addr = *((uint16_t*)(data+SM_PHY_ADDR));
 
@@ -581,6 +961,7 @@ int main(void) {
 //				printf("SM2 addr: 0x%X\n",SM2_addr);				
 //				printf("SM3 addr: 0x%X\n",SM3_addr);
 			}
+
 			
 		}
 		
@@ -591,8 +972,67 @@ int main(void) {
 				
 				if (*data & 0x01) {												// stuff wrtten to the buffer!
 					al_event = readAddr(SM2_addr, &in, SM2_len);
+
+
+					if (in.command == CMD_RESET) {
+						#ifdef DEBUG
+						printf("CMD_RESET\n");
+						#endif
+						global_flags.state = STATE_RESET;
+					}
+					else if (in.command == CMD_RESTART) {
 					
-//					PORTH.OUT ^= (1<<7);
+						#ifdef ENABLE_TC_STEP
+						tc_Stop();
+						#endif
+						
+						#ifdef DEBUG
+						printf("CMD_RESTART\n");
+						#endif
+
+						toggle			= CMD_RUN_TOGGLE_bm;
+
+					}
+					else if (in.command == CMD_DISABLE) {
+					
+						#ifdef ENABLE_TC_STEP
+						tc_Stop();
+						#endif
+						
+						// tc_VelStop();
+						
+//						out.status		|= STATUS_DISABLED;
+						toggle			= CMD_RUN_TOGGLE_bm;
+
+
+					}
+					else if (( in.command & (~CMD_RUN_TOGGLE_bm)) == CMD_RUN) {	// if we have a run command
+						
+						// Check the toggle bit in the command
+						if (toggle != ( in.command & CMD_RUN_TOGGLE_bm )) {		// toggle bit is good
+						
+							toggle = in.command & CMD_RUN_TOGGLE_bm;
+
+							// reset the time step counter
+							#ifdef ENABLE_TC_STEP
+							TC_STEP.CNT = 0;
+							#endif
+
+						}
+						else
+							printf("bad TGL\n");
+						
+					}
+					else {
+//						#ifdef DEBUG
+//						printf("CMD_BAD: 0x%.2X\n", in.command);
+//						#endif
+						global_flags.status |= STATUS_BADCMD;
+						out.status |= STATUS_BADCMD;
+					}
+					
+				
+					
 				}
 				
 			}
@@ -605,9 +1045,10 @@ int main(void) {
 			}
 		
 		}
-
-
-
+		
+		#ifndef ENABLE_TC_STEP
+		TC_STEP.CNT = 0;
+		#endif
 	
 	} // end while
 } // end main
@@ -616,23 +1057,39 @@ int main(void) {
 // Helper functions...
 
 
+// Stops the counter used for damping control
+void tc_VelStop() {
+	
+	TC_VEL.CTRLA = ( TC_VEL.CTRLA & ~TC1_CLKSEL_gm ) | TC_CLKSEL_OFF_gc;
+	TC_VEL.CNT = 0;
+}
+
+// Starts the counter used for damping control
+void tc_VelStart() {
+	TC_VEL.CTRLA = ( TC_VEL.CTRLA & ~TC1_CLKSEL_gm ) | TC_CLKSEL_DIV4_gc;	
+}
+
+// Sets up the counter used for damping control
+void initVelTimer() {
+	tc_VelStop();
+	
+	// Set the overflow interrupt as high level.
+	TC_VEL.INTCTRLA = ( TC_VEL.INTCTRLA & ~TC1_OVFINTLVL_gm ) | TC_OVFINTLVL_HI_gc;	
+}
+
+
+
+#ifdef DEBUG
 // print the options available to the user
 void printMenu () {
 	printf("\n");
+	printf("Current state: %u\n", global_flags.state);
 	printf("Menu Options:\n");
 	printf("~: Software Reset\n");
-	printf("s: Read SSIs\n");
-	printf("q: Read Quadrature\n");
-	printf("v: Read Voltages\n");
-	printf("t: Read Tempratures\n");
+	printf("o: Out values\n");
 	printf("<: Decrease PWM\n");
 	printf(">: Increase PWM\n");
 	printf("m: Toggle Direction\n");
-	printf("b: Bother amp\n");
-	printf("p: Read amp PWM\n");
-	printf("e: Error counter\n");
-	printf("a: Read eCAT AL_STATUS\n");
-	printf("d: Read eCAT DL_STATUS\n");
 	printf("\n");
 	printf("0: SyncManager0 info\n");
 	printf("1: SyncManager1 info\n");
@@ -641,24 +1098,25 @@ void printMenu () {
 	printf("\n");
 	printf("w: Write SSI0 to SM3\n");
 	printf("R: Read from SM0\n");
-//	printf("r: Read from SM2\n");
+	printf("r: Read from SM2\n");
 	printf("\n");
 }
+
 
 // translate the byte code "state" into something meaningfull for printing
 void printState(uint8_t state) {
 
 	switch (state) {
-		case AL_STATUS_INIT:
+		case AL_STATUS_INIT_bm:
 			printf("init");
 			break;
-		case AL_STATUS_PREOP:
+		case AL_STATUS_PREOP_bm:
 			printf("pre-op");
 			break;
-		case AL_STATUS_SAFEOP:
+		case AL_STATUS_SAFEOP_bm:
 			printf("safe op");
 			break;
-		case AL_STATUS_OP:
+		case AL_STATUS_OP_bm:
 			printf("op");
 			break;
 		default:
@@ -680,4 +1138,5 @@ static int uart_putchar (char c, FILE *stream) {
  
     return 0;
 }
+#endif
 

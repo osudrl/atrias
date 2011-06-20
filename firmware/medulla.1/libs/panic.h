@@ -7,7 +7,7 @@
 #include "menial_io.h"
 
 
-// Setting the panic pin to high will trigger the panic line connected to all
+// Setting the panic out pin to high will trigger the panic in line connected to all
 //  other medulla bords to go low, causing wide-spread pandemonium and terror.
 
 
