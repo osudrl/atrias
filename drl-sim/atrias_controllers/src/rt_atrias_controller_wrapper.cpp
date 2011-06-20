@@ -51,18 +51,20 @@ void *control_thread(void *arg)
 	while ( 1 )
 	{		
 		// receive process data
-		ecrt_master_receive(master);
-		ecrt_domain_process(domain1);
+		//ecrt_master_receive(master);
+		//ecrt_domain_process(domain1);
 	
-		control_wrapper_state_machine( in, out );
+		// send process data
+		//ecrt_domain_queue(domain1);
+		//ecrt_master_send(master);
+
+		//control_wrapper_state_machine( in, out );
 
 		//rtai_print_to_screen( "test: %d\n", test_global );
 
 		//log[i] = rt_get_cpu_time_ns();
 
-		// send process data
-		ecrt_domain_queue(domain1);
-		ecrt_master_send(master);
+		//rtai_print_to_screen( "Hello!\n" );
 
 		rt_task_wait_period();
 	}
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
 	// End on interrupt. 
 	signal(SIGINT, endme);
 
-	printf( "Initializing\n" );
+	printf( "Initializing...\n" );
    
     master = ecrt_request_master(0);
     if (!master)

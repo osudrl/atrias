@@ -41,6 +41,8 @@ void control_wrapper_state_machine( uControllerInput ** in, uControllerOutput **
 	static unsigned char last_state = WAKE_UP_STATE;
 	static unsigned char next_state = WAKE_UP_STATE;
 
+	//rtai_print_to_screen( "CWSM: %u\n", next_state );
+
 	switch ( next_state )
 	{
 		case WAKE_UP_STATE:
