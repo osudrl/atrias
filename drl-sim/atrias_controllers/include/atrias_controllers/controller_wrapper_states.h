@@ -10,12 +10,16 @@
 // RTAI
 #include <rtai_lxrt.h>
 
+// ROS
+#include <ros/ros.h>
+
 // ATRIAS
 #include <atrias/ucontroller.h>
 
 // ATRIAS Controllers
 #include <atrias_controllers/controller.h>
 #include <atrias_controllers/control_switcher_state_machine.h>
+#include <atrias_controllers/atrias_srv.h>
 
 // DRL Library
 #include <drl_library/discretize.h>
@@ -40,7 +44,10 @@
 #define HOR_VEL_FILTER_EPS					0.003
 #define HOR_VEL_WINDOW						100
 
-#define SIZE_OF_DATA_RING_BUFFER			1000000
+#define SIZE_OF_DATA_RING_BUFFER			10000000
+
+#define QUOTEME_(x) #x
+#define QUOTEME(x) 	QUOTEME_(x)
 
 /*****************************************************************************/
 
@@ -53,6 +60,10 @@ unsigned char initialize_state(  uControllerInput **, uControllerOutput **, unsi
 unsigned char run_state( uControllerInput **, uControllerOutput **, unsigned char );
 unsigned char error_state( uControllerInput **, uControllerOutput **, unsigned char );
 
+bool atrias_gui_callback( atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response & );
+
+void datalog( void );
+
 // Controller structs.
 static ControllerInput 		controller_input[SIZE_OF_DATA_RING_BUFFER];
 static ControllerOutput 	controller_output[SIZE_OF_DATA_RING_BUFFER];
@@ -60,8 +71,11 @@ static ControllerState 		controller_state[2];
 static ControllerData 		controller_data[2];
 
 static unsigned int			io_index = 0;
-static unsigned char		state_index = 0;
-static unsigned char		data_index = 0;
+static bool					state_index = 0;
+static bool					data_index = 0;
+
+static bool					req_state_index_chg = false;
+static bool					req_data_index_chg = false;
 
 /*****************************************************************************/
 

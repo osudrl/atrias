@@ -13,7 +13,7 @@
 	#include <math.h>
 #endif
 
-#define SIZE_OF_CONTROLLER_DATA 			100
+#define SIZE_OF_CONTROLLER_DATA 		100
 #define SIZE_OF_CONTROLLER_STATE_DATA	100
 
 //======================================================//
@@ -40,15 +40,21 @@
 	#define PRINT_WARN  //printf
 #endif
 
+// Temporary for testing in uspace.
+//#include <rtai_lxrt.h>
+
+//#define PRINT_MSG rtai_print_to_screen
+//#define PRINT_WARN rtai_print_to_screen
+
 //======================================================//
 
 // Controller types available.
 
-#define NO_CONTROLLER 						0
-#define MOTOR_TORQUE_CONTROLLER 	1
-#define MOTOR_POSITION_CONTROLLER 2
+#define NO_CONTROLLER 					0
+#define MOTOR_TORQUE_CONTROLLER 		1
+#define MOTOR_POSITION_CONTROLLER 		2
 #define LEG_TORQUE_CONTROLLER			3
-#define LEG_POSITION_CONTROLLER 	4
+#define LEG_POSITION_CONTROLLER 		4
 #define SINE_WAVE_CONTROLLER			5
 #define RAIBERT_CONTROLLER				6
 #define EQU_GAIT_CONTROLLER				7
@@ -57,7 +63,7 @@
 
 // If the controller commands both motors to have a torque below this value, assume that no controller is present,
 // and command a small torque to keep the robot off of its hardstops.
-#define MIN_TRQ_THRESH						1E-9
+#define MIN_TRQ_THRESH					1E-9
 
 //======================================================//
 

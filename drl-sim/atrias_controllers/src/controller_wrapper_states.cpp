@@ -72,6 +72,13 @@ void control_wrapper_state_machine( uControllerInput ** in, uControllerOutput **
 		default:
 			next_state = ERROR_STATE;
 	}
+	
+	// Handle controller data change requests.
+	if ( req_data_index_chg )
+	{
+		data_index ^= 1;
+		req_data_index_chg = false;
+	}
 }
 
 /*****************************************************************************/
@@ -198,6 +205,9 @@ unsigned char initialize_state( uControllerInput ** in, uControllerOutput ** out
 
 	// Grab the initial pan count, so that we know how far the robot has moved about the room.
 	first_boom_pan_cnt = out[BOOM_INDEX]->BOOM_PAN_CNT;
+
+	// Tell the control switch to initialize.
+	controller_state[0].state = controller_state[1].state = STATE_INIT;
 
 	return RUN_STATE;
 }
@@ -334,14 +344,15 @@ unsigned char run_state( uControllerInput ** in, uControllerOutput ** out, unsig
 	last_leg_angleB		= controller_input[io_index].leg_angleB;			
 
 	// Controller update.
-	//control_switcher_state_machine(&controller_input[io_index], &controller_output[io_index], &controller_state, &controller_data);
+	control_switcher_state_machine(&controller_input[io_index], &controller_output[io_index],
+		&controller_state[state_index], &controller_data[data_index]);
 	// Clamp the motor torques.
-	//controller_output[io_index].motor_torqueA = CLAMP(controller_output[io_index].motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	//controller_output[io_index].motor_torqueB = CLAMP(controller_output[io_index].motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	controller_output[io_index].motor_torqueA = CLAMP(controller_output[io_index].motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	controller_output[io_index].motor_torqueB = CLAMP(controller_output[io_index].motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
 	//controller_output[io_index].motor_torqueA = CLAMP(controller_output[io_index].motor_torqueA, -3., 3.);
 	//controller_output[io_index].motor_torqueB = CLAMP(controller_output[io_index].motor_torqueB, -3., 3.);
-	controller_output[io_index].motor_torqueA = 0.;
-	controller_output[io_index].motor_torqueB = 0.;			
+	//controller_output[io_index].motor_torqueA = 0.;
+	//controller_output[io_index].motor_torqueB = 0.;			
 
 	// Send motor torques only when all of the Medullas status's are okay..
 	if ( out[A_INDEX]->status || out[B_INDEX]->status
@@ -392,8 +403,8 @@ unsigned char run_state( uControllerInput ** in, uControllerOutput ** out, unsig
 		in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
 	//}
 
-	// Increment i/o index for datalogging.
-	io_index ++;
+	// Increment and rollover i/o index for datalogging.
+	io_index = (++io_index) % SIZE_OF_DATA_RING_BUFFER;
 
 	return RUN_STATE;
 }
@@ -412,5 +423,73 @@ unsigned char error_state( uControllerInput ** in, uControllerOutput ** out, uns
 
 	// No coming back from this one yet.
 	return ERROR_STATE;
+}
+
+/*****************************************************************************/
+
+bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)
+{
+	int i;
+
+	//*************************************************************************
+
+	// Load request into controller's data.
+
+	controller_data[ 1 - data_index ].command					= req.command;
+	controller_data[ 1 - data_index ].controller_requested		= req.controller_requested;
+
+	for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
+	{
+		controller_data[ 1 - data_index ].data[i] = req.control_data[i];
+	}
+
+	// Request controller switches data.
+	req_data_index_chg 	= true;
+
+	//*************************************************************************
+
+	// Populate response for GUI with the last controller I/O.
+
+	res.body_angle		= controller_input[io_index - 1].body_angle;
+	res.motor_angleA	= controller_input[io_index - 1].motor_angleA;
+	res.motor_angleB	= controller_input[io_index - 1].motor_angleB;
+	res.leg_angleA		= controller_input[io_index - 1].leg_angleA;
+	res.leg_angleB		= controller_input[io_index - 1].leg_angleB;
+	res.hor_vel			= controller_input[io_index - 1].horizontal_velocity;
+	res.height			= controller_input[io_index - 1].height;
+
+	res.motor_torqueA	= controller_output[io_index - 1].motor_torqueA;
+	res.motor_torqueB	= controller_output[io_index - 1].motor_torqueB;
+	
+	//*************************************************************************
+
+	return true;
+}
+
+/****************************************************************************/
+
+void datalog( void )
+{
+	int i;
+
+	FILE *fp = fopen( QUOTEME(LOG_FILENAME), "w" );
+
+	// This print cannot be a ROS_INFO, because of a problem in the ROS header file?
+	printf( "Writing %u log entries to %s.", io_index, QUOTEME(LOG_FILENAME) );
+
+	// Create file header.
+	fprintf( fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Counter, Shm Index\n");
+
+	for ( i = 0; i < io_index; i++ )
+	{
+
+		fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", controller_input[i].body_angle, controller_input[i].motor_angleA, controller_input[i].motor_angleB,
+			controller_input[i].leg_angleA, controller_input[i].leg_angleB, controller_input[i].body_ang_vel, controller_input[i].motor_velocityA, controller_input[i].motor_velocityB,
+			controller_input[i].leg_velocityA, controller_input[i].leg_velocityB, controller_input[i].height, controller_input[i].horizontal_velocity, controller_input[i].vertical_velocity,
+			controller_output[i].motor_torqueA, controller_output[i].motor_torqueB );
+
+	}
+
+	fclose(fp);
 }
 

@@ -21,6 +21,9 @@
 // EtherCAT
 #include <ecrt.h>
 
+// ROS
+#include <ros/ros.h>
+
 // ATRIAS robot
 #include <atrias/ucontroller.h>
 

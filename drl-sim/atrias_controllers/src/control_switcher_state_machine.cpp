@@ -12,7 +12,7 @@ extern void control_switcher_state_machine(ControllerInput *controller_input, Co
 			if (controller_data->command == CMD_RUN)
 			{
 				controller_state->state = STATE_ENABLED;
-				PRINT_MSG("Controller enabled.\n");
+				PRINT_MSG( "Controller enabled.\n" );
 			}
 			else if ((controller_data->command == CMD_DISABLE) 
 				&& (controller_data->controller_requested != controller_state->controller_loaded))
@@ -21,7 +21,7 @@ extern void control_switcher_state_machine(ControllerInput *controller_input, Co
 				takedown_controller(controller_input, controller_output, controller_state, controller_data);
 				switch_controllers(controller_state, controller_data);
 				initialize_controller(controller_input, controller_output, controller_state, controller_data);
-				PRINT_MSG("Switching to controller.\n");
+				PRINT_MSG( "Switching to controller %u.\n", controller_data->controller_requested );
 			}
 
 			break;

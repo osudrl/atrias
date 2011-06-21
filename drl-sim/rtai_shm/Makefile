@@ -1,50 +1,65 @@
-EXTRA_CFLAGS += $(shell rtai-config --module-cflags)
+# Devin Koepl
 
-obj-m += shm_rt.o
+# Kbuild
 
-shm_rt-objs := shm.o
+CONTROLLERS=no_controller.o \
+	motor_torque_controller.o \
+	motor_position_controller.o \
+	leg_torque_controller.o \
+	leg_position_controller.o \
+	leg_angle_sin_wave.o \
+	raibert_controller.o		
 
-prefix := $(shell rtai-config --prefix)
+obj-m := rtai_controller.o 
 
-ifeq ($(prefix),)
-$(error Please add <rtai-install>/bin to your PATH variable)
-endif
+#EXTRA_CFLAGS := \
+#	-I /usr/realtime/include \
+#	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
+#	-I /home/drl/atrias/drl-sim/atrias/include \
+#	-I /home/drl/atrias/drl-sim/drl_library/include \
+#	-I /home/drl/atrias/drl-sim/gui/include \
+#	-I /opt/etherlab/include	\
+#	$(shell rtai-config --module-cflags) \
+#	-I /usr/include \
+#	-ffast-math \
+#	-mhard-float \
+#	-D COMPILE_FOR_RTAI
+
+EXTRA_CFLAGS += $(shell rtai-config --module-cflags) \
+	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
+	-I /home/drl/atrias/drl-sim/atrias/include \
+	-I /home/drl/atrias/drl-sim/drl_library/include \
+	-I /home/drl/atrias/drl-sim/gui/include \
+	-I /opt/etherlab/include	\
+	-D COMPILE_FOR_RTAI
+
+obj-m += rtai_controller_wrapper.o
+
+rtai_controller-objs := rtai_controller_wrapper.o control_switcher_state_machine.o $(CONTROLLERS)
+
+# Makefile
 
 CC = $(shell rtai-config --cc)
 
 LXRT_CFLAGS = $(shell rtai-config --lxrt-cflags)
 LXRT_LDFLAGS = $(shell rtai-config --lxrt-ldflags)
 
-all:: display
-
-ifneq ($(findstring 2.6.,$(shell rtai-config --linux-version 2>/dev/null)),)
-
 LINUX_DIR = $(shell rtai-config --linux-dir)
 
-all::
+all: links shm.c
 	$(MAKE) -C $(LINUX_DIR) CC=$(CC) SUBDIRS=$$PWD V=$(V) modules
 
-clean::
-	$(RM) $(LINUX_DIR)/.tmp_versions/*_rt.mod *.o *.ko *.mod.c .*.cmd
+links:
+	# Create symbolic links for C++ source files.
+	ln -sf ../atrias_controllers/src/control_switcher_state_machine.cpp control_switcher_state_machine.c
 
-else
+	ln -sf ../atrias_controllers/src/no_controller.cpp no_controller.c
+	ln -sf ../atrias_controllers/src/motor_torque_controller.cpp motor_torque_controller.c
+	ln -sf ../atrias_controllers/src/motor_position_controller.cpp motor_position_controller.c
+	ln -sf ../atrias_controllers/src/leg_torque_controller.cpp leg_torque_controller.c
+	ln -sf ../atrias_controllers/src/leg_position_controller.cpp leg_position_controller.c
+	ln -sf ../atrias_controllers/src/leg_angle_sin_wave.cpp leg_angle_sin_wave.c
+	ln -sf ../atrias_controllers/src/raibert_controller.cpp raibert_controller.c
 
-MODULE_CFLAGS = $(shell rtai-config --module-cflags)
-
-all:: shm.o
-
-shm.o: shm.c
-	$(CC) $(MODULE_CFLAGS) -c $<
-
-clean::
-	$(RM) *.o
-
-endif
-
-display: display.c
-	$(CC) $(LXRT_CFLAGS) -o $@ $< $(LXRT_LDFLAGS)
-
-clean::
-	$(RM) display
-
-.PHONY: clean
+clean:
+	$(RM) $(LINUX_DIR)/.tmp_versions/*_rt.mod *.o *.ko *.mod.c .*.cmd Module.symvers modules.order
