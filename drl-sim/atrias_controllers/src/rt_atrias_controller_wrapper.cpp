@@ -38,11 +38,7 @@ void *control_thread(void *arg)
 
 		control_wrapper_state_machine( in, out );
 
-		//rtai_print_to_screen( "test: %d\n", test_global );
-
 		//log[i] = rt_get_cpu_time_ns();
-
-		//rtai_print_to_screen( "Hello!\n" );
 
 		// send process data
 		ecrt_domain_queue(domain1);
@@ -152,7 +148,12 @@ int main(int argc, char **argv)
 
 	// We could do something here if we wanted to.
 
-	ros::spin();
+	while ( ros::ok() )
+	{
+		rt_msg_print();
+
+		ros::spinOnce();
+	}
 
 	//*************************************************************************
 

@@ -33,6 +33,9 @@ float				hor_vel;
 float				hor_vel_buffer[HOR_VEL_WINDOW];
 int					hor_vel_index = 0;
 
+float				leg_angle;
+float				leg_length;
+
 /*****************************************************************************/
 
 void control_wrapper_state_machine( uControllerInput ** in, uControllerOutput ** out )
@@ -202,6 +205,8 @@ unsigned char initialize_state( uControllerInput ** in, uControllerOutput ** out
 	// Set the last transmission counts, so that a false rollover is not tripped immediately.
 	last_tranA_cnt = out[A_INDEX]->TRANS_ANGLE;
 	last_tranB_cnt = out[B_INDEX]->TRANS_ANGLE;
+	last_boom_pan_cnt	= out[BOOM_INDEX]->BOOM_PAN_CNT;
+	last_boom_tilt_cnt	= out[BOOM_INDEX]->BOOM_TILT_CNT;
 
 	// Grab the initial pan count, so that we know how far the robot has moved about the room.
 	first_boom_pan_cnt = out[BOOM_INDEX]->BOOM_PAN_CNT;
@@ -277,9 +282,9 @@ unsigned char run_state( uControllerInput ** in, uControllerOutput ** out, unsig
 	}
 
 	// Keep track of the last counts for sensors that could rollover.
-	last_tranA_cnt = out[A_INDEX]->TRANS_ANGLE;
-	last_tranB_cnt = out[B_INDEX]->TRANS_ANGLE;
-	last_boom_pan_cnt		= out[BOOM_INDEX]->BOOM_PAN_CNT;
+	last_tranA_cnt 		= out[A_INDEX]->TRANS_ANGLE;
+	last_tranB_cnt 		= out[B_INDEX]->TRANS_ANGLE;
+	last_boom_pan_cnt	= out[BOOM_INDEX]->BOOM_PAN_CNT;
 	last_boom_tilt_cnt	= out[BOOM_INDEX]->BOOM_TILT_CNT;
 
 	// Generate controller input
@@ -334,9 +339,13 @@ unsigned char run_state( uControllerInput ** in, uControllerOutput ** out, unsig
 	}				
 	last_boom_pan_angle = boom_pan_angle;
 
-	boom_tilt_angle = DISCRETIZE_LOCATION( out[BOOM_INDEX]->BOOM_TILT_CNT, 
+	boom_tilt_angle = DISCRETIZE_LOCATION( boom_tilt_off + out[BOOM_INDEX]->BOOM_TILT_CNT, 
 		BOOM_KNOWN_TILT_CNT, BOOM_KNOWN_TILT_ANGLE, MAX_16BIT, BOOM_TILT_GEAR_RATIO);
 	controller_input[io_index].height = BOOM_LENGTH * sin(boom_tilt_angle) + BOOM_PIVOT_HEIGHT;
+
+	// Grab motor torque readings.
+	controller_input[io_index].motor_currentA = out[A_INDEX]->therm1;
+	controller_input[io_index].motor_currentB = out[B_INDEX]->therm1;
 
 	last_motor_angleA = controller_input[io_index].motor_angleA;
 	last_motor_angleB = controller_input[io_index].motor_angleB;
@@ -394,14 +403,17 @@ unsigned char run_state( uControllerInput ** in, uControllerOutput ** out, unsig
 	}
 
 	// Send hip command.  Do this regardless of the status of the Medullas to try and protect the knee from moments.
-	//if ( controller_input[io_index].height < 1.0 )
-	//{
-	//	in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_PIN;
-	//}
-	//else
-	//{
+	leg_angle = ( 2. * PI + controller_input[io_index].leg_angleA + controller_input[io_index].leg_angleB ) / 2. - PI;
+	leg_length = - 0.5 * sin( controller_input[io_index].leg_angleA ) - 0.5 * sin( controller_input[io_index].leg_angleB );
+
+	if ( controller_input[io_index].height - 0.025 > leg_length * sin( leg_angle ) )
+	{
 		in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
-	//}
+	}
+	else
+	{
+		in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_PIN;
+	}
 
 	// Increment and rollover i/o index for datalogging.
 	io_index = (++io_index) % SIZE_OF_DATA_RING_BUFFER;
@@ -461,6 +473,11 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
 	res.motor_torqueA	= controller_output[io_index - 1].motor_torqueA;
 	res.motor_torqueB	= controller_output[io_index - 1].motor_torqueB;
 	
+	for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+	{
+		res.control_state[i] = controller_state[state_index].data[i];
+	}
+
 	//*************************************************************************
 
 	return true;
@@ -478,18 +495,41 @@ void datalog( void )
 	printf( "Writing %u log entries to %s.", io_index, QUOTEME(LOG_FILENAME) );
 
 	// Create file header.
-	fprintf( fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Counter, Shm Index\n");
+	fprintf( fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Motor Current A, Motor Current B\n");		
 
 	for ( i = 0; i < io_index; i++ )
 	{
 
-		fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", controller_input[i].body_angle, controller_input[i].motor_angleA, controller_input[i].motor_angleB,
+		fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u\n", controller_input[i].body_angle, controller_input[i].motor_angleA, controller_input[i].motor_angleB,
 			controller_input[i].leg_angleA, controller_input[i].leg_angleB, controller_input[i].body_ang_vel, controller_input[i].motor_velocityA, controller_input[i].motor_velocityB,
 			controller_input[i].leg_velocityA, controller_input[i].leg_velocityB, controller_input[i].height, controller_input[i].horizontal_velocity, controller_input[i].vertical_velocity,
-			controller_output[i].motor_torqueA, controller_output[i].motor_torqueB );
-
+			controller_output[i].motor_torqueA, controller_output[i].motor_torqueB, 
+			controller_input[i].motor_currentA, controller_input[i].motor_currentB );
 	}
 
 	fclose(fp);
+}
+
+/****************************************************************************/
+
+// Print any messge waiting from the RT thread.
+void rt_msg_print( void )
+{
+	switch ( rt_msg_priority )
+	{
+		case NO_MSG:
+			break;
+		case INFO_MSG:
+			ROS_INFO( "%s", rt_msg );
+			break;
+		case WARN_MSG:
+			ROS_WARN( "%s", rt_msg );
+			break;
+		case ERROR_MSG:
+			ROS_ERROR( "%s", rt_msg );
+	}
+
+	// Clear the message indicator.
+	rt_msg_priority = NO_MSG;
 }
 

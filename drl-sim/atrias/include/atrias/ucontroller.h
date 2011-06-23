@@ -113,7 +113,7 @@
 // Tilt (angle up and down):
 #define BOOM_TILT_GEAR_RATIO		13
 #define BOOM_KNOWN_TILT_ANGLE		0.
-#define BOOM_KNOWN_TILT_CNT			61300
+#define BOOM_KNOWN_TILT_CNT			61032
 #define TILT_CNT_THRESH				30000	
 
 // Roll (robot angle on the boom):

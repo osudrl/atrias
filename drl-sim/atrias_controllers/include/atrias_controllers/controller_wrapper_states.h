@@ -46,6 +46,11 @@
 
 #define SIZE_OF_DATA_RING_BUFFER			10000000
 
+#define NO_MSG								0
+#define INFO_MSG							1
+#define WARN_MSG							2
+#define ERROR_MSG							3
+
 #define QUOTEME_(x) #x
 #define QUOTEME(x) 	QUOTEME_(x)
 
@@ -63,12 +68,13 @@ unsigned char error_state( uControllerInput **, uControllerOutput **, unsigned c
 bool atrias_gui_callback( atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response & );
 
 void datalog( void );
+void rt_msg_print( void );
 
 // Controller structs.
 static ControllerInput 		controller_input[SIZE_OF_DATA_RING_BUFFER];
-static ControllerOutput 	controller_output[SIZE_OF_DATA_RING_BUFFER];
+static ControllerOutput 		controller_output[SIZE_OF_DATA_RING_BUFFER];
 static ControllerState 		controller_state[2];
-static ControllerData 		controller_data[2];
+static ControllerData 			controller_data[2];
 
 static unsigned int			io_index = 0;
 static bool					state_index = 0;
@@ -76,6 +82,10 @@ static bool					data_index = 0;
 
 static bool					req_state_index_chg = false;
 static bool					req_data_index_chg = false;
+
+// For message from RT thread.  This should probably be a ring buffer.
+static unsigned char		rt_msg_priority;
+static char 				rt_msg[100];
 
 /*****************************************************************************/
 

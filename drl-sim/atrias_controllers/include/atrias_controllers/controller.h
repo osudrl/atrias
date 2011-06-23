@@ -71,38 +71,41 @@
 
 typedef struct
 {
-	float 	body_angle;
-	float	motor_angleA;
-	float	motor_angleB;
-	float	leg_angleA;
-	float	leg_angleB;
+	float 			body_angle;
+	float			motor_angleA;
+	float			motor_angleB;
+	float			leg_angleA;
+	float			leg_angleB;
 
-	float	body_ang_vel;
-	float	motor_velocityA;
-	float 	motor_velocityB;
-	float	leg_velocityA;
-	float 	leg_velocityB;
+	float			body_ang_vel;
+	float			motor_velocityA;
+	float 			motor_velocityB;
+	float			leg_velocityA;
+	float 			leg_velocityB;
 
-	float	height;
+	float			height;
 
-	float 	horizontal_velocity;
-	float 	vertical_velocity;
+	float 			horizontal_velocity;
+	float 			vertical_velocity;
+
+	unsigned char	motor_currentA;
+	unsigned char	motor_currentB;
 } ControllerInput;
 
 typedef struct 
 {
-	float	motor_torqueA;
-	float	motor_torqueB;	
+	float			motor_torqueA;
+	float			motor_torqueB;	
 } ControllerOutput;
 
 // This struct is where the controller can keep personal information.
 typedef struct 
 {	
-	unsigned char state;
-	unsigned char controller_loaded;
+	unsigned char 	state;
+	unsigned char 	controller_loaded;
 
 	// Controller specific space.
-	unsigned char data[SIZE_OF_CONTROLLER_STATE_DATA];
+	unsigned char 	data[SIZE_OF_CONTROLLER_STATE_DATA];
 } ControllerState;
 
 // This struct is the input to the controller.

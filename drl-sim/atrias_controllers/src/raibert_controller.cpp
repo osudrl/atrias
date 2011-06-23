@@ -2,7 +2,7 @@
 
 #include <atrias_controllers/controller.h>
 
-#define ESTIMATED_SPRING_STIFFNESS			10000
+#define ESTIMATED_SPRING_STIFFNESS			0.
 #define ESTIMATED_GEAR_RATIO				20
 
 void flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
@@ -114,7 +114,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 		+ ESTIMATED_SPRING_STIFFNESS * (zf_leg_len - leg_len) / ESTIMATED_GEAR_RATIO;
 
 	output->motor_torqueA =	 -torque;
-	output->motor_torqueB =		torque;
+	output->motor_torqueB =	 torque;
 
 	//float des_leg_ang = (input->leg_angleA + input->leg_angleB) / 2.;
 	//float des_leg_ang_vel = (input->leg_velocityA + input->leg_velocityB) / 2.;		
