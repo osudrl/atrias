@@ -196,7 +196,7 @@ int __init init_mod(void)
 	printk(KERN_INFO PFX "RT timer started with %i/%i ticks.\n",
 		 (int) tick_period, (int) requested_ticks);
 
-	if ( rt_task_init_cpuid(&task, run, 0, 10000, 0, 1, NULL, 1) ) 
+	if ( rt_task_init_cpuid(&task, run, 0, 2000, 0, 1, NULL, 1) ) 
 	{
 	  printk(KERN_ERR PFX "Failed to init RTAI task!\n");
 	  goto out_stop_timer;

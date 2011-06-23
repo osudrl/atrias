@@ -13,8 +13,7 @@
 
 /*****************************************************************************/
 
-static ToKernShm	* to_kern_shm;
-static ToUspaceShm	* to_uspace_shm;
+static Shm * shm;
 
 /*****************************************************************************/
 
@@ -50,26 +49,24 @@ int					hor_vel_index 		= 0;
 float				leg_angle;
 float				leg_length;
 
+static unsigned char command = CMD_RUN;
+
+ControllerInput 	* c_in;
+ControllerOutput 	* c_out;
+
 /*****************************************************************************/
 
 // Initialize SHM.  Return true upon success.
 
 unsigned char initialize_shm( void )
 {
-	// To Kernel SHM
-	to_kern_shm = ( ToKernShm * )rt_shm_alloc( nam2num( "SHM_TO_KERN_NAM" ), sizeof(ToKernShm), USE_VMALLOC );
-	if ( to_kern_shm == NULL )
-		return false;
-	memset( to_kern_shm, 0, sizeof(ToKernShm) );
-
-	to_kern_shm->command[0] 				= to_kern_shm->command[1] 				= CMD_DISABLE;
-	to_kern_shm->controller_requested[0] 	= to_kern_shm->controller_requested[1] 	= NO_CONTROLLER;
-
 	// To Uspace SHM
-	to_uspace_shm = ( ToUspaceShm * )rt_shm_alloc( nam2num( "SHM_TO_USPACE_NAM" ), sizeof( ToUspaceShm ), USE_VMALLOC );
-	if ( to_uspace_shm == NULL )
+	if ( !( shm = ( Shm * )rt_shm_alloc( nam2num( SHM_NAME ), sizeof( Shm ), USE_VMALLOC ) ) )
 		return false;
-	memset( to_uspace_shm, 0, sizeof( ToUspaceShm ) );
+	memset( shm, 0, sizeof( Shm ) );
+
+	shm->command[0] 				= shm->command[1] 				= CMD_DISABLE;
+	shm->controller_requested[0] 	= shm->controller_requested[1] 	= NO_CONTROLLER;
 
 	return true;
 }
@@ -78,8 +75,7 @@ unsigned char initialize_shm( void )
 
 void takedown_shm( void )
 {
-	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
-	rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) );
+	rt_shm_free( nam2num( SHM_NAME ) );
 }
 
 /*****************************************************************************/
@@ -89,6 +85,8 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 	// Keep a copy of the states in memory.
 	static unsigned char last_state = STATE_WAKEUP;
 	static unsigned char next_state = STATE_WAKEUP;
+
+	//rt_printk( "Next state: %u\n", next_state );
 
 	switch ( next_state )
 	{
@@ -121,10 +119,10 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 	}
 	
 	// Handle controller data change requests.
-	if ( to_kern_shm->req_switch )
+	if ( shm->req_switch )
 	{
-		to_kern_shm->index ^= 1;
-		to_kern_shm->req_switch = false;
+		shm->control_index 		= 1 - shm->control_index;
+		shm->req_switch 		= false;
 	}
 }
 
@@ -134,8 +132,6 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 {
 	int i;
 
-	//rtai_print_to_screen( "Wake up.\n" );
-
 	// Check to see if Medullas are awake by sending them a bad command (0).
 	for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
 	{
@@ -143,7 +139,10 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 		
 		// If a Medulla does not report the bad command, then fail.
 		if ( !( uc_out[i]->status & STATUS_BADCMD ) )
+		{
+			rt_printk( "Medulla %u did not report the bad command.\n", i );
 			return STATE_WAKEUP;
+		}
 	}
 
 	// If successful, Medullas are ready to receive restarts.
@@ -155,21 +154,17 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 unsigned char state_restart( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
 	int i;
-	
-	//rtai_print_to_screen( "Restart.\n" );
 
 	// Send restart commands.
 	for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
-	{
 		uc_in[i]->command = CMD_RESTART;
-	}
 
 	// Open the leg, and have the hip behave like a pin joint.
 	uc_in[A_INDEX]->MOTOR_TORQUE	= PWM_OPEN;
 	uc_in[B_INDEX]->MOTOR_TORQUE 	= PWM_OPEN;
 	uc_in[HIP_INDEX]->HIP_MTR_CMD 	= HIP_CMD_PIN;
 
-	if ( last_state == state_restart )
+	if ( last_state == STATE_RESTART )
 		return STATE_CHECK;
 
 	return STATE_RESTART;
@@ -181,8 +176,6 @@ unsigned char state_check( uControllerInput ** uc_in, uControllerOutput ** uc_ou
 {
 	int i;
 
-	//rtai_print_to_screen( "Check.\n" );
-
 	for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
 	{
 		// Send command disables.
@@ -190,7 +183,10 @@ unsigned char state_check( uControllerInput ** uc_in, uControllerOutput ** uc_ou
 
 		// Check Medulla states.  They have to be disabled to move on to the next state.
 		if ( uc_out[i]->status != STATUS_DISABLED )
+		{
+			rt_printk( "Medulla not disabled.\n" );
 			return STATE_CHECK;
+		}
 	}
 
 	// Hold the leg open, and the hip floppy.
@@ -201,8 +197,10 @@ unsigned char state_check( uControllerInput ** uc_in, uControllerOutput ** uc_ou
 	// Verify Medullas in their correct locations.
 	if ( ( uc_out[A_INDEX]->id != MEDULLA_A_ID ) || ( uc_out[B_INDEX]->id != MEDULLA_B_ID )		
 		|| ( uc_out[HIP_INDEX]->id != MEDULLA_HIP_ID )	|| ( uc_out[BOOM_INDEX]->id != MEDULLA_BOOM_ID ) )
+	{
+		rt_printk( "Medulla in wrong location.\n" );
 		return STATE_CHECK;
-
+	}
 
 	return STATE_INITIALIZE;
 }
@@ -214,11 +212,12 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 {
 	int i;
 
-	// Create pointers to controller I/O
-	ControllerInput 	* c_in	= &to_uspace_shm->controller_input[to_uspace_shm->index];
-	ControllerOutput 	* c_out = &to_uspace_shm->controller_output[to_uspace_shm->index];
+	// Tell the control switch to initialize.
+	shm->controller_state.state = 3;
 
-	//rtai_print_to_screen( "Initialize.\n" );
+	// Create pointers to controller I/O
+	c_in	= &shm->controller_input[shm->io_index];
+	c_out 	= &shm->controller_output[shm->io_index];
 
 	// Send command disables.
 	for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
@@ -259,9 +258,6 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 	// Grab the initial pan count, so that we know how far the robot has moved about the room.
 	first_boom_pan_cnt = uc_out[BOOM_INDEX]->BOOM_PAN_CNT;
 
-	// Tell the control switch to initialize.
-	//controller_state[0].state = controller_state[1].state = STATE_INIT;
-
 	return STATE_RUN;
 }
 
@@ -270,11 +266,10 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
 	int i;
-	static unsigned char command;
 
 	// Create pointers to controller I/O
-	ControllerInput 	* c_in	= &to_uspace_shm->controller_input[to_uspace_shm->index];
-	ControllerOutput 	* c_out 	= &to_uspace_shm->controller_output[to_uspace_shm->index];
+	c_in	= &shm->controller_input[shm->io_index];
+	c_out 	= &shm->controller_output[shm->io_index];
 
 	if ( last_state == state_initialize )
 		command = CMD_RUN;
@@ -406,12 +401,12 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 	// Controller update.
 	control_switcher_state_machine( c_in, c_out,
-		&to_uspace_shm->controller_state, to_kern_shm->controller_data[to_kern_shm->index] );
+		&shm->controller_state, &shm->controller_data[shm->control_index] );
 	// Clamp the motor torques.
-	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
-	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
+	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
+	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
 	//c_out->motor_torqueA = 0.;
 	//c_out->motor_torqueB = 0.;			
 
@@ -468,7 +463,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	}
 
 	// Increment and rollover i/o index for datalogging.
-	to_uspace_shm->index = (++to_uspace_shm->index) % SHM_TO_USPACE_ENTRIES;
+	shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;
 
 	return STATE_RUN;
 }
@@ -477,8 +472,6 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 unsigned char state_error( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
-	//rtai_print_to_screen( "Error.\n" );
-
 	// Send zero motor torques.
 	uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
 		0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);

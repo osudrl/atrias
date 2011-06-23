@@ -1,65 +1,30 @@
 # Devin Koepl
 
-# Kbuild
-
-CONTROLLERS=no_controller.o \
-	motor_torque_controller.o \
-	motor_position_controller.o \
-	leg_torque_controller.o \
-	leg_position_controller.o \
-	leg_angle_sin_wave.o \
-	raibert_controller.o		
-
-obj-m := rtai_controller.o 
-
-#EXTRA_CFLAGS := \
-#	-I /usr/realtime/include \
-#	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
-#	-I /home/drl/atrias/drl-sim/atrias/include \
-#	-I /home/drl/atrias/drl-sim/drl_library/include \
-#	-I /home/drl/atrias/drl-sim/gui/include \
-#	-I /opt/etherlab/include	\
-#	$(shell rtai-config --module-cflags) \
-#	-I /usr/include \
-#	-ffast-math \
-#	-mhard-float \
-#	-D COMPILE_FOR_RTAI
-
-EXTRA_CFLAGS += $(shell rtai-config --module-cflags) \
-	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
-	-I /home/drl/atrias/drl-sim/atrias/include \
-	-I /home/drl/atrias/drl-sim/drl_library/include \
-	-I /home/drl/atrias/drl-sim/gui/include \
+EXTRA_CFLAGS := \
+	-I /usr/realtime/include \
 	-I /opt/etherlab/include	\
-	-D COMPILE_FOR_RTAI
+	$(shell rtai-config --module-cflags) \
+	-I /usr/include \
+	-ffast-math \
+	-mhard-float
 
-obj-m += rtai_controller_wrapper.o
+LINUX_SOURCE_DIR=/usr/src/linux-`uname -r`
+MODULES_DIR=/lib/modules/`uname -r`
 
-rtai_controller-objs := rtai_controller_wrapper.o control_switcher_state_machine.o $(CONTROLLERS)
+CC=$(shell rtai-config --cc)
 
-# Makefile
+LXRT_CFLAGS=$(shell rtai-config --lxrt-cflags)
+LXRT_LDFLAGS=$(shell rtai-config --lxrt-ldflags)
 
-CC = $(shell rtai-config --cc)
+obj-m := rt_shm.o 
 
-LXRT_CFLAGS = $(shell rtai-config --lxrt-cflags)
-LXRT_LDFLAGS = $(shell rtai-config --lxrt-ldflags)
+rt_shm-objs := shm.o
 
-LINUX_DIR = $(shell rtai-config --linux-dir)
+all: kern
 
-all: links shm.c
-	$(MAKE) -C $(LINUX_DIR) CC=$(CC) SUBDIRS=$$PWD V=$(V) modules
-
-links:
-	# Create symbolic links for C++ source files.
-	ln -sf ../atrias_controllers/src/control_switcher_state_machine.cpp control_switcher_state_machine.c
-
-	ln -sf ../atrias_controllers/src/no_controller.cpp no_controller.c
-	ln -sf ../atrias_controllers/src/motor_torque_controller.cpp motor_torque_controller.c
-	ln -sf ../atrias_controllers/src/motor_position_controller.cpp motor_position_controller.c
-	ln -sf ../atrias_controllers/src/leg_torque_controller.cpp leg_torque_controller.c
-	ln -sf ../atrias_controllers/src/leg_position_controller.cpp leg_position_controller.c
-	ln -sf ../atrias_controllers/src/leg_angle_sin_wave.cpp leg_angle_sin_wave.c
-	ln -sf ../atrias_controllers/src/raibert_controller.cpp raibert_controller.c
+kern: shm.c
+	$(MAKE) -C "$(LINUX_SOURCE_DIR)" M="$(PWD)" modules
 
 clean:
-	$(RM) $(LINUX_DIR)/.tmp_versions/*_rt.mod *.o *.ko *.mod.c .*.cmd Module.symvers modules.order
+	rm -rf *.o *.mod.* Module.* modules.*
+	
