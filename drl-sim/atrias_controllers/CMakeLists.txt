@@ -83,7 +83,7 @@ if(EXISTS /usr/realtime)
 
 	#add_definitions(-DCOMPILE_FOR_RTAI)
 
-	rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
+	rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp)
 
 	# XXX Fix and re-include.
 	#rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.cpp src/controller_wrapper_states.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})

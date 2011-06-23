@@ -233,8 +233,7 @@ void __exit cleanup_mod(void)
 
     printk(KERN_INFO PFX "Stopping...\n");
 
-	rt_shm_free( SHM_TO_KERN_KEY );
-	rt_shm_free( SHM_TO_USPACE_KEY );
+	takedown_shm;
 
     rt_task_delete(&task);
     stop_rt_timer();

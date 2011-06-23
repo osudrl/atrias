@@ -15,7 +15,6 @@
 
 #include <atrias_controllers/uspace_kern_shm.h>
 #include <atrias_controllers/atrias_srv.h>
-#include <atrias_controllers/data_logger.h>
 
 // Macros for
 #define QUOTEME_(x) #x
@@ -39,9 +38,7 @@ int main (int argc, char **argv)
 {
 	int i;
 
-	pthread_t datalogging_thread;
-
-	DataLogger	data_logger = DataLogger(QUOTEME(LOG_FILENAME));
+	//pthread_t datalogging_thread;
 
 	//*************************************************************************
 
@@ -51,8 +48,8 @@ int main (int argc, char **argv)
 	if ( to_kern_shm == NULL ) 
 		ROS_ERROR( "rtai_malloc() data to kernel failed (maybe /dev/rtai_shm is missing)!" );
 
-	to_uspace_shm = ( ToUspaceShm * )rtai_malloc(nam2num( "SHM_TO_USPACE_NAM" ), 0 );
-	if ( to_uspace_shm[i] == NULL ) 
+	to_uspace_shm = ( ToUspaceShm * )rtai_malloc( nam2num( "SHM_TO_USPACE_NAM" ), 0 );
+	if ( to_uspace_shm == NULL ) 
 		ROS_ERROR( "rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!" );
 
 	ROS_INFO( "Connected to SHM." );
@@ -69,54 +66,31 @@ int main (int argc, char **argv)
 
 	//*************************************************************************
 
-	// Datalog at 1kHz.
-
-	ROS_INFO("Log Filename: %s", QUOTEME(LOG_FILENAME));
-	ROS_INFO( "Entry size: %u", sizeof(ToUspaceShm) );
-
 	// Create datalogging thread.
-	pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);	
+	//pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);	
 
 	while ( ros::ok() )
 	{
-		// If the kernel shm is free, then load the kernel buffer.
-		if ( !to_kern_shm->lock )
-		{
-			to_kern_shm->lock = true;
-
-			to_kern_shm->command 				= to_kern_buffer.command;
-			to_kern_shm->controller_requested	= to_kern_buffer.controller_requested;
-			
-			for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
-			{
-				to_kern_shm->controller_data[i] = to_kern_buffer.controller_data[i];
-			}
-
-			to_kern_shm->lock = false;
-		}
-
-		//if ( uspace_buffer_index == INTERFACE_BUFFER_SIZE - 1 )
-		//	ROS_INFO("Log file grew too large.  Restarting datalogging.");
+		ros::spinOnce();
 	}
 
 	//*************************************************************************
 
 	// Write the log file.
 
-	ROS_INFO( "\nWriting %u log file entries.", uspace_buffer_index );
+	/*ROS_INFO( "\nWriting %u log file entries to %s.", uspace_buffer_index, QUOTEME(LOG_FILENAME) );
 
 	for ( i = 0; i < uspace_buffer_index; i++)
 	{
 		// Log the data.
 		data_logger.log( &to_uspace_buffer[i] );		
-	}
+	}*/
 
 	//*************************************************************************
 
 	// Disconnect from kernel's shm.
 
 	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
-
 	rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) );
 
 	ROS_INFO("Disconnected from SHM.");
@@ -126,7 +100,9 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-void * datalogging_task( void * argument )
+//*****************************************************************************
+
+/*void * datalogging_task( void * argument )
 {
 	int i;
 
@@ -151,7 +127,9 @@ void * datalogging_task( void * argument )
 	}
 
 	return NULL;
-}
+}*/
+
+//*****************************************************************************
 
 bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)
 {
@@ -161,28 +139,35 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
 
 	// Load request into the kernel buffer.
 
-	to_kern_buffer.command					= req.command;
-	to_kern_buffer.controller_requested		= req.controller_requested;
+	to_kern_shm->command[to_kern_shm->index ^ 1]				= req.command;
+	to_kern_shm->controller_requested[to_kern_shm->index ^ 1]	= req.controller_requested;
 
 	for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
 	{
-		to_kern_buffer.controller_data[i] = req.control_data[i];
+		to_kern_shm->controller_data[to_kern_shm->index ^ 1][i] = req.control_data[i];
 	}
+
+	to_kern_shm->req_switch										= true;
 
 	//*************************************************************************
 
 	// Populate response from userspace buffer.
+	
+	res.body_angle		= to_uspace_shm->controller_input[to_uspace_shm->index].body_angle;
+	res.motor_angleA	= to_uspace_shm->controller_input[to_uspace_shm->index].motor_angleA;
+	res.motor_angleB	= to_uspace_shm->controller_input[to_uspace_shm->index].motor_angleB;
+	res.leg_angleA		= to_uspace_shm->controller_input[to_uspace_shm->index].leg_angleA;
+	res.leg_angleB		= to_uspace_shm->controller_input[to_uspace_shm->index].leg_angleB;
+	res.hor_vel			= to_uspace_shm->controller_input[to_uspace_shm->index].horizontal_velocity;
+	res.height			= to_uspace_shm->controller_input[to_uspace_shm->index].height;
 
-	res.body_angle		= to_uspace_buffer[uspace_buffer_index - 1].controller_input.body_angle;
-	res.motor_angleA	= to_uspace_buffer[uspace_buffer_index - 1].controller_input.motor_angleA;
-	res.motor_angleB	= to_uspace_buffer[uspace_buffer_index - 1].controller_input.motor_angleB;
-	res.leg_angleA		= to_uspace_buffer[uspace_buffer_index - 1].controller_input.leg_angleA;
-	res.leg_angleB		= to_uspace_buffer[uspace_buffer_index - 1].controller_input.leg_angleB;
-	res.hor_vel			= to_uspace_buffer[uspace_buffer_index - 1].controller_input.horizontal_velocity;
-	res.height			= to_uspace_buffer[uspace_buffer_index - 1].controller_input.height;
+	res.motor_torqueA	= to_uspace_shm->controller_output[to_uspace_shm->index].motor_torqueA;
+	res.motor_torqueB	= to_uspace_shm->controller_output[to_uspace_shm->index].motor_torqueB;
 
-	res.motor_torqueA	= to_uspace_buffer[uspace_buffer_index - 1].controller_output.motor_torqueA;
-	res.motor_torqueB	= to_uspace_buffer[uspace_buffer_index - 1].controller_output.motor_torqueB;
+	for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+	{
+		res.control_state[i] = to_uspace_shm->controller_state.data[i];
+	}
 
 	//*************************************************************************
 

@@ -5,8 +5,8 @@
 
 #include <atrias_controllers/controller.h>
 
-#define SHM_TO_KERN_KEY			5000
-#define SHM_TO_USPACE_KEY		5001
+#define SHM_TO_KERN_KEY			"SHM_TO_KERN_NAM"
+#define SHM_TO_USPACE_KEY		"SHM_TO_USPACE_NAM"
 #define SHM_TO_USPACE_ENTRIES	1000000
 
 // Messages
@@ -38,7 +38,7 @@ typedef struct
 
 	ControllerInput 	controller_input[SHM_TO_USPACE_ENTRIES];
 	ControllerOutput 	controller_output[SHM_TO_USPACE_ENTRIES]; 
-	ControllerState		controller_state[SIZE_OF_CONTROLLER_STATE_DATA];
+	ControllerState		controller_state;
 
 	// Messages
 	unsigned char		msg_index;  // Index of the last written message.

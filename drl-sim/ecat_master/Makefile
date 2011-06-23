@@ -46,7 +46,7 @@ all: links rtai_controller_wrapper.c
 
 links:
 	# Create symbolic links for C++ source files.
-	ln -sf ../atrias_controllers/src/controller_wrapper_states.cpp controller_wrapper_states.c
+	ln -sf ../atrias_controllers/src/control_switcher_state_machine.cpp control_switcher_state_machine.c
 
 	ln -sf ../atrias_controllers/src/no_controller.cpp no_controller.c
 	ln -sf ../atrias_controllers/src/motor_torque_controller.cpp motor_torque_controller.c

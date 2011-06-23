@@ -47,6 +47,7 @@
 /*****************************************************************************/
 
 unsigned char initialize_shm( void );
+void takedown_shm( void );
 
 void control_wrapper_state_machine( uControllerInput **, uControllerOutput ** );
 

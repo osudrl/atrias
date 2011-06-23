@@ -57,7 +57,7 @@ float				leg_length;
 unsigned char initialize_shm( void )
 {
 	// To Kernel SHM
-	to_kern_shm = ( ToKernShm * )rt_shm_alloc( SHM_TO_KERN_KEY, sizeof(ToKernShm), USE_VMALLOC );
+	to_kern_shm = ( ToKernShm * )rt_shm_alloc( nam2num( "SHM_TO_KERN_NAM" ), sizeof(ToKernShm), USE_VMALLOC );
 	if ( to_kern_shm == NULL )
 		return false;
 	memset( to_kern_shm, 0, sizeof(ToKernShm) );
@@ -66,12 +66,20 @@ unsigned char initialize_shm( void )
 	to_kern_shm->controller_requested[0] 	= to_kern_shm->controller_requested[1] 	= NO_CONTROLLER;
 
 	// To Uspace SHM
-	to_uspace_shm = ( ToUspaceShm * )rt_shm_alloc( SHM_TO_USPACE_KEY, sizeof( ToUspaceShm ), USE_VMALLOC );
+	to_uspace_shm = ( ToUspaceShm * )rt_shm_alloc( nam2num( "SHM_TO_USPACE_NAM" ), sizeof( ToUspaceShm ), USE_VMALLOC );
 	if ( to_uspace_shm == NULL )
 		return false;
 	memset( to_uspace_shm, 0, sizeof( ToUspaceShm ) );
 
 	return true;
+}
+
+/*****************************************************************************/
+
+void takedown_shm( void )
+{
+	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
+	rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) );
 }
 
 /*****************************************************************************/
@@ -398,7 +406,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 	// Controller update.
 	control_switcher_state_machine( c_in, c_out,
-		to_uspace_shm->controller_state, to_kern_shm->controller_data[to_kern_shm->index] );
+		&to_uspace_shm->controller_state, to_kern_shm->controller_data[to_kern_shm->index] );
 	// Clamp the motor torques.
 	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
 	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
