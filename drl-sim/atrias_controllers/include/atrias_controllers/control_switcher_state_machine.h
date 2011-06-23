@@ -13,12 +13,6 @@
 
 #include <atrias_controllers/controller.h>
 
-#define STATE_DISABLED 0
-#define STATE_ERROR		 1
-#define STATE_ENABLED	 2
-#define STATE_INIT		 3
-#define STATE_FINI		 4
-
 // These all pretty much have to be global since we have to call them from inside an object in the Gazebo namespace,
 // and from our RTAI kernel module.
 

@@ -2,6 +2,12 @@
 
 #include <atrias_controllers/control_switcher_state_machine.h>
 
+#define STATE_DISABLED		0
+#define STATE_ERROR		 	1
+#define STATE_ENABLED	 	2
+#define STATE_INIT		 	3
+#define STATE_FINI		 	4
+
 extern void control_switcher_state_machine(ControllerInput *controller_input, ControllerOutput *controller_output, 
 	ControllerState *controller_state, ControllerData *controller_data)
 {

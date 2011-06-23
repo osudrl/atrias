@@ -25,20 +25,23 @@
 #include <atrias/ucontroller.h>
 
 // ATRIAS controllers
-#include <atrias_controllers/controller.h>
-#include <atrias_controllers/control_switcher_state_machine.h>
-#include <atrias_controllers/uspace_kern_shm.h>
-#include <atrias_controllers/simulation_ecat_interface.h>
+//#include <atrias_controllers/controller.h>
+//#include <atrias_controllers/control_switcher_state_machine.h>
+//#include <atrias_controllers/uspace_kern_shm.h>
+//#include <atrias_controllers/simulation_ecat_interface.h>
 
 // DRL Library
-#include <drl_library/discretize.h>
-#include <drl_library/drl_math.h>
+//#include <drl_library/discretize.h>
+//#include <drl_library/drl_math.h>
+
+// Local
+#include "controller_wrapper_states.h"
 
 /*****************************************************************************/
 
 // Module parameters
 
-#define FREQUENCY 									1000 // task frequency in Hz
+#define FREQUENCY 										1000 // task frequency in Hz
 #define INHIBIT_TIME 									20
 
 #define TIMERTICKS 										(1000000000 / FREQUENCY)
@@ -63,11 +66,6 @@
 
 #define HOR_VEL_FILTER_EPS								0.003
 #define HOR_VEL_WINDOW									100
-
-/*****************************************************************************/
-
-static DataToKern	*to_kern_shm;
-static DataToUspace *to_uspace_shm;
 
 /*****************************************************************************/
 
@@ -186,61 +184,17 @@ static ec_sync_info_t medulla_hip_sync[] =
 
 /*****************************************************************************/
 
-// Controller structs.
-
-ControllerInput	 	controller_input;
-ControllerOutput 	controller_output;
-ControllerState	 	controller_state;
-ControllerData	 	controller_data;
-
-// Control wrapper variables.
-
-uint8_t				command;
-
-uint16_t			tranA_off;
-uint16_t			tranB_off;
-
-int32_t				boom_pan_off = 0;
-int32_t				boom_tilt_off = 0;
-
-uint16_t			last_boom_pan_cnt;
-uint16_t			first_boom_pan_cnt;
-uint16_t			last_boom_tilt_cnt;
-
-float				boom_pan_angle = 0.;
-float				boom_tilt_angle = 0.;
-
-float				last_boom_pan_angle = 0.;
-
-uint16_t			last_tranA_cnt;
-uint16_t			last_tranB_cnt;
-
-float				last_motor_angleA = 0.;
-float				last_motor_angleB = 0.;
-float				last_leg_angleA		= 0.;
-float				last_leg_angleB		= 0.;
-
-float				hor_vel;
-float				hor_vel_buffer[HOR_VEL_WINDOW];
-int					hor_vel_index = 0;
-
-// Keep track of the number of consecutive cycles that the program has been locked out of shm.
-int					spin_lock_cnt 	= 0;
-int					to_uspace_index = 0;
-unsigned int		to_uspace_cnt 	= 0;
+// Microcontroller I/O
+uControllerInput * uc_in[NUM_OF_MEDULLAS_ON_ROBOT ];
+uControllerOutput *	uc_out[NUM_OF_MEDULLAS_ON_ROBOT ];
 
 /*****************************************************************************/
 
 void check_master_state(void);
-
 void run(long data);
-
 void request_lock_callback(void *cb_data);
-
 void release_lock_callback(void *cb_data);
-
-int init_mod(void);
-
+int  init_mod(void);
 void cleanup_mod(void);
 
 #endif // FUNCS_H_RTAI_CONTROLLER_WRAPPER

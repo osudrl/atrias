@@ -12,14 +12,14 @@ CONTROLLERS=no_controller.o \
 
 obj-m := rtai_controller.o 
 
-rtai_controller-objs := rtai_controller_wrapper.o control_switcher_state_machine.o $(CONTROLLERS)
+rtai_controller-objs := rtai_controller_wrapper.o controller_wrapper_states.o control_switcher_state_machine.o $(CONTROLLERS)
 
 EXTRA_CFLAGS := \
 	-I /usr/realtime/include \
-	-I /home/drl/atrias/drl-sim/atrias_controllers/include \
-	-I /home/drl/atrias/drl-sim/atrias/include \
-	-I /home/drl/atrias/drl-sim/drl_library/include \
-	-I /home/drl/atrias/drl-sim/gui/include \
+	-I $(shell rospack find atrias_controllers)/include \
+	-I $(shell rospack find atrias)/include \
+	-I $(shell rospack find drl_library)/include \
+	-I $(shell rospack find gui)/include \
 	-I /opt/etherlab/include	\
 	$(shell rtai-config --module-cflags) \
 	-I /usr/include \
@@ -46,7 +46,7 @@ all: links rtai_controller_wrapper.c
 
 links:
 	# Create symbolic links for C++ source files.
-	ln -sf ../atrias_controllers/src/control_switcher_state_machine.cpp control_switcher_state_machine.c
+	ln -sf ../atrias_controllers/src/controller_wrapper_states.cpp controller_wrapper_states.c
 
 	ln -sf ../atrias_controllers/src/no_controller.cpp no_controller.c
 	ln -sf ../atrias_controllers/src/motor_torque_controller.cpp motor_torque_controller.c

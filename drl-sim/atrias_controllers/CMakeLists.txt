@@ -83,9 +83,10 @@ if(EXISTS /usr/realtime)
 
 	#add_definitions(-DCOMPILE_FOR_RTAI)
 
-	#rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
+	rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp src/data_logger.cpp)
 
-	rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.cpp src/controller_wrapper_states.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
+	# XXX Fix and re-include.
+	#rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.cpp src/controller_wrapper_states.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
 else(EXISTS /usr/realtime)
 	message("RTAI not detected, skipping building the wireless kernel interface.")
 endif(EXISTS /usr/realtime)
@@ -103,8 +104,9 @@ if(EXISTS "${GAZEBO_INSTALLED}")
 
 	message("Building the simulator.")
 
-	rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
-	rosbuild_link_boost(all_in_one_controller_wrapper thread)
+	# XXX These need to be fixed and re-included.
+	#rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
+	#rosbuild_link_boost(all_in_one_controller_wrapper thread)
 
 	#rosbuild_add_library(ecat_interface src/ecat_interface.cpp)
 	#rosbuild_link_boost(ecat_interface thread)

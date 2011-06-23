@@ -27,17 +27,8 @@
 
 // SHM interface to kernel.
 
-// For indexing kernel's ring buffer.
-int				to_uspace_index = 0;
-
-DataToKern		*to_kern_shm;
-DataToUspace	*to_uspace_shm[SHM_TO_USPACE_ENTRIES];
-
-DataToKern		to_kern_buffer;
-DataToUspace	to_uspace_buffer[INTERFACE_BUFFER_SIZE];
-
-// For datalogging.
-int				uspace_buffer_index = 0;
+ToKernShm		* to_kern_shm;
+ToUspaceShm		* to_uspace_shm;
 
 //*****************************************************************************
 
@@ -56,28 +47,15 @@ int main (int argc, char **argv)
 
 	// Connect to kernel's shm.
 
-	to_kern_shm = (DataToKern *)rtai_malloc(nam2num("SHM_TO_KERN_NAM"), 0);
-	to_kern_shm = (DataToKern *)rtai_malloc(nam2num("SHM_TO_KERN_NAM"), 0);
-	to_kern_shm = (DataToKern *)rtai_malloc(nam2num("SHM_TO_KERN_NAM"), 0);
-	to_kern_shm = (DataToKern *)rtai_malloc(nam2num("SHM_TO_KERN_NAM"), 0);
-	if (to_kern_shm == NULL) 
-	{
-		ROS_ERROR("rtai_malloc() data to kernel failed (maybe /dev/rtai_shm is missing)!");
-	}
+	to_kern_shm = ( ToKernShm * )rtai_malloc( nam2num( "SHM_TO_KERN_NAM" ), 0 );
+	if ( to_kern_shm == NULL ) 
+		ROS_ERROR( "rtai_malloc() data to kernel failed (maybe /dev/rtai_shm is missing)!" );
 
-	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
-	{
-		to_uspace_shm[i] = (DataToUspace *)rtai_malloc(nam2num("SHM_TO_USPACE_NAM") + i, 0);
-		to_uspace_shm[i] = (DataToUspace *)rtai_malloc(nam2num("SHM_TO_USPACE_NAM") + i, 0);
-		to_uspace_shm[i] = (DataToUspace *)rtai_malloc(nam2num("SHM_TO_USPACE_NAM") + i, 0);
-		to_uspace_shm[i] = (DataToUspace *)rtai_malloc(nam2num("SHM_TO_USPACE_NAM") + i, 0);
-		if (to_uspace_shm[i] == NULL) 
-		{
-			ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
-		}
-	}
+	to_uspace_shm = ( ToUspaceShm * )rtai_malloc(nam2num( "SHM_TO_USPACE_NAM" ), 0 );
+	if ( to_uspace_shm[i] == NULL ) 
+		ROS_ERROR( "rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!" );
 
-	ROS_INFO("Connected to SHM.");
+	ROS_INFO( "Connected to SHM." );
 
 	//*************************************************************************
 
@@ -94,7 +72,7 @@ int main (int argc, char **argv)
 	// Datalog at 1kHz.
 
 	ROS_INFO("Log Filename: %s", QUOTEME(LOG_FILENAME));
-	ROS_INFO( "Entry size: %u", sizeof(DataToUspace) );
+	ROS_INFO( "Entry size: %u", sizeof(ToUspaceShm) );
 
 	// Create datalogging thread.
 	pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);	
@@ -138,17 +116,8 @@ int main (int argc, char **argv)
 	// Disconnect from kernel's shm.
 
 	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
-	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
-	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
-	rt_shm_free( nam2num( "SHM_TO_KERN_NAM" ) );
 
-	for ( i = 0; i < SHM_TO_USPACE_ENTRIES; i++ )
-	{
-		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
-		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
-		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
-		rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) + i );
-	}
+	rt_shm_free( nam2num( "SHM_TO_USPACE_NAM" ) );
 
 	ROS_INFO("Disconnected from SHM.");
 
