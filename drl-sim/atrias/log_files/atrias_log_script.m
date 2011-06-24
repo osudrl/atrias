@@ -1,3 +1,6 @@
+% Devin Koepl
+% scp drl@bors:/home/drl/atrias/drl-sim/atrias/log_files/atrias_log.dat atrias_log.dat
+
 G = 20;
 
 % Torque sensitivity
@@ -19,37 +22,27 @@ mtr_velB = data.data(:, 8);
 mtr_trqA = data.data(:, 14);
 mtr_trqB = data.data(:, 15);
 
-mtr_curA = data.data(:, 16);
-mtr_curB = data.data(:, 17);
-
-figure( 'name', 'Current Requested' );
-plot( t, [mtr_trqA, mtr_trqB] );
-xlabel( 'Time (s)' );
-ylabel( 'Current (A)' );
-
-figure( 'name', 'Current Measured' );
-plot( t, [mtr_curA, mtr_curB] );
-xlabel( 'Time (s)' );
-ylabel( 'Current (cnts)' );
-
-% ind = ( 1 : size( t, 1 ) )';
+ind = ( 1 : size( t, 1 ) )';
 % ind = ( 3.2e5 : 3.35e5 )';
 
 % figure( 'name', 'Motor Angles' );
+plot( t, [mtr_trqA, mtr_trqB], 'linewidth', 3 );
 % plot( t, [mtr_angA, mtr_angB, leg_angA, leg_angB], 'linewidth', 3 );
 % plot( ind(1) : ind(end), [mtr_trqA(ind), abs( mtr_angA(ind) - leg_angA(ind) ),...
 %     mtr_trqB(ind), abs( mtr_angB(ind) - leg_angB(ind) )],...
 %     'linewidth', 3 );
-% xlabel( 'Time (s)' );
+xlabel( 'Time (s)' );
 % ylabel( 'Angle (rad)' );
+ylabel( 'Torque (Nm)' );
 % ylim( [ -2 * pi, 2 * pi ] );
 % legend( 'Motor Torque A', 'Spring Deflection A', 'Motor Torque B', 'Spring Deflection B' );
+legend( 'Motor Torque A', 'Motor Torque B' );
 
 % tauA = Kt * mean( abs( mtr_trqA(ind) ) );
 % tauB = Kt * mean( abs( mtr_trqB(ind) ) );
-% 
-% defA = mean( abs( mtr_angA(ind) - leg_angA(ind)) );
-% defB = mean( abs( mtr_angB(ind) - leg_angB(ind)) );
+
+defA = mean( abs( mtr_angA(ind) - leg_angA(ind)) );
+defB = mean( abs( mtr_angB(ind) - leg_angB(ind)) );
 
 % fprintf( '\n\n\n\n' );
 % 

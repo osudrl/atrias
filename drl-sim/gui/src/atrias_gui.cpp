@@ -91,11 +91,10 @@ int main(int argc, char **argv)
 	gui->get_widget("hor_vel_label", hor_vel_label);
 	gui->get_widget("height_label", height_label);
 
-	gui->get_widget("status_label", status_label);
+	gui->get_widget("restart_button", restart_button);
 	gui->get_widget("enable_button", enable_button);
 	gui->get_widget("disable_button", disable_button);
 
-	status_label->set_label("Initializing...");
 	raibert_state_label->set_label("Initializing");
 
 	// Initialize GUI objects
@@ -112,7 +111,7 @@ int main(int argc, char **argv)
 
 	leg_length_hscale->set_range(0., 1.);
 	leg_angle_hscale->set_range(0., PI);
-	p_leg_position_hscale->set_range(0., 100.);
+	p_leg_position_hscale->set_range(0., 1000.);
 	d_leg_position_hscale->set_range(0., 100.);
 
 	leg_angle_amplitude_hscale->set_range(0., 1.);
@@ -227,14 +226,13 @@ int main(int argc, char **argv)
 
 	// Connect buttons to functions.
 	log_file_chkbox->signal_toggled().connect( sigc::ptr_fun(log_chkbox_toggled) );
-	enable_button->signal_clicked().connect( sigc::ptr_fun(enable_motors) );
-	disable_button->signal_clicked().connect( sigc::ptr_fun(disable_motors) );
+	restart_button->signal_clicked().connect( sigc::ptr_fun( restart_robot ) );
+	enable_button->signal_clicked().connect( sigc::ptr_fun( enable_motors ) );
+	disable_button->signal_clicked().connect( sigc::ptr_fun( disable_motors ) );
 
 	controller_notebook->signal_switch_page().connect( sigc::ptr_fun(switch_controllers) );
 
 	sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(poke_controller), 100); // 50 is the timeout in milliseconds
-		
-	status_label->set_label("");
 
 	gtk.run(*window);
 
@@ -259,7 +257,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void log_chkbox_toggled()
+void log_chkbox_toggled( void )
 {
 	if ( log_file_chkbox->get_active() )
 	{
@@ -274,22 +272,31 @@ void log_chkbox_toggled()
 	}
 }
 
-void enable_motors()
+void restart_robot( void )
+{
+	if ( atrias_srv.request.command == CMD_DISABLE )
+		atrias_srv.request.command = CMD_RESTART;
+}
+
+void enable_motors( void )
 {
 	atrias_srv.request.command = CMD_RUN;
 }
 
-void disable_motors()
+void disable_motors( void )
 {
 	atrias_srv.request.command = CMD_DISABLE;
 }
 
 void switch_controllers(GtkNotebookPage* page, guint page_num)
 {
-	atrias_srv.request.controller_requested = page_num;
+	if ( atrias_srv.request.command == CMD_DISABLE )
+		atrias_srv.request.controller_requested = page_num;
+	else
+		controller_notebook->set_current_page( atrias_srv.request.controller_requested );
 }
 
-bool poke_controller()
+bool poke_controller( void )
 {
 	char buffer[20];
 
@@ -342,34 +349,25 @@ bool poke_controller()
 
 			// Set the state label.
 			if ( atrias_srv.response.status == CMD_DISABLE )
-			{
 				raibert_state_label->set_label("Disabled");
-			}
 			else
-			{ 
 				if ( ((RaibertControllerState *)(&(atrias_srv.response.control_state.elems)))->in_flight )
-				{
 					raibert_state_label->set_label("Flight");	
-				}
 				else
-				{
 					raibert_state_label->set_label("Stance");
-				}
-			}
 	}		
 
 	// Check to see if we are supposed to be logging data.
 	if ( log_file_chkbox->get_active() )
-	{
 		fprintf(log_file_fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", atrias_srv.response.time, atrias_srv.response.body_angle, 
 			atrias_srv.response.motor_angleA, atrias_srv.response.motor_angleB, atrias_srv.response.leg_angleA, atrias_srv.response.leg_angleB,
 			atrias_srv.response.motor_torqueA, atrias_srv.response.motor_torqueB, atrias_srv.response.hor_vel, atrias_srv.response.height);
-	}
 
 	if (atrias_client.call(atrias_srv))
-	{
 		draw_leg();
-	}
+
+	if ( atrias_srv.request.command == CMD_RESTART )
+		atrias_srv.request.command = CMD_DISABLE;
 
 	// Move the sliders if the controller is disabled.
 	if ( atrias_srv.response.status == CMD_DISABLE )

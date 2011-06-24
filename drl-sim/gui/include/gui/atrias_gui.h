@@ -64,12 +64,12 @@ Gtk::ProgressBar *motor_torqueB_progress_bar;
 Gtk::CheckButton *log_file_chkbox;
 Gtk::FileChooser *log_file_chooser;
 
-Gtk::Label *hor_vel_label;
-Gtk::Label *height_label;
+Gtk::Label * hor_vel_label;
+Gtk::Label * height_label;
 
-Gtk::Label *status_label;
-Gtk::Button *enable_button;
-Gtk::Button *disable_button;
+Gtk::Button * restart_button;
+Gtk::Button * enable_button;
+Gtk::Button * disable_button;
 
 Cairo::RefPtr<Cairo::Context> cr;
 Gtk::Allocation drawing_allocation;
@@ -81,12 +81,13 @@ atrias_controllers::atrias_srv atrias_srv;
 
 FILE *log_file_fp;
 
-bool poke_controller();
+bool poke_controller( void );
 
-void log_chkbox_toggled();
+void log_chkbox_toggled( void );
 
-void enable_motors();
-void disable_motors();
+void restart_robot( void );
+void enable_motors( void );
+void disable_motors( void );
 
 void switch_controllers(GtkNotebookPage *, guint);
 
