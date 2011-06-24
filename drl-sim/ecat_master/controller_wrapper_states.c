@@ -403,19 +403,21 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	last_leg_angleB		= c_in->leg_angleB;			
 
 	// Send hip command.  Do this regardless of the status of the Medullas to try and protect the knee from moments.
-	leg_angle = ( 2. * PI + c_in->leg_angleA + c_in->leg_angleB ) / 2. - PI;
+	leg_angle = ( c_in->leg_angleA + c_in->leg_angleB ) / 2.;
 	leg_length = - 0.5 * sin( c_in->leg_angleA ) - 0.5 * sin( c_in->leg_angleB );
 
-	if ( c_in->height > leg_length * sin( leg_angle ) )
-	{
-		// Flight
-		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
-		c_in->toe_switch = false;
-	}
-	else
+	if ( ( c_in->height - leg_length * sin( leg_angle ) < 0.02 ) && ( ( ABS( c_in->motor_angleA - c_in->leg_angleA ) > 0.02 )
+		|| ( ABS( c_in->motor_angleB - c_in->leg_angleB ) > 0.02 ) ) )
+	//if ( c_in->height > leg_length * sin( leg_angle ) )
 	{
 		// Stance
 		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_PIN;
+		c_in->toe_switch = true;
+	}
+	else
+	{
+		// Flight
+		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
 		c_in->toe_switch = false;
 	}
 
@@ -425,10 +427,10 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	control_switcher_state_machine( c_in, c_out,
 		&shm->controller_state, &shm->controller_data[shm->control_index] );
 	// Clamp the motor torques.
-	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
-	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
+	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
+	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
 	//c_out->motor_torqueA = 0.;
 	//c_out->motor_torqueB = 0.;			
 

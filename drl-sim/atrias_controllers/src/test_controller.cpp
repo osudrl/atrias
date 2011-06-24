@@ -10,7 +10,6 @@
 #define g 9.81
 #define MAX_TORQUE 15.0
 
-int counter = 0;
 double FCP_SETPTLS = 0.7854;
 double FCP_SETPTTDA = 0.0;
 //double FCP_SETPTTDA = 0.1230;
@@ -37,19 +36,19 @@ const double m2 = 0.68292;
 const double m3 = 0.19126;
 const double m4 = 0.42493;
 const double mT = 44.0 / 2.0;
-const double R1 = 20;
-const double R2 = R1;
+const double R1 = 20.;
+const double R2 = 20.;
 const double K1 = 1200.0 / 0.5;
-const double K2 = K1;
+const double K2 = 1200.0 / 0.5;
 const double Jcm1 = 0.01910;
 const double Jcm2 = 0.02116;
 const double Jcm3 = 0.00633;
 const double Jcm4 = 0.01243;
 const double JcmT = 1.37;
 const double Jgear1 = 0.0025;
-const double Jgear2 = Jgear1;
+const double Jgear2 = 0.0025;
 const double Jrotor1 = 0.00286;
-const double Jrotor2 = Jrotor1;
+const double Jrotor2 = 0.00286;
 const double ellzcm1 = 0.16957;
 const double ellzcm2 = 0.18626;
 const double ellzcm3 = 0.24997;
@@ -62,17 +61,18 @@ const double ellzcmTa  = 0.01;
 const double ellycmT = 0.0;
 const double mBatteryPack = 6.7;
 const double ellzBatteryBack = -0.09;
-const double ellzcmT = ellzcmTa -2*ellzBatteryBack *mBatteryPack/(mT);
+//double ellzcmT = ellzcmTa -2.*ellzBatteryBack *mBatteryPack/(mT);
+double ellzcmT = 0.01 - 2.* -0.09 * 6.7 / 44.0 / 2.0;
 const double REF_SPEED = 1.3;
 const int STANCE_CONTROLLER = 2;
 
-struct TorqueOutputs
+typedef struct
 {
   double torqueA;
   double torqueB;
-};
+} TorqueOutputs;
 
-struct SensorInputs
+typedef struct 
 {
   double torso;
   double motorA;
@@ -86,11 +86,11 @@ struct SensorInputs
   double dlegB;
   double Z;
   double dZ;
-};
+} SensorInputs;
 
-void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques);
-void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques);
-double abs_max(double var, double max);
+void flight_state_controller(SensorInputs, TorqueOutputs * , float);
+void stance_state_controller(SensorInputs , TorqueOutputs * );
+double abs_max(double , double );
 
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
@@ -104,6 +104,8 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
 {
   SensorInputs sensors;
   TorqueOutputs torques;
+
+	float motor_gain = TEST_CONTROLLER_DATA(data)->motor_gain;
 
   // Get sensor data
   // These are converted to Grizzle's reference frame
@@ -131,7 +133,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
   // Choose a controller based on state
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
-      flight_state_controller(sensors, torques);
+      flight_state_controller(sensors, &torques, motor_gain);
 
       if (sprdefA > threshF || sprdefB > threshF)
 	{
@@ -142,7 +144,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
 
   else
     {
-      stance_state_controller(sensors, torques);
+      stance_state_controller(sensors, &torques);
 
       if (sprdefA < threshS && sprdefB < threshS)
 	{
@@ -186,10 +188,10 @@ extern void takedown_test_controller(ControllerInput *input, ControllerOutput *o
 //  sensors: Input sensors
 //  &torques: Pair of output torques
 // Output: void
-void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques)
+void flight_state_controller(SensorInputs sensors, TorqueOutputs * torques, float motor_gain)
 {
   // Math from file
-  double vHip2 = sensors.dZ;
+  /*double vHip2 = sensors.dZ;
   double p42 = sensors.Z + cos(sensors.torso + sensors.motorB) * L2 + cos(sensors.torso + sensors.motorA) * L4;
   double qLA = (sensors.motorA + sensors.motorB) / 2;
   double dqLA = (sensors.dmotorA + sensors.dmotorB) / 2;
@@ -202,14 +204,14 @@ void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques)
   double y2 = FCP_SETPTTDA - qTDA;
   double dy2 = 0 - dqTDA;
   double uLA = FCP_KPTDA * y2 + FCP_KDTDA * dy2;
-  double y1, dy1, uLS;
+  double y1, dy1, uLS;*/
   /* if( (vHip2 > 0) && (p42 < 0.05) )
     {
     FCP_SETPTLS += (10.0 * PI / 180);*/
-      y1 = FCP_SETPTLS - qLS;
+     /* y1 = FCP_SETPTLS - qLS;
       dy1 = 0 - dqLS;
-      uLS = FCP_KPLS * y1 + FCP_KDLS * dy1;/*
-    }
+      uLS = FCP_KPLS * y1 + FCP_KDLS * dy1;/**/
+  /*  }
   else
     {
       y1 = FCP_SETPTLS - qLS;
@@ -217,8 +219,15 @@ void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques)
       uLS = FCP_KPLS * y1 + FCP_KDLS * dy1;
       }*/
   // Cap torques at +- 15
-  torques.torqueA = 0 * abs_max(uLA - (uLS / 2), MAX_TORQUE);
-  torques.torqueB = 0 * abs_max(uLA + (uLS / 2), MAX_TORQUE);
+  /*torques.torqueA = 0 * abs_max(uLA - (uLS / 2), MAX_TORQUE);
+  torques.torqueB = 0 * abs_max(uLA + (uLS / 2), MAX_TORQUE);*/
+	float des_mtr_angA = PI/2. - PI + acos( 0.9239 );
+	float des_mtr_angB = PI/2. + PI - acos( 0.9239 ); 
+
+	torques->torqueA = motor_gain * (des_mtr_angA - sensors.motorA) 
+		- 6. * sensors.dmotorA;
+	torques->torqueB = motor_gain * (des_mtr_angB - sensors.motorB) 
+		- 6. * sensors.dmotorB;
 }
 
 // Name: stance_state_controller
@@ -227,7 +236,7 @@ void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques)
 //  sensors: Input sensors
 //  &torques: Pair of output torques
 // Output: void
-void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques)
+void stance_state_controller(SensorInputs sensors, TorqueOutputs * torques)
 {
   // Math from file
   double qLS = sensors.legB - sensors.legA;
@@ -306,8 +315,8 @@ void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques)
   double dy2 = 0 - sensors.dtorso;
   double uTorso = SCP_KPTDA * y2 + SCP_KDTDA * dy2;
   // Cap torques at +- 15
-  torques.torqueA = abs_max(-uTorso - (uLS / 2), MAX_TORQUE);
-  torques.torqueB = abs_max(-uTorso + (uLS / 2), MAX_TORQUE);
+  torques->torqueA = abs_max(-uTorso - (uLS / 2), MAX_TORQUE);
+  torques->torqueB = abs_max(-uTorso + (uLS / 2), MAX_TORQUE);
 }
 
 // Name: abs_max
