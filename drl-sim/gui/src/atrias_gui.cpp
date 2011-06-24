@@ -4,8 +4,8 @@
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "atrias_gui");	
-	ros::NodeHandle n;	
+	ros::init(argc, argv, "atrias_gui");
+	ros::NodeHandle n;
 	atrias_client = n.serviceClient<atrias_controllers::atrias_srv>("/gui_interface_srv");
 	atrias_srv.request.command = CMD_DISABLE;
 	atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
@@ -14,14 +14,14 @@ int main(int argc, char **argv)
 
 	// Create the relative path to the Glade file.
 	std::string glade_gui_path = std::string(argv[0]);
-	
+
 	glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
 	glade_gui_path = glade_gui_path.append("/src/atrias_gui.glade");
 
 	Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
 	try
 	{
-		gui->add_from_file(glade_gui_path);		
+		gui->add_from_file(glade_gui_path);
 	}
 	catch(const Glib::FileError& ex)
 	{
@@ -37,10 +37,10 @@ int main(int argc, char **argv)
 	// Grab pointers to GUI objects
 	gui->get_widget("atrias_window", window);
 	if(!window)
-	{		
+	{
 		ROS_ERROR("No ATRIAS Window");
 	}
-	
+
 	gui->get_widget("controller_notebook", controller_notebook);
 
 	gui->get_widget("motor_torqueA_hscale", motor_torqueA_hscale);
@@ -306,8 +306,8 @@ bool poke_controller( void )
 
 	switch (atrias_srv.request.controller_requested)
 	{
-		case NO_CONTROLLER:	
-			//MTR_TRQ_CONTROLLER_DATA(&(atrias_srv.request.control_data.elems))->mtr_trqA = 0.;			
+		case NO_CONTROLLER:
+			//MTR_TRQ_CONTROLLER_DATA(&(atrias_srv.request.control_data.elems))->mtr_trqA = 0.;
 			break;
 		case MOTOR_TORQUE_CONTROLLER:
 			((MtrTrqControllerData *)(&(atrias_srv.request.control_data.elems)))->mtr_trqA = motor_torqueA_hscale->get_value();
@@ -315,7 +315,7 @@ bool poke_controller( void )
 			break;
 		case MOTOR_POSITION_CONTROLLER:
 			((MtrPosControllerData *)(&(atrias_srv.request.control_data.elems)))->mtr_angA = motor_positionA_hscale->get_value();
-			((MtrPosControllerData *)(&(atrias_srv.request.control_data.elems)))->mtr_angB = motor_positionB_hscale->get_value();	
+			((MtrPosControllerData *)(&(atrias_srv.request.control_data.elems)))->mtr_angB = motor_positionB_hscale->get_value();
 			((MtrPosControllerData *)(&(atrias_srv.request.control_data.elems)))->p_gain = p_motor_position_hscale->get_value();
 			((MtrPosControllerData *)(&(atrias_srv.request.control_data.elems)))->d_gain = d_motor_position_hscale->get_value();
 			break;
@@ -346,7 +346,7 @@ bool poke_controller( void )
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_p_gain = raibert_stance_p_gain_hscale->get_value();
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_d_gain = raibert_stance_d_gain_hscale->get_value();
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_spring_threshold = raibert_stance_spring_threshold_hscale->get_value();
-			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->preferred_leg_len = raibert_preferred_leg_len_hscale->get_value();			
+			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->preferred_leg_len = raibert_preferred_leg_len_hscale->get_value();
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_p_gain = raibert_flight_p_gain_hscale->get_value();
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_d_gain = raibert_flight_d_gain_hscale->get_value();
 			((RaibertControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_spring_threshold = raibert_flight_spring_threshold_hscale->get_value();
@@ -356,14 +356,14 @@ bool poke_controller( void )
 				raibert_state_label->set_label("Disabled");
 			else
 				if ( ((RaibertControllerState *)(&(atrias_srv.response.control_state.elems)))->in_flight )
-					raibert_state_label->set_label("Flight");	
+					raibert_state_label->set_label("Flight");
 				else
 					raibert_state_label->set_label("Stance");
-	}		
+	}
 
 	// Check to see if we are supposed to be logging data.
 	if ( log_file_chkbox->get_active() )
-		fprintf(log_file_fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", atrias_srv.response.time, atrias_srv.response.body_angle, 
+		fprintf(log_file_fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", atrias_srv.response.time, atrias_srv.response.body_angle,
 			atrias_srv.response.motor_angleA, atrias_srv.response.motor_angleB, atrias_srv.response.leg_angleA, atrias_srv.response.leg_angleB,
 			atrias_srv.response.motor_torqueA, atrias_srv.response.motor_torqueB, atrias_srv.response.hor_vel, atrias_srv.response.height);
 
@@ -386,10 +386,10 @@ bool poke_controller( void )
 
 	// Update the boom stuff indicators.
 	sprintf(buffer, "%.4f", atrias_srv.response.hor_vel);
-	hor_vel_label->set_label(buffer);	
+	hor_vel_label->set_label(buffer);
 	sprintf(buffer, "%.4f", atrias_srv.response.height);
-	height_label->set_label(buffer);	
-	
+	height_label->set_label(buffer);
+
 	return true;
 }
 
@@ -403,9 +403,9 @@ void draw_leg()
 	float start_y = 100.;
 
 	drawing_area->get_window()->clear();
-	
+
 	cr = drawing_area->get_window()->create_cairo_context();
-	
+
 	cr->set_line_width(12.0);
 
 	// Draw the motors
@@ -420,7 +420,7 @@ void draw_leg()
 	cr->rel_line_to(motor_radius * cos(atrias_srv.response.motor_angleB), -motor_radius * sin(atrias_srv.response.motor_angleB));
 	cr->move_to(start_x, start_y);
 	cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleB), motor_radius * sin(atrias_srv.response.motor_angleB));
-	cr->stroke();	
+	cr->stroke();
 
 	// Draw the leg
 	cr->move_to(start_x, start_y);
@@ -436,5 +436,5 @@ void draw_leg()
 	cr->rel_line_to(segment_length * cos(atrias_srv.response.leg_angleB), -segment_length * sin(atrias_srv.response.leg_angleB));
 	// D
 	cr->rel_line_to(segment_length * cos(atrias_srv.response.leg_angleA), -segment_length * sin(atrias_srv.response.leg_angleA));
-	cr->stroke();	
+	cr->stroke();
 }

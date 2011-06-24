@@ -1,21 +1,24 @@
 // Ported by: Colan Dray & Alireza Ramezani
 // MATLAB code by: Jessy Grizzle
 
-#include <iostream>
-#include <stdlib.h>
-#include <math.h>
+//#include <iostream>
+//#include <stdlib.h>
+//#include <math.h>
+#include <atrias_controllers/controller.h>
 
 #define PI 3.14159265
 #define g 9.81
 #define MAX_TORQUE 15.0
+#define FLIGHT_THRESHOLD 0.022
+#define STANCE_THRESHOLD 0.05
 
 int counter = 0;
 double FCP_SETPTLS = 0.7854;
+double FCP_SETPTTDA = 0.1230;
 const double FCP_KPLS = 400.0;
 const double FCP_KDLS = 50.4077;
 const double FCP_KPTDA = 750.0;
 const double FCP_KDTDA = 50.0;
-const double FCP_SETPTTDA = 0.1230;
 const double FCP_SETPTTDA_NOM = 0.0524;
 const double SCP_KPLS = 600.0;
 const double SCP_KDLS = 167.8620;
@@ -69,7 +72,7 @@ struct TorqueOutputs
   double torqueB;
 };
 
-struct AngleInputs
+struct SensorInputs
 {
   double torso;
   double motor1;
@@ -81,18 +84,12 @@ struct AngleInputs
   double dmotor2;
   double dgear1;
   double dgear2;
-};
-
-struct PositionInputs
-{
-  double Y;
   double Z;
-  double dY;
   double dZ;
 };
 
-void flight_state_controller(AngleInputs angles, PositionInputs positions, TorqueOutputs& output);
-void stance_state_controller(AngleInputs angles, TorqueOutputs& output);
+void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques);
+void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques);
 double abs_max(double var, double max);
 
 
@@ -106,38 +103,35 @@ extern void initialize_test_controller(ControllerInput *input, ControllerOutput 
 
 extern void update_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
-  AngleInputs angles;
-  PositionInputs positions;
-  TorqueOutputs outputs;
+  SensorInputs sensors;
+  TorqueOutputs torques;
 
   // Get sensor data
-  angles.torso = input->body_angle;
-  angles.motor1 = input->motor_angleA;
-  angles.motor2 = input->motor_angleB;
-  angles.gear1 = input->leg_angleA;
-  angles.gear2 = input->leg_angleB;
-  angles.dtorso = input->body_velocity;
-  angles.dmotor1 = input->motor_velocityA;
-  angles.dmotor2 = input->motor_velocityB;
-  angles.dgear1 = input->leg_velocityA;
-  angles.dgear2 = input->leg_velocityB;
-  //positions.Y = 0;
-  positions.Z = input->height;
-  //positions.dY = input->horizontal_velocity;
-  positions.dZ = input->vertical_velocity;
+  sensors.torso = input->body_angle;
+  sensors.motor1 = input->motor_angleA;
+  sensors.motor2 = input->motor_angleB;
+  sensors.gear1 = input->leg_angleA;
+  sensors.gear2 = input->leg_angleB;
+  sensors.dtorso = input->body_ang_vel;
+  sensors.dmotor1 = input->motor_velocityA;
+  sensors.dmotor2 = input->motor_velocityB;
+  sensors.dgear1 = input->leg_velocityA;
+  sensors.dgear2 = input->leg_velocityB;
+  sensors.Z = input->height;
+  sensors.dZ = input->vertical_velocity;
 
-  double spring_deflectionA = input->motor_angleA - input->leg_angleA;
-  double spring_deflectionB = input->motor_angleB - input->leg_angleB;
+  double abs_spring_deflectionA = ABS(sensors.motor1 - sensors.gear1);
+  double abs_spring_deflectionB = ABS(sensors.motor2 - sensors.gear2);
 
-  if ( (spring_deflectionA > FLIGHT_THRESHOLD) ||
-       (spring_deflectionB > FLIGHT_THRESHOLD) )
+  if ( (abs_spring_deflectionA > FLIGHT_THRESHOLD) ||
+       (abs_spring_deflectionB > FLIGHT_THRESHOLD) )
     {
       PRINT_MSG("Test controller status: LANDED. Update iterations: %d", counter);
       counter = 0;
       TEST_CONTROLLER_STATE(state)->in_flight = false;
     }
-  else if ( ( abs(spring_deflectionA) < STANCE_THRESHOLD ) &&
-	    ( abs(spring_deflectionB) < STANCE_THRESHOLD ) )
+  else if ( ( (abs_spring_deflectionA) < STANCE_THRESHOLD ) &&
+	    ( (abs_spring_deflectionB) < STANCE_THRESHOLD ) )
     {
       PRINT_MSG("Test controller status: TAKEOFF. Update iterations: %d", counter);
       counter = 0;
@@ -154,7 +148,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
 	}
       else
 	{
-	  FCP_SETPTTDA = ((speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
+	  FCP_SETPTTDA = ((error_speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
 	}
     }
   else
@@ -165,21 +159,21 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
   // Choose a controller based on state, then check to see if we need to change state
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
-      flight_state_controller(angles, positions, outputs);
+      flight_state_controller(sensors, torques);
 
     }
   else
     {
-      stance_state_controller(angles, outputs);
+      stance_state_controller(sensors, torques);
 
     }
 
   // Send output torques to motors
-  output->motor_torqueA = outputs.torqueA;
-  output->motor_torqueB = outputs.torqueB;
+  output->motor_torqueA = torques.torqueA;
+  output->motor_torqueB = torques.torqueB;
 }
 
-extern void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, Controlleata *data)
+extern void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
   output->motor_torqueA = output->motor_torqueB = 0.0;
 
@@ -190,21 +184,21 @@ extern void takedown_test_controller(ControllerInput *input, ControllerOutput *o
 // Description: Controller for flight state
 // Parameters:
 //  angles: Input angles
-//  positions: Input positions
-//  &output: Pair of output torques
+//  sensors: Input sensors
+//  &torques: Pair of output torques
 // Output: void
-void flight_state_controller(AngleInputs angles, PositionInputs positions, TorqueOutputs& output)
+void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques)
 {
   // Math from file
-  double vHip2 = positions.dZ;
-  double p42 = positions.Z + cos(angles.torso + angles.motor2) * L2 + cos(angles.torso + angles.motor1) * L4;
-  double qLA = (angles.motor1 + angles.motor2) / 2;
-  double dqLA = (angles.dmotor1 + angles.dmotor2) / 2;
-  double qLS = angles.gear2 - angles.gear1;
-  double dqLS = angles.dgear2 - angles.dgear1;
-  double qLA_abs = qLA + angles.torso;
+  double vHip2 = sensors.dZ;
+  double p42 = sensors.Z + cos(sensors.torso + sensors.motor2) * L2 + cos(sensors.torso + sensors.motor1) * L4;
+  double qLA = (sensors.motor1 + sensors.motor2) / 2;
+  double dqLA = (sensors.dmotor1 + sensors.dmotor2) / 2;
+  double qLS = sensors.gear2 - sensors.gear1;
+  double dqLS = sensors.dgear2 - sensors.dgear1;
+  double qLA_abs = qLA + sensors.torso;
   double qTDA = qLA_abs - PI;
-  double dqLA_abs = dqLA + angles.dtorso;
+  double dqLA_abs = dqLA + sensors.dtorso;
   double dqTDA = dqLA_abs;
   double y2 = FCP_SETPTTDA - qTDA;
   double dy2 = 0 - dqTDA;
@@ -224,32 +218,32 @@ void flight_state_controller(AngleInputs angles, PositionInputs positions, Torqu
       uLS = FCP_KPLS * y1 + FCP_KDLS * dy1;
     }
   // Cap torques at +- 15
-  output.torqueA = abs_max(uLA - (uLS / 2), MAX_TORQUE);
-  output.torqueB = abs_max(uLA + (uLS / 2), MAX_TORQUE);
+  torques.torqueA = abs_max(uLA - (uLS / 2), MAX_TORQUE);
+  torques.torqueB = abs_max(uLA + (uLS / 2), MAX_TORQUE);
 }
 
 // Name: stance_state_controller
 // Description: Controller for stance state
 // Parameters:
-//  angles: Input angles
-//  &output: Pair of output torques
+//  sensors: Input sensors
+//  &torques: Pair of output torques
 // Output: void
-void stance_state_controller(AngleInputs angles, TorqueOutputs& output)
+void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques)
 {
   // Math from file
-  double qLS = angles.gear2 - angles.gear1;
-  double dqLS = angles.dgear2 - angles.dgear1;
-  double vcm = (mT*(sin(angles.torso+angles.motor2)*L2+sin(angles.torso+angles.motor1)*L4+cos(angles.torso)*ellycmT-sin(angles.torso)*ellzcmT)+m1*(sin(angles.torso+angles.motor2)*L2+sin(angles.torso+angles.motor1)*L4+cos(angles.torso+angles.motor1)*ellycm1-sin(angles.torso+angles.motor1)*ellzcm1)+m2*(sin(angles.torso+angles.motor2)*L2+sin(angles.torso+angles.motor1)*L4+cos(angles.torso+angles.motor2)*ellycm2-sin(angles.torso+angles.motor2)*ellzcm2)+m3*(sin(angles.torso+angles.motor2)*L2+sin(angles.torso+angles.motor1)*L4-sin(angles.torso+angles.motor1)*L1+cos(angles.torso+angles.motor2)*ellycm3-sin(angles.torso+angles.motor2)*ellzcm3)+m4*(sin(angles.torso+angles.motor1)*L4+cos(angles.torso+angles.motor1)*ellycm4-sin(angles.torso+angles.motor1)*ellzcm4))/(mT+m1+m2+m3+m4)*angles.dtorso+(mT*sin(angles.torso+angles.motor1)*L4+m1*(sin(angles.torso+angles.motor1)*L4+cos(angles.torso+angles.motor1)*ellycm1-sin(angles.torso+angles.motor1)*ellzcm1)+m2*sin(angles.torso+angles.motor1)*L4+m3*(sin(angles.torso+angles.motor1)*L4-sin(angles.torso+angles.motor1)*L1)+m4*(sin(angles.torso+angles.motor1)*L4+cos(angles.torso+angles.motor1)*ellycm4-sin(angles.torso+angles.motor1)*ellzcm4))/(mT+m1+m2+m3+m4)*angles.dmotor1+(mT*sin(angles.torso+angles.motor2)*L2+m1*sin(angles.torso+angles.motor2)*L2+m2*(sin(angles.torso+angles.motor2)*L2+cos(angles.torso+angles.motor2)*ellycm2-sin(angles.torso+angles.motor2)*ellzcm2)+m3*(sin(angles.torso+angles.motor2)*L2+cos(angles.torso+angles.motor2)*ellycm3-sin(angles.torso+angles.motor2)*ellzcm3))/(mT+m1+m2+m3+m4)*angles.dmotor2;
-  double qT = angles.torso;
-  double q1 = angles.motor1;
-  double q2 = angles.motor2;
-  double qgr1 = angles.gear1;
-  double qgr2 = angles.gear2;
-  double dqT = angles.dtorso;
-  double dq1 = angles.dmotor1;
-  double dq2 = angles.dmotor2;
-  double dqgr1 = angles.dgear1;
-  double dqgr2 = angles.dgear2;
+  double qLS = sensors.gear2 - sensors.gear1;
+  double dqLS = sensors.dgear2 - sensors.dgear1;
+  double vcm = (mT*(sin(sensors.torso+sensors.motor2)*L2+sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso)*ellycmT-sin(sensors.torso)*ellzcmT)+m1*(sin(sensors.torso+sensors.motor2)*L2+sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso+sensors.motor1)*ellycm1-sin(sensors.torso+sensors.motor1)*ellzcm1)+m2*(sin(sensors.torso+sensors.motor2)*L2+sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso+sensors.motor2)*ellycm2-sin(sensors.torso+sensors.motor2)*ellzcm2)+m3*(sin(sensors.torso+sensors.motor2)*L2+sin(sensors.torso+sensors.motor1)*L4-sin(sensors.torso+sensors.motor1)*L1+cos(sensors.torso+sensors.motor2)*ellycm3-sin(sensors.torso+sensors.motor2)*ellzcm3)+m4*(sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso+sensors.motor1)*ellycm4-sin(sensors.torso+sensors.motor1)*ellzcm4))/(mT+m1+m2+m3+m4)*sensors.dtorso+(mT*sin(sensors.torso+sensors.motor1)*L4+m1*(sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso+sensors.motor1)*ellycm1-sin(sensors.torso+sensors.motor1)*ellzcm1)+m2*sin(sensors.torso+sensors.motor1)*L4+m3*(sin(sensors.torso+sensors.motor1)*L4-sin(sensors.torso+sensors.motor1)*L1)+m4*(sin(sensors.torso+sensors.motor1)*L4+cos(sensors.torso+sensors.motor1)*ellycm4-sin(sensors.torso+sensors.motor1)*ellzcm4))/(mT+m1+m2+m3+m4)*sensors.dmotor1+(mT*sin(sensors.torso+sensors.motor2)*L2+m1*sin(sensors.torso+sensors.motor2)*L2+m2*(sin(sensors.torso+sensors.motor2)*L2+cos(sensors.torso+sensors.motor2)*ellycm2-sin(sensors.torso+sensors.motor2)*ellzcm2)+m3*(sin(sensors.torso+sensors.motor2)*L2+cos(sensors.torso+sensors.motor2)*ellycm3-sin(sensors.torso+sensors.motor2)*ellzcm3))/(mT+m1+m2+m3+m4)*sensors.dmotor2;
+  double qT = sensors.torso;
+  double q1 = sensors.motor1;
+  double q2 = sensors.motor2;
+  double qgr1 = sensors.gear1;
+  double qgr2 = sensors.gear2;
+  double dqT = sensors.dtorso;
+  double dq1 = sensors.dmotor1;
+  double dq2 = sensors.dmotor2;
+  double dqgr1 = sensors.dgear1;
+  double dqgr2 = sensors.dgear2;
   double PE = g*(mT*(-cos(qT+q2)*L2-cos(qT+q1)*L4+sin(qT)*ellycmT+cos(qT)*ellzcmT)+m1*(-cos(qT+q2)*L2-cos(qT+q1)*L4+sin(qT+q1)*ellycm1+cos(qT+q1)*ellzcm1)+m2*(-cos(qT+q2)*L2-cos(qT+q1)*L4+sin(qT+q2)*ellycm2+cos(qT+q2)*ellzcm2)+m3*(-cos(qT+q2)*L2-cos(qT+q1)*L4+cos(qT+q1)*L1+sin(qT+q2)*ellycm3+cos(qT+q2)*ellzcm3)+m4*(-cos(qT+q1)*L4+sin(qT+q1)*ellycm4+cos(qT+q1)*ellzcm4))+1.0/2.0*K1*((q1-qgr1)*(q1-qgr1))+1.0/2.0*K2*((q2-qgr2)*(q2-qgr2));
   double MapleGenVar3 = Jcm1*dqT*dq1+Jcm2*dqT*dq2+Jcm3*dqT*dq2+m2*dq2*dq2*ellycm2*ellycm2/2.0+m3*dqT*dqT*L1*L1/2.0+m1*dqT*dqT*ellzcm1*ellzcm1/2.0+m4*dq1*dq1*ellycm4*ellycm4/2.0+m3*dq2*dq2*ellzcm3*ellzcm3/2.0+m2*dqT*dqT*ellycm2*ellycm2/2.0+m1*dq1*dq1*ellzcm1*ellzcm1/2.0+m1*dqT*dqT*ellycm1*ellycm1/2.0+m1*dq1*dq1*ellycm1*ellycm1/2.0+m1*dqT*ellzcm1*ellzcm1*dq1+m1*dqT*ellycm1*ellycm1*dq1+m2*dqT*ellycm2*ellycm2*dq2+m2*dqT*ellzcm2*ellzcm2*dq2+m3*dqT*L1*L1*dq1+m3*dqT*ellzcm3*ellzcm3*dq2+m4*dqT*ellzcm4*ellzcm4*dq1+m3*dqT*ellycm3*ellycm3*dq2+m4*dqT*ellycm4*ellycm4*dq1+m3*L1*L1*dq1*dq1/2.0+m4*dq1*dq1*ellzcm4*ellzcm4/2.0+m4*dqT*dqT*ellycm4*ellycm4/2.0+m4*dqT*dqT*ellzcm4*ellzcm4/2.0+mT*dqT*dqT*ellycmT*ellycmT/2.0;
   double MapleGenVar4 = mT*dqT*dqT*ellzcmT*ellzcmT/2.0+m2*dqT*dqT*ellzcm2*ellzcm2/2.0+m2*dq2*dq2*ellzcm2*ellzcm2/2.0+m3*dqT*dqT*ellycm3*ellycm3/2.0+m3*dq2*dq2*ellycm3*ellycm3/2.0+m3*dqT*dqT*ellzcm3*ellzcm3/2.0+Jcm4*dqT*dq1+m3*dqT*sin(qT+q2)*ellycm3*cos(qT+q1)*L1*dq1+m3*dqT*cos(qT+q2)*ellzcm3*cos(qT+q1)*L1*dq1+m3*cos(qT+q1)*L1*dq1*dq2*sin(qT+q2)*ellycm3+m3*cos(qT+q1)*L1*dq1*dq2*cos(qT+q2)*ellzcm3+m3*dqT*dqT*cos(qT+q1)*L1*sin(qT+q2)*ellycm3+m3*dqT*cos(qT+q1)*L1*dq2*cos(qT+q2)*ellzcm3;
@@ -273,6 +267,7 @@ void stance_state_controller(AngleInputs angles, TorqueOutputs& output)
   double uLSpower, uLSspring, uLS;
   double y1 = SCP_SETPTLS - qLS;
   double dy1 = 0 - dqLS;
+
   // Controller choices
   switch(STANCE_CONTROLLER)
     {
@@ -305,18 +300,15 @@ void stance_state_controller(AngleInputs angles, TorqueOutputs& output)
 	}
       break;
     default:
-      using namespace std;
-      cout << "Stance controller selected improperly:" << endl;
-      cout << "Choices: 1, 2, or 3." << endl;
-      cout << "Selected: " << STANCE_CONTROLLER << "." << endl;
+      PRINT_MSG("Stance controller selected improperly:");
       break;
     }
-  double y2 = SCP_SETPTTDA - angles.torso;
-  double dy2 = 0 - angles.dtorso;
+  double y2 = SCP_SETPTTDA - sensors.torso;
+  double dy2 = 0 - sensors.dtorso;
   double uTorso = SCP_KPTDA * y2 + SCP_KDTDA * dy2;
   // Cap torques at +- 15
-  output.torqueA = abs_max(-uTorso - (uLS / 2), MAX_TORQUE);
-  output.torqueB = abs_max(-uTorso + (uLS / 2), MAX_TORQUE);
+  torques.torqueA = abs_max(-uTorso - (uLS / 2), MAX_TORQUE);
+  torques.torqueB = abs_max(-uTorso + (uLS / 2), MAX_TORQUE);
 }
 
 // Name: abs_max
@@ -327,8 +319,7 @@ void stance_state_controller(AngleInputs angles, TorqueOutputs& output)
 // Output: Result of capping
 double abs_max(double number, double max)
 {
-  //  std::cout << "Capping: " << number << std::endl;
-  if(abs(number) > max)
+  if(ABS(number) > max)
     {
       return (number > 0)? max : -max;
     }
@@ -349,27 +340,28 @@ double abs_max(double number, double max)
    }
    else
    {
-   AngleInputs angles;
-   PositionInputs positions;
-   angles.torso = atof(argv[1]);
-   angles.motor1 = atof(argv[2]);
-   angles.motor2 = atof(argv[3]);
-   angles.gear1 = atof(argv[4]);
-   angles.gear2 = atof(argv[5]);
-   positions.Y = atof(argv[6]);
-   positions.Z = atof(argv[7]);
-   angles.dtorso = atof(argv[8]);
-   angles.dmotor1 = atof(argv[9]);
-   angles.dmotor2 = atof(argv[10]);
-   angles.dgear1 = atof(argv[11]);
-   angles.dgear2 = atof(argv[12]);
-   positions.dY = atof(argv[13]);
-   positions.dZ = atof(argv[14]);
+   AngleInputs sensors;
+   PositionInputs sensors;
+   sensors.torso = atof(argv[1]);
+   sensors.motor1 = atof(argv[2]);
+   sensors.motor2 = atof(argv[3]);
+   sensors.gear1 = atof(argv[4]);
+   sensors.gear2 = atof(argv[5]);
+   sensors.Y = atof(argv[6]);
+   sensors.Z = atof(argv[7]);
+   sensors.dtorso = atof(argv[8]);
+   sensors.dmotor1 = atof(argv[9]);
+   sensors.dmotor2 = atof(argv[10]);
+   sensors.dgear1 = atof(argv[11]);
+   sensors.dgear2 = atof(argv[12]);
+   sensors.dY = atof(argv[13]);
+   sensors.dZ = atof(argv[14]);
    TorqueOutputs flight_output, stance_output;
-   flight_state_controller(angles, positions, flight_output);
+   flight_state_controller(sensors, sensors, flight_output);
    cout << "Flight: Torque A: " << flight_output.torqueA << "; Torque B: " << flight_output.torqueB << endl;
-   stance_state_controller(angles, stance_output);
+   stance_state_controller(sensors, stance_output);
    cout << "Stance: Torque A: " << stance_output.torqueA << "; Torque B: " << stance_output.torqueB << endl;
    return 1;
    }
-   }*/
+   }
+*/
