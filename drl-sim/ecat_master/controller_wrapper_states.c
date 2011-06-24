@@ -118,6 +118,9 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 			next_state = STATE_ERROR;
 	}
 	
+	if ( shm->controller_data[shm->control_index].command == CMD_RESTART )
+		next_state =  STATE_WAKEUP;
+
 	// Handle controller data change requests.
 	if ( shm->req_switch )
 	{
@@ -403,12 +406,12 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	control_switcher_state_machine( c_in, c_out,
 		&shm->controller_state, &shm->controller_data[shm->control_index] );
 	// Clamp the motor torques.
-	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
 	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
 	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
-	//c_out->motor_torqueA = 0.;
-	//c_out->motor_torqueB = 0.;			
+	c_out->motor_torqueA = 0.;
+	c_out->motor_torqueB = 0.;			
 
 	// Send motor torques only when all of the Medullas status's are okay..
 	if ( uc_out[A_INDEX]->status || uc_out[B_INDEX]->status
