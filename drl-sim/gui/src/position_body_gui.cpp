@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     simulation_srv.request.desired_pose.position.z = 1.;
 
     Gtk::Main gtk(argc, argv);
-    
+
     // Create the relative path to the Glade file.
     std::string glade_gui_path = std::string(argv[0]);
     glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
     try
     {
-        gui->add_from_file(glade_gui_path);        
+        gui->add_from_file(glade_gui_path);
     }
     catch(const Glib::FileError& ex)
     {
@@ -39,19 +39,20 @@ int main(int argc, char **argv)
     // Grab pointers to GUI objects
     gui->get_widget("window", window);
     if(!window)
-    {        
+    {
         ROS_ERROR("No GUI Window");
     }
+
     gui->get_widget("x_translation_checkbutton", x_translation_checkbutton);
-    //gui->get_widget("x_rotation_checkbutton", x_rotation_checkbutton);
+    gui->get_widget("x_rotation_checkbutton", x_rotation_checkbutton);
     gui->get_widget("x_position_hscale", x_position_hscale);
-    
+
     gui->get_widget("y_translation_checkbutton", y_translation_checkbutton);
-    //gui->get_widget("y_rotation_checkbutton", y_rotation_checkbutton);
+    gui->get_widget("y_rotation_checkbutton", y_rotation_checkbutton);
     gui->get_widget("y_position_hscale", y_position_hscale);
-    
+
     gui->get_widget("z_translation_checkbutton", z_translation_checkbutton);
-    //gui->get_widget("z_rotation_checkbutton", z_rotation_checkbutton);    
+    gui->get_widget("z_rotation_checkbutton", z_rotation_checkbutton);
     gui->get_widget("z_position_hscale", z_position_hscale);
 
     gui->get_widget("pause_play_button", pause_play_button);
@@ -62,7 +63,7 @@ int main(int argc, char **argv)
     x_position_hscale->set_range(-100., 100.);
     y_position_hscale->set_range(-100., 100.);
     z_position_hscale->set_range(0.5, 1.5);
-    
+
     x_position_hscale->set_value(0.0);
     y_position_hscale->set_value(0.0);
     z_position_hscale->set_value(1.0);
@@ -84,6 +85,9 @@ int main(int argc, char **argv)
     x_translation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
     y_translation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
     z_translation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
+    x_rotation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
+    y_rotation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
+    z_rotation_checkbutton->signal_toggled().connect( sigc::ptr_fun(desired_pose_changed) );
 
     gtk.run(*window);
 
@@ -116,14 +120,33 @@ void desired_pose_changed()
     if( x_translation_checkbutton->get_active() )
     {
         simulation_srv.request.desired_pose.position.x = x_position_hscale->get_value();
+	ROS_INFO("TX%f", x_position_hscale->get_value());
     }
     if( y_translation_checkbutton->get_active() )
     {
         simulation_srv.request.desired_pose.position.y = y_position_hscale->get_value();
+	ROS_INFO("TY%f", y_position_hscale->get_value());
     }
     if( z_translation_checkbutton->get_active() )
     {
         simulation_srv.request.desired_pose.position.z = z_position_hscale->get_value();
+	ROS_INFO("TZ%f", z_position_hscale->get_value());
     }
+    if( x_rotation_checkbutton->get_active() )
+    {
+        simulation_srv.request.desired_pose.orientation.x = x_position_hscale->get_value();
+	ROS_INFO("RX%f", x_position_hscale->get_value());
+    }
+    if( y_rotation_checkbutton->get_active() )
+    {
+        simulation_srv.request.desired_pose.orientation.y = y_position_hscale->get_value();
+	ROS_INFO("RY%f", y_position_hscale->get_value());
+    }
+    if( z_rotation_checkbutton->get_active() )
+    {
+        simulation_srv.request.desired_pose.orientation.z = z_position_hscale->get_value();
+	ROS_INFO("RZ%f", z_position_hscale->get_value());
+    }
+    //desired_pose.orientation.w
     while( !simulation_client.call(simulation_srv) );
 }

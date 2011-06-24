@@ -4,9 +4,9 @@
 #define FUNCS_H_CONTROL_SWITCHER_STATE_MACHINE
 
 #ifndef COMPILE_FOR_RTAI
-	#include <stdint.h>
+#include <stdint.h>
 #else
-	#include <rtai_sem.h>
+#include <rtai_sem.h>
 #endif
 
 #include <atrias/ucontroller.h>
@@ -54,6 +54,9 @@ extern void initialize_raibert_controller(ControllerInput*, ControllerOutput*, C
 extern void update_raibert_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void takedown_raibert_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 
+extern void initialize_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void update_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void takedown_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 //==================================================================================//
 
 extern void control_switcher_state_machine(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);

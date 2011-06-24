@@ -5,5 +5,4 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/drl-sim</url>
   <depend stack="ros" />
-
 </stack>

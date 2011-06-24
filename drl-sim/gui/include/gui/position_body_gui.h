@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <gtkmm.h>
-#include <stdlib.h>
 #include <cairomm/context.h>
 
 #include <ros/ros.h>
@@ -22,9 +21,9 @@ Gtk::CheckButton *x_translation_checkbutton;
 Gtk::CheckButton *y_translation_checkbutton;
 Gtk::CheckButton *z_translation_checkbutton;
 
-//Gtk::CheckButton *x_rotation_checkbutton;
-//Gtk::CheckButton *y_rotation_checkbutton;
-//Gtk::CheckButton *z_rotation_checkbutton;
+Gtk::CheckButton *x_rotation_checkbutton;
+Gtk::CheckButton *y_rotation_checkbutton;
+Gtk::CheckButton *z_rotation_checkbutton;
 
 Gtk::ToggleButton *pause_play_button;
 Gtk::ToggleButton *hold_release_button;

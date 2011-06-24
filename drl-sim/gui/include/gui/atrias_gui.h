@@ -50,11 +50,22 @@ Gtk::HScale *raibert_leg_angle_gain_hscale;
 Gtk::HScale *raibert_stance_p_gain_hscale;
 Gtk::HScale *raibert_stance_d_gain_hscale;
 Gtk::HScale *raibert_stance_spring_threshold_hscale;
-Gtk::Label	*raibert_state_label;
+Gtk::Label  *raibert_state_label;
 Gtk::HScale *raibert_preferred_leg_len_hscale;
 Gtk::HScale *raibert_flight_p_gain_hscale;
 Gtk::HScale *raibert_flight_d_gain_hscale;
 Gtk::HScale *raibert_flight_spring_threshold_hscale;
+
+//NEW
+Gtk::SpinButton *extra_1_line_1_object;
+Gtk::SpinButton *extra_1_line_2_object;
+Gtk::HScale *extra_1_line_3_object;
+Gtk::HScale *extra_1_line_4_object;
+Gtk::RadioButton *extra_1_line_5_object_1;
+Gtk::RadioButton *extra_1_line_5_object_2;
+Gtk::RadioButton *extra_1_line_5_object_3;
+Gtk::RadioButton *extra_1_line_5_object_4;
+//END NEW
 
 Gtk::DrawingArea *drawing_area;
 
