@@ -63,8 +63,9 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 
 	// Figure out the next state.
 
-	if ( (ABS(input->motor_angleA - input->leg_angleA) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) 
-		|| (ABS(input->motor_angleB - input->leg_angleB) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) )
+	//if ( (ABS(input->motor_angleA - input->leg_angleA) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) 
+	//	|| (ABS(input->motor_angleB - input->leg_angleB) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) )
+	if ( input->toe_switch )
 	{
 		// Check to see if ground contact has occured.
 		PRINT_MSG("TD!");
@@ -108,7 +109,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	}
 
 	// Limit the desired leg length.
-	float des_leg_len = CLAMP( RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len + leg_ext, 0.51, 1.005 );
+	float des_leg_len = CLAMP( RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len + leg_ext, 0.51, 0.99 );
 	float torque = RAIBERT_CONTROLLER_DATA(data)->stance_p_gain * (des_leg_len - zf_leg_len ) 
 		- RAIBERT_CONTROLLER_DATA(data)->stance_d_gain * zf_leg_len_vel 
 		+ ESTIMATED_SPRING_STIFFNESS * (zf_leg_len - leg_len) / ESTIMATED_GEAR_RATIO;
@@ -143,8 +144,9 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	//output->motor_torqueA = CLAMP( output->motor_torqueA, -3., 3. );
 	//output->motor_torqueB = CLAMP( output->motor_torqueB, -3., 3. );
 
-	if ( ( ABS(spring_defA) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold )
-		&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) )
+	//if ( ( ABS(spring_defA) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold )
+	//	&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) )
+	if ( !input->toe_switch )
 	{
 		// Check to see if lift off has occured.
 

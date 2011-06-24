@@ -402,6 +402,25 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	last_leg_angleA		= c_in->leg_angleA;
 	last_leg_angleB		= c_in->leg_angleB;			
 
+	// Send hip command.  Do this regardless of the status of the Medullas to try and protect the knee from moments.
+	leg_angle = ( 2. * PI + c_in->leg_angleA + c_in->leg_angleB ) / 2. - PI;
+	leg_length = - 0.5 * sin( c_in->leg_angleA ) - 0.5 * sin( c_in->leg_angleB );
+
+	if ( c_in->height > leg_length * sin( leg_angle ) )
+	{
+		// Flight
+		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
+		c_in->toe_switch = false;
+	}
+	else
+	{
+		// Stance
+		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_PIN;
+		c_in->toe_switch = false;
+	}
+
+	c_in->command = shm->controller_data[shm->control_index].command;
+
 	// Controller update.
 	control_switcher_state_machine( c_in, c_out,
 		&shm->controller_state, &shm->controller_data[shm->control_index] );
@@ -454,19 +473,6 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 			//uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
 			//	0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
 		}
-	}
-
-	// Send hip command.  Do this regardless of the status of the Medullas to try and protect the knee from moments.
-	leg_angle = ( 2. * PI + c_in->leg_angleA + c_in->leg_angleB ) / 2. - PI;
-	leg_length = - 0.5 * sin( c_in->leg_angleA ) - 0.5 * sin( c_in->leg_angleB );
-
-	if ( c_in->height - 0.025 > leg_length * sin( leg_angle ) )
-	{
-		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_RIGID;
-	}
-	else
-	{
-		uc_in[HIP_INDEX]->HIP_MTR_CMD = HIP_CMD_PIN;
 	}
 
 	// Increment and rollover i/o index for datalogging.

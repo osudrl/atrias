@@ -162,10 +162,11 @@ void log_data_entry( FILE * fp, int i )
 	c_in	= &shm->controller_input[i];
 	c_out 	= &shm->controller_output[i];
 
-	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
+	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
 		c_in->leg_angleA, c_in->leg_angleB, c_in->body_ang_vel, c_in->motor_velocityA, c_in->motor_velocityB,
 		c_in->leg_velocityA, c_in->leg_velocityB, c_in->height, c_in->horizontal_velocity, c_in->vertical_velocity,
-		c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB );
+		c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB,
+		c_in->toe_switch, c_in->command );
 }
 
 //*****************************************************************************

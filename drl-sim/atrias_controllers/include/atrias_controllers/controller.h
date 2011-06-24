@@ -94,6 +94,10 @@ typedef struct
 
 	unsigned char	motor_currentA;
 	unsigned char	motor_currentB;
+
+	unsigned char	toe_switch;
+	
+	unsigned char	command;
 } ControllerInput;
 
 typedef struct

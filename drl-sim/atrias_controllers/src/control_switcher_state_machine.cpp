@@ -120,12 +120,12 @@ extern void switch_controllers(ControllerState * controller_state, ControllerDat
 		  takedown_controller = &takedown_no_controller;
 
 		  break;
-		case TEST_CONTROLLER:
+		/*case TEST_CONTROLLER:
 		  initialize_controller = &initialize_test_controller;
 		  update_controller = &update_test_controller;
 		  takedown_controller = &takedown_test_controller;
 
-		  break;
+		  break;*/
 	}
 
 	controller_state->controller_loaded = controller_data->controller_requested;
