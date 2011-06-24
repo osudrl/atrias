@@ -58,6 +58,7 @@ Gtk::HScale *raibert_flight_spring_threshold_hscale;
 
 Gtk::HScale *grizzle_stance_threshold_hscale;
 Gtk::HScale *grizzle_flight_threshold_hscale;
+Gtk::HScale *grizzle_motor_gain_hscale;
 
 Gtk::DrawingArea *drawing_area;
 

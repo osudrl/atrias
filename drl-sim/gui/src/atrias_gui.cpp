@@ -82,6 +82,7 @@ int main(int argc, char **argv)
 
 	gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
 	gui->get_widget("grizzle_stance_threshold_hscale", grizzle_stance_threshold_hscale);
+	gui->get_widget("grizzle_motor_gain_hscale", grizzle_motor_gain_hscale);
 
 	gui->get_widget("drawing_area", drawing_area);
 
@@ -138,7 +139,8 @@ int main(int argc, char **argv)
 	raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
 	grizzle_flight_threshold_hscale->set_range(0.0, 1.0);
-	grizzle_stance_threshold_hscale->set_range(0.0, 1.0);
+	grizzle_stance_threshold_hscale->set_range(-2.0, 2.0);
+	grizzle_motor_gain_hscale->set_range(-10.0, 10.0);
 
 	motor_torqueA_progress_bar->set_fraction(0.);
 	motor_torqueB_progress_bar->set_fraction(0.);
@@ -230,6 +232,7 @@ int main(int argc, char **argv)
 
 	grizzle_stance_threshold_hscale->set_value(0.05);
 	grizzle_flight_threshold_hscale->set_value(0.022);
+	grizzle_motor_gain_hscale->set_value(-6.0);
 
 	drawing_allocation = drawing_area->get_allocation();
 
@@ -372,6 +375,7 @@ bool poke_controller( void )
 	case TEST_CONTROLLER:
 	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
 	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
+	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->motor_gain = grizzle_motor_gain_hscale->get_value();
 	}
 
 	// Check to see if we are supposed to be logging data.

@@ -207,6 +207,7 @@ typedef struct
 {
   double stance_threshold;
   double flight_threshold;
+  double motor_gain;
 } TestControllerData;
 
 typedef struct

@@ -105,8 +105,8 @@ if(EXISTS "${GAZEBO_INSTALLED}")
 	message("Building the simulator.")
 
 	# XXX These need to be fixed and re-included.
-	#rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
-	#rosbuild_link_boost(all_in_one_controller_wrapper thread)
+	rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
+	rosbuild_link_boost(all_in_one_controller_wrapper thread)
 
 	#rosbuild_add_library(ecat_interface src/ecat_interface.cpp)
 	#rosbuild_link_boost(ecat_interface thread)
