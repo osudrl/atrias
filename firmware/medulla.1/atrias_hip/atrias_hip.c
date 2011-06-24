@@ -107,8 +107,8 @@ int main(void) {
 	float		delta	= 0;
 	float		vel		= 0;
 	uint16_t	error	= 0;
-	int16_t		kD		= 1400;
-	float		kP		= 0.006;
+	int16_t		kD		= 2500;
+	float		kP		= 0.003;
 
 	uint8_t		limit_cnt		= 0;
 	uint8_t		enc_cnt			= 0;

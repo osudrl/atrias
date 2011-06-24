@@ -1,4 +1,9 @@
 // Kevin Kemper
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+#ifndef	BISS_SPI_H
+#define BISS_SPI_H
 
 #include <stdio.h>
 #include <avr/io.h>
@@ -6,12 +11,12 @@
 #include "./menial_io.h"
 
 #define BISS_ERROR_bp	7
-#define BISS_ERROR_bm	(1<<7)
+#define BISS_ERROR_bm	(1<<BISS_ERROR_bp)
 
 #define BISS_WARN_bp	6
-#define BISS_WARN_bm	(1<<6)
+#define BISS_WARN_bm	(1<<BISS_WARN_bp)
 
-
+#define MAX_BISS_CNT	20
 
 inline void space() {
 
@@ -33,6 +38,7 @@ inline void space() {
 uint8_t readBiSS_spi(uint8_t *data, uint8_t *status) {
 
 	uint8_t tmp[5] = {0,0,0,0,0};
+	uint8_t cnt = 0;
 //	uint8_t status = 0;
 	
 //	data[3] = tmp[3];
@@ -41,6 +47,8 @@ uint8_t readBiSS_spi(uint8_t *data, uint8_t *status) {
 //	data[0] = tmp[0];
 
 //	while ((PORT_BISS.IN & BISS_DAT_bm) == 0) ;									// the device isn't ready
+
+//	*status = 0;
 	
 	if ((PORT_BISS.IN & BISS_DAT_bm) == 0)										// the device isn't ready
 		return 0xFF;
@@ -68,7 +76,9 @@ uint8_t readBiSS_spi(uint8_t *data, uint8_t *status) {
 	}
 	
 	// Clock until we get the start bit
-	while ((PORT_BISS.IN & BISS_DAT_bm) == 0) {
+	while ( ((PORT_BISS.IN & BISS_DAT_bm) == 0) && (cnt<MAX_BISS_CNT)) {
+		cnt++;
+		
 		space();
 //		_delay_us(1);
 		PORT_BISS.OUTTGL	= BISS_CLK_bm;	// up edge
@@ -77,6 +87,9 @@ uint8_t readBiSS_spi(uint8_t *data, uint8_t *status) {
 		PORT_BISS.OUTTGL	= BISS_CLK_bm;	// down edge
 	}
 	
+	if ( cnt>=MAX_BISS_CNT ) {													// took too long
+		return cnt;
+	}
 	
 	space();
 //	_delay_us(1);
@@ -159,3 +172,4 @@ void initBiSS_spi() {
 
 }
 
+#endif // !BISS_SPI_H

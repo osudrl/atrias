@@ -1,4 +1,7 @@
 // Kevin Kemper
+//
+//
+////////////////////////////////////////////////////////////////////////////////
 #ifndef MENIAL_IO_H
 #define MENIAL_IO_H
 
@@ -244,7 +247,7 @@ inline void led_solid_purple() {
 // disabled
 inline void led_solid_white() {
 	solidLED();
-	SetDutyR(0x7FFF);
+	SetDutyR(0x2FFF);
 	SetDutyG(0x7FFF);
 	SetDutyB(0x2FFF);
 }
