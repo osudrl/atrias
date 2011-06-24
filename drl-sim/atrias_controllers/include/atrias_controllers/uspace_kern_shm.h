@@ -26,9 +26,7 @@ typedef struct
 	unsigned char		req_switch;
 
 	// To Controller
-	unsigned char		command[2];
-	unsigned char		controller_requested[2];
-	unsigned char		controller_data[2][SIZE_OF_CONTROLLER_DATA];
+	ControllerData		controller_data[2];
 
 	// To userspace
 

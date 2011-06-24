@@ -244,13 +244,11 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
 
 	// Load request into the kernel buffer.
 
-	shm->command[1 - shm->control_index]				= req.command;
-	shm->controller_requested[1 - shm->control_index]	= req.controller_requested;
+	shm->controller_data[1 - shm->control_index].command				= req.command;
+	shm->controller_data[1 - shm->control_index].controller_requested	= req.controller_requested;
 
 	for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
-	{
-		shm->controller_data[1 - shm->control_index][i] = req.control_data[i];
-	}
+		shm->controller_data[1 - shm->control_index].data[i] = req.control_data[i];
 
 	shm->req_switch										= true;
 
@@ -270,9 +268,7 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
 	res.motor_torqueB	= shm->controller_output[shm->io_index - 1].motor_torqueB;
 
 	for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
-	{
 		res.control_state[i] = shm->controller_state.data[i];
-	}
 
 	//*************************************************************************
 

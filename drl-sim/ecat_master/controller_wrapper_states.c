@@ -65,8 +65,8 @@ unsigned char initialize_shm( void )
 		return false;
 	memset( shm, 0, sizeof( Shm ) );
 
-	shm->command[0] 				= shm->command[1] 				= CMD_DISABLE;
-	shm->controller_requested[0] 	= shm->controller_requested[1] 	= NO_CONTROLLER;
+	shm->controller_data[0].command 				= shm->controller_data[1].command 				= CMD_DISABLE;
+	shm->controller_data[0].controller_requested 	= shm->controller_data[1].controller_requested 	= NO_CONTROLLER;
 
 	return true;
 }
@@ -121,8 +121,8 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 	// Handle controller data change requests.
 	if ( shm->req_switch )
 	{
-		shm->control_index 		= 1 - shm->control_index;
-		shm->req_switch 		= false;
+		shm->control_index 	= 1 - shm->control_index;
+		shm->req_switch 	= false;
 	}
 }
 
@@ -420,6 +420,10 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 			0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
 		uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
 			0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+
+		// Print the Medullas' status bytes, because at least one of them has a problem.
+		rt_printk( "Status: A: %u, B: %u, Hip: %u, Boom: %u\n", uc_out[A_INDEX]->status, uc_out[B_INDEX]->status,
+			uc_out[HIP_INDEX]->status, uc_out[BOOM_INDEX]->status );
 
 		// Move to error state.
 		//return state_error;
