@@ -13,10 +13,17 @@
 
 #include <atrias_controllers/controller.h>
 
-// These all pretty much have to be global since we have to call them from inside an object in the Gazebo namespace,
-// and from our RTAI kernel module.
+// Control switcher state machine (CSSM) states.
+#define CSSM_STATE_DISABLED		0
+#define CSSM_STATE_ERROR		1
+#define CSSM_STATE_ENABLED	 	2
+#define CSSM_STATE_INIT		 	3
+#define CSSM_STATE_FINI		 	4
 
 //==================================================================================//
+
+// These all pretty much have to be global since we have to call them from inside an object in the Gazebo namespace,
+// and from our RTAI kernel module.
 
 // Control function pointers.
 

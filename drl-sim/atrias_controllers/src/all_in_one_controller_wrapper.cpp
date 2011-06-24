@@ -31,14 +31,14 @@ AllInOneControllerWrapper::AllInOneControllerWrapper(Entity *parent)
 	this->controller_state				= new ControllerState();
 	this->controller_data					= new ControllerData();
 
-	this->controller_state->state = STATE_INIT;
+	this->controller_state->state = CSSM_STATE_INIT;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Destructor
 AllInOneControllerWrapper::~AllInOneControllerWrapper()
 {
-	controller_state->state = STATE_FINI;
+	controller_state->state = CSSM_STATE_FINI;
 	//control_switcher_state_machine(controller_input, controller_output, controller_state, controller_data);
 
 	delete this->bodyNameP;
@@ -196,7 +196,7 @@ bool AllInOneControllerWrapper::atrias_gui_callback(atrias_controllers::atrias_s
 	}
 
 	// Pack the response.
-	if ( this->controller_state->state == STATE_ENABLED )
+	if ( this->controller_state->state == CSSM_STATE_ENABLED )
 	{
 		res.status = CMD_RUN;
 	}
