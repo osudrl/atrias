@@ -80,6 +80,9 @@ int main(int argc, char **argv)
 	gui->get_widget("raibert_flight_d_gain_hscale", raibert_flight_d_gain_hscale);
 	gui->get_widget("raibert_flight_spring_threshold_hscale", raibert_flight_spring_threshold_hscale);
 
+	gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
+	gui->get_widget("grizzle_stance_threshold_hscale", grizzle_stance_threshold_hscale);
+
 	gui->get_widget("drawing_area", drawing_area);
 
 	gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
@@ -133,6 +136,9 @@ int main(int argc, char **argv)
 	raibert_flight_p_gain_hscale->set_range(0., 1000.);
 	raibert_flight_d_gain_hscale->set_range(0., 50.);
 	raibert_flight_spring_threshold_hscale->set_range(0., 1.);
+
+	grizzle_flight_threshold_hscale->set_range(0.0, 1.0);
+	grizzle_stance_threshold_hscale->set_range(0.0, 1.0);
 
 	motor_torqueA_progress_bar->set_fraction(0.);
 	motor_torqueB_progress_bar->set_fraction(0.);
@@ -221,6 +227,9 @@ int main(int argc, char **argv)
 	raibert_flight_p_gain_hscale->set_value(250.);
 	raibert_flight_d_gain_hscale->set_value(12.);
 	raibert_flight_spring_threshold_hscale->set_value(0.022);
+
+	grizzle_stance_threshold_hscale->set_value(0.05);
+	grizzle_flight_threshold_hscale->set_value(0.022);
 
 	drawing_allocation = drawing_area->get_allocation();
 
@@ -359,6 +368,10 @@ bool poke_controller( void )
 					raibert_state_label->set_label("Flight");
 				else
 					raibert_state_label->set_label("Stance");
+			break;
+	case TEST_CONTROLLER:
+	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
+	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
 	}
 
 	// Check to see if we are supposed to be logging data.

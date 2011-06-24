@@ -9,8 +9,6 @@
 #define PI 3.14159265
 #define g 9.81
 #define MAX_TORQUE 15.0
-#define FLIGHT_THRESHOLD 0.022
-#define STANCE_THRESHOLD 0.05
 
 int counter = 0;
 double FCP_SETPTLS = 0.7854;
@@ -92,7 +90,6 @@ void flight_state_controller(SensorInputs sensors, TorqueOutputs& torques);
 void stance_state_controller(SensorInputs sensors, TorqueOutputs& torques);
 double abs_max(double var, double max);
 
-
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
   TEST_CONTROLLER_STATE(state)->in_flight = true;
@@ -120,52 +117,43 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
   sensors.Z = input->height;
   sensors.dZ = input->vertical_velocity;
 
-  double abs_spring_deflectionA = ABS(sensors.motor1 - sensors.gear1);
-  double abs_spring_deflectionB = ABS(sensors.motor2 - sensors.gear2);
-
-  if ( (abs_spring_deflectionA > FLIGHT_THRESHOLD) ||
-       (abs_spring_deflectionB > FLIGHT_THRESHOLD) )
-    {
-      PRINT_MSG("Test controller status: LANDED. Update iterations: %d", counter);
-      counter = 0;
-      TEST_CONTROLLER_STATE(state)->in_flight = false;
-    }
-  else if ( ( (abs_spring_deflectionA) < STANCE_THRESHOLD ) &&
-	    ( (abs_spring_deflectionB) < STANCE_THRESHOLD ) )
-    {
-      PRINT_MSG("Test controller status: TAKEOFF. Update iterations: %d", counter);
-      counter = 0;
-      TEST_CONTROLLER_STATE(state)->in_flight = true;
-
-      double error_speed = REF_SPEED;// - vcm(1);
-      if(error_speed > 0.5)
-	{
-	  FCP_SETPTTDA = -1.0 * PI / 180;
-	}
-      else if(error_speed < -.3)
-	{
-	  FCP_SETPTTDA = FCP_SETPTTDA_NOM - 12.0 * error_speed * PI / 180;
-	}
-      else
-	{
-	  FCP_SETPTTDA = ((error_speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
-	}
-    }
-  else
-    {
-      counter += 1;
-    }
+  double flight_threshold = TEST_CONTROLLER_DATA(data)->flight_threshold;
+  double stance_threshold = TEST_CONTROLLER_DATA(data)->stance_threshold;
 
   // Choose a controller based on state, then check to see if we need to change state
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
       flight_state_controller(sensors, torques);
-
+      if ( (ABS(sensors.motor1 - sensors.gear1) > flight_threshold) ||
+	   (ABS(sensors.motor2 - sensors.gear2) > flight_threshold) )
+	{
+	  PRINT_MSG("Test controller status: LANDED.");
+	  TEST_CONTROLLER_STATE(state)->in_flight = false;
+	}
     }
   else
     {
       stance_state_controller(sensors, torques);
+      if ( ( ABS(sensors.motor1 - sensors.gear1) < stance_threshold ) &&
+	   ( ABS(sensors.motor2 - sensors.gear2) < stance_threshold ) )
+	{
+	  PRINT_MSG("Test controller status: TAKEOFF.");
+	  TEST_CONTROLLER_STATE(state)->in_flight = true;
 
+	  double error_speed = REF_SPEED;// - vcm(1);     !!!!!!!!!!!!!!!!
+	  if(error_speed > 0.5)
+	    {
+	      FCP_SETPTTDA = -1.0 * PI / 180;
+	    }
+	  else if(error_speed < -.3)
+	    {
+	      FCP_SETPTTDA = FCP_SETPTTDA_NOM - 12.0 * error_speed * PI / 180;
+	    }
+	  else
+	    {
+	      FCP_SETPTTDA = ((error_speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
+	    }
+	}
     }
 
   // Send output torques to motors

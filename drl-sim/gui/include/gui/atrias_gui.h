@@ -56,6 +56,9 @@ Gtk::HScale *raibert_flight_p_gain_hscale;
 Gtk::HScale *raibert_flight_d_gain_hscale;
 Gtk::HScale *raibert_flight_spring_threshold_hscale;
 
+Gtk::HScale *grizzle_stance_threshold_hscale;
+Gtk::HScale *grizzle_flight_threshold_hscale;
+
 Gtk::DrawingArea *drawing_area;
 
 Gtk::ProgressBar *motor_torqueA_progress_bar;

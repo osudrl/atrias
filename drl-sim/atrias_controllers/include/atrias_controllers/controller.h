@@ -22,8 +22,8 @@
 
 // Debugging print statements.
 
-//#define DEBUG_CONTROLLERS
-#undef	DEBUG_CONTROLLERS
+#define DEBUG_CONTROLLERS
+//#undef	DEBUG_CONTROLLERS
 
 
 #ifdef DEBUG_CONTROLLERS
@@ -60,8 +60,8 @@
 #define LEG_POSITION_CONTROLLER 		4
 #define SINE_WAVE_CONTROLLER			5
 #define RAIBERT_CONTROLLER				6
-#define EQU_GAIT_CONTROLLER 7
-#define TEST_CONTROLLER 8
+#define TEST_CONTROLLER 7
+#define EQU_GAIT_CONTROLLER 8
 
 //======================================================//
 
@@ -205,7 +205,8 @@ typedef struct
 
 typedef struct
 {
-  // Nothing
+  double stance_threshold;
+  double flight_threshold;
 } TestControllerData;
 
 typedef struct
