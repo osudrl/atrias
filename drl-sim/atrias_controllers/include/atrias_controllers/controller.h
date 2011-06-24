@@ -1,17 +1,20 @@
 // Devin Koepl
 
+
 #ifndef FUNCS_H_CONTROLLER
 #define FUNCS_H_CONTROLLER
 
 #include <drl_library/drl_math.h>
 
+
 #ifdef COMPILE_FOR_RTAI
-#include <linux/types.h>
-#include <rtai_math.h>
+ #include <linux/types.h>
+ #include <rtai_math.h>
 #else
-#include <stdint.h>
-#include <math.h>
+ #include <stdint.h>
+ #include <math.h>
 #endif
+
 
 #define SIZE_OF_CONTROLLER_DATA 		100
 #define SIZE_OF_CONTROLLER_STATE_DATA	100
@@ -23,8 +26,10 @@
 //#define DEBUG_CONTROLLERS
 #undef	DEBUG_CONTROLLERS
 
+
 #ifdef DEBUG_CONTROLLERS
-	#ifdef COMPILE_FOR_RTAI
+
+#ifdef COMPILE_FOR_RTAI
 		//#include <rtai_sem.h>
 		#define PRINT_MSG	rt_printk
 		#define PRINT_WARN	rt_printk
@@ -34,14 +39,11 @@
 		#include <ros/ros.h>
 		#define PRINT_MSG	ROS_INFO
 		#define PRINT_WARN	ROS_WARN
-	#endif
-#else
-	#define PRINT_MSG	//printf
-	#define PRINT_WARN  //printf
 #endif
+
 #else
-#define PRINT_MSG(X) //printf(X)
-#define PRINT_WARN(X) //printf(X)
+	#define PRINT_MSG //printf
+	#define PRINT_WARN //printf
 #endif
 
 // Temporary for testing in uspace.
@@ -61,14 +63,15 @@
 #define LEG_POSITION_CONTROLLER 		4
 #define SINE_WAVE_CONTROLLER			5
 #define RAIBERT_CONTROLLER				6
-#define EQU_GAIT_CONTROLLER				7
+#define EQU_GAIT_CONTROLLER 7
+#define TEST_CONTROLLER 8
 
 //======================================================//
 
 // If the controller commands both motors to have a torque below this value, assume that no controller is present,
 // and command a small torque to keep the robot off of its hardstops.
 #define MIN_TRQ_THRESH					1E-9
- 
+
 //======================================================//
 
 // General control structs.
@@ -99,12 +102,12 @@ typedef struct
 typedef struct
 {
 	float			motor_torqueA;
-	float			motor_torqueB;	
+	float			motor_torqueB;
 } ControllerOutput;
 
 // This struct is where the controller can keep personal information.
-typedef struct 
-{	
+typedef struct
+{
 	unsigned char 	state;
 	unsigned char 	controller_loaded;
 
