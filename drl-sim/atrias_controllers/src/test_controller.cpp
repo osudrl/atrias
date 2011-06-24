@@ -9,6 +9,7 @@
 #define g 9.81
 #define MAX_TORQUE 15.0
 
+int counter = 0;
 double FCP_SETPTLS = 0.7854;
 const double FCP_KPLS = 400.0;
 const double FCP_KDLS = 50.4077;
@@ -59,6 +60,7 @@ const double ellycmT = 0.0;
 const double mBatteryPack = 6.7;
 const double ellzBatteryBack = -0.09;
 const double ellzcmT = ellzcmTa -2*ellzBatteryBack *mBatteryPack/(mT);
+const double REF_SPEED = 1.3;
 const int STANCE_CONTROLLER = 2;
 
 struct TorqueOutputs
@@ -124,47 +126,53 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
   //positions.dY = input->horizontal_velocity;
   positions.dZ = input->vertical_velocity;
 
+  double spring_deflectionA = input->motor_angleA - input->leg_angleA;
+  double spring_deflectionB = input->motor_angleB - input->leg_angleB;
+
+  if ( (spring_deflectionA > FLIGHT_THRESHOLD) ||
+       (spring_deflectionB > FLIGHT_THRESHOLD) )
+    {
+      PRINT_MSG("Test controller status: LANDED. Update iterations: %d", counter);
+      counter = 0;
+      TEST_CONTROLLER_STATE(state)->in_flight = false;
+    }
+  else if ( ( abs(spring_deflectionA) < STANCE_THRESHOLD ) &&
+	    ( abs(spring_deflectionB) < STANCE_THRESHOLD ) )
+    {
+      PRINT_MSG("Test controller status: TAKEOFF. Update iterations: %d", counter);
+      counter = 0;
+      TEST_CONTROLLER_STATE(state)->in_flight = true;
+
+      double error_speed = REF_SPEED;// - vcm(1);
+      if(error_speed > 0.5)
+	{
+	  FCP_SETPTTDA = -1.0 * PI / 180;
+	}
+      else if(error_speed < -.3)
+	{
+	  FCP_SETPTTDA = FCP_SETPTTDA_NOM - 12.0 * error_speed * PI / 180;
+	}
+      else
+	{
+	  FCP_SETPTTDA = ((speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
+	}
+    }
+  else
+    {
+      counter += 1;
+    }
+
   // Choose a controller based on state, then check to see if we need to change state
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
       flight_state_controller(angles, positions, outputs);
-      if ( (abs(input->motor_angleA - input->leg_angleA) > FLIGHT_THRESHOLD) ||
-	   (abs(input->motor_angleB - input->leg_angleB) > FLIGHT_THRESHOLD) )
-	{
-	  PRINT_MSG("Test controller status: LANDED");
-	  TEST_CONTROLLER_STATE(state)->in_flight = false;
-	}
+
     }
   else
     {
       stance_state_controller(angles, outputs);
-      if ( ( abs(spring_defA) < STANCE_THRESHOLD ) &&
-	   ( abs(spring_defB) < STANCE_THRESHOLD ) )
-	{
-	  PRINT_MSG("Test controller status: TAKEOFF");
-	  RAIBERT_CONTROLLER_STATE(state)->in_flight = true;
-	}
+
     }
-
-  /*
-  // qT=q_minus(1);
-
-  double ref_speed = 1.3;
-  double error_speed = ref_speed - vcm(1);
-  if(error_speed > 0.5)
-  {
-  FCP_SETPTTDA = -1.0 * PI / 180;
-  }
-  else if(error_speed < -.3)
-  {
-  FCP_SETPTTDA = FCP_SETPTTDA_NOM - 12.0 * error_speed * PI / 180;
-  }
-  else
-  {
-  FCP_SETPTTDA = ((speed < 0)? -1 : 1) * FCP_SETPTTDA_NOM;
-  }
-  end
-  */
 
   // Send output torques to motors
   output->motor_torqueA = outputs.torqueA;

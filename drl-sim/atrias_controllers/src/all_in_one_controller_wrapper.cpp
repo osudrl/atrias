@@ -42,7 +42,7 @@ AllInOneControllerWrapper::~AllInOneControllerWrapper()
 	//control_switcher_state_machine(controller_input, controller_output, controller_state, controller_data);
 
 	delete this->bodyNameP;
-  delete this->motorANameP;
+	delete this->motorANameP;
 	delete this->motorBNameP;
 	delete this->legANameP;
 	delete this->legBNameP;
