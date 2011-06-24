@@ -300,7 +300,11 @@ void log_chkbox_toggled( void )
 void restart_robot( void )
 {
 	if ( atrias_srv.request.command == CMD_DISABLE )
+	{
 		atrias_srv.request.command = CMD_RESTART;
+		atrias_srv.request.controller_requested = NO_CONTROLLER;
+		controller_notebook->set_current_page( NO_CONTROLLER );
+	}
 }
 
 void enable_motors( void )
@@ -398,6 +402,9 @@ bool poke_controller( void )
     case TEST_CONTROLLER:
       break;
     }
+
+	if ( atrias_client.call( atrias_srv ) )
+		draw_leg();
 
 	if ( atrias_srv.request.command == CMD_RESTART )
 		atrias_srv.request.command = CMD_DISABLE;
