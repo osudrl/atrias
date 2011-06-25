@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 	raibert_flight_d_gain_hscale->set_range(0., 50.);
 	raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
-	grizzle_flight_threshold_hscale->set_range(0.0, 1.0);
+	grizzle_flight_threshold_hscale->set_range(-2.0, 2.0);
 	grizzle_stance_threshold_hscale->set_range(-2.0, 2.0);
 	grizzle_motor_gain_hscale->set_range(-10.0, 10.0);
 
@@ -375,7 +375,8 @@ bool poke_controller( void )
 	case TEST_CONTROLLER:
 	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
 	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
-	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->motor_gain = grizzle_motor_gain_hscale->get_value();
+	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->flight_motor_gain = grizzle_motor_gain_hscale->get_value();
+	  ((TestControllerData *)(&(atrias_srv.request.control_data.elems)))->stance_motor_gain = grizzle_motor_gain_hscale->get_value();
 	}
 
 	// Check to see if we are supposed to be logging data.
