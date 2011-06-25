@@ -17,7 +17,7 @@ double FCP_SETPTLS = 0.7854;
 
 #define PI 3.14159265
 #define g 9.81
-#define MAX_TORQUE 15.0
+#define MAX_TORQUE 1E9
 #define FCP_KPLS 400.0
 #define FCP_KDLS 50.4077
 #define FCP_KPTDA 750.0
@@ -104,18 +104,20 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
       flight_state_controller(input, output, state, data);
-      if (input->motor_angleA - input->leg_angleA > TEST_CONTROLLER_DATA(data)->flight_threshold || input->motor_angleB - input->leg_angleB > TEST_CONTROLLER_DATA(data)->flight_threshold)
+     // if (input->motor_angleA - input->leg_angleA > TEST_CONTROLLER_DATA(data)->flight_threshold || input->motor_angleB - input->leg_angleB > TEST_CONTROLLER_DATA(data)->flight_threshold)
+	if ( input->toe_switch )	
 	{
-	  PRINT_MSG("Test controller status: LANDED.");
+	  //PRINT_MSG("Test controller status: LANDED.");
 	  TEST_CONTROLLER_STATE(state)->in_flight = false;
 	}
     }
   else
     {
       stance_state_controller(input, output, state, data);
-      if (input->motor_angleA - input->leg_angleA < TEST_CONTROLLER_DATA(data)->stance_threshold || input->motor_angleB - input->leg_angleB < TEST_CONTROLLER_DATA(data)->stance_threshold)
+      //if (input->motor_angleA - input->leg_angleA < TEST_CONTROLLER_DATA(data)->stance_threshold || input->motor_angleB - input->leg_angleB < TEST_CONTROLLER_DATA(data)->stance_threshold)
+	if ( !input->toe_switch )	
 	{
-	  PRINT_MSG("Test controller status: TAKEOFF.");
+	  //PRINT_MSG("Test controller status: TAKEOFF.");
 	  TEST_CONTROLLER_STATE(state)->in_flight = true;
 
 	  /*

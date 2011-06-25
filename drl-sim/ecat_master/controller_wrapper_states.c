@@ -429,8 +429,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	// Clamp the motor torques.
 	//c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
 	//c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
-	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -3., 3.);
-	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -3., 3.);
+	c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -30., 30.);
+	c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -30., 30.);
 	//c_out->motor_torqueA = 0.;
 	//c_out->motor_torqueB = 0.;			
 
