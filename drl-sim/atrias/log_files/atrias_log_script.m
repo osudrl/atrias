@@ -19,30 +19,71 @@ leg_angB = data.data(:, 5);
 mtr_velA = data.data(:, 7);
 mtr_velB = data.data(:, 8);
 
-mtr_trqA = data.data(:, 14);
-mtr_trqB = data.data(:, 15);
+height   = data.data(:, 11);
+
+mtr_curA = data.data(:, 14);
+mtr_curB = data.data(:, 15);
+
+toe_switch = data.data(:, 18);
+
+command = data.data(:, 19);
+
+defA = abs( mtr_angA - leg_angA );
+defB = abs( mtr_angB - leg_angB );
 
 ind = ( 1 : size( t, 1 ) )';
 % ind = ( 3.2e5 : 3.35e5 )';
 
+SUBPLOTS = 4;
+figure( 'name', 'ATRIAS Experiment' );
+% Toe Switch
+subplot( SUBPLOTS, 1, 1 );
+imagesc( t, 0, toe_switch' );
+title( 'Toe Switch' );
+xlabel( 'Time (s)' );
+axis([0 t(end) -0.5, 0.5] );
+% CoM Height
+subplot( SUBPLOTS, 1, 2);
+plot( t, height, 'linewidth', 3 );
+title( 'CoM Height' );
+xlabel( 'Time (s)' );
+ylabel( 'Height (m)' );
+axis([0 t(end) 0 max(height)]);
+% Motor Torques
+subplot( SUBPLOTS, 1, 3);
+plot( t, [mtr_curA, mtr_curB], 'linewidth', 3  );
+title( 'Motor Current' );
+xlabel( 'Time (s)' );
+ylabel( 'Current (A)' );
+legend( 'A', 'B' );
+axis([0 t(end) min([mtr_curA; mtr_curB]) max([mtr_curA; mtr_curB])]);
+% Spring Deflections
+subplot( SUBPLOTS, 1, 4);
+plot( t, [defA, defB] * 180 / pi, 'linewidth', 3  );
+title( 'Spring Deflection' );
+xlabel( 'Time (s)' );
+ylabel( 'Deflection (deg)' );
+legend( 'A', 'B' );
+axis( [0 t(end) 0 max( [defA; defB] * 180/pi) ] );
+
 % figure( 'name', 'Motor Angles' );
-plot( t, [mtr_trqA, mtr_trqB], 'linewidth', 3 );
+% plot( t, [mtr_trqA, mtr_trqB], 'linewidth', 3 );
 % plot( t, [mtr_angA, mtr_angB, leg_angA, leg_angB], 'linewidth', 3 );
 % plot( ind(1) : ind(end), [mtr_trqA(ind), abs( mtr_angA(ind) - leg_angA(ind) ),...
 %     mtr_trqB(ind), abs( mtr_angB(ind) - leg_angB(ind) )],...
 %     'linewidth', 3 );
-xlabel( 'Time (s)' );
+% xlabel( 'Time (s)' );
 % ylabel( 'Angle (rad)' );
-ylabel( 'Torque (Nm)' );
+% ylabel( 'Torque (Nm)' );
 % ylim( [ -2 * pi, 2 * pi ] );
 % legend( 'Motor Torque A', 'Spring Deflection A', 'Motor Torque B', 'Spring Deflection B' );
-legend( 'Motor Torque A', 'Motor Torque B' );
+% legend( 'Motor Torque A', 'Motor Torque B' );
 
 % tauA = Kt * mean( abs( mtr_trqA(ind) ) );
 % tauB = Kt * mean( abs( mtr_trqB(ind) ) );
 
-defA = mean( abs( mtr_angA(ind) - leg_angA(ind)) );
-defB = mean( abs( mtr_angB(ind) - leg_angB(ind)) );
+% defA = mean( abs( mtr_angA(ind) - leg_angA(ind)) );
+% defB = mean( abs( mtr_angB(ind) - leg_angB(ind)) );
 
 % fprintf( '\n\n\n\n' );
 % 

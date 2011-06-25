@@ -138,9 +138,9 @@ int main(int argc, char **argv)
 	raibert_flight_d_gain_hscale->set_range(0., 50.);
 	raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
-	grizzle_flight_threshold_hscale->set_range(-2.0, 2.0);
-	grizzle_stance_threshold_hscale->set_range(-2.0, 2.0);
-	grizzle_motor_gain_hscale->set_range(-10.0, 10.0);
+	grizzle_flight_threshold_hscale->set_range( -2.0, 2.0 );
+	grizzle_stance_threshold_hscale->set_range(-2.0, 2.0 );
+	grizzle_motor_gain_hscale->set_range( 0., 1000. );
 
 	motor_torqueA_progress_bar->set_fraction(0.);
 	motor_torqueB_progress_bar->set_fraction(0.);
