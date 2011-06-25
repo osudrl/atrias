@@ -91,8 +91,8 @@ typedef struct
   float dZ;
 } SensorInputs;
 
-void flight_state_controller(ControllerState *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
-void stance_state_controller(ControllerState *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
+void flight_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
+void stance_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
 void abs_max(float *num, float max);
 
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
@@ -125,7 +125,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
 
   if(TEST_CONTROLLER_STATE(state)->in_flight)
     {
-      flight_state_controller(input, &output, state, data);
+      flight_state_controller(input, output, state, data);
       if (input->motor_angleA - input->leg_angleA > TEST_CONTROLLER_DATA(data)->flight_threshold || input->motor_angleB - input->leg_angleB > TEST_CONTROLLER_DATA(data)->flight_threshold)
 	{
 	  PRINT_MSG("Test controller status: LANDED.");
@@ -134,7 +134,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
     }
   else
     {
-      stance_state_controller(input, &output, state, data);
+      stance_state_controller(input, output, state, data);
       if (input->motor_angleA - input->leg_angleA < TEST_CONTROLLER_DATA(data)->stance_threshold || input->motor_angleB - input->leg_angleB < TEST_CONTROLLER_DATA(data)->stance_threshold)
 	{
 	  PRINT_MSG("Test controller status: TAKEOFF.");
@@ -205,8 +205,8 @@ void flight_state_controller(ControllerInput *input, ControllerOutput *output, C
   float des_mtr_angA = PI/2. - PI + acos( 0.9239 );
   float des_mtr_angB = PI/2. + PI - acos( 0.9239 ); 
 
-  output->motor_torqueA = TEST_CONTROLLER_DATA(data)->flight_motor_gain * abs_max(input->motor_gain * (des_mtr_angA - input->motor_angleA) - 6. * input->motor_velocityA);
-  output->motor_torqueB = TEST_CONTROLLER_DATA(data)->flight_motor_gain * abs_max(input->motor_gain * (des_mtr_angB - input->motor_angleB) - 6. * input->motor_velocityB);
+  output->motor_torqueA = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angA - input->motor_angleA) - 6. * input->motor_velocityA);
+  output->motor_torqueB = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angB - input->motor_angleB) - 6. * input->motor_velocityB);
 }
 
 void stance_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
