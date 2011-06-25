@@ -30,66 +30,44 @@ double FCP_SETPTLS = 0.7854;
 #define SCP_KDTDA 26.6597
 #define SCP_SETPTTDA -0.0175
 #define SCP_EDES 273.0
-#define ALPHA 3.0;
-#define L1 0.45;
-#define L2 0.5;
-#define L3 0.5;
-#define L4 0.5;
-#define m1 0.66149;
-#define m2 0.68292;
-#define m3 0.19126;
-#define m4 0.42493;
-#define mT 44.0 / 2.0;
-#define R1 20.;
-#define R2 20.;
-#define K1 1200.0 / 0.5;
-#define K2 1200.0 / 0.5;
-#define Jcm1 0.01910;
-#define Jcm2 0.02116;
-#define Jcm3 0.00633;
-#define Jcm4 0.01243;
-#define JcmT 1.37;
-#define Jgear1 0.0025;
-#define Jgear2 0.0025;
-#define Jrotor1 0.00286;
-#define Jrotor2 0.00286;
-#define ellzcm1 0.16957;
-#define ellzcm2 0.18626;
-#define ellzcm3 0.24997;
-#define ellzcm4 0.23832;
-#define ellycm1 0.04566;
-#define ellycm2 -0.02624;
-#define ellycm3 0.0;
-#define ellycm4 0.0;
-#define ellzcmTa  0.01;
-#define ellycmT 0.0;
-#define mBatteryPack 6.7;
-#define ellzBatteryBack -0.09;
-#define FCP_SETPTLS 0.01 - 2.* -0.09 * 6.7 / 44.0 / 2.0;
-#define REF_SPEED 1.3;
-#define STANCE_CONTROLLER 2;
-
-typedef struct
-{
-  float torqueA;
-  float torqueB;
-} TorqueOutputs;
-
-typedef struct
-{
-  float torso;
-  float motorA;
-  float motorB;
-  float legA;
-  float legB;
-  float dtorso;
-  float dmotorA;
-  float dmotorB;
-  float dlegA;
-  float dlegB;
-  float Z;
-  float dZ;
-} SensorInputs;
+#define ALPHA 3.0
+#define L1 0.45
+#define L2 0.5
+#define L3 0.5
+#define L4 0.5
+#define m1 0.66149
+#define m2 0.68292
+#define m3 0.19126
+#define m4 0.42493
+#define mT 44.0 / 2.0
+#define R1 20.0
+#define R2 20.0
+#define K1 1200.0 / 0.5
+#define K2 1200.0 / 0.5
+#define Jcm1 0.01910
+#define Jcm2 0.02116
+#define Jcm3 0.00633
+#define Jcm4 0.01243
+#define JcmT 1.37
+#define Jgear1 0.0025
+#define Jgear2 0.0025
+#define Jrotor1 0.00286
+#define Jrotor2 0.00286
+#define ellzcm1 0.16957
+#define ellzcm2 0.18626
+#define ellzcm3 0.24997
+#define ellzcm4 0.23832
+#define ellycm1 0.04566
+#define ellycm2 -0.02624
+#define ellycm3 0.0
+#define ellycm4 0.0
+#define ellzcmTa  0.01
+#define ellycmT 0.0
+#define mBatteryPack 6.7
+#define ellzBatteryBack -0.09
+#define FCP_SETPTLS 0.01 - 2.0 * -0.09 * 6.7 / 44.0 / 2.0
+#define REF_SPEED 1.3
+#define STANCE_CONTROLLER 2
 
 void flight_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
 void stance_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
@@ -243,7 +221,8 @@ void stance_state_controller(ControllerInput *input, ControllerOutput *output, C
   MapleGenVar5 = MapleGenVar3+m1*sin(qT+q1)*L4*dq1*sin(qT+q2)*L2*dq2+m2*dqT*cos(qT+q1)*L4*cos(qT+q2)*L2*dq2-m2*dqT*dqT*cos(qT+q1)*L4*sin(qT+q2)*ellycm2-m2*dqT*sin(qT+q2)*ellzcm2*sin(qT+q1)*L4*dq1+m2*sin(qT+q1)*L4*dq1*dq2*cos(qT+q2)*ellycm2+m2*dqT*cos(qT+q2)*L2*cos(qT+q1)*L4*dq1;
   MapleGenVar4 = MapleGenVar5-m2*sin(qT+q1)*L4*dq1*dq2*sin(qT+q2)*ellzcm2-m2*dqT*cos(qT+q2)*ellzcm2*cos(qT+q1)*L4*dq1-m2*dqT*dqT*cos(qT+q1)*L4*cos(qT+q2)*ellzcm2+m3*dqT*dqT*sin(qT+q1)*L4*cos(qT+q2)*ellycm3+m3*dqT*sin(qT+q1)*L4*sin(qT+q2)*L2*dq2+m3*dqT*sin(qT+q2)*L2*sin(qT+q1)*L4*dq1+m3*sin(qT+q1)*L4*dq1*sin(qT+q2)*L2*dq2;
   MapleGenVar5 = MapleGenVar4-m3*dqT*sin(qT+q2)*L2*dq1*sin(qT+q1)*L1-m3*dqT*dqT*sin(qT+q1)*L4*sin(qT+q2)*ellzcm3-m3*dqT*dqT*cos(qT+q2)*L2*cos(qT+q1)*L1+m3*dqT*sin(qT+q1)*L4*dq2*cos(qT+q2)*ellycm3-m3*dqT*sin(qT+q1)*L4*dq2*sin(qT+q2)*ellzcm3-m3*dqT*sin(qT+q1)*L1*sin(qT+q2)*L2*dq2;
-  float KE = MapleGenVar5+m3*dqT*cos(qT+q2)*ellycm3*sin(qT+q1)*L4*dq1-m3*dqT*sin(qT+q2)*ellzcm3*sin(qT+q1)*L4*dq1+m3*sin(qT+q1)*L4*dq1*dq2*cos(qT+q2)*ellycm3-m3*sin(qT+q1)*L4*dq1*dq2*sin(qT+q2)*ellzcm3-m3*dq1*sin(qT+q1)*L1*sin(qT+q2)*L2*dq2+m3*dqT*cos(qT+q1)*L4*cos(qT+q2)*L2*dq2+m3*cos(qT+q1)*L4*dq1*cos(qT+q2)*L2*dq2-2.0*m3*dqT*L4*dq1*L1;
+  float KE;
+  KE = MapleGenVar5+m3*dqT*cos(qT+q2)*ellycm3*sin(qT+q1)*L4*dq1-m3*dqT*sin(qT+q2)*ellzcm3*sin(qT+q1)*L4*dq1+m3*sin(qT+q1)*L4*dq1*dq2*cos(qT+q2)*ellycm3-m3*sin(qT+q1)*L4*dq1*dq2*sin(qT+q2)*ellzcm3-m3*dq1*sin(qT+q1)*L1*sin(qT+q2)*L2*dq2+m3*dqT*cos(qT+q1)*L4*cos(qT+q2)*L2*dq2+m3*cos(qT+q1)*L4*dq1*cos(qT+q2)*L2*dq2-2.0*m3*dqT*L4*dq1*L1;
   float Etot = PE + KE;
   float uLSpower, uLSspring, uLS;
   float y1 = SCP_SETPTLS - qLS;
