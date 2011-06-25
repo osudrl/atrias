@@ -61,7 +61,7 @@ double FCP_SETPTLS = 0.7854;
 #define ellycm2 -0.02624
 #define ellycm3 0.0
 #define ellycm4 0.0
-#define ellzcmTa  0.01
+#define ellzcmT 0.01
 #define ellycmT 0.0
 #define mBatteryPack 6.7
 #define ellzBatteryBack -0.09
@@ -71,7 +71,7 @@ double FCP_SETPTLS = 0.7854;
 
 void flight_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
 void stance_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data);
-void abs_max(float *num, float max);
+float abs_max(float number, float max);
 
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
@@ -183,8 +183,8 @@ void flight_state_controller(ControllerInput *input, ControllerOutput *output, C
   float des_mtr_angA = PI/2. - PI + acos( 0.9239 );
   float des_mtr_angB = PI/2. + PI - acos( 0.9239 ); 
 
-  output->motor_torqueA = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angA - input->motor_angleA) - 6. * input->motor_velocityA);
-  output->motor_torqueB = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angB - input->motor_angleB) - 6. * input->motor_velocityB);
+  output->motor_torqueA = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angA - input->motor_angleA) - 6. * input->motor_velocityA, MAX_TORQUE);
+  output->motor_torqueB = abs_max(TEST_CONTROLLER_DATA(data)->flight_motor_gain * (des_mtr_angB - input->motor_angleB) - 6. * input->motor_velocityB, MAX_TORQUE);
 }
 
 void stance_state_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
@@ -267,14 +267,18 @@ void stance_state_controller(ControllerInput *input, ControllerOutput *output, C
   float dy2 = 0 - input->body_ang_vel;
   float uTorso = SCP_KPTDA * y2 + SCP_KDTDA * dy2;
   // Cap torques at +- 15
-  output->motor_torqueA = TEST_CONTROLLER_DATA(data)->stance_motor_gain * abs_max(-uTorso - (uLS / 2), MAX_TORQUE);
-  output->motor_torqueB = TEST_CONTROLLER_DATA(data)->stance_motor_gain * abs_max(-uTorso + (uLS / 2), MAX_TORQUE);
+  output->motor_torqueA = abs_max(TEST_CONTROLLER_DATA(data)->stance_motor_gain * (-uTorso - (uLS / 2)), MAX_TORQUE);
+  output->motor_torqueB = abs_max(TEST_CONTROLLER_DATA(data)->stance_motor_gain * (-uTorso + (uLS / 2)), MAX_TORQUE);
 }
 
-void abs_max(float *number, float max)
+float abs_max(float number, float max)
 {
   if(ABS(number) > max)
     {
-      number = (number > 0)? max : -max;
+      return (number > 0)? max : -max;
+    }
+  else
+    {
+      return number;
     }
 }
