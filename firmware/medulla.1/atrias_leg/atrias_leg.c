@@ -527,13 +527,13 @@ int main(void) {
 		
 		// Check if the BiSS read was valid
 		if (tmp8 == 0x00) {
-			if ( biss[3] > 0x22 ) {										// the number is too big
+			if ( biss[3] > 0x22 ) {												// the number is too big
 				enc_cnt+=10;
 			}
-			else if ( biss[3] < 0x7 ) {									// the number is too small
+			else if ( biss[3] < 0x7 ) {											// the number is too small
 				enc_cnt+=10;
 			}
-			else if ((status & BISS_ERROR_bm) == 0) {					// freak out if the BiSS data is bad
+			else if ((status & BISS_ERROR_bm) == 0) {							// freak out if the BiSS data is bad
 				enc_cnt+=10;
 			}
 			else {
