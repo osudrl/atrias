@@ -1,4 +1,5 @@
 // Devin Koepl
+// Colan Dray
 
 #include <stdlib.h>
 #include <gtkmm.h>
@@ -13,17 +14,21 @@
 // GUI objects
 Gtk::Window *window;
 
-Gtk::HScale *x_position_hscale;
-Gtk::HScale *y_position_hscale;
-Gtk::HScale *z_position_hscale;
+Gtk::SpinButton *xPosSpin;
+Gtk::SpinButton *yPosSpin;
+Gtk::SpinButton *zPosSpin;
 
-Gtk::CheckButton *x_translation_checkbutton;
-Gtk::CheckButton *y_translation_checkbutton;
-Gtk::CheckButton *z_translation_checkbutton;
+Gtk::CheckButton *xPosCheck;
+Gtk::CheckButton *yPosCheck;
+Gtk::CheckButton *zPosCheck;
 
-Gtk::CheckButton *x_rotation_checkbutton;
-Gtk::CheckButton *y_rotation_checkbutton;
-Gtk::CheckButton *z_rotation_checkbutton;
+Gtk::SpinButton *xRotSpin;
+Gtk::SpinButton *yRotSpin;
+Gtk::SpinButton *zRotSpin;
+
+Gtk::CheckButton *xRotCheck;
+Gtk::CheckButton *yRotCheck;
+Gtk::CheckButton *zRotCheck;
 
 Gtk::ToggleButton *pause_play_button;
 Gtk::ToggleButton *hold_release_button;
@@ -37,4 +42,4 @@ geometry_msgs::Pose desired_pose;
 void pause_play();
 void hold_release();
 void get_position();
-void desired_pose_changed();
+void update_constraints();
