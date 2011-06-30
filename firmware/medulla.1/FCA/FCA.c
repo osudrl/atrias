@@ -284,34 +284,26 @@ int main(void) {
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 
 
-	LimitDis();
+	limitDis();
 	
 	////////////////////////////////////////////////////////////////////////////
 	// Set up the transmission tracker
-	tmp8 = readSSI_bang(ssi);
-	while ((tmp8 == 0xFF) || (ssi[1] > 8191) || (ssi[1] == 0)) {
-		tmp8 = readSSI_bang(ssi);
-	}
-	out.TRANS_ANGLE = ssi[0];
+//	readSSI_bang(ssi);
+//	while ((tmp8 == 0xFF) || (ssi[0] > 8191) || (ssi[0] == 0)) {
+//		readSSI_bang(ssi);
+//	}
+//	out.enc16[0] = ssi[0];
 
 
+//	tran_off = (uint16_t)((out.LEG_SEG_ANGLE-LEG_MIN)*(((float)(TRAN_MAX-TRAN_MIN))/((float)(LEG_MAX-LEG_MIN)))+TRAN_MIN);
 
-	tran_off = (uint16_t)((out.LEG_SEG_ANGLE-LEG_MIN)*(((float)(TRAN_MAX-TRAN_MIN))/((float)(LEG_MAX-LEG_MIN)))+TRAN_MIN);
+//	tran_off = (tran_off / MAX_13BIT) * MAX_13BIT;
 
-	tran_off = (tran_off / MAX_13BIT) * MAX_13BIT;
-
-	#ifdef DEBUG
-	printf("%u	%u	%u\n", out.TRANS_ANGLE, tran_off, out.TRANS_ANGLE+tran_off);
-	start_off = tran_off;
-	start_ssi = ssi[1];
-	start_biss = out.LEG_SEG_ANGLE;
-	#endif
 
 	// Keep track of the last counts for sensors that could rollover.
-	last_tran = out.TRANS_ANGLE;
+//	last_tran = out.TRANS_ANGLE;
 	
 
-	
 
 	while(1) {
 
@@ -338,9 +330,9 @@ int main(void) {
 					printf("Out:\n");
 					printf("out.status:			0x%.2X\n", out.status);
 					printf("out.timestep:			%u\n", out.timestep);
-					printf("out.TRANS_ANGLE:		%u\n", out.TRANS_ANGLE);
-					printf("out.LEG_SEG_ANGLE:		%lu\n", out.LEG_SEG_ANGLE);
-					printf("out.ROTOR_ANGLE:		%u\n", out.ROTOR_ANGLE);
+					printf("out.enc16[0]:		%u\n", out.enc16[0]);
+					printf("out.enc16[1]:		%u\n", out.enc16[1]);
+					printf("out.enc16[2]:		%u\n", out.enc16[2]);
 					break;
 
 
@@ -370,10 +362,6 @@ int main(void) {
 					printf("PWM_OPEN %u\n",PWM_OPEN);
 					break;
 					
-				case 'n':
-					printf("o %u,	s %u,	b %lu\n", start_off, start_ssi, start_biss);
-					break;
-
 					
 				case 'l':
 					printf("lim: 0x%.2X\n", (uint8_t)(~PORT_LIMIT.IN) );
@@ -458,34 +446,34 @@ int main(void) {
 
 		////////////////////////////////////////////////////////////////////////
 		// Update Encoder values and sensors
-		tmp8 = readSSI_spi(ssi);
+		readSSI_bang(ssi);
 		
 		if (tmp8 == 0xFF) {
 //			enc_cnt+=2;
 		}
-		else if (ssi[TRANS_IDX] > 8191) {												// The ssi value is invalid (>8191)
+		else if (ssi[0] > 8191) {												// The ssi value is invalid (>8191)
 			enc_cnt+=2;
 		}
 		else {
-			out.TRANS_ANGLE = ssi[TRANS_IDX];
+			out.enc16[0] = ssi[0];
 		}
 		
 		// Transmission A rollovers.
-		if ( (out.TRANS_ANGLE > last_tran) && (out.TRANS_ANGLE - last_tran > ROLLOVER_THRESHOLD) ) {
-			tran_off -= MAX_13BIT;
-		}
-		else if ( (last_tran > out.TRANS_ANGLE) && (last_tran - out.TRANS_ANGLE > ROLLOVER_THRESHOLD) ) {
-			tran_off += MAX_13BIT;
-		}
+//		if ( (out.TRANS_ANGLE > last_tran) && (out.TRANS_ANGLE - last_tran > ROLLOVER_THRESHOLD) ) {
+//			tran_off -= MAX_13BIT;
+//		}
+//		else if ( (last_tran > out.TRANS_ANGLE) && (last_tran - out.TRANS_ANGLE > ROLLOVER_THRESHOLD) ) {
+//			tran_off += MAX_13BIT;
+//		}
 
 		// Keep track of the last counts for sensors that could rollover.
-		last_tran = out.TRANS_ANGLE;
+//		last_tran = out.TRANS_ANGLE;
 		
-		tran_pos = out.TRANS_ANGLE+tran_off;
+//		tran_pos = out.TRANS_ANGLE+tran_off;
 		
 		
 
-		out.ROTOR_ANGLE			= TC_ENC.CNT;
+		out.enc16[3]			= TC_ENC.CNT;
 
 		// update timestamp
 		out.timestep			= TC_STEP.CNT;
@@ -502,10 +490,10 @@ int main(void) {
 				led_solid_red();
 	
 //XXX			
-//				if ((al_status != AL_STATUS_OP_bm)) {
-//					global_flags.state = STATE_ERROR;
-//				}
-//				else {
+				if ((al_status != AL_STATUS_OP_bm)) {
+					global_flags.state = STATE_ERROR;
+				}
+				else {
 
 					global_flags.state = STATE_RUN;//XXX STATE_START
 					
@@ -515,7 +503,7 @@ int main(void) {
 					enc_cnt					= 0;
 					
 					#ifdef ENABLE_PWM
-					LimitDis();
+					limitDis();
 					tmp16 = tran_pos;
 					setPWM(PWM_OPEN);											// apply a small torque
 					PWMen();
@@ -526,7 +514,7 @@ int main(void) {
 					#ifdef DEBUG
 					printf("START\n");
 					#endif
-//				}
+				}
 					
 				break;
 				
@@ -548,7 +536,7 @@ int main(void) {
 					// The encoder should get smaller after the motor moves with positve torque.
 					if ((global_flags.limits != 0) || (tran_pos>=tmp16)) {		// If we hit a limit switch or the encoder didn't move right...
 						PWMdis();
-						LimitDis();
+						limitDis();
 						printf("\t\t\t\tMOTOR MOVED BAD!!!  %u\n",tmp16);
 						printf("\t\t\t\tLimits: 0x%.2X\n",global_flags.limits);
 	
@@ -594,6 +582,7 @@ int main(void) {
 
 
 				// check to see if we're in the dange zone
+/*
 				if ( tran_pos > DANGER_UPPER ) {
 					global_flags.state = STATE_DANGER;
 					out.status		|= STATUS_DANGER;
@@ -627,6 +616,8 @@ int main(void) {
 
 				}
 				else if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
+*/
+				if ((al_status == AL_STATUS_OP_bm)) {								// Stuff to do when eCAT is in OP mode
 					
 					// Deal with commands from the master
 					if ( ( in.command & (~CMD_RUN_TOGGLE_bm)) == CMD_RUN ) {
@@ -644,10 +635,10 @@ int main(void) {
 						#endif
 						
 						// Play with the LED colors
-						tmp16 = (((uint16_t*)&out.LEG_SEG_ANGLE)[1]);
+//						tmp16 = (((uint16_t*)&out.LEG_SEG_ANGLE)[1]);
 //						printf("%u\n",tmp16);
-						tmp16 = tmp16-LEG_MIN16;
-						tmp16 = tmp16*5 + TRAN_MIN;	// translate the leg angle into the same space as the transmission position
+//						tmp16 = tmp16-LEG_MIN16;
+//						tmp16 = tmp16*5 + TRAN_MIN;	// translate the leg angle into the same space as the transmission position
 //						tmp16 = ((int16_t)(tran_pos - tmp16)<0)?(tmp16-tran_pos):(tran_pos-tmp16);
 //						tmp16 = 0x0000;
 //						printf("\t%u\n",tmp16);
@@ -832,7 +823,7 @@ int main(void) {
 				PWMdis();
 				#endif
 				
-				LimitDis();
+				limitDis();
 				tc_Stop();
 				tc_VelStop();
 

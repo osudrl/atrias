@@ -29,6 +29,7 @@ void initSSI_spi() {
 
 
 }
+
 uint8_t readSSI_spi(uint16_t *data) {
 
 	uint8_t tmp1H = 0;
@@ -57,7 +58,6 @@ uint8_t readSSI_spi(uint16_t *data) {
 	while((SSI1_SPI.STATUS & SPI_IF_bm) == 0);
 
 	tmp1L = SSI1_SPI.DATA;
-
 
 
 	SSI1_SPI.CTRL &= ~SPI_ENABLE_bm;
