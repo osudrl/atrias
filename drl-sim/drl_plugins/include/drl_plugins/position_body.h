@@ -26,6 +26,7 @@
 #include <gazebo/Model.hh>
 #include <gazebo/Quatern.hh>
 #include <gazebo/Mass.hh>
+#include <gazebo/Vector3.hh>
 
 #include <ros/ros.h>
 
@@ -78,6 +79,10 @@ class PositionBody : public Controller
 	protected: virtual void InitChild();
 
 	protected: virtual void FiniChild();
+        
+        public: void SetPositionConstraints(Vector3 constraints);
+        
+        public: void SetRotationConstraints(Vector3 constraints);
 
 	/// \brief A pointer to the parent entity
 	private: Model *myParent;
@@ -94,7 +99,10 @@ class PositionBody : public Controller
 
 	private: bool 	hold_robot;
 	private: Pose3d desired_pose;
-
+        
+        private: Vector3 position_constraints;
+        private: Vector3 rotation_constraints;
+        
 	// GUI Interface
 	private: bool position_body_gui_callback(drl_plugins::position_body_srv::Request&, drl_plugins::position_body_srv::Response&);
 	private: ros::NodeHandle *nh;

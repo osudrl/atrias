@@ -60,17 +60,22 @@ int main(int argc, char **argv)
     gui->get_widget("hold_release_button", hold_release_button);
     gui->get_widget("get_position_button", get_position_button);
 
-    // Initialize GUI objects
+    // Adjust the spin buttons to set min and max, and other options
+    xPosSpin->set_range(-10,10);
+    yPosSpin->set_range(-10,10);
+    zPosSpin->set_range(-10,10);
 
-    /*
-      xPosSpin->
-      yPosSpin->
-      zPosSpin->
-      
-      xRotSpin->
-      yRotSpin->
-      zRotSpin->
-    */
+    xPosSpin->set_increments(1,4);
+    yPosSpin->set_increments(1,4);
+    zPosSpin->set_increments(1,4);
+
+    xRotSpin->set_range(-180,180);
+    yRotSpin->set_range(-180,180);
+    zRotSpin->set_range(-180,180);
+
+    xRotSpin->set_increments(5,30);
+    yRotSpin->set_increments(5,30);
+    zRotSpin->set_increments(5,30);
 
     // Connect buttons to functions.
     pause_play_button->signal_toggled().connect( sigc::ptr_fun(pause_play) );
@@ -78,14 +83,14 @@ int main(int argc, char **argv)
     hold_release_button->signal_clicked().connect( sigc::ptr_fun(update_constraints) );
     get_position_button->signal_clicked().connect( sigc::ptr_fun(get_position) );
 
-    /* It's not 'signal_toggled()' for these.
-       xPosSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-       yPosSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-       zPosSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-       xRotSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-       yRotSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-       zRotSpin->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
-    */
+  
+    xPosSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );  
+    yPosSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );  
+    zPosSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );  
+    xRotSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );
+    yRotSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );
+    zRotSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );
+
     xPosCheck->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
     yPosCheck->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
     zPosCheck->signal_toggled().connect( sigc::ptr_fun(update_constraints) );
@@ -121,36 +126,48 @@ void get_position()
 
 void update_constraints()
 {
+    int x = xRotSpin->get_value();
+    int y = yRotSpin->get_value();
+    int z = zRotSpin->get_value();
+
+    /*float q1 = -cos((x-z)/2) * sin(y/2);
+    float q2 = -sin((x-z)/2) * sin(y/2);
+    float q3 = -sin((x+z)/2) * cos(y/2);
+    float q4 = sin((x+z)/2) * cos(y/2);
+
+    float l = sqrt(q1^2 + q2^2 + q3^2 + q4^2);*/
+
     if( xPosCheck->get_active() )
     {
         simulation_srv.request.desired_pose.position.x = xPosSpin->get_value();
-	//ROS_INFO("TX%f", xPosSpin->get_value());
     }
     if( yPosCheck->get_active() )
     {
         simulation_srv.request.desired_pose.position.y = yPosSpin->get_value();
-	//ROS_INFO("TY%f", yPosSpin->get_value());
     }
     if( zPosCheck->get_active() )
     {
         simulation_srv.request.desired_pose.position.z = zPosSpin->get_value();
-	//ROS_INFO("TZ%f", zPosSpin->get_value());
     }
 
-    if( xRotCheck->get_active() )
+/*float Q1=simulation_srv.response.actual_pose.orientation.w;
+float Q2=simulation_srv.response.actual_pose.orientation.x;
+float Q3=simulation_srv.response.actual_pose.orientation.y;
+float Q4=simulation_srv.response.actual_pose.orientation.z;*/
+
+//X = arctan((q1*q3 + q2*q4)
+
+    if ( xRotCheck->get_active() )
     {
         simulation_srv.request.desired_pose.orientation.x = xRotSpin->get_value();
-	//ROS_INFO("RX%f", xRotSpin->get_value());
     }
     if( yRotCheck->get_active() )
     {
         simulation_srv.request.desired_pose.orientation.y = yRotSpin->get_value();
-	//ROS_INFO("RY%f", yRotSpin->get_value());
     }
     if( zRotCheck->get_active() )
     {
         simulation_srv.request.desired_pose.orientation.z = zRotSpin->get_value();
-	//ROS_INFO("RZ%f", zRotSpin->get_value());
     }
 
     while( !simulation_client.call(simulation_srv) );
