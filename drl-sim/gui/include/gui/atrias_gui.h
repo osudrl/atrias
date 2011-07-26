@@ -1,9 +1,12 @@
 // Devin Koepl
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <gtkmm.h>
-#include <stdlib.h>
 #include <cairomm/context.h>
+
+#include <time.h>
+#include <string.h>
 
 #include <ros/ros.h>
 
@@ -29,7 +32,6 @@ Gtk::HScale *d_motor_position_hscale;
 
 Gtk::HScale *leg_length_torque_hscale;
 Gtk::HScale *leg_angle_torque_hscale;
-
 Gtk::HScale *leg_length_hscale;
 Gtk::HScale *leg_angle_hscale;
 Gtk::HScale *p_leg_position_hscale;
@@ -50,7 +52,7 @@ Gtk::HScale *raibert_leg_angle_gain_hscale;
 Gtk::HScale *raibert_stance_p_gain_hscale;
 Gtk::HScale *raibert_stance_d_gain_hscale;
 Gtk::HScale *raibert_stance_spring_threshold_hscale;
-Gtk::Label	*raibert_state_label;
+Gtk::Label *raibert_state_label;
 Gtk::HScale *raibert_preferred_leg_len_hscale;
 Gtk::HScale *raibert_flight_p_gain_hscale;
 Gtk::HScale *raibert_flight_d_gain_hscale;
@@ -66,14 +68,22 @@ Gtk::ProgressBar *motor_torqueA_progress_bar;
 Gtk::ProgressBar *motor_torqueB_progress_bar;
 
 Gtk::CheckButton *log_file_chkbox;
-Gtk::FileChooser *log_file_chooser;
+Gtk::FileChooserButton *log_file_chooser;
 
-Gtk::Label * hor_vel_label;
-Gtk::Label * height_label;
+Gtk::Entry *xPosDisplay;
+Gtk::Entry *yPosDisplay;
+Gtk::Entry *zPosDisplay;
 
-Gtk::Button * restart_button;
-Gtk::Button * enable_button;
-Gtk::Button * disable_button;
+Gtk::Entry *xVelDisplay;
+Gtk::Entry *yVelDisplay;
+Gtk::Entry *zVelDisplay;
+
+Gtk::Entry *torqueADisplay;
+Gtk::Entry *torqueBDisplay;
+
+Gtk::Button *restart_button;
+Gtk::Button *enable_button;
+Gtk::Button *disable_button;
 
 Cairo::RefPtr<Cairo::Context> cr;
 Gtk::Allocation drawing_allocation;
@@ -85,7 +95,10 @@ atrias_controllers::atrias_srv atrias_srv;
 
 FILE *log_file_fp;
 
+bool isLogging = false;
+
 bool poke_controller( void );
+std::string format_float ( float );
 
 void log_chkbox_toggled( void );
 

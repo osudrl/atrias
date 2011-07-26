@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <gtkmm.h>
 #include <cairomm/context.h>
+#include <std_srvs/Empty.h>
 
 #include <ros/ros.h>
 
@@ -33,13 +34,17 @@ Gtk::CheckButton *zRotCheck;
 Gtk::ToggleButton *pause_play_button;
 Gtk::ToggleButton *hold_release_button;
 Gtk::Button *get_position_button;
+Gtk::Button *reset_button;
 
 ros::ServiceClient simulation_client;
 drl_plugins::position_body_srv simulation_srv;
+ros::ServiceClient reset_client;
+std_srvs::Empty reset_srv;
 
 geometry_msgs::Pose desired_pose;
 
 void pause_play();
 void hold_release();
 void get_position();
+void reset_simulation();
 void update_constraints();

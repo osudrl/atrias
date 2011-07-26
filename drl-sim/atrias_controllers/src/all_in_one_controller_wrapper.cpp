@@ -135,8 +135,6 @@ void AllInOneControllerWrapper::generate_controller_input()
 	double angle;
 	Vector3 axis;
 
-	float vel;
-
 	this->body->GetWorldPose().rot.GetAsAxis(axis, angle);
 	this->controller_input->body_angle	 = angle * axis.y;
 	this->motorA->GetWorldPose().rot.GetAsAxis(axis, angle);
@@ -152,16 +150,19 @@ void AllInOneControllerWrapper::generate_controller_input()
 	this->controller_input->leg_angleB	 = -angle * axis.y + PI/4. + PI;
 	//ROS_INFO("laB = %.3f\n\n", angle);
 
-	this->controller_input->body_ang_vel = this->body->GetWorldAngularVel().y;
-	this->controller_input->motor_velocityA = -this->motorA->GetWorldAngularVel().y;
+        this->controller_input->xPosition = this->body->GetWorldPose().pos.x;
+        this->controller_input->yPosition = this->body->GetWorldPose().pos.y;
+        this->controller_input->zPosition = this->body->GetWorldPose().pos.z;
+        
+	this->controller_input->xVelocity = this->body->GetWorldLinearVel().x;
+	this->controller_input->yVelocity = this->body->GetWorldLinearVel().y;
+	this->controller_input->zVelocity = this->body->GetWorldLinearVel().z;
+        
+        this->controller_input->horizontal_velocity = this->body->GetWorldLinearVel().x;
+        this->controller_input->motor_velocityA = -this->motorA->GetWorldAngularVel().y;
 	this->controller_input->motor_velocityB = -this->motorB->GetWorldAngularVel().y;
 	this->controller_input->leg_velocityA = -this->legA->GetWorldAngularVel().y;
 	this->controller_input->leg_velocityB = -this->legB->GetWorldAngularVel().y;
-
-	this->controller_input->height = this->body->GetWorldPose().pos.z;
-
-	this->controller_input->horizontal_velocity = this->body->GetWorldLinearVel().x;
-	this->controller_input->vertical_velocity = this->body->GetWorldLinearVel().z;
 }
 
 // Initialize the controller
@@ -213,8 +214,13 @@ bool AllInOneControllerWrapper::atrias_gui_callback(atrias_controllers::atrias_s
 	res.leg_angleB = this->controller_input->leg_angleB;
 	res.motor_torqueA = this->controller_output->motor_torqueA;
 	res.motor_torqueB = this->controller_output->motor_torqueB;
-	res.hor_vel = this->controller_input->horizontal_velocity;
-	res.height = this->controller_input->height;
+	res.xPosition = this->controller_input->xPosition;
+	res.yPosition = this->controller_input->yPosition;
+	res.zPosition = this->controller_input->zPosition;
+	res.xVelocity = this->controller_input->xVelocity;
+	res.yVelocity = this->controller_input->yVelocity;
+	res.zVelocity = this->controller_input->zVelocity;
+        res.horizontal_velocity = this->controller_input->horizontal_velocity;
 
 	// Clone data from the gui into the controller's data memory.
 	for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)

@@ -9,6 +9,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle n;
     simulation_client = n.serviceClient<drl_plugins::position_body_srv>("/position_body_srv");
+    reset_client = n.serviceClient<std_srvs::Empty>("gazebo/reset_simulation");
     simulation_srv.request.hold_robot = true;
     simulation_srv.request.pause_simulation = false;
     simulation_srv.request.desired_pose.position.x = 0.;
@@ -59,6 +60,7 @@ int main(int argc, char **argv)
     gui->get_widget("pause_play_button", pause_play_button);
     gui->get_widget("hold_release_button", hold_release_button);
     gui->get_widget("get_position_button", get_position_button);
+    gui->get_widget("reset_button", reset_button);
 
     // Adjust the spin buttons to set min and max, and other options
     xPosSpin->set_range(-10,10);
@@ -82,6 +84,7 @@ int main(int argc, char **argv)
     hold_release_button->signal_toggled().connect( sigc::ptr_fun(hold_release) );
     hold_release_button->signal_clicked().connect( sigc::ptr_fun(update_constraints) );
     get_position_button->signal_clicked().connect( sigc::ptr_fun(get_position) );
+    reset_button->signal_clicked().connect( sigc::ptr_fun(reset_simulation) );
 
   
     xPosSpin->signal_value_changed().connect( sigc::ptr_fun(update_constraints) );  
@@ -113,6 +116,11 @@ void hold_release()
 {
     simulation_srv.request.hold_robot = !simulation_srv.request.hold_robot;
     while( !simulation_client.call(simulation_srv) );
+}
+
+void reset_simulation()
+{
+    while( !reset_client.call(reset_srv) );
 }
 
 void get_position()

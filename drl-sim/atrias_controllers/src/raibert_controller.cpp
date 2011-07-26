@@ -77,7 +77,7 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	}
 
 	// Check to see if we have reached a new peak height.
-	RAIBERT_CONTROLLER_STATE(state)->peak_ht = MAX( input->height, RAIBERT_CONTROLLER_STATE(state)->peak_ht );
+	RAIBERT_CONTROLLER_STATE(state)->peak_ht = MAX( input->zPosition, RAIBERT_CONTROLLER_STATE(state)->peak_ht );
 }
 
 void stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 

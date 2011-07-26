@@ -29,7 +29,8 @@
 #ifdef DEBUG_CONTROLLERS
 	#ifdef COMPILE_FOR_RTAI
 			//#include <rtai_sem.h>
-			#define PRINT_MSG	rt_printk
+			#de
+#include <geometry_msgs/Vector3.h>fine PRINT_MSG	rt_printk
 			#define PRINT_WARN	rt_printk
 			//#define PRINT_MSG	rtai_print_to_screen
 			//#define PRINT_WARN	rtai_print_to_screen
@@ -87,10 +88,15 @@ typedef struct
 	float			leg_velocityA;
 	float 			leg_velocityB;
 
-	float			height;
-
-	float 			horizontal_velocity;
-	float 			vertical_velocity;
+        float                   xPosition;
+        float                   yPosition;
+        float                   zPosition;
+        
+        float                   xVelocity;
+        float                   yVelocity;
+        float                   zVelocity;
+        
+        float horizontal_velocity;
 
 	unsigned char	motor_currentA;
 	unsigned char	motor_currentB;
