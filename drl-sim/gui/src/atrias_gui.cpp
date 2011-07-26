@@ -326,21 +326,22 @@ std::string format_float(float fl) {
             } else {
                 positive = true;
             }
-        } else if (i > 6) {
-            break;
-        }
-        if (j == '.') {
-            if (i < 5) { // if there's room for one or more decimal places, include them
+        } 
+        else if (j == '.') {
+            if (i < 6) { // if there's room for one or more decimal places, include them
                 for (int k = 0; k < 7; k++) {
                     result[k] = charBuf[k];
                 }
                 return result;
             } else { // if there's no room, leave them out
-                for (int k = 0; k < (i - 1) && k < 7; k++) {
+                for (int k = 0; k < i && k < 7; k++) {
                     result[k] = charBuf[k];
                 }
                 return result;
             }
+        }
+        else if (i > 6) {
+            break;
         }
     }
     if (positive) {
