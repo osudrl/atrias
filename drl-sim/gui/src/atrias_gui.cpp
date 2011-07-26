@@ -373,13 +373,15 @@ void disable_motors(void) {
     atrias_srv.request.command = CMD_DISABLE;
 }
 
+//! @brief Change the active controller.
 void switch_controllers(GtkNotebookPage* page, guint page_num) {
     if (atrias_srv.request.command == CMD_DISABLE)
         atrias_srv.request.controller_requested = page_num;
     else
         controller_notebook->set_current_page(atrias_srv.request.controller_requested);
 }
-//! Probes the active controller and sends updated commands to the robot
+
+//! @brief Probes and updates the active controller then sends updated commands to the robot.
 bool poke_controller(void) {
     char buffer[20];
     switch (atrias_srv.request.controller_requested) {
