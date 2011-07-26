@@ -1,8 +1,14 @@
-// Devin Koepl
-// Colan Dray
+//! @file position_body_gui.cpp
+//! @brief The interface between the GUI and the robot control logic.
+//! @author Devin Koepl
+//! @author Colan Dray
 
 #include <gui/position_body_gui.h>
 
+//! @brief Initializes the GUI and controls.
+//! @param argc An integer that is one more than the number of command line arguments.
+//! @param argv An array of character pointers containing the command line arguments.
+//! @return Returns zero upon successful completion, non-zero if an error occured.
 int main(int argc, char **argv)
 {
     // ROS Initializations
@@ -106,12 +112,14 @@ int main(int argc, char **argv)
   return 0;
 }
 
+//! @brief Toggles whether the simulation is paused.
 void pause_play()
 {
     simulation_srv.request.pause_simulation = !simulation_srv.request.pause_simulation;
     while( !simulation_client.call(simulation_srv) );
 }
 
+//! @brief Toggles whether the robot's movement is constrained. 
 void hold_release()
 {
     simulation_srv.request.hold_robot = !simulation_srv.request.hold_robot;
@@ -132,6 +140,7 @@ void get_position()
     zPosSpin->set_value(desired_pose.position.z + 0.025); // +0.025 is a crude hack to fix gravity error
 }
 
+//! TODO
 void update_constraints()
 {
     int x = xRotSpin->get_value();
@@ -180,3 +189,5 @@ float Q4=simulation_srv.response.actual_pose.orientation.z;*/
 
     while( !simulation_client.call(simulation_srv) );
 }
+
+

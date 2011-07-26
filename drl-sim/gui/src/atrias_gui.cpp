@@ -1,7 +1,13 @@
-// Devin Koepl
+//! @file position_body_gui.cpp
+//! @brief The interface between the GUI and the robot control logic.
+//! @author Devin Koepl
 
 #include <gui/atrias_gui.h>
 
+//! @brief Initializes the GUI and controls.
+//! @param argc An integer that is one more than the number of command line arguments.
+//! @param argv An array of character pointers containing the command line arguments.
+//! @return Returns zero upon successful completion, non-zero if an error occured.
 int main(int argc, char **argv) {
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle n;
@@ -17,7 +23,7 @@ int main(int argc, char **argv) {
     glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
     glade_gui_path = glade_gui_path.append("/src/atrias_gui.glade");
 
-    Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
+    Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();bladeless fan
     try {
         gui->add_from_file(glade_gui_path);
     } catch (const Glib::FileError& ex) {
@@ -217,7 +223,7 @@ int main(int argc, char **argv) {
           raibert_stance_spring_threshold_hscale->set_value(read_val);
 
     fclose (gui_state_fp);*/
-
+	// set initial values for velocity
     raibert_desired_velocity_hscale->set_value(0.364);
     raibert_desired_height_hscale->set_value(1.2);
     raibert_hor_vel_gain_hscale->set_value(0.162);
@@ -265,7 +271,7 @@ int main(int argc, char **argv) {
     fclose(gui_state_fp);*/
     return 0;
 }
-
+//! @brief Creates or closes a log file.
 void log_chkbox_toggled(void) {
     if (log_file_chkbox->get_active()) {
 
@@ -350,7 +356,7 @@ std::string format_float(float fl) {
         return "NTOOLOW"; // the number is too small to be formatted
     }
 }
-
+//! @brief restarts the robot.
 void restart_robot(void) {
     if (atrias_srv.request.command == CMD_DISABLE) {
         atrias_srv.request.command = CMD_RESTART;
@@ -358,11 +364,11 @@ void restart_robot(void) {
         controller_notebook->set_current_page(NO_CONTROLLER);
     }
 }
-
+//! @brief Enables the motors of the robot.
 void enable_motors(void) {
     atrias_srv.request.command = CMD_RUN;
 }
-
+//! @brief Disables the motors of the robot. 
 void disable_motors(void) {
     atrias_srv.request.command = CMD_DISABLE;
 }
@@ -373,7 +379,7 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
     else
         controller_notebook->set_current_page(atrias_srv.request.controller_requested);
 }
-
+//! Probes the active controller and sends updated commands to the robot
 bool poke_controller(void) {
     char buffer[20];
     switch (atrias_srv.request.controller_requested) {
@@ -483,7 +489,7 @@ bool poke_controller(void) {
 
     return true;
 }
-
+//! @brief Draws the four legs of Atrias in the simulation (the carrot).
 void draw_leg() {
     float segment_length = 125.;
     float short_segment_length = 100.;
