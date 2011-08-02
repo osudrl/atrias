@@ -35,85 +35,85 @@
 #include <drl_plugins/position_body_srv.h>
 
 // PD controller gains.
-#define KP 10000.
-#define KD 1000.
+#define KP 100.
+#define KD 10.
 
 namespace gazebo
 {
-/** \defgroup GazeboRosForce Plugin XML Reference and Example
+  /** \defgroup GazeboRosForce Plugin XML Reference and Example
 
-  Example Usage:
-  \verbatim
-  <model:physical name="box_model">
-    <body:empty name="box_body">
-     ...
-    </body:empty>
-    <controller:gazebo_ros_force name="box_force_controller" plugin="libgazebo_ros_force.so">
-        <alwaysOn>true</alwaysOn>
-        <updateRate>15.0</updateRate>
-        <bodyName>box_body</bodyName>
-    </controller:gazebo_ros_force>
-  </model:phyiscal>
-  \endverbatim
- 
-\{
-*/
+      Example Usage:
+      \verbatim
+      <model:physical name="box_model">
+      <body:empty name="box_body">
+      ...
+      </body:empty>
+      <controller:gazebo_ros_force name="box_force_controller" plugin="libgazebo_ros_force.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>15.0</updateRate>
+      <bodyName>box_body</bodyName>
+      </controller:gazebo_ros_force>
+      </model:phyiscal>
+      \endverbatim
 
-class PositionBody : public Controller
-{
-	/// \brief Constructor
-	/// \param parent The parent entity, must be a Model or a Sensor
-	public: PositionBody(Entity *parent);
+      \{
+  */
 
-	/// \brief Destructor
-	public: virtual ~PositionBody();
+  class PositionBody : public Controller
+  {
+  public:
+    //! @brief Constructor
+    //! @param parent The parent entity, must be a Model or a Sensor
+    PositionBody(Entity *parent);
 
-	/// \brief Load the controller
-	/// \param node XML config node
-	protected: virtual void LoadChild(XMLConfigNode *node);
+    //! @brief Destructor
+    virtual ~PositionBody();
 
-	/// \brief Update the controller
-	protected: virtual void UpdateChild();
+  protected:
+    //! @brief Load the controller
+    //! @param node XML config node
+    virtual void LoadChild(XMLConfigNode *node);
 
-	// Initialize the controller
-	protected: virtual void InitChild();
+    //! @brief Update the controller
+    virtual void UpdateChild();
 
-	protected: virtual void FiniChild();
-        
-        public: void SetPositionConstraints(Vector3 constraints);
-        
-        public: void SetRotationConstraints(Vector3 constraints);
+    //! @brief Initialize the controller
+    virtual void InitChild();
 
-	/// \brief A pointer to the parent entity
-	private: Model *myParent;
+    //! @brief Destroy the controller
+    virtual void FiniChild();
 
-	/// \brief A pointer to the Body
-	private: Body *body;
+  private:
+    //! @brief A pointer to the parent entity
+    Model *myParent;
 
-	/// \brief A mutex to lock access to fields that are used in ROS message callbacks
-	private: boost::mutex lock;
+    //! @brief A pointer to the Body
+    Body *body;
 
-	/// \brief inputs
-	private: ParamT<std::string> *bodyNameP; 
-	private: std::string bodyName;
+    //! @brief A mutex to lock access to fields that are used in ROS message callbacks
+    boost::mutex lock;
 
-	private: bool 	hold_robot;
-	private: Pose3d desired_pose;
-        
-        private: Vector3 position_constraints;
-        private: Vector3 rotation_constraints;
-        
-	// GUI Interface
-	private: bool position_body_gui_callback(drl_plugins::position_body_srv::Request&, drl_plugins::position_body_srv::Response&);
-	private: ros::NodeHandle *nh;
-	private: ros::ServiceServer position_body_srv;
+    //! @brief inputs
+    ParamT<std::string> *bodyNameP;
+    std::string bodyName;
 
-	// Custom Callback Queue
-	private: ros::CallbackQueue queue;
-	private: boost::thread* callback_queuethread;
-	private: void QueueThread();
-};
+    bool hold_robot;
+    Pose3d desired_pose;
+
+    bool xIsConstrained;
+    bool yIsConstrained;
+    bool zIsConstrained;
+
+    // GUI Interface
+    bool position_body_gui_callback(drl_plugins::position_body_srv::Request&, drl_plugins::position_body_srv::Response&);
+    ros::NodeHandle *nh;
+    ros::ServiceServer position_body_srv;
+
+    // Custom Callback Queue
+    ros::CallbackQueue queue;
+    boost::thread* callback_queuethread;
+    void QueueThread();
+  };
 
 }
 #endif
-

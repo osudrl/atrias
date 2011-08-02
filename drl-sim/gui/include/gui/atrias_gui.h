@@ -68,6 +68,7 @@ Gtk::ProgressBar *motor_torqueA_progress_bar;
 Gtk::ProgressBar *motor_torqueB_progress_bar;
 
 Gtk::CheckButton *log_file_chkbox;
+Gtk::SpinButton *log_frequency_spin;
 Gtk::FileChooserButton *log_file_chooser;
 
 Gtk::Entry *xPosDisplay;
@@ -96,6 +97,7 @@ atrias_controllers::atrias_srv atrias_srv;
 FILE *log_file_fp;
 
 bool isLogging = false;
+long nextLogTime;
 
 bool poke_controller( void );
 std::string format_float ( float );

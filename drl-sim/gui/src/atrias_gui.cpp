@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
     glade_gui_path = glade_gui_path.append("/src/atrias_gui.glade");
 
-    Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();bladeless fan
+    Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
     try {
         gui->add_from_file(glade_gui_path);
     } catch (const Glib::FileError& ex) {
@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
     gui->get_widget("motor_torqueB_progress_bar", motor_torqueB_progress_bar);
 
     gui->get_widget("log_file_chkbox", log_file_chkbox);
+    gui->get_widget("log_frequency_spin", log_frequency_spin);
     gui->get_widget("log_file_chooser", log_file_chooser);
 
     gui->get_widget("xPosDisplay", xPosDisplay);
@@ -123,6 +124,10 @@ int main(int argc, char **argv) {
     p_leg_position_hscale->set_range(0., 1000.);
     d_leg_position_hscale->set_range(0., 100.);
 
+    log_frequency_spin->set_range(100,10000);
+    log_frequency_spin->set_increments(100,500);
+    log_frequency_spin->set_value(100);
+    
     leg_angle_amplitude_hscale->set_range(0., 1.);
     leg_angle_frequency_hscale->set_range(0., 5.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
@@ -305,6 +310,14 @@ void log_chkbox_toggled(void) {
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
             fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Trq A---Tq B----xPos----yPos----zPos----xVel----yVel----zVel---\n");
+            struct timespec curTime;
+            if(clock_gettime( CLOCK_REALTIME, &curTime) == -1) {
+                ROS_WARN("Error getting current time, logging cannot initialize!");
+                return;
+            }
+            else {
+                nextLogTime = (curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) + log_frequency_spin->get_value();
+            }
             isLogging = true;
         } else {
             log_file_chkbox->set_active(false);
@@ -447,10 +460,18 @@ bool poke_controller(void) {
 
     // Check to see if we are supposed to be logging data.
     if (isLogging) {
-        fprintf(log_file_fp, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
-                format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
-                format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
-                format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
+        struct timespec curTime;
+        if(clock_gettime( CLOCK_REALTIME, &curTime) == -1) {
+            ROS_WARN("Error getting current time, logging has been disabled!");
+            log_file_chkbox->set_active(false);
+        }
+        else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime)) {
+            fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
+                    format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
+                    format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
+                    format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
+            nextLogTime = nextLogTime + log_frequency_spin->get_value();
+        }
     }
 
     if (atrias_client.call(atrias_srv))
@@ -497,7 +518,7 @@ void draw_leg() {
     float short_segment_length = 100.;
     float motor_radius = 70.;
 
-    float start_x = 260.;
+    float start_x = 110.;
     float start_y = 100.;
 
     drawing_area->get_window()->clear();
