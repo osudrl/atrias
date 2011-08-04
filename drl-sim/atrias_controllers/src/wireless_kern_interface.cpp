@@ -162,10 +162,10 @@ void log_data_entry( FILE * fp, int i )
 	c_in	= &shm->controller_input[i];
 	c_out 	= &shm->controller_output[i];
 
-	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
+	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
 		c_in->leg_angleA, c_in->leg_angleB, c_in->body_ang_vel, c_in->motor_velocityA, c_in->motor_velocityB,
-		c_in->leg_velocityA, c_in->leg_velocityB, c_in->height, c_in->horizontal_velocity, c_in->vertical_velocity,
-		c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB,
+		c_in->leg_velocityA, c_in->leg_velocityB, c_in->xPosition, c_in->yPosition, c_in->zPosition, c_in->xVelocity,
+		c_in->xVelocity, c_in->yVelocity, c_in->zVelocity, c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB,
 		c_in->toe_switch, c_in->command );
 }
 
@@ -262,8 +262,12 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
 	res.motor_angleB	= shm->controller_input[shm->io_index - 1].motor_angleB;
 	res.leg_angleA		= shm->controller_input[shm->io_index - 1].leg_angleA;
 	res.leg_angleB		= shm->controller_input[shm->io_index - 1].leg_angleB;
-	res.hor_vel			= shm->controller_input[shm->io_index - 1].horizontal_velocity;
-	res.height			= shm->controller_input[shm->io_index - 1].height;
+	res.xPosition			= shm->controller_input[shm->io_index - 1].xPosition;
+	res.yPosition			= shm->controller_input[shm->io_index - 1].yPosition;
+	res.zPosition			= shm->controller_input[shm->io_index - 1].zPosition;
+	res.xVelocity                  	= shm->controller_input[shm->io_index - 1].xVelocity;
+	res.yVelocity                  	= shm->controller_input[shm->io_index - 1].yVelocity;
+	res.zVelocity                  	= shm->controller_input[shm->io_index - 1].zVelocity;
 
 	res.motor_torqueA	= shm->controller_output[shm->io_index - 1].motor_torqueA;
 	res.motor_torqueB	= shm->controller_output[shm->io_index - 1].motor_torqueB;
