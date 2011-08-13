@@ -9,24 +9,28 @@
 //! @param argc An integer that is one more than the number of command line arguments.
 //! @param argv An array of character pointers containing the command line arguments.
 //! @return Returns zero upon successful completion, non-zero if an error occured.
-
-int main(int argc, char **argv) {
-    // ROS Initializations
+int main(int argc, char **argv)
+{
+    // Initialize ROS
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle n;
-    simulation_client = n.serviceClient<drl_plugins::position_body_srv > ("/position_body_srv");
-    reset_client = n.serviceClient<std_srvs::Empty > ("gazebo/reset_simulation");
-    reset_client = n.serviceClient<std_srvs::Empty>("gazebo/reset_simulation");
+    simulation_client = n.serviceClient<drl_plugins::position_body_srv> ("/position_body_srv");
+    reset_client = n.serviceClient<std_srvs::Empty> ("gazebo/reset_simulation");
+    
+    // Initialize service variables   
     simulation_srv.request.hold_robot = true;
     simulation_srv.request.pause_simulation = false;
-    simulation_srv.request.desired_pose.position.x = 0.;
-    simulation_srv.request.desired_pose.position.y = 0.;
-    simulation_srv.request.desired_pose.position.z = 1.;
+    simulation_srv.request.xIsConstrained = true;
+    simulation_srv.request.yIsConstrained = true;
+    simulation_srv.request.zIsConstrained = true;
+    simulation_srv.request.desired_pose.position.x = 0.0;
+    simulation_srv.request.desired_pose.position.y = 0.0;
+    simulation_srv.request.desired_pose.position.z = 1.5;
 
-    // Gtk Initializations
+    // Initialize Gtk
     Gtk::Main gtk(argc, argv);
 
-    // Create the relative path to the Glade file.
+    // Initialize Glade
     std::string glade_gui_path = std::string(argv[0]);
     glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
     glade_gui_path = glade_gui_path.append("/src/position_body_gui.glade");
@@ -51,6 +55,7 @@ int main(int argc, char **argv) {
     gui->get_widget("yPosCheck", yPosCheck);
     gui->get_widget("zPosCheck", zPosCheck);
 
+    /* TODO
     gui->get_widget("xRotSpin", xRotSpin);
     gui->get_widget("yRotSpin", yRotSpin);
     gui->get_widget("zRotSpin", zRotSpin);
@@ -58,28 +63,27 @@ int main(int argc, char **argv) {
     gui->get_widget("xRotCheck", xRotCheck);
     gui->get_widget("yRotCheck", yRotCheck);
     gui->get_widget("zRotCheck", zRotCheck);
+    */
 
     gui->get_widget("pause_play_button", pause_play_button);
     gui->get_widget("hold_release_button", hold_release_button);
     gui->get_widget("get_position_button", get_position_button);
     gui->get_widget("reset_button", reset_button);
 
-    // Adjust the spin buttons to set min and max, and other options
-    xPosSpin->set_range(-10, 10);
-    yPosSpin->set_range(-10, 10);
-    zPosSpin->set_range(-10, 10);
+    // Set position SpinButton settings
+    xPosSpin->set_range(-100, 100);
+    xPosSpin->set_increments(0.01, 0);
+    xPosSpin->set_value(0.0);
 
-    xPosSpin->set_increments(1, 4);
-    yPosSpin->set_increments(1, 4);
-    zPosSpin->set_increments(1, 4);
+    yPosSpin->set_range(-100, 100);
+    yPosSpin->set_increments(0.01, 0);
+    yPosSpin->set_value(0.0);
 
-    xRotSpin->set_range(-180, 180);
-    yRotSpin->set_range(-180, 180);
-    zRotSpin->set_range(-180, 180);
+    zPosSpin->set_range(-100, 100);
+    zPosSpin->set_increments(0.01, 0);
+    zPosSpin->set_value(1.5);
 
-    xRotSpin->set_increments(5, 30);
-    yRotSpin->set_increments(5, 30);
-    zRotSpin->set_increments(5, 30);
+    // TODO Add rotation SpinButton settings
 
     // Connect buttons to functions.
     pause_play_button->signal_toggled().connect(sigc::ptr_fun(pause_play));
@@ -89,109 +93,71 @@ int main(int argc, char **argv) {
     reset_button->signal_clicked().connect(sigc::ptr_fun(reset_simulation));
     reset_button->signal_clicked().connect( sigc::ptr_fun(reset_simulation) );
 
+    xPosCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
+    yPosCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
+    zPosCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
 
     xPosSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
     yPosSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
     zPosSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
-    xRotSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
-    yRotSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
-    zRotSpin->signal_value_changed().connect(sigc::ptr_fun(update_constraints));
 
-    xPosCheck->signal_toggled().connect(sigc::ptr_fun(checkbox_toggled));
-    yPosCheck->signal_toggled().connect(sigc::ptr_fun(checkbox_toggled));
-    zPosCheck->signal_toggled().connect(sigc::ptr_fun(checkbox_toggled));
-    xRotCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
-    yRotCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
-    zRotCheck->signal_toggled().connect(sigc::ptr_fun(update_constraints));
+    // TODO Connect rotation CheckButtons and SpinButtons to functions.
 
+    while (!simulation_client.call(simulation_srv));
     gtk.run(*window);
 
     return 0;
 }
 
 //! @brief Toggles whether the simulation is paused.
-
-void pause_play() {
+void pause_play()
+{
     simulation_srv.request.pause_simulation = !simulation_srv.request.pause_simulation;
+
     while (!simulation_client.call(simulation_srv));
 }
 
 //! @brief Toggles whether the robot's movement is constrained. 
-
-void hold_release() {
+void hold_release()
+{
     simulation_srv.request.hold_robot = !simulation_srv.request.hold_robot;
+
     while (!simulation_client.call(simulation_srv));
 }
 
-void reset_simulation() {
+//! @brief Resets the simulation.
+void reset_simulation()
+{
     while (!reset_client.call(reset_srv));
 }
 
-void get_position() {
+//! @brief TODO
+void get_position()
+{
     while (!simulation_client.call(simulation_srv));
     desired_pose = simulation_srv.response.actual_pose;
     xPosSpin->set_value(desired_pose.position.x);
     yPosSpin->set_value(desired_pose.position.y);
-    zPosSpin->set_value(desired_pose.position.z + 0.025); // +0.025 is a crude hack to fix gravity error
+    zPosSpin->set_value(desired_pose.position.z); //TODO +0.025?
 }
 
-//! TODO
+//! @brief TODO
+void update_constraints()
+{
+    simulation_srv.request.desired_pose.position.x = xPosSpin->get_value();
+    simulation_srv.request.desired_pose.position.y = yPosSpin->get_value();
+    simulation_srv.request.desired_pose.position.z = zPosSpin->get_value();
 
-void update_constraints() {
-    int x = xRotSpin->get_value();
-    int y = yRotSpin->get_value();
-    int z = zRotSpin->get_value();
+    /* TODO
+    simulation_srv.request.desired_pose.orientation.x = xRotSpin->get_value();
+    simulation_srv.request.desired_pose.orientation.y = yRotSpin->get_value();
+    simulation_srv.request.desired_pose.orientation.z = zRotSpin->get_value();
+    */
 
-    /*float q1 = -cos((x-z)/2) * sin(y/2);
-    float q2 = -sin((x-z)/2) * sin(y/2);
-    float q3 = -sin((x+z)/2) * cos(y/2);
-    float q4 = sin((x+z)/2) * cos(y/2);
-
-    float l = sqrt(q1^2 + q2^2 + q3^2 + q4^2);*/
-
-    if (xPosCheck->get_active()) {
-        if (xPosCheck->get_active() || yPosCheck->get_active() || zPosCheck->get_active()) {
-            while (!simulation_client.call(simulation_srv));
-        }
-        simulation_srv.request.desired_pose.position.x = xPosSpin->get_value();
-    }
-    if (yPosCheck->get_active()) {
-        simulation_srv.request.desired_pose.position.y = yPosSpin->get_value();
-    }
-    if (zPosCheck->get_active()) {
-
-        /*float Q1=simulation_srv.response.actual_pose.orientation.w;
-        float Q2=simulation_srv.response.actual_pose.orientation.x;
-        float Q3=simulation_srv.response.actual_pose.orientation.y;
-        float Q4=simulation_srv.response.actual_pose.orientation.z;*/
-
-        //X = arctan((q1*q3 + q2*q4)
-
-        /*if ( xRotCheck->get_active() )
-        {
-            simulation_srv.request.desired_pose.orientation.x = xRotSpin->get_value();
-        }
-        if( yRotCheck->get_active() )
-        {
-            simulation_srv.request.desired_pose.orientation.y = yRotSpin->get_value();
-        }
-        if( zRotCheck->get_active() )
-        {
-            simulation_srv.request.desired_pose.orientation.z = zRotSpin->get_value();
-        }*/
-
-        if (xPosCheck->get_active() || yPosCheck->get_active() || zPosCheck->get_active()) {
-            while (!simulation_client.call(simulation_srv));
-        }
-    }
-}
-
-void checkbox_toggled() {
     simulation_srv.request.xIsConstrained = xPosCheck->get_active();
     simulation_srv.request.yIsConstrained = yPosCheck->get_active();
     simulation_srv.request.zIsConstrained = zPosCheck->get_active();
 
     while (!simulation_client.call(simulation_srv));
 }
-
 

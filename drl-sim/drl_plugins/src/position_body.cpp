@@ -63,61 +63,15 @@ void PositionBody::LoadChild(XMLConfigNode *node) {
 ////////////////////////////////////////////////////////////////////////////////
 // Update the controller
 
-/*void PositionBody::UpdateChild() {
+void PositionBody::UpdateChild() {
   if (this->hold_robot) {
     this->lock.lock();
 
-    //  Vector3 force_unconstrained = (this->desired_pose.pos - this->body->GetWorldPose().pos) * KP - this->body->GetRelativeLinearVel() * KD;
-    Vector3 force_constrained;
-
-    //    force_constrained.x = force_unconstrained.x * this->xIsConstrained;
-    //    force_constrained.y = force_unconstrained.y * this->yIsConstrained;
-    //    force_constrained.z = force_unconstrained.z * this->zIsConstrained + 1200;
-
-    force_constrained.x = force_constrained.y = 0;
-    force_constrained.z = 24 * 9.81;
-
-    // ROS_INFO("Forces: %f, %f, %f", force_constrained.x, force_constrained.y, force_constrained.z);
-    //ROS_INFO("xxxx: %f, %f", this->body->GetWorldForce().x, this->body->GetRelativeForce().x);
-    //ROS_INFO("yyyy: %f, %f", this->body->GetWorldForce().y, this->body->GetRelativeForce().y);
-    //ROS_INFO("zzzz: %f, %f", this->body->GetWorldForce().z, this->body->GetRelativeForce().z);
-    this->body->SetForce(force_constrained);
+    this->body->SetForce((this->desired_pose.pos - this->body->GetWorldPose().pos) * KP - this->body->GetRelativeLinearVel() * KD);
+    this->body->SetTorque((this->desired_pose.rot.GetAsEuler() - this->body->GetWorldPose().rot.GetAsEuler()) * KP - this->body->GetRelativeAngularVel() * KD);
 
     this->lock.unlock();
   }
-}*/
-
-void PositionBody::UpdateChild() {
-    // If we are holding the robot, than apply PD force control to move it to the desired position.
-    if (this->hold_robot) {
-        this->lock.lock();
-
-        Vector3 force_unconstrained;
-        
-        force_unconstrained = (this->desired_pose.pos - this->body->GetWorldPose().pos) * KP - this->body->GetRelativeLinearVel() * KD;
-        /*force_unconstrained.x = (this->desired_pose.pos.x - this->body->GetWorldPose().pos.x) * KP - this->body->GetRelativeLinearVel().x * KD;
-        force_unconstrained.y = (this->desired_pose.pos.y - this->body->GetWorldPose().pos.y) * KP - this->body->GetRelativeLinearVel().y * KD;
-        force_unconstrained.z = (this->desired_pose.pos.z - this->body->GetWorldPose().pos.z) * KP - this->body->GetRelativeLinearVel().z * KD;*/
-
-        Vector3 force_constrained;
-        
-        //ROS_INFO("Constraints: x=%i y=%i z=%i", this->xIsConstrained, this->yIsConstrained, this->zIsConstrained);
-        force_constrained.x = force_unconstrained.x * this->xIsConstrained;
-        force_constrained.y = force_unconstrained.y * this->yIsConstrained;
-        force_constrained.z = force_unconstrained.z * this->zIsConstrained;
-
-        this->body->SetForce(force_constrained);
-
-        /*Vector3 torque_constrained;
-
-        torque_constrained.x = torque_unconstrained.x * this->rotation_constraints.x;
-        torque_constrained.y = torque_unconstrained.y * this->rotation_constraints.y;
-        torque_constrained.z = torque_unconstrained.z * this->rotation_constraints.z;*/
-
-        //this->body->SetTorque(torque_constrained);
-
-        this->lock.unlock();
-    }
 }
 
 // Initialize the controller

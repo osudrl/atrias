@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <gtkmm.h>
 #include <cairomm/context.h>
-#include <std_srvs/Empty.h>
 
 #include <ros/ros.h>
 
 #include <geometry_msgs/Pose.h>
+#include <std_srvs/Empty.h>
 
 #include <drl_plugins/position_body_srv.h>
 
@@ -23,6 +23,7 @@ Gtk::CheckButton *xPosCheck;
 Gtk::CheckButton *yPosCheck;
 Gtk::CheckButton *zPosCheck;
 
+/* TODO
 Gtk::SpinButton *xRotSpin;
 Gtk::SpinButton *yRotSpin;
 Gtk::SpinButton *zRotSpin;
@@ -30,6 +31,7 @@ Gtk::SpinButton *zRotSpin;
 Gtk::CheckButton *xRotCheck;
 Gtk::CheckButton *yRotCheck;
 Gtk::CheckButton *zRotCheck;
+*/
 
 Gtk::ToggleButton *pause_play_button;
 Gtk::ToggleButton *hold_release_button;
@@ -38,6 +40,7 @@ Gtk::Button *reset_button;
 
 ros::ServiceClient simulation_client;
 drl_plugins::position_body_srv simulation_srv;
+
 ros::ServiceClient reset_client;
 std_srvs::Empty reset_srv;
 
@@ -48,4 +51,4 @@ void hold_release();
 void get_position();
 void reset_simulation();
 void update_constraints();
-void checkbox_toggled();
+

@@ -21,15 +21,15 @@ AllInOneControllerWrapper::AllInOneControllerWrapper(Entity *parent)
   Param::Begin(&this->parameters);
   this->bodyNameP	= new ParamT<std::string>("bodyName", "link", 1);
   this->motorANameP	= new ParamT<std::string>("motorAName", "link", 1);
-	this->motorBNameP	= new ParamT<std::string>("motorBName", "link", 1);
+  this->motorBNameP	= new ParamT<std::string>("motorBName", "link", 1);
   this->legANameP	= new ParamT<std::string>("legAName", "link", 1);
-	this->legBNameP	= new ParamT<std::string>("legBName", "link", 1);
+  this->legBNameP	= new ParamT<std::string>("legBName", "link", 1);
   Param::End();
 
 	this->controller_input				= new ControllerInput();
 	this->controller_output				= new ControllerOutput();
 	this->controller_state				= new ControllerState();
-	this->controller_data					= new ControllerData();
+	this->controller_data				= new ControllerData();
 
 	this->controller_state->state = CSSM_STATE_INIT;
 }

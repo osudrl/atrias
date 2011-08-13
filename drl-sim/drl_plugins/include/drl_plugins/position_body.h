@@ -35,8 +35,8 @@
 #include <drl_plugins/position_body_srv.h>
 
 // PD controller gains.
-#define KP 100.
-#define KD 10.
+#define KP 10000.
+#define KD 1000.
 
 namespace gazebo
 {

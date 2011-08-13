@@ -52,6 +52,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
+                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -70,6 +71,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
@@ -110,6 +113,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
+                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -128,6 +132,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
@@ -168,6 +174,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
+                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -186,6 +193,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
@@ -280,6 +289,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
@@ -338,6 +349,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
@@ -396,6 +409,8 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <property name="climb_rate">0.01</property>
+                        <property name="digits">2</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
                       </object>
