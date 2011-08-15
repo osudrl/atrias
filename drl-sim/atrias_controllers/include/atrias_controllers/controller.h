@@ -7,11 +7,11 @@
 #include <drl_library/drl_math.h>
 
 #ifdef COMPILE_FOR_RTAI
- #include <linux/types.h>
- #include <rtai_math.h>
+#include <linux/types.h>
+#include <rtai_math.h>
 #else
- #include <stdint.h>
- #include <math.h>
+#include <stdint.h>
+#include <math.h>
 #endif
 
 
@@ -27,21 +27,21 @@
 
 
 #ifdef DEBUG_CONTROLLERS
-	#ifdef COMPILE_FOR_RTAI
-			//#include <rtai_sem.h>
-			#de
+#ifdef COMPILE_FOR_RTAI
+//#include <rtai_sem.h>
+#de
 #include <geometry_msgs/Vector3.h>fine PRINT_MSG	rt_printk
-			#define PRINT_WARN	rt_printk
-			//#define PRINT_MSG	rtai_print_to_screen
-			//#define PRINT_WARN	rtai_print_to_screen
-		#else
-			#include <ros/ros.h>
-			#define PRINT_MSG	ROS_INFO
-			#define PRINT_WARN	ROS_WARN
-	#endif
+#define PRINT_WARN	rt_printk
+//#define PRINT_MSG	rtai_print_to_screen
+//#define PRINT_WARN	rtai_print_to_screen
 #else
-	#define PRINT_MSG	// printf
-	#define PRINT_WARN	// printf
+#include <ros/ros.h>
+#define PRINT_MSG	ROS_INFO
+#define PRINT_WARN	ROS_WARN
+#endif
+#else
+#define PRINT_MSG	// printf
+#define PRINT_WARN	// printf
 #endif
 
 // Temporary for testing in uspace.
@@ -74,152 +74,146 @@
 
 // General control structs.
 
-typedef struct
-{
-	float 			body_angle;
-	float			motor_angleA;
-	float			motor_angleB;
-	float			leg_angleA;
-	float			leg_angleB;
+typedef struct {
+    float body_angle;
+    float motor_angleA;
+    float motor_angleB;
+    float leg_angleA;
+    float leg_angleB;
 
-	float			body_ang_vel;
-	float			motor_velocityA;
-	float 			motor_velocityB;
-	float			leg_velocityA;
-	float 			leg_velocityB;
+    float body_ang_vel;
+    float motor_velocityA;
+    float motor_velocityB;
+    float leg_velocityA;
+    float leg_velocityB;
 
-        float                   xPosition;
-        float                   yPosition;
-        float                   zPosition;
-        
-        float                   xVelocity;
-        float                   yVelocity;
-        float                   zVelocity;
-        
-        float horizontal_velocity;
+    float xPosition;
+    float yPosition;
+    float zPosition;
 
-	unsigned char	motor_currentA;
-	unsigned char	motor_currentB;
+    float xVelocity;
+    float yVelocity;
+    float zVelocity;
 
-	unsigned char	toe_switch;
-	
-	unsigned char	command;
+    float horizontal_velocity;
+
+    unsigned char motor_currentA;
+    unsigned char motor_currentB;
+
+    unsigned char toe_switch;
+
+    unsigned char command;
 } ControllerInput;
 
-typedef struct
-{
-	float			motor_torqueA;
-	float			motor_torqueB;
+typedef struct {
+    float motor_torqueA;
+    float motor_torqueB;
 } ControllerOutput;
 
 // This struct is where the controller can keep personal information.
-typedef struct
-{
-	unsigned char 	state;
-	unsigned char 	controller_loaded;
 
-	// Controller specific space.
-	unsigned char 	data[SIZE_OF_CONTROLLER_STATE_DATA];
+typedef struct {
+    unsigned char state;
+    unsigned char controller_loaded;
+
+    // Controller specific space.
+    unsigned char data[SIZE_OF_CONTROLLER_STATE_DATA];
 } ControllerState;
 
 // This struct is the input to the controller.
-typedef struct
-{
-  unsigned char command;
-  unsigned char controller_requested;
 
-  // Controller specific space.
-  unsigned char data[SIZE_OF_CONTROLLER_DATA];
+typedef struct {
+    unsigned char command;
+    unsigned char controller_requested;
+
+    // Controller specific space.
+    unsigned char data[SIZE_OF_CONTROLLER_DATA];
 } ControllerData;
 
 //======================================================//
 
 // Specific control structs
 
-typedef struct
-{
-  float mtr_trqA;
-  float mtr_trqB;
+typedef struct {
+    float mtr_trqA;
+    float mtr_trqB;
 } MtrTrqControllerData;
 
-typedef struct
-{
-  float mtr_angA;
-  float mtr_angB;
-  float p_gain;
-  float d_gain;
+typedef struct {
+    float mtr_angA;
+    float mtr_angB;
+    float p_gain;
+    float d_gain;
 } MtrPosControllerData;
 
-typedef struct
-{
-  float leg_ang_trq;
-  float leg_len_trq;
+typedef struct {
+    float leg_ang_trq;
+    float leg_len_trq;
 } LegTrqControllerData;
 
-typedef struct
-{
-  float leg_ang;
-  float leg_len;
-  float p_gain;
-  float d_gain;
+typedef struct {
+    float leg_ang;
+    float leg_len;
+    float p_gain;
+    float d_gain;
 } LegPosControllerData;
 
-typedef struct
-{
-  // Inputs
-  float leg_ang_frq;
-  float leg_ang_amp;
-  float leg_len_frq;
-  float leg_len_amp;
-  float p_gain;
-  float d_gain;
+typedef struct {
+    // Inputs
+    float leg_ang_frq;
+    float leg_ang_amp;
+    float leg_len_frq;
+    float leg_len_amp;
+    float p_gain;
+    float d_gain;
 
-  // For Control
-  float time;
+    // For Control
+    float time;
 } SinWaveControllerData;
 
-typedef struct
-{
-  float time;
+typedef struct {
+    float time;
 } SinWaveControllerState;
 
-typedef struct
-{
-  // Inputs
-  float des_hor_vel;
-  float des_hop_ht;
-  float hor_vel_gain;
-  float hop_ht_gain;
-  float leg_ang_gain;
-  float stance_p_gain;
-  float stance_d_gain;
-  float stance_spring_threshold;
-  float preferred_leg_len;
-  float flight_p_gain;
-  float flight_d_gain;
-  float flight_spring_threshold;
+typedef struct {
+    // Inputs
+    float des_hor_vel;
+    float des_hop_ht;
+    float hor_vel_gain;
+    float hop_ht_gain;
+    float leg_ang_gain;
+    float stance_p_gain;
+    float stance_d_gain;
+    float stance_spring_threshold;
+    float preferred_leg_len;
+    float flight_p_gain;
+    float flight_d_gain;
+    float flight_spring_threshold;
 } RaibertControllerData;
 
-typedef struct
-{
-  unsigned char in_flight;
-  unsigned char after_mid_stance;
+typedef struct {
+    unsigned char in_flight;
+    unsigned char after_mid_stance;
 
-  float peak_ht;
-  float last_leg_len;
+    float peak_ht;
+    float last_leg_len;
 } RaibertControllerState;
 
-typedef struct
-{
-  float stance_threshold;
-  float flight_threshold;
-  float stance_motor_gain;
-  float flight_motor_gain;
+typedef struct {
+//    float flight_threshold;
+//    float stance_threshold;
+    float flight_motor_gain_p;
+    float stance_motor_gain_p;
+    float flight_motor_gain_d;
+    float stance_motor_gain_d;
+    float flight_desired_motor_angleA;
+    float flight_desired_motor_angleB;
+    float stance_desired_motor_angleA;
+    float stance_desired_motor_angleB;
 } TestControllerData;
 
-typedef struct
-{
-  unsigned char in_flight;
+typedef struct {
+    unsigned char in_flight;
 } TestControllerState;
 
 // Macros for dereferencing pointers.
