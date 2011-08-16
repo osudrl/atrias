@@ -22,6 +22,9 @@ Gtk::Window *window;
 
 Gtk::Notebook *controller_notebook;
 
+std::string red_image_path;
+std::string green_image_path;
+
 Gtk::HScale *motor_torqueA_hscale;
 Gtk::HScale *motor_torqueB_hscale;
 
@@ -58,8 +61,19 @@ Gtk::HScale *raibert_flight_p_gain_hscale;
 Gtk::HScale *raibert_flight_d_gain_hscale;
 Gtk::HScale *raibert_flight_spring_threshold_hscale;
 
-Gtk::ColorButton *test_boolean_motorsOn;
-Gtk::ColorButton *test_boolean_jumped;
+Gtk::Image *test_motors_status_image;
+Gtk::Image *test_flight_status_image;
+
+/*Gtk::ColorButton *test_motors_disabled_color_button;
+Gtk::ColorButton *test_motors_enabled_color_button;
+Gtk::ColorButton *test_not_in_flight_color_button;
+Gtk::ColorButton *test_in_flight_color_button;
+
+Gdk::Color green;
+Gdk::Color dark_green;
+Gdk::Color red;
+Gdk::Color dark_red;*/
+
 Gtk::HScale *test_slider_longLegAngle;
 Gtk::HScale *test_slider_shortLegAngle;
 Gtk::HScale *test_slider_heightOff;

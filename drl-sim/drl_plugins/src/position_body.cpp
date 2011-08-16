@@ -62,12 +62,17 @@ void PositionBody::LoadChild(XMLConfigNode *node) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update the controller
-
 void PositionBody::UpdateChild() {
   if (this->hold_robot) {
     this->lock.lock();
 
-    this->body->SetForce((this->desired_pose.pos - this->body->GetWorldPose().pos) * KP - this->body->GetRelativeLinearVel() * KD);
+    Vector3 force_unconstrained = (this->desired_pose.pos - this->body->GetWorldPose().pos) * KP - this->body->GetRelativeLinearVel() * KD;
+    Vector3 force_constrained;
+    force_constrained.x = (force_unconstrained.x * (this->xIsConstrained ? 1.0 : 0.0));
+    force_constrained.y = (force_unconstrained.y * (this->yIsConstrained ? 1.0 : 0.0));
+    force_constrained.z = (force_unconstrained.z * (this->zIsConstrained ? 1.0 : 0.0)) + 254.75;
+    this->body->SetForce(force_constrained);
+    
     this->body->SetTorque((this->desired_pose.rot.GetAsEuler() - this->body->GetWorldPose().rot.GetAsEuler()) * KP - this->body->GetRelativeAngularVel() * KD);
 
     this->lock.unlock();
@@ -75,12 +80,11 @@ void PositionBody::UpdateChild() {
 }
 
 // Initialize the controller
-
 void PositionBody::InitChild() {
     callback_queuethread = new boost::thread(boost::bind(&PositionBody::QueueThread, this));
 }
-// Shutdown
 
+// Shutdown
 void PositionBody::FiniChild() {
     // Callback Queue
     this->queue.clear();
@@ -90,12 +94,11 @@ void PositionBody::FiniChild() {
 }
 
 // Simulation wants xdata.
-
 bool PositionBody::position_body_gui_callback(drl_plugins::position_body_srv::Request &req, drl_plugins::position_body_srv::Response &res) {
     Pose3d actual_pose = this->body->GetWorldPose();
 
     // Check to see if we are supposed to pause the simulation.
-    if (req.pause_simulation) {
+if (req.pause_simulation) {
         Simulator::Instance()->SetPaused(true);
     } else {
         Simulator::Instance()->SetPaused(false);

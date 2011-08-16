@@ -1112,17 +1112,42 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkColorButton" id="test_boolean_motorsOn">
+                          <object class="GtkVBox" id="vbox16">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="color">#ffff00000000</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_motors_enabled_label">
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Motors Enabled</property>
+                                <attributes>
+                                  <attribute name="weight" value="semibold"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="test_motors_status_image">
+                                <property name="height_request">1</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="stock">gtk-missing-image</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="padding">5</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -1138,17 +1163,42 @@ You may only switch controllers with the motors disabled.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkColorButton" id="test_boolean_jumped">
+                          <object class="GtkVBox" id="vbox17">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="color">#ffff00000000</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_in_flight_label">
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">In Flight</property>
+                                <attributes>
+                                  <attribute name="weight" value="semibold"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="test_flight_status_image">
+                                <property name="height_request">1</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="stock">gtk-missing-image</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="padding">5</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -1156,7 +1206,6 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="padding">5</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -1176,83 +1225,13 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkVBox" id="vbox13">
+                          <object class="GtkLabel" id="test_displacement_label">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkHBox" id="hbox14">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label16">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Displacement: Long Leg Angle</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_longLegAngle">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkHBox" id="hbox15">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label17">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Displacement: Short Leg Angle</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_shortLegAngle">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
+                            <property name="label" translatable="yes">Displacements</property>
+                            <attributes>
+                              <attribute name="weight" value="semibold"/>
+                            </attributes>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -1261,91 +1240,73 @@ You may only switch controllers with the motors disabled.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkHSeparator" id="hseparator3">
+                          <object class="GtkHBox" id="hbox14">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_long_leg_angle_label">
+                                <property name="width_request">108</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Long Leg Angle</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHScale" id="test_slider_longLegAngle">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">2</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
+                            <property name="expand">True</property>
                             <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkVBox" id="vbox14">
+                          <object class="GtkHBox" id="hbox15">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkHBox" id="hbox16">
+                              <object class="GtkLabel" id="test_short_leg_angle_label">
+                                <property name="width_request">108</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label18">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Height: Motors On</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_heightMotorsOn">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes">Short Leg Angle</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox17">
+                              <object class="GtkHScale" id="test_slider_shortLegAngle">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label19">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Height: Motors Off</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_heightMotorsOff">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">2</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
+                                <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -1357,7 +1318,7 @@ You may only switch controllers with the motors disabled.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkHSeparator" id="hseparator4">
+                          <object class="GtkHSeparator" id="hseparator5">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>
@@ -1368,80 +1329,49 @@ You may only switch controllers with the motors disabled.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkVBox" id="vbox15">
+                          <object class="GtkLabel" id="test_height_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Heights</property>
+                            <attributes>
+                              <attribute name="weight" value="semibold"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHBox" id="hbox16">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkHBox" id="hbox18">
+                              <object class="GtkLabel" id="test_motors_on_height_label">
+                                <property name="width_request">108</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label20">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Gain: Proportional</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_gainP">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes">Motors On</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="hbox19">
+                              <object class="GtkHScale" id="test_slider_heightMotorsOn">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label21">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Gain: Differential</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHScale" id="test_slider_gainD">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="round_digits">1</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">3</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
+                                <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -1449,7 +1379,150 @@ You may only switch controllers with the motors disabled.</property>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHBox" id="hbox17">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_motors_off_height_label">
+                                <property name="width_request">108</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Motors Off</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHScale" id="test_slider_heightMotorsOff">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">3</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHSeparator" id="hseparator6">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="test_gain_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Gains</property>
+                            <attributes>
+                              <attribute name="weight" value="semibold"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHBox" id="hbox18">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_gain_proportional_label">
+                                <property name="width_request">108</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Proportional</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHScale" id="test_slider_gainP">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">2</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHBox" id="hbox19">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="test_gain_differential_label">
+                                <property name="width_request">108</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Differential</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkHScale" id="test_slider_gainD">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="round_digits">1</property>
+                                <property name="digits">2</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">5</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
                           </packing>
                         </child>
                       </object>

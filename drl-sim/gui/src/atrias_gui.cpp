@@ -21,9 +21,13 @@ int main(int argc, char **argv)
 
     // Create the relative path to the Glade file.
     std::string glade_gui_path = std::string(argv[0]);
+    red_image_path = std::string(argv[0]);
+    green_image_path = std::string(argv[0]);
 
-    glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
-    glade_gui_path = glade_gui_path.append("/src/atrias_gui.glade");
+    red_image_path = green_image_path = glade_gui_path = glade_gui_path.substr(0, glade_gui_path.rfind("/bin"));
+    red_image_path.append("/src/media/red.png");
+    green_image_path.append("/src/media/green.png");
+    glade_gui_path.append("/src/atrias_gui.glade");
 
     Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
     try
@@ -86,12 +90,14 @@ int main(int argc, char **argv)
     gui->get_widget("raibert_flight_d_gain_hscale", raibert_flight_d_gain_hscale);
     gui->get_widget("raibert_flight_spring_threshold_hscale", raibert_flight_spring_threshold_hscale);
 
-    gui->get_widget("test_boolean_motorsOn", test_boolean_motorsOn);
-    gui->get_widget("test_boolean_jumped", test_boolean_jumped);
+    gui->get_widget("test_motors_status_image", test_motors_status_image);
+    gui->get_widget("test_flight_status_image", test_flight_status_image);
+    gui->get_widget("test_motors_status_image", test_motors_status_image);
+    gui->get_widget("test_flight_status_image", test_flight_status_image);
     gui->get_widget("test_slider_longLegAngle", test_slider_longLegAngle);
     gui->get_widget("test_slider_shortLegAngle", test_slider_shortLegAngle);
-    gui->get_widget("test_slider_heightOff", test_slider_heightOff);
-    gui->get_widget("test_slider_heightOn", test_slider_heightOn);
+    gui->get_widget("test_slider_heightMotorsOff", test_slider_heightOff);
+    gui->get_widget("test_slider_heightMotorsOn", test_slider_heightOn);
     gui->get_widget("test_slider_gainP", test_slider_gainP);
     gui->get_widget("test_slider_gainD", test_slider_gainD);
 
@@ -183,6 +189,9 @@ int main(int argc, char **argv)
     motor_torqueA_progress_bar->set_fraction(0.);
     motor_torqueB_progress_bar->set_fraction(0.);
 
+    test_motors_status_image->set(red_image_path);
+    test_flight_status_image->set(red_image_path);
+    
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
     gui_state_file = gui_state_file.substr(0, gui_state_file.rfind("/bin"));
@@ -273,7 +282,7 @@ int main(int argc, char **argv)
     test_slider_longLegAngle->set_value(20.0);
     test_slider_shortLegAngle->set_value(60.);
     test_slider_heightOff->set_value(0.90);
-    test_slider_heightOn->set_value(0.50);
+    test_slider_heightOn->set_value(0.65);
     test_slider_gainP->set_value(200.0);
     test_slider_gainD->set_value(10.0);
 
@@ -529,29 +538,29 @@ bool poke_controller(void)
             break;
         case TEST_CONTROLLER:
 
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->longLegAngle = test_slider_longLegAngle->set_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->shortLegAngle = test_slider_shortLegAngle->set_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOff = test_slider_heightOff->set_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOn = test_slider_heightOn->set_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainP = test_slider_gainP->set_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainD = test_slider_gainD->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->longLegAngle = test_slider_longLegAngle->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->shortLegAngle = test_slider_shortLegAngle->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOff = test_slider_heightOff->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOn = test_slider_heightOn->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainP = test_slider_gainP->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainD = test_slider_gainD->get_value();
 
             if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->motors_powered)
             {
-                test_boolean_motorsOn->set_color("#0000ffff0000");
+                test_motors_status_image->set(green_image_path);
             }
             else
             {
-                test_boolean_motorsOn->set_color("#ffff00000000");
+                test_motors_status_image->set(red_image_path);
             }
             
             if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->jumped)
             {
-                test_boolean_jumped->set_color("#0000ffff0000");
+                test_flight_status_image->set(green_image_path);
             }
             else
             {
-                test_boolean_jumped->set_color("#ffff00000000");
+                test_flight_status_image->set(red_image_path);
             }
 
             break;
@@ -595,6 +604,7 @@ bool poke_controller(void)
     {
         motor_positionA_hscale->set_value(atrias_srv.response.motor_angleA);
         motor_positionB_hscale->set_value(atrias_srv.response.motor_angleB);
+        test_motors_status_image->set(red_image_path);
     }
 
     // Update the motor torque progress bars and displays.
