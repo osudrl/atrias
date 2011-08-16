@@ -8,7 +8,9 @@
 //! @param argc An integer that is one more than the number of command line arguments.
 //! @param argv An array of character pointers containing the command line arguments.
 //! @return Returns zero upon successful completion, non-zero if an error occured.
-int main(int argc, char **argv) {
+
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle n;
     atrias_client = n.serviceClient<atrias_controllers::atrias_srv > ("/gui_interface_srv");
@@ -24,19 +26,25 @@ int main(int argc, char **argv) {
     glade_gui_path = glade_gui_path.append("/src/atrias_gui.glade");
 
     Glib::RefPtr<Gtk::Builder> gui = Gtk::Builder::create();
-    try {
+    try
+    {
         gui->add_from_file(glade_gui_path);
-    } catch (const Glib::FileError& ex) {
+    }
+    catch (const Glib::FileError& ex)
+    {
         ROS_ERROR("Filprintfe Error");
         //			ROS_ERROR("FileError: %d", ex.what());
-    } catch (const Gtk::BuilderError& ex) {
+    }
+    catch (const Gtk::BuilderError& ex)
+    {
         ROS_ERROR("Builder Error");
         //			ROS_ERROR("BuilderError: %d", ex.what());
     }
 
     // Grab pointers to GUI objects
     gui->get_widget("atrias_window", window);
-    if (!window) {
+    if (!window)
+    {
         ROS_ERROR("No ATRIAS Window");
     }
     gui->get_widget("controller_notebook", controller_notebook);
@@ -78,9 +86,20 @@ int main(int argc, char **argv) {
     gui->get_widget("raibert_flight_d_gain_hscale", raibert_flight_d_gain_hscale);
     gui->get_widget("raibert_flight_spring_threshold_hscale", raibert_flight_spring_threshold_hscale);
 
+    gui->get_widget("test_boolean_motorsOn", test_boolean_motorsOn);
+    gui->get_widget("test_boolean_jumped", test_boolean_jumped);
+    gui->get_widget("test_slider_longLegAngle", test_slider_longLegAngle);
+    gui->get_widget("test_slider_shortLegAngle", test_slider_shortLegAngle);
+    gui->get_widget("test_slider_heightOff", test_slider_heightOff);
+    gui->get_widget("test_slider_heightOn", test_slider_heightOn);
+    gui->get_widget("test_slider_gainP", test_slider_gainP);
+    gui->get_widget("test_slider_gainD", test_slider_gainD);
+
+    /*
     gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
     gui->get_widget("grizzle_stance_threshold_hscale", grizzle_stance_threshold_hscale);
     gui->get_widget("grizzle_motor_gain_hscale", grizzle_motor_gain_hscale);
+     */
 
     gui->get_widget("drawing_area", drawing_area);
 
@@ -124,10 +143,10 @@ int main(int argc, char **argv) {
     p_leg_position_hscale->set_range(0., 1000.);
     d_leg_position_hscale->set_range(0., 100.);
 
-    log_frequency_spin->set_range(100,10000);
-    log_frequency_spin->set_increments(100,500);
+    log_frequency_spin->set_range(100, 10000);
+    log_frequency_spin->set_increments(100, 500);
     log_frequency_spin->set_value(100);
-    
+
     leg_angle_amplitude_hscale->set_range(0., 1.);
     leg_angle_frequency_hscale->set_range(0., 5.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
@@ -148,9 +167,18 @@ int main(int argc, char **argv) {
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
+    test_slider_longLegAngle->set_range(10.0, 30.0);
+    test_slider_shortLegAngle->set_range(50.0, 70.0);
+    test_slider_heightOff->set_range(0.0, 1.0);
+    test_slider_heightOn->set_range(0.0, 1.0);
+    test_slider_gainP->set_range(0.0, 1000.0);
+    test_slider_gainD->set_range(0.0, 100.0);
+
+    /*
     grizzle_flight_threshold_hscale->set_range(-2.0, 2.0);
     grizzle_stance_threshold_hscale->set_range(-2.0, 2.0);
     grizzle_motor_gain_hscale->set_range(0., 1000.);
+     */
 
     motor_torqueA_progress_bar->set_fraction(0.);
     motor_torqueB_progress_bar->set_fraction(0.);
@@ -228,7 +256,7 @@ int main(int argc, char **argv) {
           raibert_stance_spring_threshold_hscale->set_value(read_val);
 
     fclose (gui_state_fp);*/
-	// set initial values for velocity
+    // set initial values for velocity
     raibert_desired_velocity_hscale->set_value(0.364);
     raibert_desired_height_hscale->set_value(1.2);
     raibert_hor_vel_gain_hscale->set_value(0.162);
@@ -241,9 +269,19 @@ int main(int argc, char **argv) {
     raibert_flight_p_gain_hscale->set_value(250.);
     raibert_flight_d_gain_hscale->set_value(12.);
     raibert_flight_spring_threshold_hscale->set_value(0.022);
+
+    test_slider_longLegAngle->set_value(20.0);
+    test_slider_shortLegAngle->set_value(60.);
+    test_slider_heightOff->set_value(0.90);
+    test_slider_heightOn->set_value(0.50);
+    test_slider_gainP->set_value(200.0);
+    test_slider_gainD->set_value(10.0);
+
+    /*
     grizzle_stance_threshold_hscale->set_value(0.05);
     grizzle_flight_threshold_hscale->set_value(0.022);
     grizzle_motor_gain_hscale->set_value(-6.0);
+     */
 
     drawing_allocation = drawing_area->get_allocation();
     // Connect buttons to functions.
@@ -277,8 +315,11 @@ int main(int argc, char **argv) {
     return 0;
 }
 //! @brief Creates or closes a log file.
-void log_chkbox_toggled(void) {
-    if (log_file_chkbox->get_active()) {
+
+void log_chkbox_toggled(void)
+{
+    if (log_file_chkbox->get_active())
+    {
 
         //TODO: Figure out how to set the path in the file chooser to make this work
         /*if (log_file_chooser->get_filename() == "") {
@@ -306,31 +347,39 @@ void log_chkbox_toggled(void) {
             log_file_chooser->set_filename(buffer3);
         }
         ROS_INFO(log_file_chooser->get_filename().c_str());*/
-        if (log_file_chooser->get_filename() != "") {
+        if (log_file_chooser->get_filename() != "")
+        {
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
             fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Trq A---Tq B----xPos----yPos----zPos----xVel----yVel----zVel---\n");
             struct timespec curTime;
-            if(clock_gettime( CLOCK_REALTIME, &curTime) == -1) {
+            if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
+            {
                 ROS_WARN("Error getting current time, logging cannot initialize!");
                 return;
             }
-            else {
+            else
+            {
                 nextLogTime = (curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) + log_frequency_spin->get_value();
             }
             isLogging = true;
-        } else {
+        }
+        else
+        {
             log_file_chkbox->set_active(false);
         }
         //fprintf(log_file_fp, "time, body_ang, mtr_angA, mtr_angB, leg_angA, leg_angB, mtr_trqA, mtr_trqB\n");
-    } else if (isLogging) {
+    }
+    else if (isLogging)
+    {
         // Close the log file.
         isLogging = false;
         fclose(log_file_fp);
     }
 }
 
-std::string format_float(float fl) {
+std::string format_float(float fl)
+{
     char charBuf[64];
     sprintf(charBuf, "%.6f", fl);
     std::string buf = charBuf;
@@ -338,56 +387,80 @@ std::string format_float(float fl) {
     bool positive;
     std::string result = "       ";
 
-    for (int i = 0; (j = charBuf[i]) > 0; i++) { // loop until a null character is encountered
-        if (i == 0) {
-            if (j == '-') { // is the number negative
+    for (int i = 0; (j = charBuf[i]) > 0; i++)
+    { // loop until a null character is encountered
+        if (i == 0)
+        {
+            if (j == '-')
+            { // is the number negative
                 positive = false;
-            } else {
+            }
+            else
+            {
                 positive = true;
             }
-        } 
-        else if (j == '.') {
-            if (i < 6) { // if there's room for one or more decimal places, include them
-                for (int k = 0; k < 7; k++) {
+        }
+        else if (j == '.')
+        {
+            if (i < 6)
+            { // if there's room for one or more decimal places, include them
+                for (int k = 0; k < 7; k++)
+                {
                     result[k] = charBuf[k];
                 }
                 return result;
-            } else { // if there's no room, leave them out
-                for (int k = 0; k < i && k < 7; k++) {
+            }
+            else
+            { // if there's no room, leave them out
+                for (int k = 0; k < i && k < 7; k++)
+                {
                     result[k] = charBuf[k];
                 }
                 return result;
             }
         }
-        else if (i > 6) {
+        else if (i > 6)
+        {
             break;
         }
     }
-    if (positive) {
+    if (positive)
+    {
         return "NTOOBIG"; // the number is too big too be formatted
-    } else {
+    }
+    else
+    {
         return "NTOOLOW"; // the number is too small to be formatted
     }
 }
 //! @brief restarts the robot.
-void restart_robot(void) {
-    if (atrias_srv.request.command == CMD_DISABLE) {
+
+void restart_robot(void)
+{
+    if (atrias_srv.request.command == CMD_DISABLE)
+    {
         atrias_srv.request.command = CMD_RESTART;
         atrias_srv.request.controller_requested = NO_CONTROLLER;
         controller_notebook->set_current_page(NO_CONTROLLER);
     }
 }
 //! @brief Enables the motors of the robot.
-void enable_motors(void) {
+
+void enable_motors(void)
+{
     atrias_srv.request.command = CMD_RUN;
 }
 //! @brief Disables the motors of the robot. 
-void disable_motors(void) {
+
+void disable_motors(void)
+{
     atrias_srv.request.command = CMD_DISABLE;
 }
 
 //! @brief Change the active controller.
-void switch_controllers(GtkNotebookPage* page, guint page_num) {
+
+void switch_controllers(GtkNotebookPage* page, guint page_num)
+{
     if (atrias_srv.request.command == CMD_DISABLE)
         atrias_srv.request.controller_requested = page_num;
     else
@@ -395,9 +468,12 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
 }
 
 //! @brief Probes and updates the active controller then sends updated commands to the robot.
-bool poke_controller(void) {
+
+bool poke_controller(void)
+{
     char buffer[20];
-    switch (atrias_srv.request.controller_requested) {
+    switch (atrias_srv.request.controller_requested)
+    {
         case NO_CONTROLLER:
             //MTR_TRQ_CONTROLLER_DATA(&(atrias_srv.request.control_data.elems))->mtr_trqA = 0.;
             break;
@@ -452,20 +528,54 @@ bool poke_controller(void) {
                 raibert_state_label->set_label("Stance");
             break;
         case TEST_CONTROLLER:
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_motor_gain = grizzle_motor_gain_hscale->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_motor_gain = grizzle_motor_gain_hscale->get_value();
+
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->longLegAngle = test_slider_longLegAngle->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->shortLegAngle = test_slider_shortLegAngle->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOff = test_slider_heightOff->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOn = test_slider_heightOn->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainP = test_slider_gainP->set_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainD = test_slider_gainD->set_value();
+
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->motors_powered)
+            {
+                test_boolean_motorsOn->set_color("#0000ffff0000");
+            }
+            else
+            {
+                test_boolean_motorsOn->set_color("#ffff00000000");
+            }
+            
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->jumped)
+            {
+                test_boolean_jumped->set_color("#0000ffff0000");
+            }
+            else
+            {
+                test_boolean_jumped->set_color("#ffff00000000");
+            }
+
+            break;
+            /*
+            case GRIZZLE_CONTROLLER:
+                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
+                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
+                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_motor_gain = grizzle_motor_gain_hscale->get_value();
+                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_motor_gain = grizzle_motor_gain_hscale->get_value();
+                break;
+             */
     }
 
     // Check to see if we are supposed to be logging data.
-    if (isLogging) {
+    if (isLogging)
+    {
         struct timespec curTime;
-        if(clock_gettime( CLOCK_REALTIME, &curTime) == -1) {
+        if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
+        {
             ROS_WARN("Error getting current time, logging has been disabled!");
             log_file_chkbox->set_active(false);
         }
-        else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime)) {
+        else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime))
+        {
             fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
                     format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
                     format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
@@ -481,7 +591,8 @@ bool poke_controller(void) {
         atrias_srv.request.command = CMD_DISABLE;
 
     // Move the sliders if the controller is disabled.
-    if (atrias_srv.response.status == CMD_DISABLE) {
+    if (atrias_srv.response.status == CMD_DISABLE)
+    {
         motor_positionA_hscale->set_value(atrias_srv.response.motor_angleA);
         motor_positionB_hscale->set_value(atrias_srv.response.motor_angleB);
     }
@@ -513,12 +624,14 @@ bool poke_controller(void) {
     return true;
 }
 //! @brief Draws the four legs of Atrias in the simulation (the carrot).
-void draw_leg() {
+
+void draw_leg()
+{
     float segment_length = 125.;
     float short_segment_length = 100.;
     float motor_radius = 70.;
 
-    float start_x = 110.;
+    float start_x = 100.;
     float start_y = 100.;
 
     drawing_area->get_window()->clear();

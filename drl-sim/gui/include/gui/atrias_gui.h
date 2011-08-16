@@ -58,9 +58,20 @@ Gtk::HScale *raibert_flight_p_gain_hscale;
 Gtk::HScale *raibert_flight_d_gain_hscale;
 Gtk::HScale *raibert_flight_spring_threshold_hscale;
 
+Gtk::ColorButton *test_boolean_motorsOn;
+Gtk::ColorButton *test_boolean_jumped;
+Gtk::HScale *test_slider_longLegAngle;
+Gtk::HScale *test_slider_shortLegAngle;
+Gtk::HScale *test_slider_heightOff;
+Gtk::HScale *test_slider_heightOn;
+Gtk::HScale *test_slider_gainP;
+Gtk::HScale *test_slider_gainD;
+
+/*
 Gtk::HScale *grizzle_stance_threshold_hscale;
 Gtk::HScale *grizzle_flight_threshold_hscale;
 Gtk::HScale *grizzle_motor_gain_hscale;
+*/
 
 Gtk::DrawingArea *drawing_area;
 

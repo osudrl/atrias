@@ -6,6 +6,8 @@
 
 #include <drl_library/drl_math.h>
 
+#include <stdio.h>
+
 #ifdef COMPILE_FOR_RTAI
 #include <linux/types.h>
 #include <rtai_math.h>
@@ -40,7 +42,7 @@
 #define PRINT_WARN	ROS_WARN
 #endif
 #else
-#define PRINT_MSG	// printf
+#define PRINT_MSG	printf
 #define PRINT_WARN	// printf
 #endif
 
@@ -200,20 +202,17 @@ typedef struct {
 } RaibertControllerState;
 
 typedef struct {
-//    float flight_threshold;
-//    float stance_threshold;
-    float flight_motor_gain_p;
-    float stance_motor_gain_p;
-    float flight_motor_gain_d;
-    float stance_motor_gain_d;
-    float flight_desired_motor_angleA;
-    float flight_desired_motor_angleB;
-    float stance_desired_motor_angleA;
-    float stance_desired_motor_angleB;
+    float longLegAngle;
+    float shortLegAngle;
+    float heightOff;
+    float heightOn;
+    float gainP;
+    float gainD;
 } TestControllerData;
 
 typedef struct {
-    unsigned char in_flight;
+    unsigned char motors_powered;
+    unsigned char jumped;
 } TestControllerState;
 
 // Macros for dereferencing pointers.
