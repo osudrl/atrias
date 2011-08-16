@@ -391,7 +391,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 	boom_tilt_angle = DISCRETIZE_LOCATION( boom_tilt_off + uc_out[BOOM_INDEX]->BOOM_TILT_CNT, 
 		BOOM_KNOWN_TILT_CNT, BOOM_KNOWN_TILT_ANGLE, MAX_16BIT, BOOM_TILT_GEAR_RATIO);
-	c_in->height = BOOM_LENGTH * sin(boom_tilt_angle) + BOOM_PIVOT_HEIGHT;
+	c_in->zPosition = BOOM_LENGTH * sin(boom_tilt_angle) + BOOM_PIVOT_HEIGHT;
 
 	// Grab motor torque readings.
 	c_in->motor_currentA = uc_out[A_INDEX]->therm1;
@@ -406,7 +406,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	leg_angle = ( c_in->leg_angleA + c_in->leg_angleB ) / 2.;
 	leg_length = - 0.5 * sin( c_in->leg_angleA ) - 0.5 * sin( c_in->leg_angleB );
 
-	if ( ( c_in->height - leg_length * sin( leg_angle ) < 0.02 ) && ( ( ABS( c_in->motor_angleA - c_in->leg_angleA ) > 0.02 )
+	if ( ( c_in->zPosition - leg_length * sin( leg_angle ) < 0.02 ) && ( ( ABS( c_in->motor_angleA - c_in->leg_angleA ) > 0.02 )
 		|| ( ABS( c_in->motor_angleB - c_in->leg_angleB ) > 0.02 ) ) )
 	//if ( c_in->height > leg_length * sin( leg_angle ) )
 	{
