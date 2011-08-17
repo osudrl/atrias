@@ -65,6 +65,8 @@ int main(int argc, char **argv)
     gui->get_widget("leg_angle_torque_hscale", leg_angle_torque_hscale);
     gui->get_widget("p_leg_position_hscale", p_leg_position_hscale);
     gui->get_widget("d_leg_position_hscale", d_leg_position_hscale);
+    //gui->get_widget("p_leg_position_spin", p_leg_position_spin);
+    //gui->get_widget("d_leg_position_spin", d_leg_position_spin);
 
     gui->get_widget("leg_length_hscale", leg_length_hscale);
     gui->get_widget("leg_angle_hscale", leg_angle_hscale);
@@ -147,7 +149,11 @@ int main(int argc, char **argv)
     leg_length_hscale->set_range(0., 1.);
     leg_angle_hscale->set_range(0., PI);
     p_leg_position_hscale->set_range(0., 1000.);
+    //p_leg_position_spin->set_range(0., 1000.);
+    //p_leg_position_spin->set_increments(.05, 1.);
     d_leg_position_hscale->set_range(0., 100.);
+    //d_leg_position_spin->set_increments(.05, 1.);
+    //d_leg_position_spin->set_range(0., 1000.);
 
     log_frequency_spin->set_range(100, 10000);
     log_frequency_spin->set_increments(100, 500);
@@ -360,7 +366,7 @@ void log_chkbox_toggled(void)
         {
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
-            fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Trq A---Tq B----xPos----yPos----zPos----xVel----yVel----zVel---\n");
+            fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Torq A--Torq B--xPos----yPos----zPos----xVel----yVel----zVel---\n");
             struct timespec curTime;
             if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
             {
@@ -503,6 +509,22 @@ bool poke_controller(void)
         case LEG_POSITION_CONTROLLER:
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_len = leg_length_hscale->get_value();
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang = leg_angle_hscale->get_value();
+            /*if (fabs(p_leg_position_spin->get_value() - last_p_gain) > .00001)
+            {
+                  p_leg_position_hscale->set_value(p_leg_position_spin->get_value());
+            }
+            else if (fabs(p_leg_position_hscale->get_value() - last_p_gain) > .00001)
+            {
+                  p_leg_position_spin->set_value(p_leg_position_hscale->get_value());
+            }
+            if (fabs(d_leg_position_spin->get_value() - last_d_gain) > .00001)
+            {
+                  d_leg_position_hscale->set_value(d_leg_position_spin->get_value());
+            }
+            else if (fabs(d_leg_position_hscale->get_value() - last_d_gain) > .00001)
+            {
+                  d_leg_position_spin->set_value(d_leg_position_hscale->get_value());
+            }*/
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = p_leg_position_hscale->get_value();
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = d_leg_position_hscale->get_value();
             break;

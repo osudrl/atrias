@@ -26,6 +26,7 @@ EXTRA_CFLAGS := \
 	-I /usr/include \
 	-ffast-math \
 	-mhard-float \
+	-msse \
 	-D COMPILE_FOR_RTAI
 
 KBUILD_EXTRA_SYMBOLS := \

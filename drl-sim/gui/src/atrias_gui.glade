@@ -1,17 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="atrias_window">
-    <property name="can_focus">False</property>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkNotebook" id="controller_notebook">
                 <property name="visible">True</property>
@@ -19,7 +16,6 @@
                 <child>
                   <object class="GtkLabel" id="instructions_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Select the tab for the controller that you would like to run.
 
 You may only switch controllers with the motors disabled.</property>
@@ -28,7 +24,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="no_controller_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">None</property>
                   </object>
                   <packing>
@@ -38,16 +33,12 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="motor_torque_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="motor_torqueA_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Motor Torque A:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -55,24 +46,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="motor_torqueA_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="motor_torqueB_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Motor Torque B:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -80,12 +65,9 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="motor_torqueB_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
@@ -97,7 +79,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="motor_torque_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Motor Torque</property>
                   </object>
                   <packing>
@@ -108,16 +89,12 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="motor_position_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="motor_positionA_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Motor Position A:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -125,24 +102,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="motor_positionA_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="motor_positionB_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Motor Position B:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -150,28 +121,21 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="motor_positionB_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox4">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="p_motor_position_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">P Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -179,23 +143,17 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="p_motor_position_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">4</property>
                       </packing>
                     </child>
@@ -203,28 +161,21 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="p_motor_position_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox3">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="d_motor_position_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">D Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -232,23 +183,17 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="d_motor_position_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">6</property>
                       </packing>
                     </child>
@@ -256,12 +201,9 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="d_motor_position_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>
                     </child>
@@ -273,7 +215,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="motor_position_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Motor Position</property>
                   </object>
                   <packing>
@@ -284,16 +225,12 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="leg_torque_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="leg_length_torque_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Length Torque:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -301,24 +238,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_length_torque_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="leg_angle_torque_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Angle Torque:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -326,12 +257,9 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_angle_torque_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
@@ -343,7 +271,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="leg_torque_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Leg Torque</property>
                   </object>
                   <packing>
@@ -354,16 +281,12 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="leg_position_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="leg_length_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Length:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -371,24 +294,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_length_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="leg_angle_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Angle:</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -396,28 +313,21 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_angle_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox6">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="p_leg_position_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">P Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -425,52 +335,60 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="p_leg_position_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHScale" id="p_leg_position_hscale">
+                      <object class="GtkHBox" id="hbox20">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
-                        <property name="digits">3</property>
+                        <child>
+                          <object class="GtkSpinButton" id="spinbutton1">
+                            <property name="width_request">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="digits">2</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHScale" id="p_leg_position_hscale">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="digits">3</property>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox5">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="d_leg_position_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">D Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -478,36 +396,48 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="d_leg_position_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHScale" id="d_leg_position_hscale">
+                      <object class="GtkHBox" id="hbox21">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
-                        <property name="digits">3</property>
+                        <child>
+                          <object class="GtkSpinButton" id="spinbutton2">
+                            <property name="width_request">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="digits">2</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkHScale" id="d_leg_position_hscale">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="digits">3</property>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>
                     </child>
@@ -519,7 +449,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="leg_position_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Leg Position</property>
                   </object>
                   <packing>
@@ -530,16 +459,12 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="sine_wave_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="leg_angle_amplitude_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Angle Amplitude (rad):</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -547,24 +472,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_angle_amplitude_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="leg_angle_frequency_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Angle Frequency (Hz):</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -572,24 +491,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_angle_frequency_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="leg_length_amplitude_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Length Amplitude (m):</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">4</property>
                       </packing>
                     </child>
@@ -597,24 +510,18 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_length_amplitude_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="leg_length_frequency_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg Length Frequency (Hz):</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">6</property>
                       </packing>
                     </child>
@@ -622,28 +529,21 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="leg_length_frequency_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox7">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="p_sine_wave_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">P Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -651,23 +551,17 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="p_sine_wave_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">8</property>
                       </packing>
                     </child>
@@ -675,28 +569,21 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="p_sine_wave_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">9</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox8">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="d_sine_wave_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">D Gain:</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -704,23 +591,17 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkEntry" id="d_sine_wave_entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">10</property>
                       </packing>
                     </child>
@@ -728,12 +609,9 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="d_sine_wave_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">11</property>
                       </packing>
                     </child>
@@ -745,7 +623,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="sine_wave_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Sine Wave</property>
                   </object>
                   <packing>
@@ -756,13 +633,11 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkTable" id="table2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="n_rows">17</property>
                     <property name="n_columns">2</property>
                     <child>
                       <object class="GtkLabel" id="raibert_desired_velocity_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Desired Horizontal Velocity:</property>
                       </object>
                     </child>
@@ -770,7 +645,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_desired_velocity_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -781,7 +655,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_desired_height_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Desired Hopping Height:</property>
                       </object>
                       <packing>
@@ -793,7 +666,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_desired_height_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -804,7 +676,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_leg_angle_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Horizontal Velocity Gain:</property>
                       </object>
                       <packing>
@@ -816,7 +687,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_hor_vel_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -827,7 +697,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_leg_force_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Hopping Height Gain:</property>
                       </object>
                       <packing>
@@ -839,7 +708,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_leg_force_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -850,7 +718,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_leg_angle_gain_labe">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Leg TD Angle Gain:</property>
                       </object>
                       <packing>
@@ -862,7 +729,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_leg_angle_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -873,7 +739,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_stance_p_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Stance P Gain:</property>
                       </object>
                       <packing>
@@ -885,7 +750,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_stance_p_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -896,7 +760,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_stance_d_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Stance D Gain:</property>
                       </object>
                       <packing>
@@ -908,7 +771,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_stance_d_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -919,7 +781,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_stance_spring_threshold_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Stance Spring Deflection Threshold (rad):</property>
                       </object>
                       <packing>
@@ -931,7 +792,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_stance_spring_threshold_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -942,11 +802,10 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_state_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Starting...</property>
                         <attributes>
                           <attribute name="weight" value="ultraheavy"/>
-                          <attribute name="scale" value="4"/>
+                          <attribute name="scale" value="4.000000"/>
                         </attributes>
                       </object>
                       <packing>
@@ -958,7 +817,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_flight_spring_threshold_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -971,7 +829,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_flight_spring_threshold_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Flight Spring Deflection Threshold (rad):</property>
                       </object>
                       <packing>
@@ -984,7 +841,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_flight_p_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Flight P Gain:</property>
                       </object>
                       <packing>
@@ -998,7 +854,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_flight_p_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1011,7 +866,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_flight_d_gain_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Flight D Gain:</property>
                       </object>
                       <packing>
@@ -1025,7 +879,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_flight_d_gain_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1038,7 +891,6 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkLabel" id="raibert_preferred_leg_len_label">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Preferred Leg Length:</property>
                       </object>
                       <packing>
@@ -1050,7 +902,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkHScale" id="raibert_preferred_leg_len_hscale">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="round_digits">3</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1095,7 +946,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="raibert_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Raibert Control</property>
                   </object>
                   <packing>
@@ -1106,20 +956,16 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="test_flight_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkHBox" id="hbox13">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkVBox" id="vbox16">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_motors_enabled_label">
                                 <property name="height_request">30</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Motors Enabled</property>
                                 <attributes>
                                   <attribute name="weight" value="semibold"/>
@@ -1127,7 +973,6 @@ You may only switch controllers with the motors disabled.</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -1135,42 +980,33 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkImage" id="test_motors_status_image">
                                 <property name="height_request">1</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-missing-image</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkVSeparator" id="vseparator5">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkVBox" id="vbox17">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_in_flight_label">
                                 <property name="height_request">30</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">In Flight</property>
                                 <attributes>
                                   <attribute name="weight" value="semibold"/>
@@ -1178,7 +1014,6 @@ You may only switch controllers with the motors disabled.</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -1186,73 +1021,57 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkImage" id="test_flight_status_image">
                                 <property name="height_request">1</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="stock">gtk-missing-image</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHSeparator" id="hseparator2">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkVBox" id="vbox12">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="test_displacement_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Displacements</property>
                             <attributes>
                               <attribute name="weight" value="semibold"/>
                             </attributes>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox14">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_long_leg_angle_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Long Leg Angle</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1261,37 +1080,29 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_longLegAngle">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">2</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox15">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_short_leg_angle_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Short Leg Angle</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1300,63 +1111,50 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_shortLegAngle">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">2</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHSeparator" id="hseparator5">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">3</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="test_height_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Heights</property>
                             <attributes>
                               <attribute name="weight" value="semibold"/>
                             </attributes>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">4</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox16">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_motors_on_height_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Motors On</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1365,37 +1163,29 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_heightMotorsOn">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">3</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">5</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox17">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_motors_off_height_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Motors Off</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1404,63 +1194,50 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_heightMotorsOff">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">3</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">6</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHSeparator" id="hseparator6">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">7</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="test_gain_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Gains</property>
                             <attributes>
                               <attribute name="weight" value="semibold"/>
                             </attributes>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">8</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox18">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_gain_proportional_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Proportional</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1469,37 +1246,29 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_gainP">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">2</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">9</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox19">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="test_gain_differential_label">
                                 <property name="width_request">108</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Differential</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">0</property>
                               </packing>
@@ -1508,27 +1277,20 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkHScale" id="test_slider_gainD">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="round_digits">1</property>
                                 <property name="digits">2</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="padding">5</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">10</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -1540,7 +1302,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="test_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Test</property>
                   </object>
                   <packing>
@@ -1551,7 +1312,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkVBox" id="grizzle_tab">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="homogeneous">True</property>
                     <child>
                       <placeholder/>
@@ -1562,23 +1322,19 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkVBox" id="grizzle_stance_controller">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="grizzle_stance_controller_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Stance Controller:</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHButtonBox" id="grizzle_stance_controller_selector">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="spacing">10</property>
                             <property name="homogeneous">True</property>
                             <property name="layout_style">center</property>
@@ -1588,7 +1344,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="use_action_appearance">False</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1602,7 +1357,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="use_action_appearance">False</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1616,7 +1370,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="use_action_appearance">False</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1626,14 +1379,11 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">2</property>
                       </packing>
@@ -1641,16 +1391,13 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkVBox" id="grizzle_flight_threshold">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="grizzle_flight_threshold_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Flight Threshold:</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -1658,18 +1405,14 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkHScale" id="grizzle_flight_threshold_hscale">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="round_digits">3</property>
                             <property name="digits">3</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">3</property>
                       </packing>
@@ -1677,16 +1420,13 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkVBox" id="grizzle_stance_threshold">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="grizzle_stance_threshold_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Stance Threshold:</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -1694,18 +1434,14 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkHScale" id="grizzle_stance_threshold_hscale">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="round_digits">3</property>
                             <property name="digits">3</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">4</property>
                       </packing>
@@ -1713,16 +1449,13 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkVBox" id="grizzle_motor_gain">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel" id="grizzle_motor_gain_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Motor Gain:</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -1730,18 +1463,14 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkHScale" id="grizzle_motor_gain_hscale">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="round_digits">3</property>
                             <property name="digits">3</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">5</property>
                       </packing>
@@ -1757,7 +1486,6 @@ You may only switch controllers with the motors disabled.</property>
                 <child type="tab">
                   <object class="GtkLabel" id="grizzle_label">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Grizzle</property>
                   </object>
                   <packing>
@@ -1767,19 +1495,15 @@ You may only switch controllers with the motors disabled.</property>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkVSeparator" id="vseparator4">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -1787,62 +1511,48 @@ You may only switch controllers with the motors disabled.</property>
               <object class="GtkVBox" id="vbox2">
                 <property name="width_request">200</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkDrawingArea" id="drawing_area">
                     <property name="width_request">250</property>
                     <property name="height_request">80</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkVBox" id="vbox4">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkButton" id="enable_button">
-                            <property name="height_request">14</property>
+                            <property name="height_request">16</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <child>
                               <object class="GtkHBox" id="hbox12">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkImage" id="image1">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="pixel_size">48</property>
                                     <property name="icon_name">media-playback-start</property>
                                     <property name="icon-size">6</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label15">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Start</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
@@ -1850,45 +1560,35 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="restart_button">
-                            <property name="height_request">14</property>
+                            <property name="height_request">16</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <child>
                               <object class="GtkHBox" id="hbox11">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkImage" id="image2">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="pixel_size">72</property>
                                     <property name="icon_name">media-seek-backward</property>
                                     <property name="icon-size">6</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label14">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Reset</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
@@ -1896,16 +1596,12 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="padding">1</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -1914,36 +1610,27 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <child>
                           <object class="GtkHBox" id="hbox10">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkImage" id="disable_butto">
                                 <property name="height_request">1</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="pixel_size">72</property>
                                 <property name="icon_name">media-playback-stop</property>
-                                <property name="use_fallback">True</property>
                                 <property name="icon-size">6</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="label13">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Stop</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -1951,8 +1638,6 @@ You may only switch controllers with the motors disabled.</property>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="padding">1</property>
                         <property name="position">1</property>
                       </packing>
@@ -1961,7 +1646,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkVBox" id="vbox5">
                         <property name="height_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkCheckButton" id="log_file_chkbox">
                             <property name="label" translatable="yes">Log Data</property>
@@ -1969,29 +1653,22 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="draw_indicator">True</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkHBox" id="hbox9">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkLabel" id="label12">
                                 <property name="width_request">55</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Frequency</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -2000,19 +1677,15 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_request">70</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="invisible_char">•</property>
+                                <property name="invisible_char">&#x2022;</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="caps_lock_warning">False</property>
-                                <property name="primary_icon_activatable">False</property>
-                                <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="snap_to_ticks">True</property>
                                 <property name="numeric">True</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -2020,119 +1693,92 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkLabel" id="label11">
                                 <property name="width_request">5</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">ms</property>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkFileChooserButton" id="log_file_chooser">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="extension_events">all</property>
-                            <property name="action">save</property>
                             <property name="do_overwrite_confirmation">True</property>
+                            <property name="action">save</property>
                             <property name="title" translatable="yes">Select A Log File</property>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
                             <property name="fill">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkHSeparator" id="hseparator1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkHBox" id="hbox2">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkVBox" id="vbox6">
                 <property name="width_request">1</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Position</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkTable" id="table1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="n_rows">3</property>
                     <property name="n_columns">2</property>
                     <child>
                       <object class="GtkLabel" id="label2">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">X:</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkEntry" id="xPosDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2146,7 +1792,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkLabel" id="label3">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Y:</property>
                       </object>
                       <packing>
@@ -2158,7 +1803,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkLabel" id="label4">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Z:</property>
                       </object>
                       <packing>
@@ -2169,11 +1813,8 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkEntry" id="yPosDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2188,11 +1829,8 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkEntry" id="zPosDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2206,26 +1844,20 @@ You may only switch controllers with the motors disabled.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkVSeparator" id="vseparator1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -2233,30 +1865,24 @@ You may only switch controllers with the motors disabled.</property>
               <object class="GtkVBox" id="vbox7">
                 <property name="width_request">1</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Velocity</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkTable" id="table3">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="n_rows">3</property>
                     <property name="n_columns">2</property>
                     <child>
                       <object class="GtkLabel" id="label6">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">X:</property>
                       </object>
                     </child>
@@ -2264,7 +1890,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkLabel" id="label7">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Y:</property>
                       </object>
                       <packing>
@@ -2276,7 +1901,6 @@ You may only switch controllers with the motors disabled.</property>
                       <object class="GtkLabel" id="label8">
                         <property name="width_request">1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Z:</property>
                       </object>
                       <packing>
@@ -2287,11 +1911,8 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkEntry" id="xVelDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2303,11 +1924,8 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkEntry" id="yVelDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2321,11 +1939,8 @@ You may only switch controllers with the motors disabled.</property>
                     <child>
                       <object class="GtkEntry" id="zVelDisplay">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
@@ -2338,26 +1953,20 @@ You may only switch controllers with the motors disabled.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkVSeparator" id="vseparator2">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
             </child>
@@ -2365,20 +1974,15 @@ You may only switch controllers with the motors disabled.</property>
               <object class="GtkVBox" id="vbox8">
                 <property name="width_request">1</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkVBox" id="vbox9">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Torque A</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -2387,52 +1991,39 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="invisible_char_set">True</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkProgressBar" id="motor_torqueA_progress_bar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">4</property>
               </packing>
             </child>
             <child>
               <object class="GtkVSeparator" id="vseparator3">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">5</property>
               </packing>
             </child>
@@ -2440,20 +2031,15 @@ You may only switch controllers with the motors disabled.</property>
               <object class="GtkVBox" id="vbox10">
                 <property name="width_request">1</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkVBox" id="vbox11">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkLabel" id="label9">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Torque B</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -2462,48 +2048,35 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
-                        <property name="invisible_char">•</property>
+                        <property name="invisible_char">&#x2022;</property>
                         <property name="invisible_char_set">True</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkProgressBar" id="motor_torqueB_progress_bar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">6</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>

@@ -39,6 +39,8 @@ Gtk::HScale *leg_length_hscale;
 Gtk::HScale *leg_angle_hscale;
 Gtk::HScale *p_leg_position_hscale;
 Gtk::HScale *d_leg_position_hscale;
+Gtk::SpinButton *p_leg_position_spin;
+Gtk::SpinButton *d_leg_position_spin;
 
 Gtk::HScale *leg_angle_amplitude_hscale;
 Gtk::HScale *leg_angle_frequency_hscale;
@@ -120,6 +122,9 @@ ros::ServiceClient atrias_client;
 atrias_controllers::atrias_srv atrias_srv;
 
 FILE *log_file_fp;
+
+double last_p_gain;
+double last_d_gain;
 
 bool isLogging = false;
 long nextLogTime;
