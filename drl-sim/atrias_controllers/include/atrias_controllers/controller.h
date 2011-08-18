@@ -202,17 +202,17 @@ typedef struct {
 } RaibertControllerState;
 
 typedef struct {
-    float longLegAngle;
-    float shortLegAngle;
-    float heightOff;
-    float heightOn;
-    float gainP;
-    float gainD;
+    float flightGainP;
+    float flightGainD;
+    float stanceGainP;
+    float stanceGainD;
+    float desiredLength;
+    float activationDeflection;
 } TestControllerData;
 
 typedef struct {
-    unsigned char motors_powered;
-    unsigned char jumped;
+    //unsigned char motors_powered;
+    //unsigned char jumped;
 } TestControllerState;
 
 // Macros for dereferencing pointers.

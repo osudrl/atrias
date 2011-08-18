@@ -96,12 +96,25 @@ int main(int argc, char **argv)
     gui->get_widget("test_flight_status_image", test_flight_status_image);
     gui->get_widget("test_motors_status_image", test_motors_status_image);
     gui->get_widget("test_flight_status_image", test_flight_status_image);
-    gui->get_widget("test_slider_longLegAngle", test_slider_longLegAngle);
-    gui->get_widget("test_slider_shortLegAngle", test_slider_shortLegAngle);
-    gui->get_widget("test_slider_heightMotorsOff", test_slider_heightOff);
-    gui->get_widget("test_slider_heightMotorsOn", test_slider_heightOn);
-    gui->get_widget("test_slider_gainP", test_slider_gainP);
-    gui->get_widget("test_slider_gainD", test_slider_gainD);
+    gui->get_widget("test_label_1", test_label);
+    test_label->set_text("Flight KP");
+    gui->get_widget("test_label_2", test_label);
+    test_label->set_text("Flight KD");
+    gui->get_widget("test_label_3", test_label);
+    test_label->set_text("Stance KD");
+    gui->get_widget("test_label_4", test_label);
+    test_label->set_text("Stance KP");
+    gui->get_widget("test_label_5", test_label);
+    test_label->set_text("Desired Length");
+    gui->get_widget("test_label_6", test_label);
+    test_label->set_text("Activation Deflection");
+    
+    gui->get_widget("test_hscale_1", test_slider_flightGainP);
+    gui->get_widget("test_hscale_2", test_slider_flightGainD);
+    gui->get_widget("test_hscale_3", test_slider_stanceGainP);
+    gui->get_widget("test_hscale_4", test_slider_stanceGainD);
+    gui->get_widget("test_hscale_5", test_slider_desiredLength);
+    gui->get_widget("test_hscale_6", test_slider_activationDeflection);
 
     /*
     gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
@@ -179,12 +192,12 @@ int main(int argc, char **argv)
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
-    test_slider_longLegAngle->set_range(1.0, 89.0);
-    test_slider_shortLegAngle->set_range(1.0, 89.0);
-    test_slider_heightOff->set_range(0.0, 0.0);
-    test_slider_heightOn->set_range(0.0, 0.0);
-    test_slider_gainP->set_range(0.0, 1000.0);
-    test_slider_gainD->set_range(0.0, 100.0);
+    test_slider_flightGainP->set_range(0.0, 100.0);
+    test_slider_flightGainD->set_range(0.0, 10.0);
+    test_slider_stanceGainP->set_range(0.0, 1000.0);
+    test_slider_stanceGainD->set_range(0.0, 100.0);
+    test_slider_desiredLength->set_range(0.01, 0.99);
+    test_slider_activationDeflection->set_range(0.0, 0.1);
 
     /*
     grizzle_flight_threshold_hscale->set_range(-2.0, 2.0);
@@ -285,12 +298,12 @@ int main(int argc, char **argv)
     raibert_flight_d_gain_hscale->set_value(10.);
     raibert_flight_spring_threshold_hscale->set_value(0.020);
 
-    test_slider_longLegAngle->set_value(20.0);
-    test_slider_shortLegAngle->set_value(60.);
-    test_slider_heightOff->set_value(0.90);
-    test_slider_heightOn->set_value(0.65);
-    test_slider_gainP->set_value(200.0);
-    test_slider_gainD->set_value(10.0);
+    test_slider_flightGainP->set_value(50.0);
+    test_slider_flightGainD->set_value(10.0);
+    test_slider_stanceGainP->set_value(100.0);
+    test_slider_stanceGainD->set_value(20.0);
+    test_slider_desiredLength->set_value(0.95);
+    test_slider_activationDeflection->set_value(0.05);
 
     /*
     grizzle_stance_threshold_hscale->set_value(0.05);
@@ -560,14 +573,14 @@ bool poke_controller(void)
             break;
         case TEST_CONTROLLER:
 
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->longLegAngle = test_slider_longLegAngle->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->shortLegAngle = test_slider_shortLegAngle->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOff = test_slider_heightOff->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->heightOn = test_slider_heightOn->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainP = test_slider_gainP->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->gainD = test_slider_gainD->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightGainP = test_slider_flightGainP->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightGainD = test_slider_flightGainD->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceGainP = test_slider_stanceGainP->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceGainD = test_slider_stanceGainD->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLength = test_slider_desiredLength->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->activationDeflection = test_slider_activationDeflection->get_value();
 
-            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->motors_powered)
+            /*if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->motors_powered)
             {
                 test_motors_status_image->set(green_image_path);
             }
@@ -583,7 +596,7 @@ bool poke_controller(void)
             else
             {
                 test_flight_status_image->set(red_image_path);
-            }
+            }*/
 
             break;
             /*

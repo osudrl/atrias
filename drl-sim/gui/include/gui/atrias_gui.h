@@ -65,23 +65,13 @@ Gtk::HScale *raibert_flight_spring_threshold_hscale;
 
 Gtk::Image *test_motors_status_image;
 Gtk::Image *test_flight_status_image;
-
-/*Gtk::ColorButton *test_motors_disabled_color_button;
-Gtk::ColorButton *test_motors_enabled_color_button;
-Gtk::ColorButton *test_not_in_flight_color_button;
-Gtk::ColorButton *test_in_flight_color_button;
-
-Gdk::Color green;
-Gdk::Color dark_green;
-Gdk::Color red;
-Gdk::Color dark_red;*/
-
-Gtk::HScale *test_slider_longLegAngle;
-Gtk::HScale *test_slider_shortLegAngle;
-Gtk::HScale *test_slider_heightOff;
-Gtk::HScale *test_slider_heightOn;
-Gtk::HScale *test_slider_gainP;
-Gtk::HScale *test_slider_gainD;
+Gtk::Label *test_label;
+Gtk::HScale *test_slider_flightGainP;
+Gtk::HScale *test_slider_flightGainD;
+Gtk::HScale *test_slider_stanceGainP;
+Gtk::HScale *test_slider_stanceGainD;
+Gtk::HScale *test_slider_desiredLength;
+Gtk::HScale *test_slider_activationDeflection;
 
 /*
 Gtk::HScale *grizzle_stance_threshold_hscale;

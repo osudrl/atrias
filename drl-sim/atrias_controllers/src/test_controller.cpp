@@ -2,70 +2,45 @@
 
 #include <atrias_controllers/controller.h>
 
-#define ANGLE_CALCULATION_A(A) (((-90 + (A))/180.0)*PI)
-#define ANGLE_CALCULATION_B(B) (((270 - (B))/180.0)*PI)
-
-#define INVERT_A(A) ((((A)/PI)*180)+90)
-#define INVERT_B(B) ((((-1*(B))/PI)*180)-270)
-
-void set_torques(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, bool on);
-
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     output->motor_torqueA = output->motor_torqueB = 0.0;
-    TEST_CONTROLLER_STATE(state)->motors_powered = true;
-    TEST_CONTROLLER_STATE(state)->jumped = false;
     PRINT_MSG("Test Controller Initialized.\n");
 }
 
 extern void update_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
-    if ((input->motor_angleA <= ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle)) && (input->motor_angleB >= ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle)) && TEST_CONTROLLER_STATE(state)->motors_powered == true)
+    float leg_angle = (input->leg_angleA + input->leg_angleB) / 2.;
+    float leg_length = - 0.5 * sin(input->leg_angleA) - 0.5 * sin(input->leg_angleB);
+    if(input->zPosition - leg_length * sin(leg_angle) < 0.02)
     {
-        TEST_CONTROLLER_STATE(state)->motors_powered = false;
- //       PRINT_MSG("Motors OFF::");
-   //     PRINT_MSG("[%f] [%f]::", input->motor_angleA, input->motor_angleB);
-   // PRINT_MSG("[%f] [%f]::", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->shortLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->shortLegAngle));
-   // PRINT_MSG("[%f] [%f]\n", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle));
+        if((input->leg_angleA - input->motor_angleA) >= TEST_CONTROLLER_DATA(data)->activationDeflection || (input->leg_angleB - input->motor_angleB) >= TEST_CONTROLLER_DATA(data)->activationDeflection)
+        {
+            output->motor_torqueA = TEST_CONTROLLER_DATA(data)->stanceGainP * ((-1)*(PI/2) + acos(TEST_CONTROLLER_DATA(data)->desiredLength));
+            output->motor_torqueB = TEST_CONTROLLER_DATA(data)->stanceGainP * (( 3)*(PI/2) + acos(TEST_CONTROLLER_DATA(data)->desiredLength));
+            //output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->stanceGainP * (((-1)*(PI/2) + acos(TEST_CONTROLLER_DATA(data)->desiredLength)) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->stanceGainD * input->motor_velocityA);
+            //output->motor_torqueB = (TEST_CONTROLLER_DATA(data)->stanceGainP * ((( 3)*(PI/2) - acos(TEST_CONTROLLER_DATA(data)->desiredLength)) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->stanceGainD * input->motor_velocityB);
+        }
+        else
+        {
+        output->motor_torqueA = output->motor_torqueB = 0.0;
+        }
     }
-    /*if ((input->motor_angleA >= TEST_CONTROLLER_DATA(data)->longLegAngle) && (input->motor_angleB >= TEST_CONTROLLER_DATA(data)->longLegAngle) && (input->zVelocity <= 0) && (TEST_CONTROLLER_STATE(state)->jumped))
+    else
     {
-        TEST_CONTROLLER_STATE(state)->jumped = false;
-        TEST_CONTROLLER_STATE(state)->motors_powered = false;
-        PRINT_MSG("Jumped: FALSE, Motors: FALSE\n");
-    }*/
-    if ((input->motor_angleA >= ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->shortLegAngle)) && (input->motor_angleB <= ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->shortLegAngle)) && TEST_CONTROLLER_STATE(state)->motors_powered == false)
-    {
-        TEST_CONTROLLER_STATE(state)->motors_powered = true;
-        PRINT_MSG("Motors ON::");
-        PRINT_MSG("[%f] [%f]::", input->motor_angleA, input->motor_angleB);
-    PRINT_MSG("[%f] [%f]::", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->shortLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->shortLegAngle));
-    PRINT_MSG("[%f] [%f]\n", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle));
+        output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->flightGainP * (((-1)*(PI/2) + acos(TEST_CONTROLLER_DATA(data)->desiredLength)) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->flightGainD * input->motor_velocityA);
+        output->motor_torqueB = (TEST_CONTROLLER_DATA(data)->flightGainP * ((( 3)*(PI/2) - acos(TEST_CONTROLLER_DATA(data)->desiredLength)) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->flightGainD * input->motor_velocityB);
     }
     
-    //PRINT_MSG("[%f] [%f]::", input->motor_angleA, input->motor_angleB);
-    //PRINT_MSG("[%f] [%f]::", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->shortLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->shortLegAngle));
-    //PRINT_MSG("[%f] [%f]\n", ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle), ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle));
     
-    set_torques(input, output, state, data, TEST_CONTROLLER_STATE(state)->motors_powered);
+    //(ABS(spring_deflection_A) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold)
+    //(ABS(spring_deflection_B) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold)
+    
+    //if (  && (  ||  ) )
 }
-//PRINT_MSG("MOTORS ON: %f, %f.\n", (TEST_CONTROLLER_DATA(data)->gainP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->gainD * input->motor_velocityA), (TEST_CONTROLLER_DATA(data)->gainP * (ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->gainD * input->motor_velocityB));
 
 extern void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     output->motor_torqueA = output->motor_torqueB = 0.0;
     PRINT_MSG("Test Controller Stopped.\n");
-}
-
-void set_torques(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, bool on)
-{
-    if(on)
-    {
-        output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->gainP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->longLegAngle) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->gainD * input->motor_velocityA);
-        output->motor_torqueB = (TEST_CONTROLLER_DATA(data)->gainP * (ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->longLegAngle) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->gainD * input->motor_velocityB);
-    }
-    else
-    {
-        output->motor_torqueA = output->motor_torqueB = 0.0;
-    }
 }
