@@ -179,10 +179,10 @@ int main(int argc, char **argv)
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
-    test_slider_longLegAngle->set_range(10.0, 30.0);
-    test_slider_shortLegAngle->set_range(50.0, 70.0);
-    test_slider_heightOff->set_range(0.0, 1.0);
-    test_slider_heightOn->set_range(0.0, 1.0);
+    test_slider_longLegAngle->set_range(1.0, 89.0);
+    test_slider_shortLegAngle->set_range(1.0, 89.0);
+    test_slider_heightOff->set_range(0.0, 0.0);
+    test_slider_heightOn->set_range(0.0, 0.0);
     test_slider_gainP->set_range(0.0, 1000.0);
     test_slider_gainD->set_range(0.0, 100.0);
 
@@ -277,13 +277,13 @@ int main(int argc, char **argv)
     raibert_hor_vel_gain_hscale->set_value(0.162);
     raibert_leg_force_gain_hscale->set_value(0.225);
     raibert_leg_angle_gain_hscale->set_value(0.15);
-    raibert_stance_p_gain_hscale->set_value(350.);
-    raibert_stance_d_gain_hscale->set_value(10.);
-    raibert_stance_spring_threshold_hscale->set_value(0.05);
+    raibert_stance_p_gain_hscale->set_value(300.);
+    raibert_stance_d_gain_hscale->set_value(20.);
+    raibert_stance_spring_threshold_hscale->set_value(0.200);
     raibert_preferred_leg_len_hscale->set_value(0.97);
-    raibert_flight_p_gain_hscale->set_value(250.);
-    raibert_flight_d_gain_hscale->set_value(12.);
-    raibert_flight_spring_threshold_hscale->set_value(0.022);
+    raibert_flight_p_gain_hscale->set_value(50.);
+    raibert_flight_d_gain_hscale->set_value(10.);
+    raibert_flight_spring_threshold_hscale->set_value(0.020);
 
     test_slider_longLegAngle->set_value(20.0);
     test_slider_shortLegAngle->set_value(60.);

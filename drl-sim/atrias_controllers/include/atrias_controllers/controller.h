@@ -42,7 +42,7 @@
 #define PRINT_WARN	ROS_WARN
 #endif
 #else
-#define PRINT_MSG	// printf
+#define PRINT_MSG	printf
 #define PRINT_WARN	// printf
 #endif
 
