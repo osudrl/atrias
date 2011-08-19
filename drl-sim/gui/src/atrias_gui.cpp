@@ -105,16 +105,21 @@ int main(int argc, char **argv)
     gui->get_widget("test_label_4", test_label);
     test_label->set_text("Stance KP");
     gui->get_widget("test_label_5", test_label);
-    test_label->set_text("Desired Length");
+    test_label->set_text("Desired Length Long");
     gui->get_widget("test_label_6", test_label);
-    test_label->set_text("Activation Deflection");
-    
-    gui->get_widget("test_hscale_1", test_slider_flightGainP);
-    gui->get_widget("test_hscale_2", test_slider_flightGainD);
-    gui->get_widget("test_hscale_3", test_slider_stanceGainP);
-    gui->get_widget("test_hscale_4", test_slider_stanceGainD);
-    gui->get_widget("test_hscale_5", test_slider_desiredLength);
-    gui->get_widget("test_hscale_6", test_slider_activationDeflection);
+    test_label->set_text("Desired Length Short");
+    gui->get_widget("test_label_7", test_label);
+    test_label->set_text("Toe Switch Threshold");
+    gui->get_widget("test_label_8", test_label);
+    test_label->set_text("Spring Deflection Threshold");
+    gui->get_widget("test_hscale_1", test_slider_flightKP);
+    gui->get_widget("test_hscale_2", test_slider_flightKD);
+    gui->get_widget("test_hscale_3", test_slider_stanceKP);
+    gui->get_widget("test_hscale_4", test_slider_stanceKD);
+    gui->get_widget("test_hscale_5", test_slider_desiredLengthLong);
+    gui->get_widget("test_hscale_6", test_slider_desiredLengthShort);
+    gui->get_widget("test_hscale_7", test_slider_toeSwitchThreshold);
+    gui->get_widget("test_hscale_8", test_slider_springDeflectionThreshold);
 
     /*
     gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
@@ -192,18 +197,14 @@ int main(int argc, char **argv)
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
-    test_slider_flightGainP->set_range(0.0, 100.0);
-    test_slider_flightGainD->set_range(0.0, 10.0);
-    test_slider_stanceGainP->set_range(0.0, 1000.0);
-    test_slider_stanceGainD->set_range(0.0, 100.0);
-    test_slider_desiredLength->set_range(0.01, 0.99);
-    test_slider_activationDeflection->set_range(0.0, 0.1);
-
-    /*
-    grizzle_flight_threshold_hscale->set_range(-2.0, 2.0);
-    grizzle_stance_threshold_hscale->set_range(-2.0, 2.0);
-    grizzle_motor_gain_hscale->set_range(0., 1000.);
-     */
+    test_slider_flightKP->set_range(0.0, 1000.0);
+    test_slider_flightKD->set_range(0.0, 1000.0);
+    test_slider_stanceKP->set_range(0.0, 1000.0);
+    test_slider_stanceKD->set_range(0.0, 1000.0);
+    test_slider_desiredLengthLong->set_range(0.0, 1.0);
+    test_slider_desiredLengthShort->set_range(0.0, 1.0);
+    test_slider_toeSwitchThreshold->set_range(0.0, 2.0);
+    test_slider_springDeflectionThreshold->set_range(0.0, 5.0);
 
     motor_torqueA_progress_bar->set_fraction(0.);
     motor_torqueB_progress_bar->set_fraction(0.);
@@ -298,18 +299,14 @@ int main(int argc, char **argv)
     raibert_flight_d_gain_hscale->set_value(10.);
     raibert_flight_spring_threshold_hscale->set_value(0.020);
 
-    test_slider_flightGainP->set_value(50.0);
-    test_slider_flightGainD->set_value(10.0);
-    test_slider_stanceGainP->set_value(100.0);
-    test_slider_stanceGainD->set_value(20.0);
-    test_slider_desiredLength->set_value(0.95);
-    test_slider_activationDeflection->set_value(0.05);
-
-    /*
-    grizzle_stance_threshold_hscale->set_value(0.05);
-    grizzle_flight_threshold_hscale->set_value(0.022);
-    grizzle_motor_gain_hscale->set_value(-6.0);
-     */
+    test_slider_flightKP->set_value(100.0);
+    test_slider_flightKD->set_value(10.0);
+    test_slider_stanceKP->set_value(250.0);
+    test_slider_stanceKD->set_value(25.0);
+    test_slider_desiredLengthLong->set_value(0.99);
+    test_slider_desiredLengthShort->set_value(0.85);
+    test_slider_toeSwitchThreshold->set_value(0.10);
+    test_slider_springDeflectionThreshold->set_value(1.0);
 
     drawing_allocation = drawing_area->get_allocation();
     // Connect buttons to functions.
@@ -572,41 +569,33 @@ bool poke_controller(void)
                 raibert_state_label->set_label("Stance");
             break;
         case TEST_CONTROLLER:
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightKP = test_slider_flightKP->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightKD = test_slider_flightKD->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceKP = test_slider_stanceKP->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceKD = test_slider_stanceKD->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLengthLong = test_slider_desiredLengthLong->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLengthShort = test_slider_desiredLengthShort->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->toeSwitchThreshold = test_slider_toeSwitchThreshold->get_value();
+            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->springDeflectionThreshold = test_slider_springDeflectionThreshold->get_value();
 
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightGainP = test_slider_flightGainP->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightGainD = test_slider_flightGainD->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceGainP = test_slider_stanceGainP->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stanceGainD = test_slider_stanceGainD->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLength = test_slider_desiredLength->get_value();
-            ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->activationDeflection = test_slider_activationDeflection->get_value();
-
-            /*if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->motors_powered)
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState <= 0)
             {
                 test_motors_status_image->set(green_image_path);
             }
             else
             {
                 test_motors_status_image->set(red_image_path);
-            }
-            
-            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->jumped)
+            }            
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState > 0)
             {
                 test_flight_status_image->set(green_image_path);
             }
             else
             {
                 test_flight_status_image->set(red_image_path);
-            }*/
+            }
 
             break;
-            /*
-            case GRIZZLE_CONTROLLER:
-                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_threshold = grizzle_stance_threshold_hscale->get_value();
-                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_threshold = grizzle_flight_threshold_hscale->get_value();
-                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_motor_gain = grizzle_motor_gain_hscale->get_value();
-                ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_motor_gain = grizzle_motor_gain_hscale->get_value();
-                break;
-             */
     }
 
     // Check to see if we are supposed to be logging data.

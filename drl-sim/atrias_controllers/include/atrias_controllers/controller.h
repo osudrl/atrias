@@ -42,7 +42,7 @@
 #define PRINT_WARN	ROS_WARN
 #endif
 #else
-#define PRINT_MSG	printf
+#define PRINT_MSG	// printf
 #define PRINT_WARN	// printf
 #endif
 
@@ -202,17 +202,24 @@ typedef struct {
 } RaibertControllerState;
 
 typedef struct {
-    float flightGainP;
-    float flightGainD;
-    float stanceGainP;
-    float stanceGainD;
-    float desiredLength;
-    float activationDeflection;
+    float flightKP;
+    float flightKD;
+    float stanceKP;
+    float stanceKD;
+    float desiredLengthLong;
+    float desiredLengthShort;
+    float toeSwitchThreshold;
+    float springDeflectionThreshold;
 } TestControllerData;
 
 typedef struct {
-    //unsigned char motors_powered;
-    //unsigned char jumped;
+    int currentState;
+    float legLength;
+    float legAngle;
+    float springDeflectionAverageA;
+    float springDeflectionAverageB;
+    float previousSpringDeflectionsA[10];
+    float previousSpringDeflectionsB[10];
 } TestControllerState;
 
 // Macros for dereferencing pointers.
