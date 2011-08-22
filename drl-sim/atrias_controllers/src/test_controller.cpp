@@ -14,7 +14,8 @@ extern void initialize_test_controller(ControllerInput *input, ControllerOutput 
     output->motor_torqueA = output->motor_torqueB = 0.0;
     TEST_CONTROLLER_STATE(state)->springDeflectionAverageA = 0.0;
     TEST_CONTROLLER_STATE(state)->springDeflectionAverageB = 0.0;
-    for(int i = 0; i < MAGIC_1; i++)
+int i;
+    for(i = 0; i < MAGIC_1; i++)
     {
         TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i] = 0.0;
         TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i] = 0.0;
@@ -29,7 +30,8 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
 
     TEST_CONTROLLER_STATE(state)->springDeflectionAverageA = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[9];
     TEST_CONTROLLER_STATE(state)->springDeflectionAverageB = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[9];
-    for(int i = 0; i < MAGIC_1 - 1; i++)
+int i;
+    for(i = 0; i < MAGIC_1 - 1; i++)
     {
         TEST_CONTROLLER_STATE(state)->springDeflectionAverageA += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i]);
         TEST_CONTROLLER_STATE(state)->springDeflectionAverageB += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i]);
