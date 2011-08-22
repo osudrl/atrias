@@ -216,10 +216,12 @@ typedef struct {
     int currentState;
     float legLength;
     float legAngle;
-    float springDeflectionAverageA;
-    float springDeflectionAverageB;
-    float previousSpringDeflectionsA[10];
-    float previousSpringDeflectionsB[10];
+    float springDeflectionAverageANew;
+    float springDeflectionAverageBNew;
+    float springDeflectionAverageAOld;
+    float springDeflectionAverageBOld;
+    float previousSpringDeflectionsA[20];
+    float previousSpringDeflectionsB[20];
 } TestControllerState;
 
 // Macros for dereferencing pointers.

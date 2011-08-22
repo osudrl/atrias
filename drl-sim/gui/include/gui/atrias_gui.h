@@ -74,6 +74,8 @@ Gtk::HScale *test_slider_desiredLengthLong;
 Gtk::HScale *test_slider_desiredLengthShort;
 Gtk::HScale *test_slider_toeSwitchThreshold;
 Gtk::HScale *test_slider_springDeflectionThreshold;
+Gtk::HScale *test_slider_springDeflectionA;
+Gtk::HScale *test_slider_springDeflectionB;
 
 Gtk::DrawingArea *drawing_area;
 

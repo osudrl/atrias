@@ -5,17 +5,18 @@
 
 #define ANGLE_CALCULATION_A(AAA) (PI/2.0 - PI + acos((AAA)))
 #define ANGLE_CALCULATION_B(BBB) (PI/2.0 + PI - acos((BBB)))
-#define MAGIC_1 10
 
 enum {AIR_PHASE, SHORT_LEG_STANCE_PHASE, LONG_LEG_STANCE_PHASE};
 
 extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     output->motor_torqueA = output->motor_torqueB = 0.0;
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageA = 0.0;
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageB = 0.0;
-int i;
-    for(i = 0; i < MAGIC_1; i++)
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew = 0.0;
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew = 0.0;
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld = 0.0;
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld = 0.0;
+    int i;
+    for(i = 0; i <= 19; i++)
     {
         TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i] = 0.0;
         TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i] = 0.0;
@@ -28,19 +29,19 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
     TEST_CONTROLLER_STATE(state)->legAngle = (input->leg_angleA + input->leg_angleB) / 2.;
     TEST_CONTROLLER_STATE(state)->legLength = -0.5 * sin(input->leg_angleA) - 0.5 * sin(input->leg_angleB);
 
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageA = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[9];
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageB = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[9];
-int i;
-    for(i = 0; i < MAGIC_1 - 1; i++)
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld += ((TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[9] - TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[19]) / 10.0);
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld += ((TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[9] - TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[19]) / 10.0);
+    int i;
+    for(i = 0; i < 19; i++)
     {
-        TEST_CONTROLLER_STATE(state)->springDeflectionAverageA += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i]);
-        TEST_CONTROLLER_STATE(state)->springDeflectionAverageB += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i]);
+        TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[i];
+        TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i+1] = TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[i];
     }
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageA += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[0] = input->leg_angleA - input->motor_angleA);
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageB += (TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[0] = input->leg_angleB - input->motor_angleB);
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageA /= MAGIC_1 + 1;
-    TEST_CONTROLLER_STATE(state)->springDeflectionAverageB /= MAGIC_1 + 1;
-    
+    TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[0] =  (input->leg_angleA - input->motor_angleA);
+    TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[0] = -(input->leg_angleB - input->motor_angleB);
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew += ((TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[0] - TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsA[10]) / 10.0);
+    TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew += ((TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[0] - TEST_CONTROLLER_STATE(state)->previousSpringDeflectionsB[10]) / 10.0);
+
     switch(TEST_CONTROLLER_STATE(state)->currentState)
     {
         case AIR_PHASE:
@@ -53,7 +54,7 @@ int i;
             output->motor_torqueB = (TEST_CONTROLLER_DATA(data)->flightKP * (ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->flightKD * input->motor_velocityB);
             break;
         case SHORT_LEG_STANCE_PHASE:
-            if(TEST_CONTROLLER_STATE(state)->springDeflectionAverageA < TEST_CONTROLLER_DATA(data)->springDeflectionThreshold && TEST_CONTROLLER_STATE(state)->springDeflectionAverageB < TEST_CONTROLLER_DATA(data)->springDeflectionThreshold)
+            if((TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew < TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld) && (TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew < TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld))
             {
                 TEST_CONTROLLER_STATE(state)->currentState = LONG_LEG_STANCE_PHASE;
                 //PRINT_MSG("Begin LLS phase\n");

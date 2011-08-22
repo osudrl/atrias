@@ -112,6 +112,10 @@ int main(int argc, char **argv)
     test_label->set_text("Toe Switch Threshold");
     gui->get_widget("test_label_8", test_label);
     test_label->set_text("Spring Deflection Threshold");
+	gui->get_widget("test_label_9", test_label);
+    test_label->set_text("Spring Deflection A");
+	gui->get_widget("test_label_0", test_label);
+    test_label->set_text("Spring Deflection B");
     gui->get_widget("test_hscale_1", test_slider_flightKP);
     gui->get_widget("test_hscale_2", test_slider_flightKD);
     gui->get_widget("test_hscale_3", test_slider_stanceKP);
@@ -120,6 +124,8 @@ int main(int argc, char **argv)
     gui->get_widget("test_hscale_6", test_slider_desiredLengthShort);
     gui->get_widget("test_hscale_7", test_slider_toeSwitchThreshold);
     gui->get_widget("test_hscale_8", test_slider_springDeflectionThreshold);
+    gui->get_widget("test_hscale_9", test_slider_springDeflectionA);
+    gui->get_widget("test_hscale_0", test_slider_springDeflectionB);
 
     /*
     gui->get_widget("grizzle_flight_threshold_hscale", grizzle_flight_threshold_hscale);
@@ -205,6 +211,8 @@ int main(int argc, char **argv)
     test_slider_desiredLengthShort->set_range(0.0, 1.0);
     test_slider_toeSwitchThreshold->set_range(0.0, 2.0);
     test_slider_springDeflectionThreshold->set_range(0.0, 5.0);
+    test_slider_springDeflectionA->set_range(-100.0, 100.0);
+    test_slider_springDeflectionB->set_range(-100.0, 100.0);
 
     motor_torqueA_progress_bar->set_fraction(0.);
     motor_torqueB_progress_bar->set_fraction(0.);
@@ -305,8 +313,10 @@ int main(int argc, char **argv)
     test_slider_stanceKD->set_value(25.0);
     test_slider_desiredLengthLong->set_value(0.99);
     test_slider_desiredLengthShort->set_value(0.85);
-    test_slider_toeSwitchThreshold->set_value(0.10);
+    test_slider_toeSwitchThreshold->set_value(0.02);
     test_slider_springDeflectionThreshold->set_value(1.0);
+    test_slider_springDeflectionA->set_value(0.0);
+    test_slider_springDeflectionB->set_value(0.0);
 
     drawing_allocation = drawing_area->get_allocation();
     // Connect buttons to functions.
@@ -577,6 +587,9 @@ bool poke_controller(void)
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLengthShort = test_slider_desiredLengthShort->get_value();
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->toeSwitchThreshold = test_slider_toeSwitchThreshold->get_value();
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->springDeflectionThreshold = test_slider_springDeflectionThreshold->get_value();
+            
+	    //test_slider_springDeflectionA->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageA);
+	    //test_slider_springDeflectionB->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageB);
 
             if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState <= 0)
             {
