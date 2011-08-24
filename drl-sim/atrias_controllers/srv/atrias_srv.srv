@@ -18,4 +18,4 @@ float32 xVelocity
 float32 yVelocity
 float32 zVelocity
 float32 horizontal_velocity
-uint8[100] control_state
+uint8[256] control_state

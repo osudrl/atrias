@@ -30,184 +30,184 @@ static Shm * shm;
 
 bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response &);
 
-void print_msg( int );
-void * msg_task( void * );
+void print_msg(int);
+void * msg_task(void *);
 
-void log_data_entry( FILE *, int );
-void * datalogging_task( void * );
+void log_data_entry(FILE *, int);
+void * datalogging_task(void *);
 
 //*****************************************************************************
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int i;
+    int i;
 
-	pthread_t datalogging_thread;
-	pthread_t msg_thread;
+    pthread_t datalogging_thread;
+    pthread_t msg_thread;
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Connect to kernel's shm.
+    // Connect to kernel's shm.
 
-	if ( !( shm = ( Shm * )rt_shm_alloc( nam2num( SHM_NAME ), 0, USE_VMALLOC ) ) )
-		ROS_ERROR( "rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!" );
+    if (!(shm = (Shm *) rt_shm_alloc(nam2num(SHM_NAME), 0, USE_VMALLOC)))
+        ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
 
-	ROS_INFO( "Connected to SHM." );
+    ROS_INFO("Connected to SHM.");
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Startup ROS and interface service.
+    // Startup ROS and interface service.
 
-	ros::init(argc, argv, "gui_interface");
-	ros::NodeHandle nh;
-	ros::ServiceServer gui_srv = nh.advertiseService("gui_interface_srv", atrias_gui_callback);
+    ros::init(argc, argv, "gui_interface");
+    ros::NodeHandle nh;
+    ros::ServiceServer gui_srv = nh.advertiseService("gui_interface_srv", atrias_gui_callback);
 
-	ROS_INFO("Service advertised.");
+    ROS_INFO("Service advertised.");
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Create threads.
+    // Create threads.
 
-	ROS_INFO( "Creating threads." );
+    ROS_INFO("Creating threads.");
 
-	pthread_create( &msg_thread, NULL, msg_task, NULL );
-	pthread_create( &datalogging_thread, NULL, datalogging_task, NULL );	
+    pthread_create(&msg_thread, NULL, msg_task, NULL);
+    pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);
 
-	//*************************************************************************
+    //*************************************************************************
 
-	ros::spin();
+    ros::spin();
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Wait for threads to finish.
+    // Wait for threads to finish.
 
-	ROS_INFO( "Waiting for threads to finish." );
+    ROS_INFO("Waiting for threads to finish.");
 
-	pthread_join( msg_thread, NULL );
-	pthread_join( datalogging_thread, NULL );
+    pthread_join(msg_thread, NULL);
+    pthread_join(datalogging_thread, NULL);
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Disconnect from kernel's shm.
+    // Disconnect from kernel's shm.
 
-	rt_shm_free( nam2num( SHM_NAME ) );
+    rt_shm_free(nam2num(SHM_NAME));
 
-	ROS_INFO("\nDisconnected from SHM.");
+    ROS_INFO("\nDisconnected from SHM.");
 
-	//*************************************************************************
+    //*************************************************************************
 
-	return 0;
+    return 0;
 }
 
 //*****************************************************************************
 
-void print_msg( int i )
+void print_msg(int i)
 {
-	switch ( shm->msg_priority[i] )
-	{
-		case NO_MSG:
-			break;
-		case INFO_MSG:
-			ROS_INFO( "%s", shm->msg[i] );
-			break;
-		case WARN_MSG:
-			ROS_WARN( "%s", shm->msg[i] );
-			break;
-		case ERROR_MSG:
-			ROS_ERROR( "%s", shm->msg[i] );
-			break;
-		default:
-			break;
-	}
+    switch (shm->msg_priority[i])
+    {
+        case NO_MSG:
+            break;
+        case INFO_MSG:
+            ROS_INFO("%s", shm->msg[i]);
+            break;
+        case WARN_MSG:
+            ROS_WARN("%s", shm->msg[i]);
+            break;
+        case ERROR_MSG:
+            ROS_ERROR("%s", shm->msg[i]);
+            break;
+        default:
+            break;
+    }
 }
 
 //*****************************************************************************
 
-void * msg_task( void * arg )
+void * msg_task(void * arg)
 {
-	int i = 0;
+    int i = 0;
 
-	while ( ros::ok() )
-	{
-		if ( i != shm->msg_index )
-		{
-			print_msg( i );
-		
-			i = (++i) % SHM_TO_USPACE_MSGS;
-		}	
+    while (ros::ok())
+    {
+        if (i != shm->msg_index)
+        {
+            print_msg(i);
 
-		pthread_yield();
-		ros::spinOnce;
-	}
+            i = (++i) % SHM_TO_USPACE_MSGS;
+        }
 
-	while ( i != shm->msg_index )
-	{
-		print_msg( i );
-		
-		i = (++i) % SHM_TO_USPACE_MSGS;
-	}
+        pthread_yield();
+        ros::spinOnce;
+    }
 
-	pthread_exit( NULL );
+    while (i != shm->msg_index)
+    {
+        print_msg(i);
+
+        i = (++i) % SHM_TO_USPACE_MSGS;
+    }
+
+    pthread_exit(NULL);
 }
 
 //*****************************************************************************
 
 // Log a data entry.
 
-void log_data_entry( FILE * fp, int i )
+void log_data_entry(FILE * fp, int i)
 {
-	ControllerInput * c_in;
-	ControllerOutput * c_out;
+    ControllerInput * c_in;
+    ControllerOutput * c_out;
 
-	c_in	= &shm->controller_input[i];
-	c_out 	= &shm->controller_output[i];
+    c_in = &shm->controller_input[i];
+    c_out = &shm->controller_output[i];
 
-	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
-		c_in->leg_angleA, c_in->leg_angleB, c_in->body_ang_vel, c_in->motor_velocityA, c_in->motor_velocityB,
-		c_in->leg_velocityA, c_in->leg_velocityB, c_in->xPosition, c_in->yPosition, c_in->zPosition, c_in->xVelocity,
-		c_in->xVelocity, c_in->yVelocity, c_in->zVelocity, c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB,
-		c_in->toe_switch, c_in->command );
+    fprintf(fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u\n", c_in->body_angle, c_in->motor_angleA, c_in->motor_angleB,
+        c_in->leg_angleA, c_in->leg_angleB, c_in->body_ang_vel, c_in->motor_velocityA, c_in->motor_velocityB,
+        c_in->leg_velocityA, c_in->leg_velocityB, c_in->xPosition, c_in->yPosition, c_in->zPosition, c_in->xVelocity,
+        c_in->xVelocity, c_in->yVelocity, c_in->zVelocity, c_out->motor_torqueA, c_out->motor_torqueB, c_in->motor_currentA, c_in->motor_currentB,
+        c_in->toe_switch, c_in->command);
 }
 
 //*****************************************************************************
 
 // Datalog while the robot is running.
 
-void * datalogging_task( void * arg )
+void * datalogging_task(void * arg)
 {
-	int i = 0;
+    int i = 0;
 
-	FILE *fp = fopen( QUOTEME(LOG_FILENAME), "w" );
+    FILE *fp = fopen(QUOTEME(LOG_FILENAME), "w");
 
-	// This print cannot be a ROS_INFO, because of a problem in the ROS header file?
-	//ROS_INFO( "Writing %u log entries to %s.", shm->io_index, QUOTEME(LOG_FILENAME) );
+    // This print cannot be a ROS_INFO, because of a problem in the ROS header file?
+    //ROS_INFO( "Writing %u log entries to %s.", shm->io_index, QUOTEME(LOG_FILENAME) );
 
-	// Create file header.
-	fprintf( fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Motor Current A, Motor Current B\n");		
+    // Create file header.
+    fprintf(fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Motor Current A, Motor Current B\n");
 
-	while ( ros::ok() )
-	{
-		if ( i != shm->io_index )
-		{
-			log_data_entry( fp, i );
-			
-			i = (++i) % SHM_TO_USPACE_ENTRIES;
-		}
+    while (ros::ok())
+    {
+        if (i != shm->io_index)
+        {
+            log_data_entry(fp, i);
 
-		pthread_yield();
-		ros::spinOnce;
-	}
+            i = (++i) % SHM_TO_USPACE_ENTRIES;
+        }
 
-	while ( i != shm->io_index )
-	{
-		log_data_entry( fp, i );
-		
-		i = (++i) % SHM_TO_USPACE_ENTRIES;
-	}
+        pthread_yield();
+        ros::spinOnce;
+    }
 
-	fclose(fp);
+    while (i != shm->io_index)
+    {
+        log_data_entry(fp, i);
 
-	pthread_exit( NULL );
+        i = (++i) % SHM_TO_USPACE_ENTRIES;
+    }
+
+    fclose(fp);
+
+    pthread_exit(NULL);
 }
 
 /****************************************************************************/
@@ -216,66 +216,66 @@ void * datalogging_task( void * arg )
 // Print any messge waiting from the RT thread.
 void rt_msg_print( void )
 {
-	switch ( rt_msg_priority )
-	{
-		case NO_MSG:
-			break;
-		case INFO_MSG:
-			ROS_INFO( "%s", rt_msg );
-			break;
-		case WARN_MSG:
-			ROS_WARN( "%s", rt_msg );
-			break;
-		case ERROR_MSG:
-			ROS_ERROR( "%s", rt_msg );
-	}
+    switch ( rt_msg_priority )
+    {
+        case NO_MSG:
+            break;
+        case INFO_MSG:
+            ROS_INFO( "%s", rt_msg );
+            break;
+        case WARN_MSG:
+            ROS_WARN( "%s", rt_msg );
+            break;
+        case ERROR_MSG:
+            ROS_ERROR( "%s", rt_msg );
+    }
 
-	// Clear the message indicator.
-	rt_msg_priority = NO_MSG;
+    // Clear the message indicator.
+    rt_msg_priority = NO_MSG;
 }
-*/
+ */
 
 //*****************************************************************************
 
 bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)
 {
-	int i;
+    int i;
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Load request into the kernel buffer.
+    // Load request into the kernel buffer.
 
-	shm->controller_data[1 - shm->control_index].command				= req.command;
-	shm->controller_data[1 - shm->control_index].controller_requested	= req.controller_requested;
+    shm->controller_data[1 - shm->control_index].command = req.command;
+    shm->controller_data[1 - shm->control_index].controller_requested = req.controller_requested;
 
-	for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
-		shm->controller_data[1 - shm->control_index].data[i] = req.control_data[i];
+    for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
+        shm->controller_data[1 - shm->control_index].data[i] = req.control_data[i];
 
-	shm->req_switch										= true;
+    shm->req_switch = true;
 
-	//*************************************************************************
+    //*************************************************************************
 
-	// Populate response from userspace buffer.
-	
-	res.body_angle		= shm->controller_input[shm->io_index - 1].body_angle;
-	res.motor_angleA	= shm->controller_input[shm->io_index - 1].motor_angleA;
-	res.motor_angleB	= shm->controller_input[shm->io_index - 1].motor_angleB;
-	res.leg_angleA		= shm->controller_input[shm->io_index - 1].leg_angleA;
-	res.leg_angleB		= shm->controller_input[shm->io_index - 1].leg_angleB;
-	res.xPosition			= shm->controller_input[shm->io_index - 1].xPosition;
-	res.yPosition			= shm->controller_input[shm->io_index - 1].yPosition;
-	res.zPosition			= shm->controller_input[shm->io_index - 1].zPosition;
-	res.xVelocity                  	= shm->controller_input[shm->io_index - 1].xVelocity;
-	res.yVelocity                  	= shm->controller_input[shm->io_index - 1].yVelocity;
-	res.zVelocity                  	= shm->controller_input[shm->io_index - 1].zVelocity;
+    // Populate response from userspace buffer.
 
-	res.motor_torqueA	= shm->controller_output[shm->io_index - 1].motor_torqueA;
-	res.motor_torqueB	= shm->controller_output[shm->io_index - 1].motor_torqueB;
+    res.body_angle      = shm->controller_input[shm->io_index - 1].body_angle;
+    res.motor_angleA    = shm->controller_input[shm->io_index - 1].motor_angleA;
+    res.motor_angleB    = shm->controller_input[shm->io_index - 1].motor_angleB;
+    res.leg_angleA      = shm->controller_input[shm->io_index - 1].leg_angleA;
+    res.leg_angleB      = shm->controller_input[shm->io_index - 1].leg_angleB;
+    res.xPosition       = shm->controller_input[shm->io_index - 1].xPosition;
+    res.yPosition       = shm->controller_input[shm->io_index - 1].yPosition;
+    res.zPosition       = shm->controller_input[shm->io_index - 1].zPosition;
+    res.xVelocity       = shm->controller_input[shm->io_index - 1].xVelocity;
+    res.yVelocity       = shm->controller_input[shm->io_index - 1].yVelocity;
+    res.zVelocity       = shm->controller_input[shm->io_index - 1].zVelocity;
 
-	for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
-		res.control_state[i] = shm->controller_state.data[i];
+    res.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
+    res.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;
 
-	//*************************************************************************
+    for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+        res.control_state[i] = shm->controller_state.data[i];
 
-	return true;
+    //*************************************************************************
+
+    return true;
 }

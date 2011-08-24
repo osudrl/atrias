@@ -1,7 +1,7 @@
 <!-- Devin Koepl -->
 
 <launch>
-  <node name="gazebo" pkg="gazebo" type="gazebo" respawn="false" output="screen"/>
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="$(find atrias)/worlds/simple.world" respawn="false" output="screen"/>
 
   <!-- send atrias.xml to param server -->
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find atrias)/robots/all_in_one.urdf.xacro'" />

@@ -16,10 +16,10 @@
 #include <math.h>
 #endif
 
-#define MAGIC 30
+#define TEST_CONTROLLER_MAGIC 50
 
 #define SIZE_OF_CONTROLLER_DATA 		100
-#define SIZE_OF_CONTROLLER_STATE_DATA	100
+#define SIZE_OF_CONTROLLER_STATE_DATA   	256
 
 //======================================================//
 
@@ -220,8 +220,8 @@ typedef struct {
     float springDeflectionAverageBNew;
     float springDeflectionAverageAOld;
     float springDeflectionAverageBOld;
-    float previousSpringDeflectionsA[MAGIC];
-    float previousSpringDeflectionsB[MAGIC];
+    float previousSpringDeflectionsA[TEST_CONTROLLER_MAGIC];
+    float previousSpringDeflectionsB[TEST_CONTROLLER_MAGIC];
     int currentState;
 } TestControllerState;
 

@@ -66,8 +66,8 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
     
     if (debugTimer >= 100) {
         ROS_INFO("Current State: %i", curState);
-        ROS_INFO("Avg Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld);
-        ROS_INFO("New Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew);
+        //ROS_INFO("Avg Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld);
+        //ROS_INFO("New Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew);
         debugTimer = 0;
     }
     else {
