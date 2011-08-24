@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     }
     catch (const Glib::FileError& ex)
     {
-        ROS_ERROR("Filprintfe Error");
+        ROS_ERROR("File Error");
         //			ROS_ERROR("FileError: %d", ex.what());
     }
     catch (const Gtk::BuilderError& ex)
@@ -94,8 +94,6 @@ int main(int argc, char **argv)
 
     gui->get_widget("test_motors_status_image", test_motors_status_image);
     gui->get_widget("test_flight_status_image", test_flight_status_image);
-    gui->get_widget("test_motors_status_image", test_motors_status_image);
-    gui->get_widget("test_flight_status_image", test_flight_status_image);
     gui->get_widget("test_label_1", test_label);
     test_label->set_text("Flight KP");
     gui->get_widget("test_label_2", test_label);
@@ -112,9 +110,9 @@ int main(int argc, char **argv)
     test_label->set_text("Toe Switch Threshold");
     gui->get_widget("test_label_8", test_label);
     test_label->set_text("Spring Deflection Threshold");
-	gui->get_widget("test_label_9", test_label);
+    gui->get_widget("test_label_9", test_label);
     test_label->set_text("Spring Deflection A");
-	gui->get_widget("test_label_0", test_label);
+    gui->get_widget("test_label_0", test_label);
     test_label->set_text("Spring Deflection B");
     gui->get_widget("test_hscale_1", test_slider_flightKP);
     gui->get_widget("test_hscale_2", test_slider_flightKD);
@@ -219,7 +217,7 @@ int main(int argc, char **argv)
 
     test_motors_status_image->set(red_image_path);
     test_flight_status_image->set(red_image_path);
-    
+
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
     gui_state_file = gui_state_file.substr(0, gui_state_file.rfind("/bin"));
@@ -490,6 +488,7 @@ void enable_motors(void)
 void disable_motors(void)
 {
     atrias_srv.request.command = CMD_DISABLE;
+    test_motors_status_image->set(red_image_path);
 }
 
 //! @brief Change the active controller.
@@ -587,18 +586,18 @@ bool poke_controller(void)
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->desiredLengthShort = test_slider_desiredLengthShort->get_value();
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->toeSwitchThreshold = test_slider_toeSwitchThreshold->get_value();
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->springDeflectionThreshold = test_slider_springDeflectionThreshold->get_value();
-            
-	    //test_slider_springDeflectionA->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageA);
-	    //test_slider_springDeflectionB->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageB);
 
-            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState <= 0)
+            test_slider_springDeflectionA->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageAOld);
+            test_slider_springDeflectionB->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageBOld);
+
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState == 0)
             {
                 test_motors_status_image->set(green_image_path);
             }
             else
             {
                 test_motors_status_image->set(red_image_path);
-            }            
+            }
             if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState > 0)
             {
                 test_flight_status_image->set(green_image_path);
@@ -623,9 +622,9 @@ bool poke_controller(void)
         else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime))
         {
             fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
-                    format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
-                    format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
-                    format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
+                format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
+                format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
+                format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
             nextLogTime = nextLogTime + log_frequency_spin->get_value();
         }
     }
@@ -641,7 +640,6 @@ bool poke_controller(void)
     {
         motor_positionA_hscale->set_value(atrias_srv.response.motor_angleA);
         motor_positionB_hscale->set_value(atrias_srv.response.motor_angleB);
-        test_motors_status_image->set(red_image_path);
     }
 
     // Update the motor torque progress bars and displays.

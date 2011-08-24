@@ -16,6 +16,7 @@
 #include <math.h>
 #endif
 
+#define MAGIC 30
 
 #define SIZE_OF_CONTROLLER_DATA 		100
 #define SIZE_OF_CONTROLLER_STATE_DATA	100
@@ -213,15 +214,15 @@ typedef struct {
 } TestControllerData;
 
 typedef struct {
-    int currentState;
     float legLength;
     float legAngle;
     float springDeflectionAverageANew;
     float springDeflectionAverageBNew;
     float springDeflectionAverageAOld;
     float springDeflectionAverageBOld;
-    float previousSpringDeflectionsA[20];
-    float previousSpringDeflectionsB[20];
+    float previousSpringDeflectionsA[MAGIC];
+    float previousSpringDeflectionsB[MAGIC];
+    int currentState;
 } TestControllerState;
 
 // Macros for dereferencing pointers.
