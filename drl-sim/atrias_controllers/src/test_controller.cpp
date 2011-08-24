@@ -7,7 +7,7 @@
 #define ANGLE_CALCULATION_B(BBB) (PI/2.0 + PI - acos((BBB)))
 
 #ifdef COMPILE_FOR_RTAI
-    #define ROS_INFO(x) NULL
+    #define ROS_x) NULL
 #else
     #include <ros/console.h>
 #endif
