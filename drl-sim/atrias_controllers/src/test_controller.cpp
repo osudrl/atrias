@@ -7,11 +7,11 @@
 #define ANGLE_CALCULATION_B(BBB) (PI/2.0 + PI - acos((BBB)))
 
 #ifdef COMPILE_FOR_RTAI
-    #define ROS_DEBUG(x) NULL
-    #define ROS_INFO(x) NULL
-    #define ROS_WARN(x) NULL
-    #define ROS_ERROR(x) NULL
-    #define ROS_FATAL(x) NULL
+    #define ROS_DEBUG(...) NULL
+    #define ROS_INFO(...) NULL
+    #define ROS_WARN(...) NULL
+    #define ROS_ERROR(...) NULL
+    #define ROS_FATAL(...) NULL
 #else
     #include <ros/console.h>
 #endif
