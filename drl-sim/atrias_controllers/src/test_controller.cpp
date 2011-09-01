@@ -17,7 +17,7 @@
 #endif
 
 int controllerIteration = 1;
-int debugTimer = 100;
+//int debugTimer = 100;
 
 enum {AIR_PHASE, SHORT_LEG_STANCE_PHASE, LONG_LEG_STANCE_PHASE};
 
@@ -64,23 +64,22 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
     
     int curState = TEST_CONTROLLER_STATE(state)->currentState;
     
-    if (debugTimer >= 100) {
-        ROS_INFO("Current State: %i", curState);
+    /*if (debugTimer >= 100) {
+        ROS_INFO("blarfg: %f", sin(TEST_CONTROLLER_STATE(state)->legAngle));
         //ROS_INFO("Avg Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld);
         //ROS_INFO("New Spring Def: A: %f, B: %f", TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew, TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew);
         debugTimer = 0;
     }
     else {
         debugTimer++;
-    }
+    }*/
     
     switch(TEST_CONTROLLER_STATE(state)->currentState)
     {
         case AIR_PHASE:
-            if(input->zPosition - TEST_CONTROLLER_STATE(state)->legLength * sin(TEST_CONTROLLER_STATE(state)->legAngle) < TEST_CONTROLLER_DATA(data)->toeSwitchThreshold)
+            if((input->zPosition - (TEST_CONTROLLER_STATE(state)->legLength * sin(TEST_CONTROLLER_STATE(state)->legAngle))) < TEST_CONTROLLER_DATA(data)->toeSwitchThreshold && input->zPosition < TEST_CONTROLLER_STATE(state)->lastZPosition)
             {
                 TEST_CONTROLLER_STATE(state)->currentState = SHORT_LEG_STANCE_PHASE;
-                debugTimer = 0;
                 ROS_INFO("Begin short leg stance phase\n");
             }
             output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->flightKP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleA)) - ((TEST_CONTROLLER_DATA(data)->flightKD * input->motor_velocityA));
@@ -91,7 +90,6 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
             if((TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew > TEST_CONTROLLER_STATE(state)->springDeflectionAverageAOld) && (TEST_CONTROLLER_STATE(state)->springDeflectionAverageBNew > TEST_CONTROLLER_STATE(state)->springDeflectionAverageBOld))
             {
                 TEST_CONTROLLER_STATE(state)->currentState = LONG_LEG_STANCE_PHASE;
-                debugTimer = 0;
                 ROS_INFO("Begin long leg stance phase\n");
             }
             output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityA);
@@ -99,10 +97,9 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
             //ROS_INFO("Torque A: %f    B: %f", (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityA), (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityB));
             break;
         case LONG_LEG_STANCE_PHASE:
-            if((input->zPosition - (TEST_CONTROLLER_STATE(state)->legLength * sin((TEST_CONTROLLER_STATE(state)->legAngle >= 0 ? TEST_CONTROLLER_STATE(state)->legAngle : -1*TEST_CONTROLLER_STATE(state)->legAngle)))) > TEST_CONTROLLER_DATA(data)->toeSwitchThreshold)
+            if((input->zPosition - (TEST_CONTROLLER_STATE(state)->legLength * sin(TEST_CONTROLLER_STATE(state)->legAngle))) > TEST_CONTROLLER_DATA(data)->toeSwitchThreshold && input->zPosition > TEST_CONTROLLER_STATE(state)->lastZPosition)
             {
                 TEST_CONTROLLER_STATE(state)->currentState = AIR_PHASE;
-                debugTimer = 0;
                 ROS_INFO("Begin air phase\n");
             }
             output->motor_torqueA = (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->desiredLengthLong) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityA);
@@ -112,8 +109,10 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
             ROS_ERROR("[FATAL] This line shouldn't ever be printed.\n");
             break;
     }
-    if (controllerIteration < 10)
+    if (controllerIteration < TEST_CONTROLLER_MAGIC)
         controllerIteration++;
+
+    TEST_CONTROLLER_STATE(state)->lastZPosition = input->zPosition;
 }
 
 extern void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)

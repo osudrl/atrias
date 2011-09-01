@@ -590,7 +590,7 @@ bool poke_controller(void)
             test_slider_springDeflectionA->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageAOld);
             test_slider_springDeflectionB->set_value(((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->springDeflectionAverageBOld);
 
-            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState == 0)
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState > 0)
             {
                 test_motors_status_image->set(green_image_path);
             }
@@ -598,7 +598,7 @@ bool poke_controller(void)
             {
                 test_motors_status_image->set(red_image_path);
             }
-            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState > 0)
+            if (((TestControllerState *) (&(atrias_srv.response.control_state.elems)))->currentState == 0)
             {
                 test_flight_status_image->set(green_image_path);
             }
