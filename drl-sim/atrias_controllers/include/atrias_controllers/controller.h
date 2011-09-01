@@ -16,7 +16,7 @@
 #include <math.h>
 #endif
 
-#define TEST_CONTROLLER_MAGIC 10
+#define TEST_CONTROLLER_MAGIC 24
 
 #define SIZE_OF_CONTROLLER_DATA 		100
 #define SIZE_OF_CONTROLLER_STATE_DATA   	256
@@ -32,7 +32,8 @@
 #ifdef DEBUG_CONTROLLERS
 #ifdef COMPILE_FOR_RTAI
 //#include <rtai_sem.h>
-#include <geometry_msgs/Vector3.h>fine PRINT_MSG	rt_printk
+#include <geometry_msgs/Vector3.h>
+#define PRINT_MSG	rt_printk
 #define PRINT_WARN	rt_printk
 //#define PRINT_MSG	rtai_print_to_screen
 //#define PRINT_WARN	rtai_print_to_screen
