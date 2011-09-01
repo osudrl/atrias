@@ -406,7 +406,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	leg_angle = ( c_in->leg_angleA + c_in->leg_angleB ) / 2.;
 	leg_length = - 0.5 * sin( c_in->leg_angleA ) - 0.5 * sin( c_in->leg_angleB );
 
-	if ( ( c_in->zPosition - leg_length * sin( leg_angle ) < 0.02 ) && ( ( ABS( c_in->motor_angleA - c_in->leg_angleA ) > 0.02 )
+	if ( ( c_in->zPosition - leg_length * sin( leg_angle ) < 0.01 ) && ( ( ABS( c_in->motor_angleA - c_in->leg_angleA ) > 0.02 )
 		|| ( ABS( c_in->motor_angleB - c_in->leg_angleB ) > 0.02 ) ) )
 	//if ( c_in->height > leg_length * sin( leg_angle ) )
 	{
