@@ -99,7 +99,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
             //ROS_INFO("Torque A: %f    B: %f", (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_A(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleA)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityA), (TEST_CONTROLLER_DATA(data)->stanceKP * (ANGLE_CALCULATION_B(TEST_CONTROLLER_DATA(data)->desiredLengthShort) - input->motor_angleB)) - (TEST_CONTROLLER_DATA(data)->stanceKD * input->motor_velocityB));
             break;
         case LONG_LEG_STANCE_PHASE:
-            if(input->zPosition - TEST_CONTROLLER_STATE(state)->legLength * sin(TEST_CONTROLLER_STATE(state)->legAngle) > TEST_CONTROLLER_DATA(data)->toeSwitchThreshold)
+            if((input->zPosition - (TEST_CONTROLLER_STATE(state)->legLength * sin((TEST_CONTROLLER_STATE(state)->legAngle >= 0 ? TEST_CONTROLLER_STATE(state)->legAngle : -1*TEST_CONTROLLER_STATE(state)->legAngle)))) > TEST_CONTROLLER_DATA(data)->toeSwitchThreshold)
             {
                 TEST_CONTROLLER_STATE(state)->currentState = AIR_PHASE;
                 debugTimer = 0;

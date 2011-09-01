@@ -99,9 +99,9 @@ int main(int argc, char **argv)
     gui->get_widget("test_label_2", test_label);
     test_label->set_text("Flight KD");
     gui->get_widget("test_label_3", test_label);
-    test_label->set_text("Stance KD");
-    gui->get_widget("test_label_4", test_label);
     test_label->set_text("Stance KP");
+    gui->get_widget("test_label_4", test_label);
+    test_label->set_text("Stance KD");
     gui->get_widget("test_label_5", test_label);
     test_label->set_text("Desired Length Long");
     gui->get_widget("test_label_6", test_label);
@@ -202,9 +202,9 @@ int main(int argc, char **argv)
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
     test_slider_flightKP->set_range(0.0, 1000.0);
-    test_slider_flightKD->set_range(0.0, 1000.0);
+    test_slider_flightKD->set_range(0.0, 100.0);
     test_slider_stanceKP->set_range(0.0, 1000.0);
-    test_slider_stanceKD->set_range(0.0, 1000.0);
+    test_slider_stanceKD->set_range(0.0, 100.0);
     test_slider_desiredLengthLong->set_range(0.0, 1.0);
     test_slider_desiredLengthShort->set_range(0.0, 1.0);
     test_slider_toeSwitchThreshold->set_range(0.0, 2.0);
@@ -307,8 +307,8 @@ int main(int argc, char **argv)
 
     test_slider_flightKP->set_value(100.0);
     test_slider_flightKD->set_value(10.0);
-    test_slider_stanceKP->set_value(250.0);
-    test_slider_stanceKD->set_value(25.0);
+    test_slider_stanceKP->set_value(350.0);
+    test_slider_stanceKD->set_value(15.0);
     test_slider_desiredLengthLong->set_value(0.99);
     test_slider_desiredLengthShort->set_value(0.85);
     test_slider_toeSwitchThreshold->set_value(0.02);
