@@ -292,18 +292,18 @@ int main(int argc, char **argv)
 
     fclose (gui_state_fp);*/
     // set initial values for velocity
-    raibert_desired_velocity_hscale->set_value(0.364);
-    raibert_desired_height_hscale->set_value(1.2);
+    raibert_desired_velocity_hscale->set_value(0.);
+    raibert_desired_height_hscale->set_value(1.54);
     raibert_hor_vel_gain_hscale->set_value(0.162);
     raibert_leg_force_gain_hscale->set_value(0.225);
     raibert_leg_angle_gain_hscale->set_value(0.15);
-    raibert_stance_p_gain_hscale->set_value(300.);
-    raibert_stance_d_gain_hscale->set_value(20.);
-    raibert_stance_spring_threshold_hscale->set_value(0.200);
-    raibert_preferred_leg_len_hscale->set_value(0.97);
-    raibert_flight_p_gain_hscale->set_value(50.);
+    raibert_stance_p_gain_hscale->set_value(600.);
+    raibert_stance_d_gain_hscale->set_value(15.);
+    raibert_stance_spring_threshold_hscale->set_value(0.075);
+    raibert_preferred_leg_len_hscale->set_value(0.95);
+    raibert_flight_p_gain_hscale->set_value(70.);
     raibert_flight_d_gain_hscale->set_value(10.);
-    raibert_flight_spring_threshold_hscale->set_value(0.020);
+    raibert_flight_spring_threshold_hscale->set_value(0.035);
 
     test_slider_flightKP->set_value(100.0);
     test_slider_flightKD->set_value(10.0);
