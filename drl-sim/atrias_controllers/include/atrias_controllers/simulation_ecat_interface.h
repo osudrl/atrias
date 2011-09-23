@@ -3,7 +3,7 @@
 
 #include <atrias/ucontroller.h>
 
-#define SHMSZ     			27
+#define SHMSZ		27
 #define GAZEBO_SHM_KEY 	5678
 
 #define NUM_OF_MEDULLAS 3

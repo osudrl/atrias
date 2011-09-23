@@ -35,15 +35,15 @@
 
 /*****************************************************************************/
 
-#define MEDULLA_BOOM_POS								0, 0
-#define MEDULLA_B_POS									0, 1
-#define MEDULLA_A_POS									0, 2
-#define MEDULLA_HIP_POS									0, 3
+#define MEDULLA_BOOM_POS	0, 0
+#define MEDULLA_B_POS		0, 1
+#define MEDULLA_A_POS		0, 2
+#define MEDULLA_HIP_POS		0, 3
 
-#define VENDOR_ID										0x00000777
-#define PRODUCT_CODE						 			0x02628111
+#define VENDOR_ID		0x00000777
+#define PRODUCT_CODE		0x02628111
 
-#define BITS_IN_A_BYTE 									8
+#define BITS_IN_A_BYTE 		8
 
 /*****************************************************************************/
 

@@ -28,19 +28,19 @@
 
 // Module parameters
 
-#define FREQUENCY 										1000 // task frequency in Hz
+#define FREQUENCY 									1000 // task frequency in Hz
 #define INHIBIT_TIME 									20
 
-#define TIMERTICKS 										(1000000000 / FREQUENCY)
+#define TIMERTICKS 									(1000000000 / FREQUENCY)
 
 // Optional features (comment to disable)
 #define CONFIGURE_PDOS
 
-#define PFX 											"ec_rtai_controller_wrapper: "
+#define PFX 										"ec_rtai_controller_wrapper: "
 
-#define MEDULLA_POS										0, 0
+#define MEDULLA_POS									0, 0
 
-#define VENDOR_ID										0x00000777
+#define VENDOR_ID									0x00000777
 #define PRODUCT_CODE						 			0x02628111
 
 #define BITS_IN_A_BYTE 									8
@@ -80,7 +80,7 @@ static cycles_t t_last_cycle = 0, t_critical;
 // process data
 static uint8_t *domain1_pd; // process data memory
 
-#define MEDULLA_POS		0, 0
+#define MEDULLA_POS	0, 0
 #define MEDULLA_IDPC	0x00000777, 0x02628111
 
 // offsets for PDO entries
@@ -94,7 +94,7 @@ const static ec_pdo_entry_reg_t domain1_regs[] = {
 	{}
 };
 
-static unsigned int		counter	= 0;
+static unsigned int	counter	= 0;
 static unsigned char	blink	= 0xF0;
 
 txpdo_struct	txpdo;
@@ -126,8 +126,8 @@ static ec_pdo_info_t medulla_rx_pdos[] = {
 };
 
 static ec_sync_info_t medulla_syncs[] = {
-	{0, EC_DIR_OUTPUT,	0, NULL,			EC_WD_DISABLE},
-	{1, EC_DIR_INPUT,	0, NULL,			EC_WD_DISABLE},
+	{0, EC_DIR_OUTPUT,	0, NULL,		EC_WD_DISABLE},
+	{1, EC_DIR_INPUT,	0, NULL,		EC_WD_DISABLE},
 	{2, EC_DIR_OUTPUT,	2, medulla_rx_pdos,	EC_WD_ENABLE},
 	{3, EC_DIR_INPUT,	3, medulla_tx_pdos,	EC_WD_ENABLE},
 	{0xff}
