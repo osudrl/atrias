@@ -2,7 +2,7 @@
 
 /*****************************************************************************/
 
-#ifndef FUNCS_H__CONTROL_WRAPPER_STATES
+#ifndef FUNCS_H_CONTROL_WRAPPER_STATES
 #define FUNCS_H_CONTROL_WRAPPER_STATES
 
 #include <stdint.h>
