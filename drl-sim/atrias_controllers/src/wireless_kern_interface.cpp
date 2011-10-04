@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     // Connect to kernel's shm.
 
-    if (!(shm = (Shm *) rt_shm_alloc(nam2num(SHM_NAME), 0, USE_VMALLOC)))
+    if (!(shm = (Shm *) rt_shm_alloc(nam2num(SHM_NAME), sizeof(Shm), USE_VMALLOC)))
         ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
 
     ROS_INFO("Connected to SHM.");
