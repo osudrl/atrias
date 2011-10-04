@@ -12,12 +12,13 @@ for n in `seq 0 9`; do
 	fi
 done
 
-prefix=`rtai-config --prefix`
-
-if test "$prefix" = ""; then
-echo "ERROR: please set your PATH variable to <rtai-install>/bin"
-exit
-fi
+# Commented out by yoos 10/03/11
+# prefix=`rtai-config --prefix`
+# 
+# if test "$prefix" = ""; then
+# echo "ERROR: please set your PATH variable to <rtai-install>/bin"
+# exit
+# fi
 
 modprobe rtai_hal
 modprobe rtai_ksched
