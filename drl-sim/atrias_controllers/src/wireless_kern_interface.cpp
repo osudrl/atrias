@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     // Connect to kernel's shm.
 
 	rt_allow_nonroot_hrt();   // Allow rt_shm_alloc to be used without root permissions.
-    if (!(shm = (Shm *) rt_shm_alloc(nam2num(SHM_NAME), sizeof(Shm), USE_VMALLOC)))
+    if (!(shm = (Shm *) rt_shm_alloc(nam2num(SHM_NAME), sizeof(Shm)*50, USE_VMALLOC)))
         ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
 
     ROS_INFO("Connected to SHM.");
