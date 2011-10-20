@@ -29,11 +29,11 @@
 #define RESTART_STATE 						1
 #define CHECK_STATE 						2
 #define INITIALIZE_STATE 					3
-#define RUN_STATE 						4
+#define RUN_STATE 						    4
 #define ERROR_STATE 						5
 
-#define NUM_OF_MEDULLAS_ON_ROBOT 				4 
-#define NUM_OF_SLAVES_IN_SIMULATION_MACHINE			1
+#define NUM_OF_MEDULLAS_ON_ROBOT 			4 
+#define NUM_OF_SLAVES_IN_SIMULATION_MACHINE	1
 
 #define	A_INDEX							0
 #define B_INDEX							1
@@ -41,10 +41,10 @@
 #define BOOM_INDEX						3
 
 // Horizontal velocity windowing filter parameters.
-#define HOR_VEL_FILTER_EPS					0.003
-#define HOR_VEL_WINDOW						100
+#define HOR_VEL_FILTER_EPS				0.003
+#define HOR_VEL_WINDOW					100
 
-#define SIZE_OF_DATA_RING_BUFFER				10000000
+#define SIZE_OF_DATA_RING_BUFFER		10000000
 
 #define NO_MSG							0
 #define INFO_MSG						1
