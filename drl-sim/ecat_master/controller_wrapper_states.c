@@ -191,9 +191,9 @@ unsigned char state_check( uControllerInput ** uc_in, uControllerOutput ** uc_ou
 		uc_in[i]->command = CMD_DISABLE;
 	 	
 		// Check Medulla states.  They have to be disabled to move on to the next state.
-	 	if ( uc_out[i]->status != STATUS_DISABLED )
+	 	if ( (uc_out[i]->status & STATUS_DISABLED) != STATUS_DISABLED )
 	 	{
-	 		rt_printk( "Medulla %d not disabled.\n", i );
+	 		rt_printk( "Medulla %d not disabled. Instead it is: %d.\n", i, uc_out[i]->status);
 	 		return STATE_CHECK;
 	 	}
 	}
