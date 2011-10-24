@@ -86,8 +86,8 @@
 // to be computed accurately.  Add these offsets to the transmission angle.
 //#define TRAN_A_OFF_ANGLE			-0.028043331476324
 //#define TRAN_B_OFF_ANGLE			0.011322169916428
-#define TRAN_A_OFF_ANGLE			0.
-#define TRAN_B_OFF_ANGLE			0.
+#define TRAN_A_OFF_ANGLE			0.051567
+#define TRAN_B_OFF_ANGLE			-0.004387
 
 // Hip Medulla sensors:
 #define MIN_HIP_COUNT				0
