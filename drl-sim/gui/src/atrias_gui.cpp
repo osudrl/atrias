@@ -683,23 +683,10 @@ void draw_leg()
 
     cr = drawing_area->get_window()->create_cairo_context();
 
+
     cr->set_line_width(12.0);
-
-    // Draw the motors
-    cr->set_source_rgb(0.0, 0.8, 0.0);
-    // A
-    cr->move_to(start_x, start_y);
-    cr->rel_line_to(motor_radius * cos(atrias_srv.response.motor_angleA), -motor_radius * sin(atrias_srv.response.motor_angleA));
-    cr->move_to(start_x, start_y);
-    cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleA), motor_radius * sin(atrias_srv.response.motor_angleA));
-    // B
-    cr->move_to(start_x, start_y);
-    cr->rel_line_to(motor_radius * cos(atrias_srv.response.motor_angleB), -motor_radius * sin(atrias_srv.response.motor_angleB));
-    cr->move_to(start_x, start_y);
-    cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleB), motor_radius * sin(atrias_srv.response.motor_angleB));
-    cr->stroke();
-
-    // Draw the leg
+	
+	// Draw the leg
     cr->move_to(start_x, start_y);
     // OSU orange 216, 90, 26
     cr->set_source_rgb(0.8471, 0.3529, 0.1020);
@@ -713,5 +700,19 @@ void draw_leg()
     cr->rel_line_to(segment_length * cos(atrias_srv.response.leg_angleB), -segment_length * sin(atrias_srv.response.leg_angleB));
     // D
     cr->rel_line_to(segment_length * cos(atrias_srv.response.leg_angleA), -segment_length * sin(atrias_srv.response.leg_angleA));
+    cr->stroke();
+
+    // Draw the motors
+    cr->set_source_rgb(0.0, 0.8, 0.0);
+    // A
+    cr->move_to(start_x, start_y);
+    cr->rel_line_to(motor_radius * cos(atrias_srv.response.motor_angleA), -motor_radius * sin(atrias_srv.response.motor_angleA));
+    cr->move_to(start_x, start_y);
+    cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleA), motor_radius * sin(atrias_srv.response.motor_angleA));
+    // B
+    cr->move_to(start_x, start_y);
+    cr->rel_line_to(motor_radius * cos(atrias_srv.response.motor_angleB), -motor_radius * sin(atrias_srv.response.motor_angleB));
+    cr->move_to(start_x, start_y);
+    cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleB), motor_radius * sin(atrias_srv.response.motor_angleB));
     cr->stroke();
 }
