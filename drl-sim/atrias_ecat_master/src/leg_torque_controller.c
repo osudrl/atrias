@@ -1,1 +1,1 @@
-../atrias_controllers/src/leg_torque_controller.cpp
+../../atrias_controllers/src/leg_torque_controller.cpp

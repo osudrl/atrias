@@ -1,1 +1,1 @@
-../atrias_controllers/src/leg_angle_sin_wave.cpp
+../../atrias_controllers/src/leg_angle_sin_wave.cpp

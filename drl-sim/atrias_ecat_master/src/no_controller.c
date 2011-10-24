@@ -1,1 +1,1 @@
-../atrias_controllers/src/no_controller.cpp
+../../atrias_controllers/src/no_controller.cpp
