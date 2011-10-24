@@ -91,32 +91,26 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 	switch ( next_state )
 	{
 		case STATE_WAKEUP:
-			rt_printk("In: STATE_WAKEUP ");
 			next_state = state_wakeup( uc_in, uc_out, last_state );
 			last_state = STATE_WAKEUP;
 			break;
 		case STATE_RESTART:
-			rt_printk("In: STATE_RESTART ");
 			next_state = state_restart( uc_in, uc_out, last_state );
 			last_state = STATE_RESTART;
 			break;
 		case STATE_CHECK:
-			rt_printk("In: STATE_CHECK ");
 			next_state = state_check( uc_in, uc_out, last_state );
 			last_state = STATE_CHECK;
 			break;
 		case STATE_INITIALIZE:
-			rt_printk("In: STATE_INITIALIZE ");
 			next_state = state_initialize( uc_in, uc_out, last_state );
 			last_state = STATE_INITIALIZE;
 			break;
 		case STATE_RUN:
-			rt_printk("In: STATE_RUN ");
 			next_state = state_run( uc_in, uc_out, last_state );
 			last_state = STATE_RUN;
 			break;
 		case STATE_ERROR:
-			rt_printk("In: STATE_ERROR ");
 			next_state = state_error( uc_in, uc_out, last_state );
 			last_state = STATE_ERROR;
 			break;
@@ -189,13 +183,13 @@ unsigned char state_check( uControllerInput ** uc_in, uControllerOutput ** uc_ou
 	{
 		// Send command disables.
 		uc_in[i]->command = CMD_DISABLE;
-	 	
+
 		// Check Medulla states.  They have to be disabled to move on to the next state.
-	 	if ( (uc_out[i]->status & STATUS_DISABLED) != STATUS_DISABLED )
-	 	{
-	 		rt_printk( "Medulla %d not disabled. Instead it is: %d.\n", i, uc_out[i]->status);
-	 		return STATE_CHECK;
-	 	}
+		if ( uc_out[i]->status != STATUS_DISABLED )
+		{
+			rt_printk( "Medulla not disabled.\n" );
+			return STATE_CHECK;
+		}
 	}
 
 	// Hold the leg open, and the hip floppy.
