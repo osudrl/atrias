@@ -1,0 +1,6 @@
+<launch>
+    <!-- start the gui -->
+    <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen">
+        <env name="ROS_HOSTNAME" value="192.168.1.100" />
+    </node>
+</launch>
