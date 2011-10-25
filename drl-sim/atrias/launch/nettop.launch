@@ -1,0 +1,7 @@
+<launch>
+    <!-- start the ecat kernel interface -->
+    <node name="wireless_kern_interface" pkg="atrias_controllers" launch-prefix="xterm -e gdb -ex run --args" type="wireless_kern_interface">
+        <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
+        <env name="ROS_HOSTNAME" value="192.168.1.121" />
+    </node>
+</launch>
