@@ -78,19 +78,32 @@ int main(int argc, char **argv)
     gui->get_widget("p_sine_wave_hscale", p_sine_wave_hscale);
     gui->get_widget("d_sine_wave_hscale", d_sine_wave_hscale);
 
+    gui->get_widget("raibert_state_label", raibert_state_label);
     gui->get_widget("raibert_desired_velocity_hscale", raibert_desired_velocity_hscale);
-    gui->get_widget("raibert_desired_height_hscale", raibert_desired_height_hscale);
     gui->get_widget("raibert_hor_vel_gain_hscale", raibert_hor_vel_gain_hscale);
-    gui->get_widget("raibert_leg_force_gain_hscale", raibert_leg_force_gain_hscale);
     gui->get_widget("raibert_leg_angle_gain_hscale", raibert_leg_angle_gain_hscale);
     gui->get_widget("raibert_stance_p_gain_hscale", raibert_stance_p_gain_hscale);
     gui->get_widget("raibert_stance_d_gain_hscale", raibert_stance_d_gain_hscale);
     gui->get_widget("raibert_stance_spring_threshold_hscale", raibert_stance_spring_threshold_hscale);
-    gui->get_widget("raibert_state_label", raibert_state_label);
+    gui->get_widget("raibert_desired_height_hscale", raibert_desired_height_hscale);
+    gui->get_widget("raibert_leg_force_gain_hscale", raibert_leg_force_gain_hscale);
     gui->get_widget("raibert_preferred_leg_len_hscale", raibert_preferred_leg_len_hscale);
     gui->get_widget("raibert_flight_p_gain_hscale", raibert_flight_p_gain_hscale);
     gui->get_widget("raibert_flight_d_gain_hscale", raibert_flight_d_gain_hscale);
     gui->get_widget("raibert_flight_spring_threshold_hscale", raibert_flight_spring_threshold_hscale);
+
+    gui->get_widget("raibert_desired_velocity_spinbutton", raibert_desired_velocity_spinbutton);
+    gui->get_widget("raibert_hor_vel_gain_spinbutton", raibert_hor_vel_gain_spinbutton);
+    gui->get_widget("raibert_leg_angle_gain_spinbutton", raibert_leg_angle_gain_spinbutton);
+    gui->get_widget("raibert_stance_p_gain_spinbutton", raibert_stance_p_gain_spinbutton);
+    gui->get_widget("raibert_stance_d_gain_spinbutton", raibert_stance_d_gain_spinbutton);
+    gui->get_widget("raibert_stance_spring_threshold_spinbutton", raibert_stance_spring_threshold_spinbutton);
+    gui->get_widget("raibert_desired_height_spinbutton", raibert_desired_height_spinbutton);
+    gui->get_widget("raibert_leg_force_gain_spinbutton", raibert_leg_force_gain_spinbutton);
+    gui->get_widget("raibert_preferred_leg_len_spinbutton", raibert_preferred_leg_len_spinbutton);
+    gui->get_widget("raibert_flight_p_gain_spinbutton", raibert_flight_p_gain_spinbutton);
+    gui->get_widget("raibert_flight_d_gain_spinbutton", raibert_flight_d_gain_spinbutton);
+    gui->get_widget("raibert_flight_spring_threshold_spinbutton", raibert_flight_spring_threshold_spinbutton);
 
     gui->get_widget("test_motors_status_image", test_motors_status_image);
     gui->get_widget("test_flight_status_image", test_flight_status_image);
@@ -168,12 +181,12 @@ int main(int argc, char **argv)
     leg_length_torque_hscale->set_range(-10., 10.);
     leg_angle_torque_hscale->set_range(-10., 10.);
 
-    leg_length_hscale->set_range(0., 1.);
-    leg_angle_hscale->set_range(0., PI);
-    p_leg_position_hscale->set_range(0., 1000.);
+    leg_length_hscale->set_range(0.5, 1.);
+    leg_angle_hscale->set_range(1.29, 1.85);
+    p_leg_position_hscale->set_range(0., 200.);
     //p_leg_position_spin->set_range(0., 1000.);
     //p_leg_position_spin->set_increments(.05, 1.);
-    d_leg_position_hscale->set_range(0., 100.);
+    d_leg_position_hscale->set_range(0., 8.);
     //d_leg_position_spin->set_increments(.05, 1.);
     //d_leg_position_spin->set_range(0., 1000.);
 
@@ -181,26 +194,45 @@ int main(int argc, char **argv)
     log_frequency_spin->set_increments(100, 500);
     log_frequency_spin->set_value(100);
 
-    leg_angle_amplitude_hscale->set_range(0., 1.);
-    leg_angle_frequency_hscale->set_range(0., 5.);
+    leg_angle_amplitude_hscale->set_range(0., 0.5);
+    leg_angle_frequency_hscale->set_range(0., 2.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
-    leg_length_frequency_hscale->set_range(0., 5.);
-    p_sine_wave_hscale->set_range(0., 2000.);
-    d_sine_wave_hscale->set_range(0., 50.);
+    leg_length_frequency_hscale->set_range(0., 2.);
+    p_sine_wave_hscale->set_range(0., 200.);
+    d_sine_wave_hscale->set_range(0., 5.);
 
+
+	/* Raibert tab */
+	// HScales
     raibert_desired_velocity_hscale->set_range(-5., 5.);
-    raibert_desired_height_hscale->set_range(0., 3.);
     raibert_hor_vel_gain_hscale->set_range(0., 10.);
-    raibert_leg_force_gain_hscale->set_range(0., 1.);
     raibert_leg_angle_gain_hscale->set_range(0., 1.);
     raibert_stance_p_gain_hscale->set_range(0., 1000.);
     raibert_stance_d_gain_hscale->set_range(0., 50.);
     raibert_stance_spring_threshold_hscale->set_range(0., 1.);
+	raibert_desired_height_hscale->set_range(0., 3.);
+    raibert_leg_force_gain_hscale->set_range(0., 1.);
     raibert_preferred_leg_len_hscale->set_range(0.7, 1.);
     raibert_flight_p_gain_hscale->set_range(0., 1000.);
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
 
+	// Spinbuttons
+    raibert_desired_velocity_spinbutton->set_range(-5., 5.);
+    raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
+    raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
+    raibert_stance_p_gain_spinbutton->set_range(0., 1000.);
+    raibert_stance_d_gain_spinbutton->set_range(0., 50.);
+    raibert_stance_spring_threshold_spinbutton->set_range(0., 1.);
+	raibert_desired_height_spinbutton->set_range(0., 3.);
+    raibert_leg_force_gain_spinbutton->set_range(0., 1.);
+    raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
+    raibert_flight_p_gain_spinbutton->set_range(0., 1000.);
+    raibert_flight_d_gain_spinbutton->set_range(0., 50.);
+    raibert_flight_spring_threshold_spinbutton->set_range(0., 1.);
+
+
+	/* Test tab */
     test_slider_flightKP->set_range(0.0, 1000.0);
     test_slider_flightKD->set_range(0.0, 100.0);
     test_slider_stanceKP->set_range(0.0, 1000.0);
@@ -291,19 +323,41 @@ int main(int argc, char **argv)
           raibert_stance_spring_threshold_hscale->set_value(read_val);
 
     fclose (gui_state_fp);*/
-    // set initial values for velocity
+
+	// Leg position tab default values
+    leg_length_hscale->set_value(0.9);
+    leg_angle_hscale->set_value(PI/2);
+    p_leg_position_hscale->set_value(50);
+    d_leg_position_hscale->set_value(2.5);
+
+	// HScale default values
     raibert_desired_velocity_hscale->set_value(0.);
-    raibert_desired_height_hscale->set_value(1.54);
     raibert_hor_vel_gain_hscale->set_value(0.162);
-    raibert_leg_force_gain_hscale->set_value(0.225);
     raibert_leg_angle_gain_hscale->set_value(0.15);
     raibert_stance_p_gain_hscale->set_value(600.);
     raibert_stance_d_gain_hscale->set_value(15.);
     raibert_stance_spring_threshold_hscale->set_value(0.075);
+    raibert_desired_height_hscale->set_value(1.54);
+    raibert_leg_force_gain_hscale->set_value(0.225);
     raibert_preferred_leg_len_hscale->set_value(0.95);
     raibert_flight_p_gain_hscale->set_value(70.);
     raibert_flight_d_gain_hscale->set_value(10.);
     raibert_flight_spring_threshold_hscale->set_value(0.035);
+
+	// Spinbutton default values (should be the same as HScales for now
+    raibert_desired_velocity_spinbutton->set_value(0.);
+    raibert_hor_vel_gain_spinbutton->set_value(0.162);
+    raibert_leg_angle_gain_spinbutton->set_value(0.15);
+    raibert_stance_p_gain_spinbutton->set_value(600.);
+    raibert_stance_d_gain_spinbutton->set_value(15.);
+    raibert_stance_spring_threshold_spinbutton->set_value(0.075);
+    raibert_desired_height_spinbutton->set_value(1.54);
+    raibert_leg_force_gain_spinbutton->set_value(0.225);
+    raibert_preferred_leg_len_spinbutton->set_value(0.95);
+    raibert_flight_p_gain_spinbutton->set_value(70.);
+    raibert_flight_d_gain_spinbutton->set_value(10.);
+    raibert_flight_spring_threshold_spinbutton->set_value(0.035);
+
 
     test_slider_flightKP->set_value(100.0);
     test_slider_flightKD->set_value(10.0);
@@ -555,18 +609,18 @@ bool poke_controller(void)
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = d_sine_wave_hscale->get_value();
             break;
         case RAIBERT_CONTROLLER:
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hor_vel = raibert_desired_velocity_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hop_ht = raibert_desired_height_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->hor_vel_gain = raibert_hor_vel_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->hop_ht_gain = raibert_leg_force_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_gain = raibert_leg_angle_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_p_gain = raibert_stance_p_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_d_gain = raibert_stance_d_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_spring_threshold = raibert_stance_spring_threshold_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->preferred_leg_len = raibert_preferred_leg_len_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_p_gain = raibert_flight_p_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_d_gain = raibert_flight_d_gain_hscale->get_value();
-            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_spring_threshold = raibert_flight_spring_threshold_hscale->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hor_vel = raibert_desired_velocity_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hop_ht = raibert_desired_height_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->hor_vel_gain = raibert_hor_vel_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->hop_ht_gain = raibert_leg_force_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_gain = raibert_leg_angle_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_p_gain = raibert_stance_p_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_d_gain = raibert_stance_d_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_spring_threshold = raibert_stance_spring_threshold_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->preferred_leg_len = raibert_preferred_leg_len_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_p_gain = raibert_flight_p_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_d_gain = raibert_flight_d_gain_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_spring_threshold = raibert_flight_spring_threshold_spinbutton->get_value();
 
             // Set the state label.
             if (atrias_srv.response.status == CMD_DISABLE)
@@ -676,8 +730,8 @@ void draw_leg()
     float short_segment_length = 100.;
     float motor_radius = 70.;
 
-    float start_x = 100.;
-    float start_y = 100.;
+    float start_x = 125.;
+    float start_y = 125.;
 
     drawing_area->get_window()->clear();
 
