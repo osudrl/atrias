@@ -2118,7 +2118,7 @@ You may only switch controllers with the motors disabled.</property>
                                   <object class="GtkLabel" id="label15">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Start</property>
+                                    <property name="label" translatable="yes">Enable</property>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -2164,7 +2164,7 @@ You may only switch controllers with the motors disabled.</property>
                                   <object class="GtkLabel" id="label14">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Reset</property>
+                                    <property name="label" translatable="yes">Restart</property>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -2218,7 +2218,7 @@ You may only switch controllers with the motors disabled.</property>
                               <object class="GtkLabel" id="label13">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Stop</property>
+                                <property name="label" translatable="yes">Disable</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>

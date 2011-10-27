@@ -3,11 +3,13 @@
 //! @author Devin Koepl
 
 #include <gui/atrias_gui.h>
+#include <time.h>
 
 //! @brief Initializes the GUI and controls.
 //! @param argc An integer that is one more than the number of command line arguments.
 //! @param argv An array of character pointers containing the command line arguments.
 //! @return Returns zero upon successful completion, non-zero if an error occured.
+
 
 int main(int argc, char **argv)
 {
@@ -195,9 +197,9 @@ int main(int argc, char **argv)
     log_frequency_spin->set_value(100);
 
     leg_angle_amplitude_hscale->set_range(0., 0.5);
-    leg_angle_frequency_hscale->set_range(0., 2.);
+    leg_angle_frequency_hscale->set_range(0., 20.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
-    leg_length_frequency_hscale->set_range(0., 2.);
+    leg_length_frequency_hscale->set_range(0., 20.);
     p_sine_wave_hscale->set_range(0., 200.);
     d_sine_wave_hscale->set_range(0., 5.);
 
@@ -221,15 +223,15 @@ int main(int argc, char **argv)
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
     raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
     raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
-    raibert_stance_p_gain_spinbutton->set_range(0., 1000.);
-    raibert_stance_d_gain_spinbutton->set_range(0., 50.);
-    raibert_stance_spring_threshold_spinbutton->set_range(0., 1.);
+    raibert_stance_p_gain_spinbutton->set_range(0., 800.);
+    raibert_stance_d_gain_spinbutton->set_range(0., 8.);
+    raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
 	raibert_desired_height_spinbutton->set_range(0., 3.);
     raibert_leg_force_gain_spinbutton->set_range(0., 1.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
-    raibert_flight_p_gain_spinbutton->set_range(0., 1000.);
-    raibert_flight_d_gain_spinbutton->set_range(0., 50.);
-    raibert_flight_spring_threshold_spinbutton->set_range(0., 1.);
+    raibert_flight_p_gain_spinbutton->set_range(0., 800.);
+    raibert_flight_d_gain_spinbutton->set_range(0., 8.);
+    raibert_flight_spring_threshold_spinbutton->set_range(0., 0.4);
 
 
 	/* Test tab */
@@ -407,37 +409,38 @@ void log_chkbox_toggled(void)
 {
     if (log_file_chkbox->get_active())
     {
-
         //TODO: Figure out how to set the path in the file chooser to make this work
-        /*if (log_file_chooser->get_filename() == "") {
-            time_t curTime;
-            struct tm * tInfo;
-            char buffer [80];
-            char buffer2[256];
-            char buffer3[256];
-
-            time(&curTime);
-            tInfo = localtime(&curTime);
+        if (log_file_chooser->get_filename() == "") {
+            time_t curSeconds;
+            curSeconds = time(NULL);
+            struct tm *tInfo;
+            tInfo = localtime(&curSeconds);
+            char buffer[256];
 
             //strftime(buffer, 80, "%d%m%y-%H:%M:%S.log", tInfo);
-            strftime(buffer, 80, "%d%m%y.log", tInfo);
-            sprintf(buffer2, "%s%s", getenv("HOME"), "/.ros/log/atrias/");
-            mkdir(buffer2, 0777);
-            sprintf(buffer3, "%s%s", buffer2, buffer);
+            sprintf(buffer, "%s/atrias_%0.2d%0.2d%0.2d_%0.2d%0.2d%0.2d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            ROS_INFO("Log filename: %s", buffer);
+            //sprintf(buffer2, "%s%s", getenv("HOME"), "/atrias/drl-sim/atrias/log_files/");
+            //mkdir(buffer2, 0777);
+            //sprintf(buffer3, "%s%s", buffer2, buffer);
+
             FILE * file;
-            file = fopen(buffer2, "w");
-            if (file != NULL) {
-                fprintf(file, "-");
+            file = fopen(buffer, "w");
+            if (file == NULL) perror ("Error opening file");
+            else if (file != NULL) {
+                fputs("-", file);
                 fclose(file);
             }
-            ROS_INFO(buffer3);
-            log_file_chooser->set_filename(buffer3);
+            log_file_chooser->set_filename(buffer);
         }
-        ROS_INFO(log_file_chooser->get_filename().c_str());*/
+        //ROS_INFO(log_file_chooser->get_filename().c_str());
+
         if (log_file_chooser->get_filename() != "")
         {
+            ROS_ERROR("Log filename is not blank!");
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
+            ROS_ERROR("Logfile opened.");
             fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Torq A--Torq B--xPos----yPos----zPos----xVel----yVel----zVel---\n");
             struct timespec curTime;
             if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
@@ -451,10 +454,10 @@ void log_chkbox_toggled(void)
             }
             isLogging = true;
         }
-        else
-        {
-            log_file_chkbox->set_active(false);
-        }
+        //else
+        //{
+        //    log_file_chkbox->set_active(false);
+        //}
         //fprintf(log_file_fp, "time, body_ang, mtr_angA, mtr_angB, leg_angA, leg_angB, mtr_trqA, mtr_trqB\n");
     }
     else if (isLogging)
