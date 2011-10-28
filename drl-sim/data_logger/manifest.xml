@@ -1,0 +1,14 @@
+<package>
+  <description brief="data_logger">
+
+     data_logger
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/data_logger</url>
+
+</package>
+
+
