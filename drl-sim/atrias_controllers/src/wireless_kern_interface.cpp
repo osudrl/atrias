@@ -12,8 +12,8 @@
 #include <rtai_nam2num.h>
 
 #include <ros/ros.h>
-#include "std_msgs/String.h"   // Testing Publisher
-#include <sstream>             // Testing Publisher
+//#include "std_msgs/String.h"   // Testing Publisher
+//#include <sstream>             // Testing Publisher
 
 #include <atrias_controllers/uspace_kern_shm.h>
 #include <atrias_controllers/atrias_srv.h>
@@ -38,8 +38,11 @@ void * msg_task(void *);
 void log_data_entry(FILE *, int);
 void * datalogging_task(void *);
 
-void push_data_to_gui(std_msgs::String);
-void * data_pushing_task(void *);
+//void push_data_to_gui(std_msgs::String);
+//void * data_pushing_task(void *);
+
+//ros::Publisher rtai_controller_pub;
+//ros::Rate loop_rate(10);
 
 //*****************************************************************************
 
@@ -49,7 +52,7 @@ int main(int argc, char **argv)
 
     pthread_t datalogging_thread;
     pthread_t msg_thread;
-    pthread_t data_pushing_thread;
+    //pthread_t data_pushing_thread;
 
     //*************************************************************************
 
@@ -75,10 +78,9 @@ int main(int argc, char **argv)
 
 	// Start datalogging Publisher.
 
-	ros::Publisher rtai_controller_pub = nh.advertise<std_msgs::String>("chatter", 1000);
-    ros::Rate loop_rate(10);
+	//rtai_controller_pub = nh.advertise<std_msgs::String>("chatter", 1000);
 
-	ROS_INFO("Data logging Publisher advertised.");
+	//ROS_INFO("Data logging Publisher advertised.");
 
     //*************************************************************************
 
@@ -88,7 +90,7 @@ int main(int argc, char **argv)
 
     pthread_create(&msg_thread, NULL, msg_task, NULL);
     pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);
-    pthread_create(&data_pushing_thread, NULL, data_pushing_task, NULL);
+    //pthread_create(&data_pushing_thread, NULL, data_pushing_task, NULL);
 
     //*************************************************************************
 
@@ -102,7 +104,7 @@ int main(int argc, char **argv)
 
     pthread_join(msg_thread, NULL);
     pthread_join(datalogging_thread, NULL);
-    pthread_join(data_pushing_thread, NULL);
+    //pthread_join(data_pushing_thread, NULL);
 
     //*************************************************************************
 
@@ -236,32 +238,32 @@ void * datalogging_task(void * arg)
 
 // Push data to GUI.
 
-void push_data_to_gui (std_msgs::String msg) {
-    rtai_controller_pub.publish(msg);
-}
-
-void *data_pushing_task (void *) {
-    int count = 0;
-
-    while (ros::ok()) {
-        std_msgs::String msg;
-        std::stringstream ss;
-        ss << "hello world " << count;
-        msg.data = ss.str();
-    
-        ROS_INFO("%s", msg.data.c_str());
-    
-        push_data_to_gui(msg);
-    
-        pthread_yield();
-        ros::spinOnce();
-
-        loop_rate.sleep();
-        count++;
-    }
-
-    pthread_exit(NULL);
-}
+//void push_data_to_gui (std_msgs::String someMsg) {
+//    rtai_controller_pub.publish(someMsg);
+//}
+//
+//void *data_pushing_task (void *) {
+//    int count = 0;
+//
+//    while (ros::ok()) {
+//        std_msgs::String msg;
+//        std::stringstream ss;
+//        ss << "hello world " << count;
+//        msg.data = ss.str();
+//    
+//        ROS_INFO("%s", msg.data.c_str());
+//    
+//        push_data_to_gui(msg);
+//    
+//        pthread_yield();
+//        ros::spinOnce();
+//
+//        //loop_rate.sleep();
+//        count++;
+//    }
+//
+//    pthread_exit(NULL);
+//}
 
 /*
 // Print any messge waiting from the RT thread.
