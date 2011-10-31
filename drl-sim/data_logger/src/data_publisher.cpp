@@ -4,9 +4,9 @@
 #include <sstream>
 
 int main (int argc, char **argv) {
-    ros::init(argc, argv, "talker");
+    ros::init(argc, argv, "data_publisher");
     ros::NodeHandle nh;
-    ros::Publisher atrias_datalog_pub = nh.advertise<std_msgs::String>("chatter", 1000);
+    ros::Publisher atrias_datalog_pub = nh.advertise<std_msgs::String>("data_downlink", 1000);
     ros::Rate loop_rate(10);
 
     int count = 0;
