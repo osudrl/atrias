@@ -30,4 +30,5 @@ rosbuild_genmsg()
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(data_publisher src/data_publisher.cpp)
+rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
 
