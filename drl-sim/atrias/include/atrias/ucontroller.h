@@ -84,10 +84,8 @@
 
 // Need to set these during sensor calibration if you want the spring deflections
 // to be computed accurately.  Add these offsets to the transmission angle.
-//#define TRAN_A_OFF_ANGLE			-0.028043331476324
-//#define TRAN_B_OFF_ANGLE			0.011322169916428
-#define TRAN_A_OFF_ANGLE			0.038292
-#define TRAN_B_OFF_ANGLE			-0.021920
+#define TRAN_A_OFF_ANGLE			0.057933
+#define TRAN_B_OFF_ANGLE			-0.026280
 
 // Hip Medulla sensors:
 #define MIN_HIP_COUNT				0
