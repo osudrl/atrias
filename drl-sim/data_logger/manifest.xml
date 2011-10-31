@@ -9,6 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/data_logger</url>
 
+  <depend package="roscpp" />
+
 </package>
 
 
