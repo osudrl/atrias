@@ -28,18 +28,44 @@ int main (int argc, char **argv) {
     ROS_INFO("Connected to SHM.");
 
     int i = 0;
+    float dataArray[22];
 
     while (ros::ok()) {
         std_msgs::String msg;
         std::stringstream ss;
 
-        ControllerInput *c_in;
+        ControllerInput* c_in;
+        ControllerOutput* c_out;
         if (i != shm->io_index) {
             c_in = &shm->controller_input[i];
+
+            dataArray[0]  = c_in->body_angle;
+            dataArray[1]  = c_in->motor_angleA;
+            dataArray[2]  = c_in->motor_angleB;
+            dataArray[3]  = c_in->leg_angleA;
+            dataArray[4]  = c_in->leg_angleB;
+            dataArray[5]  = c_in->body_ang_vel;
+            dataArray[6]  = c_in->motor_velocityA;
+            dataArray[7]  = c_in->motor_velocityB;
+            dataArray[8]  = c_in->leg_velocityA;
+            dataArray[9]  = c_in->leg_velocityB;
+            dataArray[10] = c_in->xPosition;
+            dataArray[11] = c_in->yPosition;
+            dataArray[12] = c_in->zPosition;
+            dataArray[13] = c_in->xVelocity;
+            dataArray[14] = c_in->yVelocity;
+            dataArray[15] = c_in->zVelocity;
+            dataArray[16] = c_out->motor_torqueA;
+            dataArray[17] = c_out->motor_torqueB;
+            dataArray[18] = c_in->motor_currentA;
+            dataArray[19] = c_in->motor_currentB;
+            dataArray[20] = c_in->toe_switch;
+            dataArray[21] = c_in->command;
+
             i = (i++) % SHM_TO_USPACE_ENTRIES;
         }
 
-        ss << c_in->motor_angleA;
+        ss << dataArray[0];
         msg.data = ss.str();
 
         //ROS_INFO("%s", msg.data.c_str());
