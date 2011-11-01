@@ -1,4 +1,3 @@
-uint8 status
 float32 time
 float32 body_angle
 float32 motor_angleA
@@ -23,4 +22,3 @@ uint8 toe_switch
 uint8 command
 float32 motor_torqueA
 float32 motor_torqueB
-uint8[256] control_state
