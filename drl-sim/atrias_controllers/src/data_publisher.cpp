@@ -31,7 +31,8 @@ int main (int argc, char **argv) {
     ControllerOutput* c_out;
     int i = 0;
     int dIndex = 0;
-    atrias_controllers::AtriasData dataClump;
+    int msgNum = 0;
+    atrias_controllers::AtriasData aData;
 
     while (ros::ok()) {
         if (i != shm->io_index) {   // Check if shm has been updated.
@@ -40,31 +41,38 @@ int main (int argc, char **argv) {
                 c_out = &shm->controller_output[i];
 
                 // When adding new fields, make sure to update AtriasData.msg.
-                dataClump.body_angle  = c_in->body_angle;
-                //dataArray[1]  = c_in->motor_angleA;
-                //dataArray[2]  = c_in->motor_angleB;
-                //dataArray[3]  = c_in->leg_angleA;
-                //dataArray[4]  = c_in->leg_angleB;
-                //dataArray[5]  = c_in->body_ang_vel;
-                //dataArray[6]  = c_in->motor_velocityA;
-                //dataArray[7]  = c_in->motor_velocityB;
-                //dataArray[8]  = c_in->leg_velocityA;
-                //dataArray[9]  = c_in->leg_velocityB;
-                //dataArray[10] = c_in->xPosition;
-                //dataArray[11] = c_in->yPosition;
-                //dataArray[12] = c_in->zPosition;
-                //dataArray[13] = c_in->xVelocity;
-                //dataArray[14] = c_in->yVelocity;
-                //dataArray[15] = c_in->zVelocity;
-                //dataArray[16] = c_out->motor_torqueA;
-                //dataArray[17] = c_out->motor_torqueB;
-                //dataArray[18] = c_in->motor_currentA;
-                //dataArray[19] = c_in->motor_currentB;
-                //dataArray[20] = c_in->toe_switch;
-                //dataArray[21] = c_in->command;
+                aData.time = msgNum;
+                aData.body_angle  = c_in->body_angle;
+                aData.motor_angleA = c_in->motor_angleA;
+                aData.motor_angleB = c_in->motor_angleB;
+                aData.leg_angleA = c_in->leg_angleA;
+                aData.leg_angleB = c_in->leg_angleB;
+
+                aData.body_ang_vel = c_in->body_ang_vel;
+                aData.motor_velocityA = c_in->motor_velocityA;
+                aData.motor_velocityB = c_in->motor_velocityB;
+                aData.leg_velocityA = c_in->leg_velocityA;
+                aData.leg_velocityB = c_in->leg_velocityB;
+
+                aData.xPosition = c_in->xPosition;
+                aData.yPosition = c_in->yPosition;
+                aData.zPosition = c_in->zPosition;
+                aData.xVelocity = c_in->xVelocity;
+                aData.yVelocity = c_in->yVelocity;
+                aData.zVelocity = c_in->zVelocity;
+
+                aData.motor_torqueA = c_out->motor_torqueA;
+                aData.motor_torqueB = c_out->motor_torqueB;
+
+                aData.horizontal_velocity = c_in->horizontal_velocity;
+                aData.motor_currentA = c_in->motor_currentA;
+                aData.motor_currentB = c_in->motor_currentB;
+                aData.toe_switch = c_in->toe_switch;
+                aData.command = c_in->command;
 
                 i = (i++) % SHM_TO_USPACE_ENTRIES;
                 dIndex++;
+                msgNum++;
             }
             else {
                 dIndex = 0;
@@ -74,7 +82,7 @@ int main (int argc, char **argv) {
             }
         }
 
-        data_publisher.publish(dataClump);
+        data_publisher.publish(aData);
         ros::spinOnce();
         loop_rate.sleep();
     }
