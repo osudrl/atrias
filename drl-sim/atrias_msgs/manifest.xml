@@ -1,0 +1,14 @@
+<package>
+  <description brief="atrias_msgs">
+
+     atrias_msgs
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_msgs</url>
+
+</package>
+
+
