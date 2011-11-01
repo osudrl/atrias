@@ -3,6 +3,7 @@
 //! @author Devin Koepl
 
 #include <gui/atrias_gui.h>
+#include <atrias_msgs/GUIInfo.h>
 #include <time.h>
 
 //! @brief Initializes the GUI and controls.
@@ -14,10 +15,13 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "atrias_gui");
-    ros::NodeHandle n;
-    atrias_client = n.serviceClient<atrias_controllers::atrias_srv > ("gui_interface_srv");
+    ros::NodeHandle nh;
+
+    atrias_client = nh.serviceClient<atrias_controllers::atrias_srv>("gui_interface_srv");
     atrias_srv.request.command = CMD_DISABLE;
     atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
+
+    gui_publisher = nh.advertise<atrias_msgs::GUIInfo>("gui_info", 1000);
 
     Gtk::Main gtk(argc, argv);
 

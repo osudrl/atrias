@@ -119,6 +119,8 @@ Gtk::Allocation drawing_allocation;
 //FILE *logFile;
 
 ros::ServiceClient atrias_client;
+ros::Publisher gui_publisher;
+ros::Subscriber gui_subscriber;
 atrias_controllers::atrias_srv atrias_srv;
 
 FILE *log_file_fp;
