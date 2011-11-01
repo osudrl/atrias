@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/data_logger</url>
 
   <depend package="roscpp" />
+  <depend package="atrias" />
 
 </package>
 
