@@ -1,5 +1,9 @@
 // Devin Koepl
 
+#ifndef DRL_MATH_H
+#define DRL_MATH_H
+
+
 #define PI 3.14159265
 
 #define ABS(x)	(((x) < 0) ? -(x) : (x))
@@ -9,4 +13,6 @@
 #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
 #define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
+
+#endif // DRL_MATH_H
 

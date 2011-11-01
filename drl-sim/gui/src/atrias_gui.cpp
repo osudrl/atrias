@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle n;
-    atrias_client = n.serviceClient<atrias_controllers::atrias_srv > ("/gui_interface_srv");
+    atrias_client = n.serviceClient<atrias_controllers::atrias_srv > ("gui_interface_srv");
     atrias_srv.request.command = CMD_DISABLE;
     atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
 
@@ -382,6 +382,7 @@ int main(int argc, char **argv)
 
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(poke_controller), 100); // 50 is the timeout in milliseconds
 
+    ROS_INFO("Running GUI.");
     gtk.run(*window);
 
     // Store the final state of the gui.
