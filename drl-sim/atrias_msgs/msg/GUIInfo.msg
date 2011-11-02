@@ -1,1 +1,2 @@
+bool isLogging
 string logfileName

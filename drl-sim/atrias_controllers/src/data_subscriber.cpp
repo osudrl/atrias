@@ -7,8 +7,7 @@
 char buffer[256];
 FILE *log_file_fp;
 
-std::string format_float(float fl) 
-{
+std::string format_float(float fl) {
     char charBuf[64];
     sprintf(charBuf, "%.6f", fl);
     std::string buf = charBuf;
@@ -16,51 +15,39 @@ std::string format_float(float fl)
     bool positive;
     std::string result = "       ";
 
-    for (int i = 0; (j = charBuf[i]) > 0; i++)
-    { // loop until a null character is encountered
-        if (i == 0)
-        {   
-            if (j == '-')
-            { // is the number negative
+    for (int i = 0; (j = charBuf[i]) > 0; i++) {   // loop until a null character is encountered
+        if (i == 0) {
+            if (j == '-') {   // is the number negative
                 positive = false;
-            }   
-            else
-            {   
+            }
+            else {  
                 positive = true;
-            }   
-        }   
-        else if (j == '.')
-        {   
-            if (i < 6)
-            { // if there's room for one or more decimal places, include them
-                for (int k = 0; k < 7; k++)
-                {   
+            }
+        }
+        else if (j == '.') {
+            if (i < 6) {   // if there's room for one or more decimal places, include them
+                for (int k = 0; k < 7; k++) {
                     result[k] = charBuf[k];
-                }   
+                }
                 return result;
-            }   
-            else
-            { // if there's no room, leave them out
-                for (int k = 0; k < i && k < 7; k++)
-                {   
+            }
+            else {   // if there's no room, leave them out
+                for (int k = 0; k < i && k < 7; k++) {   
                     result[k] = charBuf[k];
-                }   
+                }
                 return result;
-            }   
-        }   
-        else if (i > 6)
-        {   
+            }
+        }
+        else if (i > 6) {
             break;
-        }   
-    }   
-    if (positive)
-    {   
-        return "NTOOBIG"; // the number is too big too be formatted
-    }   
-    else
-    {   
-        return "NTOOLOW"; // the number is too small to be formatted
-    }   
+        }
+    }
+    if (positive) {
+        return "NTOOBIG";   // the number is too big too be formatted
+    }
+    else {
+        return "NTOOLOW";   // the number is too small to be formatted
+    }
 }
 
 
