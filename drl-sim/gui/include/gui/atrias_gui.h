@@ -14,6 +14,7 @@
 
 #include <atrias_controllers/controller.h>
 #include <atrias_controllers/atrias_srv.h>
+#include <atrias_msgs/GUIInfo.h>
 
 #include <drl_library/drl_math.h>
 
@@ -120,6 +121,7 @@ Gtk::Allocation drawing_allocation;
 
 ros::ServiceClient atrias_client;
 ros::Publisher gui_publisher;
+atrias_msgs::GUIInfo guiInfo;
 ros::Subscriber gui_subscriber;
 atrias_controllers::atrias_srv atrias_srv;
 

@@ -424,10 +424,12 @@ void log_chkbox_toggled(void)
 
             //strftime(buffer, 80, "%d%m%y-%H:%M:%S.log", tInfo);
             sprintf(buffer, "%s/atrias_%0.2d%0.2d%0.2d_%0.2d%0.2d%0.2d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
-            ROS_INFO("Log filename: %s", buffer);
             //sprintf(buffer2, "%s%s", getenv("HOME"), "/atrias/drl-sim/atrias/log_files/");
             //mkdir(buffer2, 0777);
             //sprintf(buffer3, "%s%s", buffer2, buffer);
+
+            guiInfo.logfileName = buffer;
+            gui_publisher.publish(guiInfo);
 
             FILE * file;
             file = fopen(buffer, "w");
@@ -442,10 +444,9 @@ void log_chkbox_toggled(void)
 
         if (log_file_chooser->get_filename() != "")
         {
-            ROS_ERROR("Log filename is not blank!");
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
-            ROS_ERROR("Logfile opened.");
+            ROS_INFO("Logfile opened.");
             fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Torq A--Torq B--xPos----yPos----zPos----xVel----yVel----zVel---\n");
             struct timespec curTime;
             if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
