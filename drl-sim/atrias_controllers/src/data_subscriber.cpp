@@ -4,9 +4,10 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-char buffer[256];
-FILE *log_file_fp;
+char buffer[256];   // Buffer for general use (e.g., store announced logfile name. TODO: data_subscriber node should decide what filename to use, not GUI.
+FILE *log_file_fp;   // Pointer to logfile.
 
+// !@brief Convert float to string for storage. TODO: storage should be in floats that can be parsed by a script to extract user-specified parameters.
 std::string format_float(float fl) {
     char charBuf[64];
     sprintf(charBuf, "%.6f", fl);
@@ -50,7 +51,7 @@ std::string format_float(float fl) {
     }
 }
 
-
+// !@brief Log data to logfile.
 void datalogCallback(const atrias_controllers::AtriasData &aData) {
     //ROS_INFO("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f,%d, %d, %f, %f", aData.time, aData.body_angle, aData.motor_angleA, aData.motor_angleB, aData.leg_angleA, aData.leg_angleB, aData.body_ang_vel, aData.motor_velocityA, aData.motor_velocityB, aData.leg_velocityA, aData.leg_velocityB, aData.xPosition, aData.yPosition, aData.zPosition, aData.xVelocity, aData.yVelocity, aData.zVelocity, aData.horizontal_velocity, aData.motor_currentA, aData.motor_currentB, aData.toe_switch, aData.command, aData.motor_torqueA, aData.motor_torqueB);
     if (log_file_fp == NULL) ROS_ERROR("Logfile is not open.");
@@ -83,23 +84,24 @@ void datalogCallback(const atrias_controllers::AtriasData &aData) {
     }
 }
 
+// !@brief Get logfile name published by GUI and open file to write.
 void guiCallback(const atrias_msgs::GUIInfo &guiInfo) {
-
     sprintf(buffer, guiInfo.logfileName.c_str());
     ROS_INFO("Subscriber got logfile name: %s", buffer);
 
     log_file_fp = fopen(buffer, "w");
 }
 
+// !@brief Main loop.
 int main (int argc, char **argv) {
     ros::init(argc, argv, "datalog_subscriber");
     ros::NodeHandle nh;
     ros::Subscriber datalogSubscriber = nh.subscribe("datalog_downlink", 1000, datalogCallback);
-
     ros::Subscriber guiSubscriber = nh.subscribe("gui_info", 1000, guiCallback);
 
-    ros::spin();
-
+    while (ros::ok()) {
+        ros::spin();
+    }
     return 0;
 }
 
