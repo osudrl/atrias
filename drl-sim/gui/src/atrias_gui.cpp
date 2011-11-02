@@ -431,13 +431,6 @@ void log_chkbox_toggled(void)
             guiInfo.logfileName = buffer;
             gui_publisher.publish(guiInfo);
 
-            FILE * file;
-            file = fopen(buffer, "w");
-            if (file == NULL) perror ("Error opening file");
-            else if (file != NULL) {
-                fputs("-", file);
-                fclose(file);
-            }
             log_file_chooser->set_filename(buffer);
         }
         //ROS_INFO(log_file_chooser->get_filename().c_str());
@@ -447,7 +440,7 @@ void log_chkbox_toggled(void)
             // Open the log file for data logging.
             log_file_fp = fopen(log_file_chooser->get_filename().c_str(), "w");
             ROS_INFO("Logfile opened.");
-            fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Torq A--Torq B--xPos----yPos----zPos----xVel----yVel----zVel---\n");
+            //fprintf(log_file_fp, "Time----BdyAng--MtrAngA-MtrAngB-LegAngA-LegAngB-Torq A--Torq B--xPos----yPos----zPos----xVel----yVel----zVel---\n");
             struct timespec curTime;
             if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
             {
@@ -470,7 +463,7 @@ void log_chkbox_toggled(void)
     {
         // Close the log file.
         isLogging = false;
-        fclose(log_file_fp);
+        //fclose(log_file_fp);
     }
 }
 
@@ -674,23 +667,23 @@ bool poke_controller(void)
     }
 
     // Check to see if we are supposed to be logging data.
-    if (isLogging)
-    {
-        struct timespec curTime;
-        if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
-        {
-            ROS_WARN("Error getting current time, logging has been disabled!");
-            log_file_chkbox->set_active(false);
-        }
-        else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime))
-        {
-            fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
-                format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
-                format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
-                format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
-            nextLogTime = nextLogTime + log_frequency_spin->get_value();
-        }
-    }
+    //if (isLogging)
+    //{
+    //    struct timespec curTime;
+    //    if (clock_gettime(CLOCK_REALTIME, &curTime) == -1)
+    //    {
+    //        ROS_WARN("Error getting current time, logging has been disabled!");
+    //        log_file_chkbox->set_active(false);
+    //    }
+    //    else if (log_frequency_spin->get_value_as_int() == 100 || ((curTime.tv_nsec / 1000000) + (curTime.tv_sec * 1000) >= nextLogTime))
+    //    {
+    //        fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", format_float(atrias_srv.response.time).c_str(), format_float(atrias_srv.response.body_angle).c_str(),
+    //            format_float(atrias_srv.response.motor_angleA).c_str(), format_float(atrias_srv.response.motor_angleB).c_str(), format_float(atrias_srv.response.leg_angleA).c_str(), format_float(atrias_srv.response.leg_angleB).c_str(),
+    //            format_float(atrias_srv.response.motor_torqueA).c_str(), format_float(atrias_srv.response.motor_torqueB).c_str(), format_float(atrias_srv.response.xPosition).c_str(), format_float(atrias_srv.response.yPosition).c_str(),
+    //            format_float(atrias_srv.response.zPosition).c_str(), format_float(atrias_srv.response.xVelocity).c_str(), format_float(atrias_srv.response.yVelocity).c_str(), format_float(atrias_srv.response.zVelocity).c_str());
+    //        nextLogTime = nextLogTime + log_frequency_spin->get_value();
+    //    }
+    //}
 
     if (atrias_client.call(atrias_srv))
         draw_leg();
