@@ -15,10 +15,10 @@
 static Shm * shm;   // shm interface to kernel.
 
 int main (int argc, char **argv) {
-    ros::init(argc, argv, "datalog_publisher");
+    ros::init(argc, argv, "data_publisher");
     ros::NodeHandle nh;
     ros::Publisher data_publisher = nh.advertise<atrias_controllers::AtriasData>("datalog_downlink", 1000);   // Advertise topic at "data_downlink" and queue up to 1000 messages before dropping the oldest ones.
-    ros::Rate loop_rate(1000);   // Loop at 10 Hz.
+    ros::Rate loop_rate(3000);
 
     // Connect to kernel's shm.
     rt_allow_nonroot_hrt();   // Allow rt_shm_alloc to be used without root permissions.
@@ -30,59 +30,49 @@ int main (int argc, char **argv) {
     ControllerInput* c_in;
     ControllerOutput* c_out;
     int i = 0;
-    int dIndex = 0;
     int msgNum = 0;
     atrias_controllers::AtriasData aData;
 
     while (ros::ok()) {
         if (i != shm->io_index) {   // Check if shm has been updated.
-            if (dIndex < 100) {   // Check if dataClump is full.
-                c_in = &shm->controller_input[i];
-                c_out = &shm->controller_output[i];
+            c_in = &shm->controller_input[i];
+            c_out = &shm->controller_output[i];
 
-                // When adding new fields, make sure to update AtriasData.msg.
-                aData.time = msgNum;
-                aData.body_angle  = c_in->body_angle;
-                aData.motor_angleA = c_in->motor_angleA;
-                aData.motor_angleB = c_in->motor_angleB;
-                aData.leg_angleA = c_in->leg_angleA;
-                aData.leg_angleB = c_in->leg_angleB;
+            // When adding new fields, make sure to update AtriasData.msg.
+            aData.time = msgNum;
+            aData.body_angle  = c_in->body_angle;
+            aData.motor_angleA = c_in->motor_angleA;
+            aData.motor_angleB = c_in->motor_angleB;
+            aData.leg_angleA = c_in->leg_angleA;
+            aData.leg_angleB = c_in->leg_angleB;
 
-                aData.body_ang_vel = c_in->body_ang_vel;
-                aData.motor_velocityA = c_in->motor_velocityA;
-                aData.motor_velocityB = c_in->motor_velocityB;
-                aData.leg_velocityA = c_in->leg_velocityA;
-                aData.leg_velocityB = c_in->leg_velocityB;
+            aData.body_ang_vel = c_in->body_ang_vel;
+            aData.motor_velocityA = c_in->motor_velocityA;
+            aData.motor_velocityB = c_in->motor_velocityB;
+            aData.leg_velocityA = c_in->leg_velocityA;
+            aData.leg_velocityB = c_in->leg_velocityB;
 
-                aData.xPosition = c_in->xPosition;
-                aData.yPosition = c_in->yPosition;
-                aData.zPosition = c_in->zPosition;
-                aData.xVelocity = c_in->xVelocity;
-                aData.yVelocity = c_in->yVelocity;
-                aData.zVelocity = c_in->zVelocity;
+            aData.xPosition = c_in->xPosition;
+            aData.yPosition = c_in->yPosition;
+            aData.zPosition = c_in->zPosition;
+            aData.xVelocity = c_in->xVelocity;
+            aData.yVelocity = c_in->yVelocity;
+            aData.zVelocity = c_in->zVelocity;
 
-                aData.motor_torqueA = c_out->motor_torqueA;
-                aData.motor_torqueB = c_out->motor_torqueB;
+            aData.motor_torqueA = c_out->motor_torqueA;
+            aData.motor_torqueB = c_out->motor_torqueB;
 
-                aData.horizontal_velocity = c_in->horizontal_velocity;
-                aData.motor_currentA = c_in->motor_currentA;
-                aData.motor_currentB = c_in->motor_currentB;
-                aData.toe_switch = c_in->toe_switch;
-                aData.command = c_in->command;
+            aData.horizontal_velocity = c_in->horizontal_velocity;
+            aData.motor_currentA = c_in->motor_currentA;
+            aData.motor_currentB = c_in->motor_currentB;
+            aData.toe_switch = c_in->toe_switch;
+            aData.command = c_in->command;
 
-                i = (i++) % SHM_TO_USPACE_ENTRIES;
-                dIndex++;
-                msgNum++;
-            }
-            else {
-                dIndex = 0;
-                //for (i=0; i<100; i++) {
-                //    dataClump[i] = 0;
-                //}
-            }
+            data_publisher.publish(aData);
+
+            i = (i++) % SHM_TO_USPACE_ENTRIES;
+            msgNum++;
         }
-
-        data_publisher.publish(aData);
         ros::spinOnce();
         loop_rate.sleep();
     }
