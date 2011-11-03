@@ -14,7 +14,7 @@
 
 #include <atrias_controllers/controller.h>
 #include <atrias_controllers/atrias_srv.h>
-#include <atrias_msgs/GUIInfo.h>
+#include <atrias_controllers/data_subscriber_srv.h>
 
 #include <drl_library/drl_math.h>
 
@@ -120,17 +120,13 @@ Gtk::Allocation drawing_allocation;
 //FILE *logFile;
 
 ros::ServiceClient atrias_client;
-ros::Publisher gui_publisher;
-atrias_msgs::GUIInfo guiInfo;
-ros::Subscriber gui_subscriber;
+ros::ServiceClient datalog_client;
 atrias_controllers::atrias_srv atrias_srv;
-
-FILE *log_file_fp;
+atrias_controllers::data_subscriber_srv data_subscriber_srv;
 
 double last_p_gain;
 double last_d_gain;
 
-bool isLogging = false;
 long nextLogTime;
 
 bool poke_controller( void );

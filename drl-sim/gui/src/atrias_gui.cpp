@@ -3,8 +3,6 @@
 //! @author Devin Koepl
 
 #include <gui/atrias_gui.h>
-#include <atrias_msgs/GUIInfo.h>
-#include <time.h>
 
 //! @brief Initializes the GUI and controls.
 //! @param argc An integer that is one more than the number of command line arguments.
@@ -20,7 +18,7 @@ int main (int argc, char **argv) {
     atrias_srv.request.command = CMD_DISABLE;
     atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
 
-    gui_publisher = nh.advertise<atrias_msgs::GUIInfo>("gui_info", 1000);
+    datalog_client = nh.serviceClient<atrias_controllers::data_subscriber_srv>("data_subscriber_srv");   // Subscribe to service named "data_subscriber_srv".
 
     Gtk::Main gtk(argc, argv);
 
@@ -405,29 +403,25 @@ int main (int argc, char **argv) {
 }
 
 //! @brief Announce for a log file to be created.
-// TODO: Filename should be decided by data logger, not GUI. Datalogger should create and announce a new log file every time the Log Data checkbox is toggled, and GUI should subscribe to datalogger for the filename.
+// TODO: data_subscriber_srv should be named something like desktop_datalog_srv.
 void log_chkbox_toggled (void) {
-    if (log_file_chkbox->get_active()) {
-        guiInfo.isLogging = true;   // If checkbox is checked, set isLogging to true.
-        if (log_file_chooser->get_filename() == "") {   // If filename is unspecified, set one based on date and time.
-            time_t curSeconds;
-            curSeconds = time(NULL);
-            struct tm *tInfo;
-            tInfo = localtime(&curSeconds);
-            char buffer[256];
-
-            sprintf(buffer, "%s/atrias_%0.2d%0.2d%0.2d_%0.2d%0.2d%0.2d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
-            ROS_INFO(buffer);
-
-            guiInfo.logfileName = buffer;   // Set logfileName to buffer to be published to /gui_info.
-            log_file_chooser->set_filename(buffer);   // Set FileChooserButton filename to buffer.
+    if (log_file_chkbox->get_active()) {   // If checkbox is checked...
+        if (log_file_chooser->get_filename() != "") {
+            data_subscriber_srv.request.logfilename = log_file_chooser->get_filename();
         }
+        data_subscriber_srv.request.isLogging = true;
     }
     else {
-        guiInfo.isLogging = false;   // If checkbox is unchecked, set isLogging to false.
-        log_file_chooser->unselect_all();   // Reset logfile name.
+        log_file_chooser->unselect_all();
+        data_subscriber_srv.request.isLogging = false;
     }
-    gui_publisher.publish(guiInfo);   // Publish all this information.
+
+    datalog_client.call(data_subscriber_srv);   // Call the service with request and receive response.
+
+    if (data_subscriber_srv.response.logfilename != "") {
+        ROS_INFO("response.logfilename not blank.");
+        log_file_chooser->set_filename(data_subscriber_srv.response.logfilename);   // Set FileChooserButton filename to response.
+    }
 }
 
 //! @brief restarts the robot.
