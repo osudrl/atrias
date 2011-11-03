@@ -408,7 +408,8 @@ int main (int argc, char **argv) {
 // TODO: Filename should be decided by data logger, not GUI. Datalogger should create and announce a new log file every time the Log Data checkbox is toggled, and GUI should subscribe to datalogger for the filename.
 void log_chkbox_toggled (void) {
     if (log_file_chkbox->get_active()) {
-        if (log_file_chooser->get_filename() == "") {
+        guiInfo.isLogging = true;   // If checkbox is checked, set isLogging to true.
+        if (log_file_chooser->get_filename() == "") {   // If filename is unspecified, set one based on date and time.
             time_t curSeconds;
             curSeconds = time(NULL);
             struct tm *tInfo;
@@ -416,23 +417,17 @@ void log_chkbox_toggled (void) {
             char buffer[256];
 
             sprintf(buffer, "%s/atrias_%0.2d%0.2d%0.2d_%0.2d%0.2d%0.2d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            ROS_INFO(buffer);
 
-            guiInfo.logfileName = buffer;
-            gui_publisher.publish(guiInfo);
-
-            log_file_chooser->set_filename(buffer);
-        }
-
-        if (log_file_chooser->get_filename() != "") {
-            guiInfo.isLogging = true;
-        }
-        else {
-            log_file_chkbox->set_active(false);
+            guiInfo.logfileName = buffer;   // Set logfileName to buffer to be published to /gui_info.
+            log_file_chooser->set_filename(buffer);   // Set FileChooserButton filename to buffer.
         }
     }
-    else if (guiInfo.isLogging) {
-        guiInfo.isLogging = false;
+    else {
+        guiInfo.isLogging = false;   // If checkbox is unchecked, set isLogging to false.
+        log_file_chooser->unselect_all();   // Reset logfile name.
     }
+    gui_publisher.publish(guiInfo);   // Publish all this information.
 }
 
 //! @brief restarts the robot.
