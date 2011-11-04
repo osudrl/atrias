@@ -95,38 +95,37 @@ void datalogCallback(const atrias_controllers::AtriasData &aData) {
 //! @brief Get logfile name published by GUI and open file to write.
 bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atrias_controllers::data_subscriber_srv::Response& res) {
     if (req.isLogging) {
-        ROS_INFO("logging");
+        ROS_INFO("data_subscriber: Logging.");
         char buffer[256];   // Create buffer to store filename.
 
         if (req.logfilename == "") {   // If filename is unspecified, set one based on date and time.
+            ROS_INFO("data_subscriber: Logfile name unspecified. Deciding logfile name based on date and time.");
             time_t curSeconds;
             curSeconds = time(NULL);
             struct tm *tInfo;
             tInfo = localtime(&curSeconds);
             sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
-            ROS_INFO("data_subscriber decided logfile name based on date and time.");
         }
         else {   // If filename is specified, use that as logfilename.
+            ROS_INFO("data_subscriber: Setting logfile name as requested by GUI.");
             sprintf(buffer, "%s", req.logfilename.c_str());
-            ROS_INFO("data_subscriber set logfile name as requested by GUI.");
         }
 
+        ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
         log_file_fp = fopen(buffer, "w");   // Open logfile.
-        ROS_INFO("data_subscriber opened logfile at %s", buffer);
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }
     else if (!req.isLogging) {
-        ROS_INFO("not logging");
+        ROS_INFO("data_subscriber: Not logging.");
         if (log_file_fp != NULL) {   // Check if logfile is open because serviceCallback could be run if logfilename is set but isLogging is off.
             fclose(log_file_fp);
-            ROS_INFO("data_subscriber closed logfile.");
+            ROS_INFO("data_subscriber: Closing logfile.");
         }
         res.logfilename = "";   // Respond with blank logfilename.
         isLogging = false;
     }
     return true;
-    ROS_INFO("This print was defined after the return true of serviceCallback.");
 }
 
 //! @brief Main loop.

@@ -379,7 +379,7 @@ int main (int argc, char **argv) {
 
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(poke_controller), 100); // 50 is the timeout in milliseconds
 
-    ROS_INFO("Running GUI.");
+    ROS_INFO("GUI: Running.");
     gtk.run(*window);
 
     // Store the final state of the gui.
@@ -406,29 +406,22 @@ int main (int argc, char **argv) {
 // TODO: data_subscriber_srv should be named something like desktop_datalog_srv.
 void log_chkbox_toggled (void) {
     if (log_file_chkbox->get_active()) {   // If checkbox is checked...
-        ROS_INFO("Checkbox ON!");
+        ROS_INFO("GUI: Sending log enable request.");
         if (log_file_chooser->get_filename() != "") {
-            data_subscriber_srv.request.logfilename = log_file_chooser->get_filename();
-            ROS_INFO("GUI: FileChooserButton not blank!");
+            data_subscriber_srv.request.logfilename = log_file_chooser->get_filename();   // Specify name to use for logfile.
         }
         data_subscriber_srv.request.isLogging = true;
     }
     else {
-        ROS_INFO("Checkbox OFF!");
+        ROS_INFO("GUI: Sending log disable request.");
         log_file_chooser->unselect_all();
         data_subscriber_srv.request.isLogging = false;
     }
 
     datalog_client.call(data_subscriber_srv);   // Call the service with request and receive response.
-    ROS_INFO("GUI: data_subscriber_srv called.");
 
     if (data_subscriber_srv.response.logfilename != "") {
         log_file_chooser->set_filename(data_subscriber_srv.response.logfilename);   // Set FileChooserButton filename to response.
-        ROS_INFO("GUI: response.logfilename is %s.", data_subscriber_srv.response.logfilename.c_str());
-        ROS_INFO("GUI: log_file_chooser filename set to %s.", log_file_chooser->get_filename().c_str());
-    }
-    else if (data_subscriber_srv.response.logfilename == "") {
-        ROS_INFO("GUI: response.logfilename blank!");
     }
 }
 
