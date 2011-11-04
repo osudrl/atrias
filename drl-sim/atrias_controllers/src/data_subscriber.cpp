@@ -58,36 +58,37 @@ std::string format_float(float fl) {
 
 //! @brief Log data to logfile.
 void datalogCallback(const atrias_controllers::AtriasData &aData) {
-    //ROS_INFO("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f,%d, %d, %f, %f", aData.time, aData.body_angle, aData.motor_angleA, aData.motor_angleB, aData.leg_angleA, aData.leg_angleB, aData.body_ang_vel, aData.motor_velocityA, aData.motor_velocityB, aData.leg_velocityA, aData.leg_velocityB, aData.xPosition, aData.yPosition, aData.zPosition, aData.xVelocity, aData.yVelocity, aData.zVelocity, aData.horizontal_velocity, aData.motor_currentA, aData.motor_currentB, aData.toe_switch, aData.command, aData.motor_torqueA, aData.motor_torqueB);
-    if (log_file_fp != NULL) {
-        fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%s,%s\n",
-            format_float(aData.time).c_str(),
-            format_float(aData.body_angle).c_str(),
-            format_float(aData.motor_angleA).c_str(),
-            format_float(aData.motor_angleB).c_str(),
-            format_float(aData.leg_angleA).c_str(),
-            format_float(aData.leg_angleB).c_str(),
-            format_float(aData.body_ang_vel).c_str(),
-            format_float(aData.motor_velocityA).c_str(),
-            format_float(aData.motor_velocityB).c_str(),
-            format_float(aData.leg_velocityA).c_str(),
-            format_float(aData.leg_velocityB).c_str(),
-            format_float(aData.xPosition).c_str(),
-            format_float(aData.yPosition).c_str(),
-            format_float(aData.zPosition).c_str(),
-            format_float(aData.xVelocity).c_str(),
-            format_float(aData.yVelocity).c_str(),
-            format_float(aData.zVelocity).c_str(),
-            format_float(aData.horizontal_velocity).c_str(),
-            format_float(aData.motor_currentA).c_str(),
-            format_float(aData.motor_currentB).c_str(),
-            format_float(aData.toe_switch).c_str(),
-            format_float(aData.command).c_str(),
-            format_float(aData.motor_torqueA).c_str(),
-            format_float(aData.motor_torqueB).c_str());
-    }
-    else {
-        ROS_ERROR("data_subscriber cannot open log file.");
+    if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
+        if (log_file_fp != NULL) {
+            fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                format_float(aData.time).c_str(),
+                format_float(aData.body_angle).c_str(),
+                format_float(aData.motor_angleA).c_str(),
+                format_float(aData.motor_angleB).c_str(),
+                format_float(aData.leg_angleA).c_str(),
+                format_float(aData.leg_angleB).c_str(),
+                format_float(aData.body_ang_vel).c_str(),
+                format_float(aData.motor_velocityA).c_str(),
+                format_float(aData.motor_velocityB).c_str(),
+                format_float(aData.leg_velocityA).c_str(),
+                format_float(aData.leg_velocityB).c_str(),
+                format_float(aData.xPosition).c_str(),
+                format_float(aData.yPosition).c_str(),
+                format_float(aData.zPosition).c_str(),
+                format_float(aData.xVelocity).c_str(),
+                format_float(aData.yVelocity).c_str(),
+                format_float(aData.zVelocity).c_str(),
+                format_float(aData.horizontal_velocity).c_str(),
+                format_float(aData.motor_currentA).c_str(),
+                format_float(aData.motor_currentB).c_str(),
+                format_float(aData.toe_switch).c_str(),
+                format_float(aData.command).c_str(),
+                format_float(aData.motor_torqueA).c_str(),
+                format_float(aData.motor_torqueB).c_str());
+        }
+        else {
+            ROS_ERROR("data_subscriber cannot open log file.");
+        }
     }
 }
 
@@ -102,10 +103,12 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
             curSeconds = time(NULL);
             struct tm *tInfo;
             tInfo = localtime(&curSeconds);
-            sprintf(buffer, "%s/atrias_%0.2d%0.2d%0.2d_%0.2d%0.2d%0.2d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            ROS_INFO("data_subscriber decided logfile name based on date and time.");
         }
         else {   // If filename is specified, use that as logfilename.
             sprintf(buffer, "%s", req.logfilename.c_str());
+            ROS_INFO("data_subscriber set logfile name as requested by GUI.");
         }
 
         log_file_fp = fopen(buffer, "w");   // Open logfile.
@@ -120,8 +123,10 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
             ROS_INFO("data_subscriber closed logfile.");
         }
         res.logfilename = "";   // Respond with blank logfilename.
+        isLogging = false;
     }
     return true;
+    ROS_INFO("This print was defined after the return true of serviceCallback.");
 }
 
 //! @brief Main loop.
