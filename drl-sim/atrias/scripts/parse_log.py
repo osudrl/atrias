@@ -17,10 +17,11 @@ if (len(sys.argv) > 2):   # Column to plot specified?
     del dataList[0]   # Delete label row.
     del dataList[-1]   # Delete potentially incomplete last row.
     for row in dataList:
-        colNum = 0
-        for col in row:
-            row[colNum] = float(col.strip())
-            colNum += 1
+        for colNum in [0, int(sys.argv[2])]:
+            try:
+                row[colNum] = float(row[colNum].strip())
+            except:
+                pass
 
     xdata = [x[0] for x in dataList]   # Timestamp
     ydata = [x[int(sys.argv[2])] for x in dataList]
@@ -29,7 +30,7 @@ if (len(sys.argv) > 2):   # Column to plot specified?
     plt.xlabel('Time (ms)')
     plt.ylabel('Motor Angle B')
     plt.title('Title!')
-    plt.axis([dataList[0][0], dataList[-1][0], -1, 1])
+    plt.axis([dataList[0][0], dataList[-1][0], -5, 5])
     plt.grid(True)
     plt.show()
 else:
