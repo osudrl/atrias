@@ -113,6 +113,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 
         ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
         log_file_fp = fopen(buffer, "w");   // Open logfile.
+        fprintf(log_file_fp, "Time (ms), Body Angle, Motor A Angle, Motor B Angle, Leg A Angle, Leg B Angle, Body Angular Velocity, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Horizontal Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Motor A Torque, Motor B Torque");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }
