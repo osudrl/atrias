@@ -133,7 +133,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 int main (int argc, char **argv) {
     ros::init(argc, argv, "data_subscriber");
     ros::NodeHandle nh;
-    ros::Subscriber data_subscriber = nh.subscribe("datalog_downlink", 1000, datalogCallback);
+    ros::Subscriber data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
     ros::ServiceServer data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
 
     while (ros::ok()) {
