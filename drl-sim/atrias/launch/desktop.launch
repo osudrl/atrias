@@ -1,9 +1,14 @@
 <launch>
-    <env name="ROS_HOSTNAME" value="192.168.1.100" />
-
-    <!-- start the gui -->
-    <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />
+    <!-- Start the GUI. -->
+    <node name   = "atrias_gui"
+          pkg    = "gui"
+          type   = "atrias_gui"
+          output = "screen" />
 
     <!-- Start data subscriber node -->
-    <node name="data_subscriber" pkg="atrias_controllers" type="data_subscriber" output="screen" />
+    <node name   = "data_subscriber"
+          pkg    = "atrias_controllers"
+          type   = "data_subscriber"
+          output = "screen" />
 </launch>
+

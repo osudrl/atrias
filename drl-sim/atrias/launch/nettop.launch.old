@@ -1,0 +1,11 @@
+<launch>
+    <!-- Nettop should connect to ROS master node running on desktop. -->
+    <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
+    <env name="ROS_HOSTNAME" value="192.168.1.121" />
+
+    <!-- Start the ecat kernel interface. -->
+    <node name="wireless_kern_interface" pkg="atrias_controllers" type="wireless_kern_interface" output="screen" />
+
+    <!-- Start data publishing node. -->
+    <node name="data_publisher" pkg="atrias_controllers" type="data_publisher" output="screen" />
+</launch>

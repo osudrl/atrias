@@ -1,11 +1,35 @@
 <launch>
-    <!-- Nettop should connect to ROS master node running on desktop. -->
-    <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
-    <env name="ROS_HOSTNAME" value="192.168.1.121" />
+    <!-- Set up nettop as remote machine. -->
+    <machine name    = "drl-zotac"
+             address = "192.168.1.121"
+             user    = "drl"
+             password="robot" />
 
     <!-- Start the ecat kernel interface. -->
-    <node name="wireless_kern_interface" pkg="atrias_controllers" type="wireless_kern_interface" output="screen" />
+    <node machine = "drl-zotac"
+          name    = "wireless_kern_interface"
+          pkg     = "atrias_controllers"
+          type    = "wireless_kern_interface"
+          output  = "screen">
+        <!-- Nettop should connect to ROS master node running on desktop. -->
+        <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
+    </node>
 
     <!-- Start data publishing node. -->
-    <node name="data_publisher" pkg="atrias_controllers" type="data_publisher" output="screen" />
+    <node machine = "drl-zotac"
+          name    = "data_publisher"
+          pkg     = "atrias_controllers"
+          type    = "data_publisher"
+          output  = "screen">
+        <!-- Nettop should connect to ROS master node running on desktop. -->
+        <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
+    </node>
+
+    <!-- Start data plotter on desktop. -->
+    <node name = "data_plotter"
+          pkg  = "rxtools"
+          type = "rxplot"
+          args = "-p 20 /datalog_downlink/motor_angleA:motor_angleB
+                        /datalog_downlink/leg_angleA:leg_angleB" />
 </launch>
+
