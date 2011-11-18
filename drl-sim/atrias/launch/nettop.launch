@@ -29,7 +29,10 @@
     <node name = "data_plotter"
           pkg  = "rxtools"
           type = "rxplot"
-          args = "-p 20 /datalog_downlink/motor_angleA:motor_angleB
-                        /datalog_downlink/leg_angleA:leg_angleB" />
+          args = "--period=20
+                  --refresh_rate=20
+                  /datalog_downlink/motor_angleA:motor_angleB
+                        /datalog_downlink/leg_angleA:leg_angleB
+                        /datalog_downlink/time" />
 </launch>
 

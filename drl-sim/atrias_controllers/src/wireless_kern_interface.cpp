@@ -30,6 +30,7 @@ static Shm * shm;
 
 //*****************************************************************************
 
+// Get control parameters from GUI over ROS service atrias_srv.
 bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response &);
 
 void print_msg(int);

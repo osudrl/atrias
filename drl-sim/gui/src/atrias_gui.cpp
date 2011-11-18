@@ -9,7 +9,6 @@
 //! @param argv An array of character pointers containing the command line arguments.
 //! @return Returns zero upon successful completion, non-zero if an error occured.
 
-
 int main (int argc, char **argv) {
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle nh;
@@ -18,7 +17,8 @@ int main (int argc, char **argv) {
     atrias_srv.request.command = CMD_DISABLE;
     atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
 
-    datalog_client = nh.serviceClient<atrias_controllers::data_subscriber_srv>("data_subscriber_srv");   // Subscribe to service named "data_subscriber_srv".
+    // Subscribe to service named "data_subscriber_srv".
+    datalog_client = nh.serviceClient<atrias_controllers::data_subscriber_srv>("data_subscriber_srv");
 
     Gtk::Main gtk(argc, argv);
 
@@ -639,3 +639,9 @@ void draw_leg () {
     cr->rel_line_to(-motor_radius * cos(atrias_srv.response.motor_angleB), motor_radius * sin(atrias_srv.response.motor_angleB));
     cr->stroke();
 }
+
+//! @brief Draw a simple, live plot of the last 30 seconds.
+void draw_plot () {
+
+}
+
