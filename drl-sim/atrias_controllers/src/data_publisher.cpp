@@ -6,7 +6,7 @@ void callbackShm (const ros::TimerEvent&) {
         c_out = &shm->controller_output[i];
 
         // When adding new fields, make sure to update AtriasData.msg.
-        aData.time = msgNum;
+        aData.time = i;
         aData.body_angle  = c_in->body_angle;
         aData.motor_angleA = c_in->motor_angleA;
         aData.motor_angleB = c_in->motor_angleB;
@@ -39,7 +39,6 @@ void callbackShm (const ros::TimerEvent&) {
         data_publisher.publish(aData);
 
         i = (i++) % SHM_TO_USPACE_ENTRIES;
-        msgNum++;
         ROS_INFO("%d %d", i, shm->io_index);
     }
         ROS_INFO("shm not updated yet!");
@@ -87,6 +86,9 @@ int main (int argc, char **argv) {
         ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
         
     ROS_INFO("Datalog publisher connected to shm.");
+
+    // Set i to current value of io_index.
+    i = shm->io_index;
 
     ros::spin();
 
