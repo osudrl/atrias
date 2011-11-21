@@ -25,14 +25,7 @@
         <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
     </node>
 
-    <!-- Start data plotter on desktop. -->
-    <node name = "data_plotter"
-          pkg  = "rxtools"
-          type = "rxplot"
-          args = "--period=20
-                  --refresh_rate=20
-                  /datalog_downlink/motor_angleA:motor_angleB
-                        /datalog_downlink/leg_angleA:leg_angleB
-                        /datalog_downlink/time" />
+    <!-- Include data plotter node. -->
+    <include file="$(find atrias)/launch/data_plotter.launch" />
 </launch>
 
