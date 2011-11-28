@@ -2,15 +2,7 @@
 //! @author Soo-Hyun Yoo
 //! @brief Subscribe to data_publisher and log data to file.
 
-#include <atrias_controllers/AtriasData.h>
-#include <atrias_controllers/data_subscriber_srv.h>
-
-#include "ros/ros.h"
-
-#include <time.h>
-
-FILE *log_file_fp;   // Pointer to logfile.
-bool isLogging = false;   // Should I be logging?
+#include <atrias_controllers/data_subscriber.h>
 
 // !@brief Convert float to string for storage. TODO: storage should be in floats that can be parsed by a script to extract user-specified parameters.
 std::string format_float(float fl) {
@@ -58,6 +50,9 @@ std::string format_float(float fl) {
 
 //! @brief Log data to logfile.
 void datalogCallback(const atrias_controllers::AtriasData &aData) {
+    if ((int) aData.time % 20 == 0) {   // 50 Hz
+        data_visualization_publisher.publish(aData);
+    }
     if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
         if (log_file_fp != NULL) {
             fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
@@ -131,10 +126,19 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 
 //! @brief Main loop.
 int main (int argc, char **argv) {
+    isLogging = false;
+
     ros::init(argc, argv, "data_subscriber");
     ros::NodeHandle nh;
-    ros::Subscriber data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
-    ros::ServiceServer data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
+
+    // Subscribe to data stream from data_publisher on nettop.
+    data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
+
+    // Publish a much lower-frequency data stream (50 Hz) for visualization purposes. TODO: Eventually, GUI should read stuff from this stream instead of asking for data from wireless_kern_interface.
+    data_visualization_publisher = nh.advertise<atrias_controllers::AtriasData>("data_visualization_stream", 0);
+
+    // Service for GUI.
+    data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
 
     while (ros::ok()) {
         ros::spinOnce();
