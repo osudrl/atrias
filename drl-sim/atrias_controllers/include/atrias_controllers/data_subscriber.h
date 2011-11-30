@@ -15,5 +15,4 @@ ros::Subscriber data_subscriber;
 ros::Publisher data_visualization_publisher;
 ros::ServiceServer data_subscriber_srv;
 
-
 #endif // DATA_SUBSCRIBER_H

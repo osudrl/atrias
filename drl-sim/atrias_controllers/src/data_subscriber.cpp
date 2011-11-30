@@ -4,7 +4,10 @@
 
 #include <atrias_controllers/data_subscriber.h>
 
-// !@brief Convert float to string for storage. TODO: storage should be in floats that can be parsed by a script to extract user-specified parameters.
+// !@brief Convert float to string for storage.
+//
+// TODO: To save disk space, storage should be in floats that can be parsed by
+// a script to extract user-specified parameters.
 std::string format_float(float fl) {
     char charBuf[64];
     sprintf(charBuf, "%.6f", fl);
@@ -15,22 +18,14 @@ std::string format_float(float fl) {
 
     for (int i = 0; (j = charBuf[i]) > 0; i++) {   // loop until a null character is encountered
         if (i == 0) {
-            if (j == '-') {   // is the number negative
-                positive = false;
-            }
-            else {  
-                positive = true;
-            }
+            // Check if the number is negative.
+            positive = (j == '-') ? false : true;
         }
         else if (j == '.') {
-            if (i < 6) {   // if there's room for one or more decimal places, include them
+            // If there is room for one or more decimal places, include them.
+            // Otherwise, leave them out.
+            if (i < 6) {
                 for (int k = 0; k < 7; k++) {
-                    result[k] = charBuf[k];
-                }
-                return result;
-            }
-            else {   // if there's no room, leave them out
-                for (int k = 0; k < i && k < 7; k++) {   
                     result[k] = charBuf[k];
                 }
                 return result;
@@ -40,19 +35,17 @@ std::string format_float(float fl) {
             break;
         }
     }
-    if (positive) {
-        return "NTOOBIG";   // the number is too big too be formatted
-    }
-    else {
-        return "NTOOLOW";   // the number is too small to be formatted
-    }
+
+    return (positive) ? "NTOOBIG" : "NTOOLOW";
 }
 
 //! @brief Log data to logfile.
 void datalogCallback(const atrias_controllers::AtriasData &aData) {
-    if ((int) aData.time % 20 == 0) {   // 50 Hz
+    // Publish at about 50 Hz based on data timestamp.
+    if ((int) aData.time % 20 == 0) {
         data_visualization_publisher.publish(aData);
     }
+
     if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
         if (log_file_fp != NULL) {
             fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
@@ -126,6 +119,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 
 //! @brief Main loop.
 int main (int argc, char **argv) {
+    // Logging is disabled by default.
     isLogging = false;
 
     ros::init(argc, argv, "data_subscriber");
@@ -134,15 +128,23 @@ int main (int argc, char **argv) {
     // Subscribe to data stream from data_publisher on nettop.
     data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
 
-    // Publish a much lower-frequency data stream (50 Hz) for visualization purposes. TODO: Eventually, GUI should read stuff from this stream instead of asking for data from wireless_kern_interface.
+    // Provide a much lower-frequency data stream for visualization purposes by
+    // re-publishing every few AtriasData fetched by datalogCallback. We
+    // wouldn't need to do this if there was a nice way to specify a sampling
+    // rate for rxplot, but this workaround suffices for now.
+    //
+    // TODO: Eventually, GUI should read stuff from this stream instead of
+    // asking for data from wireless_kern_interface.
     data_visualization_publisher = nh.advertise<atrias_controllers::AtriasData>("data_visualization_stream", 0);
 
     // Service for GUI.
     data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
 
+    // Run ROS loop.
     while (ros::ok()) {
         ros::spinOnce();
     }
+
     return 0;
 }
 
