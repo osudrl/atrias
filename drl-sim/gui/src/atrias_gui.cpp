@@ -162,6 +162,9 @@ int main (int argc, char **argv) {
     gui->get_widget("torqueADisplay", torqueADisplay);
     gui->get_widget("torqueBDisplay", torqueBDisplay);
 
+    gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
+    gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
+
     gui->get_widget("restart_button", restart_button);
     gui->get_widget("enable_button", enable_button);
     gui->get_widget("disable_button", disable_button);
@@ -574,6 +577,12 @@ bool poke_controller (void) {
 
     motor_torqueA_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueA), MTR_MAX_TRQ) / MTR_MAX_TRQ);
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
+
+    // Update spring deflection displays.
+    sprintf(buffer, "%0.4f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
+    spring_deflection_A_entry->set_text(buffer);
+    sprintf(buffer, "%0.4f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
+    spring_deflection_B_entry->set_text(buffer);
 
     // Update the boom stuff indicators.
     sprintf(buffer, "%0.4f", atrias_srv.response.xPosition);

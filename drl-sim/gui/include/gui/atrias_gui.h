@@ -110,6 +110,9 @@ Gtk::Entry *zVelDisplay;
 Gtk::Entry *torqueADisplay;
 Gtk::Entry *torqueBDisplay;
 
+Gtk::Entry *spring_deflection_A_entry;
+Gtk::Entry *spring_deflection_B_entry;
+
 Gtk::Button *restart_button;
 Gtk::Button *enable_button;
 Gtk::Button *disable_button;
