@@ -1,5 +1,12 @@
-// Devin Koepl
-
+/**
+ * @file
+ * @author Devin Koepl
+ *
+ * @breif atrias ethercat code. Makes a kernel modul.
+ *
+ *
+ *
+ */
 #include "controller_wrapper_states.h"
 
 /*****************************************************************************/
@@ -13,6 +20,9 @@
 
 /*****************************************************************************/
 
+/**
+ * @brief pointer for shared memory manipulation
+ */
 static Shm * shm;
 
 /*****************************************************************************/
