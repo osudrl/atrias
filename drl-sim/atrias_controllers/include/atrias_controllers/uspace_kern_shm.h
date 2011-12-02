@@ -1,5 +1,9 @@
-// Devin Koepl
-
+/**
+ * @file
+ * @author Devin Koepl
+ * @brief Defines the Shm strcut for shared memory management. Define message codes.
+ *
+ */
 #ifndef FUNCS_H_USPACE_KERN_SHM
 #define FUNCS_H_USPACE_KERN_SHM
 
@@ -16,7 +20,11 @@
 #define WARN_MSG		2
 #define ERROR_MSG		3
 
-// Data to the kernel.  We can just use a spin lock for data going to the kernel.
+/**
+ * @brief Data to the kernel.
+ * 
+ * We can just use a spin lock for data going to the kernel.
+ */
 typedef struct
 {
 	// To kernel space
