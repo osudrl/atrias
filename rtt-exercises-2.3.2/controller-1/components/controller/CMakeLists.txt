@@ -1,0 +1,1 @@
+orocos_component(usecase-controller Controller.cpp )

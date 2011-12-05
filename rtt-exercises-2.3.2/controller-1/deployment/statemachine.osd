@@ -1,0 +1,88 @@
+
+/**
+ * This statemachine file must be loaded in the ModeSwitch
+ * component. See the last line for the name of the statemachine
+ * instance we will create. See the Component Builder's Manual
+ * for instructions on how to load and start state machines.
+ */
+StateMachine OurStateMachineType
+{
+
+    /*
+     * Exercise: (complete first the other exercises in this file)
+     * INIT goes immediately to Automatic. Change this by
+     * adding an intermediate state 'Waiting' which
+     * waits for 5 seconds before making the transition
+     * to Automatic. Use the Timer component for this. First choose
+     * the timer number (id) you want to use. You must
+     * 'arm' a timer and then wait for the 'timeout' event to happen.
+     * When it happens (and it was our timer id that expired),
+     * go to the Automatic state.
+     */
+    initial state INIT {
+        transition select Automatic;
+    }
+
+    state Automatic {
+        entry {
+            try Automatic.start();
+            try Controller.start();
+        }
+
+        exit {
+            try Automatic.stop();
+            try Controller.stop();
+        }
+
+        /*
+         * Exercise: Switch to the Manual Mode
+         * when ModeSwitch signals this with a
+         * switchMode event.
+         */
+    }
+
+    state Manual {
+        entry {
+            try Joystick.start();
+        }
+
+        /*
+         * Exercise: write a 'run' program that checks
+         * the joysticks output value. If the value is larger
+         * than 10.0 or smaller than -10.0, switch the Joystick
+         * to the run time 'warning' state, if the value is between
+         * 10.0 and -10.0 again, 'recover' from the warning state.
+         */
+
+        exit {
+            try Joystick.stop();
+        }
+
+        /*
+         * Exercise: Switch to the Automatic Mode
+         * when ModeSwitch signals this with a
+         * switchMode event.
+         */
+
+        /*
+         * Exercise: go to automatic mode when
+         * the joystick component is in a run-time error state.
+         */
+
+        /*
+         * Exercise: If the safety switch attribute of the ModeSwitch
+         * component is false, do not go to the automatic mode.
+         */
+    }
+
+    final state FINI {
+    }
+}
+
+/*
+ * This line 'instantiates' one statemachine of the
+ * above declared type.
+ */
+RootMachine OurStateMachineType the_statemachine
+
+

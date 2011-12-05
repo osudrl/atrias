@@ -1,0 +1,21 @@
+
+/**
+ * Exercise: Write the App program, to be
+ * loaded in the Hello component.
+ *
+ * The program is an endless loop which
+ * receives new data (of type 'array') on an input port of Hello
+ * and multiplies all elements with the gains. The result is
+ * written out on the output port.
+ *
+ * Be careful not to get stuck in an infinite spinnnig loop.
+ *
+ * Load this program in the Hello component using the scripting service.
+ * Then start it. Take a look at the listing using the 'list'
+ * command in the TaskBrowser. Play with pausing and stepping the program.
+ * you can use 'trace' in this case to avoid repetitive typing 'list'.
+ */
+program App {
+
+
+}

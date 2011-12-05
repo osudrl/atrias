@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <!-- Exercise: Modify ComponentPath to point to your local installation of 
+       the Orocos Component Library, OCL. In case you use ROS, this property can be
+       ignored, since ROS finds the package automatically by name using rospack. -->
+  <struct name="Deployer" type="PropertyBag">
+    <struct name="Properties" type="PropertyBag">
+      <simple name="RTT_COMPONENT_PATH" type="string"><value>/usr/local</value></simple>
+    </struct>
+  </struct>
+</properties>

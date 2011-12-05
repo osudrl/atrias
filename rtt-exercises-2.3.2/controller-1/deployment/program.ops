@@ -1,0 +1,20 @@
+
+/**
+ * This program must be loaded in the
+ * Automatic component. See the Component Builder's Manual
+ * for instructions on how to load and start program scripts.
+ */
+
+ program the_program {
+	 /**
+	  * Scripting Exercise:
+	  * Complete this program script such that it executes a
+	  * move-to-a-b-c-d program for the Automatic component.
+	  * A move of '1' unit takes '1' second.
+	  * Load this program script in the Automatic
+	  * component using the 'scripting' object and
+	  * start it (using C++ or the TaskBrowser).
+	  * Now change the script to repeat the a-b-c-d movement 5 times.
+	  */
+
+ }

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+
+  <!-- Structure of this file:
+  
+     |-  Component 1
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     |
+     |-  Component 2
+     |     |- Property file
+     |     |- Activity info
+     |     |- Peer connections
+     |     |- Port connections
+     |     \- Scripts to load
+     ...
+  -->
+
+  <!-- This package is probably installed in some system path. 
+       Edit the Deployer-site.cpf file to point the Deployer to this path -->
+  <simple name="Import" type="string"><value>controller-1</value></simple>
+
+  <!-- Exercise: Create a 'ModeSwitch' component which can execute a state machine at 50Hz. 
+  	See statemachine.osd to see which peers this component requires.
+    Then, automatically load statemachine.osd into this component using this XML file.
+    Finally, activate and start the statemachine in the ModeSwitch component's startHook().
+  --> 
+  
+  <struct name="Controller" type="UseCase::Controller">
+    <struct name="Activity" type="Activity">
+      <simple name="Period" type="double"><value>0.001</value></simple>
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+    </struct>
+    
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+    <!-- List all peers (uni-directional) -->
+    <struct name="Peers" type="PropertyBag">
+      <simple type="string"><value>Plant</value></simple>
+    </struct>
+    <struct name="Ports" type="PropertyBag">
+      <simple name="Target" type="string"><value>RefPosition</value></simple>
+      <simple name="Sense" type="string"><value>CurPosition</value></simple>
+      <simple name="Steer" type="string"><value>PlantSetPoint</value></simple>
+    </struct>
+    
+    <!-- Exercise: Read the properties of this component from a file
+         'Controller.cpf'. 
+	 You need to create this file yourself.
+	 You can do so by using the marshalling interface of the Controller
+	 component (write a property file) or by hand coding it.
+      -->
+
+  </struct>
+
+  <!-- This component represents (simulates) our robot and would in the
+       final application communicate with hardware IO signals.
+  -->
+  <struct name="Plant" type="UseCase::Plant">
+    <struct name="Activity" type="Activity">
+      <simple name="Period" type="double"><value>0.001</value></simple>
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+    <!-- List all peers (uni-directional) -->
+    <struct name="Peers" type="PropertyBag">
+      <simple type="string"><value>Controller</value></simple>
+    </struct>
+    <struct name="Ports" type="PropertyBag">
+      <simple name="Output" type="string"><value>CurPosition</value></simple>
+      <simple name="Input" type="string"><value>PlantSetPoint</value></simple>
+    </struct>
+  </struct>
+
+  <!-- The Joystick drives the plant directly -->
+  <struct name="Joystick" type="UseCase::Joystick">
+    <struct name="Activity" type="Activity">
+      <simple name="Period" type="double"><value>0.01</value></simple>
+<!--       <simple name="Priority" type="string"><value>HighestPriority</value></simple> -->
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+    </struct>
+
+    <!-- List all peers (uni-directional) -->
+    <struct name="Peers" type="PropertyBag">
+      <simple type="string"><value>Plant</value></simple>
+    </struct>
+    <struct name="Ports" type="PropertyBag">
+      <simple name="output" type="string"><value>PlantSetPoint</value></simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  </struct>
+
+  <!-- The Automatic component interpolates positions 
+       and sends them to the Controller component.
+  -->
+  <struct name="Automatic" type="UseCase::Automatic">
+    <struct name="Activity" type="Activity">
+      <simple name="Period" type="double"><value>0.01</value></simple>
+<!--       <simple name="Priority" type="string"><value>HighestPriority</value></simple> -->
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+    </struct>
+
+    <!-- List all peers (uni-directional) -->
+    <struct name="Peers" type="PropertyBag">
+      <simple type="string"><value>Controller</value></simple>
+    </struct>
+    <struct name="Ports" type="PropertyBag">
+      <simple name="input" type="string"><value>CurPosition</value></simple>
+      <simple name="output" type="string"><value>RefPosition</value></simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>0</value></simple>
+  </struct>
+
+  <!-- This OCL component can be used to log data port values to files.
+  	   Exercise: The reporting component is setup allright to log
+  	   the data flow ports of the Plant and the Automatic Component.
+       Extend it such that it also logs the ports of Joystick. Note:
+       another file in addition to this file must be edited to do so.
+  -->
+  <struct name="Reporting" type="OCL::FileReporting">
+    <struct name="Activity" type="Activity">
+      <simple name="Period" type="double"><value>0.01</value></simple>
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_OTHER</value></simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>0</value></simple>
+    <simple name="AutoSave" type="boolean"><value>1</value></simple>
+    <simple name="LoadProperties" type="string"><value>deployment/Reporting.cpf</value></simple>
+    <!-- List all peers (uni-directional) -->
+    <struct name="Peers" type="PropertyBag">
+      <simple type="string"><value>Plant</value></simple>
+      <simple type="string"><value>Automatic</value></simple>
+    </struct>
+  </struct>
+
+  <!-- The OCL Timer component is used in state machines to 
+       program the expiration of 'timeout' events, to which the
+       state machine can react. It defines a 'timeout' output port
+       to which your component must connect using an input port.
+       You'd better use a buffered connection in order not to miss
+       any timer events.
+  -->
+  <struct name="Timer" type="OCL::TimerComponent">
+    <struct name="Activity" type="Activity">
+      <simple name="Priority" type="short"><value>0</value></simple>
+      <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+    </struct>
+    <simple name="AutoConf" type="boolean"><value>1</value></simple>
+    <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  </struct>
+
+
+</properties>

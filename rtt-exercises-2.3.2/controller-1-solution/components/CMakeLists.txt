@@ -1,0 +1,5 @@
+ADD_SUBDIRECTORY( plant )
+ADD_SUBDIRECTORY( controller )
+ADD_SUBDIRECTORY( joystick )
+ADD_SUBDIRECTORY( automatic )
+ADD_SUBDIRECTORY( modeswitch )
