@@ -67,11 +67,11 @@ ControllerOutput     * c_out;
 /*****************************************************************************/
 
 /**
- * @brief Initialize shared memory struct 
+ * @brief Initialize shared memory struct.
  *  
- * zeros out the memory block and sets default state
+ * Zeros out the memory block and sets default state.
  *
- * @return true upon success
+ * @return True upon success.
  */
 unsigned char initialize_shm( void )
 {
@@ -89,7 +89,7 @@ unsigned char initialize_shm( void )
 /*****************************************************************************/
 
 /**
- * @breif free the shared memory
+ * @breif Free the shared memory.
  */
 void takedown_shm( void )
 {
@@ -98,6 +98,12 @@ void takedown_shm( void )
 
 /*****************************************************************************/
 
+/**
+ * @brief Switch between states and call the appropriate functions.
+ *
+ * @param uc_in array of pointers to each medualla input struct.  
+ * @param uc_out array of pointers to each medualla output struct.
+ */
 void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput ** uc_out )
 {
     // Keep a copy of the states in memory.
@@ -149,6 +155,15 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 
 /*****************************************************************************/
 
+/**
+ * @breif wake up all the medullas on the robot.
+ *
+ * @param uc_in array of pointers to each medualla input struct.
+ * @param uc_out array of pointers to each medualla output struct.
+ * @param last_state is not used in the function, TODO: remove this param
+ *
+ * @retrun  result to the response of a bad command (STATE_RESTART or STATE_WAKEUP).
+ */
 unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i;
@@ -156,7 +171,7 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
-        uc_in[i]->command = 0;
+        uc_in[i]->command = CMD_BAD;
         
         // If a Medulla does not report the bad command, then fail.
         if ( !( uc_out[i]->status & STATUS_BADCMD ) )
@@ -172,6 +187,15 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 
 /*****************************************************************************/
 
+/**
+ * @breif Send restart command to all medullas. Opens the leg, hip behaves like a pin joint.
+ *
+ * @param uc_in array of pointers to each medualla input struct.
+ * @param uc_out array of pointers to each medualla output struct.
+ * @param last_state the last state of the robot.
+ *
+ * @return next state will be STATE_RESTART unless last_state was STATE_CHECK.
+ */
 unsigned char state_restart( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i;
@@ -234,6 +258,7 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     int i;
 
     // Tell the control switch to initialize.
+    /*FIXME replace magic number with macro */
     shm->controller_state.state = 3;
 
     // Create pointers to controller I/O

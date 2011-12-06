@@ -41,9 +41,16 @@
 #define NUM_OF_MEDULLAS_ON_ROBOT 			4 
 #define NUM_OF_SLAVES_IN_SIMULATION_MACHINE 1
 
+/** @brief Reference to Motor A. */
 #define	A_INDEX								0
+
+/** @brief Reference to Motor B. */
 #define B_INDEX								1
+
+/** @brief Reference to Hip Motor. */
 #define HIP_INDEX							2
+
+/** @brief Reference to Boom Motor. */
 #define BOOM_INDEX							3
 
 // Horizontal velocity windowing filter parameters.

@@ -1,4 +1,9 @@
-// Devin Koepl
+/**
+ * @file
+ * @author Devin Koepl   
+ * @brief Define states, error codes, special values, and medual communication structs. 
+ *
+ */
 
 #ifndef FUNCS_H_UCONTROLLER
 #define FUNCS_H_UCONTROLLER
@@ -13,29 +18,48 @@
 // During normal running, the controller should switch between sending the two run mode bytes
 // as its command byte at each timestep.  We can implement watchdog timers to detect if the
 // control computer is operating correctly.  CMD_BAD is a place-holder so the value is never used.
-#define CMD_BAD						0
-#define CMD_RESTART					(1<<0)
-#define CMD_DISABLE					(1<<1)
-#define CMD_RUN						(1<<2)
-#define CMD_RESET					(1<<3)
+#define CMD_BAD					0
+#define CMD_RESTART				(1<<0)
+#define CMD_DISABLE				(1<<1)
+#define CMD_RUN					(1<<2)
+#define CMD_RESET				(1<<3)
 #define CMD_RUN_TOGGLE_bm			(1<<6)
 #define CMD_RUN_OK_bm				(1<<7)
 
 // Hip commands - send these in the HIP_MTR_CMD.
-#define HIP_CMD_PIN					0xF0
+/** @brief command for hip to behave like a pin joint */
+#define HIP_CMD_PIN				0xF0
+
+/** @brief command for hip to be rigid */
 #define HIP_CMD_RIGID				0x00
 
 // Status bits.
 //   If any of the bits in the status byte are set, there is an error in the uController.
 //   The following #defines describe the bit locations of each possible error.
-#define STATUS_LIMITSW				(1<<7)	// A limit switch was hit.
-#define STATUS_TCOVF				(1<<6)	// The step timer rolled over.
-#define STATUS_BADPWM				(1<<5)	// The PWM command was out of range.
-#define STATUS_ENC					(1<<4)	// There was a problem wit1h the encoders.
-#define STATUS_BADCMD				(1<<3)	// The command received was invalid, or the toggle bit was wrong.
-#define STATUS_DISABLED				(1<<2)	// Everything is OK, but the uController is in a disabled state
-#define STATUS_DANGER				(1<<1)	// The uC is taking control of the motor
-#define STATUS_BADMOTOR				(1<<0)	// The motor didn't move as expected
+
+/** @breif  The limit switch was hit. */
+#define STATUS_LIMITSW				(1<<7)
+
+/** @breif  The step timer rolled over. */
+#define STATUS_TCOVF				(1<<6)	
+
+/** @brief  The PWM command was out of range. */
+#define STATUS_BADPWM				(1<<5)
+
+/** @breif  There was a problem wit1h the encoders .*/
+#define STATUS_ENC				(1<<4)
+
+/** @breif  The command received was invalid, or the toggle bit was wrong. */
+#define STATUS_BADCMD				(1<<3)	
+
+/** @breif  Everything is OK, but the uController is in a disabled state */
+#define STATUS_DISABLED				(1<<2) 
+
+/** @breif  The uC is taking control of the motor */
+#define STATUS_DANGER				(1<<1) 
+
+/** @breif  The motor didn't move as expected */
+#define STATUS_BADMOTOR				(1<<0) 
 
 /* Sensor values:
 * The Biss-C 32-bit encoders measure the absolute leg segment angles relative to the body, and do not roll over.
@@ -43,10 +67,13 @@
 */
 #define LEG_SEG_ANGLE				enc32
 #define TRANS_ANGLE 				enc16[0]
-#define ROTOR_ANGLE					enc16[1]
+#define ROTOR_ANGLE				enc16[1]
 
+/** @brief used to access the motor field in uControllerInput */
 #define MOTOR_TORQUE				motor
-#define HIP_MTR_CMD					motor
+
+/** @brief used to access the motor field in uControllerInput */
+#define HIP_MTR_CMD				motor
 
 #define BOOM_PAN_CNT				enc16[0]
 #define BOOM_TILT_CNT				enc16[1]
@@ -103,7 +130,7 @@
 // 		0.9555 (measuring tape)
 
 #define BOOM_PIVOT_HEIGHT			0.9555
-#define	BOOM_LENGTH					2.13
+#define	BOOM_LENGTH				2.13
 
 // Pan (angle about the room):
 #define BOOM_PAN_GEAR_RATIO 		1
@@ -115,36 +142,43 @@
 #define TILT_CNT_THRESH				30000	
 
 // Roll (robot angle on the boom):
-#define BOOM_ROLL_GEAR_RATIO		1.84615385
+#define BOOM_ROLL_GEAR_RATIO		        1.84615385
 
 // For motors
-#define MTR_DIR_bm					(1<<15)
-#define MTR_MIN_TRQ					-60.0
+#define MTR_DIR_bm				(1<<15)
+#define MTR_MIN_TRQ				-60.0
 #define MTR_MAX_TRQ  				60.0
-#define MTR_MIN_CNT					100
+#define MTR_MIN_CNT				100
 #define MTR_MAX_CNT 				19900
 #define MTR_ZERO_CNT				10000
 // This should only be just enough torque to hold open the legs.
-#define AMPS_OPEN					1
-#define PWM_OPEN					((uint16_t)(MTR_ZERO_CNT + (AMPS_OPEN / (MTR_MAX_TRQ/(MTR_ZERO_CNT))) ))
+#define AMPS_OPEN				1
+
+/** @brief macro to hold the open the legs */
+#define PWM_OPEN				((uint16_t)(MTR_ZERO_CNT + (AMPS_OPEN / (MTR_MAX_TRQ/(MTR_ZERO_CNT))) ))
 
 
 // For handling rollover of encoders
-#define ROLLOVER13BIT_THRESHOLD		4096
-#define MAX_13BIT					8192
-#define ROLLOVER16BIT_THRESHOLD		32768
-#define MAX_16BIT					65536
+#define ROLLOVER13BIT_THRESHOLD 		4096
+#define MAX_13BIT				8192
+#define ROLLOVER16BIT_THRESHOLD	        	32768
+#define MAX_16BIT				65536
 
-#define SEC_PER_CNT					125E-9
+#define SEC_PER_CNT				125E-9
 
 // For GCC running on a 32-bit machine to minimize the size in memory of these structs, the smallest
 // values must come first.  This is important for compatability with the avr-gcc compiled code.
 
+/**
+ * @ berief means for talking to the medullas
+ */
 typedef struct 
 {
-	uint16_t	motor;
+        /** @breif tell the motors what to do */
+	uint16_t	motor
 
-	uint8_t		command;
+	/** @brief tell the medulla what to do */
+        uint8_t		command;
 } uControllerInput;
 
 typedef struct
