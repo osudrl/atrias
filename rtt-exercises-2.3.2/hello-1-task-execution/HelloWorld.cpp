@@ -64,7 +64,7 @@ namespace Example
         : public TaskContext
     {
 
-    int count;
+    ros::Time count;
 
     public:
         /**
@@ -84,20 +84,21 @@ namespace Example
 
         bool startHook() {
             // Return false to abort startup.
-            count = 0;
+            //count = 0;
             log(Info) << "startHook run!" << endlog();
             return true;
         }
 
         void updateHook() {
             // My algorithm/code goes here.
-            std_msgs::String msg;
-            std::stringstream ss;
-            ss << "Hello from talker! " << ros::Time::now() << " " << count;
-            msg.data = ss.str();
-            chatter_pub.publish(msg);
-        	log(Info) << "updateHook run!" << endlog();
-            count++;
+            //std_msgs::String msg;
+            //std::stringstream ss;
+            //ss << "Hello from talker! " << ros::Time::now() << " " << count;
+            //msg.data = ss.str();
+            //chatter_pub.publish(msg);
+        	log(Info) << "updateHook run!" << ros::Time::now() - count << endlog();
+            count = ros::Time::now();
+            //count++;
         }
 
         void stopHook() {
