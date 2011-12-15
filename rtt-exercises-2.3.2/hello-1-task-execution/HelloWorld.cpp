@@ -80,6 +80,7 @@ namespace Example
         Hello(std::string name)
             : RTT::TaskContext(name)
         {
+            this->setActivity( new Activity(1, 0.0002, NULL, "helloAct") );
         }
 
         bool configureHook() {
@@ -102,10 +103,16 @@ namespace Example
 
             std_msgs::String msg;
             std::stringstream ss;
+
+            //ss << "Hello from talker! ";
             ss << "Hello from talker! " << tm->tm_sec*1000000 + tv.tv_usec - count;
+
             msg.data = ss.str();
             chatter_pub.publish(msg);
+
+        	//log(Info) << "updateHook run! " << endlog();
         	log(Info) << "updateHook run! " << tm->tm_sec*1000000 + tv.tv_usec - count << endlog();
+
             //count = ros::Time::now();
             count = tm->tm_sec*1000000 + tv.tv_usec;
             //count++;
@@ -144,6 +151,8 @@ int ORO_main(int argc, char** argv)
     log(Info) << "**** Creating the 'Hello' component ****" <<endlog();
     // Create the task:
     Hello hello("Hello");
+
+    //log(Info) << "Running with " << hello.thread().getScheduler() << " and " << hello.thread().getPriority() << endlog();
 
     log(Info) << "**** Starting the TaskBrowser       ****" <<endlog();
     // Switch to user-interactive mode.
