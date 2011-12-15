@@ -19,6 +19,9 @@
 
 #include <sstream>
 
+#include <stdlib.h>
+#include <sys/time.h>
+
 using namespace std;
 using namespace RTT;
 using namespace Orocos;
@@ -64,7 +67,10 @@ namespace Example
         : public TaskContext
     {
 
-    ros::Time count;
+    int count;
+    struct timeval tv;
+    struct timezone tz;
+    struct tm *tm;
 
     public:
         /**
@@ -91,13 +97,17 @@ namespace Example
 
         void updateHook() {
             // My algorithm/code goes here.
-            //std_msgs::String msg;
-            //std::stringstream ss;
-            //ss << "Hello from talker! " << ros::Time::now() << " " << count;
-            //msg.data = ss.str();
-            //chatter_pub.publish(msg);
-        	log(Info) << "updateHook run!" << ros::Time::now() - count << endlog();
-            count = ros::Time::now();
+            gettimeofday(&tv, &tz);
+            tm = localtime(&tv.tv_sec);
+
+            std_msgs::String msg;
+            std::stringstream ss;
+            ss << "Hello from talker! " << tm->tm_sec*1000000 + tv.tv_usec - count;
+            msg.data = ss.str();
+            chatter_pub.publish(msg);
+        	log(Info) << "updateHook run! " << tm->tm_sec*1000000 + tv.tv_usec - count << endlog();
+            //count = ros::Time::now();
+            count = tm->tm_sec*1000000 + tv.tv_usec;
             //count++;
         }
 
