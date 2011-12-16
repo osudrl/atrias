@@ -10,11 +10,12 @@ class Atrias_orocos_test
     : public RTT::TaskContext
 {
 
-int count;
+//int count;
+int usecNow, usecLast, usecDiff;
 
-// Get system time. NOTE: This counts as system calls, which is not realtime-safe. But whatever?
+// Get system time. NOTE: This counts as a system call, which is not
+// realtime-safe.. but whatever?
 struct timeval tv;
-struct timezone tz;
 struct tm *tm;
 
  public:
@@ -31,17 +32,23 @@ struct tm *tm;
 
     bool startHook() {
         std::cout << "Atrias_orocos_test started !" <<std::endl;
-        count = 0;
+        //count = 0;
+        usecNow = 0;
+        usecLast = 0;
+        usecDiff = 0;
         return true;
     }
 
     void updateHook() {
-        gettimeofday(&tv, &tz);
+        gettimeofday(&tv, NULL);
         tm = localtime(&tv.tv_sec);
 
-        std::cout << "Atrias_orocos_test executes updateHook !   Time: " << tm->tm_sec*1000000 + tv.tv_usec - count << " Count: " << count <<std::endl;
+        usecNow = tm->tm_sec*1000000 + tv.tv_usec;
+        usecDiff = usecNow - usecLast;
+        usecLast = usecNow;
 
-        count = tm->tm_sec*1000000 + tv.tv_usec;
+        std::cout << "Atrias_orocos_test executes updateHook !   Time: " << usecDiff <<std::endl;   //<< " Count: " << count <<std::endl;
+
         //count++;
     }
 
