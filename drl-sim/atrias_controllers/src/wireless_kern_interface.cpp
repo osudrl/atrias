@@ -89,9 +89,8 @@ int main(int argc, char **argv)
 
     ROS_INFO("Creating threads.");
 
-    pthread_create(&msg_thread, NULL, msg_task, NULL);
-    pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);
-    //pthread_create(&data_pushing_thread, NULL, data_pushing_task, NULL);
+    //pthread_create(&msg_thread, NULL, msg_task, NULL);
+    //pthread_create(&datalogging_thread, NULL, datalogging_task, NULL);
 
     //*************************************************************************
 
@@ -103,9 +102,8 @@ int main(int argc, char **argv)
 
     ROS_INFO("Waiting for threads to finish.");
 
-    pthread_join(msg_thread, NULL);
-    pthread_join(datalogging_thread, NULL);
-    //pthread_join(data_pushing_thread, NULL);
+    //pthread_join(msg_thread, NULL);
+    //pthread_join(datalogging_thread, NULL);
 
     //*************************************************************************
 

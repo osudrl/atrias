@@ -1,0 +1,3 @@
+program App {
+    import("atrias_orocos_test")
+    }
