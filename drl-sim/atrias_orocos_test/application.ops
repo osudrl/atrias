@@ -1,5 +1,3 @@
-program App {
-    import("atrias_orocos_test")
-    loadComponent("ac", "Atrias_orocos_test")
-    setActivity("ac", 0.001, 99, ORO_SCHED_RT)
-    }
+import("atrias_orocos_test")
+loadComponent("ac", "Atrias_orocos_test")
+setActivity("ac", 0.001, 99, ORO_SCHED_RT)
