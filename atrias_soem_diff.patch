@@ -1,8 +1,15 @@
 diff --git a/soem_beckhoff_drivers/CMakeLists.txt b/soem_beckhoff_drivers/CMakeLists.txt
-index 23a5085..1f92c3c 100644
+index 23a5085..8cf7404 100644
 --- a/soem_beckhoff_drivers/CMakeLists.txt
 +++ b/soem_beckhoff_drivers/CMakeLists.txt
-@@ -32,7 +32,7 @@ find_package(Orocos-RTT REQUIRED ${RTT_HINTS})
+@@ -26,13 +26,13 @@ rosbuild_genmsg()
+ 
+ # Set the CMAKE_PREFIX_PATH in case you're not using Orocos through
+ # ROS for helping these find commands find RTT.
+-find_package(Orocos-RTT REQUIRED ${RTT_HINTS})
++find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
+ 
+ # Defines the orocos_* cmake macros. See that file for additional
  # documentation.
  include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
  
