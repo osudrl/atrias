@@ -4,7 +4,11 @@
     </description>
     <!--NOTE: set the license and author before you publish this code-->
     <license></license>
-    <author>Unknown Author</author>
+    <author>Soo-Hyun Yoo</author>
     <depend package="rtt" />
+    <depend package="rtt_rosnode" />
+    <depend package="soem_core" />
+    <depend package="soem_beckhoff_drivers" />
+    <depend package="soem_master" />
 </package>
 
