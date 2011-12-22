@@ -7,7 +7,7 @@ namespace soem_beckhoff_drivers
 {
 
 SoemET1100::SoemET1100(ec_slavet* mem_loc) :
-    soem_master::SoemDriver(mem_loc), m_port("bits")
+    soem_master::SoemDriver(mem_loc), port_out("atrias_port_out")
 {
     m_size = mem_loc->Ibits;
     m_service->doc(std::string("Services for Beckhoff ") + std::string(
@@ -16,18 +16,31 @@ SoemET1100::SoemET1100(ec_slavet* mem_loc) :
             RTT::OwnThread).doc("Read in a value.");
     m_service->addConstant("size", m_size);
     //m_msg.values.resize(m_size);
-    m_port.setDataSample(m_msg);
-    m_service->addPort(m_port).doc("Data port to communicate full bitsets");
+    //port_out.setDataSample(m_msg);
+    m_service->addPort("Port_out", port_out).doc("Data port to communicate full bitsets");
 }
 
 void SoemET1100::update()
 {
-    m_msg.value = read();
-    log(Info) << "Read: " << m_msg.value << endlog();
+    //m_msg.value = read();
+    //log(Info) << "Read: " << m_msg.value << endlog();
+    in = ((in_et1100t*) (m_datap->inputs));
+    out = ((out_et1100t*) (m_datap->outputs));
+
+    log(Info) << "  " << sizeof(out_et1100t)
+              << "  " << out->enc32
+              << "  " << (out->enc16)[0]
+              << "  " << (out->enc16)[1]
+              << "  " << (out->enc16)[2]
+              << "  " << (out->enc16)[3]
+              << "  " << out->timestep
+              << "  " << out->id
+              << "  " << out->status
+              << endlog();
 }
 
 uint32_t SoemET1100::read(void) {
-    return ((out_et1100t*) (m_datap->outputs))->bits;
+    return ((out_et1100t*) (m_datap->outputs))->enc32;
 }
 
 

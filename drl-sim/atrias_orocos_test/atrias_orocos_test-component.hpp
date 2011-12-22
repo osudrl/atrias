@@ -6,6 +6,8 @@
 
 #include <sys/time.h>
 
+#include <soem_master/soem_driver.h>
+
 class Atrias_orocos_test
     : public RTT::TaskContext
 {
