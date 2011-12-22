@@ -579,9 +579,9 @@ bool poke_controller (void) {
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
 
     // Update spring deflection displays.
-    sprintf(buffer, "%0.4f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
+    sprintf(buffer, "%0.6f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
     spring_deflection_A_entry->set_text(buffer);
-    sprintf(buffer, "%0.4f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
+    sprintf(buffer, "%0.6f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
     spring_deflection_B_entry->set_text(buffer);
 
     // Update the boom stuff indicators.
