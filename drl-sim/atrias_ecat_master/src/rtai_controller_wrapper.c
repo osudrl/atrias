@@ -27,7 +27,7 @@ void check_master_state(void)
 void run(long data)
 {
 	int i;
-
+	printk("RUNNING...\n");
 	/*************************************************************************/
 
 	// Now start controlling the robot
@@ -114,7 +114,7 @@ int __init init_mod(void)
 	}
 
 	//****************************************************************************
-
+	/*
 	if (!(sc_medulla_boom = ecrt_master_slave_config(master, MEDULLA_BOOM_POS, VENDOR_ID, PRODUCT_CODE))) {
 		printk(KERN_ERR PFX "Failed to get slave configuration.\n");
 		goto out_release_master;
@@ -124,7 +124,7 @@ int __init init_mod(void)
 		printk(KERN_ERR PFX "Failed to configure PDOs.\n");
 		goto out_release_master;
 	}
-
+	*/
 	if (!(sc_medullaB = ecrt_master_slave_config(master, MEDULLA_B_POS, VENDOR_ID, PRODUCT_CODE))) {
 		printk(KERN_ERR PFX "Failed to get slave configuration.\n");
 		goto out_release_master;
@@ -144,7 +144,7 @@ int __init init_mod(void)
 		printk(KERN_ERR PFX "Failed to configure PDOs.\n");
 		goto out_release_master;
 	}
-
+	/*
 	if (!(sc_medulla_hip = ecrt_master_slave_config(master, MEDULLA_HIP_POS, VENDOR_ID, PRODUCT_CODE))) {
 		printk(KERN_ERR PFX "Failed to get slave configuration.\n");
 		goto out_release_master;
@@ -153,7 +153,7 @@ int __init init_mod(void)
 	if (ecrt_slave_config_pdos(sc_medulla_hip, EC_END, medulla_hip_sync)) {
 		printk(KERN_ERR PFX "Failed to configure PDOs.\n");
 		goto out_release_master;
-	}
+	}*/
 
 	//****************************************************************************
 
@@ -173,19 +173,20 @@ int __init init_mod(void)
 
 	// Get internal process data for domain
 	domain1_pd = ecrt_domain_data(domain1);
+	printk("Domain_pd: %p\n",domain1_pd);
 
 	//****************************************************************************
 
 	// Map I/O pointers to sync manager memory.
 	uc_in[0] = ( uControllerInput * )( domain1_pd + off_medullaA_rx );
 	uc_in[1] = ( uControllerInput * )( domain1_pd + off_medullaB_rx );
-	uc_in[2] = ( uControllerInput * )( domain1_pd + off_medulla_hip_rx );
-	uc_in[3] = ( uControllerInput * )( domain1_pd + off_medulla_boom_rx );
+	//uc_in[2] = ( uControllerInput * )( domain1_pd + off_medulla_hip_rx );
+	//uc_in[0] = ( uControllerInput * )( domain1_pd + off_medulla_hip_rx );
 
 	uc_out[0] = ( uControllerOutput * )( domain1_pd + off_medullaA_tx );
 	uc_out[1] = ( uControllerOutput * )( domain1_pd + off_medullaB_tx );
-	uc_out[2] = ( uControllerOutput * )( domain1_pd + off_medulla_hip_tx );
-	uc_out[3] = ( uControllerOutput * )( domain1_pd + off_medulla_boom_tx );
+	//uc_out[2] = ( uControllerOutput * )( domain1_pd + off_medulla_hip_tx );
+	//uc_out[0] = ( uControllerOutput * )( domain1_pd + off_medulla_hip_tx );
 
 	//****************************************************************************
 

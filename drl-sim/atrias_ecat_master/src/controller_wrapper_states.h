@@ -38,20 +38,14 @@
 #include <drl_library/discretize.h>
 #include <drl_library/drl_math.h>
 
-#define NUM_OF_MEDULLAS_ON_ROBOT 			4 
+#define NUM_OF_MEDULLAS_ON_ROBOT 			2 
 #define NUM_OF_SLAVES_IN_SIMULATION_MACHINE 1
 
 /** @brief Reference to Motor A. */
-#define	A_INDEX								0
+#define	A_INDEX								1
 
 /** @brief Reference to Motor B. */
-#define B_INDEX								1
-
-/** @brief Reference to Hip Motor. */
-#define HIP_INDEX							2
-
-/** @brief Reference to Boom Motor. */
-#define BOOM_INDEX							3
+#define B_INDEX								0
 
 // Horizontal velocity windowing filter parameters.
 #define HOR_VEL_FILTER_EPS					0.003
@@ -63,6 +57,7 @@ unsigned char initialize_shm( void );
 void takedown_shm( void );
 
 void control_wrapper_state_machine( uControllerInput **, uControllerOutput ** );
+
 
 unsigned char state_wakeup( uControllerInput **, uControllerOutput **, unsigned char );
 unsigned char state_restart( uControllerInput **, uControllerOutput **, unsigned char );
