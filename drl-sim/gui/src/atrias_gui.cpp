@@ -502,6 +502,7 @@ bool poke_controller (void) {
         case SINE_WAVE_CONTROLLER:
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_frq = leg_angle_frequency_hscale->get_value();
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_amp = leg_angle_amplitude_hscale->get_value();
+            ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_len_frq = leg_length_frequency_hscale->get_value();
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_len_amp = leg_length_amplitude_hscale->get_value();
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = p_sine_wave_hscale->get_value();
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = d_sine_wave_hscale->get_value();
