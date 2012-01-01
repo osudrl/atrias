@@ -1,5 +1,5 @@
-#ifndef SOEM_ET1100_H
-#define SOEM_ET1100_H
+#ifndef SOEM_MEDULLA_H
+#define SOEM_MEDULLA_H
 
 #include <soem_master/soem_driver.h>
 #include <soem_beckhoff_drivers/AtriasMsg.h>
@@ -8,11 +8,11 @@
 
 namespace soem_beckhoff_drivers {
 
-    class SoemET1100 : public soem_master::SoemDriver {
+    class SoemMedulla : public soem_master::SoemDriver {
         typedef struct {
             uint16_t motor;
             uint8_t command;
-        } in_et1100t;
+        } in_medulla;
         
         typedef struct {
             uint32_t enc32;
@@ -25,14 +25,14 @@ namespace soem_beckhoff_drivers {
             uint8_t therm1;
             uint8_t therm2;
             uint8_t therm3;
-        } out_et1100t;
+        } out_medulla;
 
-        in_et1100t* in;
-        out_et1100t* out;
+        in_medulla* in;
+        out_medulla* out;
       
     public:
-        SoemET1100(ec_slavet* mem_loc);
-        ~SoemET1100(){};
+        SoemMedulla(ec_slavet* mem_loc);
+        ~SoemMedulla(){};
      
         void update();
         uint32_t read();
@@ -48,5 +48,5 @@ namespace soem_beckhoff_drivers {
 };
  
 }
-#endif // SOEM_ET1100_H
+#endif // SOEM_MEDULLA_H
 
