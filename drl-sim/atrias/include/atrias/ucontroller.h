@@ -175,7 +175,7 @@
 typedef struct 
 {
         /** @breif tell the motors what to do */
-	uint16_t	motor
+	uint16_t	motor;
 
 	/** @brief tell the medulla what to do */
         uint8_t		command;
