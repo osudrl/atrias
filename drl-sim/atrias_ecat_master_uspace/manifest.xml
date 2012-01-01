@@ -1,0 +1,14 @@
+<package>
+  <description brief="atrias_ecat_master_uspace">
+
+     atrias_ecat_master_uspace
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_ecat_master_uspace</url>
+
+</package>
+
+
