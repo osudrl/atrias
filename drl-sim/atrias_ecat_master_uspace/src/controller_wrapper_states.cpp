@@ -12,7 +12,7 @@
 /******************************************************************************/
 
 #define STATE_INIT          0
-#define STATE_START	    1
+#define STATE_START	        1
 #define STATE_RUN           2
 #define STATE_ERROR         3
 
@@ -71,28 +71,28 @@ ControllerOutput     * c_out;
  *
  * @return True upon success.
  */
-unsigned char initialize_shm( void )
-{
-    // To Uspace SHM
-    if ( !( shm = ( Shm * )rt_shm_alloc( nam2num( SHM_NAME ), sizeof( Shm ), USE_VMALLOC ) ) )
-        return false;
-    memset( shm, 0, sizeof( Shm ) );
-
-    shm->controller_data[0].command = shm->controller_data[1].command = CMD_DISABLE;
-    shm->controller_data[0].controller_requested = shm->controller_data[1].controller_requested = NO_CONTROLLER;
-
-    return true;
-}
+//unsigned char initialize_shm( void )
+//{
+//    // To Uspace SHM
+//    if ( !( shm = ( Shm * )rt_shm_alloc( nam2num( SHM_NAME ), sizeof( Shm ), USE_VMALLOC ) ) )
+//        return false;
+//    memset( shm, 0, sizeof( Shm ) );
+//
+//    shm->controller_data[0].command = shm->controller_data[1].command = CMD_DISABLE;
+//    shm->controller_data[0].controller_requested = shm->controller_data[1].controller_requested = NO_CONTROLLER;
+//
+//    return true;
+//}
 
 /*****************************************************************************/
 
 /**
  * @breif Free the shared memory.
  */
-void takedown_shm( void )
-{
-    rt_shm_free( nam2num( SHM_NAME ) );
-}
+//void takedown_shm( void )
+//{
+//    rt_shm_free( nam2num( SHM_NAME ) );
+//}
 
 /*****************************************************************************/
 
@@ -109,7 +109,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     static unsigned char next_state = STATE_INIT;
 
     //rt_printk( "Next state: %u\n", next_state );
-    printk("Motor Enable: %d\n", uc_out[1]->thermistor[0]);
+    printf("Motor Enable: %d\n", uc_out[1]->thermistor[0]);
     
     switch ( next_state )
     {
@@ -133,15 +133,15 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
             next_state = STATE_ERROR;
     }
     
-    if ( shm->controller_data[shm->control_index].command == CMD_RESTART )
-        next_state =  STATE_INIT;
-
-    // Handle controller data change requests.
-    if ( shm->req_switch )
-    {
-        shm->control_index     = 1 - shm->control_index;
-        shm->req_switch     = false;
-    }
+//    if ( shm->controller_data[shm->control_index].command == CMD_RESTART )
+//        next_state =  STATE_INIT;
+//
+//    // Handle controller data change requests.
+//    if ( shm->req_switch )
+//    {
+//        shm->control_index     = 1 - shm->control_index;
+//        shm->req_switch     = false;
+//    }
 }
 
 /*****************************************************************************/
@@ -167,7 +167,7 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
         // If a Medulla does not report the bad command, then fail.
         if ( uc_out[i]->state != 1)
         {
-            rt_printk( "Medulla %u did in state INIT\n", i );
+            printf( "Medulla %u did in state INIT\n", i );
             return STATE_INIT;
         }
     }
@@ -177,12 +177,11 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 
 // Initialize the encoder counters.
 unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
-   int i;
+    int i;
     shm->controller_state.state = 3;
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )

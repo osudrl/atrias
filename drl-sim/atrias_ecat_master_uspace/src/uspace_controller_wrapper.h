@@ -3,20 +3,14 @@
 #ifndef FUNCS_H_RTAI_CONTROLLER_WRAPPER
 #define FUNCS_H_RTAI_CONTROLLER_WRAPPER
 
-// Linux
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/err.h>
-#include <linux/slab.h>
-
-// RTAI
-#include <rtai.h>
-#include <rtai_sched.h>
-#include <rtai_shm.h>
-#include <rtai_nam2num.h>
-#include <rtai_sched.h>
-#include <rtai_sem.h>
-#include <rtai_math.h>
+#include <errno.h>
+//#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/resource.h>
+//#include <sys/time.h>
+//#include <sys/types.h>
+#include <unistd.h>
 
 // EtherCAT
 #include <ecrt.h>
@@ -35,19 +29,19 @@
 //#include <drl_library/drl_math.h>
 
 // Local
-#include "controller_wrapper_states.h"
+//#include "controller_wrapper_states.h"
 
 /*****************************************************************************/
 
 // Module parameters
 
 #define FREQUENCY 										1000 // task frequency in Hz
-#define INHIBIT_TIME 									20
+//#define INHIBIT_TIME 									20
 
-#define TIMERTICKS 										(1000000000 / FREQUENCY)
+//#define TIMERTICKS 										(1000000000 / FREQUENCY)
 
 // Optional features (comment to disable)
-#define CONFIGURE_PDOS
+#define CONFIGURE_PDOS                                  1
 
 #define PFX 											"ec_rtai_controller: "
 
@@ -82,10 +76,14 @@ static ec_slave_config_t *sc_medullaB;
 static ec_slave_config_t *sc_medullaA;
 static ec_slave_config_t *sc_medulla_hip;
 
+// Timer
+static unsigned int sig_alarms = 0;
+static unsigned int user_alarms = 0;
+
 // RTAI
-static RT_TASK task;
-static SEM master_sem;
-static cycles_t t_last_cycle = 0, t_critical;
+//static RT_TASK task;
+//static SEM master_sem;
+//static cycles_t t_last_cycle = 0, t_critical;
 
 /*****************************************************************************/
 
@@ -103,16 +101,16 @@ static unsigned int off_medullaB_tx;
 static unsigned int off_medullaA_tx;
 static unsigned int off_medulla_hip_tx;
 
-const static ec_pdo_entry_reg_t domain_regs[] =
+const static ec_pdo_entry_reg_t domain1_regs[] =
 {
-	//{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x21, &off_medulla_boom_rx},
-	//{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_boom_tx},
+	{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x21, &off_medulla_boom_rx},
+	{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_boom_tx},
 	{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x34, &off_medullaB_rx},
 	{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x02, &off_medullaB_tx},
 	{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medullaA_rx},
 	{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medullaA_tx},
-	//{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medulla_hip_rx},
-	//{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_hip_tx},
+	{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medulla_hip_rx},
+	{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_hip_tx},
 	{}
 };
 
@@ -120,32 +118,34 @@ static unsigned int counter = 0;
 
 /*****************************************************************************/
 
+#if CONFIGURE_PDOS
+
 // RX PDO entries
-//static ec_pdo_entry_info_t medulla_boom_rxpdo_entries = {0x6126, 0x21,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
+static ec_pdo_entry_info_t medulla_boom_rxpdo_entries = {0x6126, 0x21,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
 static ec_pdo_entry_info_t medullaB_rxpdo_entries = {0x6126, 0x34,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
 static ec_pdo_entry_info_t medullaA_rxpdo_entries = {0x6126, 0x33,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
-//static ec_pdo_entry_info_t medulla_hip_rxpdo_entries = {0x6126, 0x33,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
+static ec_pdo_entry_info_t medulla_hip_rxpdo_entries = {0x6126, 0x33,  BITS_IN_A_BYTE * sizeof(uControllerInput)};
 
 // TX PDO Entries
-//static ec_pdo_entry_info_t medulla_boom_txpdo_entries = {0x6130, 0x01, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
+static ec_pdo_entry_info_t medulla_boom_txpdo_entries = {0x6130, 0x01, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
 static ec_pdo_entry_info_t medullaB_txpdo_entries = {0x6130, 0x02, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
 static ec_pdo_entry_info_t medullaA_txpdo_entries = {0x6130, 0x01, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
-//static ec_pdo_entry_info_t medulla_hip_txpdo_entries = {0x6130, 0x01, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
+static ec_pdo_entry_info_t medulla_hip_txpdo_entries = {0x6130, 0x01, BITS_IN_A_BYTE * sizeof(uControllerOutput)};
 
 // RX PDO Info
-//static ec_pdo_info_t medulla_boom_rx_pdos = {0x1600, 1, &medulla_boom_rxpdo_entries};
+static ec_pdo_info_t medulla_boom_rx_pdos = {0x1600, 1, &medulla_boom_rxpdo_entries};
 static ec_pdo_info_t medullaB_rx_pdos = {0x1601, 1, &medullaB_rxpdo_entries};
 static ec_pdo_info_t medullaA_rx_pdos = {0x1600, 1, &medullaA_rxpdo_entries};
-//static ec_pdo_info_t medulla_hip_rx_pdos = {0x1600, 1, &medulla_hip_rxpdo_entries};
+static ec_pdo_info_t medulla_hip_rx_pdos = {0x1600, 1, &medulla_hip_rxpdo_entries};
 
 // TX PDO Info
-//static ec_pdo_info_t medulla_boom_tx_pdos = {0x1A00, 1, &medulla_boom_txpdo_entries};
+static ec_pdo_info_t medulla_boom_tx_pdos = {0x1A00, 1, &medulla_boom_txpdo_entries};
 static ec_pdo_info_t medullaB_tx_pdos = {0x1A01, 1, &medullaB_txpdo_entries};
 static ec_pdo_info_t medullaA_tx_pdos = {0x1A00, 1, &medullaA_txpdo_entries};
-//static ec_pdo_info_t medulla_hip_tx_pdos = {0x1A00, 1, &medulla_hip_txpdo_entries};
+static ec_pdo_info_t medulla_hip_tx_pdos = {0x1A00, 1, &medulla_hip_txpdo_entries};
 
 /*****************************************************************************/
-/*
+
 static ec_sync_info_t medulla_boom_sync[] = 
 {
 	{0, EC_DIR_OUTPUT, 0, NULL,	EC_WD_DISABLE},
@@ -154,7 +154,7 @@ static ec_sync_info_t medulla_boom_sync[] =
 	{3, EC_DIR_INPUT , 1, &medulla_boom_tx_pdos, EC_WD_ENABLE},
 	{0xff}
 };
-*/
+
 static ec_sync_info_t medullaB_sync[] = 
 {
 	{0, EC_DIR_OUTPUT, 0, NULL,	EC_WD_DISABLE},
@@ -172,7 +172,7 @@ static ec_sync_info_t medullaA_sync[] =
 	{3, EC_DIR_INPUT , 1, &medullaA_tx_pdos, EC_WD_ENABLE},
 	{0xff}
 };
-/*
+
 static ec_sync_info_t medulla_hip_sync[] = 
 {
 	{0, EC_DIR_OUTPUT, 0, NULL,	EC_WD_DISABLE},
@@ -181,20 +181,22 @@ static ec_sync_info_t medulla_hip_sync[] =
 	{3, EC_DIR_INPUT , 1, &medulla_hip_tx_pdos, EC_WD_ENABLE},
 	{0xff}
 };
-*/
+
+#endif // CONFIGURE_PDOS
+
 /*****************************************************************************/
 
 // Microcontroller I/O
-uControllerInput * uc_in[NUM_OF_MEDULLAS_ON_ROBOT ];
-uControllerOutput *	uc_out[NUM_OF_MEDULLAS_ON_ROBOT ];
+uControllerInput * uc_in[NUM_OF_MEDULLAS_ON_ROBOT];
+uControllerOutput *	uc_out[NUM_OF_MEDULLAS_ON_ROBOT];
 
 /*****************************************************************************/
 
 void check_master_state(void);
-void run(long data);
-void request_lock_callback(void *cb_data);
-void release_lock_callback(void *cb_data);
-int  init_mod(void);
-void cleanup_mod(void);
+void cyclic_task(void);
+//void request_lock_callback(void *cb_data);
+//void release_lock_callback(void *cb_data);
+//int  init_mod(void);
+//void cleanup_mod(void);
 
 #endif // FUNCS_H_RTAI_CONTROLLER_WRAPPER

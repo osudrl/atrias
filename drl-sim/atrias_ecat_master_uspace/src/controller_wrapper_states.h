@@ -11,21 +11,6 @@
 #ifndef FUNCS_H_CONTROL_WRAPPER_STATES
 #define FUNCS_H_CONTROL_WRAPPER_STATES
 
-// Linux
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/err.h>
-#include <linux/slab.h>
-
-// RTAI
-#include <rtai.h>
-#include <rtai_sched.h>
-#include <rtai_shm.h>
-#include <rtai_nam2num.h>
-#include <rtai_sched.h>
-#include <rtai_sem.h>
-#include <rtai_math.h>
-
 // ATRIAS
 #include <atrias/ucontroller.h>
 

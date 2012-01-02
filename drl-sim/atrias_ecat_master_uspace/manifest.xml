@@ -1,13 +1,19 @@
 <package>
-  <description brief="atrias_ecat_master_uspace">
+    <description brief="atrias_ecat_master_uspace">
 
-     atrias_ecat_master_uspace
+        atrias_ecat_master_uspace
 
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atrias_ecat_master_uspace</url>
+    </description>
+    <author>drl</author>
+    <license>BSD</license>
+    <review status="unreviewed" notes=""/>
+    <url>http://ros.org/wiki/atrias_ecat_master_uspace</url>
+
+    <depend package="roscpp" />
+    <depend package="atrias" />
+    <!--<depend package="atrias_controllers" />
+    <depend package="drl_library" />
+    <depend package="gui" />-->
 
 </package>
 
