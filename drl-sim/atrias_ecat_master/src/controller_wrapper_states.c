@@ -109,7 +109,13 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     static unsigned char next_state = STATE_INIT;
 
     //rt_printk( "Next state: %u\n", next_state );
-    printk("Motor Enable: %d\n", uc_out[1]->thermistor[0]);
+    printk("Timestep[0]: %d\n", uc_out[0]->timestep);
+    printk("Timestep[1]: %d\n", uc_out[1]->timestep);
+
+    printk("Out Counter[0]: %d\n", uc_in[0]->counter);
+    printk(" In Counter[0]: %d\n", uc_out[0]->counter);
+    printk("Out Counter[1]: %d\n", uc_in[1]->counter);
+    printk(" In Counter[1]: %d\n", uc_out[0]->counter);
     
     switch ( next_state )
     {
@@ -257,6 +263,31 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     //c_out->motor_torqueA = 0.;
     //c_out->motor_torqueB = 0.;            
     
+    // If ether of the torques is below the min threshold, then send the minimum torque.
+    // This should keep the motor controllers from thinking that the PWM signal is broken
+    /*if (ABS(c_out->motor_torqueA) < MIN_TRQ_THRESH) {
+	if (c_out->motor_torqueA >= 0)
+		uc_in[A_INDEX]->MOTOR_TORQUE = PWM_OPEN;
+	else
+		uc_in[A_INDEX]->MOTOR_TORQUE = PWM_OPEN*-1;
+    }
+    else*/
+	 uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+            c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+
+    /*if (ABS(c_out->motor_torqueB) < MIN_TRQ_THRESH) {
+	if (c_out->motor_torqueB >= 0)
+		uc_in[B_INDEX]->MOTOR_TORQUE = PWM_OPEN;
+	else
+		uc_in[B_INDEX]->MOTOR_TORQUE = PWM_OPEN*-1;
+    }
+    else*/
+	uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+            -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+    
+    uc_in[A_INDEX]->counter++;
+    uc_in[B_INDEX]->counter++;
+
 
     // If both torques are below the threshold, then send a small torque to keep the robot off of its hardstops.
     //if ( ( ABS(c_out->motor_torqueA) < MIN_TRQ_THRESH ) 
@@ -268,10 +299,10 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     //else
     //{
         // Send motor torques.
-        uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
-            c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
-        uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
-            -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+        //uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+        //    c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+        //uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+        //    -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
       //  }
 
 //    uc_in[A_INDEX]->motor_torque = 5000;

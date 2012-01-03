@@ -30,7 +30,7 @@ extern void update_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *
 	float des_leg_ang_vel = 2. * PI * SIN_WAVE_CONTROLLER_DATA(data)->leg_ang_frq * SIN_WAVE_CONTROLLER_DATA(data)->leg_ang_amp 
 		* cos(2. * PI * SIN_WAVE_CONTROLLER_DATA(data)->leg_ang_frq * SIN_WAVE_CONTROLLER_STATE(state)->time);
 
-	float des_leg_len = 0.75 + SIN_WAVE_CONTROLLER_DATA(data)->leg_len_amp 
+	float des_leg_len = 0.85 + SIN_WAVE_CONTROLLER_DATA(data)->leg_len_amp 
 		* sin(2. * PI * SIN_WAVE_CONTROLLER_DATA(data)->leg_len_frq * SIN_WAVE_CONTROLLER_STATE(state)->time);
 	float des_leg_len_vel = 2. * PI * SIN_WAVE_CONTROLLER_DATA(data)->leg_len_frq * SIN_WAVE_CONTROLLER_DATA(data)->leg_len_amp 
 		* cos(2. * PI * SIN_WAVE_CONTROLLER_DATA(data)->leg_len_frq * SIN_WAVE_CONTROLLER_STATE(state)->time);

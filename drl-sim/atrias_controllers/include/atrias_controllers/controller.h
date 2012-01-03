@@ -57,15 +57,16 @@
 
 // Controller types available.
 
-#define NO_CONTROLLER 					0
+#define NO_CONTROLLER 				0
 #define MOTOR_TORQUE_CONTROLLER 		1
 #define MOTOR_POSITION_CONTROLLER 		2
 #define LEG_TORQUE_CONTROLLER			3
 #define LEG_POSITION_CONTROLLER 		4
 #define SINE_WAVE_CONTROLLER			5
-#define RAIBERT_CONTROLLER				6
-#define TEST_CONTROLLER 7
-#define EQU_GAIT_CONTROLLER 8
+#define RAIBERT_CONTROLLER			6
+#define TEST_CONTROLLER 			7
+#define EQU_GAIT_CONTROLLER 			8
+#define FORCE_CONTROLLER			9
 
 //======================================================//
 
@@ -226,6 +227,15 @@ typedef struct {
     int currentState;
 } TestControllerState;
 
+typedef struct {
+    float p_gain;
+    float d_gain;
+} ForceControllerData;
+
+typedef struct {
+    float current_torque;
+} ForceControllerState;
+
 // Macros for dereferencing pointers.
 #define MTR_TRQ_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((MtrTrqControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define MTR_POS_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((MtrPosControllerData *)(&(CONTROLLER_DATA_PTR->data)))
@@ -234,6 +244,7 @@ typedef struct {
 #define SIN_WAVE_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((SinWaveControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define RAIBERT_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((RaibertControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define TEST_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((TestControllerData *)(&(CONTROLLER_DATA_PTR->data)))
+#define FORCE_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((ForceControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 
 #define MTR_TRQ_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((MtrTrqControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define MTR_POS_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((MtrPosControllerState *)(&(CONTROLLER_STATE_PTR->data)))
@@ -242,5 +253,6 @@ typedef struct {
 #define SIN_WAVE_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((SinWaveControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define RAIBERT_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((RaibertControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define TEST_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((TestControllerState *)(&(CONTROLLER_STATE_PTR->data)))
+#define FORCE_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((ForceControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 
 #endif // FUNCS_H_CONTROLLER

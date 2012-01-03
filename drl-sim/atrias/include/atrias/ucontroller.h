@@ -8,6 +8,8 @@
 #ifndef FUNCS_H_UCONTROLLER
 #define FUNCS_H_UCONTROLLER
 
+//#include <stdint.h>
+
 // Medulla IDs
 #define MEDULLA_A_ID 				0xAA
 #define MEDULLA_B_ID 				0xBB
@@ -65,41 +67,40 @@
 * The Biss-C 32-bit encoders measure the absolute leg segment angles relative to the body, and do not roll over.
 * The SSI encoders meausre the motor angles relative to the body and roll over.
 */
-#define LEG_SEG_ANGLE				enc32
-#define TRANS_ANGLE 				enc16[0]
-#define ROTOR_ANGLE				enc16[1]
+#define LEG_SEG_ANGLE				encoder[1]
+#define TRANS_ANGLE 				encoder[0]
 
 /** @brief used to access the motor field in uControllerInput */
-#define MOTOR_TORQUE				motor
+#define MOTOR_TORQUE				motor_torque
 
 /** @brief used to access the motor field in uControllerInput */
-#define HIP_MTR_CMD				motor
+#define HIP_MTR_CMD				motor_torque
 
 #define BOOM_PAN_CNT				enc16[0]
 #define BOOM_TILT_CNT				enc16[1]
 #define BOOM_ROLL_CNT				enc16[2]					
 
 // Medulla A sensors:
-#define MIN_LEG_SEG_A_COUNT			159246000
-#define MAX_LEG_SEG_A_COUNT			552720300
-#define MIN_LEG_SEG_A_ANGLE			-2.7053
-#define MAX_LEG_SEG_A_ANGLE			0.6545
+#define MIN_LEG_SEG_A_COUNT			134185219
+#define MAX_LEG_SEG_A_COUNT			682343461
+#define MIN_LEG_SEG_A_ANGLE			0.296705973
+#define MAX_LEG_SEG_A_ANGLE			-2.35619449
 
-#define MIN_TRAN_A_COUNT			3226
-#define MAX_TRAN_A_COUNT			28904
-#define MIN_TRAN_A_ANGLE			-2.3562
-#define MAX_TRAN_A_ANGLE			0.3054
+#define MAX_TRAN_A_COUNT			617778691
+#define MIN_TRAN_A_COUNT			70126263 
+#define MIN_TRAN_A_ANGLE			0.296705973
+#define MAX_TRAN_A_ANGLE			-2.35619449
 
 // Medulla B sensors:
-#define MIN_LEG_SEG_B_COUNT			159200000
-#define MAX_LEG_SEG_B_COUNT			553005000
-#define MIN_LEG_SEG_B_ANGLE			2.4871
-#define MAX_LEG_SEG_B_ANGLE			5.8469
+#define MAX_LEG_SEG_B_COUNT			139212755
+#define MIN_LEG_SEG_B_COUNT			681805251
+#define MIN_LEG_SEG_B_ANGLE			2.84488668
+#define MAX_LEG_SEG_B_ANGLE			5.49778714
 
-#define MIN_TRAN_B_COUNT			5914
-#define MAX_TRAN_B_COUNT			31570
-#define MIN_TRAN_B_ANGLE			2.8362
-#define MAX_TRAN_B_ANGLE			5.4978
+#define MAX_TRAN_B_COUNT			69387705
+#define MIN_TRAN_B_COUNT			611961703
+#define MIN_TRAN_B_ANGLE			2.84488668
+#define MAX_TRAN_B_ANGLE			5.49778714
 
 // These are the rough ranges of motion for the zero force leg segments.
 //  E.g. they are the leg angle counts when the transmission is at the limits
@@ -111,8 +112,8 @@
 
 // Need to set these during sensor calibration if you want the spring deflections
 // to be computed accurately.  Add these offsets to the transmission angle.
-#define TRAN_A_OFF_ANGLE			0.057933
-#define TRAN_B_OFF_ANGLE			-0.026280
+#define TRAN_A_OFF_ANGLE			0.0273115
+#define TRAN_B_OFF_ANGLE			0.0265556
 
 // Hip Medulla sensors:
 #define MIN_HIP_COUNT				0
@@ -146,16 +147,16 @@
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-60.0
-#define MTR_MAX_TRQ  				60.0
-#define MTR_MIN_CNT				100
+#define MTR_MIN_TRQ				-40.0
+#define MTR_MAX_TRQ  				40.0
+#define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900
-#define MTR_ZERO_CNT				10000
+#define MTR_ZERO_CNT				0
 // This should only be just enough torque to hold open the legs.
 #define AMPS_OPEN				1
 
 /** @brief macro to hold the open the legs */
-#define PWM_OPEN				((uint16_t)(MTR_ZERO_CNT + (AMPS_OPEN / (MTR_MAX_TRQ/(MTR_ZERO_CNT))) ))
+#define PWM_OPEN				15 //((uint16_t)(MTR_ZERO_CNT + (AMPS_OPEN / (MTR_MAX_TRQ/(MTR_ZERO_CNT))) ))
 
 
 // For handling rollover of encoders
@@ -175,7 +176,8 @@
 typedef struct 
 {
         /** @breif tell the motors what to do */
-	uint16_t	motor;
+	int32_t	motor_torque;
+	uint16_t counter;
 
 	/** @brief tell the medulla what to do */
         uint8_t		command;
@@ -183,18 +185,17 @@ typedef struct
 
 typedef struct
 {
-	uint32_t 	enc32;
-
-	uint16_t	enc16[4];
+	uint32_t 	encoder[3];
 
 	uint16_t 	timestep;
+	uint16_t	counter;
 
 	uint8_t		id;
-	uint8_t		status;	
+	uint8_t		state;
+	uint8_t		error_flags;
+	uint8_t		limitSW;
 	
-	uint8_t		therm1;
-	uint8_t		therm2;
-	uint8_t		therm3;
+	uint8_t		thermistor[3];
 } uControllerOutput;
 
 #endif // FUNCS_H_UCONTROLLER

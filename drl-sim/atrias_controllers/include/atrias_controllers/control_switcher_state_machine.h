@@ -53,6 +53,10 @@ extern void initialize_leg_position_controller(ControllerInput*, ControllerOutpu
 extern void update_leg_position_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void takedown_leg_position_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 
+extern void initialize_leg_force_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void update_leg_force_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void takedown_leg_force_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+
 extern void initialize_leg_angle_sin_wave(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void update_leg_angle_sin_wave(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void takedown_leg_angle_sin_wave(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);

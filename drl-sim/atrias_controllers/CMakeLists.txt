@@ -118,4 +118,5 @@ endif(EXISTS "${GAZEBO_INSTALLED}")
 #rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)
 
 rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
+rosbuild_add_executable(data_logger src/data_logger.cpp)
 

@@ -143,6 +143,9 @@ int main (int argc, char **argv) {
     gui->get_widget("grizzle_motor_gain_hscale", grizzle_motor_gain_hscale);
      */
 
+    gui->get_widget("force_control_p_gain", force_control_p_gain);
+    gui->get_widget("force_control_d_gain", force_control_d_gain);
+
     gui->get_widget("drawing_area", drawing_area);
 
     gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
@@ -177,7 +180,7 @@ int main (int argc, char **argv) {
 
     motor_positionA_hscale->set_range(-2.3562, 0.3054);
     motor_positionB_hscale->set_range(2.8362, 5.4978);
-    p_motor_position_hscale->set_range(0., 1000.);
+    p_motor_position_hscale->set_range(0., 200.);
     d_motor_position_hscale->set_range(0., 50.);
 
     leg_length_torque_hscale->set_range(-10., 10.);
@@ -196,11 +199,11 @@ int main (int argc, char **argv) {
     log_frequency_spin->set_increments(100, 500);
     log_frequency_spin->set_value(100);
 
-    leg_angle_amplitude_hscale->set_range(0., 0.5);
+    leg_angle_amplitude_hscale->set_range(0., 1.0);
     leg_angle_frequency_hscale->set_range(0., 20.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
     leg_length_frequency_hscale->set_range(0., 20.);
-    p_sine_wave_hscale->set_range(0., 200.);
+    p_sine_wave_hscale->set_range(0., 1000.);
     d_sine_wave_hscale->set_range(0., 5.);
 
 
@@ -251,6 +254,10 @@ int main (int argc, char **argv) {
 
     test_motors_status_image->set(red_image_path);
     test_flight_status_image->set(red_image_path);
+
+    /* Force Control Tab */
+    force_control_p_gain->set_range(0.0,1000.0);
+    force_control_d_gain->set_range(0.0,10.0);
 
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
@@ -556,6 +563,10 @@ bool poke_controller (void) {
                 test_flight_status_image->set(red_image_path);
             }
             break;
+	case FORCE_CONTROLLER:
+	    ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = force_control_p_gain->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = force_control_d_gain->get_value();
+	    break;
     }
 
     if (atrias_client.call(atrias_srv))
@@ -580,9 +591,9 @@ bool poke_controller (void) {
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
 
     // Update spring deflection displays.
-    sprintf(buffer, "%0.6f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
+    sprintf(buffer, "%0.8f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
     spring_deflection_A_entry->set_text(buffer);
-    sprintf(buffer, "%0.6f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
+    sprintf(buffer, "%0.8f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
     spring_deflection_B_entry->set_text(buffer);
 
     // Update the boom stuff indicators.

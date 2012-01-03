@@ -1,28 +1,167 @@
-// Devin Koepl
 
 #include <atrias_controllers/data_logger.h>
 
-DataLogger::DataLogger( const char *filename )
-{
-	// Open log file for writing.
-	fp = fopen( filename, "w" );
+// !@brief Convert float to string for storage.
+//
+// TODO: To save disk space, storage should be in floats that can be parsed by
+// a script to extract user-specified parameters.
+std::string format_float(float fl) {
+    char charBuf[64];
+    sprintf(charBuf, "%.6f", fl);
+    std::string buf = charBuf;
+    char j;
+    bool positive;
+    std::string result = "       ";
 
-	// Create file header.
-	// fprintf( fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Counter, Shm Index\n");		
-	fprintf( fp, "Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Counter, Shm Index\n");		
+    for (int i = 0; (j = charBuf[i]) > 0; i++) {   // loop until a null character is encountered
+        if (i == 0) {
+            // Check if the number is negative.
+            positive = (j == '-') ? false : true;
+        }
+        else if (j == '.') {
+            // If there is room for one or more decimal places, include them.
+            // Otherwise, leave them out.
+            if (i < 6) {
+                for (int k = 0; k < 7; k++) {
+                    result[k] = charBuf[k];
+                }
+                return result;
+            }
+        }
+        else if (i > 6) {
+            break;
+        }
+    }
+
+    return (positive) ? "NTOOBIG" : "NTOOLOW";
 }
 
-DataLogger::~DataLogger()
-{
-	fclose(fp);
+//! @brief Log data to logfile.
+void datalogCallback(const ros::TimerEvent&) {
+    while (i != shm->io_index) {
+        c_in = &shm->controller_input[i];
+        c_out = &shm->controller_output[i];
+        // Publish at about 50 Hz based on data timestamp.
+        //if (i % 20 == 0) {
+        //    data_visualization_publisher.publish(aData);
+        //}
+    
+        if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
+            if (log_file_fp != NULL) {
+                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                    format_float(i).c_str(),
+                    format_float(c_in->body_angle).c_str(),
+                    format_float(c_in->motor_angleA).c_str(),
+                    format_float(c_in->motor_angleB).c_str(),
+                    format_float(c_in->leg_angleA).c_str(),
+                    format_float(c_in->leg_angleB).c_str(),
+                    format_float(c_in->body_ang_vel).c_str(),
+                    format_float(c_in->motor_velocityA).c_str(),
+                    format_float(c_in->motor_velocityB).c_str(),
+                    format_float(c_in->leg_velocityA).c_str(),
+                    format_float(c_in->leg_velocityB).c_str(),
+                    format_float(c_in->xPosition).c_str(),
+                    format_float(c_in->yPosition).c_str(),
+                    format_float(c_in->zPosition).c_str(),
+                    format_float(c_in->xVelocity).c_str(),
+                    format_float(c_in->yVelocity).c_str(),
+                    format_float(c_in->zVelocity).c_str(),
+                    format_float(c_in->horizontal_velocity).c_str(),
+                    format_float(c_in->motor_currentA).c_str(),
+                    format_float(c_in->motor_currentB).c_str(),
+                    format_float(c_in->toe_switch).c_str(),
+                    format_float(c_in->command).c_str(),
+                    format_float(c_out->motor_torqueA).c_str(),
+                    format_float(c_out->motor_torqueB).c_str());
+    
+            }
+            else {
+                ROS_ERROR("data_subscriber cannot open log file.");
+            }
+        }
+        i = (i++) % SHM_TO_USPACE_ENTRIES;
+        //ROS_INFO("%d %d", i, shm->io_index);
+    
+    }
 }
 
-// Log a new entry.
-void DataLogger::log( DataToUspace *data )
-{
-// 	fprintf( fp, "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u\n", data->controller_input.body_angle, data->controller_input.motor_angleA, data->controller_input.motor_angleB,
-// 		data->controller_input.leg_angleA, data->controller_input.leg_angleB, data->controller_input.body_ang_vel, data->controller_input.motor_velocityA, data->controller_input.motor_velocityB,
-// 		data->controller_input.leg_velocityA, data->controller_input.leg_velocityB, data->controller_input.height, data->controller_input.horizontal_velocity, data->controller_input.vertical_velocity,
-// 		data->controller_output.motor_torqueA, data->controller_output.motor_torqueB, data->cnt, data->index );
-	fprintf( fp, "%f, %f, %f, %f, %u, %u\n", data->controller_input.motor_angleA, data->controller_input.motor_angleB, data->controller_input.leg_angleA, data->controller_input.leg_angleB, data->cnt, data->index );
+//! @brief Get logfile name published by GUI and open file to write.
+bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atrias_controllers::data_subscriber_srv::Response& res) {
+    if (req.isLogging) {
+        ROS_INFO("data_subscriber: Logging.");
+        char buffer[256];   // Create buffer to store filename.
+
+        if (req.logfilename == "") {   // If filename is unspecified, set one based on date and time.
+            ROS_INFO("data_subscriber: Logfile name unspecified. Deciding logfile name based on date and time.");
+            time_t curSeconds;
+            curSeconds = time(NULL);
+            struct tm *tInfo;
+            tInfo = localtime(&curSeconds);
+            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+        }
+        else {   // If filename is specified, use that as logfilename.
+            ROS_INFO("data_subscriber: Setting logfile name as requested by GUI.");
+            sprintf(buffer, "%s", req.logfilename.c_str());
+        }
+
+        ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
+        log_file_fp = fopen(buffer, "w");   // Open logfile.
+        fprintf(log_file_fp, "Time (ms), Body Angle, Motor A Angle, Motor B Angle, Leg A Angle, Leg B Angle, Body Angular Velocity, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Horizontal Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Motor A Torque, Motor B Torque");   // TODO: Need units for these labels.
+        res.logfilename = buffer;   // Respond with new logfilename.
+        isLogging = true;   // data_subscriber should start logging.
+    }
+    else if (!req.isLogging) {
+        ROS_INFO("data_subscriber: Not logging.");
+        if (log_file_fp != NULL) {   // Check if logfile is open because serviceCallback could be run if logfilename is set but isLogging is off.
+            fclose(log_file_fp);
+            ROS_INFO("data_subscriber: Closing logfile.");
+        }
+        res.logfilename = "";   // Respond with blank logfilename.
+        isLogging = false;
+    }
+    return true;
 }
+
+//! @brief Main loop.
+int main (int argc, char **argv) {
+    // Logging is disabled by default.
+    isLogging = false;
+
+    ros::init(argc, argv, "data_subscriber");
+    ros::NodeHandle nh;
+
+    // Subscribe to data stream from data_publisher on nettop.
+    //data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
+
+    timer = nh.createTimer(ros::Duration(0.002), datalogCallback);
+
+    rt_allow_nonroot_hrt();
+    if (!(shm = (Shm*) rt_shm_alloc(nam2num(SHM_NAME), 0, USE_VMALLOC)))
+        ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
+
+    ROS_INFO("Datalog publisher connected to shm.");
+
+    // Set i to current value of io_index.
+    i = shm->io_index;
+
+    // Provide a much lower-frequency data stream for visualization purposes by
+    // re-publishing every few AtriasData fetched by datalogCallback. We
+    // wouldn't need to do this if there was a nice way to specify a sampling
+    // rate for rxplot, but this workaround suffices for now.
+    //
+    // TODO: Eventually, GUI should read stuff from this stream instead of
+    // asking for data from wireless_kern_interface.
+
+    //data_visualization_publisher = nh.advertise<atrias_controllers::AtriasData>("data_visualization_stream", 0);
+
+    // Service for GUI.
+    data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
+
+    ros::spin();
+
+    // Disconnect from shm.
+    rt_shm_free(nam2num(SHM_NAME));
+
+    return 0;
+}
+
