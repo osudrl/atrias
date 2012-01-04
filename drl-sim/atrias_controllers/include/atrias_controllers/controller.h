@@ -230,6 +230,7 @@ typedef struct {
 typedef struct {
     float p_gain;
     float d_gain;
+    float spring_deflection;
 } ForceControllerData;
 
 typedef struct {

@@ -145,6 +145,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("force_control_p_gain", force_control_p_gain);
     gui->get_widget("force_control_d_gain", force_control_d_gain);
+    gui->get_widget("force_control_spring_deflection", force_control_spring_deflection);
 
     gui->get_widget("drawing_area", drawing_area);
 
@@ -256,8 +257,9 @@ int main (int argc, char **argv) {
     test_flight_status_image->set(red_image_path);
 
     /* Force Control Tab */
-    force_control_p_gain->set_range(0.0,1000.0);
-    force_control_d_gain->set_range(0.0,10.0);
+    force_control_p_gain->set_range(0.0,10000.0);
+    force_control_d_gain->set_range(0.0,300.0);
+    force_control_spring_deflection->set_range(-0.2,0.2);
 
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
@@ -566,6 +568,7 @@ bool poke_controller (void) {
 	case FORCE_CONTROLLER:
 	    ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = force_control_p_gain->get_value();
             ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = force_control_d_gain->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->spring_deflection = force_control_spring_deflection->get_value();
 	    break;
     }
 
