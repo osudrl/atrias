@@ -78,7 +78,7 @@ void init(void) {
 	
 	// Init motor controllers for current measurement
 	#ifdef ENABLE_MOTOR
-	initAmp(&PORTC,&USARTF0,&TCC1,&HIRESC,4,3);
+	initAmp(&USARTF0,&PORTF,&PORTC,&TCC1,&HIRESC,4,3);
 	#endif
 	
 	// init the input and output values

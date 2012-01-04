@@ -7,7 +7,7 @@
 
 #define PERIOD 20000 
 
-void initAmp(PORT_t * port, USART_t * amp_usart, TC1_t * timer, HIRES_t * hires, uint8_t pwm_pin, uint8_t dir_pin);
+void initAmp(USART_t * amp_usart, PORT_t * usart_port, PORT_t * pwm_port, TC1_t * timer, HIRES_t * hires, uint8_t pwm_pin, uint8_t dir_pin);
 void enableAmp(USART_t * amp_usart);
 void enablePWM(TC1_t * timer);
 void disablePWM(TC1_t * timer);

@@ -1,12 +1,12 @@
 #include "amp.h"
 
-void initAmp(PORT_t * port, USART_t * amp_usart, TC1_t * timer, HIRES_t * hires, uint8_t pwm_pin, uint8_t dir_pin) {
+void initAmp(USART_t * amp_usart, PORT_t * usart_port, PORT_t * pwm_port, TC1_t * timer, HIRES_t * hires, uint8_t pwm_pin, uint8_t dir_pin) {
 	// Init usart communication with amplifier
-	initUART(port,amp_usart,1152);
+	initUART(usart_port,amp_usart,1152);
 	
 	// Init counter for PWM generation
-	port->OUTCLR	= (1 << pwm_pin) | (1 << dir_pin);
-	port->DIRSET	= 1 << pwm_pin | (1 << dir_pin);
+	pwm_port->OUTCLR	= (1 << pwm_pin) | (1 << dir_pin);
+	pwm_port->DIRSET	= 1 << pwm_pin | (1 << dir_pin);
 
 
 	timer->CTRLA	= ( timer->CTRLA & ~TC1_CLKSEL_gm ) | TC_CLKSEL_DIV1_gc;
