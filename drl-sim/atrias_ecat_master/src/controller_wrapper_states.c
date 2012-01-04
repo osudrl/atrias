@@ -108,15 +108,6 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     static unsigned char last_state = STATE_INIT;
     static unsigned char next_state = STATE_INIT;
 
-    //rt_printk( "Next state: %u\n", next_state );
-    printk("Timestep[0]: %d\n", uc_out[0]->timestep);
-    printk("Timestep[1]: %d\n", uc_out[1]->timestep);
-
-    printk("Out Counter[0]: %d\n", uc_in[0]->counter);
-    printk(" In Counter[0]: %d\n", uc_out[0]->counter);
-    printk("Out Counter[1]: %d\n", uc_in[1]->counter);
-    printk(" In Counter[1]: %d\n", uc_out[0]->counter);
-    
     switch ( next_state )
     {
         case STATE_INIT:
@@ -169,11 +160,13 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
         uc_in[i]->command = 1;
-        
+    }
+    
+    for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ ) {
         // If a Medulla does not report the bad command, then fail.
         if ( uc_out[i]->state != 1)
         {
-            rt_printk( "Medulla %u did in state INIT\n", i );
+            rt_printk( "Medulla %u is not in state INIT\n", i );
             return STATE_INIT;
         }
     }
@@ -194,11 +187,13 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
         uc_in[i]->command = 2;
-        
+    }
+    
+    for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ ) {
         // If a Medulla does not report the bad command, then fail.
         if ( uc_out[i]->state != 2)
         {
-            rt_printk( "Medulla %u did in state RUN\n", i );
+            rt_printk( "Medulla %u is not in state RUN\n", i );
             return STATE_START;
         }
     }
@@ -243,7 +238,9 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->leg_velocityA = (c_in->leg_angleA - last_leg_angleA)
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );    
     c_in->leg_velocityB = (c_in->leg_angleB - last_leg_angleB)
-        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );                    
+        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );                   
+
+    c_in->toe_switch = uc_out[B_INDEX]->toe_switch;
 
     last_motor_angleA = c_in->motor_angleA;
     last_motor_angleB = c_in->motor_angleB;
@@ -258,31 +255,10 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     // Clamp the motor torques.
     c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
     c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
-    //c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, -30., 30.);
-    //c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, -30., 30.);
-    //c_out->motor_torqueA = 0.;
-    //c_out->motor_torqueB = 0.;            
     
-    // If ether of the torques is below the min threshold, then send the minimum torque.
-    // This should keep the motor controllers from thinking that the PWM signal is broken
-    /*if (ABS(c_out->motor_torqueA) < MIN_TRQ_THRESH) {
-	if (c_out->motor_torqueA >= 0)
-		uc_in[A_INDEX]->MOTOR_TORQUE = PWM_OPEN;
-	else
-		uc_in[A_INDEX]->MOTOR_TORQUE = PWM_OPEN*-1;
-    }
-    else*/
-	 uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+    uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
-
-    /*if (ABS(c_out->motor_torqueB) < MIN_TRQ_THRESH) {
-	if (c_out->motor_torqueB >= 0)
-		uc_in[B_INDEX]->MOTOR_TORQUE = PWM_OPEN;
-	else
-		uc_in[B_INDEX]->MOTOR_TORQUE = PWM_OPEN*-1;
-    }
-    else*/
-	uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+    uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
     
     uc_in[A_INDEX]->counter++;
