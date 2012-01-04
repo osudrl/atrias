@@ -23,6 +23,7 @@ int8_t			eStop_count;
 // Interrupt handeler for the step timer overflow.
 ISR(TCC1_OVF_vect) {
 	cli();
+	assertEStop();
 	timerOverflow();
 	resetStepTimer();
 	TCC1.INTFLAGS = TCC1.INTFLAGS & 0b11111110;	// Clear the interrupt flags
@@ -45,22 +46,23 @@ void medulla_run(void* in, void* out) {
 	CLK.PSCTRL = 0x00;															// no division on peripheral clocks
 	Config32MHzClock();
 
+	#ifdef ENABLE_DEBUG
 	stdout = &mystdout;															// attach the uart to the stdout for printf
 	initUART(&PORTE,&USARTE0,1152);												// RS232 uart 115.2kb
-	initUART(&PORTF,&USARTF0,1152);
+	#endif
+	
 	initEStop(&PORTF,0,1);
 	clearEStop();
 	init_eCAT();
 	init();
 	eStop_count = 0;
 	
-	//PMIC.CTRL |= PMIC_HILVLEN_bm;
+	PMIC.CTRL |= PMIC_HILVLEN_bm;
 	sei();	// Enable interrupt
 	
 	currentState = IDLE;
 	
 	//******** Loop ********
-	//printf("Starting\n");
 	initStepTimer();
 	stepTimer_Start();
 	while(1) {
@@ -131,7 +133,6 @@ void medulla_run(void* in, void* out) {
 
 			if (eStop_count > 100) {
 				if (currentState != ERROR)
-					printf("E-STOPPED\n");
 				currentState = ERROR;
 				eStop = 1;
 			}

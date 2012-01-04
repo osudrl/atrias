@@ -70,7 +70,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = atrias_leg
+TARGET = medulla
 
 
 # Object files directory
@@ -80,7 +80,7 @@ OBJDIR = .
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = pwm.c biss.c clock.c uart.c ecat.c step_timer.c estop.c medulla_controller.c $(TARGET).c 
+SRC = amp.c biss.c clock.c uart.c ecat.c step_timer.c estop.c medulla_controller.c $(TARGET).c 
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -126,7 +126,7 @@ CSTANDARD = -std=gnu99
 
 
 # Place -D or -U options here for C sources
-CDEFS = -DF_CPU=$(F_CPU)UL
+CDEFS = -DF_CPU=$(F_CPU)UL -D_AVR_
 
 
 # Place -D or -U options here for ASM sources

@@ -8,7 +8,9 @@
 #ifndef FUNCS_H_UCONTROLLER
 #define FUNCS_H_UCONTROLLER
 
-//#include <stdint.h>
+#ifdef _AVR_
+#include <stdint.h>
+#endif
 
 // Medulla IDs
 #define MEDULLA_A_ID 				0xAA
@@ -194,7 +196,9 @@ typedef struct
 	uint8_t		state;
 	uint8_t		error_flags;
 	uint8_t		limitSW;
-	
+	uint8_t		toe_switch;
+	uint8_t		motor_power;
+	uint8_t		logic_power;	
 	uint8_t		thermistor[3];
 } uControllerOutput;
 
