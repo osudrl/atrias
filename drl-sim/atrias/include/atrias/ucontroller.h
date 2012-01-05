@@ -191,7 +191,7 @@ typedef struct
 
 	uint16_t 	timestep;
 	uint16_t	counter;
-
+	
 	uint8_t		id;
 	uint8_t		state;
 	uint8_t		error_flags;

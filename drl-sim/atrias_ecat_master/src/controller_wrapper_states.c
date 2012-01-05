@@ -104,6 +104,9 @@ void takedown_shm( void )
  */
 void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput ** uc_out )
 {
+    printk("Thermistor[0]: %d\n", uc_out[B_INDEX]->thermistor[0]);
+    printk("Thermistor[1]: %d\n", uc_out[B_INDEX]->thermistor[1]);
+    printk("Thermistor[2]: %d\n", uc_out[B_INDEX]->thermistor[2]);
     // Keep a copy of the states in memory.
     static unsigned char last_state = STATE_INIT;
     static unsigned char next_state = STATE_INIT;
