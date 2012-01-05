@@ -8,17 +8,18 @@
 #include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
 #include <util/delay.h>
 
-#include <stdint.h>
 #include "medulla_controller.h"
 #include "limitSW.h"
 #include "biss_bang.h"
 #include "amp.h"
+#include "adc.h"
 
 #define ENABLE_ENCODERS
 #define ENABLE_LIMITSW
 #define ENABLE_MOTOR
 #define ENABLE_TOESW
 #define ENABLE_DEBUG
+#define ENABLE_THERM
 //#define ENABLE_MOTOR_PASSTHROUGH
 
 uControllerInput in;
@@ -65,10 +66,15 @@ void init(void) {
 	PORTA.PIN4CTRL = PORT_OPC_PULLUP_gc;
 	#endif
 	
-	// Init analog input
-	// - Toe Switch
-	// - Voltage monitor
-	// - Motor thermistors
+	// Voltage monitor
+	
+	// Motor thermistors
+	#ifdef ENABLE_THERM
+	initADC(&ADCA);					// Init ADC
+	initADC_CH(&(ADCA.CH0), 1);		// Configure channels 0, 1, and 2 for monitoring the thermistors
+	initADC_CH(&(ADCA.CH1), 2);
+	initADC_CH(&(ADCA.CH2), 3);
+	#endif
 	
 	// Init Encoders
 	#ifdef ENABLE_ENCODERS
@@ -168,6 +174,13 @@ void updateInput(void) {
 		status = readBiSS_bang_motor(biss, &PORTD,1<<5,1<<6);
 	}
 	out.encoder[1] = *((uint32_t*)biss);
+	#endif
+	
+	// Read Thermistors
+	#ifdef ENABLE_THERM
+	out.thermistor[0] = readADC_CH(ADCA.CH0);
+	out.thermistor[1] = readADC_CH(ADCA.CH1);
+	out.thermistor[2] = readADC_CH(ADCA.CH2);
 	#endif
 }
 
