@@ -99,6 +99,9 @@ Gtk::DrawingArea *drawing_area;
 Gtk::ProgressBar *motor_torqueA_progress_bar;
 Gtk::ProgressBar *motor_torqueB_progress_bar;
 
+Gtk::ProgressBar *motor_velocityA_progress_bar;
+Gtk::ProgressBar *motor_velocityB_progress_bar;
+
 Gtk::CheckButton *log_file_chkbox;
 Gtk::SpinButton *log_frequency_spin;
 Gtk::FileChooserButton *log_file_chooser;
@@ -113,6 +116,9 @@ Gtk::Entry *zVelDisplay;
 
 Gtk::Entry *torqueADisplay;
 Gtk::Entry *torqueBDisplay;
+
+Gtk::Entry *velocityADisplay;
+Gtk::Entry *velocityBDisplay;
 
 Gtk::Entry *spring_deflection_A_entry;
 Gtk::Entry *spring_deflection_B_entry;

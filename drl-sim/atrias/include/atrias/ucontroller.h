@@ -149,8 +149,10 @@
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-40.0
-#define MTR_MAX_TRQ  				40.0
+#define MTR_MIN_TRQ				-50.0
+#define MTR_MAX_TRQ  				50.0
+#define MTR_MAX_TRQ_LIMIT			30.0
+#define MTR_MIN_TRQ_LIMIT			-30.0
 #define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900
 #define MTR_ZERO_CNT				0
@@ -168,6 +170,10 @@
 #define MAX_16BIT				65536
 
 #define SEC_PER_CNT				125E-9
+
+#define ADC_VAL_TO_VOLTAGE(val)			(val * (3.26/255.0))
+#define THERM_VAL_TO_R(val)			(4700.0/((3.26/(ADC_VAL_TO_VOLTAGE(val))) - 1.0))
+//#define ADC_TO_TEMP(val)			((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_V_TO_R(val)/10000))) - 273.15)
 
 // For GCC running on a 32-bit machine to minimize the size in memory of these structs, the smallest
 // values must come first.  This is important for compatability with the avr-gcc compiled code.

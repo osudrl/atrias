@@ -2059,8 +2059,8 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkFileChooserButton" id="log_file_chooser">
                             <property name="visible">True</property>
                             <property name="extension_events">all</property>
-                            <property name="do_overwrite_confirmation">True</property>
                             <property name="action">save</property>
+                            <property name="do_overwrite_confirmation">True</property>
                             <property name="title" translatable="yes">Select A Log File</property>
                           </object>
                           <packing>
@@ -2361,6 +2361,33 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkLabel" id="label16">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Velocity A</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="velocityADisplay">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_velocityA_progress_bar">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">4</property>
@@ -2415,6 +2442,33 @@ You may only switch controllers with the motors disabled.</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label17">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Velocity B</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="velocityBDisplay">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_velocityB_progress_bar">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
                   </packing>
                 </child>
               </object>

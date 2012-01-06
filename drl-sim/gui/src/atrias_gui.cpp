@@ -9,6 +9,11 @@
 //! @param argv An array of character pointers containing the command line arguments.
 //! @return Returns zero upon successful completion, non-zero if an error occured.
 
+#define DELTA_Y (0.5*sin(atrias_srv.response.motor_angleB) + 0.5*sin(atrias_srv.response.motor_angleA))
+#define DELTA_X (-0.5*cos(atrias_srv.response.motor_angleB) - 0.5*cos(atrias_srv.response.motor_angleA))
+#define LEG_LENGTH sqrt(DELTA_Y*DELTA_Y + DELTA_X*DELTA_X)
+#define LEG_ANGLE ((0.0*PI) - (atan2(DELTA_Y,DELTA_X)))
+
 int main (int argc, char **argv) {
     ros::init(argc, argv, "atrias_gui");
     ros::NodeHandle nh;
@@ -169,6 +174,12 @@ int main (int argc, char **argv) {
     gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
     gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
 
+    gui->get_widget("velocityADisplay", velocityADisplay);
+    gui->get_widget("velocityBDisplay", velocityBDisplay);
+
+    gui->get_widget("motor_velocityA_progress_bar", motor_velocityA_progress_bar);
+    gui->get_widget("motor_velocityB_progress_bar", motor_velocityB_progress_bar);
+    
     gui->get_widget("restart_button", restart_button);
     gui->get_widget("enable_button", enable_button);
     gui->get_widget("disable_button", disable_button);
@@ -181,18 +192,18 @@ int main (int argc, char **argv) {
 
     motor_positionA_hscale->set_range(-2.3562, 0.3054);
     motor_positionB_hscale->set_range(2.8362, 5.4978);
-    p_motor_position_hscale->set_range(0., 200.);
-    d_motor_position_hscale->set_range(0., 50.);
+    p_motor_position_hscale->set_range(0., 50000.);
+    d_motor_position_hscale->set_range(0., 5000.);
 
     leg_length_torque_hscale->set_range(-10., 10.);
     leg_angle_torque_hscale->set_range(-10., 10.);
 
     leg_length_hscale->set_range(0.5, 1.);
     leg_angle_hscale->set_range(1.29, 1.85);
-    p_leg_position_hscale->set_range(0., 200.);
+    p_leg_position_hscale->set_range(0., 10000.);
     //p_leg_position_spin->set_range(0., 1000.);
     //p_leg_position_spin->set_increments(.05, 1.);
-    d_leg_position_hscale->set_range(0., 8.);
+    d_leg_position_hscale->set_range(0., 300.);
     //d_leg_position_spin->set_increments(.05, 1.);
     //d_leg_position_spin->set_range(0., 1000.);
 
@@ -204,8 +215,8 @@ int main (int argc, char **argv) {
     leg_angle_frequency_hscale->set_range(0., 20.);
     leg_length_amplitude_hscale->set_range(0., 0.2);
     leg_length_frequency_hscale->set_range(0., 20.);
-    p_sine_wave_hscale->set_range(0., 1000.);
-    d_sine_wave_hscale->set_range(0., 5.);
+    p_sine_wave_hscale->set_range(0., 10000.);
+    d_sine_wave_hscale->set_range(0., 100.);
 
 
 	/* Raibert tab */
@@ -253,6 +264,9 @@ int main (int argc, char **argv) {
     motor_torqueA_progress_bar->set_fraction(0.);
     motor_torqueB_progress_bar->set_fraction(0.);
 
+    motor_velocityA_progress_bar->set_fraction(0.);
+    motor_velocityB_progress_bar->set_fraction(0.);
+    
     test_motors_status_image->set(red_image_path);
     test_flight_status_image->set(red_image_path);
 
@@ -463,6 +477,10 @@ void switch_controllers (GtkNotebookPage* page, guint page_num) {
         atrias_srv.request.controller_requested = page_num;
     else
         controller_notebook->set_current_page(atrias_srv.request.controller_requested);
+
+    leg_length_hscale->set_value(LEG_LENGTH);
+    leg_angle_hscale->set_value(LEG_ANGLE);
+
 }
 
 //! @brief Probes and updates the active controller then sends updated commands to the robot.
@@ -593,6 +611,13 @@ bool poke_controller (void) {
     motor_torqueA_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueA), MTR_MAX_TRQ) / MTR_MAX_TRQ);
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
 
+    motor_velocityA_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_velocityA * 477.45), 1327) / 1327);
+    motor_velocityB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_velocityB * 477.45), 1327) / 1327);
+    sprintf(buffer, "%0.2f", atrias_srv.response.motor_velocityA * 477.45);
+    velocityADisplay->set_text(buffer);
+    sprintf(buffer, "%0.2f", atrias_srv.response.motor_velocityB * 477.45);
+    velocityBDisplay->set_text(buffer);
+   
     // Update spring deflection displays.
     sprintf(buffer, "%0.8f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);
     spring_deflection_A_entry->set_text(buffer);

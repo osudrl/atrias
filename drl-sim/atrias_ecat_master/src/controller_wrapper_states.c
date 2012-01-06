@@ -111,6 +111,10 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     static unsigned char last_state = STATE_INIT;
     static unsigned char next_state = STATE_INIT;
 
+
+    //printk("216 = %d\n", (int)(ADC_VAL_TO_VOLTAGE(216.0)*10));
+    //printk("216 = %d\n", (int)THERM_VAL_TO_R(216.0));
+    
     switch ( next_state )
     {
         case STATE_INIT:
@@ -256,8 +260,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     control_switcher_state_machine( c_in, c_out,
         &shm->controller_state, &shm->controller_data[shm->control_index] );
     // Clamp the motor torques.
-    c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-    c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+    c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
+    c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
     
     uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
@@ -268,24 +272,6 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     uc_in[B_INDEX]->counter++;
 
 
-    // If both torques are below the threshold, then send a small torque to keep the robot off of its hardstops.
-    //if ( ( ABS(c_out->motor_torqueA) < MIN_TRQ_THRESH ) 
-    //    && ( ABS(c_out->motor_torqueB) < MIN_TRQ_THRESH ) )
-    //{
-    //    uc_in[A_INDEX]->MOTOR_TORQUE = PWM_OPEN;
-    //    uc_in[B_INDEX]->MOTOR_TORQUE = PWM_OPEN;
-    //}
-    //else
-    //{
-        // Send motor torques.
-        //uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
-        //    c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
-        //uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
-        //    -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
-      //  }
-
-//    uc_in[A_INDEX]->motor_torque = 5000;
-//    uc_in[B_INDEX]->motor_torque = -5000;
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
 	return STATE_ERROR;
     

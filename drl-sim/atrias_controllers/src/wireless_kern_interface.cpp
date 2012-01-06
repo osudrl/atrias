@@ -324,6 +324,9 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
     res.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
     res.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;
 
+    res.motor_velocityA   = shm->controller_input[shm->io_index - 1].motor_velocityA;
+    res.motor_velocityB   = shm->controller_input[shm->io_index - 1].motor_velocityB;
+    
     for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
         res.control_state[i] = shm->controller_state.data[i];
 
