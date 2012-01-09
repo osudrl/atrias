@@ -82,7 +82,16 @@
 #define BOOM_TILT_CNT				enc16[1]
 #define BOOM_ROLL_CNT				enc16[2]					
 
-// Medulla A sensors:
+// 32 bit encoder defines
+#define ENC_CNT_PER_RAD				206626011
+
+// Medulla A sensors:		
+#define LEG_A_CALIB_LOC				-1.308996694
+#define LEG_A_ENC_TO_ANGLE(val,calib) LEG_A_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
+
+#define LEG_A_CALIB_VAL				465965157.0
+#define TRAN_A_CALIB_VAL			401400387.0
+
 #define MIN_LEG_SEG_A_COUNT			134185219
 #define MAX_LEG_SEG_A_COUNT			682343461
 #define MIN_LEG_SEG_A_ANGLE			0.296705973
@@ -94,6 +103,12 @@
 #define MAX_TRAN_A_ANGLE			-2.35619449
 
 // Medulla B sensors:
+#define MEDULLA_B_CALIB_LOC			4.450589258
+#define LEG_B_ENC_TO_ANGLE(val,calib) LEG_B_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
+
+#define LEG_B_CALIB_VAL				470992673.0
+#define TRAN_B_CALIB_VAL			401167623.0
+
 #define MAX_LEG_SEG_B_COUNT			139212755
 #define MIN_LEG_SEG_B_COUNT			681805251
 #define MIN_LEG_SEG_B_ANGLE			2.84488668
@@ -194,7 +209,7 @@ typedef struct
 typedef struct
 {
 	uint32_t 	encoder[3];
-
+	uint32_t	encoder_calib[2];
 	uint16_t 	timestep;
 	uint16_t	counter;
 	

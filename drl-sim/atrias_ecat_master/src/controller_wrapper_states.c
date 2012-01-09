@@ -12,7 +12,7 @@
 /******************************************************************************/
 
 #define STATE_INIT          0
-#define STATE_START	    1
+#define STATE_START			1
 #define STATE_RUN           2
 #define STATE_ERROR         3
 
@@ -183,7 +183,6 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 
 // Initialize the encoder counters.
 unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
@@ -220,22 +219,11 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in    = &shm->controller_input[shm->io_index];
     c_out     = &shm->controller_output[shm->io_index];
 
-    // Generate controller input
-    c_in->leg_angleA        = UNDISCRETIZE(
-        uc_out[A_INDEX]->LEG_SEG_ANGLE,
-        MAX_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_COUNT, MAX_LEG_SEG_A_COUNT);
-
-    c_in->leg_angleB        = UNDISCRETIZE(
-        uc_out[B_INDEX]->LEG_SEG_ANGLE,
-        MIN_LEG_SEG_B_ANGLE, MAX_LEG_SEG_B_ANGLE, MIN_LEG_SEG_B_COUNT, MAX_LEG_SEG_B_COUNT);
-
-    c_in->motor_angleA     = UNDISCRETIZE(
-        tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,
-        MAX_TRAN_A_ANGLE, MIN_TRAN_A_ANGLE, MIN_TRAN_A_COUNT, MAX_TRAN_A_COUNT) + TRAN_A_OFF_ANGLE;
-
-    c_in->motor_angleB     = UNDISCRETIZE(
-        tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,
-        MIN_TRAN_B_ANGLE, MAX_TRAN_B_ANGLE, MIN_TRAN_B_COUNT, MAX_TRAN_B_COUNT) + TRAN_B_OFF_ANGLE;                
+    // Generate controller input	
+	c_in->leg_angleA        = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL)
+    c_in->leg_angleB        = LEG_B_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE,LEG_B_CALIB_VAL)
+    c_in->motor_angleA      = TRAN_A_ENC_TO_ANGLE(tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,TRAN_A_CALIB_VAL)
+    c_in->motor_angleB      = TRAN_B_ENC_TO_ANGLE(tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,TRAN_B_CALIB_VAL)
 
     c_in->motor_velocityA = (c_in->motor_angleA - last_motor_angleA)
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );

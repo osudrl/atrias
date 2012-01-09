@@ -55,6 +55,12 @@ int main(void) {
 
 void init(void) {
 	//******** Init ********
+	// Init DIP switches
+	PORTH.PIN4CTRL = PORT_OPC_PULLUP_g; 
+	PORTH.PIN5CTRL = PORT_OPC_PULLUP_g;
+	PORTH.PIN6CTRL = PORT_OPC_PULLUP_g;
+	PORTH.PIN7CTRL = PORT_OPC_PULLUP_g;
+	
 	// Init Limit Switches
 	#ifdef ENABLE_LIMITSW
 	initLimitSW(&PORTK);
