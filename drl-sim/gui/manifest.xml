@@ -15,7 +15,7 @@
 	<depend package="drl_plugins" />
 	<depend package="drl_library" />
 	<depend package="atrias" />
-	<depend package="atrias_controllers" />
+        <depend package="atrias_controllers" />
     <depend package="atrias_msgs" />
 
 	<export>
