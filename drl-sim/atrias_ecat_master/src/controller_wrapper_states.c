@@ -12,7 +12,7 @@
 /******************************************************************************/
 
 #define STATE_INIT          0
-#define STATE_START			1
+#define STATE_START            1
 #define STATE_RUN           2
 #define STATE_ERROR         3
 
@@ -27,40 +27,40 @@ static Shm * shm;
 
 // Control wrapper variables.
 
-unsigned short int    tranA_off;
-unsigned short int    tranB_off;
+unsigned short int  tranA_off;
+unsigned short int  tranB_off;
 
-int                    boom_pan_off = 0;
-int                    boom_tilt_off = 0;
+int                 boom_pan_off  = 0;
+int                 boom_tilt_off = 0;
 
-unsigned short int    last_boom_pan_cnt;
-unsigned short int    first_boom_pan_cnt;
-unsigned short int    last_boom_tilt_cnt;
+unsigned short int  last_boom_pan_cnt;
+unsigned short int  first_boom_pan_cnt;
+unsigned short int  last_boom_tilt_cnt;
 
-float                boom_pan_angle         = 0.;
-float                boom_tilt_angle     = 0.;
+float               boom_pan_angle  = 0.;
+float               boom_tilt_angle = 0.;
 
-float                last_boom_pan_angle = 0.;
+float               last_boom_pan_angle = 0.;
 
-unsigned short int    last_tranA_cnt;
-unsigned short int    last_tranB_cnt;
+unsigned short int  last_tranA_cnt;
+unsigned short int  last_tranB_cnt;
 
-float                last_motor_angleA     = 0.;
-float                last_motor_angleB     = 0.;
-float                last_leg_angleA        = 0.;
-float                last_leg_angleB        = 0.;
+float               last_motor_angleA = 0.;
+float               last_motor_angleB = 0.;
+float               last_leg_angleA   = 0.;
+float               last_leg_angleB   = 0.;
 
-float                hor_vel;
-float                hor_vel_buffer[HOR_VEL_WINDOW];
-int                    hor_vel_index         = 0;
+float               hor_vel;
+float               hor_vel_buffer[HOR_VEL_WINDOW];
+int                 hor_vel_index     = 0;
 
-float                leg_angle;
-float                leg_length;
+float               leg_angle;
+float               leg_length;
 
 static unsigned char command = CMD_RUN;
 
-ControllerInput     * c_in;
-ControllerOutput     * c_out;
+ControllerInput*    c_in;
+ControllerOutput*   c_out;
 
 /*****************************************************************************/
 
@@ -121,10 +121,10 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
             next_state = state_wakeup( uc_in, uc_out, last_state );
             last_state = STATE_INIT;
             break;
-	case STATE_START:
-	    next_state =  state_initialize(uc_in, uc_out, last_state);
-	    last_state = STATE_START;
-	    break;
+        case STATE_START:
+            next_state =  state_initialize(uc_in, uc_out, last_state);
+            last_state = STATE_START;
+            break;
         case STATE_RUN:
             next_state = state_run( uc_in, uc_out, last_state );
             last_state = STATE_RUN;
@@ -219,8 +219,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in    = &shm->controller_input[shm->io_index];
     c_out     = &shm->controller_output[shm->io_index];
 
-    // Generate controller input	
-	c_in->leg_angleA        = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL)
+    // Generate controller input    
+    c_in->leg_angleA        = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL)
     c_in->leg_angleB        = LEG_B_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE,LEG_B_CALIB_VAL)
     c_in->motor_angleA      = TRAN_A_ENC_TO_ANGLE(tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,TRAN_A_CALIB_VAL)
     c_in->motor_angleB      = TRAN_B_ENC_TO_ANGLE(tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,TRAN_B_CALIB_VAL)
@@ -261,7 +261,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
-	return STATE_ERROR;
+    return STATE_ERROR;
     
     // Increment and rollover i/o index for datalogging.
     shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;
