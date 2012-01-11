@@ -12,7 +12,7 @@
 /******************************************************************************/
 
 #define STATE_INIT          0
-#define STATE_START            1
+#define STATE_START         1
 #define STATE_RUN           2
 #define STATE_ERROR         3
 
@@ -101,20 +101,24 @@ void takedown_shm( void )
  *
  * @param uc_in array of pointers to each medualla input struct.  
  * @param uc_out array of pointers to each medualla output struct.
- */
+*/
 void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput ** uc_out )
 {
-    printk("Thermistor[0]: %d\n", uc_out[B_INDEX]->thermistor[0]);
-    printk("Thermistor[1]: %d\n", uc_out[B_INDEX]->thermistor[1]);
-    printk("Thermistor[2]: %d\n", uc_out[B_INDEX]->thermistor[2]);
+    printk("Thermistor[0]: %d, %d\n", (uc_out[B_INDEX]->thermistor[0]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0])));
+    printk("Thermistor[1]: %d, %d\n", (uc_out[B_INDEX]->thermistor[1]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1])));
+    printk("Thermistor[2]: %d, %d\n", (uc_out[B_INDEX]->thermistor[2]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2])));
+	
+    printk("Motor Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[B_INDEX]->motor_power)));
+    printk("Logic Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power)));
+
+    printk("Motor Encoder A: %d\n",uc_out[A_INDEX]->TRANS_ANGLE);
+    printk("Motor Encoder B: %d\n",uc_out[B_INDEX]->TRANS_ANGLE);
+    printk("Leg Encoder A: %d\n",uc_out[A_INDEX]->LEG_SEG_ANGLE);
+    printk("Leg Encoder B: %d\n",uc_out[B_INDEX]->LEG_SEG_ANGLE);
     // Keep a copy of the states in memory.
     static unsigned char last_state = STATE_INIT;
     static unsigned char next_state = STATE_INIT;
 
-
-    //printk("216 = %d\n", (int)(ADC_VAL_TO_VOLTAGE(216.0)*10));
-    //printk("216 = %d\n", (int)THERM_VAL_TO_R(216.0));
-    
     switch ( next_state )
     {
         case STATE_INIT:
@@ -219,12 +223,26 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in    = &shm->controller_input[shm->io_index];
     c_out     = &shm->controller_output[shm->io_index];
 
-    // Generate controller input    
-    c_in->leg_angleA        = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL)
-    c_in->leg_angleB        = LEG_B_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE,LEG_B_CALIB_VAL)
-    c_in->motor_angleA      = TRAN_A_ENC_TO_ANGLE(tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,TRAN_A_CALIB_VAL)
-    c_in->motor_angleB      = TRAN_B_ENC_TO_ANGLE(tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,TRAN_B_CALIB_VAL)
+    // Generate controller input
+    //c_in->leg_angleA       = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL);
+    //c_in->leg_angleB       = LEG_B_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE,LEG_B_CALIB_VAL);
+    //c_in->motor_angleA     = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE,TRAN_A_CALIB_VAL);
+    //c_in->motor_angleB     = LEG_B_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE,TRAN_B_CALIB_VAL);
+    c_in->leg_angleA        = UNDISCRETIZE(
+        uc_out[A_INDEX]->LEG_SEG_ANGLE,
+        MAX_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_COUNT, MAX_LEG_SEG_A_COUNT);
 
+    c_in->leg_angleB        = UNDISCRETIZE(
+        uc_out[B_INDEX]->LEG_SEG_ANGLE,
+        MIN_LEG_SEG_B_ANGLE, MAX_LEG_SEG_B_ANGLE, MIN_LEG_SEG_B_COUNT, MAX_LEG_SEG_B_COUNT);
+
+    c_in->motor_angleA     = UNDISCRETIZE(
+        tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,
+        MAX_TRAN_A_ANGLE, MIN_TRAN_A_ANGLE, MIN_TRAN_A_COUNT, MAX_TRAN_A_COUNT) + TRAN_A_OFF_ANGLE;
+
+    c_in->motor_angleB     = UNDISCRETIZE(
+        tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,
+        MIN_TRAN_B_ANGLE, MAX_TRAN_B_ANGLE, MIN_TRAN_B_COUNT, MAX_TRAN_B_COUNT) + TRAN_B_OFF_ANGLE;    
     c_in->motor_velocityA = (c_in->motor_angleA - last_motor_angleA)
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
     c_in->motor_velocityB = (c_in->motor_angleB - last_motor_angleB) 

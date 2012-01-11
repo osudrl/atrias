@@ -82,15 +82,15 @@
 #define BOOM_TILT_CNT				enc16[1]
 #define BOOM_ROLL_CNT				enc16[2]					
 
-// 32 bit encoder defines
-#define ENC_CNT_PER_RAD				206626011
+// 32 Bit Encoder defines
+#define ENC_CNT_PER_RAD                       	2.04e8
 
-// Medulla A sensors:		
-#define LEG_A_CALIB_LOC				-1.308996694
-#define LEG_A_ENC_TO_ANGLE(val,calib) LEG_A_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
+// Medulla A sensors:           
+#define LEG_A_CALIB_LOC                         -1.308996694
+#define LEG_A_ENC_TO_ANGLE(val,calib) 		LEG_A_CALIB_LOC + (-1)*(calib - val)/ENC_CNT_PER_RAD
 
-#define LEG_A_CALIB_VAL				465965157.0
-#define TRAN_A_CALIB_VAL			401400387.0
+#define LEG_A_CALIB_VAL                         354691251.0
+#define TRAN_A_CALIB_VAL                        284556173.0
 
 #define MIN_LEG_SEG_A_COUNT			134185219
 #define MAX_LEG_SEG_A_COUNT			682343461
@@ -103,11 +103,13 @@
 #define MAX_TRAN_A_ANGLE			-2.35619449
 
 // Medulla B sensors:
-#define MEDULLA_B_CALIB_LOC			4.450589258
-#define LEG_B_ENC_TO_ANGLE(val,calib) LEG_B_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
 
-#define LEG_B_CALIB_VAL				470992673.0
-#define TRAN_B_CALIB_VAL			401167623.0
+#define LEG_B_CALIB_LOC                     	4.450589258
+#define LEG_B_ENC_TO_ANGLE(val,calib) 		LEG_B_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
+
+#define LEG_B_CALIB_VAL                         349044101.0
+#define TRAN_B_CALIB_VAL                        285253415.0
+
 
 #define MAX_LEG_SEG_B_COUNT			139212755
 #define MIN_LEG_SEG_B_COUNT			681805251
@@ -186,9 +188,15 @@
 
 #define SEC_PER_CNT				125E-9
 
-#define ADC_VAL_TO_VOLTAGE(val)			(val * (3.26/255.0))
+#define ADC_VAL_TO_VOLTAGE(val)			(val * (2.68/255.0))
+
 #define THERM_VAL_TO_R(val)			(4700.0/((3.26/(ADC_VAL_TO_VOLTAGE(val))) - 1.0))
-//#define ADC_TO_TEMP(val)			((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_V_TO_R(val)/10000))) - 273.15)
+#define ADC_TO_TEMP(val)			((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_VAL_TO_R(val)/10000))) - 273.15)
+#define THERM_MAX_VAL				39
+
+#define POWER_ADC_TO_V(val)			((ADC_VAL_TO_VOLTAGE(val)*30) - 2)
+#define MOTOR_POWER_MIN				70
+#define LOGIC_POWER_MIN				35
 
 // For GCC running on a 32-bit machine to minimize the size in memory of these structs, the smallest
 // values must come first.  This is important for compatability with the avr-gcc compiled code.
@@ -209,7 +217,6 @@ typedef struct
 typedef struct
 {
 	uint32_t 	encoder[3];
-	uint32_t	encoder_calib[2];
 	uint16_t 	timestep;
 	uint16_t	counter;
 	
