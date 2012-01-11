@@ -188,15 +188,15 @@
 
 #define SEC_PER_CNT				125E-9
 
-#define ADC_VAL_TO_VOLTAGE(val)			(val * (2.68/255.0))
+#define ADC_VAL_TO_VOLTAGE(val)                 (val * (2.68/255.0))
 
-#define THERM_VAL_TO_R(val)			(4700.0/((3.26/(ADC_VAL_TO_VOLTAGE(val))) - 1.0))
-#define ADC_TO_TEMP(val)			((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_VAL_TO_R(val)/10000))) - 273.15)
-#define THERM_MAX_VAL				39
+#define THERM_VAL_TO_R(val)                     (4700.0/((3.26/(ADC_VAL_TO_VOLTAGE(val))) - 1.0))
+#define ADC_TO_TEMP(val)                        ((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_VAL_TO_R(val)/10000))) - 273.15)
+#define THERM_MAX_VAL                           39
 
-#define POWER_ADC_TO_V(val)			((ADC_VAL_TO_VOLTAGE(val)*30) - 2)
-#define MOTOR_POWER_MIN				70
-#define LOGIC_POWER_MIN				35
+#define POWER_ADC_TO_V(val)                     ((ADC_VAL_TO_VOLTAGE(val)*30) - 2)
+#define MOTOR_POWER_MIN                         70
+#define LOGIC_POWER_MIN                         35
 
 // For GCC running on a 32-bit machine to minimize the size in memory of these structs, the smallest
 // values must come first.  This is important for compatability with the avr-gcc compiled code.
@@ -206,10 +206,12 @@
  */
 typedef struct 
 {
+	uint32_t	enc_max;
+	uint32_t	enc_min;
         /** @breif tell the motors what to do */
 	int32_t	motor_torque;
 	uint16_t counter;
-
+	
 	/** @brief tell the medulla what to do */
         uint8_t		command;
 } uControllerInput;
@@ -217,6 +219,7 @@ typedef struct
 typedef struct
 {
 	uint32_t 	encoder[3];
+
 	uint16_t 	timestep;
 	uint16_t	counter;
 	

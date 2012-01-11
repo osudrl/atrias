@@ -20,7 +20,13 @@
 #define ENABLE_TOESW
 #define ENABLE_DEBUG
 #define ENABLE_THERM
+//#define ENABLE_MOTOR_POWER_MONITOR
+#define ENABLE_LOGIC_POWER_MONITOR
+#define ENABLE_DAMPING_REGIONS
 //#define ENABLE_MOTOR_PASSTHROUGH
+
+#define ABS(x)	(((x) < 0) ? -(x) : (x))
+#define DAMPING_INVERSE_P_GAIN 1
 
 uControllerInput in;
 uControllerOutput out;
@@ -56,10 +62,10 @@ int main(void) {
 void init(void) {
 	//******** Init ********
 	// Init DIP switches
-	PORTH.PIN4CTRL = PORT_OPC_PULLUP_g; 
-	PORTH.PIN5CTRL = PORT_OPC_PULLUP_g;
-	PORTH.PIN6CTRL = PORT_OPC_PULLUP_g;
-	PORTH.PIN7CTRL = PORT_OPC_PULLUP_g;
+	PORTH.PIN4CTRL = PORT_OPC_PULLUP_gc; 
+	PORTH.PIN5CTRL = PORT_OPC_PULLUP_gc;
+	PORTH.PIN6CTRL = PORT_OPC_PULLUP_gc;
+	PORTH.PIN7CTRL = PORT_OPC_PULLUP_gc;
 	
 	// Init Limit Switches
 	#ifdef ENABLE_LIMITSW
@@ -73,6 +79,15 @@ void init(void) {
 	#endif
 	
 	// Voltage monitor
+	#ifdef ENABLE_MOTOR_POWER_MONITOR
+	initADC(&ADCB);					// Init ADC
+	initADC_CH(&(ADCB.CH0), 0);		// Configure channel 0 to monitor motor power input
+	#endif
+	
+	#ifdef ENABLE_LOGIC_POWER_MONITOR
+	initADC(&ADCB);					// Init ADC
+	initADC_CH(&(ADCB.CH1), 1);		// Configure channel 1 to monitor logic power input
+	#endif
 	
 	// Motor thermistors
 	#ifdef ENABLE_THERM
@@ -96,7 +111,7 @@ void init(void) {
 	// init the input and output values
 	out.id				= 0;
 	out.state			= 0;
-	out.encoder[0]		= 12;
+	out.encoder[0]		= 0;
 	out.encoder[1]		= 0; 	
 	out.encoder[2]		= 0;
 	out.timestep		= 0;
@@ -107,6 +122,8 @@ void init(void) {
 	out.limitSW			= 0;
 	out.counter			= 0;
 	
+	in.enc_max			= 0;
+	in.enc_min			= 0;
 	in.motor_torque		= 0;
 	in.command			= 0;
 	
@@ -187,6 +204,15 @@ void updateInput(void) {
 	out.thermistor[0] = readADC_CH(ADCA.CH0);
 	out.thermistor[1] = readADC_CH(ADCA.CH1);
 	out.thermistor[2] = readADC_CH(ADCA.CH2);
+	#endif
+	
+	// Read the power monitor ADCs
+	#ifdef ENABLE_MOTOR_POWER_MONITOR
+	out.motor_power = readADC_CH(ADCB.CH0);
+	#endif
+	
+	#ifdef ENABLE_LOGIC_POWER_MONITOR
+	out.logic_power = readADC_CH(ADCB.CH1);
 	#endif
 }
 
@@ -281,6 +307,12 @@ MedullaState state_init(void) {
 		return ERROR;
 	#endif
 	
+	// If the damping regions have not been set, then go back to error
+	#ifdef ENABLE_DAMPING_REGIONS
+	if ((in.enc_max == 0) || (in.enc_min == 0))
+		return ERROR;
+	#endif
+	
 	return INIT;
 }
 
@@ -312,6 +344,43 @@ MedullaState state_run(void) {
 		#endif
 		return ERROR;
 	}
+	#endif
+	
+	// If any of the motor thermistors are over the max temperature, then disable
+	#ifdef ENABLE_THERM
+	if ((out.thermistor[0] <= THERM_MAX_VAL) ||
+		(out.thermistor[1] <= THERM_MAX_VAL) ||
+		(out.thermistor[2] <= THERM_MAX_VAL)) {
+		#ifdef ENABLE_DEBUG
+		printf("Motor Over Temp");
+		#endif
+		return ERROR;
+	}
+	#endif
+	
+	// Check the input voltages agains the minimums
+	#ifdef ENABLE_MOTOR_POWER_MONITOR
+	if (out.motor_power < MOTOR_POWER_MIN) {
+		#ifdef ENABLE_DEBUG
+		printf("Motor power too low");
+		#endif
+		return ERROR;
+	}
+	#endif
+	
+	#ifdef ENABLE_LOGIC_POWER_MONITOR
+	if (out.logic_power < LOGIC_POWER_MIN) {
+		#ifdef ENABLE_DEBUG
+		printf("Logic power too low");
+		#endif
+		return ERROR;
+	}
+	#endif
+	
+	// Make sure the motor output is not inside the damping regions
+	#ifdef ENABLE_DAMPING_REGIONS
+	if ((out.encoder[0] < in.enc_min) || (out.encoder[0] > in.enc_max))
+		return ERROR_DAMPING;
 	#endif
 	
 	return RUN;
@@ -349,6 +418,26 @@ MedullaState state_error_damping(void) {
 	// Update Status LEDs
 	PORTC.OUTCLR = 0b010;
 	PORTC.OUTSET = 0b101;
+	
+	// Run damping controller
+	#ifdef ENABLE_DAMPING_REGIONS
+	static uint32_t prev_encoder_val;
+	
+	// If this is the first call to error_damping, then do nothing because we can't calculate an velocity
+	if (prev_encoder_val != 0) {
+		// If the motor is still moving, then we need to run the damping controller
+		if (ABS(prev_encoder_val - out.encoder[0]) > 10) {
+			int torque  = (prev_encoder_val - out.encoder[0])/(DAMPING_INVERSE_P_GAIN);
+			//if (torque < 0)
+				//setPWM(torque*-1,0,&PORTC,&TCC1,3);
+			//else
+				//setPWM(toruque,1,&PORTC,&TCC1,3);
+		}
+		printf("%d\n",prev_encoder_val - out.encoder[0]);
+	}
+	
+	prev_encoder_val = out.encoder[0];
+	#endif
 	
 	// If a limit switch was hit, stop
 	#ifdef ENABLE_LIMITSW
