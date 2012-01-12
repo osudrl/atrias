@@ -20,7 +20,7 @@
 #define ENABLE_TOESW
 #define ENABLE_DEBUG
 #define ENABLE_THERM
-//#define ENABLE_MOTOR_POWER_MONITOR
+#define ENABLE_MOTOR_POWER_MONITOR
 #define ENABLE_LOGIC_POWER_MONITOR
 #define ENABLE_DAMPING_REGIONS
 //#define ENABLE_MOTOR_PASSTHROUGH
@@ -37,6 +37,18 @@ MedullaState curState;
 
 #ifdef ENABLE_LIMITSW
 int8_t LimitSWCounter;
+#endif
+
+#ifdef ENABLE_THERM
+int8_t ThermistorCounter;
+#endif
+
+#ifdef ENABLE_MOTOR_POWER_MONITOR
+uint16_t	MotorPowerCounter;
+#endif
+
+#ifdef ENABLE_LOGIC_POWER_MONITOR
+uint16_t	LogicPowerCounter;
 #endif
 
 int main(void) {
@@ -131,9 +143,11 @@ void init(void) {
 	PORTC.DIRSET = 0b111;
 	PORTC.OUTSET = 0b111;
 	
+	// We need to wait a little while so the encoders will initilize
+	_delay_ms(1000);
+	
 	#ifdef ENABLE_DEBUG
 	printf("Initilized Hardware\n");
-	_delay_ms(1000);
 	
 	curState = INIT;
 	#endif
@@ -149,8 +163,8 @@ void updateInput(void) {
 	// Handle heartbeat counter, reset step timer if the medulla has been read by computer
 	if (in.counter != out.counter)
 	{
-		setTimeStep(stepTimerValue());
-		resetStepTimer();
+		setTimeStep(timerValue(STEP_TIMER));
+		resetTimer(STEP_TIMER);
 		out.counter = in.counter;
 	}
 	
@@ -247,7 +261,8 @@ void timerOverflow(void) {
 	#endif
 	
 	// set status LED white
-	PORTC.OUTSET = 0b111;
+	PORTC.OUTCLR = 0b111;
+	PORTC.OUTSET = 0b101;
 	
 	while(1) {		
 		// We don't want to recover from this. It was scary.
@@ -270,8 +285,10 @@ MedullaState state_idle(void) {
 	PORTC.OUTCLR = 0b101;
 	PORTC.OUTSET = 0b010;
 	
-	// We are idle, so let's just do nothing
+	// Reset watchdog timer
+	resetTimer(WATCHDOG_TIMER);
 	
+	// We are idle, so let's just do nothing
 	return IDLE;
 }
 
@@ -289,6 +306,9 @@ MedullaState state_init(void) {
 	// Change indicator LED
 	PORTC.OUTCLR = 0b001;
 	PORTC.OUTSET = 0b110;
+	
+	// Reset the watchdog timer
+	resetTimer(WATCHDOG_TIMER);
 	
 	// Reset errors
 	#ifdef ENABLE_LIMITSW
@@ -336,6 +356,9 @@ MedullaState state_run(void) {
 	// Update outputs
 	updateOutput();
 	
+	// Reset watchdog timer
+	resetTimer(WATCHDOG_TIMER);
+	
 	// If a limit switch was hit, stop
 	#ifdef ENABLE_LIMITSW
 	if (out.limitSW != 0) {
@@ -351,6 +374,16 @@ MedullaState state_run(void) {
 	if ((out.thermistor[0] <= THERM_MAX_VAL) ||
 		(out.thermistor[1] <= THERM_MAX_VAL) ||
 		(out.thermistor[2] <= THERM_MAX_VAL)) {
+		// Increment thermistor counter
+		ThermistorCounter++;
+	}
+	else {
+		// Else decrement thermistor counter if it's not already at 0
+		if (ThermistorCounter > 0)
+			ThermistorCounter--;
+	}
+	if (ThermistorCounter > 100) {
+		// If the thermistors have been too hot for too long, then error out
 		#ifdef ENABLE_DEBUG
 		printf("Motor Over Temp");
 		#endif
@@ -360,7 +393,13 @@ MedullaState state_run(void) {
 	
 	// Check the input voltages agains the minimums
 	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	if (out.motor_power < MOTOR_POWER_MIN) {
+	if (out.motor_power < MOTOR_POWER_MIN)
+		MotorPowerCounter++;
+	else {
+		if (MotorPowerCounter > 0)
+			MotorPowerCounter--;
+	}
+	if (MotorPowerCounter > 1000) {
 		#ifdef ENABLE_DEBUG
 		printf("Motor power too low");
 		#endif
@@ -369,7 +408,14 @@ MedullaState state_run(void) {
 	#endif
 	
 	#ifdef ENABLE_LOGIC_POWER_MONITOR
-	if (out.logic_power < LOGIC_POWER_MIN) {
+	if (out.logic_power < LOGIC_POWER_MIN) 
+		LogicPowerCounter++;
+	
+	else {
+		if (LogicPowerCounter > 0)
+			LogicPowerCounter--;
+	}
+	if (LogicPowerCounter > 1000) {
 		#ifdef ENABLE_DEBUG
 		printf("Logic power too low");
 		#endif
@@ -397,6 +443,9 @@ void state_stop(void) {
 	PORTC.OUTCLR = 0b001;
 	PORTC.OUTSET = 0b110;
 	
+	// Reset Watchdog Timer
+	resetTimer(WATCHDOG_TIMER);
+	
 	// Disable Motor
 	#ifdef ENABLE_MOTOR
 	disablePWM(&TCC1);
@@ -418,6 +467,9 @@ MedullaState state_error_damping(void) {
 	// Update Status LEDs
 	PORTC.OUTCLR = 0b010;
 	PORTC.OUTSET = 0b101;
+	
+	// Reset Watchdog Timer
+	resetTimer(WATCHDOG_TIMER);
 	
 	// Run damping controller
 	#ifdef ENABLE_DAMPING_REGIONS
@@ -445,7 +497,7 @@ MedullaState state_error_damping(void) {
 		return ERROR;
 	#endif
 	
-	return ERROR_DAMPING;
+	return ERROR;
 }
 
 MedullaState state_error(void) {
@@ -461,6 +513,9 @@ MedullaState state_error(void) {
 		printf("ERROR\n");
 	curState = ERROR;
 	#endif
+	
+	// Reset watchdog timer
+	resetTimer(WATCHDOG_TIMER);
 	
 	// Update Status LEDss
 	PORTC.OUTCLR = 0b110;

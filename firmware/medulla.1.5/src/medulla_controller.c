@@ -21,12 +21,11 @@ uint8_t			rs_data;
 int8_t			eStop_count;
 
 // Interrupt handeler for the step timer overflow.
-ISR(TCC1_OVF_vect) {
+ISR(TCD1_OVF_vect) {
 	cli();
 	assertEStop();
 	timerOverflow();
-	resetStepTimer();
-	TCC1.INTFLAGS = TCC1.INTFLAGS & 0b11111110;	// Clear the interrupt flags
+	resetTimer(WATCHDOG_TIMER);
 	sei();
 }
 
@@ -46,10 +45,8 @@ void medulla_run(void* in, void* out) {
 	CLK.PSCTRL = 0x00;															// no division on peripheral clocks
 	Config32MHzClock();
 
-	#ifdef ENABLE_DEBUG
 	stdout = &mystdout;															// attach the uart to the stdout for printf
 	initUART(&PORTE,&USARTE0,1152);												// RS232 uart 115.2kb
-	#endif
 	
 	initEStop(&PORTF,0,1);
 	clearEStop();
@@ -58,16 +55,20 @@ void medulla_run(void* in, void* out) {
 	eStop_count = 0;
 	
 	PMIC.CTRL |= PMIC_HILVLEN_bm;
-	sei();	// Enable interrupt
 	
 	currentState = IDLE;
 	
 	//******** Loop ********
-	initStepTimer();
-	stepTimer_Start();
+	timer_Start(WATCHDOG_TIMER,TC_CLKSEL_DIV64_gc);
+	TCD1.INTCTRLA =TC_OVFINTLVL_HI_gc;
+	timer_Start(STEP_TIMER,TC_CLKSEL_DIV4_gc);
+	sei();	// Enable interrupt
 	while(1) {
 		updateInput();
-		setState(currentState);
+		
+		// If the current state is init, then we want to stay in init until the estop has been deasserted
+		if (!(currentState == INIT && checkEStop() == 1))
+			setState(currentState);
 		eCATWriteData(out);
 		eCATReadData(in);
 		

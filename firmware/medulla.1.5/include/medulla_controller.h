@@ -7,10 +7,13 @@
 #include <stdio.h>
 
 #include "ecat.h"
-#include "step_timer.h"
+#include "timer.h"
 #include "estop.h"
 #include "uart.h"
 #include "clock.h"
+
+#define STEP_TIMER		&TCE1
+#define	WATCHDOG_TIMER	&TCD1
 
 typedef enum {IDLE, INIT, RUN, STOP, ERROR_DAMPING, ERROR} MedullaState;
 uint8_t eStop;
