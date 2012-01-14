@@ -310,7 +310,8 @@ MedullaState state_init(void) {
 	// Reset the watchdog timer
 	resetTimer(WATCHDOG_TIMER);
 	
-	// Reset errors
+	// Reset error flags
+	out.error_flags = 0;
 	#ifdef ENABLE_LIMITSW
 	out.limitSW = 0;
 	#endif
@@ -323,8 +324,10 @@ MedullaState state_init(void) {
 	
 	// If a limit switch was hit, stop
 	#ifdef ENABLE_LIMITSW
-	if (out.limitSW != 0)
+	if (out.limitSW != 0) {
+		out.error_flags |= STATUS_LIMITSW;
 		return ERROR;
+	}
 	#endif
 	
 	// If the damping regions have not been set, then go back to error
@@ -365,6 +368,7 @@ MedullaState state_run(void) {
 		#ifdef ENABLE_DEBUG
 		printf("LIMIT SWITCH\n");
 		#endif
+		out.error_flags |= STATUS_LIMITSW;
 		return ERROR;
 	}
 	#endif
@@ -387,6 +391,7 @@ MedullaState state_run(void) {
 		#ifdef ENABLE_DEBUG
 		printf("Motor Over Temp");
 		#endif
+		out.error_flags |= STATUS_OVER_TEMP;
 		return ERROR;
 	}
 	#endif
@@ -403,6 +408,7 @@ MedullaState state_run(void) {
 		#ifdef ENABLE_DEBUG
 		printf("Motor power too low");
 		#endif
+		out.error_flags |= STATUS_MOTOR_VOLTAGE_LOW;
 		return ERROR;
 	}
 	#endif
@@ -419,6 +425,7 @@ MedullaState state_run(void) {
 		#ifdef ENABLE_DEBUG
 		printf("Logic power too low");
 		#endif
+		out.error_flags |= STATUS_LOGIC_VOLTAGE_LOW;
 		return ERROR;
 	}
 	#endif
@@ -471,6 +478,10 @@ MedullaState state_error_damping(void) {
 	// Reset Watchdog Timer
 	resetTimer(WATCHDOG_TIMER);
 	
+	// Set the estop error flag and the motor out of range error flag if we ever get to the error damping state
+	out.error_flags |= STATUS_ESTOP;
+	out.error_flags |= STATUS_MOTOR_OUT_OF_RANGE;
+	
 	// Run damping controller
 	#ifdef ENABLE_DAMPING_REGIONS
 	static uint32_t prev_encoder_val;
@@ -493,8 +504,10 @@ MedullaState state_error_damping(void) {
 	
 	// If a limit switch was hit, stop
 	#ifdef ENABLE_LIMITSW
-	if (out.limitSW != 0)
+	if (out.limitSW != 0) {
+		out.error_flags |= STATUS_LIMITSW;
 		return ERROR;
+	}
 	#endif
 	
 	return ERROR;
@@ -517,9 +530,12 @@ MedullaState state_error(void) {
 	// Reset watchdog timer
 	resetTimer(WATCHDOG_TIMER);
 	
-	// Update Status LEDss
+	// Update Status LEDs
 	PORTC.OUTCLR = 0b110;
 	PORTC.OUTSET = 0b001;
+	
+	// Set the estop error flag if we ever get to the error state
+	out.error_flags |= STATUS_ESTOP;
 
 	return ERROR;
 }

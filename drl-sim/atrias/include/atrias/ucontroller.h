@@ -18,52 +18,18 @@
 #define MEDULLA_HIP_ID 				0xCC
 #define MEDULLA_BOOM_ID				0xDD
 
-// Command bytes.
-// During normal running, the controller should switch between sending the two run mode bytes
-// as its command byte at each timestep.  We can implement watchdog timers to detect if the
-// control computer is operating correctly.  CMD_BAD is a place-holder so the value is never used.
-#define CMD_BAD					0
-#define CMD_RESTART				(1<<0)
-#define CMD_DISABLE				(1<<1)
-#define CMD_RUN					(1<<2)
-#define CMD_RESET				(1<<3)
-#define CMD_RUN_TOGGLE_bm			(1<<6)
-#define CMD_RUN_OK_bm				(1<<7)
-
-// Hip commands - send these in the HIP_MTR_CMD.
-/** @brief command for hip to behave like a pin joint */
-#define HIP_CMD_PIN				0xF0
-
-/** @brief command for hip to be rigid */
-#define HIP_CMD_RIGID				0x00
-
 // Status bits.
 //   If any of the bits in the status byte are set, there is an error in the uController.
 //   The following #defines describe the bit locations of each possible error.
 
-/** @breif  The limit switch was hit. */
-#define STATUS_LIMITSW				(1<<7)
-
-/** @breif  The step timer rolled over. */
-#define STATUS_TCOVF				(1<<6)	
-
-/** @brief  The PWM command was out of range. */
-#define STATUS_BADPWM				(1<<5)
-
-/** @breif  There was a problem wit1h the encoders .*/
-#define STATUS_ENC				(1<<4)
-
-/** @breif  The command received was invalid, or the toggle bit was wrong. */
-#define STATUS_BADCMD				(1<<3)	
-
-/** @breif  Everything is OK, but the uController is in a disabled state */
-#define STATUS_DISABLED				(1<<2) 
-
-/** @breif  The uC is taking control of the motor */
-#define STATUS_DANGER				(1<<1) 
-
-/** @breif  The motor didn't move as expected */
-#define STATUS_BADMOTOR				(1<<0) 
+#define STATUS_ESTOP				(1<<0)
+#define STATUS_LIMITSW				(1<<1)
+#define STATUS_OVER_TEMP			(1<<2)
+#define STATUS_MOTOR_OUT_OF_RANGE	(1<<3)
+#define STATUS_MOTOR_CTRL_DISABLE	(1<<4)
+#define STATUS_MOTOR_VOLTAGE_LOW	(1<<5)
+#define STATUS_LOGIC_VOLTAGE_LOW	(1<<6)
+#define STATUS_ENCODER_ERROR		(1<<7)
 
 /* Sensor values:
 * The Biss-C 32-bit encoders measure the absolute leg segment angles relative to the body, and do not roll over.
