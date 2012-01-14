@@ -90,8 +90,12 @@ Gtk::HScale *test_slider_springDeflectionThreshold;
 Gtk::HScale *test_slider_springDeflectionA;
 Gtk::HScale *test_slider_springDeflectionB;
 
-Gtk::HScale *force_control_p_gain;
-Gtk::HScale *force_control_d_gain;
+Gtk::HScale *force_control_p_gainA;
+Gtk::HScale *force_control_d_gainA;
+Gtk::HScale *force_control_i_gainA;
+Gtk::HScale *force_control_p_gainB;
+Gtk::HScale *force_control_d_gainB;
+Gtk::HScale *force_control_i_gainB;
 Gtk::HScale *force_control_spring_deflection;
 
 Gtk::DrawingArea *drawing_area;

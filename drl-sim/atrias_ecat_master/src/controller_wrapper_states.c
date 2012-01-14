@@ -1,4 +1,4 @@
-/**
+/*
  * @file
  * @author Devin Koepl
  *
@@ -104,12 +104,16 @@ void takedown_shm( void )
 */
 void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput ** uc_out )
 {
-    printk("Thermistor[0]: %d, %d\n", (uc_out[B_INDEX]->thermistor[0]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0])));
-    printk("Thermistor[1]: %d, %d\n", (uc_out[B_INDEX]->thermistor[1]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1])));
-    printk("Thermistor[2]: %d, %d\n", (uc_out[B_INDEX]->thermistor[2]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2])));
+    printk("ThermistorA[0]: %d, %d\n", (uc_out[A_INDEX]->thermistor[0]), (int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0])));
+    printk("ThermistorA[1]: %d, %d\n", (uc_out[A_INDEX]->thermistor[1]), (int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1])));
+    printk("ThermistorA[2]: %d, %d\n", (uc_out[A_INDEX]->thermistor[2]), (int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2])));
+    
+    printk("ThermistorB[0]: %d, %d\n", (uc_out[B_INDEX]->thermistor[0]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0])));
+    printk("ThermistorB[1]: %d, %d\n", (uc_out[B_INDEX]->thermistor[1]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1])));
+    printk("ThermistorB[2]: %d, %d\n", (uc_out[B_INDEX]->thermistor[2]), (int)(ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2])));
 	
-    printk("Motor Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[B_INDEX]->motor_power)));
-    printk("Logic Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power)));
+    printk("Motor Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power)));
+    printk("Logic Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power)));
 
     printk("Motor Encoder A: %d\n",uc_out[A_INDEX]->TRANS_ANGLE);
     printk("Motor Encoder B: %d\n",uc_out[B_INDEX]->TRANS_ANGLE);
@@ -166,6 +170,12 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
 unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i;
+
+    uc_in[A_INDEX]->enc_max = MEDULLA_A_ENC_MAX;
+    uc_in[A_INDEX]->enc_min = MEDULLA_A_ENC_MIN;
+
+    uc_in[B_INDEX]->enc_max = MEDULLA_B_ENC_MAX;
+    uc_in[B_INDEX]->enc_min = MEDULLA_B_ENC_MIN;
 
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
@@ -261,6 +271,14 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     last_leg_angleB        = c_in->leg_angleB;            
 
     c_in->command = shm->controller_data[shm->control_index].command;
+    
+    // Update status variabes
+    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
+    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
+    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
+    
+
+
 
     // Controller update.
     control_switcher_state_machine( c_in, c_out,

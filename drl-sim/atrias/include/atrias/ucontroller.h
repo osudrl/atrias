@@ -83,11 +83,11 @@
 #define BOOM_ROLL_CNT				enc16[2]					
 
 // 32 Bit Encoder defines
-#define ENC_CNT_PER_RAD                       	2.04e8
+#define ENC_PER_CNT				1
 
 // Medulla A sensors:           
 #define LEG_A_CALIB_LOC                         -1.308996694
-#define LEG_A_ENC_TO_ANGLE(val,calib) 		LEG_A_CALIB_LOC + (-1)*(calib - val)/ENC_CNT_PER_RAD
+#define LEG_A_ENC_TO_ANGLE(val,calib) 		LEG_A_CALIB_LOC + (val-calib)*RAD_PER_CNT
 
 #define LEG_A_CALIB_VAL                         354691251.0
 #define TRAN_A_CALIB_VAL                        284556173.0
@@ -101,6 +101,9 @@
 #define MIN_TRAN_A_COUNT			70126263 
 #define MIN_TRAN_A_ANGLE			0.296705973
 #define MAX_TRAN_A_ANGLE			-2.35619449
+
+#define MEDULLA_A_ENC_MAX			563013448
+#define MEDULLA_A_ENC_MIN			124891505
 
 // Medulla B sensors:
 
@@ -120,6 +123,9 @@
 #define MIN_TRAN_B_COUNT			611961703
 #define MIN_TRAN_B_ANGLE			2.84488668
 #define MAX_TRAN_B_ANGLE			5.49778714
+
+#define MEDULLA_B_ENC_MAX			557704303
+#define MEDULLA_B_ENC_MIN			123645104
 
 // These are the rough ranges of motion for the zero force leg segments.
 //  E.g. they are the leg angle counts when the transmission is at the limits

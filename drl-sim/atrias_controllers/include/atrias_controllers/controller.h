@@ -107,6 +107,17 @@ typedef struct {
     unsigned char toe_switch;
 
     unsigned char command;
+
+    unsigned char thermistorA[3];
+    unsigned char thermistorB[3];
+    unsigned char motorVoltageA;
+    unsigned char motorVoltageB;
+    unsigned char logicVoltageA;
+    unsigned char logicVoltageB;
+    unsigned char medullaStatusA;
+    unsigned char medullaStatusB;
+
+
 } ControllerInput;
 
 typedef struct {
@@ -228,13 +239,19 @@ typedef struct {
 } TestControllerState;
 
 typedef struct {
-    float p_gain;
-    float d_gain;
+    float p_gainA;
+    float d_gainA;
+    float i_gainA;
+    float p_gainB;
+    float d_gainB;
+    float i_gainB;
     float spring_deflection;
 } ForceControllerData;
 
 typedef struct {
-    float current_torque;
+    float springDeflectionA[250];
+    float springDeflectionB[250];
+    int ringBufferLocation;
 } ForceControllerState;
 
 // Macros for dereferencing pointers.

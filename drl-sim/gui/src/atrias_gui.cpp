@@ -148,8 +148,12 @@ int main (int argc, char **argv) {
     gui->get_widget("grizzle_motor_gain_hscale", grizzle_motor_gain_hscale);
      */
 
-    gui->get_widget("force_control_p_gain", force_control_p_gain);
-    gui->get_widget("force_control_d_gain", force_control_d_gain);
+    gui->get_widget("force_control_p_gainA", force_control_p_gainA);
+    gui->get_widget("force_control_d_gainA", force_control_d_gainA);
+    gui->get_widget("force_control_i_gainA", force_control_i_gainA);
+    gui->get_widget("force_control_p_gainB", force_control_p_gainB);
+    gui->get_widget("force_control_d_gainB", force_control_d_gainB);
+    gui->get_widget("force_control_i_gainB", force_control_i_gainB);
     gui->get_widget("force_control_spring_deflection", force_control_spring_deflection);
 
     gui->get_widget("drawing_area", drawing_area);
@@ -271,8 +275,12 @@ int main (int argc, char **argv) {
     test_flight_status_image->set(red_image_path);
 
     /* Force Control Tab */
-    force_control_p_gain->set_range(0.0,10000.0);
-    force_control_d_gain->set_range(0.0,300.0);
+    force_control_p_gainA->set_range(0.0,100000.0);
+    force_control_d_gainA->set_range(0.0,300.0);
+    force_control_i_gainA->set_range(0.0,30000.0);
+    force_control_p_gainB->set_range(0.0,100000.0);
+    force_control_d_gainB->set_range(0.0,300.0);
+    force_control_i_gainB->set_range(0.0,30000.0);
     force_control_spring_deflection->set_range(-0.2,0.2);
 
     // Create the path to the data file with the last state of the gui gains.
@@ -584,8 +592,12 @@ bool poke_controller (void) {
             }
             break;
 	case FORCE_CONTROLLER:
-	    ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = force_control_p_gain->get_value();
-            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = force_control_d_gain->get_value();
+	    ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gainA = force_control_p_gainA->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gainA = force_control_d_gainA->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->i_gainA = force_control_i_gainA->get_value();
+	    ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gainB = force_control_p_gainB->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gainB = force_control_d_gainB->get_value();
+            ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->i_gainB = force_control_i_gainB->get_value();
             ((ForceControllerData *) (&(atrias_srv.request.control_data.elems)))->spring_deflection = force_control_spring_deflection->get_value();
 	    break;
     }
