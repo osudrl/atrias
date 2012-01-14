@@ -22,6 +22,7 @@
  * These are still being used by all_in_one_controller_wrapper.cpp
  * Can't build the GUI without these macros. -CJM
  */
+#define CMD_RESTART                             (1<<0)
 #define CMD_DISABLE                             (1<<1)
 #define CMD_RUN                                 (1<<2)
 
