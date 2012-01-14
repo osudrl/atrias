@@ -130,7 +130,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
             last_state = STATE_INIT;
             break;
         case STATE_START:
-            next_state =  state_initialize(uc_in, uc_out, last_state);
+            next_state = state_initialize(uc_in, uc_out, last_state);
             last_state = STATE_START;
             break;
         case STATE_RUN:
@@ -146,13 +146,13 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     }
     
     if ( shm->controller_data[shm->control_index].command == CMD_RESTART )
-        next_state =  STATE_INIT;
+        next_state = STATE_INIT;
 
     // Handle controller data change requests.
     if ( shm->req_switch )
     {
-        shm->control_index     = 1 - shm->control_index;
-        shm->req_switch     = false;
+        shm->control_index = 1 - shm->control_index;
+        shm->req_switch    = false;
     }
 }
 
@@ -201,7 +201,7 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
 // Initialize the encoder counters.
 unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
-   int i;
+    int i;
     shm->controller_state.state = 3;
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
@@ -227,11 +227,9 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
-    int i;
-
     // Create pointers to controller I/O
-    c_in    = &shm->controller_input[shm->io_index];
-    c_out     = &shm->controller_output[shm->io_index];
+    c_in  = &shm->controller_input[shm->io_index];
+    c_out = &shm->controller_output[shm->io_index];
 
     // Generate controller input
     //c_in->leg_angleA       = LEG_A_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE,LEG_A_CALIB_VAL);
@@ -252,16 +250,16 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
     c_in->motor_angleB     = UNDISCRETIZE(
         tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,
-        MIN_TRAN_B_ANGLE, MAX_TRAN_B_ANGLE, MIN_TRAN_B_COUNT, MAX_TRAN_B_COUNT) + TRAN_B_OFF_ANGLE;    
+        MIN_TRAN_B_ANGLE, MAX_TRAN_B_ANGLE, MIN_TRAN_B_COUNT, MAX_TRAN_B_COUNT) + TRAN_B_OFF_ANGLE;
     c_in->motor_velocityA = (c_in->motor_angleA - last_motor_angleA)
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
     c_in->motor_velocityB = (c_in->motor_angleB - last_motor_angleB) 
         / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );
 
     c_in->leg_velocityA = (c_in->leg_angleA - last_leg_angleA)
-        / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );    
+        / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
     c_in->leg_velocityB = (c_in->leg_angleB - last_leg_angleB)
-        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );                   
+        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );
 
     c_in->toe_switch = uc_out[B_INDEX]->toe_switch;
 
@@ -276,13 +274,11 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
     c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
     c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
-    
-
-
 
     // Controller update.
     control_switcher_state_machine( c_in, c_out,
         &shm->controller_state, &shm->controller_data[shm->control_index] );
+
     // Clamp the motor torques.
     c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
     c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
