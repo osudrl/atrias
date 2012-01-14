@@ -18,6 +18,13 @@
 #define MEDULLA_HIP_ID 				0xCC
 #define MEDULLA_BOOM_ID				0xDD
 
+/*
+ * These are still being used by all_in_one_controller_wrapper.cpp
+ * Can't build the GUI without these macros. -CJM
+ */
+#define CMD_DISABLE                             (1<<1)
+#define CMD_RUN                                 (1<<2)
+
 // Status bits.
 //   If any of the bits in the status byte are set, there is an error in the uController.
 //   The following #defines describe the bit locations of each possible error.
