@@ -79,16 +79,16 @@ Gtk::SpinButton *raibert_desired_velocity_spinbutton,
 Gtk::Image *test_motors_status_image;
 Gtk::Image *test_flight_status_image;
 Gtk::Label *test_label;
-Gtk::HScale *test_slider_flightKP;
-Gtk::HScale *test_slider_flightKD;
-Gtk::HScale *test_slider_stanceKP;
-Gtk::HScale *test_slider_stanceKD;
-Gtk::HScale *test_slider_desiredLengthLong;
-Gtk::HScale *test_slider_desiredLengthShort;
-Gtk::HScale *test_slider_toeSwitchThreshold;
-Gtk::HScale *test_slider_springDeflectionThreshold;
-Gtk::HScale *test_slider_springDeflectionA;
-Gtk::HScale *test_slider_springDeflectionB;
+Gtk::HScale *test_slider_flightKP,
+            *test_slider_flightKD,
+            *test_slider_stanceKP,
+            *test_slider_stanceKD,
+            *test_slider_desiredLengthLong,
+            *test_slider_desiredLengthShort,
+            *test_slider_toeSwitchThreshold,
+            *test_slider_springDeflectionThreshold,
+            *test_slider_springDeflectionA,
+            *test_slider_springDeflectionB;
 
 Gtk::HScale *force_control_p_gainA;
 Gtk::HScale *force_control_d_gainA;

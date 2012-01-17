@@ -691,6 +691,40 @@ bool poke_controller (void) {
     sprintf(buffer, "%0.4f", atrias_srv.response.zVelocity);
     zVelDisplay->set_text(buffer);
 
+    /* Update Medula status */
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[0]);
+    MedulaA_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[1]);
+    MedulaA_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[2]);
+    MedulaA_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
+    MedulaA_VMotor->set_text(buffer);
+
+    sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
+    MedulaA_VMotor->set_text(buffer);
+
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[0]);
+    MedulaB_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[1]);
+    MedulaB_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[2]);
+    MedulaB_TempA->set_text(buffer);
+
+    sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
+    MedulaB_VMotor->set_text(buffer);
+
+    sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
+    MedulaB_VMotor->set_text(buffer);
+
+
+
+
     return true;
 }
 

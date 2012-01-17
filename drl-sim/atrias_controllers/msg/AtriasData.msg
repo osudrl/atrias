@@ -22,11 +22,3 @@ uint8 toe_switch
 uint8 command
 float32 motor_torqueA
 float32 motor_torqueB
-uint8[] thermistorA
-uint8[] thermistorB
-uint8 motorVoltageA
-uint8 motorVoltageB
-uint8 logicVoltageA
-uint8 logicVoltageB
-uint8 medullaStatusA
-uint8 medullaStatusB
