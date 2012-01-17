@@ -722,8 +722,38 @@ bool poke_controller (void) {
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
     MedulaB_VMotor->set_text(buffer);
 
+    if (atrias_srv.response.medullaStatusA)
+    {
+        if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
+            MedulaA_Estop->set_markup("<span font_weight=\"ultrabold\" foreground=\"red" 
+                    + MedulaA_Estop->get_text()  +  "</span>");
+
+        /*
+        if (atrias_srv.response.medulaStatusA & STATUS_LIMITSW)
+            MedulaA_LimitSW->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_OVER_TEMP)
+            MedulaA_OverTemp->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
+            MedulaA_MotorRange->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_CTRL_DISABLE)
+            MedulaA_MotorDisabled->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
+            MedulaA_MotorVoltage->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
+            MedulaA_LogicVoltage->set_attributes();
+
+        if (atrias_srv.response.medulaStatusA & STATUS_ENCODER_ERROR)
+            MedulaA_Encoder->set_attributes();
+    */
+            }
 
 
+    /* End Medula status*/
 
     return true;
 }

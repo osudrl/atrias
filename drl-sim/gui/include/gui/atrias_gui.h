@@ -23,32 +23,33 @@ Gtk::Window *window;
 
 Gtk::Notebook *controller_notebook;
 
-std::string red_image_path;
-std::string green_image_path;
+std::string red_image_path, 
+            green_image_path;
 
-Gtk::HScale *motor_torqueA_hscale;
-Gtk::HScale *motor_torqueB_hscale;
+Gtk::HScale *motor_torqueA_hscale,
+            *motor_torqueB_hscale;
 
-Gtk::HScale *motor_positionA_hscale;
-Gtk::HScale *motor_positionB_hscale;
-Gtk::HScale *p_motor_position_hscale;
-Gtk::HScale *d_motor_position_hscale;
+Gtk::HScale *motor_positionA_hscale,
+            *motor_positionB_hscale,
+            *p_motor_position_hscale,
+            *d_motor_position_hscale;
 
-Gtk::HScale *leg_length_torque_hscale;
-Gtk::HScale *leg_angle_torque_hscale;
-Gtk::HScale *leg_length_hscale;
-Gtk::HScale *leg_angle_hscale;
-Gtk::HScale *p_leg_position_hscale;
-Gtk::HScale *d_leg_position_hscale;
-Gtk::SpinButton *p_leg_position_spin;
-Gtk::SpinButton *d_leg_position_spin;
+Gtk::HScale *leg_length_torque_hscale,
+            *leg_angle_torque_hscale,
+            *leg_length_hscale,
+            *leg_angle_hscale,
+            *p_leg_position_hscale,
+            *d_leg_position_hscale;
 
-Gtk::HScale *leg_angle_amplitude_hscale;
-Gtk::HScale *leg_angle_frequency_hscale;
-Gtk::HScale *leg_length_amplitude_hscale;
-Gtk::HScale *leg_length_frequency_hscale;
-Gtk::HScale *p_sine_wave_hscale;
-Gtk::HScale *d_sine_wave_hscale;
+Gtk::SpinButton *p_leg_position_spin, 
+                *d_leg_position_spin;
+
+Gtk::HScale *leg_angle_amplitude_hscale,
+            *leg_angle_frequency_hscale,
+            *leg_length_amplitude_hscale,
+            *leg_length_frequency_hscale,
+            *p_sine_wave_hscale,
+            *d_sine_wave_hscale;
 
 Gtk::Label *raibert_state_label;
 Gtk::HScale *raibert_desired_velocity_hscale,
@@ -63,6 +64,7 @@ Gtk::HScale *raibert_desired_velocity_hscale,
             *raibert_flight_p_gain_hscale,
             *raibert_flight_d_gain_hscale,
             *raibert_flight_spring_threshold_hscale;
+
 Gtk::SpinButton *raibert_desired_velocity_spinbutton,
                 *raibert_desired_height_spinbutton,
                 *raibert_hor_vel_gain_spinbutton,
@@ -76,8 +78,9 @@ Gtk::SpinButton *raibert_desired_velocity_spinbutton,
                 *raibert_flight_d_gain_spinbutton,
                 *raibert_flight_spring_threshold_spinbutton;
 
-Gtk::Image *test_motors_status_image;
-Gtk::Image *test_flight_status_image;
+Gtk::Image  *test_motors_status_image,
+            *test_flight_status_image;
+
 Gtk::Label *test_label;
 Gtk::HScale *test_slider_flightKP,
             *test_slider_flightKD,
@@ -90,56 +93,53 @@ Gtk::HScale *test_slider_flightKP,
             *test_slider_springDeflectionA,
             *test_slider_springDeflectionB;
 
-Gtk::HScale *force_control_p_gainA;
-Gtk::HScale *force_control_d_gainA;
-Gtk::HScale *force_control_i_gainA;
-Gtk::HScale *force_control_p_gainB;
-Gtk::HScale *force_control_d_gainB;
-Gtk::HScale *force_control_i_gainB;
-Gtk::HScale *force_control_spring_deflection;
+Gtk::HScale *force_control_p_gainA,
+            *force_control_d_gainA,
+            *force_control_i_gainA,
+            *force_control_p_gainB,
+            *force_control_d_gainB,
+            *force_control_i_gainB,
+            *force_control_spring_deflection;
 
 Gtk::DrawingArea *drawing_area;
 
-Gtk::ProgressBar *motor_torqueA_progress_bar;
-Gtk::ProgressBar *motor_torqueB_progress_bar;
-
-Gtk::ProgressBar *motor_velocityA_progress_bar;
-Gtk::ProgressBar *motor_velocityB_progress_bar;
+Gtk::ProgressBar *motor_torqueA_progress_bar,
+                 *motor_torqueB_progress_bar,
+                 *motor_velocityA_progress_bar,
+                 *motor_velocityB_progress_bar;
 
 Gtk::CheckButton *log_file_chkbox;
 Gtk::SpinButton *log_frequency_spin;
 Gtk::FileChooserButton *log_file_chooser;
 
-Gtk::Entry *xPosDisplay;
-Gtk::Entry *yPosDisplay;
-Gtk::Entry *zPosDisplay;
+Gtk::Entry  *xPosDisplay,
+            *yPosDisplay,
+            *zPosDisplay,
+            *xVelDisplay,
+            *yVelDisplay,
+            *zVelDisplay,
+            *torqueADisplay,
+            *torqueBDisplay,
+            *velocityADisplay,
+            *velocityBDisplay,
+            *spring_deflection_A_entry,
+            *spring_deflection_B_entry;
 
-Gtk::Entry *xVelDisplay;
-Gtk::Entry *yVelDisplay;
-Gtk::Entry *zVelDisplay;
-
-Gtk::Entry *torqueADisplay;
-Gtk::Entry *torqueBDisplay;
-
-Gtk::Entry *velocityADisplay;
-Gtk::Entry *velocityBDisplay;
-
-Gtk::Entry *spring_deflection_A_entry;
-Gtk::Entry *spring_deflection_B_entry;
-
-Gtk::Button *restart_button;
-Gtk::Button *enable_button;
-Gtk::Button *disable_button;
+Gtk::Button *restart_button,
+            *enable_button,
+            *disable_button;
 
 Cairo::RefPtr<Cairo::Context> cr;
 Gtk::Allocation drawing_allocation;
 
 //FILE *logFile;
 
-ros::ServiceClient atrias_client;
-ros::ServiceClient datalog_client;
-atrias_controllers::atrias_srv atrias_srv;
+ros::ServiceClient  atrias_client,
+                    datalog_client;
+
+atrias_controllers::atrias_srv  atrias_srv; 
 atrias_controllers::data_subscriber_srv data_subscriber_srv;
+
 
 /*
  * Medula Status

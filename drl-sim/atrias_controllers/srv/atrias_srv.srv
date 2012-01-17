@@ -29,3 +29,4 @@ uint8 logicVoltageA
 uint8 logicVoltageB
 uint8 medullaStatusA
 uint8 medullaStatusB
+
