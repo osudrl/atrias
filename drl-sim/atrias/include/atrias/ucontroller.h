@@ -38,6 +38,17 @@
 #define STATUS_MOTOR_VOLTAGE_LOW	(1<<5)
 #define STATUS_LOGIC_VOLTAGE_LOW	(1<<6)
 #define STATUS_ENCODER_ERROR		(1<<7)
+// Command bytes.
+// During normal running, the controller should switch between sending the two run mode bytes
+// as its command byte at each timestep.  We can implement watchdog timers to detect if the
+// control computer is operating correctly.  CMD_BAD is a place-holder so the value is never used.
+#define CMD_BAD                                 0
+#define CMD_RESTART                             (1<<0)
+#define CMD_DISABLE                             (1<<1)
+#define CMD_RUN                                 (1<<2)
+#define CMD_RESET                               (1<<3)
+#define CMD_RUN_TOGGLE_bm                       (1<<6)
+#define CMD_RUN_OK_bm                           (1<<7)
 
 /* Sensor values:
 * The Biss-C 32-bit encoders measure the absolute leg segment angles relative to the body, and do not roll over.
@@ -57,14 +68,17 @@
 #define BOOM_ROLL_CNT				enc16[2]					
 
 // 32 Bit Encoder defines
-#define ENC_PER_CNT				1
+#define RAD_PER_CNT				(4.90451647e-9)
 
 // Medulla A sensors:           
 #define LEG_A_CALIB_LOC                         -1.308996694
-#define LEG_A_ENC_TO_ANGLE(val,calib) 		LEG_A_CALIB_LOC + (val-calib)*RAD_PER_CNT
+#define LEG_A_TRAN_ENC_TO_ANGLE(val) 		LEG_A_CALIB_LOC + (val-TRAN_A_CALIB_VAL)*TRAN_A_RAD_PER_CNT
+#define LEG_A_LEG_ENC_TO_ANGLE(val) 		LEG_A_CALIB_LOC + (val-LEG_A_CALIB_VAL)*LEG_A_RAD_PER_CNT
 
-#define LEG_A_CALIB_VAL                         354691251.0
-#define TRAN_A_CALIB_VAL                        284556173.0
+#define LEG_A_CALIB_VAL                         355011585.0
+#define LEG_A_RAD_PER_CNT			4.9016592164112157e-09
+#define TRAN_A_CALIB_VAL                        284744564.0
+#define TRAN_A_RAD_PER_CNT			4.9009447987843945e-09
 
 #define MIN_LEG_SEG_A_COUNT			134185219
 #define MAX_LEG_SEG_A_COUNT			682343461
@@ -82,10 +96,13 @@
 // Medulla B sensors:
 
 #define LEG_B_CALIB_LOC                     	4.450589258
-#define LEG_B_ENC_TO_ANGLE(val,calib) 		LEG_B_CALIB_LOC + (calib - val)/ENC_CNT_PER_RAD
+#define LEG_B_TRAN_ENC_TO_ANGLE(val) 		LEG_B_CALIB_LOC - (val-TRAN_B_CALIB_VAL)*TRAN_B_RAD_PER_CNT
+#define LEG_B_LEG_ENC_TO_ANGLE(val) 		LEG_B_CALIB_LOC - (val-LEG_B_CALIB_VAL)*LEG_B_RAD_PER_CNT
 
-#define LEG_B_CALIB_VAL                         349044101.0
-#define TRAN_B_CALIB_VAL                        285253415.0
+#define LEG_B_CALIB_VAL                         349365629.0
+#define LEG_B_RAD_PER_CNT			4.9117396941444945e-09
+#define TRAN_B_CALIB_VAL                        285370373.0
+#define TRAN_B_RAD_PER_CNT			4.9113235275589447e-09
 
 
 #define MAX_LEG_SEG_B_COUNT			139212755
@@ -111,8 +128,8 @@
 
 // Need to set these during sensor calibration if you want the spring deflections
 // to be computed accurately.  Add these offsets to the transmission angle.
-#define TRAN_A_OFF_ANGLE			0.0273115
-#define TRAN_B_OFF_ANGLE			0.0265556
+#define TRAN_A_OFF_ANGLE			0.00199723
+#define TRAN_B_OFF_ANGLE			0.00361156
 
 // Hip Medulla sensors:
 #define MIN_HIP_COUNT				0
@@ -199,7 +216,7 @@ typedef struct
 typedef struct
 {
 	uint32_t 	encoder[3];
-
+	
 	uint16_t 	timestep;
 	uint16_t	counter;
 	
