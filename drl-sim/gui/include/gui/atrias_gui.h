@@ -141,6 +141,43 @@ ros::ServiceClient datalog_client;
 atrias_controllers::atrias_srv atrias_srv;
 atrias_controllers::data_subscriber_srv data_subscriber_srv;
 
+/*
+ * Medula Status
+ */
+
+Gtk::Entry  *MedulaA_TempA,
+            *MedulaA_TempB,
+            *MedulaA_TempC,
+            *MedulaA_VLogic,
+            *MedulaA_VMotor;
+
+Gtk::Label  *MedulaA_Estop,
+            *MedulaA_LimitSW,
+            *MedulaA_OverTemp,
+            *MedulaA_MotorRange,
+            *MedulaA_MotorDisabled,
+            *MedulaA_MotorVoltage,
+            *MedulaA_LogicVoltage,
+            *MedulaA_Encoder;
+
+Gtk::Entry  *MedulaB_TempA,
+            *MedulaB_TempB,
+            *MedulaB_TempC,
+            *MedulaB_VLogic,
+            *MedulaB_VMotor;
+
+Gtk::Label  *MedulaB_Estop,
+            *MedulaB_LimitSW,
+            *MedulaB_OverTemp,
+            *MedulaB_MotorRange,
+            *MedulaB_MotorDisabled,
+            *MedulaB_MotorVoltage,
+            *MedulaB_LogicVoltage,
+            *MedulaB_Encoder;
+/*
+ * End Medula Status
+ */
+
 double last_p_gain;
 double last_d_gain;
 
@@ -150,6 +187,7 @@ bool poke_controller( void );
 std::string format_float ( float );
 
 void log_chkbox_toggled( void );
+
 
 void restart_robot( void );
 void enable_motors( void );

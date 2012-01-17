@@ -188,9 +188,44 @@ int main (int argc, char **argv) {
     gui->get_widget("enable_button", enable_button);
     gui->get_widget("disable_button", disable_button);
 
+    /*
+     * This block is for the Medula Status section.
+     */
+    gui->get_widget("MedulaA_TempA",MedulaA_TempA);
+    gui->get_widget("MedulaA_TempB",MedulaA_TempB);
+    gui->get_widget("MedulaA_TempC",MedulaA_TempC);
+    gui->get_widget("MedulaA_VLogic",MedulaA_VLogic);
+    gui->get_widget("MedulaA_VMotor",MedulaA_VMotor);
+    gui->get_widget("MedulaA_Estop",MedulaA_Estop);
+    gui->get_widget("MedulaA_LimitSW",MedulaA_LimitSW);
+    gui->get_widget("MedulaA_OverTemp",MedulaA_OverTemp);
+    gui->get_widget("MedulaA_MotorRange",MedulaA_MotorRange);
+    gui->get_widget("MedulaA_MotorDisabled",MedulaA_MotorDisabled);
+    gui->get_widget("MedulaA_MotorVoltage",MedulaA_MotorVoltage);
+    gui->get_widget("MedulaA_LogicVoltage",MedulaA_LogicVoltage);
+    gui->get_widget("MedulaA_Encoder",MedulaA_Encoder);
+
+    gui->get_widget("MedulaB_TempA",MedulaB_TempA);
+    gui->get_widget("MedulaB_TempB",MedulaB_TempB);
+    gui->get_widget("MedulaB_TempC",MedulaB_TempC);
+    gui->get_widget("MedulaB_VLogic",MedulaB_VLogic);
+    gui->get_widget("MedulaB_VMotor",MedulaB_VMotor);
+    gui->get_widget("MedulaB_Estop",MedulaB_Estop);
+    gui->get_widget("MedulaB_LimitSW",MedulaB_LimitSW);
+    gui->get_widget("MedulaB_OverTemp",MedulaB_OverTemp);
+    gui->get_widget("MedulaB_MotorRange",MedulaB_MotorRange);
+    gui->get_widget("MedulaB_MotorDisabled",MedulaB_MotorDisabled);
+    gui->get_widget("MedulaB_MotorVoltage",MedulaB_MotorVoltage);
+    gui->get_widget("MedulaB_LogicVoltage",MedulaB_LogicVoltage);
+    gui->get_widget("MedulaB_Encoder",MedulaB_Encoder);
+
+
     raibert_state_label->set_label("Initializing");
 
-    // Initialize GUI objects
+    /* 
+     * #region Initialize GUI objects
+     *
+     */
     motor_torqueA_hscale->set_range(MTR_MIN_TRQ, MTR_MAX_TRQ);
     motor_torqueB_hscale->set_range(MTR_MIN_TRQ, MTR_MAX_TRQ);
 
@@ -402,6 +437,11 @@ int main (int argc, char **argv) {
     test_slider_springDeflectionThreshold->set_value(1.0);
     test_slider_springDeflectionA->set_value(0.0);
     test_slider_springDeflectionB->set_value(0.0);
+
+    /*
+     * #end region 
+     *
+     */
 
     drawing_allocation = drawing_area->get_allocation();
     // Connect buttons to functions.
