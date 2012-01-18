@@ -21,12 +21,12 @@ float32 yVelocity
 float32 zVelocity
 float32 horizontal_velocity
 uint8[256] control_state
-uint8[3] thermistorA
-uint8[3] thermistorB
-uint8 motorVoltageA
-uint8 motorVoltageB
-uint8 logicVoltageA
-uint8 logicVoltageB
+float32[3] thermistorA
+float32[3] thermistorB
+float32 motorVoltageA
+float32 motorVoltageB
+float32 logicVoltageA
+float32 logicVoltageB
 uint8 medullaStatusA
 uint8 medullaStatusB
 

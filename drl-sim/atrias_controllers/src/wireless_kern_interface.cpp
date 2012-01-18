@@ -320,6 +320,18 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
     res.xVelocity       = shm->controller_input[shm->io_index - 1].xVelocity;
     res.yVelocity       = shm->controller_input[shm->io_index - 1].yVelocity;
     res.zVelocity       = shm->controller_input[shm->io_index - 1].zVelocity;
+    res.thermistorA[0]  = shm->controller_input[shm->io_index - 1].thermistorA[0];
+    res.thermistorA[1]  = shm->controller_input[shm->io_index - 1].thermistorA[1];
+    res.thermistorA[2]  = shm->controller_input[shm->io_index - 1].thermistorA[2];
+    res.thermistorB[0]  = shm->controller_input[shm->io_index - 1].thermistorB[0];
+    res.thermistorB[1]  = shm->controller_input[shm->io_index - 1].thermistorB[1];
+    res.thermistorB[2]  = shm->controller_input[shm->io_index - 1].thermistorB[2];
+    res.motorVoltageA   = shm->controller_input[shm->io_index - 1].motorVoltageA;
+    res.motorVoltageB   = shm->controller_input[shm->io_index - 1].motorVoltageB;
+    res.logicVoltageA   = shm->controller_input[shm->io_index - 1].logicVoltageA;
+    res.logicVoltageB   = shm->controller_input[shm->io_index - 1].logicVoltageB;
+    res.medullaStatusA  = shm->controller_input[shm->io_index - 1].medullaStatusA;
+    res.medullaStatusB  = shm->controller_input[shm->io_index - 1].medullaStatusB;
 
     res.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
     res.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;

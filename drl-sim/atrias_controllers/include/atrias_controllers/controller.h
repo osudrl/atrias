@@ -108,12 +108,12 @@ typedef struct {
 
     unsigned char command;
 
-    unsigned char thermistorA[3];
-    unsigned char thermistorB[3];
-    unsigned char motorVoltageA;
-    unsigned char motorVoltageB;
-    unsigned char logicVoltageA;
-    unsigned char logicVoltageB;
+    float thermistorA[3];
+    float thermistorB[3];
+    float motorVoltageA;
+    float motorVoltageB;
+    float logicVoltageA;
+    float logicVoltageB;
     unsigned char medullaStatusA;
     unsigned char medullaStatusB;
 

@@ -308,9 +308,22 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->command = shm->controller_data[shm->control_index].command;
     
     // Update status variabes
-    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
-    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
-    c_in->thermistorA[0] = uc_out[A_INDEX]->thermistor[0];
+    c_in->thermistorA[0] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0]);
+    c_in->thermistorA[1] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1]);
+    c_in->thermistorA[2] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2]);
+    c_in->thermistorB[0] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0]);
+    c_in->thermistorB[1] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1]);
+    c_in->thermistorB[2] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2]);
+
+    c_in->motorVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power);
+    c_in->motorVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power);
+                                        
+    c_in->logicVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power);
+    c_in->logicVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power);
+
+    c_in->medullaStatusA = uc_out[A_INDEX]->error_flags;
+    c_in->medullaStatusB = uc_out[B_INDEX]->error_flags;
+
 
     // Controller update.
     control_switcher_state_machine( c_in, c_out,

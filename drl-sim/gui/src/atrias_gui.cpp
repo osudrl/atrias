@@ -696,31 +696,31 @@ bool poke_controller (void) {
     MedulaA_TempA->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[1]);
-    MedulaA_TempA->set_text(buffer);
+    MedulaA_TempB->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[2]);
-    MedulaA_TempA->set_text(buffer);
+    MedulaA_TempC->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
     MedulaA_VMotor->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
-    MedulaA_VMotor->set_text(buffer);
+    MedulaA_VLogic->set_text(buffer);
 
-    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[0]);
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[0]);
     MedulaB_TempA->set_text(buffer);
 
-    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[1]);
-    MedulaB_TempA->set_text(buffer);
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[1]);
+    MedulaB_TempB->set_text(buffer);
 
-    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[2]);
-    MedulaB_TempA->set_text(buffer);
+    sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[2]);
+    MedulaB_TempC->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
     MedulaB_VMotor->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
-    MedulaB_VMotor->set_text(buffer);
+    MedulaB_VLogic->set_text(buffer);
 
     if (atrias_srv.response.medullaStatusA)
     {
