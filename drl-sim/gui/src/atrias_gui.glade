@@ -3180,18 +3180,18 @@ You may only switch controllers with the motors disabled.</property>
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hboxMedulaStatus">
+          <object class="GtkHBox" id="hboxMedullaStatus">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkVBox" id="vboxMedulaA">
+              <object class="GtkVBox" id="vboxMedullaA">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label18">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Medula A Status</property>
+                    <property name="label" translatable="yes">Medulla A Status</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3255,11 +3255,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaA_TempA">
+                              <object class="GtkEntry" id="MedullaA_TempA">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
@@ -3271,11 +3272,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaA_TempB">
+                              <object class="GtkEntry" id="MedullaA_TempB">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
@@ -3289,11 +3291,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaA_TempC">
+                              <object class="GtkEntry" id="MedullaA_TempC">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
@@ -3372,11 +3375,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaA_VLogic">
+                              <object class="GtkEntry" id="MedullaA_VLogic">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
@@ -3388,11 +3392,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaA_VMotor">
+                              <object class="GtkEntry" id="MedullaA_VMotor">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
@@ -3447,101 +3452,11 @@ You may only switch controllers with the motors disabled.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTable" id="tableErrors">
+                      <object class="GtkLabel" id="MedullaA_Errors">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="n_rows">4</property>
-                        <property name="n_columns">2</property>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_Estop">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">EStop Pressed</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_LimitSW">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Limit Switch Hit</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_OverTemp">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Over Temperature</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_MotorRange">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Out of Range</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_MotorDisabled">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Control Disabled</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_MotorVoltage">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Voltage Low</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_LogicVoltage">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Logic Voltage Low</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaA_Encoder">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Encoder Error</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                          </packing>
-                        </child>
+                        <property name="label" translatable="yes">NO ERRORS</property>
+                        <property name="selectable">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3576,14 +3491,14 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vboxMedulaB">
+              <object class="GtkVBox" id="vboxMedullaB">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label31">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Medula B Status</property>
+                    <property name="label" translatable="yes">Medulla B Status</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3647,11 +3562,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaB_TempA">
+                              <object class="GtkEntry" id="MedullaB_TempA">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
@@ -3664,11 +3580,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaB_TempB">
+                              <object class="GtkEntry" id="MedullaB_TempB">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
@@ -3683,11 +3600,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaB_TempC">
+                              <object class="GtkEntry" id="MedullaB_TempC">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
@@ -3767,11 +3685,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaB_VLogic">
+                              <object class="GtkEntry" id="MedullaB_VLogic">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
@@ -3784,11 +3703,12 @@ You may only switch controllers with the motors disabled.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="MedulaB_VMotor">
+                              <object class="GtkEntry" id="MedullaB_VMotor">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
                                 <property name="invisible_char">•</property>
+                                <property name="width_chars">5</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
@@ -3844,101 +3764,11 @@ You may only switch controllers with the motors disabled.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTable" id="tableErrors1">
+                      <object class="GtkLabel" id="MedullaB_Errors">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="n_rows">4</property>
-                        <property name="n_columns">2</property>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_Estop">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">EStop Pressed</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_LimitSW">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Limit Switch Hit</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_OverTemp">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Over Temperature</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_MotorRange">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Out of Range</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_MotorDisabled">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Control Disabled</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_MotorVoltage">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Motor Voltage Low</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_LogicVoltage">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Logic Voltage Low</property>
-                          </object>
-                          <packing>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="MedulaB_Encoder">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Encoder Error</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                          </packing>
-                        </child>
+                        <property name="label" translatable="yes">NO ERRORS</property>
+                        <property name="selectable">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>

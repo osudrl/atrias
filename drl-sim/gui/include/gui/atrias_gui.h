@@ -6,7 +6,7 @@
 #include <cairomm/context.h>
 
 #include <time.h>
-#include <string.h>
+#include <string.h> /* where is this used? */
 
 #include <ros/ros.h>
 
@@ -142,40 +142,27 @@ atrias_controllers::data_subscriber_srv data_subscriber_srv;
 
 
 /*
- * Medula Status
+ * Medulla Status
  */
 
-Gtk::Entry  *MedulaA_TempA,
-            *MedulaA_TempB,
-            *MedulaA_TempC,
-            *MedulaA_VLogic,
-            *MedulaA_VMotor;
+Gtk::Entry  *MedullaA_TempA,
+            *MedullaA_TempB,
+            *MedullaA_TempC,
+            *MedullaA_VLogic,
+            *MedullaA_VMotor;
 
-Gtk::Label  *MedulaA_Estop,
-            *MedulaA_LimitSW,
-            *MedulaA_OverTemp,
-            *MedulaA_MotorRange,
-            *MedulaA_MotorDisabled,
-            *MedulaA_MotorVoltage,
-            *MedulaA_LogicVoltage,
-            *MedulaA_Encoder;
+Gtk::Label  *MedullaA_Error;
 
-Gtk::Entry  *MedulaB_TempA,
-            *MedulaB_TempB,
-            *MedulaB_TempC,
-            *MedulaB_VLogic,
-            *MedulaB_VMotor;
+Gtk::Entry  *MedullaB_TempA,
+            *MedullaB_TempB,
+            *MedullaB_TempC,
+            *MedullaB_VLogic,
+            *MedullaB_VMotor;
 
-Gtk::Label  *MedulaB_Estop,
-            *MedulaB_LimitSW,
-            *MedulaB_OverTemp,
-            *MedulaB_MotorRange,
-            *MedulaB_MotorDisabled,
-            *MedulaB_MotorVoltage,
-            *MedulaB_LogicVoltage,
-            *MedulaB_Encoder;
+Gtk::Label  *MedullaB_Error;
+
 /*
- * End Medula Status
+ * End Medulla Status
  */
 
 double last_p_gain;

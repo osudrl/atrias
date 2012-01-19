@@ -189,35 +189,21 @@ int main (int argc, char **argv) {
     gui->get_widget("disable_button", disable_button);
 
     /*
-     * This block is for the Medula Status section.
+     * This block is for the Medulla Status section.
      */
-    gui->get_widget("MedulaA_TempA",MedulaA_TempA);
-    gui->get_widget("MedulaA_TempB",MedulaA_TempB);
-    gui->get_widget("MedulaA_TempC",MedulaA_TempC);
-    gui->get_widget("MedulaA_VLogic",MedulaA_VLogic);
-    gui->get_widget("MedulaA_VMotor",MedulaA_VMotor);
-    gui->get_widget("MedulaA_Estop",MedulaA_Estop);
-    gui->get_widget("MedulaA_LimitSW",MedulaA_LimitSW);
-    gui->get_widget("MedulaA_OverTemp",MedulaA_OverTemp);
-    gui->get_widget("MedulaA_MotorRange",MedulaA_MotorRange);
-    gui->get_widget("MedulaA_MotorDisabled",MedulaA_MotorDisabled);
-    gui->get_widget("MedulaA_MotorVoltage",MedulaA_MotorVoltage);
-    gui->get_widget("MedulaA_LogicVoltage",MedulaA_LogicVoltage);
-    gui->get_widget("MedulaA_Encoder",MedulaA_Encoder);
+    gui->get_widget("MedullaA_TempA",MedullaA_TempA);
+    gui->get_widget("MedullaA_TempB",MedullaA_TempB);
+    gui->get_widget("MedullaA_TempC",MedullaA_TempC);
+    gui->get_widget("MedullaA_VLogic",MedullaA_VLogic);
+    gui->get_widget("MedullaA_VMotor",MedullaA_VMotor);
+    gui->get_widget("MedullaA_Error",MedullaA_Error);
 
-    gui->get_widget("MedulaB_TempA",MedulaB_TempA);
-    gui->get_widget("MedulaB_TempB",MedulaB_TempB);
-    gui->get_widget("MedulaB_TempC",MedulaB_TempC);
-    gui->get_widget("MedulaB_VLogic",MedulaB_VLogic);
-    gui->get_widget("MedulaB_VMotor",MedulaB_VMotor);
-    gui->get_widget("MedulaB_Estop",MedulaB_Estop);
-    gui->get_widget("MedulaB_LimitSW",MedulaB_LimitSW);
-    gui->get_widget("MedulaB_OverTemp",MedulaB_OverTemp);
-    gui->get_widget("MedulaB_MotorRange",MedulaB_MotorRange);
-    gui->get_widget("MedulaB_MotorDisabled",MedulaB_MotorDisabled);
-    gui->get_widget("MedulaB_MotorVoltage",MedulaB_MotorVoltage);
-    gui->get_widget("MedulaB_LogicVoltage",MedulaB_LogicVoltage);
-    gui->get_widget("MedulaB_Encoder",MedulaB_Encoder);
+    gui->get_widget("MedullaB_TempA",MedullaB_TempA);
+    gui->get_widget("MedullaB_TempB",MedullaB_TempB);
+    gui->get_widget("MedullaB_TempC",MedullaB_TempC);
+    gui->get_widget("MedullaB_VLogic",MedullaB_VLogic);
+    gui->get_widget("MedullaB_VMotor",MedullaB_VMotor);
+    gui->get_widget("MedullaB_Error",MedullaB_Error);
 
 
     raibert_state_label->set_label("Initializing");
@@ -691,69 +677,59 @@ bool poke_controller (void) {
     sprintf(buffer, "%0.4f", atrias_srv.response.zVelocity);
     zVelDisplay->set_text(buffer);
 
-    /* Update Medula status */
+    /* Update Medulla status */
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[0]);
-    MedulaA_TempA->set_text(buffer);
+    MedullaA_TempA->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[1]);
-    MedulaA_TempB->set_text(buffer);
+    MedullaA_TempB->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorA[2]);
-    MedulaA_TempC->set_text(buffer);
+    MedullaA_TempC->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
-    MedulaA_VMotor->set_text(buffer);
+    MedullaA_VMotor->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
-    MedulaA_VLogic->set_text(buffer);
+    MedullaA_VLogic->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[0]);
-    MedulaB_TempA->set_text(buffer);
+    MedullaB_TempA->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[1]);
-    MedulaB_TempB->set_text(buffer);
+    MedullaB_TempB->set_text(buffer);
 
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[2]);
-    MedulaB_TempC->set_text(buffer);
+    MedullaB_TempC->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
-    MedulaB_VMotor->set_text(buffer);
+    MedullaB_VMotor->set_text(buffer);
 
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
-    MedulaB_VLogic->set_text(buffer);
+    MedullaB_VLogic->set_text(buffer);
 
     if (atrias_srv.response.medullaStatusA)
     {
+        std::string error;
+
         if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
-            MedulaA_Estop->set_markup("<span font_weight=\"ultrabold\" foreground=\"red" 
-                    + MedulaA_Estop->get_text()  +  "</span>");
+            error += "EStop Pressed";
 
-        /*
-        if (atrias_srv.response.medulaStatusA & STATUS_LIMITSW)
-            MedulaA_LimitSW->set_attributes();
+        MedullaA_Error->set_text(error);
 
-        if (atrias_srv.response.medulaStatusA & STATUS_OVER_TEMP)
-            MedulaA_OverTemp->set_attributes();
+    }
 
-        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
-            MedulaA_MotorRange->set_attributes();
+    if (atrias_srv.response.medullaStatusB)
+    {
+        std::string error;
 
-        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_CTRL_DISABLE)
-            MedulaA_MotorDisabled->set_attributes();
+        if (atrias_srv.response.medullaStatusB & STATUS_ESTOP)
+            error += "EStop Pressed";
 
-        if (atrias_srv.response.medulaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
-            MedulaA_MotorVoltage->set_attributes();
+        MedullaB_Error->set_text(error);
+    }
 
-        if (atrias_srv.response.medulaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
-            MedulaA_LogicVoltage->set_attributes();
-
-        if (atrias_srv.response.medulaStatusA & STATUS_ENCODER_ERROR)
-            MedulaA_Encoder->set_attributes();
-    */
-            }
-
-
-    /* End Medula status*/
+    /* End Medulla status*/
 
     return true;
 }
