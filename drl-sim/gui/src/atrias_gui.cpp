@@ -710,21 +710,48 @@ bool poke_controller (void) {
 
     if (atrias_srv.response.medullaStatusA)
     {
-        std::string error;
+        Glib::ustring error;
 
         if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
-            error += "EStop Pressed";
+            error += "EStop Pressed ";
+        if (atrias_srv.response.medullaStatusA & STATUS_LIMITSW)
+            error += "Limit Switch ";
+        if (atrias_srv.response.medullaStatusA & STATUS_OVER_TEMP)
+            error += "Motor Over Temperature ";
+        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
+            error += "Motor Out of Range ";
+        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
+            error += "Motor Control Disabled ";
+        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
+            error += "Motor Voltage Low ";
+        if (atrias_srv.response.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
+            error += "Logic Voltage Low ";
+        if (atrias_srv.response.medullaStatusA & STATUS_ENCODER_ERROR)
+            error += "Encoder Error ";
 
         MedullaA_Error->set_text(error);
-
     }
 
     if (atrias_srv.response.medullaStatusB)
     {
-        std::string error;
+        Glib::ustring error;
 
         if (atrias_srv.response.medullaStatusB & STATUS_ESTOP)
-            error += "EStop Pressed";
+            error += "EStop Pressed ";
+        if (atrias_srv.response.medullaStatusB & STATUS_LIMITSW)
+            error += "Limit Switch ";
+        if (atrias_srv.response.medullaStatusB & STATUS_OVER_TEMP)
+            error += "Motor Over Temperature ";
+        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
+            error += "Motor Out of Range ";
+        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
+            error += "Motor Control Disabled ";
+        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
+            error += "Motor Voltage Low ";
+        if (atrias_srv.response.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
+            error += "Logic Voltage Low ";
+        if (atrias_srv.response.medullaStatusB & STATUS_ENCODER_ERROR)
+            error += "Encoder Error ";
 
         MedullaB_Error->set_text(error);
     }
