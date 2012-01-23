@@ -5,11 +5,11 @@
   <object class="GtkWindow" id="atrias_window">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="vboxMaster">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkHBox" id="hbox1">
+          <object class="GtkHBox" id="hboxControls">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -2600,11 +2600,11 @@ You may only switch controllers with the motors disabled.</property>
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hbox2">
+          <object class="GtkHBox" id="hboxReadings">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkVBox" id="vbox6">
+              <object class="GtkVBox" id="vboxPosition">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -2738,7 +2738,7 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox7">
+              <object class="GtkVBox" id="vboxVelocity">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -2869,7 +2869,7 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox8">
+              <object class="GtkVBox" id="vboxTorqVel_A">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -2982,7 +2982,7 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox10">
+              <object class="GtkVBox" id="vboxTorqVel_B">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -3084,14 +3084,53 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox12">
+              <object class="GtkVSeparator" id="vseparator10">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vboxTorqVel_B1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkLabel" id="spring_deflection_A_label">
+                  <object class="GtkVBox" id="vbox1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Spring Deflection A</property>
+                    <child>
+                      <object class="GtkLabel" id="label39">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Spring Deflection A</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="spring_deflection_A_entry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">•</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3100,14 +3139,9 @@ You may only switch controllers with the motors disabled.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="spring_deflection_A_entry">
+                  <object class="GtkProgressBar" id="spring_deflectionA_prpgress_bar">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">•</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
+                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3115,19 +3149,8 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">7</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkVBox" id="vbox14">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkLabel" id="spring_deflection_B_label">
+                  <object class="GtkLabel" id="label40">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Spring Deflection B</property>
@@ -3135,7 +3158,7 @@ You may only switch controllers with the motors disabled.</property>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -3143,6 +3166,7 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
+                    <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <property name="primary_icon_sensitive">True</property>
@@ -3151,7 +3175,18 @@ You may only switch controllers with the motors disabled.</property>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="spring_deflectionABprpgress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
               </object>

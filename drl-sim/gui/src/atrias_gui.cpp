@@ -430,7 +430,9 @@ int main (int argc, char **argv) {
      */
 
     drawing_allocation = drawing_area->get_allocation();
-    // Connect buttons to functions.
+    /*
+     * Connect buttons to functions.
+     */
     log_file_chkbox->signal_toggled().connect(sigc::ptr_fun(log_chkbox_toggled));
     restart_button->signal_clicked().connect(sigc::ptr_fun(restart_robot));
     enable_button->signal_clicked().connect(sigc::ptr_fun(enable_motors));
