@@ -81,7 +81,9 @@
 typedef struct {
     float body_angle;
     float motor_angleA;
+    float motor_angleA_inc;
     float motor_angleB;
+    float motor_angleB_inc;
     float leg_angleA;
     float leg_angleB;
 
@@ -251,6 +253,9 @@ typedef struct {
 typedef struct {
     float springDeflectionA[250];
     float springDeflectionB[250];
+    float velABuf[100];
+    float velBBuf[100];
+    int velBufLoc;
     int ringBufferLocation;
 } ForceControllerState;
 

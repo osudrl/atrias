@@ -57,6 +57,12 @@ int                 hor_vel_index     = 0;
 float               leg_angle;
 float               leg_length;
 
+int		    motorAinc_offset_ticks = 0;
+int		    motorBinc_offset_ticks = 0;
+float		    motorAinc_offset_angle = 0.0;
+float		    motorBinc_offset_angle = 0.0;
+
+
 static unsigned char command = CMD_RUN;
 
 ControllerInput*    c_in;
@@ -146,7 +152,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     encAverage[2] /= 128;
     encAverage[3] /= 128;
 
-    printk("Trans Encoder A: %d\n",(int32_t)uc_out[A_INDEX]->encoder[2]);
+/*    printk("Trans Encoder A: %d\n",(int32_t)uc_out[A_INDEX]->encoder[2]);
     printk("Motor Encoder A: %d\n",encAverage[0]);
     printk("Leg Encoder   A: %d\n",encAverage[1]);
     printk("Spring Deflection A: %d\n\n", (encAverage[0]-TRAN_A_CALIB_VAL)-(encAverage[1]-LEG_A_CALIB_VAL));
@@ -154,7 +160,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     printk("Trans Encoder B: %d\n",(int32_t)uc_out[B_INDEX]->encoder[2]);
     printk("Motor Encoder B: %d\n",encAverage[2]);
     printk("Leg Encoder   B: %d\n\n",encAverage[3]);
-    printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));
+    printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));*/
     // Keep a copy of the states in memory.
     static unsigned char last_state = STATE_INIT;
     static unsigned char next_state = STATE_INIT;
@@ -255,6 +261,11 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     }
 
     // If successful, Medullas are ready to receive restarts.
+    motorAinc_offset_ticks = (int)uc_out[A_INDEX]->encoder[2];
+    motorBinc_offset_ticks = (int)uc_out[B_INDEX]->encoder[2];
+    motorAinc_offset_angle = LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE) - TRAN_A_OFF_ANGLE;
+    motorBinc_offset_angle = LEG_B_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE) - TRAN_B_OFF_ANGLE;
+
     return STATE_RUN;
 
 }
@@ -272,6 +283,9 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->leg_angleB       = LEG_B_LEG_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE);
     c_in->motor_angleA     = LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE) - TRAN_A_OFF_ANGLE;
     c_in->motor_angleB     = LEG_B_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE) - TRAN_B_OFF_ANGLE;
+    
+    c_in->motor_angleA_inc = motorAinc_offset_angle + ((((int)uc_out[A_INDEX]->encoder[2])-motorAinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
+    c_in->motor_angleB_inc = motorBinc_offset_angle + ((((int)uc_out[B_INDEX]->encoder[2])-motorBinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
     /*c_in->leg_angleA        = UNDISCRETIZE(
         uc_out[A_INDEX]->LEG_SEG_ANGLE,
         MAX_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_COUNT, MAX_LEG_SEG_A_COUNT);
@@ -343,7 +357,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
-    return STATE_RUN;
+    return STATE_ERROR;
     
     // Increment and rollover i/o index for datalogging.
     shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;

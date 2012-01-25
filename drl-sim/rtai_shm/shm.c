@@ -39,7 +39,7 @@ MODULE_LICENSE("GPL");
 #define TICK_PERIOD   100000
 #define PERIOD_COUNT  1
 
-#define MEGS	100    
+#define MEGS	150 
 #define SHMNAM  "MYSHM"
 #define SHMSIZ  MEGS*1024*1024
 

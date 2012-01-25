@@ -80,16 +80,6 @@
 #define TRAN_A_CALIB_VAL                        284744564.0
 #define TRAN_A_RAD_PER_CNT			4.9009447987843945e-09
 
-#define MIN_LEG_SEG_A_COUNT			134185219
-#define MAX_LEG_SEG_A_COUNT			682343461
-#define MIN_LEG_SEG_A_ANGLE			0.296705973
-#define MAX_LEG_SEG_A_ANGLE			-2.35619449
-
-#define MAX_TRAN_A_COUNT			617778691
-#define MIN_TRAN_A_COUNT			70126263 
-#define MIN_TRAN_A_ANGLE			0.296705973
-#define MAX_TRAN_A_ANGLE			-2.35619449
-
 #define MEDULLA_A_ENC_MAX			563013448
 #define MEDULLA_A_ENC_MIN			124891505
 
@@ -104,19 +94,11 @@
 #define TRAN_B_CALIB_VAL                        285370373.0
 #define TRAN_B_RAD_PER_CNT			4.9113235275589447e-09
 
-
-#define MAX_LEG_SEG_B_COUNT			139212755
-#define MIN_LEG_SEG_B_COUNT			681805251
-#define MIN_LEG_SEG_B_ANGLE			2.84488668
-#define MAX_LEG_SEG_B_ANGLE			5.49778714
-
-#define MAX_TRAN_B_COUNT			69387705
-#define MIN_TRAN_B_COUNT			611961703
-#define MIN_TRAN_B_ANGLE			2.84488668
-#define MAX_TRAN_B_ANGLE			5.49778714
-
 #define MEDULLA_B_ENC_MAX			557704303
 #define MEDULLA_B_ENC_MIN			123645104
+
+// Defines for incremental encoder
+#define INC_ENCODER_RAD_PER_TICK		((2*PI)/542600.0)
 
 // These are the rough ranges of motion for the zero force leg segments.
 //  E.g. they are the leg angle counts when the transmission is at the limits
@@ -165,8 +147,8 @@
 #define MTR_DIR_bm				(1<<15)
 #define MTR_MIN_TRQ				-50.0
 #define MTR_MAX_TRQ  				50.0
-#define MTR_MAX_TRQ_LIMIT			30.0
-#define MTR_MIN_TRQ_LIMIT			-30.0
+#define MTR_MAX_TRQ_LIMIT			45.0
+#define MTR_MIN_TRQ_LIMIT			-45.0
 #define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900
 #define MTR_ZERO_CNT				0

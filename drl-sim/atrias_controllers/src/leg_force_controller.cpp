@@ -13,6 +13,7 @@ extern void update_leg_force_controller(ControllerInput* input, ControllerOutput
 {	
 	float springASum = 0;
 	float springBSum = 0;
+
 	int i;
 
 	// Put the current spring deflections into the ring buffers
@@ -26,9 +27,12 @@ extern void update_leg_force_controller(ControllerInput* input, ControllerOutput
 		springBSum += FORCE_CONTROLLER_STATE(state)->springDeflectionB[i];
 	}
 
-	output->motor_torqueA = FORCE_CONTROLLER_DATA(data)->p_gainA * (((-1.0)*FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleA - input->leg_angleA)) 
+	float desiredMotorPositionA = input->motor_angleA_inc - (((-1.0)*FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleA - input->leg_angleA));
+	float desiredMotorPositionB = input->motor_angleB_inc - ((FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleB - input->leg_angleB));
+
+	output->motor_torqueA = FORCE_CONTROLLER_DATA(data)->p_gainA * (((-1.0)*FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleA_inc - input->leg_angleA))
 		- FORCE_CONTROLLER_DATA(data)->d_gainA * (input->motor_velocityA) + (FORCE_CONTROLLER_DATA(data)->i_gainA * (springASum/250.0));
-	output->motor_torqueB = FORCE_CONTROLLER_DATA(data)->p_gainB * ((FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleB - input->leg_angleB)) 
+	output->motor_torqueB = FORCE_CONTROLLER_DATA(data)->p_gainB * ((FORCE_CONTROLLER_DATA(data)->spring_deflection) - (input->motor_angleB_inc - input->leg_angleB)) 
 		- FORCE_CONTROLLER_DATA(data)->d_gainB * (input->motor_velocityB) + (FORCE_CONTROLLER_DATA(data)->i_gainB * (springBSum/250.0));
 }
 
