@@ -51,10 +51,10 @@ void medulla_run(void* in, void* out) {
 	initEStop(&PORTF,0,1);
 	clearEStop();
 	init_eCAT();
+	PMIC.CTRL |= PMIC_HILVLEN_bm;
 	init();
 	eStop_count = 0;
 	
-	PMIC.CTRL |= PMIC_HILVLEN_bm;
 	
 	currentState = IDLE;
 	

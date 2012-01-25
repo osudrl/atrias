@@ -13,8 +13,10 @@
 #include "biss_bang.h"
 #include "amp.h"
 #include "adc.h"
+#include "quadrature.h"
 
 #define ENABLE_ENCODERS
+#define ENABLE_INC_ENCODER
 #define ENABLE_LIMITSW
 #define ENABLE_MOTOR
 #define ENABLE_TOESW
@@ -49,6 +51,11 @@ uint16_t	MotorPowerCounter;
 
 #ifdef ENABLE_LOGIC_POWER_MONITOR
 uint16_t	LogicPowerCounter;
+#endif
+
+#ifdef ENABLE_INC_ENCODER
+int32_t	prev_inc_encoder;
+int32_t cur_inc_encoder;
 #endif
 
 int main(void) {
@@ -113,6 +120,11 @@ void init(void) {
 	#ifdef ENABLE_ENCODERS
 	initBiSS_bang(&PORTC,1<<5,1<<6);
 	initBiSS_bang(&PORTF,1<<5,1<<7);
+	#endif
+	
+	#ifdef ENABLE_INC_ENCODER
+	initQuad();
+	prev_inc_encoder = 0;
 	#endif
 	
 	// Init motor controllers for current measurement
@@ -211,6 +223,18 @@ void updateInput(void) {
 		status = readBiSS_bang_motor(biss, &PORTD,1<<5,1<<6);
 	}
 	out.encoder[1] = *((uint32_t*)biss);
+	#endif
+	
+	#ifdef ENABLE_INC_ENCODER
+	cur_inc_encoder = (int32_t)TC_ENC.CNT;
+	if (ABS(cur_inc_encoder - prev_inc_encoder) > 1000) {
+		if ((cur_inc_encoder - prev_inc_encoder) < 0)
+			inc_encoder_base += 0xFFFF;
+		else
+			inc_encoder_base -= 0xFFFF;
+	}
+	out.encoder[2] = (inc_encoder_base + cur_inc_encoder);
+	prev_inc_encoder = cur_inc_encoder;
 	#endif
 	
 	// Read Thermistors
