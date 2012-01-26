@@ -13,10 +13,11 @@
 #endif
 
 // Medulla IDs
-#define MEDULLA_A_ID 				0xAA
-#define MEDULLA_B_ID 				0xBB
-#define MEDULLA_HIP_ID 				0xCC
-#define MEDULLA_BOOM_ID				0xDD
+#define MEDULLA_A_ID 				0b0000
+#define MEDULLA_B_ID 				0b0001
+#define MEDULLA_HIP_ID 				0b1000
+#define MEDULLA_BOOM_ID				0b1001
+#define MEDULLA_LEG_BM				0b1000
 
 /*
  * These are still being used by all_in_one_controller_wrapper.cpp

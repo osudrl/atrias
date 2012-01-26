@@ -9,54 +9,30 @@
 #include <util/delay.h>
 
 #include "medulla_controller.h"
-#include "limitSW.h"
-#include "biss_bang.h"
-#include "amp.h"
-#include "adc.h"
-#include "quadrature.h"
+#include "medulla_leg.h"
+#include "medulla_hip.h"
+#include "medulla_boom.h"
 
-#define ENABLE_ENCODERS
-#define ENABLE_INC_ENCODER
-#define ENABLE_LIMITSW
-#define ENABLE_MOTOR
-#define ENABLE_TOESW
 #define ENABLE_DEBUG
-#define ENABLE_THERM
-#define ENABLE_MOTOR_POWER_MONITOR
-#define ENABLE_LOGIC_POWER_MONITOR
-#define ENABLE_DAMPING_REGIONS
 //#define ENABLE_MOTOR_PASSTHROUGH
-
-#define ABS(x)	(((x) < 0) ? -(x) : (x))
-#define DAMPING_INVERSE_P_GAIN 1
 
 uControllerInput in;
 uControllerOutput out;
 
-#ifdef ENABLE_DEBUG
-MedullaState curState;
-#endif
+void (*initilize_pntr)(void);
+void (*updateInput_pntr)(uControllerInput *in, uControllerOutput *out);
+void (*updateOutput_pntr)(uControllerInput *in, uControllerOutput *out);
+void (*overflow_pntr)(void);
 
-#ifdef ENABLE_LIMITSW
-int8_t LimitSWCounter;
-#endif
+// **** State Machine ****
 
-#ifdef ENABLE_THERM
-int8_t ThermistorCounter;
-#endif
+MedullaState (*idle_pntr)(uControllerInput *in, uControllerOutput *out);
+MedullaState (*init_pntr)(uControllerInput *in, uControllerOutput *out);
+MedullaState (*run_pntr)(uControllerInput *in, uControllerOutput *out);
+void (*stop_pntr)(uControllerInput *in, uControllerOutput *out);
+MedullaState (*error_damping_pntr)(uControllerInput *in, uControllerOutput *out);
+MedullaState (*error_pntr)(void);
 
-#ifdef ENABLE_MOTOR_POWER_MONITOR
-uint16_t	MotorPowerCounter;
-#endif
-
-#ifdef ENABLE_LOGIC_POWER_MONITOR
-uint16_t	LogicPowerCounter;
-#endif
-
-#ifdef ENABLE_INC_ENCODER
-int32_t	prev_inc_encoder;
-int32_t cur_inc_encoder;
-#endif
 
 int main(void) {
 	#ifdef ENABLE_MOTOR_PASSTHROUGH
@@ -86,54 +62,58 @@ void init(void) {
 	PORTH.PIN6CTRL = PORT_OPC_PULLUP_gc;
 	PORTH.PIN7CTRL = PORT_OPC_PULLUP_gc;
 	
-	// Init Limit Switches
-	#ifdef ENABLE_LIMITSW
-	initLimitSW(&PORTK);
-	LimitSWCounter = 0;
-	#endif
-	
-	// Init Toe Switch
-	#ifdef ENABLE_TOESW
-	PORTA.PIN4CTRL = PORT_OPC_PULLUP_gc;
-	#endif
-	
-	// Voltage monitor
-	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	initADC(&ADCB);					// Init ADC
-	initADC_CH(&(ADCB.CH0), 0);		// Configure channel 0 to monitor motor power input
-	#endif
-	
-	#ifdef ENABLE_LOGIC_POWER_MONITOR
-	initADC(&ADCB);					// Init ADC
-	initADC_CH(&(ADCB.CH1), 1);		// Configure channel 1 to monitor logic power input
-	#endif
-	
-	// Motor thermistors
-	#ifdef ENABLE_THERM
-	initADC(&ADCA);					// Init ADC
-	initADC_CH(&(ADCA.CH0), 1);		// Configure channels 0, 1, and 2 for monitoring the thermistors
-	initADC_CH(&(ADCA.CH1), 2);
-	initADC_CH(&(ADCA.CH2), 3);
-	#endif
-	
-	// Init Encoders
-	#ifdef ENABLE_ENCODERS
-	initBiSS_bang(&PORTC,1<<5,1<<6);
-	initBiSS_bang(&PORTF,1<<5,1<<7);
-	#endif
-	
-	#ifdef ENABLE_INC_ENCODER
-	initQuad();
-	prev_inc_encoder = 0;
-	#endif
-	
-	// Init motor controllers for current measurement
-	#ifdef ENABLE_MOTOR
-	initAmp(&USARTF0,&PORTF,&PORTC,&TCC1,&HIRESC,4,3);
-	#endif
-	
+	// link the function pointers to the functions for the current medulla
+	if ((PORTH.IN>>4) | MEDULLA_LEG_BM) {
+		// This is a leg medulla, we don't really care which one, we will
+		// just send the address to the computer and have it figure it out
+		initilize_pntr = initilize_leg;
+		updateInput_pntr = updateInput_leg;
+		updateOutput_pntr = updateOutput_leg;
+		overflow_pntr = overflow_leg;
+		idle_pntr = idle_leg;
+		init_pntr = init_leg;
+		run_pntr = run_leg;
+		stop_pntr = stop_leg;
+		error_damping_pntr = error_damping_leg;
+		error_pntr = error_leg;
+		
+		// set the ID in the ethercat output struct
+		out.id = PORTH.IN>>4;
+	}
+	else if ((PORTH.IN>>4) == MEDULLA_HIP_ID) {
+		// This is a hip medulla
+		initilize_pntr = initilize_hip;
+		updateInput_pntr = updateInput_hip;
+		updateOutput_pntr = updateOutput_hip;
+		overflow_pntr = overflow_hip;
+		idle_pntr = idle_hip;
+		init_pntr = init_hip;
+		run_pntr = run_hip;
+		stop_pntr = stop_hip;
+		error_damping_pntr = error_damping_hip;
+		error_pntr = error_hip;
+		
+		// set the ID in the ethercat output struct
+		out.id = MEDULLA_HIP_ID;
+	}
+	else if ((PORTH.IN>>4) == MEDULLA_BOOM_ID) {
+		// This is a boom medulla
+		initilize_pntr = initilize_boom;
+		updateInput_pntr = updateInput_boom;
+		updateOutput_pntr = updateOutput_boom;
+		overflow_pntr = overflow_boom;
+		idle_pntr = idle_boom;
+		init_pntr = init_boom;
+		run_pntr = run_boom;
+		stop_pntr = stop_boom;
+		error_damping_pntr = error_damping_boom;
+		error_pntr = error_boom;
+		
+		// set the ID in the ethercat output struct
+		out.id = MEDULLA_BOOM_ID;
+	}
+		
 	// init the input and output values
-	out.id				= 0;
 	out.state			= 0;
 	out.encoder[0]		= 0;
 	out.encoder[1]		= 0; 	
@@ -155,8 +135,8 @@ void init(void) {
 	PORTC.DIRSET = 0b111;
 	PORTC.OUTSET = 0b111;
 	
-	// We need to wait a little while so the encoders will initilize
-	_delay_ms(1000);
+	// Initilize the hardware connected to this particular medulla
+	initilize_pntr();
 	
 	#ifdef ENABLE_DEBUG
 	printf("Initilized Hardware\n");
@@ -167,100 +147,7 @@ void init(void) {
 
 	
 void updateInput(void) {
-	#ifdef ENABLE_ENCODERS
-	uint8_t	biss[4];
-	uint8_t status;
-	#endif
-	
-	// Handle heartbeat counter, reset step timer if the medulla has been read by computer
-	if (in.counter != out.counter)
-	{
-		setTimeStep(timerValue(STEP_TIMER));
-		resetTimer(STEP_TIMER);
-		out.counter = in.counter;
-	}
-	
-	// Check Limit Switches
-	#ifdef ENABLE_LIMITSW
-	if (checkLimitSW() != 0)
-		LimitSWCounter++;
-	else if ((checkLimitSW() == 0) && (LimitSWCounter > 0))
-		LimitSWCounter--;
-	if (LimitSWCounter > 100)
-		out.limitSW = checkLimitSW();
-	#endif
-	
-	// Check Toe Switch
-	#ifdef ENABLE_TOESW
-	if ((PORTA.IN & 1<<4) == 0) 
-		// If the to switch is not pressed
-		out.toe_switch = 0;
-	else
-		// If the toe switch is pressed
-		out.toe_switch = 1;
-	#endif
-	
-	#ifdef ENABLE_MOTOR_DEBUG
-	if (USARTE0.STATUS&USART_RXCIF_bm)
-			UARTWriteChar(&USARTF0, USARTE0.DATA);
-	if (USARTF0.STATUS&USART_RXCIF_bm)
-		UARTWriteChar(&USARTE0, USARTF0.DATA);
-	#endif
-	
-	#ifdef ENABLE_ENCODERS
-	// Read Motor Encoder
-	status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
-	// Check if the BiSS read was valid
-	while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
-		status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
-	}
-	out.encoder[0] = *((uint32_t*)biss);
-	
-	// Read Leg Encoder
-	status = readBiSS_bang_motor(biss, &PORTC,1<<5,1<<6);
-	// Check if the BiSS read was valid
-	while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
-		status = readBiSS_bang_motor(biss, &PORTD,1<<5,1<<6);
-	}
-	out.encoder[1] = *((uint32_t*)biss);
-	#endif
-	
-	#ifdef ENABLE_INC_ENCODER
-	cur_inc_encoder = (int32_t)TC_ENC.CNT;
-	if (ABS(cur_inc_encoder - prev_inc_encoder) > 1000) {
-		if ((cur_inc_encoder - prev_inc_encoder) < 0)
-			inc_encoder_base += 0xFFFF;
-		else
-			inc_encoder_base -= 0xFFFF;
-	}
-	out.encoder[2] = (inc_encoder_base + cur_inc_encoder);
-	prev_inc_encoder = cur_inc_encoder;
-	#endif
-	
-	// Read Thermistors
-	#ifdef ENABLE_THERM
-	out.thermistor[0] = readADC_CH(ADCA.CH0);
-	out.thermistor[1] = readADC_CH(ADCA.CH1);
-	out.thermistor[2] = readADC_CH(ADCA.CH2);
-	#endif
-	
-	// Read the power monitor ADCs
-	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	out.motor_power = readADC_CH(ADCB.CH0);
-	#endif
-	
-	#ifdef ENABLE_LOGIC_POWER_MONITOR
-	out.logic_power = readADC_CH(ADCB.CH1);
-	#endif
-}
-
-void updateOutput(void) {
-	#ifdef ENABLE_MOTOR
-	if (in.motor_torque < 1)
-		setPWM(in.motor_torque*-1,0,&PORTC,&TCC1,3);
-	else
-		setPWM(in.motor_torque,1,&PORTC,&TCC1,3);
-	#endif
+	updateInput_pntr(&in,&out);
 }
 
 void setTimeStep(uint16_t time) {
@@ -280,9 +167,7 @@ void timerOverflow(void) {
 	printf("Overflow\n");
 	#endif
 	
-	#ifdef ENABLE_MOTOR
-	disablePWM(&TCC1);
-	#endif
+	overflow_pntr();
 	
 	// set status LED white
 	PORTC.OUTCLR = 0b111;
@@ -313,7 +198,7 @@ MedullaState state_idle(void) {
 	resetTimer(WATCHDOG_TIMER);
 	
 	// We are idle, so let's just do nothing
-	return IDLE;
+	return idle_pntr(&in,&out);
 }
 
 MedullaState state_init(void) {
@@ -336,31 +221,8 @@ MedullaState state_init(void) {
 	
 	// Reset error flags
 	out.error_flags = 0;
-	#ifdef ENABLE_LIMITSW
-	out.limitSW = 0;
-	#endif
 	
-	// Enable the amplifier
-	#ifdef ENABLE_MOTOR
-	enableAmp(&USARTF0);
-	enablePWM(&TCC1);
-	#endif
-	
-	// If a limit switch was hit, stop
-	#ifdef ENABLE_LIMITSW
-	if (out.limitSW != 0) {
-		out.error_flags |= STATUS_LIMITSW;
-		return ERROR;
-	}
-	#endif
-	
-	// If the damping regions have not been set, then go back to error
-	#ifdef ENABLE_DAMPING_REGIONS
-	if ((in.enc_max == 0) || (in.enc_min == 0))
-		return ERROR;
-	#endif
-	
-	return INIT;
+	return init_pntr(&in,&out);
 }
 
 MedullaState state_run(void) {
@@ -381,86 +243,11 @@ MedullaState state_run(void) {
 	PORTC.OUTSET = 0b100;
 	
 	// Update outputs
-	updateOutput();
+	updateOutput_pntr(&in,&out);
 	
 	// Reset watchdog timer
 	resetTimer(WATCHDOG_TIMER);
-	
-	// If a limit switch was hit, stop
-	#ifdef ENABLE_LIMITSW
-	if (out.limitSW != 0) {
-		#ifdef ENABLE_DEBUG
-		printf("LIMIT SWITCH\n");
-		#endif
-		out.error_flags |= STATUS_LIMITSW;
-		return ERROR;
-	}
-	#endif
-	
-	// If any of the motor thermistors are over the max temperature, then disable
-	#ifdef ENABLE_THERM
-	if ((out.thermistor[0] <= THERM_MAX_VAL) ||
-		(out.thermistor[1] <= THERM_MAX_VAL) ||
-		(out.thermistor[2] <= THERM_MAX_VAL)) {
-		// Increment thermistor counter
-		ThermistorCounter++;
-	}
-	else {
-		// Else decrement thermistor counter if it's not already at 0
-		if (ThermistorCounter > 0)
-			ThermistorCounter--;
-	}
-	if (ThermistorCounter > 100) {
-		// If the thermistors have been too hot for too long, then error out
-		#ifdef ENABLE_DEBUG
-		printf("Motor Over Temp");
-		#endif
-		out.error_flags |= STATUS_OVER_TEMP;
-		return ERROR;
-	}
-	#endif
-	
-	// Check the input voltages agains the minimums
-	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	if (out.motor_power < MOTOR_POWER_MIN)
-		MotorPowerCounter++;
-	else {
-		if (MotorPowerCounter > 0)
-			MotorPowerCounter--;
-	}
-	if (MotorPowerCounter > 1000) {
-		#ifdef ENABLE_DEBUG
-		printf("Motor power too low");
-		#endif
-		out.error_flags |= STATUS_MOTOR_VOLTAGE_LOW;
-		return ERROR;
-	}
-	#endif
-	
-	#ifdef ENABLE_LOGIC_POWER_MONITOR
-	if (out.logic_power < LOGIC_POWER_MIN) 
-		LogicPowerCounter++;
-	
-	else {
-		if (LogicPowerCounter > 0)
-			LogicPowerCounter--;
-	}
-	if (LogicPowerCounter > 1000) {
-		#ifdef ENABLE_DEBUG
-		printf("Logic power too low");
-		#endif
-		out.error_flags |= STATUS_LOGIC_VOLTAGE_LOW;
-		return ERROR;
-	}
-	#endif
-	
-	// Make sure the motor output is not inside the damping regions
-	#ifdef ENABLE_DAMPING_REGIONS
-	if ((out.encoder[0] < in.enc_min) || (out.encoder[0] > in.enc_max))
-		return ERROR_DAMPING;
-	#endif
-	
-	return RUN;
+	return run_pntr(&in,&out);
 }
 
 void state_stop(void) {	
@@ -476,12 +263,7 @@ void state_stop(void) {
 	
 	// Reset Watchdog Timer
 	resetTimer(WATCHDOG_TIMER);
-	
-	// Disable Motor
-	#ifdef ENABLE_MOTOR
-	disablePWM(&TCC1);
-	#endif
-
+	stop_pntr(&in,&out);
 }
 
 MedullaState state_error_damping(void) {
@@ -506,44 +288,11 @@ MedullaState state_error_damping(void) {
 	out.error_flags |= STATUS_ESTOP;
 	out.error_flags |= STATUS_MOTOR_OUT_OF_RANGE;
 	
-	// Run damping controller
-	#ifdef ENABLE_DAMPING_REGIONS
-	static uint32_t prev_encoder_val;
-	
-	// If this is the first call to error_damping, then do nothing because we can't calculate an velocity
-	if (prev_encoder_val != 0) {
-		// If the motor is still moving, then we need to run the damping controller
-		if (ABS(prev_encoder_val - out.encoder[0]) > 10) {
-			int torque  = (prev_encoder_val - out.encoder[0])/(DAMPING_INVERSE_P_GAIN);
-			//if (torque < 0)
-				//setPWM(torque*-1,0,&PORTC,&TCC1,3);
-			//else
-				//setPWM(toruque,1,&PORTC,&TCC1,3);
-		}
-		printf("%d\n",prev_encoder_val - out.encoder[0]);
-	}
-	
-	prev_encoder_val = out.encoder[0];
-	#endif
-	
-	// If a limit switch was hit, stop
-	#ifdef ENABLE_LIMITSW
-	if (out.limitSW != 0) {
-		out.error_flags |= STATUS_LIMITSW;
-		return ERROR;
-	}
-	#endif
-	
-	return ERROR;
+	return error_damping_pntr(&in,&out);
 }
 
 MedullaState state_error(void) {
 	// - State: ERROR
-	//   * Disable motors
-	
-	#ifdef ENABLE_MOTOR
-	disablePWM(&TCC1);
-	#endif
 	
 	#ifdef ENABLE_DEBUG
 	if (curState != ERROR)
@@ -561,5 +310,5 @@ MedullaState state_error(void) {
 	// Set the estop error flag if we ever get to the error state
 	out.error_flags |= STATUS_ESTOP;
 
-	return ERROR;
+	return error_pntr();
 }

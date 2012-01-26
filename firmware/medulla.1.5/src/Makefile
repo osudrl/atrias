@@ -80,7 +80,7 @@ OBJDIR = .
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = quadrature.c adc.c amp.c biss.c clock.c uart.c ecat.c timer.c estop.c medulla_controller.c $(TARGET).c 
+SRC = medulla_leg.c quadrature.c adc.c amp.c biss.c limitSW.c clock.c uart.c ecat.c timer.c estop.c medulla_controller.c $(TARGET).c 
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
