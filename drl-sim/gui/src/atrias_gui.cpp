@@ -314,7 +314,7 @@ int main (int argc, char **argv) {
     gui_state_file = gui_state_file.append("/src/gui_last_state.dat");
 
     // Set the gains in the gui according to their last values.
-    /*FILE *gui_state_fp = fopen (gui_state_file.c_str(), "r");
+   /* FILE *gui_state_fp = fopen (gui_state_file.c_str(), "r");
           float read_val;
 
           if ( fscanf(gui_state_fp, "Motor Position P Gain: %f\n", &read_val) < 1 )
@@ -327,7 +327,7 @@ int main (int argc, char **argv) {
                   ROS_WARN("Gui state file read error.");
           }
           d_motor_position_hscale->set_value(read_val);
-          if ( fscanf(gzVelDisplayui_state_fp, "Leg Position P Gain: %f\n", &read_val) < 1 )
+          if ( fscanf(zVelDisplayui_state_fp, "Leg Position P Gain: %f\n", &read_val) < 1 )
           {
                   ROS_WARN("Gui state file read error.");
           }
@@ -346,7 +346,7 @@ int main (int argc, char **argv) {
           {
                   ROS_WARN("Gui state file read error.");
           }
-          d_sine_wave_h
+          d_sine_wave_hscale->set_value(read_val);
           ROS_INFO("initialized!");scale->set_value(read_val);
           if ( fscanf(gui_state_fp, "Raibert Velocity Gain: %f\n", &read_val) < 1 )
           {
@@ -361,8 +361,8 @@ int main (int argc, char **argv) {
           raibert_leg_force_gain_hscale->set_value(read_val);
           if ( fscanf(gui_state_fp, "Raibert Leg TD Angle Gain: %f\n", &read_val) < 1 )
           {
-                  ("zVelDisplay", zVROS_WARN("Gui state file read error.");
-          }uri
+                  VROS_WARN("Gui state file read error.");
+          }
           raibert_hor_vel_gain_hscale->set_value(read_val);
           if ( fscanf(gui_state_fp, "Raibert P Gain: %f\n", &read_val) < 1 )
           {
@@ -380,8 +380,8 @@ int main (int argc, char **argv) {
           }
           raibert_stance_spring_threshold_hscale->set_value(read_val);
 
-    fclose (gui_state_fp);*/
-
+    fclose (gui_state_fp);
+*/
 	// Leg position tab default values
     leg_length_hscale->set_value(0.9);
     leg_angle_hscale->set_value(PI/2);
@@ -449,7 +449,7 @@ int main (int argc, char **argv) {
     gtk.run(*window);
 
     // Store the final state of the gui.
-    /*gui_state_fp = fopen(gui_state_file.c_str(), "w");
+/*    gui_state_fp = fopen(gui_state_file.c_str(), "w");
 
     fprintf(gui_state_fp, "Motor Position P Gain: %f\n", p_motor_position_hscale->get_value());
     fprintf(gui_state_fp, "Motor Position D Gain: %f\n", d_motor_position_hscale->get_value());

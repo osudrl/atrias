@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
-  <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="atrias_window">
     <property name="can_focus">False</property>
     <child>
@@ -179,8 +178,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -231,8 +228,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -419,8 +414,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -447,8 +440,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char">●</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                             <property name="digits">2</property>
                           </object>
                           <packing>
@@ -500,8 +491,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -528,8 +517,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char">●</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                             <property name="digits">2</property>
                           </object>
                           <packing>
@@ -697,8 +684,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -749,8 +734,6 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="invisible_char_set">True</property>
                             <property name="primary_icon_activatable">False</property>
                             <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -1104,8 +1087,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                         <property name="numeric">True</property>
                       </object>
@@ -1123,8 +1104,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1141,8 +1120,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1159,8 +1136,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1177,8 +1152,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1195,8 +1168,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1213,8 +1184,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1231,8 +1200,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1249,8 +1216,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1267,8 +1232,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1285,8 +1248,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -1303,8 +1264,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
@@ -2087,7 +2046,6 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkHScale" id="force_control_p_gainA">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="update_policy">discontinuous</property>
                             <property name="digits">-1</property>
                           </object>
                           <packing>
@@ -2165,7 +2123,6 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkHScale" id="force_control_p_gainB">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="update_policy">discontinuous</property>
                             <property name="digits">-1</property>
                           </object>
                           <packing>
@@ -2514,8 +2471,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="caps_lock_warning">False</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                                 <property name="snap_to_ticks">True</property>
                                 <property name="numeric">True</property>
                               </object>
@@ -2549,7 +2504,6 @@ You may only switch controllers with the motors disabled.</property>
                           <object class="GtkFileChooserButton" id="log_file_chooser">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="extension_events">all</property>
                             <property name="action">save</property>
                             <property name="do_overwrite_confirmation">True</property>
                             <property name="title" translatable="yes">Select A Log File</property>
@@ -2641,8 +2595,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2681,8 +2633,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2701,8 +2651,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2797,8 +2745,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2814,8 +2760,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2833,8 +2777,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -2897,8 +2839,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2943,8 +2883,6 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="invisible_char">●</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3010,8 +2948,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3056,8 +2992,6 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="invisible_char">●</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3122,8 +3056,6 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -3139,7 +3071,7 @@ You may only switch controllers with the motors disabled.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="spring_deflectionA_prpgress_bar">
+                  <object class="GtkProgressBar" id="spring_deflectionA_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -3169,8 +3101,6 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -3179,7 +3109,7 @@ You may only switch controllers with the motors disabled.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="spring_deflectionABprpgress_bar">
+                  <object class="GtkProgressBar" id="spring_deflectionB_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -3298,8 +3228,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3315,8 +3243,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3334,8 +3260,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3418,8 +3342,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3435,8 +3357,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="width_chars">5</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3487,7 +3407,7 @@ You may only switch controllers with the motors disabled.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="MedullaA_Errors">
+                      <object class="GtkLabel" id="MedullaA_Error">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">NO ERRORS</property>
@@ -3606,8 +3526,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3624,8 +3542,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3644,8 +3560,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3729,8 +3643,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3747,8 +3659,6 @@ You may only switch controllers with the motors disabled.</property>
                                 <property name="invisible_char_set">True</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3799,7 +3709,7 @@ You may only switch controllers with the motors disabled.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="MedullaB_Errors">
+                      <object class="GtkLabel" id="MedullaB_Error">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">NO ERRORS</property>
