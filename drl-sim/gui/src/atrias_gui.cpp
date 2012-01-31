@@ -3,6 +3,7 @@
 //! @author Devin Koepl
 
 #include <gui/atrias_gui.h>
+#include <cmath>
 
 //! @brief Initializes the GUI and controls.
 //! @param argc An integer that is one more than the number of command line arguments.
@@ -20,7 +21,8 @@ int main (int argc, char **argv) {
 
     atrias_client = nh.serviceClient<atrias_controllers::atrias_srv>("gui_interface_srv");
     atrias_srv.request.command = CMD_DISABLE;
-    atrias_srv.request.controller_requested = 0; // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
+    atrias_srv.request.controller_requested = 0;
+    // 0 for no controller, controllers need to be their own package I suppose.  Actually it would be better to move the gui inside the atrias package.
 
     // Subscribe to service named "data_subscriber_srv".
     datalog_client = nh.serviceClient<atrias_controllers::data_subscriber_srv>("data_subscriber_srv");
@@ -177,6 +179,8 @@ int main (int argc, char **argv) {
 
     gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
     gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
+    gui->get_widget("spring_deflectionA_progress_bar", spring_deflectionA_progress_bar);
+    gui->get_widget("spring_deflectionB_progress_bar", spring_deflectionB_progress_bar);
 
     gui->get_widget("velocityADisplay", velocityADisplay);
     gui->get_widget("velocityBDisplay", velocityBDisplay);
@@ -425,7 +429,7 @@ int main (int argc, char **argv) {
     test_slider_springDeflectionB->set_value(0.0);
 
     /*
-     * #end region 
+     * #end Initialize GUI region 
      *
      */
 
@@ -663,6 +667,15 @@ bool poke_controller (void) {
     spring_deflection_A_entry->set_text(buffer);
     sprintf(buffer, "%0.8f", atrias_srv.response.motor_angleB - atrias_srv.response.leg_angleB);
     spring_deflection_B_entry->set_text(buffer);
+
+    //replace with a macro?
+    spring_deflectionA_progress_bar->set_fraction(
+            log10(abs(atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA) + 1)
+            / log10(21));
+
+    spring_deflectionB_progress_bar->set_fraction(
+            log10(abs(atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA) + 1)
+            / log10(21));
 
     // Update the boom stuff indicators.
     sprintf(buffer, "%0.4f", atrias_srv.response.xPosition);

@@ -106,7 +106,9 @@ Gtk::DrawingArea *drawing_area;
 Gtk::ProgressBar *motor_torqueA_progress_bar,
                  *motor_torqueB_progress_bar,
                  *motor_velocityA_progress_bar,
-                 *motor_velocityB_progress_bar;
+                 *motor_velocityB_progress_bar,
+                 *spring_deflectionA_progress_bar,
+                 *spring_deflectionB_progress_bar;
 
 Gtk::CheckButton *log_file_chkbox;
 Gtk::SpinButton *log_frequency_spin;
