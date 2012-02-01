@@ -6,9 +6,36 @@ import csv
 import matplotlib.pyplot as plt
 
 if (len(sys.argv) > 1):   # File specified?
-    logFile = open(sys.argv[1], 'rU')
-    dataList = list(csv.reader(logFile, delimiter=',', quotechar='"'))
-    logFile.close()
+    if (sys.argv[1] == "help"):
+        print "Column indices:\n"
+        print "  0: Time (ms)"
+        print "  1: Body Angle (rad)"
+        print "  2: Motor A Angle (rad)"
+        print "  3: Motor B Angle (rad)"
+        print "  4: Leg A Angle (rad)"
+        print "  5: Leg B Angle (rad)"
+        print "  6: Body Angular Velocity (r/s)"
+        print "  7: Motor A Velocity (r/s)"
+        print "  8: Motor B Velocity (r/s)"
+        print "  9: Leg A Velocity (r/s)"
+        print "  0: Leg B Velocity (r/s)"
+        print " 11: X Position"
+        print " 12: Y Position"
+        print " 13: Z Position"
+        print " 14: X Velocity"
+        print " 15: Y Velocity"
+        print " 16: Z Velocity"
+        print " 17: Horizontal Velocity"
+        print " 18: Motor A Current"
+        print " 19: Motor B Current"
+        print " 20: Toe Switch"
+        print " 21: Command"
+        print " 22: Motor A Torque"
+        print " 23: Motor B Torque\n"
+    else:
+        logFile = open(sys.argv[1], 'rU')
+        dataList = list(csv.reader(logFile, delimiter=',', quotechar='"'))
+        logFile.close()
 else:
     print("File unspecified. Exiting.")
 
