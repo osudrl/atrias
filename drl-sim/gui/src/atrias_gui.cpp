@@ -267,14 +267,14 @@ int main (int argc, char **argv) {
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
     raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
     raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
-    raibert_stance_p_gain_spinbutton->set_range(0., 800.);
-    raibert_stance_d_gain_spinbutton->set_range(0., 8.);
+    raibert_stance_p_gain_spinbutton->set_range(0., 4000.);
+    raibert_stance_d_gain_spinbutton->set_range(0., 20.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
 	raibert_desired_height_spinbutton->set_range(0., 3.);
     raibert_leg_force_gain_spinbutton->set_range(0., 1.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
-    raibert_flight_p_gain_spinbutton->set_range(0., 800.);
-    raibert_flight_d_gain_spinbutton->set_range(0., 8.);
+    raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
+    raibert_flight_d_gain_spinbutton->set_range(0., 20.);
     raibert_flight_spring_threshold_spinbutton->set_range(0., 0.4);
 
 
@@ -723,6 +723,7 @@ bool poke_controller (void) {
     sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
     MedullaB_VLogic->set_text(buffer);
 
+//	ROS_INFO("MedulaA_Error: %d",atrias_srv.response.medullaStatusA);
     if (atrias_srv.response.medullaStatusA)
     {
         Glib::ustring error;
