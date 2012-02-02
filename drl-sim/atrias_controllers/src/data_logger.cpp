@@ -7,11 +7,11 @@
 // a script to extract user-specified parameters.
 std::string format_float(float fl) {
     char charBuf[64];
-    sprintf(charBuf, "%.6f", fl);
+    sprintf(charBuf, "%.9f", fl);
     std::string buf = charBuf;
     char j;
     bool positive;
-    std::string result = "       ";
+    std::string result = "          ";
 
     for (int i = 0; (j = charBuf[i]) > 0; i++) {   // loop until a null character is encountered
         if (i == 0) {
@@ -21,14 +21,14 @@ std::string format_float(float fl) {
         else if (j == '.') {
             // If there is room for one or more decimal places, include them.
             // Otherwise, leave them out.
-            if (i < 6) {
-                for (int k = 0; k < 7; k++) {
+            if (i < 9) {
+                for (int k = 0; k < 10; k++) {
                     result[k] = charBuf[k];
                 }
                 return result;
             }
         }
-        else if (i > 6) {
+        else if (i > 9) {
             break;
         }
     }
