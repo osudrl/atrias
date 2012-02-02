@@ -214,6 +214,10 @@ typedef struct {
 
     float peak_ht;
     float last_leg_len;
+
+    float time;
+    float time_lo;
+    float time_td;
 } RaibertControllerState;
 
 typedef struct {
