@@ -11,8 +11,8 @@
 
 /******************************************************************************/
 
-#define STATE_INIT          0
-#define STATE_START         1
+#define STATE_IDLE          0
+#define STATE_INIT          1
 #define STATE_RUN           2
 #define STATE_ERROR         3
 
@@ -57,20 +57,19 @@ int                 hor_vel_index     = 0;
 float               leg_angle;
 float               leg_length;
 
-int		    motorAinc_offset_ticks = 0;
-int		    motorBinc_offset_ticks = 0;
-float		    motorAinc_offset_angle = 0.0;
-float		    motorBinc_offset_angle = 0.0;
-
+int                 motorAinc_offset_ticks = 0;
+int                 motorBinc_offset_ticks = 0;
+float               motorAinc_offset_angle = 0.0;
+float               motorBinc_offset_angle = 0.0;
 
 static unsigned char command = CMD_RUN;
 
 ControllerInput*    c_in;
 ControllerOutput*   c_out;
 
-uint32_t	buffer[4][128];
-int		bufferPos[4];
-uint64_t	encAverage[4];
+uint32_t            buffer[4][128];
+int                 bufferPos[4];
+uint64_t            encAverage[4];
 
 /*****************************************************************************/
 
@@ -141,10 +140,10 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     encAverage[3] = 0;
 
     for (i = 0; i < 128; i++) {
-	encAverage[0] += buffer[0][i];
-	encAverage[1] += buffer[1][i];
-	encAverage[2] += buffer[2][i];
-	encAverage[3] += buffer[3][i];
+        encAverage[0] += buffer[0][i];
+        encAverage[1] += buffer[1][i];
+        encAverage[2] += buffer[2][i];
+        encAverage[3] += buffer[3][i];
     }
 
     encAverage[0] /= 128;
@@ -161,19 +160,20 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     printk("Motor Encoder B: %d\n",encAverage[2]);
     printk("Leg Encoder   B: %d\n\n",encAverage[3]);
     printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));*/
+
     // Keep a copy of the states in memory.
-    static unsigned char last_state = STATE_INIT;
-    static unsigned char next_state = STATE_INIT;
+    static unsigned char last_state = STATE_IDLE;
+    static unsigned char next_state = STATE_IDLE;
 
     switch ( next_state )
     {
-        case STATE_INIT:
+        case STATE_IDLE:
             next_state = state_wakeup( uc_in, uc_out, last_state );
-            last_state = STATE_INIT;
+            last_state = STATE_IDLE;
             break;
-        case STATE_START:
+        case STATE_INIT:
             next_state = state_initialize(uc_in, uc_out, last_state);
-            last_state = STATE_START;
+            last_state = STATE_INIT;
             break;
         case STATE_RUN:
             next_state = state_run( uc_in, uc_out, last_state );
@@ -186,9 +186,9 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
         default:
             next_state = STATE_ERROR;
     }
-    
+
     if ( shm->controller_data[shm->control_index].command == CMD_RESTART )
-        next_state = STATE_INIT;
+        next_state = STATE_IDLE;
 
     // Handle controller data change requests.
     if ( shm->req_switch )
@@ -222,20 +222,20 @@ unsigned char state_wakeup( uControllerInput ** uc_in, uControllerOutput ** uc_o
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
-        uc_in[i]->command = 1;
+        uc_in[i]->command = STATE_INIT;
     }
-    
+
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ ) {
         // If a Medulla does not report the bad command, then fail.
-        if ( uc_out[i]->state != 1)
+        if ( uc_out[i]->state != STATE_INIT)
         {
-            rt_printk( "Medulla %u is not in state INIT\n", i );
-            return STATE_INIT;
+            rt_printk( "Medulla %u is not in STATE_INIT\n", i );
+            return STATE_IDLE;
         }
     }
 
     // If successful, Medullas are ready to receive restarts.
-    return STATE_START;
+    return STATE_INIT;
 }
 
 /*****************************************************************************/
@@ -248,26 +248,25 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     // Check to see if Medullas are awake by sending them a bad command (0).
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
-        uc_in[i]->command = 2;
+        uc_in[i]->command = STATE_RUN;
     }
-    
+
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ ) {
         // If a Medulla does not report the bad command, then fail.
-        if ( uc_out[i]->state != 2)
+        if ( uc_out[i]->state != STATE_RUN)
         {
-            rt_printk( "Medulla %u is not in state RUN\n", i );
-            return STATE_START;
+            rt_printk( "Medulla %u is not in STATE_RUN\n", i );
+            return STATE_INIT;
         }
     }
 
     // If successful, Medullas are ready to receive restarts.
-    motorAinc_offset_ticks = (int)uc_out[A_INDEX]->encoder[2];
-    motorBinc_offset_ticks = (int)uc_out[B_INDEX]->encoder[2];
+    motorAinc_offset_ticks = (int) uc_out[A_INDEX]->encoder[2];
+    motorBinc_offset_ticks = (int) uc_out[B_INDEX]->encoder[2];
     motorAinc_offset_angle = LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE) - TRAN_A_OFF_ANGLE;
     motorBinc_offset_angle = LEG_B_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE) - TRAN_B_OFF_ANGLE;
 
     return STATE_RUN;
-
 }
 
 /*****************************************************************************/
@@ -378,3 +377,4 @@ unsigned char state_error( uControllerInput ** uc_in, uControllerOutput ** uc_ou
     // No coming back from this one yet.
     return STATE_ERROR;
 }
+
