@@ -66,14 +66,6 @@ void updateInput_leg(uControllerInput *in, uControllerOutput *out) {
 	uint8_t status;
 	#endif
 	
-	// Handle heartbeat counter, reset step timer if the medulla has been read by computer
-	if (in->counter != out->counter)
-	{
-		setTimeStep(timerValue(STEP_TIMER));
-		resetTimer(STEP_TIMER);
-		out->counter = in->counter;
-	}
-	
 	// Check Limit Switches
 	#ifdef ENABLE_LIMITSW
 	if (checkLimitSW() != 0)

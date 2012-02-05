@@ -1,3 +1,6 @@
+#ifndef MEDULLA_LEG_H
+#define MEDULLA_LEG_H
+
 // Kit Morton
 //
 //	medulla_leg.h
@@ -67,3 +70,5 @@ MedullaState run_leg(uControllerInput *in, uControllerOutput *out);
 void stop_leg(uControllerInput *in, uControllerOutput *out);
 MedullaState error_damping_leg(uControllerInput *in, uControllerOutput *out);
 MedullaState error_leg(void);
+
+#endif
