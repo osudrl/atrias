@@ -80,6 +80,7 @@
 
 typedef struct {
     float body_angle;
+    float body_angle_vel;
     float motor_angleA;
     float motor_angleA_inc;
     float motor_angleB;
@@ -92,6 +93,9 @@ typedef struct {
     float motor_velocityB;
     float leg_velocityA;
     float leg_velocityB;
+
+    float hip_angle;
+    float hip_angle_vel;
 
     float xPosition;
     float yPosition;
@@ -125,6 +129,7 @@ typedef struct {
 typedef struct {
     float motor_torqueA;
     float motor_torqueB;
+    float motor_torque_hip;
 } ControllerOutput;
 
 // This struct is where the controller can keep personal information.
@@ -154,6 +159,7 @@ typedef struct {
 typedef struct {
     float mtr_trqA;
     float mtr_trqB;
+    float mtr_trq_hip;
 } MtrTrqControllerData;
 
 typedef struct {
@@ -171,8 +177,11 @@ typedef struct {
 typedef struct {
     float leg_ang;
     float leg_len;
+    float hip_ang;
     float p_gain;
     float d_gain;
+    float hip_p_gain;
+    float hip_d_gain;
 } LegPosControllerData;
 
 typedef struct {

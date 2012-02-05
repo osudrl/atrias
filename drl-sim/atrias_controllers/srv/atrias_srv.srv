@@ -1,6 +1,6 @@
 uint8 command
 uint8 controller_requested
-uint8[100] control_data
+uint8[256] control_data
 ---
 uint8 status
 float32 time

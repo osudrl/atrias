@@ -61,6 +61,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("motor_torqueA_hscale", motor_torqueA_hscale);
     gui->get_widget("motor_torqueB_hscale", motor_torqueB_hscale);
+    gui->get_widget("motor_torque_hip_hscale", motor_torque_hip_hscale);
 
     gui->get_widget("motor_positionA_hscale", motor_positionA_hscale);
     gui->get_widget("motor_positionB_hscale", motor_positionB_hscale);
@@ -71,6 +72,10 @@ int main (int argc, char **argv) {
     gui->get_widget("leg_angle_torque_hscale", leg_angle_torque_hscale);
     gui->get_widget("p_leg_position_hscale", p_leg_position_hscale);
     gui->get_widget("d_leg_position_hscale", d_leg_position_hscale);
+
+    gui->get_widget("hip_position_ang", hip_position_ang);
+    gui->get_widget("hip_position_p", hip_position_p);
+    gui->get_widget("hip_position_d", hip_position_d);
     //gui->get_widget("p_leg_position_spin", p_leg_position_spin);
     //gui->get_widget("d_leg_position_spin", d_leg_position_spin);
 
@@ -218,6 +223,7 @@ int main (int argc, char **argv) {
      */
     motor_torqueA_hscale->set_range(MTR_MIN_TRQ, MTR_MAX_TRQ);
     motor_torqueB_hscale->set_range(MTR_MIN_TRQ, MTR_MAX_TRQ);
+    motor_torque_hip_hscale->set_range(MTR_MIN_TRQ, MTR_MAX_TRQ);
 
     motor_positionA_hscale->set_range(-2.3562, 0.3054);
     motor_positionB_hscale->set_range(2.8362, 5.4978);
@@ -235,6 +241,10 @@ int main (int argc, char **argv) {
     d_leg_position_hscale->set_range(0., 300.);
     //d_leg_position_spin->set_increments(.05, 1.);
     //d_leg_position_spin->set_range(0., 1000.);
+
+    hip_position_ang ->set_range(-0.209, 0.209);
+    hip_position_p->set_range(-500., 500.);
+    hip_position_d->set_range(-150., 150.);
 
     log_frequency_spin->set_range(100, 10000);
     log_frequency_spin->set_increments(100, 500);
@@ -533,6 +543,7 @@ bool poke_controller (void) {
         case MOTOR_TORQUE_CONTROLLER:
             ((MtrTrqControllerData *) (&(atrias_srv.request.control_data.elems)))->mtr_trqA = motor_torqueA_hscale->get_value();
             ((MtrTrqControllerData *) (&(atrias_srv.request.control_data.elems)))->mtr_trqB = motor_torqueB_hscale->get_value();
+            ((MtrTrqControllerData *) (&(atrias_srv.request.control_data.elems)))->mtr_trq_hip = motor_torque_hip_hscale->get_value();
             break;
         case MOTOR_POSITION_CONTROLLER:
             ((MtrPosControllerData *) (&(atrias_srv.request.control_data.elems)))->mtr_angA = motor_positionA_hscale->get_value();
@@ -565,6 +576,9 @@ bool poke_controller (void) {
             }*/
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->p_gain = p_leg_position_hscale->get_value();
             ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->d_gain = d_leg_position_hscale->get_value();
+            ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->hip_ang = hip_position_ang->get_value();
+            ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->hip_p_gain = hip_position_p->get_value();
+            ((LegPosControllerData *) (&(atrias_srv.request.control_data.elems)))->hip_d_gain = hip_position_d->get_value();
             break;
         case SINE_WAVE_CONTROLLER:
             ((SinWaveControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_frq = leg_angle_frequency_hscale->get_value();

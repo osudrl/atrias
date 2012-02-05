@@ -38,7 +38,7 @@
 #include <drl_library/discretize.h>
 #include <drl_library/drl_math.h>
 
-#define NUM_OF_MEDULLAS_ON_ROBOT 			2 
+#define NUM_OF_MEDULLAS_ON_ROBOT 			1 
 #define NUM_OF_SLAVES_IN_SIMULATION_MACHINE 1
 
 /** @brief Reference to Motor A. */
@@ -46,6 +46,9 @@
 
 /** @brief Reference to Motor B. */
 #define B_INDEX								0
+
+#define HIP_INDEX							2
+#define BOOM_INDEX						0
 
 // Horizontal velocity windowing filter parameters.
 #define HOR_VEL_FILTER_EPS					0.003

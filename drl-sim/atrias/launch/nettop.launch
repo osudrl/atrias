@@ -1,12 +1,12 @@
 <launch>
     <!-- Set up nettop as remote machine. -->
     <machine name    = "drl-zotac"
-             address = "192.168.1.121"
+             address = "192.168.1.109"
              user    = "drl"
              password="robot" />
 
     <!-- Start the ecat kernel interface. -->
-    <node machine = "drl-zotac"
+    <node 
           name    = "wireless_kern_interface"
           pkg     = "atrias_controllers"
           type    = "wireless_kern_interface"
@@ -16,7 +16,7 @@
     </node>
 
     <!-- Start data publishing node. -->
-    <node machine = "drl-zotac"
+    <node 
           name    = "data_publisher"
           pkg     = "atrias_controllers"
           type    = "data_publisher"

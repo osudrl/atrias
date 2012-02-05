@@ -41,6 +41,7 @@ float               boom_pan_angle  = 0.;
 float               boom_tilt_angle = 0.;
 
 float               last_boom_pan_angle = 0.;
+float		    last_body_angle = 0;
 
 unsigned short int  last_tranA_cnt;
 unsigned short int  last_tranB_cnt;
@@ -49,10 +50,13 @@ float               last_motor_angleA = 0.;
 float               last_motor_angleB = 0.;
 float               last_leg_angleA   = 0.;
 float               last_leg_angleB   = 0.;
+float		    last_hip_angle    = 0.;
 
 float               hor_vel;
 float               hor_vel_buffer[HOR_VEL_WINDOW];
 int                 hor_vel_index     = 0;
+
+float 		    last_zPosition;
 
 float               leg_angle;
 float               leg_length;
@@ -113,6 +117,7 @@ void takedown_shm( void )
 */
 void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput ** uc_out )
 {
+    int i;
 /*
     printk("ThermistorA[0]: %d, %d\n", (uc_out[A_INDEX]->thermistor[0]), (int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0])));
     printk("ThermistorA[1]: %d, %d\n", (uc_out[A_INDEX]->thermistor[1]), (int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1])));
@@ -125,7 +130,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     printk("Motor Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power)));
     printk("Logic Voltage: %d\n", (int)(POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power)));
 */
-    int i;
+/*    int i;
     buffer[0][(bufferPos[0]++)] = uc_out[A_INDEX]->TRANS_ANGLE;
     buffer[1][(bufferPos[1]++)] = uc_out[A_INDEX]->LEG_SEG_ANGLE;
     buffer[2][(bufferPos[2]++)] = uc_out[B_INDEX]->TRANS_ANGLE;
@@ -150,16 +155,25 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     encAverage[1] /= 128;
     encAverage[2] /= 128;
     encAverage[3] /= 128;
-
-/*    printk("Trans Encoder A: %d\n",(int32_t)uc_out[A_INDEX]->encoder[2]);
-    printk("Motor Encoder A: %d\n",encAverage[0]);
-    printk("Leg Encoder   A: %d\n",encAverage[1]);
-    printk("Spring Deflection A: %d\n\n", (encAverage[0]-TRAN_A_CALIB_VAL)-(encAverage[1]-LEG_A_CALIB_VAL));
+*/
+    //printk("Trans Encoder A: %d\n",(int32_t)uc_out[A_INDEX]->encoder[2]);
+    //printk("Motor Encoder A: %d\n",uc_out[A_INDEX]->encoder[0]);
+    //printk("Leg Encoder   A: %d\n",uc_out[A_INDEX]->encoder[1]);
+    //printk("Spring Deflection A: %d\n\n", (encAverage[0]-TRAN_A_CALIB_VAL)-(encAverage[1]-LEG_A_CALIB_VAL));
     
-    printk("Trans Encoder B: %d\n",(int32_t)uc_out[B_INDEX]->encoder[2]);
-    printk("Motor Encoder B: %d\n",encAverage[2]);
-    printk("Leg Encoder   B: %d\n\n",encAverage[3]);
-    printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));*/
+    //printk("Trans Encoder B: %d\n",(int32_t)uc_out[B_INDEX]->encoder[2]);
+    //printk("Motor Encoder B: %d\n",encAverage[2]);
+    //printk("Leg Encoder   B: %d\n\n",encAverage[3]);
+    //printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));
+    //printk("ERROR Code[A]: %d\n",uc_out[A_INDEX]->error_flags);
+    //printk("   LimitSW[A]: %d\n\n",uc_out[A_INDEX]->limitSW);
+    //printk("ERROR Code[B]: %d\n",uc_out[B_INDEX]->error_flags);
+    //printk("   LimitSW[B]: %d\n\n\n",uc_out[B_INDEX]->limitSW);
+    //printk("  Yaw Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[0]);
+    //printk("Pitch Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[1]);
+    printk("Timestep: %d\n", uc_out[BOOM_INDEX]->timestep);
+    //printk("                                                                                                Toe Switch: %d\n",uc_out[B_INDEX]->toe_switch);
+   // printk("Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
 
     // Keep a copy of the states in memory.
     static unsigned char last_state = STATE_IDLE;
@@ -285,21 +299,6 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     
     c_in->motor_angleA_inc = motorAinc_offset_angle + ((((int)uc_out[A_INDEX]->encoder[2])-motorAinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
     c_in->motor_angleB_inc = motorBinc_offset_angle + ((((int)uc_out[B_INDEX]->encoder[2])-motorBinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
-    /*c_in->leg_angleA        = UNDISCRETIZE(
-        uc_out[A_INDEX]->LEG_SEG_ANGLE,
-        MAX_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_ANGLE, MIN_LEG_SEG_A_COUNT, MAX_LEG_SEG_A_COUNT);
-
-    c_in->leg_angleB        = UNDISCRETIZE(
-        uc_out[B_INDEX]->LEG_SEG_ANGLE,
-        MIN_LEG_SEG_B_ANGLE, MAX_LEG_SEG_B_ANGLE, MIN_LEG_SEG_B_COUNT, MAX_LEG_SEG_B_COUNT);
-
-    c_in->motor_angleA     = UNDISCRETIZE(
-        tranA_off + uc_out[A_INDEX]->TRANS_ANGLE,
-        MAX_TRAN_A_ANGLE, MIN_TRAN_A_ANGLE, MIN_TRAN_A_COUNT, MAX_TRAN_A_COUNT) + TRAN_A_OFF_ANGLE;
-
-    c_in->motor_angleB     = UNDISCRETIZE(
-        tranB_off + uc_out[B_INDEX]->TRANS_ANGLE,
-        MIN_TRAN_B_ANGLE, MAX_TRAN_B_ANGLE, MIN_TRAN_B_COUNT, MAX_TRAN_B_COUNT) + TRAN_B_OFF_ANGLE;    */
 
     c_in->motor_velocityA = (c_in->motor_angleA - last_motor_angleA)
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
@@ -310,6 +309,11 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
     c_in->leg_velocityB = (c_in->leg_angleB - last_leg_angleB)
         / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );
+
+    // Hip Inputs
+    c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
+    c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)uc_out[HIP_INDEX]->timestep * SEC_PER_CNT);
+
 
     c_in->toe_switch = uc_out[B_INDEX]->toe_switch;
 
@@ -337,6 +341,12 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->medullaStatusA = uc_out[A_INDEX]->error_flags;
     c_in->medullaStatusB = uc_out[B_INDEX]->error_flags;
 
+    // Update boom angles
+    c_in->body_angle = (((float)(uc_out[BOOM_INDEX]->encoder[0]))-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;
+    c_in->body_angle_vel = (c_in->body_angle - last_body_angle) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
+    last_body_angle = c_in->body_angle;
+    c_in->zPosition = BOOM_PIVOT_HEIGHT + BOOM_LENGTH*sin(c_in->body_angle) + BOOM_ROBOT_OFFSET;
+    c_in->zVelocity = (c_in->zPosition - last_zPosition) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
 
     // Controller update.
     control_switcher_state_machine( c_in, c_out,
@@ -345,18 +355,23 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     // Clamp the motor torques.
     c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
     c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
+    c_out->motor_torque_hip = CLAMP(c_out->motor_torque_hip, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
     
     uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
     uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+    uc_in[HIP_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+            c_out->motor_torque_hip, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+    printk("%d\n",uc_in[HIP_INDEX]->MOTOR_TORQUE);
+
     
     uc_in[A_INDEX]->counter++;
     uc_in[B_INDEX]->counter++;
 
 
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
-    return STATE_ERROR;
+    	return STATE_ERROR;
     
     // Increment and rollover i/o index for datalogging.
     shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;

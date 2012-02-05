@@ -115,10 +115,10 @@
 #define TRAN_B_OFF_ANGLE			0.00361156
 
 // Hip Medulla sensors:
-#define MIN_HIP_COUNT				0
-#define MAX_HIP_COUNT				7200
-#define MIN_HIP_ANGLE
-#define MAX_HIP_ANGLE
+#define MIN_HIP_COUNT				13750
+#define MAX_HIP_COUNT				22890
+#define MIN_HIP_ANGLE				-0.157079633
+#define MAX_HIP_ANGLE				0.20943951
 
 // Boom Medulla sensors:
 // Boom length: 1.858m (not to CoM of robot)
@@ -129,27 +129,31 @@
 // Effective boom height: 0.85715m
 // 		0.9555 (measuring tape)
 
-#define BOOM_PIVOT_HEIGHT			0.9555
-#define	BOOM_LENGTH				2.13
+#define BOOM_PIVOT_HEIGHT			0.9144
+#define	BOOM_LENGTH				1.8796
+#define BOOM_ROBOT_OFFSET			0.0133
 
 // Pan (angle about the room):
 #define BOOM_PAN_GEAR_RATIO 		1
 
 // Tilt (angle up and down):
-#define BOOM_TILT_GEAR_RATIO		13
+#define BOOM_TILT_GEAR_RATIO		(1.0/7.0)
 #define BOOM_KNOWN_TILT_ANGLE		0.
 #define BOOM_KNOWN_TILT_CNT			61032
-#define TILT_CNT_THRESH				30000	
+#define TILT_CNT_THRESH				30000
+
+#define BOOM_RAD_PER_CNT			((2.0*PI)/131072.0)
+#define BOOM_TILT_OFFSET			37300.0	
 
 // Roll (robot angle on the boom):
 #define BOOM_ROLL_GEAR_RATIO		        1.84615385
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-50.0
-#define MTR_MAX_TRQ  				50.0
-#define MTR_MAX_TRQ_LIMIT			45.0
-#define MTR_MIN_TRQ_LIMIT			-45.0
+#define MTR_MIN_TRQ				-60.0
+#define MTR_MAX_TRQ  				60.0
+#define MTR_MAX_TRQ_LIMIT			60.0
+#define MTR_MIN_TRQ_LIMIT			-60.0
 #define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900
 #define MTR_ZERO_CNT				0

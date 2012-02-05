@@ -27,7 +27,8 @@ std::string red_image_path,
             green_image_path;
 
 Gtk::HScale *motor_torqueA_hscale,
-            *motor_torqueB_hscale;
+            *motor_torqueB_hscale,
+	    *motor_torque_hip_hscale;
 
 Gtk::HScale *motor_positionA_hscale,
             *motor_positionB_hscale,
@@ -39,7 +40,10 @@ Gtk::HScale *leg_length_torque_hscale,
             *leg_length_hscale,
             *leg_angle_hscale,
             *p_leg_position_hscale,
-            *d_leg_position_hscale;
+            *d_leg_position_hscale,
+	    *hip_position_ang,
+	    *hip_position_p,
+	    *hip_position_d;
 
 Gtk::SpinButton *p_leg_position_spin, 
                 *d_leg_position_spin;
