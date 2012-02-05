@@ -5,6 +5,7 @@
 
 #include <atrias_controllers/uspace_kern_shm.h>
 #include <atrias_controllers/data_subscriber_srv.h>
+#include <atrias_msgs/atrias_data.h>
 
 #include <rtai_shm.h>
 #include <rtai_nam2num.h>
