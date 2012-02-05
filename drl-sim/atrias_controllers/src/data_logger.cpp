@@ -48,7 +48,7 @@ void datalogCallback(const ros::TimerEvent&) {
     
         if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
             if (log_file_fp != NULL) {
-                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                     format_float(i).c_str(),
 
                     format_float(c_in->body_angle).c_str(),
@@ -64,6 +64,9 @@ void datalogCallback(const ros::TimerEvent&) {
                     format_float(c_in->motor_velocityB).c_str(),
                     format_float(c_in->leg_velocityA).c_str(),
                     format_float(c_in->leg_velocityB).c_str(),
+
+                    format_float(c_in->hip_angle).c_str(),
+                    format_float(c_in->hip_angle_vel).c_str(),
 
                     format_float(c_in->xPosition).c_str(),
                     format_float(c_in->yPosition).c_str(),
@@ -130,7 +133,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 
         ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
         log_file_fp = fopen(buffer, "w");   // Open logfile.
-        fprintf(log_file_fp, "Time (ms), Body Angle, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Body Angular Velocity, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Horizontal Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Motor A Torque, Motor B Torque");   // TODO: Need units for these labels.
+        fprintf(log_file_fp, "Time (ms), Body Angle, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Body Angular Velocity, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Horizontal Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Motor A Torque, Motor B Torque");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }
