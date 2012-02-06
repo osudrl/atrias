@@ -40,7 +40,7 @@ std::string format_float(float fl) {
 }
 
 //! @brief Log data to logfile.
-void datalogCallback(const atrias_controllers::AtriasData &aData) {
+void datalogCallback(const atrias_msgs::atrias_data &aData) {
     // Publish at about 50 Hz based on data timestamp.
     if ((int) aData.time % 20 == 0) {
         data_visualization_publisher.publish(aData);
@@ -129,13 +129,13 @@ int main (int argc, char **argv) {
     data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
 
     // Provide a much lower-frequency data stream for visualization purposes by
-    // re-publishing every few AtriasData fetched by datalogCallback. We
+    // re-publishing every few atrias_data fetched by datalogCallback. We
     // wouldn't need to do this if there was a nice way to specify a sampling
     // rate for rxplot, but this workaround suffices for now.
     //
     // TODO: Eventually, GUI should read stuff from this stream instead of
     // asking for data from wireless_kern_interface.
-    data_visualization_publisher = nh.advertise<atrias_controllers::AtriasData>("data_visualization_stream", 0);
+    data_visualization_publisher = nh.advertise<atrias_msgs::atrias_data>("data_visualization_stream", 0);
 
     // Service for GUI.
     data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);

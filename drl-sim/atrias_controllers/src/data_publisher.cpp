@@ -57,7 +57,7 @@ int main (int argc, char **argv) {
     //                      listen to what this Publisher publishes by
     //                      subscribing to this topic.
     // 1000 - Number of ROS msgs to queue up before dropping the oldest ones.
-    data_publisher = nh.advertise<atrias_controllers::AtriasData>("datalog_downlink", 0);
+    data_publisher = nh.advertise<atrias_msgs::atrias_data>("datalog_downlink", 0);
 
     // Initialize the Timer. (NOTE: This is NOT a replacement for realtime.
     // There are no guarantees about how accurate this is.)

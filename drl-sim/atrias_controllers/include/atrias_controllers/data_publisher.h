@@ -2,7 +2,7 @@
 #define DATA_PUBLISHER_H
 
 #include <atrias_controllers/uspace_kern_shm.h>
-#include <atrias_controllers/AtriasData.h>
+#include <atrias_msgs/atrias_data.h>
 
 #include <rtai_shm.h>
 #include <rtai_nam2num.h>
@@ -28,7 +28,7 @@ int i;
 
 // Instantiate ROS msg AtriasData. Publisher will use this format to publish
 // over the ROS network.
-atrias_controllers::AtriasData aData;
+atrias_msgs::atrias_data aData;
 
 
 #endif // DATA_PUBLISHER_H
