@@ -34,7 +34,7 @@ rosbuild_gensrv()
 rosbuild_add_boost_directories()
 
 # List of controllers.
-set(CONTROLLERS src/no_controller.cpp src/motor_torque_controller.cpp src/motor_position_controller.cpp src/leg_torque_controller.cpp src/leg_position_controller.cpp src/leg_angle_sin_wave.cpp src/raibert_controller.cpp src/test_controller.cpp)
+set(CONTROLLERS src/no_controller.cpp src/motor_torque_controller.cpp src/motor_position_controller.cpp src/leg_torque_controller.cpp src/leg_position_controller.cpp src/leg_angle_sin_wave.cpp src/leg_force_controller.cpp src/raibert_controller.cpp src/test_controller.cpp)
 
 # Check to see whether RTAI is installed.
 if(EXISTS /usr/realtime)
@@ -118,5 +118,5 @@ endif(EXISTS "${GAZEBO_INSTALLED}")
 #rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)
 
 rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
-rosbuild_add_executable(data_logger src/data_logger.cpp)
+#rosbuild_add_executable(data_logger src/data_logger.cpp)
 
