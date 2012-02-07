@@ -10,5 +10,8 @@
           pkg    = "atrias_controllers"
           type   = "data_subscriber"
           output = "screen" />
+
+    <!-- Include data plotter. -->
+    <include file="$(find atrias)/launch/data_plotter.launch" />
 </launch>
 
