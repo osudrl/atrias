@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<robot name="atrias_robot"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- Constants -->
+	<property name="M_PI" value="3.14159"/>
+	<property name="SQRT_2" value="1.41421356"/>
+
+	<!-- Physical Properties -->
+	<property name="A_length" value="1" />
+	<property name="B_length" value="1" />
+	<property name="spring_stiffness" value="500" />
+	<property name="leg_seg_damping" value="0" />
+	
+	<!-- Initial Condition -->
+	<property name="initial_height" value="${A_length/SQRT_2 + B_length/SQRT_2}" />
+
+	<!-- Visual Properties -->
+	<property name="body_size" value="0.25 0.15 0.15" />
+	<property name="leg_segment_radius" value="0.02" />
+
+	<xacro:macro name="atrias_robot">
+
+	<!--#########################################################################-->
+	<!--					Body					-->
+	<!--#########################################################################-->
+
+		<link name="body_link">
+			<inertial>
+				<mass value="10" />
+				<origin xyz="0 0 0" />
+				<inertia ixx="1.37" ixy="0" ixz="0"
+				         iyy="1.37" iyz="0"
+				         izz="1" />
+			</inertial>   
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+				  <box size="${body_size}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+				  <box size="${body_size}" />
+				</geometry>
+			</collision>
+		</link>
+		<gazebo reference="body_link">
+			<material>Gazebo/BumpyMetal</material>
+		</gazebo>
+
+		<gazebo>
+			<controller:position_body name="position_body" plugin="libposition_body.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName> body_link </bodyName>
+			</controller:position_body>
+		</gazebo>
+
+		<!--#########################################################################-->
+		<!--				 Leg A					-->
+		<!--#########################################################################-->
+
+
+		<joint name="body_legA_joint" type="revolute">
+			<axis xyz="1 0 0" />
+			<!-- anchor xyz="0 0 0" / -->
+			<origin xyz="0 0 0" rpy="${-M_PI/4} 0 0" />
+			<parent link="body_link" />
+			<child link="legA_link"/>
+			<limit lower="${-M_PI/4}" upper="${M_PI/4}" effort="1000000000000" velocity="100000000000000" />
+		</joint>
+
+
+		<link name="legA_link">
+			<inertial>
+				<mass value="0.66149"/>
+				<origin xyz="0 ${A_length/2} 0" rpy="0 0 0" />
+				<inertia ixx="0.01910" ixy="0" ixz="0"
+				         iyy="0.01910" iyz="0"
+				         izz="0.01910" />
+			</inertial>
+			<visual>
+				<origin xyz="0 ${A_length/2} 0" rpy="0 0 0" />
+				<geometry>
+				  <cylinder length="${A_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 ${A_length/2} 0" rpy="0 0 0"  />
+				<geometry>
+					<cylinder length="${A_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+		<gazebo reference="legA_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+		<gazebo>
+			<controller:joint_impedance name="leg_seg_frictionA" plugin="libjoint_impedance.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> body_link </bodyName1>
+				<bodyName2> legA_link </bodyName2>
+				<rotationalDamping> ${leg_seg_damping} </rotationalDamping>
+			</controller:joint_impedance>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				 Leg B					-->
+		<!--#########################################################################-->
+
+
+		<joint name="legA_legB_joint" type="revolute">
+			<axis xyz="1 0 0" />
+			<!-- anchor xyz="0 0 0" / -->
+			<origin xyz="0 ${A_length} 0" rpy="${M_PI/2} 0 0" />
+			<parent link="legA_link" />
+			<child link="legB_link"/>
+			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="100000000000" velocity="100000000000000" />
+		</joint>
+
+
+		<link name="legB_link">
+			<inertial>
+				<mass value="0.68292"/>
+				<origin xyz="0 ${B_length/2} 0" rpy="0 0 0" />
+				<inertia ixx="0.02116" ixy="0" ixz="0"
+				         iyy="0.02116" iyz="0"
+				         izz="0.02116" />
+			</inertial>
+			<visual>
+				<origin xyz="0 ${B_length/2} 0" rpy="0 0 0" />
+				<geometry>
+				  <cylinder length="${B_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 ${B_length/2} 0" rpy="0 0 0" />
+				<geometry>
+					<cylinder length="${B_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+		<gazebo reference="legB_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+		<gazebo>
+			<controller:joint_impedance name="leg_seg_frictionB" plugin="libjoint_impedance.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> legA_link </bodyName1>
+				<bodyName2> legB_link </bodyName2>
+				<rotationalDamping> ${leg_seg_damping} </rotationalDamping>
+			</controller:joint_impedance>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				Spring 					     -->
+		<!--#########################################################################-->
+
+		<gazebo>
+			<controller:spring name="springA" plugin="libspring.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> legA_link </bodyName1>
+				<bodyName2> legB_link </bodyName2>
+				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
+			</controller:spring>
+		</gazebo>
+
+
+	</xacro:macro>
+
+
+</robot>
+
