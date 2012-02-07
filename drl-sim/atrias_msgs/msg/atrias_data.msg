@@ -15,6 +15,9 @@ float32 motor_velocityB
 float32 leg_velocityA
 float32 leg_velocityB
 
+float32 hip_angle
+float32 hip_angle_vel
+
 float32 xPosition
 float32 yPosition
 float32 zPosition
