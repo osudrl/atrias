@@ -7,9 +7,12 @@ void callbackShm (const ros::TimerEvent&) {
 
         // When adding new fields, make sure to update AtriasData.msg.
         aData.time = i;
+
         aData.body_angle  = c_in->body_angle;
         aData.motor_angleA = c_in->motor_angleA;
+        aData.motor_angleA_inc = c_in->motor_angleA_inc;
         aData.motor_angleB = c_in->motor_angleB;
+        aData.motor_angleB_inc = c_in->motor_angleB_inc;
         aData.leg_angleA = c_in->leg_angleA;
         aData.leg_angleB = c_in->leg_angleB;
 
@@ -19,21 +22,41 @@ void callbackShm (const ros::TimerEvent&) {
         aData.leg_velocityA = c_in->leg_velocityA;
         aData.leg_velocityB = c_in->leg_velocityB;
 
+        aData.hip_angle = c_in->hip_angle;
+        aData.hip_angle_vel = c_in->hip_angle_vel;
+
         aData.xPosition = c_in->xPosition;
         aData.yPosition = c_in->yPosition;
         aData.zPosition = c_in->zPosition;
+
         aData.xVelocity = c_in->xVelocity;
         aData.yVelocity = c_in->yVelocity;
         aData.zVelocity = c_in->zVelocity;
 
-        aData.motor_torqueA = c_out->motor_torqueA;
-        aData.motor_torqueB = c_out->motor_torqueB;
-
         aData.horizontal_velocity = c_in->horizontal_velocity;
+
         aData.motor_currentA = c_in->motor_currentA;
         aData.motor_currentB = c_in->motor_currentB;
+
         aData.toe_switch = c_in->toe_switch;
+
         aData.command = c_in->command;
+
+        aData.thermistorA[0] = c_in->thermistorA[0];
+        aData.thermistorA[1] = c_in->thermistorA[1];
+        aData.thermistorA[2] = c_in->thermistorA[2];
+        aData.thermistorB[0] = c_in->thermistorB[0];
+        aData.thermistorB[1] = c_in->thermistorB[1];
+        aData.thermistorB[2] = c_in->thermistorB[2];
+        aData.motorVoltageA = c_in->motorVoltageA;
+        aData.motorVoltageB = c_in->motorVoltageB;
+        aData.logicVoltageA = c_in->logicVoltageA;
+        aData.logicVoltageB = c_in->logicVoltageB;
+        aData.medullaStatusA = c_in->medullaStatusA;
+        aData.medullaStatusB = c_in->medullaStatusB;
+
+        aData.motor_torqueA = c_out->motor_torqueA;
+        aData.motor_torqueB = c_out->motor_torqueB;
 
         // Publish the data. This takes up the majority of the loop time.
         data_publisher.publish(aData);
