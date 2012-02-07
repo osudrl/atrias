@@ -1,13 +1,18 @@
 <launch>
     <!-- Set up nettop as remote machine. -->
+<!--
     <machine name    = "drl-zotac"
              address = "192.168.1.109"
              user    = "drl"
              password="robot" />
+-->
+    <env name="ROS_HOSTNAME" value="192.168.1.109" />
 
     <!-- Start the ecat kernel interface. -->
-    <node 
-          name    = "wireless_kern_interface"
+<!--
+    <node machine = "drl-zotac"
+-->
+    <node name    = "wireless_kern_interface"
           pkg     = "atrias_controllers"
           type    = "wireless_kern_interface"
           output  = "screen">
@@ -16,16 +21,15 @@
     </node>
 
     <!-- Start data publishing node. -->
-    <node 
-          name    = "data_publisher"
+<!--
+    <node machine = "drl-zotac"
+-->
+    <node name    = "data_publisher"
           pkg     = "atrias_controllers"
           type    = "data_publisher"
           output  = "screen">
         <!-- Nettop should connect to ROS master node running on desktop. -->
         <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
     </node>
-
-    <!-- Include data plotter node. -->
-    <include file="$(find atrias)/launch/data_plotter.launch" />
 </launch>
 
