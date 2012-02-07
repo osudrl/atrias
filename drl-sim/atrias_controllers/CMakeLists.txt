@@ -62,6 +62,9 @@ if(EXISTS /usr/realtime)
 	set(ECAT_CFLAGS "-I /opt/etherlab/include -L /opt/etherlab/lib -l ethercat")
 	message("ECAT FLAGS: ${ECAT_CFLAGS}")
 
+        include_directories(/opt/etherlab/include)
+        find_library(ECAT_LIBRARY ethercat PATH /opt/etherlab/lib)
+
 	# Add RTAI and ECAT compiler flags.
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
 	#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LXRT_CFLAGS} ${ECAT_CFLAGS}")
@@ -107,6 +110,7 @@ if(EXISTS "${GAZEBO_INSTALLED}")
 
 	# XXX These need to be fixed and re-included.
 	rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
+        target_link_libraries(all_in_one_controller_wrapper ${ECAT_LIBRARY})
 	rosbuild_link_boost(all_in_one_controller_wrapper thread)
 
 	#rosbuild_add_library(ecat_interface src/ecat_interface.cpp)
