@@ -16,10 +16,7 @@ extern void initialize_raibert_controller(ControllerInput *input, ControllerOutp
 
 	RAIBERT_CONTROLLER_STATE(state)->peak_ht = 1.0;
 
-	RAIBERT_CONTROLLER_STATE(state)->time_td = 0.0;
-	RAIBERT_CONTROLLER_STATE(state)->time_lo = 0.0;
-
-	output->motor_torqueA = output->motor_torqueB = 0.;
+	output->motor_torqueA = output->motor_torqueB 				= 0.;
 
 	PRINT_MSG("Raibert Controller Initialized.\n");
 }
@@ -28,7 +25,6 @@ extern void initialize_raibert_controller(ControllerInput *input, ControllerOutp
 extern void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	RAIBERT_CONTROLLER_STATE(state)->time += 0.001;
 	//RAIBERT_CONTROLLER_STATE(state)->in_flight = false;
 
 	if ( RAIBERT_CONTROLLER_STATE(state)->in_flight )
@@ -40,7 +36,16 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 		stance_controller(input, output, state, data);
 	}	
 
+	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
+
+        if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
+                des_hip_ang = input->body_angle;
+
+	output->motor_torque_hip = RAIBERT_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
+                - RAIBERT_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
+
 	RAIBERT_CONTROLLER_STATE(state)->last_leg_len = cos( ( 2.*PI + input->leg_angleA - input->leg_angleB ) / 2. );
+
 }
 
 extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
@@ -76,11 +81,9 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	// Figure out the next state.
         //PRINT_MSG("00<%f> <%f>", ABS(spring_defA), ABS(spring_defB));
 	//if ( ( input->zPosition - leg_length * sin( leg_angle ) < 0.02 ) && ( (ABS(input->motor_angleA - input->leg_angleA) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) 
-	//if ( (ABS(input->motor_angleA - input->leg_angleA) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) 
-	//	|| (ABS(input->motor_angleB - input->leg_angleB) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) )
-	if ( input->toe_switch )
+	//	|| (ABS(input->motor_angleB - input->leg_angleB) > RAIBERT_CONTROLLER_DATA(data)->stance_spring_threshold) ) )
+	if ( input->toe_switch == 1)
 	{
-		RAIBERT_CONTROLLER_STATE(state)->time_td = RAIBERT_CONTROLLER_STATE(state)->time;
 		// Check to see if ground contact has occured.
 		PRINT_MSG("TD!\n");
 
@@ -88,10 +91,7 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	}
 
 	// Check to see if we have reached a new peak height.
-	//RAIBERT_CONTROLLER_STATE(state)->peak_ht = MAX( input->zPosition, RAIBERT_CONTROLLER_STATE(state)->peak_ht );
-
-	// Estimate peak height based on flight duration and clamp to [0.0, 2.0].
-	RAIBERT_CONTROLLER_STATE(state)->peak_ht = CLAMP(pow((RAIBERT_CONTROLLER_STATE(state)->time_td - RAIBERT_CONTROLLER_STATE(state)->time_lo), 2) * 9.81 / 8, 0.0, 2.0);
+	RAIBERT_CONTROLLER_STATE(state)->peak_ht = MAX( input->zPosition, RAIBERT_CONTROLLER_STATE(state)->peak_ht );
 }
 
 void stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
@@ -136,7 +136,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 
 	output->motor_torqueA =	 -torque;
 	output->motor_torqueB =	 torque;
-
+	
 	//float des_leg_ang = (input->leg_angleA + input->leg_angleB) / 2.;
 	//float des_leg_ang_vel = (input->leg_velocityA + input->leg_velocityB) / 2.;		
 
@@ -167,11 +167,9 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
         //PRINT_MSG("!!<%f> <%f>", ABS(spring_defA), ABS(spring_defB));
        
 	//if ( ( input->zPosition - leg_length * sin( leg_angle ) > -0.02 ) && ( ( ABS(spring_defA) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold )
-	//if ( ( ABS(spring_defA) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold )
-	//	&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) )
-	if ( !input->toe_switch )
+	//	&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) ) )
+	if ( input->toe_switch == 0)
 	{
-		RAIBERT_CONTROLLER_STATE(state)->time_lo = RAIBERT_CONTROLLER_STATE(state)->time;
 		// Check to see if lift off has occured.
 
 		PRINT_MSG("LO!\n");
