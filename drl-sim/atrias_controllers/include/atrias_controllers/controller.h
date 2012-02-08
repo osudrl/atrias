@@ -88,7 +88,6 @@ typedef struct {
     float leg_angleA;
     float leg_angleB;
 
-    float body_ang_vel;
     float motor_velocityA;
     float motor_velocityB;
     float leg_velocityA;
@@ -104,8 +103,6 @@ typedef struct {
     float xVelocity;
     float yVelocity;
     float zVelocity;
-
-    float horizontal_velocity;
 
     unsigned char motor_currentA;
     unsigned char motor_currentB;
@@ -185,6 +182,10 @@ typedef struct {
 } LegPosControllerData;
 
 typedef struct {
+    float prev_angle;
+} LegPosControllerState;
+
+typedef struct {
     // Inputs
     float leg_ang_frq;
     float leg_ang_amp;
@@ -215,14 +216,20 @@ typedef struct {
     float flight_p_gain;
     float flight_d_gain;
     float flight_spring_threshold;
+    float stance_hip_p_gain;
+    float stance_hip_d_gain;
+    float flight_hip_p_gain;
+    float flight_hip_d_gain;
 } RaibertControllerData;
 
 typedef struct {
     unsigned char in_flight;
     unsigned char after_mid_stance;
+    unsigned char after_mid_flight;
 
     float peak_ht;
     float last_leg_len;
+    float last_stance_hip_angle;
 
     float time;
     float time_lo;

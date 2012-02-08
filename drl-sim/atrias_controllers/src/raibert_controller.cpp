@@ -35,7 +35,10 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 	{
 		stance_controller(input, output, state, data);
 	}	
+	
 
+	// Regardless of if we are in stance or flight we control the hip the same
+	// Do that now.
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 
         if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
@@ -56,12 +59,12 @@ extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput
 void flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-    
+   
     	// Spring deflections for force control.  These can be problematic on the real robot, since they require good sensor calibration.
 	float spring_defA = input->leg_angleA - input->motor_angleA;
 	float spring_defB = input->leg_angleB - input->motor_angleB;
         
-	float des_leg_ang = PI/2. + RAIBERT_CONTROLLER_DATA(data)->leg_ang_gain * input->horizontal_velocity 
+	float des_leg_ang = PI/2. + RAIBERT_CONTROLLER_DATA(data)->leg_ang_gain * input->xVelocity 
 		- RAIBERT_CONTROLLER_DATA(data)->hor_vel_gain * RAIBERT_CONTROLLER_DATA(data)->des_hor_vel;
 
 	// Generate the motor torques.
