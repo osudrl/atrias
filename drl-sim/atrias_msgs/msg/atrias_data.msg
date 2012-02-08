@@ -2,6 +2,7 @@ uint8 status
 float32 time
 
 float32 body_angle
+float32 body_angle_vel
 float32 motor_angleA
 float32 motor_angleA_inc
 float32 motor_angleB
@@ -9,7 +10,6 @@ float32 motor_angleB_inc
 float32 leg_angleA
 float32 leg_angleB
 
-float32 body_ang_vel
 float32 motor_velocityA
 float32 motor_velocityB
 float32 leg_velocityA
@@ -25,8 +25,6 @@ float32 zPosition
 float32 xVelocity
 float32 yVelocity
 float32 zVelocity
-
-float32 horizontal_velocity
 
 uint8 motor_currentA
 uint8 motor_currentB
