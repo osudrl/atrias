@@ -56,7 +56,11 @@ float               hor_vel;
 float               hor_vel_buffer[HOR_VEL_WINDOW];
 int                 hor_vel_index     = 0;
 
-float 		    last_zPosition;
+float		    xPositionBase = 0;
+int32_t 	    last_xPositionEncoder = 0;
+
+float 		    last_zPosition = 0;
+float		    last_xPosition = 0;
 
 float               leg_angle;
 float               leg_length;
@@ -171,9 +175,11 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("   LimitSW[B]: %d\n\n\n",uc_out[B_INDEX]->limitSW);
     //printk("  Yaw Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[0]);
     //printk("Pitch Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[1]);
-    printk("Timestep: %d\n", uc_out[BOOM_INDEX]->timestep);
+    //printk("Timestep: %d\n", uc_out[2]->timestep);
     //printk("                                                                                                Toe Switch: %d\n",uc_out[B_INDEX]->toe_switch);
-   // printk("Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
+    //printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
+
+    ///printk("%d,%d,%d,%d\n",uc_out[0]->error_flags,uc_out[1]->error_flags,uc_out[2]->error_flags,uc_out[3]->error_flags);
 
     // Keep a copy of the states in memory.
     static unsigned char last_state = STATE_IDLE;
@@ -280,6 +286,8 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     motorAinc_offset_angle = LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE) - TRAN_A_OFF_ANGLE;
     motorBinc_offset_angle = LEG_B_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE) - TRAN_B_OFF_ANGLE;
 
+    last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
+
     return STATE_RUN;
 }
 
@@ -313,6 +321,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     // Hip Inputs
     c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
     c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)uc_out[HIP_INDEX]->timestep * SEC_PER_CNT);
+    last_hip_angle = c_in->hip_angle;
 
 
     c_in->toe_switch = uc_out[B_INDEX]->toe_switch;
@@ -345,8 +354,23 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->body_angle = (((float)(uc_out[BOOM_INDEX]->encoder[0]))-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;
     c_in->body_angle_vel = (c_in->body_angle - last_body_angle) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
     last_body_angle = c_in->body_angle;
+    
     c_in->zPosition = BOOM_PIVOT_HEIGHT + BOOM_LENGTH*sin(c_in->body_angle) + BOOM_ROBOT_OFFSET;
     c_in->zVelocity = (c_in->zPosition - last_zPosition) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
+    last_zPosition = c_in->zPosition;
+
+    if (ABS((int32_t)(uc_out[BOOM_INDEX]->encoder[1]) - last_xPositionEncoder) > 10000) {   // Has the encoder wrapped around?
+	printk("ABS(%d - %d) = %d\n",uc_out[BOOM_INDEX]->encoder[1] , last_xPositionEncoder, ABS(uc_out[BOOM_INDEX]->encoder[1] - last_xPositionEncoder));
+	if (((int32_t)(uc_out[BOOM_INDEX]->encoder[1]) - last_xPositionEncoder) > 0)
+	    xPositionBase -= ((2*PI)*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO);
+	else
+	    xPositionBase += ((2*PI)*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO);
+   }
+
+    last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
+    c_in->xPosition = (((float)(uc_out[BOOM_INDEX]->encoder[1]))*BOOM_RAD_PER_CNT*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO) + xPositionBase;
+    c_in->xVelocity = (c_in->xPosition - last_xPosition) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
+    last_xPosition = c_in->xPosition;
 
     // Controller update.
     control_switcher_state_machine( c_in, c_out,
@@ -355,7 +379,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     // Clamp the motor torques.
     c_out->motor_torqueA = CLAMP(c_out->motor_torqueA, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
     c_out->motor_torqueB = CLAMP(c_out->motor_torqueB, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
-    c_out->motor_torque_hip = CLAMP(c_out->motor_torque_hip, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
+    c_out->motor_torque_hip = CLAMP(c_out->motor_torque_hip, MTR_MIN_HIP_TRQ_LIMIT, MTR_MAX_HIP_TRQ_LIMIT);
     
     uc_in[A_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             c_out->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
@@ -363,18 +387,19 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
             -c_out->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
     uc_in[HIP_INDEX]->MOTOR_TORQUE = DISCRETIZE(
             c_out->motor_torque_hip, MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
-    printk("%d\n",uc_in[HIP_INDEX]->MOTOR_TORQUE);
 
     
     uc_in[A_INDEX]->counter++;
     uc_in[B_INDEX]->counter++;
+    uc_in[HIP_INDEX]->counter++;
+    uc_in[BOOM_INDEX]->counter++;
 
+
+    // Increment and rollover i/o index for datalogging.
+    shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;
 
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
     	return STATE_ERROR;
-    
-    // Increment and rollover i/o index for datalogging.
-    shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;
 
     return STATE_RUN;
 }
@@ -388,6 +413,9 @@ unsigned char state_error( uControllerInput ** uc_in, uControllerOutput ** uc_ou
         0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
     uc_in[B_INDEX]->MOTOR_TORQUE = DISCRETIZE(
         0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+    uc_in[HIP_INDEX]->MOTOR_TORQUE = DISCRETIZE(
+        0., MTR_MIN_TRQ, MTR_MAX_TRQ, MTR_MIN_CNT, MTR_MAX_CNT);
+
 
     // No coming back from this one yet.
     return STATE_ERROR;

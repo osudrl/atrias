@@ -67,7 +67,11 @@ Gtk::HScale *raibert_desired_velocity_hscale,
             *raibert_preferred_leg_len_hscale,
             *raibert_flight_p_gain_hscale,
             *raibert_flight_d_gain_hscale,
-            *raibert_flight_spring_threshold_hscale;
+            *raibert_flight_spring_threshold_hscale,
+	    *raibert_stance_hip_p_gain,
+	    *raibert_stance_hip_d_gain,
+	    *raibert_flight_hip_p_gain,
+	    *raibert_flight_hip_d_gain;
 
 Gtk::SpinButton *raibert_desired_velocity_spinbutton,
                 *raibert_desired_height_spinbutton,

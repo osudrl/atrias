@@ -134,11 +134,11 @@
 #define BOOM_ROBOT_OFFSET			0.0133
 
 // Pan (angle about the room):
-#define BOOM_PAN_GEAR_RATIO 		1
+#define BOOM_PAN_GEAR_RATIO 			(1/10.3439)   // Gear ratio between boom rotation and boom rotation encoder
 
 // Tilt (angle up and down):
-#define BOOM_TILT_GEAR_RATIO		(1.0/7.0)
-#define BOOM_KNOWN_TILT_ANGLE		0.
+#define BOOM_TILT_GEAR_RATIO			(1.0/7.0)
+#define BOOM_KNOWN_TILT_ANGLE			0.
 #define BOOM_KNOWN_TILT_CNT			61032
 #define TILT_CNT_THRESH				30000
 

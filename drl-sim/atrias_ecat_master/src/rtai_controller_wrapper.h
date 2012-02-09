@@ -59,7 +59,7 @@
 #define VENDOR_ID										0x00000777
 #define PRODUCT_CODE						 			0x02628111
 
-#define NUM_OF_MEDULLAS_ON_ROBOT 						1
+#define NUM_OF_MEDULLAS_ON_ROBOT 						4
 #define NUM_OF_SLAVES_IN_SIMULATION_MACHINE 			1
 
 #define BITS_IN_A_BYTE 									8
@@ -107,12 +107,12 @@ const static ec_pdo_entry_reg_t domain_regs[] =
 {
 	{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medulla_boom_rx},
 	{MEDULLA_BOOM_POS,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_boom_tx},
-	//{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medullaB_rx},
-	//{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medullaB_tx},
-	//{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medullaA_rx},
-	//{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medullaA_tx},
-	//{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medulla_hip_rx},
-	//{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_hip_tx},
+	{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medullaB_rx},
+	{MEDULLA_B_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medullaB_tx},
+	{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medullaA_rx},
+	{MEDULLA_A_POS	 ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medullaA_tx},
+	{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6126, 0x33, &off_medulla_hip_rx},
+	{MEDULLA_HIP_POS ,	VENDOR_ID, PRODUCT_CODE, 0x6130, 0x01, &off_medulla_hip_tx},
 	{}
 };
 

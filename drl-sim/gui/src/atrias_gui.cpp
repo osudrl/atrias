@@ -102,6 +102,10 @@ int main (int argc, char **argv) {
     gui->get_widget("raibert_flight_p_gain_hscale", raibert_flight_p_gain_hscale);
     gui->get_widget("raibert_flight_d_gain_hscale", raibert_flight_d_gain_hscale);
     gui->get_widget("raibert_flight_spring_threshold_hscale", raibert_flight_spring_threshold_hscale);
+    gui->get_widget("raibert_stance_hip_p_gain", raibert_stance_hip_p_gain);
+    gui->get_widget("raibert_stance_hip_d_gain", raibert_stance_hip_d_gain);
+    gui->get_widget("raibert_flight_hip_p_gain", raibert_flight_hip_p_gain);
+    gui->get_widget("raibert_flight_hip_d_gain", raibert_flight_hip_d_gain);
 
     gui->get_widget("raibert_desired_velocity_spinbutton", raibert_desired_velocity_spinbutton);
     gui->get_widget("raibert_hor_vel_gain_spinbutton", raibert_hor_vel_gain_spinbutton);
@@ -234,7 +238,7 @@ int main (int argc, char **argv) {
     leg_angle_torque_hscale->set_range(-10., 10.);
 
     leg_length_hscale->set_range(0.5, 1.);
-    leg_angle_hscale->set_range(1.29, 1.85);
+    leg_angle_hscale->set_range(0.29, 2.85);
     p_leg_position_hscale->set_range(0., 10000.);
     //p_leg_position_spin->set_range(0., 1000.);
     //p_leg_position_spin->set_increments(.05, 1.);
@@ -243,8 +247,8 @@ int main (int argc, char **argv) {
     //d_leg_position_spin->set_range(0., 1000.);
 
     hip_position_ang ->set_range(-0.209, 0.209);
-    hip_position_p->set_range(-500., 500.);
-    hip_position_d->set_range(-150., 150.);
+    hip_position_p->set_range(0., 10000.);
+    hip_position_d->set_range(0., 300.);
 
     log_frequency_spin->set_range(100, 10000);
     log_frequency_spin->set_increments(100, 500);
@@ -263,8 +267,8 @@ int main (int argc, char **argv) {
     raibert_desired_velocity_hscale->set_range(-5., 5.);
     raibert_hor_vel_gain_hscale->set_range(0., 10.);
     raibert_leg_angle_gain_hscale->set_range(0., 1.);
-    raibert_stance_p_gain_hscale->set_range(0., 1000.);
-    raibert_stance_d_gain_hscale->set_range(0., 50.);
+    raibert_stance_p_gain_hscale->set_range(0., 4000.);
+    raibert_stance_d_gain_hscale->set_range(0., 100.);
     raibert_stance_spring_threshold_hscale->set_range(0., 1.);
 	raibert_desired_height_hscale->set_range(0., 3.);
     raibert_leg_force_gain_hscale->set_range(0., 1.);
@@ -272,19 +276,23 @@ int main (int argc, char **argv) {
     raibert_flight_p_gain_hscale->set_range(0., 1000.);
     raibert_flight_d_gain_hscale->set_range(0., 50.);
     raibert_flight_spring_threshold_hscale->set_range(0., 1.);
+    raibert_stance_hip_p_gain->set_range(0,5000.0);
+    raibert_stance_hip_d_gain->set_range(0,100.0);
+    raibert_flight_hip_p_gain->set_range(0,5000.0);
+    raibert_flight_hip_d_gain->set_range(0,100.0);
 
 	// Spinbuttons
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
     raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
     raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
     raibert_stance_p_gain_spinbutton->set_range(0., 4000.);
-    raibert_stance_d_gain_spinbutton->set_range(0., 20.);
+    raibert_stance_d_gain_spinbutton->set_range(0., 100.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
 	raibert_desired_height_spinbutton->set_range(0., 3.);
     raibert_leg_force_gain_spinbutton->set_range(0., 1.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
-    raibert_flight_d_gain_spinbutton->set_range(0., 20.);
+    raibert_flight_d_gain_spinbutton->set_range(0., 100.);
     raibert_flight_spring_threshold_spinbutton->set_range(0., 0.4);
 
 
@@ -411,6 +419,8 @@ int main (int argc, char **argv) {
     raibert_flight_p_gain_hscale->set_value(70.);
     raibert_flight_d_gain_hscale->set_value(10.);
     raibert_flight_spring_threshold_hscale->set_value(0.035);
+    raibert_flight_hip_p_gain->set_value(400.0);
+    raibert_flight_hip_d_gain->set_value(12.0);
 
 	// Spinbutton default values (should be the same as HScales for now
     raibert_desired_velocity_spinbutton->set_value(0.);
@@ -601,6 +611,10 @@ bool poke_controller (void) {
             ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_p_gain = raibert_flight_p_gain_spinbutton->get_value();
             ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_d_gain = raibert_flight_d_gain_spinbutton->get_value();
             ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_spring_threshold = raibert_flight_spring_threshold_spinbutton->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_hip_p_gain = raibert_stance_hip_p_gain->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_hip_d_gain = raibert_stance_hip_d_gain->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_hip_p_gain = raibert_flight_hip_p_gain->get_value();
+            ((RaibertControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_hip_d_gain = raibert_flight_hip_d_gain->get_value();
 
             // Set the state label.
             if (atrias_srv.response.status == CMD_DISABLE)
@@ -741,7 +755,7 @@ bool poke_controller (void) {
     if (atrias_srv.response.medullaStatusA)
     {
         Glib::ustring error;
-
+	printf("%d\n",atrias_srv.response.medullaStatusA);
         if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
             error += "EStop Pressed ";
         if (atrias_srv.response.medullaStatusA & STATUS_LIMITSW)
@@ -765,7 +779,6 @@ bool poke_controller (void) {
     if (atrias_srv.response.medullaStatusB)
     {
         Glib::ustring error;
-
         if (atrias_srv.response.medullaStatusB & STATUS_ESTOP)
             error += "EStop Pressed ";
         if (atrias_srv.response.medullaStatusB & STATUS_LIMITSW)

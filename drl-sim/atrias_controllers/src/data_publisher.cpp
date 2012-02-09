@@ -16,14 +16,14 @@ void callbackShm (const ros::TimerEvent&) {
         aData.leg_angleA = c_in->leg_angleA;
         aData.leg_angleB = c_in->leg_angleB;
 
-        aData.body_ang_vel = c_in->body_ang_vel;
+        aData.body_ang_vel = c_in->body_angle_vel;
         aData.motor_velocityA = c_in->motor_velocityA;
         aData.motor_velocityB = c_in->motor_velocityB;
         aData.leg_velocityA = c_in->leg_velocityA;
         aData.leg_velocityB = c_in->leg_velocityB;
 
-        aData.hip_angle = c_in->hip_angle;
-        aData.hip_angle_vel = c_in->hip_angle_vel;
+        //aData.hip_angle = c_in->hip_angle;
+        //aData.hip_angle_vel = c_in->hip_angle_vel;
 
         aData.xPosition = c_in->xPosition;
         aData.yPosition = c_in->yPosition;
@@ -32,8 +32,6 @@ void callbackShm (const ros::TimerEvent&) {
         aData.xVelocity = c_in->xVelocity;
         aData.yVelocity = c_in->yVelocity;
         aData.zVelocity = c_in->zVelocity;
-
-        aData.horizontal_velocity = c_in->horizontal_velocity;
 
         aData.motor_currentA = c_in->motor_currentA;
         aData.motor_currentB = c_in->motor_currentB;

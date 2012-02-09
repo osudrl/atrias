@@ -48,7 +48,7 @@ void datalogCallback(const ros::TimerEvent&) {
     
         if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
             if (log_file_fp != NULL) {
-                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                     format_float(i).c_str(),
 
                     format_float(c_in->body_angle).c_str(),
@@ -59,7 +59,7 @@ void datalogCallback(const ros::TimerEvent&) {
                     format_float(c_in->leg_angleA).c_str(),
                     format_float(c_in->leg_angleB).c_str(),
 
-                    format_float(c_in->body_ang_vel).c_str(),
+                    format_float(c_in->body_angle_vel).c_str(),
                     format_float(c_in->motor_velocityA).c_str(),
                     format_float(c_in->motor_velocityB).c_str(),
                     format_float(c_in->leg_velocityA).c_str(),
@@ -75,8 +75,6 @@ void datalogCallback(const ros::TimerEvent&) {
                     format_float(c_in->xVelocity).c_str(),
                     format_float(c_in->yVelocity).c_str(),
                     format_float(c_in->zVelocity).c_str(),
-
-                    format_float(c_in->horizontal_velocity).c_str(),
 
                     format_float(c_in->motor_currentA).c_str(),
                     format_float(c_in->motor_currentB).c_str(),

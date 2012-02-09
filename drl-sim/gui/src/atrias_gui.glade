@@ -696,7 +696,7 @@ You may only switch controllers with the motors disabled.</property>
                 <child>
                   <object class="GtkTable" id="raibert_tab">
                     <property name="visible">True</property>
-                    <property name="n_rows">17</property>
+                    <property name="n_rows">18</property>
                     <property name="n_columns">4</property>
                     <child>
                       <object class="GtkLabel" id="raibert_desired_velocity_label">
@@ -811,8 +811,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="label" translatable="yes">Stance P Gain:</property>
                       </object>
                       <packing>
-                        <property name="top_attach">10</property>
-                        <property name="bottom_attach">11</property>
+                        <property name="top_attach">11</property>
+                        <property name="bottom_attach">12</property>
                       </packing>
                     </child>
                     <child>
@@ -822,8 +822,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="top_attach">11</property>
-                        <property name="bottom_attach">12</property>
+                        <property name="top_attach">12</property>
+                        <property name="bottom_attach">13</property>
                       </packing>
                     </child>
                     <child>
@@ -832,8 +832,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="label" translatable="yes">Stance D Gain:</property>
                       </object>
                       <packing>
-                        <property name="top_attach">12</property>
-                        <property name="bottom_attach">13</property>
+                        <property name="top_attach">13</property>
+                        <property name="bottom_attach">14</property>
                       </packing>
                     </child>
                     <child>
@@ -843,8 +843,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="top_attach">13</property>
-                        <property name="bottom_attach">14</property>
+                        <property name="top_attach">14</property>
+                        <property name="bottom_attach">15</property>
                       </packing>
                     </child>
                     <child>
@@ -853,8 +853,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="label" translatable="yes">Stance Spring Deflection Threshold (rad):</property>
                       </object>
                       <packing>
-                        <property name="top_attach">14</property>
-                        <property name="bottom_attach">15</property>
+                        <property name="top_attach">15</property>
+                        <property name="bottom_attach">16</property>
                       </packing>
                     </child>
                     <child>
@@ -864,8 +864,8 @@ You may only switch controllers with the motors disabled.</property>
                         <property name="digits">3</property>
                       </object>
                       <packing>
-                        <property name="top_attach">15</property>
-                        <property name="bottom_attach">16</property>
+                        <property name="top_attach">16</property>
+                        <property name="bottom_attach">17</property>
                       </packing>
                     </child>
                     <child>
@@ -879,8 +879,8 @@ You may only switch controllers with the motors disabled.</property>
                       </object>
                       <packing>
                         <property name="right_attach">4</property>
-                        <property name="top_attach">16</property>
-                        <property name="bottom_attach">17</property>
+                        <property name="top_attach">17</property>
+                        <property name="bottom_attach">18</property>
                       </packing>
                     </child>
                     <child>
@@ -892,8 +892,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">15</property>
-                        <property name="bottom_attach">16</property>
+                        <property name="top_attach">16</property>
+                        <property name="bottom_attach">17</property>
                       </packing>
                     </child>
                     <child>
@@ -904,8 +904,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">14</property>
-                        <property name="bottom_attach">15</property>
+                        <property name="top_attach">15</property>
+                        <property name="bottom_attach">16</property>
                       </packing>
                     </child>
                     <child>
@@ -916,8 +916,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">10</property>
-                        <property name="bottom_attach">11</property>
+                        <property name="top_attach">11</property>
+                        <property name="bottom_attach">12</property>
                       </packing>
                     </child>
                     <child>
@@ -929,8 +929,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">11</property>
-                        <property name="bottom_attach">12</property>
+                        <property name="top_attach">12</property>
+                        <property name="bottom_attach">13</property>
                       </packing>
                     </child>
                     <child>
@@ -941,8 +941,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">12</property>
-                        <property name="bottom_attach">13</property>
+                        <property name="top_attach">13</property>
+                        <property name="bottom_attach">14</property>
                       </packing>
                     </child>
                     <child>
@@ -954,8 +954,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="top_attach">13</property>
-                        <property name="bottom_attach">14</property>
+                        <property name="top_attach">14</property>
+                        <property name="bottom_attach">15</property>
                       </packing>
                     </child>
                     <child>
@@ -1064,8 +1064,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="top_attach">11</property>
-                        <property name="bottom_attach">12</property>
+                        <property name="top_attach">12</property>
+                        <property name="bottom_attach">13</property>
                       </packing>
                     </child>
                     <child>
@@ -1078,8 +1078,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="top_attach">13</property>
-                        <property name="bottom_attach">14</property>
+                        <property name="top_attach">14</property>
+                        <property name="bottom_attach">15</property>
                       </packing>
                     </child>
                     <child>
@@ -1092,8 +1092,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="right_attach">2</property>
-                        <property name="top_attach">15</property>
-                        <property name="bottom_attach">16</property>
+                        <property name="top_attach">16</property>
+                        <property name="bottom_attach">17</property>
                       </packing>
                     </child>
                     <child>
@@ -1120,8 +1120,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
-                        <property name="top_attach">11</property>
-                        <property name="bottom_attach">12</property>
+                        <property name="top_attach">12</property>
+                        <property name="bottom_attach">13</property>
                       </packing>
                     </child>
                     <child>
@@ -1134,8 +1134,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
-                        <property name="top_attach">13</property>
-                        <property name="bottom_attach">14</property>
+                        <property name="top_attach">14</property>
+                        <property name="bottom_attach">15</property>
                       </packing>
                     </child>
                     <child>
@@ -1148,8 +1148,8 @@ You may only switch controllers with the motors disabled.</property>
                       <packing>
                         <property name="left_attach">3</property>
                         <property name="right_attach">4</property>
-                        <property name="top_attach">15</property>
-                        <property name="bottom_attach">16</property>
+                        <property name="top_attach">16</property>
+                        <property name="bottom_attach">17</property>
                       </packing>
                     </child>
                     <child>
@@ -1158,8 +1158,8 @@ You may only switch controllers with the motors disabled.</property>
                       </object>
                       <packing>
                         <property name="right_attach">4</property>
-                        <property name="top_attach">7</property>
-                        <property name="bottom_attach">8</property>
+                        <property name="top_attach">8</property>
+                        <property name="bottom_attach">9</property>
                       </packing>
                     </child>
                     <child>
@@ -1223,16 +1223,94 @@ You may only switch controllers with the motors disabled.</property>
                       <placeholder/>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="raibert_stance_hip_p_gain_label">
+                        <property name="visible">True</property>
+                        <property name="xalign">0.44999998807907104</property>
+                        <property name="yalign">0.47999998927116394</property>
+                        <property name="label" translatable="yes">    Stance Hip P Gain:</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="raibert_flight_hip_p_gain_label">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Flight Hip P Gain:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="raibert_stance_hip_d_gain_label">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Stance Hip D Gain:</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">9</property>
+                        <property name="bottom_attach">10</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="raibert_flight_hip_d_gain_lable">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Flight Hip D Gain:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="top_attach">9</property>
+                        <property name="bottom_attach">10</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHScale" id="raibert_stance_hip_p_gain">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHScale" id="raibert_stance_hip_d_gain">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">10</property>
+                        <property name="bottom_attach">11</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHScale" id="raibert_flight_hip_p_gain">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkHScale" id="raibert_flight_hip_d_gain">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="top_attach">10</property>
+                        <property name="bottom_attach">11</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
