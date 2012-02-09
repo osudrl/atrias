@@ -12,7 +12,7 @@
   <url>http://ros.org/wiki/gui</url>
 
 	<depend package="roscpp" />
-	<depend package="drl_plugins" />
+    <!--<depend package="drl_plugins" />-->
 	<depend package="drl_library" />
 	<depend package="atrias" />
         <depend package="atrias_controllers" />

@@ -10,14 +10,14 @@
   <url>http://ros.org/wiki/atrias_controllers</url>
 
     <depend package="roscpp" />
-    <depend package="gazebo" />
+    <!--<depend package="gazebo" />-->
     <depend package="atrias" />
     <depend package="drl_library" />
-    <depend package="atrias_msgs" />
+    <!--<depend package="atrias_msgs" />-->
 
     <export>
         <cpp cflags="-I${prefix}/include" />
-    <gazebo plugin_path="${prefix}/lib" />
+        <!--<gazebo plugin_path="${prefix}/lib" />-->
   </export>
 
 </package>
