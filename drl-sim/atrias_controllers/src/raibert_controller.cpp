@@ -16,9 +16,13 @@ extern void initialize_raibert_controller(ControllerInput *input, ControllerOutp
 
 	RAIBERT_CONTROLLER_STATE(state)->peak_ht = 1.0;
 
-	output->motor_torqueA = output->motor_torqueB 				= 0.;
+	output->motor_torqueA    = 0.;
+	output->motor_torqueB    = 0.;
+	output->motor_torque_hip = 0.;
 
 	PRINT_MSG("Raibert Controller Initialized.\n");
+
+	RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance = RAIBERT_CONTROLLER_STATE(state)->time;
 }
 
 
@@ -41,8 +45,14 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 	// Do that now.
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 
-        if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
-                des_hip_ang = input->body_angle;
+	// REMOVED BY HUBICKI!  Resulted in oscillation ourside of range
+       // if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
+       //        des_hip_ang = input->body_angle;
+
+	//  Added Hubicki
+	des_hip_ang = CLAMP( des_hip_ang, -0.2007, 0.148 );
+	// End Hubicki	
+
 
 	output->motor_torque_hip = RAIBERT_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
                 - RAIBERT_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
@@ -54,6 +64,9 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
+	output->motor_torqueA 	 = 0.;
+	output->motor_torqueB    = 0.;
+	output->motor_torque_hip = 0.;
 }
 
 void flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
@@ -64,8 +77,9 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	float spring_defA = input->leg_angleA - input->motor_angleA;
 	float spring_defB = input->leg_angleB - input->motor_angleB;
         
-	float des_leg_ang = PI/2. + RAIBERT_CONTROLLER_DATA(data)->leg_ang_gain * input->xVelocity 
-		- RAIBERT_CONTROLLER_DATA(data)->hor_vel_gain * RAIBERT_CONTROLLER_DATA(data)->des_hor_vel;
+	// Negated 02/09
+	float des_leg_ang = PI/2. - RAIBERT_CONTROLLER_DATA(data)->leg_ang_gain * input->xVelocity 
+		+ RAIBERT_CONTROLLER_DATA(data)->hor_vel_gain * RAIBERT_CONTROLLER_DATA(data)->des_hor_vel;
 
 	// Generate the motor torques.
 	float des_mtr_angA = des_leg_ang - PI + acos(RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len);
@@ -74,9 +88,14 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	float leg_angle = ( input->leg_angleA + input->leg_angleB ) / 2.;
 	float leg_length = - 0.5 * sin( input->leg_angleA ) - 0.5 * sin( input->leg_angleB );
 
-	output->motor_torqueA = RAIBERT_CONTROLLER_DATA(data)->flight_p_gain * (des_mtr_angA - input->motor_angleA) 
+	// XXX: This is a hack to keep the robot in one place.
+	// GCF = gain control factor
+	float gcf = CLAMP(MAX(ABS(des_mtr_angA - input->motor_angleA), 
+			      ABS(des_mtr_angB - input->motor_angleB)) / 0.05, 0, 1);
+
+	output->motor_torqueA = gcf * RAIBERT_CONTROLLER_DATA(data)->flight_p_gain * (des_mtr_angA - input->motor_angleA) 
 		- RAIBERT_CONTROLLER_DATA(data)->flight_d_gain * input->motor_velocityA;
-	output->motor_torqueB = RAIBERT_CONTROLLER_DATA(data)->flight_p_gain * (des_mtr_angB - input->motor_angleB) 
+	output->motor_torqueB = gcf * RAIBERT_CONTROLLER_DATA(data)->flight_p_gain * (des_mtr_angB - input->motor_angleB) 
 		- RAIBERT_CONTROLLER_DATA(data)->flight_d_gain * input->motor_velocityB;
 
 	//=========================================================================//
@@ -119,6 +138,11 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 		RAIBERT_CONTROLLER_STATE(state)->after_mid_stance = true;
 	}
 
+//HUBICKI DEBUG ADD
+//RAIBERT_CONTROLLER_STATE(state)->after_mid_stance = false;
+// END DEBUG!
+
+
 	// Find the leg extension during stance to add energy back into the system.
 	float leg_ext = 0.;
 
@@ -129,7 +153,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	}
 
 	// Limit the desired leg length.
-	float des_leg_len = CLAMP( RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len + leg_ext, 0.51, 0.99 );
+	float des_leg_len = CLAMP( RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len + leg_ext, 0.51, 0.97 );
 	float torque = RAIBERT_CONTROLLER_DATA(data)->stance_p_gain * (des_leg_len - zf_leg_len ) 
 		- RAIBERT_CONTROLLER_DATA(data)->stance_d_gain * zf_leg_len_vel 
 		+ ESTIMATED_SPRING_STIFFNESS * (zf_leg_len - leg_len) / ESTIMATED_GEAR_RATIO;
@@ -171,7 +195,13 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
        
 	//if ( ( input->zPosition - leg_length * sin( leg_angle ) > -0.02 ) && ( ( ABS(spring_defA) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold )
 	//	&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) ) )
-	if ( input->toe_switch == 0)
+	if ( input->toe_switch == 1 )
+	{
+		RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance = RAIBERT_CONTROLLER_STATE(state)->time;
+	}
+
+	//if ( input->toe_switch == 0 && 1000 < (RAIBERT_CONTROLLER_STATE(state)->time - RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance))
+	if ( input->toe_switch == 0 )
 	{
 		// Check to see if lift off has occured.
 

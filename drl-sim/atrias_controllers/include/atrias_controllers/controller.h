@@ -120,6 +120,7 @@ typedef struct {
     unsigned char medullaStatusA;
     unsigned char medullaStatusB;
 
+    float time_of_last_stance;
 
 } ControllerInput;
 
@@ -220,6 +221,11 @@ typedef struct {
     float stance_hip_d_gain;
     float flight_hip_p_gain;
     float flight_hip_d_gain;
+
+
+    
+
+
 } RaibertControllerData;
 
 typedef struct {
@@ -234,6 +240,11 @@ typedef struct {
     float time;
     float time_lo;
     float time_td;
+    
+    float time_of_last_stance;
+    float last_hip_angle;
+
+
 } RaibertControllerState;
 
 typedef struct {

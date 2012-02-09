@@ -267,8 +267,8 @@ int main (int argc, char **argv) {
     raibert_desired_velocity_hscale->set_range(-5., 5.);
     raibert_hor_vel_gain_hscale->set_range(0., 10.);
     raibert_leg_angle_gain_hscale->set_range(0., 1.);
-    raibert_stance_p_gain_hscale->set_range(0., 4000.);
-    raibert_stance_d_gain_hscale->set_range(0., 100.);
+    raibert_stance_p_gain_hscale->set_range(0., 6000.);
+    raibert_stance_d_gain_hscale->set_range(0., 150.);
     raibert_stance_spring_threshold_hscale->set_range(0., 1.);
 	raibert_desired_height_hscale->set_range(0., 3.);
     raibert_leg_force_gain_hscale->set_range(0., 1.);
@@ -285,14 +285,14 @@ int main (int argc, char **argv) {
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
     raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
     raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
-    raibert_stance_p_gain_spinbutton->set_range(0., 4000.);
-    raibert_stance_d_gain_spinbutton->set_range(0., 100.);
+    raibert_stance_p_gain_spinbutton->set_range(0., 6000.);
+    raibert_stance_d_gain_spinbutton->set_range(0., 150.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
 	raibert_desired_height_spinbutton->set_range(0., 3.);
     raibert_leg_force_gain_spinbutton->set_range(0., 1.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
-    raibert_flight_d_gain_spinbutton->set_range(0., 100.);
+    raibert_flight_d_gain_spinbutton->set_range(0., 150.);
     raibert_flight_spring_threshold_spinbutton->set_range(0., 0.4);
 
 
@@ -408,32 +408,34 @@ int main (int argc, char **argv) {
 
 	// HScale default values
     raibert_desired_velocity_hscale->set_value(0.);
-    raibert_hor_vel_gain_hscale->set_value(0.162);
-    raibert_leg_angle_gain_hscale->set_value(0.15);
-    raibert_stance_p_gain_hscale->set_value(600.);
-    raibert_stance_d_gain_hscale->set_value(15.);
-    raibert_stance_spring_threshold_hscale->set_value(0.075);
-    raibert_desired_height_hscale->set_value(1.54);
-    raibert_leg_force_gain_hscale->set_value(0.225);
-    raibert_preferred_leg_len_hscale->set_value(0.95);
-    raibert_flight_p_gain_hscale->set_value(70.);
-    raibert_flight_d_gain_hscale->set_value(10.);
-    raibert_flight_spring_threshold_hscale->set_value(0.035);
-    raibert_flight_hip_p_gain->set_value(400.0);
-    raibert_flight_hip_d_gain->set_value(12.0);
+    raibert_hor_vel_gain_hscale->set_value(0.0);
+    raibert_leg_angle_gain_hscale->set_value(0.0);
+    raibert_stance_p_gain_hscale->set_value(0.0);
+    raibert_stance_d_gain_hscale->set_value(0.0);
+    raibert_stance_spring_threshold_hscale->set_value(0.0);
+    raibert_stance_hip_p_gain->set_value(2000.0);
+    raibert_stance_hip_d_gain->set_value(20.0);
+    raibert_desired_height_hscale->set_value(0.0);
+    raibert_leg_force_gain_hscale->set_value(0.0);
+    raibert_preferred_leg_len_hscale->set_value(0.0);
+    raibert_flight_p_gain_hscale->set_value(0.0);
+    raibert_flight_d_gain_hscale->set_value(0.0);
+    raibert_flight_spring_threshold_hscale->set_value(0.0);
+    raibert_flight_hip_p_gain->set_value(0.0);
+    raibert_flight_hip_d_gain->set_value(0.0);
 
 	// Spinbutton default values (should be the same as HScales for now
-    raibert_desired_velocity_spinbutton->set_value(0.);
-    raibert_hor_vel_gain_spinbutton->set_value(0.162);
-    raibert_leg_angle_gain_spinbutton->set_value(0.15);
-    raibert_stance_p_gain_spinbutton->set_value(600.);
-    raibert_stance_d_gain_spinbutton->set_value(15.);
+    raibert_desired_velocity_spinbutton->set_value(0.25);
+    raibert_hor_vel_gain_spinbutton->set_value(0.25);
+    raibert_leg_angle_gain_spinbutton->set_value(0.125);
+    raibert_stance_p_gain_spinbutton->set_value(6000.);
+    raibert_stance_d_gain_spinbutton->set_value(120.);
     raibert_stance_spring_threshold_spinbutton->set_value(0.075);
-    raibert_desired_height_spinbutton->set_value(1.54);
-    raibert_leg_force_gain_spinbutton->set_value(0.225);
-    raibert_preferred_leg_len_spinbutton->set_value(0.95);
-    raibert_flight_p_gain_spinbutton->set_value(70.);
-    raibert_flight_d_gain_spinbutton->set_value(10.);
+    raibert_desired_height_spinbutton->set_value(1.5);
+    raibert_leg_force_gain_spinbutton->set_value(0.3);
+    raibert_preferred_leg_len_spinbutton->set_value(0.9);
+    raibert_flight_p_gain_spinbutton->set_value(750.);
+    raibert_flight_d_gain_spinbutton->set_value(150.);
     raibert_flight_spring_threshold_spinbutton->set_value(0.035);
 
 
