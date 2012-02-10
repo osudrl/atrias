@@ -872,10 +872,10 @@ bool poke_controller (void) {
     sprintf(buffer,"%0.2f",atrias_srv.response.thermistorB[2]);
     MedullaB_TempC->set_text(buffer);
 
-    sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageA);
+    sprintf(buffer,"%0.1f",atrias_srv.response.motorVoltageB);
     MedullaB_VMotor->set_text(buffer);
 
-    sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageA);
+    sprintf(buffer,"%0.1f",atrias_srv.response.logicVoltageB);
     MedullaB_VLogic->set_text(buffer);
 
 //	ROS_INFO("MedulaA_Error: %d",atrias_srv.response.medullaStatusA);
