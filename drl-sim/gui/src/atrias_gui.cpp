@@ -747,7 +747,7 @@ bool poke_controller (void) {
             if (atrias_srv.response.status == CMD_DISABLE)
                 hubicki_state_label->set_label("Disabled");
             else
-                if (((hubickiControllerState *) (&(atrias_srv.response.control_state.elems)))->in_flight)
+                if (((HubickiControllerState *) (&(atrias_srv.response.control_state.elems)))->in_flight)
                 hubicki_state_label->set_label("Flight");
             else
                 hubicki_state_label->set_label("Stance");
