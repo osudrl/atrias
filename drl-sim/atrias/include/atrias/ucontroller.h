@@ -207,6 +207,7 @@ typedef struct
 typedef struct
 {
 	uint32_t 	encoder[3];
+	uint32_t 	encoder_last[3];
 	
 	uint16_t 	timestep;
 	uint16_t	counter;
