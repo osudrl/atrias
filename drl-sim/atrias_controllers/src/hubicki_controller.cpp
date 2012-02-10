@@ -1,10 +1,10 @@
 #include <atrias_controllers/controller.h>
 
-#define ESTIMATED_SPRING_STIFFNESS  0.
-#define ESTIMATED_GEAR_RATIO        20
+#define HUBICKI_ESTIMATED_SPRING_STIFFNESS  0.
+#define HUBICKI_ESTIMATED_GEAR_RATIO        20
 
-void flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
-void stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void hubicki_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void hubicki_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
 extern void initialize_hubicki_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
@@ -31,11 +31,11 @@ extern void update_hubicki_controller(ControllerInput *input, ControllerOutput *
 
 	if ( HUBICKI_CONTROLLER_STATE(state)->in_flight )
 	{
-		flight_controller(input, output, state, data);
+		hubicki_flight_controller(input, output, state, data);
 	}
 	else
 	{
-		stance_controller(input, output, state, data);
+		hubicki_stance_controller(input, output, state, data);
 	}	
 	
 
@@ -67,7 +67,7 @@ extern void takedown_hubicki_controller(ControllerInput *input, ControllerOutput
 	output->motor_torque_hip = 0.;
 }
 
-void flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void hubicki_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
    
@@ -114,7 +114,7 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 	HUBICKI_CONTROLLER_STATE(state)->peak_ht = MAX( input->zPosition, HUBICKI_CONTROLLER_STATE(state)->peak_ht );
 }
 
-void stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void hubicki_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	// Spring deflections for force control.  These can be problematic on the real robot, since they require good sensor calibration.
@@ -154,7 +154,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	float des_leg_len = CLAMP( HUBICKI_CONTROLLER_DATA(data)->preferred_leg_len + leg_ext, 0.51, 0.97 );
 	float torque = HUBICKI_CONTROLLER_DATA(data)->stance_p_gain * (des_leg_len - zf_leg_len ) 
 		- HUBICKI_CONTROLLER_DATA(data)->stance_d_gain * zf_leg_len_vel 
-		+ ESTIMATED_SPRING_STIFFNESS * (zf_leg_len - leg_len) / ESTIMATED_GEAR_RATIO;
+		+ HUBICKI_ESTIMATED_SPRING_STIFFNESS * (zf_leg_len - leg_len) / HUBICKI_ESTIMATED_GEAR_RATIO;
 
 	float leg_angle = ( input->leg_angleA + input->leg_angleB ) / 2.;
 	float leg_length = - 0.5 * sin( input->leg_angleA ) - 0.5 * sin( input->leg_angleB );
@@ -181,9 +181,9 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 
 	// Compute the leg torque for zero hip moment and maintaining hopping height.
 	//output->motor_torqueA = HUBICKI_CONTROLLER_DATA(data)->stance_p_gain * (des_mtr_angA - input->motor_angleA) 
-	//	+ HUBICKI_CONTROLLER_DATA(data)->stance_d_gain * (des_leg_ang_vel - input->motor_velocityA) + ESTIMATED_SPRING_STIFFNESS * spring_defA / ESTIMATED_GEAR_RATIO;
+	//	+ HUBICKI_CONTROLLER_DATA(data)->stance_d_gain * (des_leg_ang_vel - input->motor_velocityA) + HUBICKI_ESTIMATED_SPRING_STIFFNESS * spring_defA / HUBICKI_ESTIMATED_GEAR_RATIO;
 	//output->motor_torqueB = HUBICKI_CONTROLLER_DATA(data)->stance_p_gain * (des_mtr_angB - input->motor_angleB) 
-	//	+ HUBICKI_CONTROLLER_DATA(data)->stance_d_gain * (des_leg_ang_vel - input->motor_velocityB) + ESTIMATED_SPRING_STIFFNESS * spring_defB / ESTIMATED_GEAR_RATIO;
+	//	+ HUBICKI_CONTROLLER_DATA(data)->stance_d_gain * (des_leg_ang_vel - input->motor_velocityB) + HUBICKI_ESTIMATED_SPRING_STIFFNESS * spring_defB / HUBICKI_ESTIMATED_GEAR_RATIO;
 
 	// Clamp the torques for now, for added safety.
 	//output->motor_torqueA = CLAMP( output->motor_torqueA, -3., 3. );
