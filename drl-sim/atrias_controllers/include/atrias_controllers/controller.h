@@ -64,9 +64,10 @@
 #define LEG_POSITION_CONTROLLER 		4
 #define SINE_WAVE_CONTROLLER			5
 #define RAIBERT_CONTROLLER			6
-#define TEST_CONTROLLER 			7
-#define EQU_GAIT_CONTROLLER 			8
-#define FORCE_CONTROLLER			9
+#define HUBICKI_CONTROLLER			7
+#define TEST_CONTROLLER 			8
+#define EQU_GAIT_CONTROLLER 			9
+#define FORCE_CONTROLLER			10
 
 //======================================================//
 
@@ -221,11 +222,6 @@ typedef struct {
     float stance_hip_d_gain;
     float flight_hip_p_gain;
     float flight_hip_d_gain;
-
-
-    
-
-
 } RaibertControllerData;
 
 typedef struct {
@@ -240,12 +236,47 @@ typedef struct {
     float time;
     float time_lo;
     float time_td;
-    
+
     float time_of_last_stance;
     float last_hip_angle;
-
-
 } RaibertControllerState;
+
+typedef struct {
+    // Inputs
+    float des_hor_vel;
+    float des_hop_ht;
+    float hor_vel_gain;
+    float hop_ht_gain;
+    float leg_ang_gain;
+    float stance_p_gain;
+    float stance_d_gain;
+    float stance_spring_threshold;
+    float preferred_leg_len;
+    float flight_p_gain;
+    float flight_d_gain;
+    float flight_spring_threshold;
+    float stance_hip_p_gain;
+    float stance_hip_d_gain;
+    float flight_hip_p_gain;
+    float flight_hip_d_gain;
+} HubickiControllerData;
+
+typedef struct {
+    unsigned char in_flight;
+    unsigned char after_mid_stance;
+    unsigned char after_mid_flight;
+
+    float peak_ht;
+    float last_leg_len;
+    float last_stance_hip_angle;
+
+    float time;
+    float time_lo;
+    float time_td;
+
+    float time_of_last_stance;
+    float last_hip_angle;
+} HubickiControllerState;
 
 typedef struct {
     float flightKP;
@@ -297,6 +328,7 @@ typedef struct {
 #define LEG_POS_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((LegPosControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define SIN_WAVE_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((SinWaveControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define RAIBERT_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((RaibertControllerData *)(&(CONTROLLER_DATA_PTR->data)))
+#define HUBICKI_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((HubickiControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define TEST_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((TestControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 #define FORCE_CONTROLLER_DATA(CONTROLLER_DATA_PTR) ((ForceControllerData *)(&(CONTROLLER_DATA_PTR->data)))
 
@@ -306,6 +338,7 @@ typedef struct {
 #define LEG_POS_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((LegPosControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define SIN_WAVE_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((SinWaveControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define RAIBERT_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((RaibertControllerState *)(&(CONTROLLER_STATE_PTR->data)))
+#define HUBICKI_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((HubickiControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define TEST_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((TestControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define FORCE_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((ForceControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 

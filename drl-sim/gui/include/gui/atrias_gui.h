@@ -68,10 +68,10 @@ Gtk::HScale *raibert_desired_velocity_hscale,
             *raibert_flight_p_gain_hscale,
             *raibert_flight_d_gain_hscale,
             *raibert_flight_spring_threshold_hscale,
-	    *raibert_stance_hip_p_gain,
-	    *raibert_stance_hip_d_gain,
-	    *raibert_flight_hip_p_gain,
-	    *raibert_flight_hip_d_gain;
+            *raibert_stance_hip_p_gain,
+            *raibert_stance_hip_d_gain,
+            *raibert_flight_hip_p_gain,
+            *raibert_flight_hip_d_gain;
 
 Gtk::SpinButton *raibert_desired_velocity_spinbutton,
                 *raibert_desired_height_spinbutton,
@@ -85,6 +85,37 @@ Gtk::SpinButton *raibert_desired_velocity_spinbutton,
                 *raibert_flight_p_gain_spinbutton,
                 *raibert_flight_d_gain_spinbutton,
                 *raibert_flight_spring_threshold_spinbutton;
+
+Gtk::Label *hubicki_state_label;
+Gtk::HScale *hubicki_desired_velocity_hscale,
+            *hubicki_desired_height_hscale,
+            *hubicki_hor_vel_gain_hscale,
+            *hubicki_leg_force_gain_hscale,
+            *hubicki_leg_angle_gain_hscale,
+            *hubicki_stance_p_gain_hscale,
+            *hubicki_stance_d_gain_hscale,
+            *hubicki_stance_spring_threshold_hscale,
+            *hubicki_preferred_leg_len_hscale,
+            *hubicki_flight_p_gain_hscale,
+            *hubicki_flight_d_gain_hscale,
+            *hubicki_flight_spring_threshold_hscale,
+            *hubicki_stance_hip_p_gain,
+            *hubicki_stance_hip_d_gain,
+            *hubicki_flight_hip_p_gain,
+            *hubicki_flight_hip_d_gain;
+
+Gtk::SpinButton *hubicki_desired_velocity_spinbutton,
+                *hubicki_desired_height_spinbutton,
+                *hubicki_hor_vel_gain_spinbutton,
+                *hubicki_leg_force_gain_spinbutton,
+                *hubicki_leg_angle_gain_spinbutton,
+                *hubicki_stance_p_gain_spinbutton,
+                *hubicki_stance_d_gain_spinbutton,
+                *hubicki_stance_spring_threshold_spinbutton,
+                *hubicki_preferred_leg_len_spinbutton,
+                *hubicki_flight_p_gain_spinbutton,
+                *hubicki_flight_d_gain_spinbutton,
+                *hubicki_flight_spring_threshold_spinbutton;
 
 Gtk::Image  *test_motors_status_image,
             *test_flight_status_image;

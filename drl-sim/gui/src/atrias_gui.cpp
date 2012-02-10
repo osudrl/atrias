@@ -120,6 +120,37 @@ int main (int argc, char **argv) {
     gui->get_widget("raibert_flight_d_gain_spinbutton", raibert_flight_d_gain_spinbutton);
     gui->get_widget("raibert_flight_spring_threshold_spinbutton", raibert_flight_spring_threshold_spinbutton);
 
+    gui->get_widget("hubicki_state_label", hubicki_state_label);
+    gui->get_widget("hubicki_desired_velocity_hscale", hubicki_desired_velocity_hscale);
+    gui->get_widget("hubicki_hor_vel_gain_hscale", hubicki_hor_vel_gain_hscale);
+    gui->get_widget("hubicki_leg_angle_gain_hscale", hubicki_leg_angle_gain_hscale);
+    gui->get_widget("hubicki_stance_p_gain_hscale", hubicki_stance_p_gain_hscale);
+    gui->get_widget("hubicki_stance_d_gain_hscale", hubicki_stance_d_gain_hscale);
+    gui->get_widget("hubicki_stance_spring_threshold_hscale", hubicki_stance_spring_threshold_hscale);
+    gui->get_widget("hubicki_desired_height_hscale", hubicki_desired_height_hscale);
+    gui->get_widget("hubicki_leg_force_gain_hscale", hubicki_leg_force_gain_hscale);
+    gui->get_widget("hubicki_preferred_leg_len_hscale", hubicki_preferred_leg_len_hscale);
+    gui->get_widget("hubicki_flight_p_gain_hscale", hubicki_flight_p_gain_hscale);
+    gui->get_widget("hubicki_flight_d_gain_hscale", hubicki_flight_d_gain_hscale);
+    gui->get_widget("hubicki_flight_spring_threshold_hscale", hubicki_flight_spring_threshold_hscale);
+    gui->get_widget("hubicki_stance_hip_p_gain", hubicki_stance_hip_p_gain);
+    gui->get_widget("hubicki_stance_hip_d_gain", hubicki_stance_hip_d_gain);
+    gui->get_widget("hubicki_flight_hip_p_gain", hubicki_flight_hip_p_gain);
+    gui->get_widget("hubicki_flight_hip_d_gain", hubicki_flight_hip_d_gain);
+
+    gui->get_widget("hubicki_desired_velocity_spinbutton", hubicki_desired_velocity_spinbutton);
+    gui->get_widget("hubicki_hor_vel_gain_spinbutton", hubicki_hor_vel_gain_spinbutton);
+    gui->get_widget("hubicki_leg_angle_gain_spinbutton", hubicki_leg_angle_gain_spinbutton);
+    gui->get_widget("hubicki_stance_p_gain_spinbutton", hubicki_stance_p_gain_spinbutton);
+    gui->get_widget("hubicki_stance_d_gain_spinbutton", hubicki_stance_d_gain_spinbutton);
+    gui->get_widget("hubicki_stance_spring_threshold_spinbutton", hubicki_stance_spring_threshold_spinbutton);
+    gui->get_widget("hubicki_desired_height_spinbutton", hubicki_desired_height_spinbutton);
+    gui->get_widget("hubicki_leg_force_gain_spinbutton", hubicki_leg_force_gain_spinbutton);
+    gui->get_widget("hubicki_preferred_leg_len_spinbutton", hubicki_preferred_leg_len_spinbutton);
+    gui->get_widget("hubicki_flight_p_gain_spinbutton", hubicki_flight_p_gain_spinbutton);
+    gui->get_widget("hubicki_flight_d_gain_spinbutton", hubicki_flight_d_gain_spinbutton);
+    gui->get_widget("hubicki_flight_spring_threshold_spinbutton", hubicki_flight_spring_threshold_spinbutton);
+
     gui->get_widget("test_motors_status_image", test_motors_status_image);
     gui->get_widget("test_flight_status_image", test_flight_status_image);
     gui->get_widget("test_label_1", test_label);
@@ -220,6 +251,7 @@ int main (int argc, char **argv) {
 
 
     raibert_state_label->set_label("Initializing");
+    hubicki_state_label->set_label("Initializing");
 
     /* 
      * #region Initialize GUI objects
@@ -294,6 +326,40 @@ int main (int argc, char **argv) {
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
     raibert_flight_d_gain_spinbutton->set_range(0., 150.);
     raibert_flight_spring_threshold_spinbutton->set_range(0., 0.4);
+
+
+	/* Hubicki tab */
+	// HScales
+    hubicki_desired_velocity_hscale->set_range(-5., 5.);
+    hubicki_hor_vel_gain_hscale->set_range(0., 10.);
+    hubicki_leg_angle_gain_hscale->set_range(0., 1.);
+    hubicki_stance_p_gain_hscale->set_range(0., 6000.);
+    hubicki_stance_d_gain_hscale->set_range(0., 150.);
+    hubicki_stance_spring_threshold_hscale->set_range(0., 1.);
+	hubicki_desired_height_hscale->set_range(0., 3.);
+    hubicki_leg_force_gain_hscale->set_range(0., 1.);
+    hubicki_preferred_leg_len_hscale->set_range(0.7, 1.);
+    hubicki_flight_p_gain_hscale->set_range(0., 1000.);
+    hubicki_flight_d_gain_hscale->set_range(0., 50.);
+    hubicki_flight_spring_threshold_hscale->set_range(0., 1.);
+    hubicki_stance_hip_p_gain->set_range(0,5000.0);
+    hubicki_stance_hip_d_gain->set_range(0,100.0);
+    hubicki_flight_hip_p_gain->set_range(0,5000.0);
+    hubicki_flight_hip_d_gain->set_range(0,100.0);
+
+	// Spinbuttons
+    hubicki_desired_velocity_spinbutton->set_range(-5., 5.);
+    hubicki_hor_vel_gain_spinbutton->set_range(0., 10.);
+    hubicki_leg_angle_gain_spinbutton->set_range(0., 1.);
+    hubicki_stance_p_gain_spinbutton->set_range(0., 6000.);
+    hubicki_stance_d_gain_spinbutton->set_range(0., 150.);
+    hubicki_stance_spring_threshold_spinbutton->set_range(0., 0.4);
+	hubicki_desired_height_spinbutton->set_range(0., 3.);
+    hubicki_leg_force_gain_spinbutton->set_range(0., 1.);
+    hubicki_preferred_leg_len_spinbutton->set_range(0.7, 1.);
+    hubicki_flight_p_gain_spinbutton->set_range(0., 4000.);
+    hubicki_flight_d_gain_spinbutton->set_range(0., 150.);
+    hubicki_flight_spring_threshold_spinbutton->set_range(0., 0.4);
 
 
 	/* Test tab */
@@ -406,7 +472,7 @@ int main (int argc, char **argv) {
     p_leg_position_hscale->set_value(50);
     d_leg_position_hscale->set_value(2.5);
 
-	// HScale default values
+	// HScale default values for Raibert controller
     raibert_desired_velocity_hscale->set_value(0.);
     raibert_hor_vel_gain_hscale->set_value(0.0);
     raibert_leg_angle_gain_hscale->set_value(0.0);
@@ -424,7 +490,7 @@ int main (int argc, char **argv) {
     raibert_flight_hip_p_gain->set_value(0.0);
     raibert_flight_hip_d_gain->set_value(0.0);
 
-	// Spinbutton default values (should be the same as HScales for now
+	// Spinbutton default values for Raibert controller
     raibert_desired_velocity_spinbutton->set_value(0.25);
     raibert_hor_vel_gain_spinbutton->set_value(0.25);
     raibert_leg_angle_gain_spinbutton->set_value(0.125);
@@ -437,6 +503,38 @@ int main (int argc, char **argv) {
     raibert_flight_p_gain_spinbutton->set_value(750.);
     raibert_flight_d_gain_spinbutton->set_value(150.);
     raibert_flight_spring_threshold_spinbutton->set_value(0.035);
+
+	// HScale default values for Hubicki controller
+    hubicki_desired_velocity_hscale->set_value(0.);
+    hubicki_hor_vel_gain_hscale->set_value(0.0);
+    hubicki_leg_angle_gain_hscale->set_value(0.0);
+    hubicki_stance_p_gain_hscale->set_value(0.0);
+    hubicki_stance_d_gain_hscale->set_value(0.0);
+    hubicki_stance_spring_threshold_hscale->set_value(0.0);
+    hubicki_stance_hip_p_gain->set_value(2000.0);
+    hubicki_stance_hip_d_gain->set_value(20.0);
+    hubicki_desired_height_hscale->set_value(0.0);
+    hubicki_leg_force_gain_hscale->set_value(0.0);
+    hubicki_preferred_leg_len_hscale->set_value(0.0);
+    hubicki_flight_p_gain_hscale->set_value(0.0);
+    hubicki_flight_d_gain_hscale->set_value(0.0);
+    hubicki_flight_spring_threshold_hscale->set_value(0.0);
+    hubicki_flight_hip_p_gain->set_value(0.0);
+    hubicki_flight_hip_d_gain->set_value(0.0);
+
+	// Spinbutton default values for Hubicki controller
+    hubicki_desired_velocity_spinbutton->set_value(0.25);
+    hubicki_hor_vel_gain_spinbutton->set_value(0.25);
+    hubicki_leg_angle_gain_spinbutton->set_value(0.125);
+    hubicki_stance_p_gain_spinbutton->set_value(6000.);
+    hubicki_stance_d_gain_spinbutton->set_value(120.);
+    hubicki_stance_spring_threshold_spinbutton->set_value(0.075);
+    hubicki_desired_height_spinbutton->set_value(1.5);
+    hubicki_leg_force_gain_spinbutton->set_value(0.3);
+    hubicki_preferred_leg_len_spinbutton->set_value(0.9);
+    hubicki_flight_p_gain_spinbutton->set_value(750.);
+    hubicki_flight_d_gain_spinbutton->set_value(150.);
+    hubicki_flight_spring_threshold_spinbutton->set_value(0.035);
 
 
     test_slider_flightKP->set_value(100.0);
@@ -626,6 +724,33 @@ bool poke_controller (void) {
                 raibert_state_label->set_label("Flight");
             else
                 raibert_state_label->set_label("Stance");
+            break;
+        case HUBICKI_CONTROLLER:
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hor_vel = hubicki_desired_velocity_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->des_hop_ht = hubicki_desired_height_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->hor_vel_gain = hubicki_hor_vel_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->hop_ht_gain = hubicki_leg_force_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->leg_ang_gain = hubicki_leg_angle_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_p_gain = hubicki_stance_p_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_d_gain = hubicki_stance_d_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_spring_threshold = hubicki_stance_spring_threshold_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->preferred_leg_len = hubicki_preferred_leg_len_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_p_gain = hubicki_flight_p_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_d_gain = hubicki_flight_d_gain_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_spring_threshold = hubicki_flight_spring_threshold_spinbutton->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_hip_p_gain = hubicki_stance_hip_p_gain->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->stance_hip_d_gain = hubicki_stance_hip_d_gain->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_hip_p_gain = hubicki_flight_hip_p_gain->get_value();
+            ((HubickiControllerData *) (&(atrias_srv.request.control_data.elems)))->flight_hip_d_gain = hubicki_flight_hip_d_gain->get_value();
+
+            // Set the state label.
+            if (atrias_srv.response.status == CMD_DISABLE)
+                hubicki_state_label->set_label("Disabled");
+            else
+                if (((hubickiControllerState *) (&(atrias_srv.response.control_state.elems)))->in_flight)
+                hubicki_state_label->set_label("Flight");
+            else
+                hubicki_state_label->set_label("Stance");
             break;
         case TEST_CONTROLLER:
             ((TestControllerData *) (&(atrias_srv.request.control_data.elems)))->flightKP = test_slider_flightKP->get_value();

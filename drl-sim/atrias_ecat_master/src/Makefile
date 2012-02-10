@@ -8,7 +8,8 @@ CONTROLLERS=no_controller.o \
 	leg_torque_controller.o \
 	leg_position_controller.o \
 	leg_angle_sin_wave.o \
-	raibert_controller.o	\
+	raibert_controller.o \
+	hubicki_controller.o \
 	test_controller.o  \
         leg_force_controller.o
 
@@ -57,6 +58,7 @@ links:
 	ln -sf ../../atrias_controllers/src/leg_position_controller.cpp leg_position_controller.c
 	ln -sf ../../atrias_controllers/src/leg_angle_sin_wave.cpp leg_angle_sin_wave.c
 	ln -sf ../../atrias_controllers/src/raibert_controller.cpp raibert_controller.c
+	ln -sf ../../atrias_controllers/src/hubicki_controller.cpp hubicki_controller.c
 	ln -sf ../../atrias_controllers/src/test_controller.cpp test_controller.c
 	ln -sf ../../atrias_controllers/src/leg_force_controller.cpp leg_force_controller.c
 
