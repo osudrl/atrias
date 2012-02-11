@@ -10,11 +10,11 @@
 // a script to extract user-specified parameters.
 std::string format_float(float fl) {
     char charBuf[64];
-    sprintf(charBuf, "%.6f", fl);
+    sprintf(charBuf, "%.9f", fl);
     std::string buf = charBuf;
     char j;
     bool positive;
-    std::string result = "       ";
+    std::string result = "          ";
 
     for (int i = 0; (j = charBuf[i]) > 0; i++) {   // loop until a null character is encountered
         if (i == 0) {
@@ -24,14 +24,14 @@ std::string format_float(float fl) {
         else if (j == '.') {
             // If there is room for one or more decimal places, include them.
             // Otherwise, leave them out.
-            if (i < 6) {
-                for (int k = 0; k < 7; k++) {
+            if (i < 9) {
+                for (int k = 0; k < 10; k++) {
                     result[k] = charBuf[k];
                 }
                 return result;
             }
         }
-        else if (i > 6) {
+        else if (i > 9) {
             break;
         }
     }
@@ -48,31 +48,59 @@ void datalogCallback(const atrias_msgs::atrias_data &aData) {
 
     if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
         if (log_file_fp != NULL) {
-            fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+            fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                 format_float(aData.time).c_str(),
+
                 format_float(aData.body_angle).c_str(),
+                format_float(aData.body_angle_vel).c_str(),
                 format_float(aData.motor_angleA).c_str(),
+                format_float(aData.motor_angleA_inc).c_str(),
                 format_float(aData.motor_angleB).c_str(),
+                format_float(aData.motor_angleB_inc).c_str(),
                 format_float(aData.leg_angleA).c_str(),
                 format_float(aData.leg_angleB).c_str(),
-                format_float(aData.body_ang_vel).c_str(),
+
                 format_float(aData.motor_velocityA).c_str(),
                 format_float(aData.motor_velocityB).c_str(),
                 format_float(aData.leg_velocityA).c_str(),
                 format_float(aData.leg_velocityB).c_str(),
+
+                format_float(aData.hip_angle).c_str(),
+                format_float(aData.hip_angle_vel).c_str(),
+
                 format_float(aData.xPosition).c_str(),
                 format_float(aData.yPosition).c_str(),
                 format_float(aData.zPosition).c_str(),
+
                 format_float(aData.xVelocity).c_str(),
                 format_float(aData.yVelocity).c_str(),
                 format_float(aData.zVelocity).c_str(),
-                format_float(aData.horizontal_velocity).c_str(),
+
                 format_float(aData.motor_currentA).c_str(),
                 format_float(aData.motor_currentB).c_str(),
+
                 format_float(aData.toe_switch).c_str(),
+
                 format_float(aData.command).c_str(),
+
+                format_float(aData.thermistorA[0]).c_str(),
+                format_float(aData.thermistorA[1]).c_str(),
+                format_float(aData.thermistorA[2]).c_str(),
+                format_float(aData.thermistorB[0]).c_str(),
+                format_float(aData.thermistorB[1]).c_str(),
+                format_float(aData.thermistorB[2]).c_str(),
+                format_float(aData.motorVoltageA).c_str(),
+                format_float(aData.motorVoltageB).c_str(),
+                format_float(aData.logicVoltageA).c_str(),
+                format_float(aData.logicVoltageB).c_str(),
+                format_float(aData.medullaStatusA).c_str(),
+                format_float(aData.medullaStatusB).c_str(),
+
+                format_float(aData.time_of_last_stance).c_str(),
+
                 format_float(aData.motor_torqueA).c_str(),
-                format_float(aData.motor_torqueB).c_str());
+                format_float(aData.motor_torqueB).c_str(),
+                format_float(aData.motor_torque_hip).c_str());
         }
         else {
             ROS_ERROR("data_subscriber cannot open log file.");
@@ -101,7 +129,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
 
         ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
         log_file_fp = fopen(buffer, "w");   // Open logfile.
-        fprintf(log_file_fp, "Time (ms), Body Angle, Motor A Angle, Motor B Angle, Leg A Angle, Leg B Angle, Body Angular Velocity, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Horizontal Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Motor A Torque, Motor B Torque");   // TODO: Need units for these labels.
+        fprintf(log_file_fp, "Time (ms), Body Angle, Body Angle Velocity, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Time of Last Stance, Motor A Torque, Motor B Torque, Motor Hip Torque\n");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }

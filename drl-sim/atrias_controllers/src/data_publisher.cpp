@@ -8,22 +8,22 @@ void callbackShm (const ros::TimerEvent&) {
         // When adding new fields, make sure to update AtriasData.msg.
         aData.time = i;
 
-        aData.body_angle  = c_in->body_angle;
-        aData.motor_angleA = c_in->motor_angleA;
+        aData.body_angle     = c_in->body_angle;
+        aData.body_angle_vel = c_in->body_angle_vel;
+        aData.motor_angleA     = c_in->motor_angleA;
         aData.motor_angleA_inc = c_in->motor_angleA_inc;
-        aData.motor_angleB = c_in->motor_angleB;
+        aData.motor_angleB     = c_in->motor_angleB;
         aData.motor_angleB_inc = c_in->motor_angleB_inc;
         aData.leg_angleA = c_in->leg_angleA;
         aData.leg_angleB = c_in->leg_angleB;
 
-        aData.body_ang_vel = c_in->body_angle_vel;
         aData.motor_velocityA = c_in->motor_velocityA;
         aData.motor_velocityB = c_in->motor_velocityB;
-        aData.leg_velocityA = c_in->leg_velocityA;
-        aData.leg_velocityB = c_in->leg_velocityB;
+        aData.leg_velocityA   = c_in->leg_velocityA;
+        aData.leg_velocityB   = c_in->leg_velocityB;
 
-        //aData.hip_angle = c_in->hip_angle;
-        //aData.hip_angle_vel = c_in->hip_angle_vel;
+        aData.hip_angle     = c_in->hip_angle;
+        aData.hip_angle_vel = c_in->hip_angle_vel;
 
         aData.xPosition = c_in->xPosition;
         aData.yPosition = c_in->yPosition;
@@ -53,8 +53,11 @@ void callbackShm (const ros::TimerEvent&) {
         aData.medullaStatusA = c_in->medullaStatusA;
         aData.medullaStatusB = c_in->medullaStatusB;
 
+        aData.time_of_last_stance = c_in->time_of_last_stance;
+
         aData.motor_torqueA = c_out->motor_torqueA;
         aData.motor_torqueB = c_out->motor_torqueB;
+        aData.motor_torque_hip = c_out->motor_torque_hip;
 
         // Publish the data. This takes up the majority of the loop time.
         data_publisher.publish(aData);
@@ -105,7 +108,7 @@ int main (int argc, char **argv) {
     //               TODO: Need to understand this better.
     if (!(shm = (Shm*) rt_shm_alloc(nam2num(SHM_NAME), 0, USE_VMALLOC)))
         ROS_ERROR("rtai_malloc() data to user space failed (maybe /dev/rtai_shm is missing)!");
-        
+
     ROS_INFO("Datalog publisher connected to shm.");
 
     // Set i to current value of io_index.

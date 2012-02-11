@@ -42,6 +42,9 @@ float32 logicVoltageB
 uint8 medullaStatusA
 uint8 medullaStatusB
 
+float32 time_of_last_stance
+
 uint8[256] control_state
 float32 motor_torqueA
 float32 motor_torqueB
+float32 motor_torque_hip

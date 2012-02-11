@@ -87,7 +87,8 @@ if(EXISTS /usr/realtime)
 	#add_definitions(-DCOMPILE_FOR_RTAI)
 
 	rosbuild_add_executable(wireless_kern_interface src/wireless_kern_interface.cpp)
-    #rosbuild_add_executable(data_publisher src/data_publisher.cpp)
+    rosbuild_add_executable(data_publisher src/data_publisher.cpp)
+    rosbuild_add_executable(data_logger src/data_logger.cpp)
 
 	# XXX Fix and re-include.
 	#rosbuild_add_executable(rt_atrias_controller_wrapper src/rt_atrias_controller_wrapper.cpp src/controller_wrapper_states.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
@@ -121,6 +122,5 @@ endif(EXISTS "${GAZEBO_INSTALLED}")
 
 #rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)
 
-#rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
-#rosbuild_add_executable(data_logger src/data_logger.cpp)
+rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
 
