@@ -57,27 +57,26 @@
 		<gazebo reference="body_link">
 			<material>Gazebo/BumpyMetal</material>
 		</gazebo>
-
+<!--
 		<gazebo>
-			<controller:position_body name="position_body" plugin="libposition_body.so">
+			<controller:position_body name="position_block" plugin="libposition_body.so">
 				<alwaysOn> true </alwaysOn>
 				<updateRate> 10000 </updateRate>
 				<bodyName> body_link </bodyName>
 			</controller:position_body>
 		</gazebo>
-
+-->
 		<!--#########################################################################-->
 		<!--				 Leg A					-->
 		<!--#########################################################################-->
 
 
-		<joint name="body_legA_joint" type="revolute">
+		<joint name="body_legA_joint" type="continuous">
 			<axis xyz="1 0 0" />
 			<!-- anchor xyz="0 0 0" / -->
 			<origin xyz="0 0 0" rpy="${-M_PI/4} 0 0" />
 			<parent link="body_link" />
 			<child link="legA_link"/>
-			<limit lower="${-M_PI/4}" upper="${M_PI/4}" effort="1000000000000" velocity="100000000000000" />
 		</joint>
 
 
@@ -122,19 +121,19 @@
 		<!--#########################################################################-->
 
 
-		<joint name="legA_legB_joint" type="revolute">
+		<joint name="legA_legB_joint" type="continuous">
 			<axis xyz="1 0 0" />
 			<!-- anchor xyz="0 0 0" / -->
-			<origin xyz="0 ${A_length} 0" rpy="${M_PI/2} 0 0" />
+			<origin xyz="0 ${A_length} 0" rpy="${M_PI/4} 0 0" />
 			<parent link="legA_link" />
 			<child link="legB_link"/>
-			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="100000000000" velocity="100000000000000" />
 		</joint>
 
 
 		<link name="legB_link">
 			<inertial>
 				<mass value="0.68292"/>
+				<!--mass value="9999999999" /-->
 				<origin xyz="0 ${B_length/2} 0" rpy="0 0 0" />
 				<inertia ixx="0.02116" ixy="0" ixz="0"
 				         iyy="0.02116" iyz="0"
@@ -168,6 +167,15 @@
 		</gazebo>
 
 
+		<gazebo>
+			<controller:position_body name="position_legB" plugin="libposition_body.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName> legB_link </bodyName>
+			</controller:position_body>
+		</gazebo>
+
+
 		<!--#########################################################################-->
 		<!--				Spring 					     -->
 		<!--#########################################################################-->
@@ -181,7 +189,37 @@
 				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
 			</controller:spring>
 		</gazebo>
+
 -->
+<!--
+		<joint name="legB_ground_joint" type="continuous">
+			<origin xyz="0 ${B_length} 0" />
+			<parent link="legB_link" />
+			<child link="ground_link" />
+			<axis xyz="1 0 0" />
+		</joint>
+		
+		<link name="ground_link">
+			<inertial>
+				<mass value="0.68292"/>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<inertia ixx="0.02116" ixy="0" ixz="0"
+				         iyy="0.02116" iyz="0"
+				         izz="0.02116" />
+			</inertial>
+		</link>
+
+
+
+		<gazebo>
+			<controller:position_body name="position_ground" plugin="libposition_body.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName> ground_link </bodyName>
+			</controller:position_body>
+		</gazebo>
+-->
+
 
 	</xacro:macro>
 
