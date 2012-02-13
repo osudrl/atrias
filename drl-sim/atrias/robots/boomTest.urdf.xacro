@@ -120,7 +120,7 @@
 
 		<joint name="pendulum_joint" type="continuous">
 			<axis xyz="1 0 0" />
-			<origin xyz="${boom_length} 0 0" rpy="${M_PI/18} 0 0" />
+			<origin xyz="${boom_length} 0 0" rpy="${M_PI/18/5} 0 0" />
 			<parent link="boom_link" />
 			<child link="pendulum_link"/>
 		</joint>
@@ -131,8 +131,8 @@
 				<mass value="1"/>
 				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
 				<inertia ixx="0.245" ixy="0" ixz="0"
-				         iyy="0" iyz="0"
-				         izz="0" />
+				         iyy="1" iyz="0"
+				         izz="1" />
 			</inertial>
 			<visual>
 				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
