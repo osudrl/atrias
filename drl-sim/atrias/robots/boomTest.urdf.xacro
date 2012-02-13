@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<robot name="atrias_robot"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- Constants -->
+	<property name="M_PI" value="3.14159"/>
+	<property name="SQRT_2" value="1.41421356"/>
+
+	<!-- Physical Properties -->
+	<property name="upright_length" value="1" />
+	<property name="boom_length" value="1" />
+	<property name="spring_stiffness" value="500" />
+	<property name="leg_seg_damping" value="0" />
+	
+	<!-- Initial Condition -->
+	<property name="initial_height" value="${upright_length/SQRT_2 + B_length/SQRT_2}" />
+
+	<!-- Visual Properties -->
+	<property name="body_size" value="0.25 0.15 0.15" />
+	<property name="leg_segment_radius" value="0.02" />
+
+	<xacro:macro name="atrias_robot">
+
+		<link name="world" />
+
+
+		<!--#########################################################################-->
+		<!--				 Upright				-->
+		<!--#########################################################################-->
+
+
+		<joint name="world_upright_joint" type="fixed">
+			<!-- anchor xyz="0 0 0" / -->
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<parent link="world" />
+			<child link="upright_link"/>
+		</joint>
+
+
+		<link name="upright_link">
+			<inertial>
+				<mass value="0.66149"/>
+				<origin xyz="0 0 ${upright_length/2}" rpy="0 0 0" />
+				<inertia ixx="0.01910" ixy="0" ixz="0"
+				         iyy="0.01910" iyz="0"
+				         izz="0.01910" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 ${upright_length/2}" rpy="0 0 0" />
+				<geometry>
+				  <cylinder length="${upright_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${upright_length/2}" rpy="0 0 0"  />
+				<geometry>
+					<cylinder length="${upright_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+		<gazebo reference="upright_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				 Boom					-->
+		<!--#########################################################################-->
+
+
+		<joint name="uprigh_boom_joint" type="continuous">
+			<axis xyz="0 0 1" />
+			<!-- anchor xyz="0 0 0" / -->
+			<origin xyz="0 0 ${upright_length}" rpy="0 0 0" />
+			<parent link="upright_link" />
+			<child link="boom_link"/>
+		</joint>
+
+
+		<link name="boom_link">
+			<inertial>
+				<mass value="0.68292"/>
+				<!--mass value="9999999999" /-->
+				<origin xyz="${boom_length/2} 0 0" rpy="0 0 0" />
+				<inertia ixx="0.02116" ixy="0" ixz="0"
+				         iyy="0.02116" iyz="0"
+				         izz="0.02116" />
+			</inertial>
+			<visual>
+				<origin xyz="${boom_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+				<geometry>
+				  <cylinder length="${boom_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="${boom_length/2} 0 0" rpy="0 ${M_PI/2} 0" />
+				<geometry>
+					<cylinder length="${boom_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+		<gazebo reference="boom_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+	</xacro:macro>
+
+
+</robot>
+
