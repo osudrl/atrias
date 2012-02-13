@@ -17,6 +17,7 @@
 	<!-- Physical Properties -->
 	<property name="upright_length" value="1" />
 	<property name="boom_length" value="1" />
+	<property name="pendulum_length" value="0.9" />
 	<property name="spring_stiffness" value="500" />
 	<property name="leg_seg_damping" value="0" />
 	
@@ -76,7 +77,7 @@
 		<!--#########################################################################-->
 
 
-		<joint name="uprigh_boom_joint" type="continuous">
+		<joint name="upright_boom_joint" type="fixed">
 			<axis xyz="0 0 1" />
 			<!-- anchor xyz="0 0 0" / -->
 			<origin xyz="0 0 ${upright_length}" rpy="0 0 0" />
@@ -88,7 +89,6 @@
 		<link name="boom_link">
 			<inertial>
 				<mass value="0.68292"/>
-				<!--mass value="9999999999" /-->
 				<origin xyz="${boom_length/2} 0 0" rpy="0 0 0" />
 				<inertia ixx="0.02116" ixy="0" ixz="0"
 				         iyy="0.02116" iyz="0"
@@ -107,9 +107,51 @@
 				</geometry>
 			</collision>
 		</link>
+
 		<gazebo reference="boom_link">
 			<material>Gazebo/Red</material>
 		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				 Pendulum                                    -->
+		<!--#########################################################################-->
+
+
+		<joint name="pendulum_joint" type="continuous">
+			<axis xyz="1 0 0" />
+			<origin xyz="${boom_length} 0 0" rpy="${M_PI/18} 0 0" />
+			<parent link="boom_link" />
+			<child link="pendulum_link"/>
+		</joint>
+
+
+		<link name="pendulum_link">
+			<inertial>
+				<mass value="1"/>
+				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
+				<inertia ixx="0.245" ixy="0" ixz="0"
+				         iyy="0" iyz="0"
+				         izz="0" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
+				<geometry>
+				  <cylinder length="${pendulum_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
+				<geometry>
+					<cylinder length="${pendulum_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+
+		<gazebo reference="pendulum_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
 	</xacro:macro>
 
 
