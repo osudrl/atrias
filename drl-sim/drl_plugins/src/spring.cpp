@@ -64,7 +64,7 @@ void Spring::LoadChild(XMLConfigNode *node)
   if (dynamic_cast<Body*>(this->myParent->GetBody(this->bodyName1)) == NULL)
     ROS_FATAL("gazebo_ros_force plugin error: bodyName1: %s does not exist\n",bodyName1.c_str());
   if (dynamic_cast<Body*>(this->myParent->GetBody(this->bodyName2)) == NULL)
-    ROS_FATAL("gazebo_ros_force plugin error: bodyName2: %s does not exist\n",bodyName1.c_str());
+    ROS_FATAL("gazebo_ros_force plugin error: bodyName2: %s does not exist\n",bodyName2.c_str());
 
   this->body1 = dynamic_cast<Body*>(this->myParent->GetBody(bodyName1));
   this->body2 = dynamic_cast<Body*>(this->myParent->GetBody(bodyName2));
