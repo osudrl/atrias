@@ -23,11 +23,13 @@
 #define ENABLE_LIMITSW
 #define ENABLE_MOTOR
 #define ENABLE_TOESW
+//#define ENABLE_TOESW_DEBOUNCE
 #define ENABLE_DEBUG
 #define ENABLE_THERM
-#define ENABLE_MOTOR_POWER_MONITOR
+#define ENABLE_MOTOR_POWER
+//#define ENABLE_MOTOR_POWER_MONITOR
 #define ENABLE_LOGIC_POWER_MONITOR
-#define ENABLE_DAMPING_REGIONS
+//#define ENABLE_DAMPING_REGIONS
 
 #define ABS(x)	(((x) < 0) ? -(x) : (x))
 #define DAMPING_INVERSE_P_GAIN 1
@@ -37,14 +39,18 @@ MedullaState curState;
 #endif
 
 #ifdef ENABLE_LIMITSW
-int8_t LimitSWCounter;
+int16_t LimitSWCounter;
+#endif
+
+#ifdef ENABLE_TOESW_DEBOUNCE
+uint16_t toeCounter;
 #endif
 
 #ifdef ENABLE_THERM
 int8_t ThermistorCounter;
 #endif
 
-#ifdef ENABLE_MOTOR_POWER_MONITOR
+#ifdef ENABLE_MOTOR_POWER
 uint16_t	MotorPowerCounter;
 #endif
 

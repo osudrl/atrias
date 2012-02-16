@@ -59,6 +59,8 @@ void initilize_hip(void) {
 	#ifdef ENABLE_MOTOR
 	initAmp(&USARTF0,&PORTF,&PORTC,&TCC1,&HIRESC,4,3);
 	#endif
+	
+	_delay_ms(1000);
 }
 
 void updateInput_hip(uControllerInput *in, uControllerOutput *out) {

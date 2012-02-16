@@ -44,14 +44,14 @@ int main(void) {
 	Config32MHzClock();
 	initUART(&PORTE,&USARTE0,1152);
 	initUART(&PORTF,&USARTF0,1152);
-	//sei();
-	/*while (1) {
+	sei();
+	while (1) {
 		
 		if (USARTE0.STATUS&USART_RXCIF_bm)
 			UARTWriteChar(&USARTF0, USARTE0.DATA);
 		if (USARTF0.STATUS&USART_RXCIF_bm)
 			UARTWriteChar(&USARTE0, USARTF0.DATA);
-	}*/
+	}
 	#endif
 	
 	medulla_run((void*)(&in),(void*)(&out));
@@ -67,28 +67,7 @@ void init(void) {
 	PORTH.PIN7CTRL = PORT_OPC_PULLUP_gc;
 	printf("%X",PORTH.IN>>4);
 	// link the function pointers to the functions for the current medulla
-	if (((PORTH.IN>>4) | MEDULLA_LEG_BM) == 0) {
-		// This is a leg medulla, we don't really care which one, we will
-		// just send the address to the computer and have it figure it out
-		initilize_pntr = &initilize_leg;
-		updateInput_pntr = &updateInput_leg;
-		updateOutput_pntr = &updateOutput_leg;
-		overflow_pntr = &overflow_leg;
-		idle_pntr = &idle_leg;
-		init_pntr = &init_leg;
-		run_pntr = &run_leg;
-		stop_pntr = &stop_leg;
-		error_damping_pntr = &error_damping_leg;
-		error_pntr = &error_leg;
-		
-		// set the ID in the ethercat output struct
-		out.id = PORTH.IN>>4;
-		
-		#ifdef ENABLE_DEBUG
-		printf("Initilizing Leg\n");
-		#endif
-	}
-	else if ((PORTH.IN>>4) == 0b1110) {
+	if ((PORTH.IN>>4) == MEDULLA_HIP_ID) {
 		// This is a hip medulla
 		initilize_pntr = &initilize_hip;
 		updateInput_pntr = &updateInput_hip;
@@ -108,7 +87,7 @@ void init(void) {
 		printf("Initilizing Hip\n");
 		#endif
 	}
-	else if ((PORTH.IN>>4) == 0x9) {
+	else if ((PORTH.IN>>4) == MEDULLA_BOOM_ID) {
 		// This is a boom medulla
 		initilize_pntr = &initilize_boom;
 		updateInput_pntr = &updateInput_boom;
@@ -125,6 +104,27 @@ void init(void) {
 		out.id = MEDULLA_BOOM_ID;
 		#ifdef ENABLE_DEBUG
 		//printf("Initilizing Boom\n");
+		#endif
+	}
+	else {
+		// If it's not a hip or a boom then it must be a leg, we don't really care which one, we will
+		// just send the address to the computer and have it figure it out
+		initilize_pntr = &initilize_leg;
+		updateInput_pntr = &updateInput_leg;
+		updateOutput_pntr = &updateOutput_leg;
+		overflow_pntr = &overflow_leg;
+		idle_pntr = &idle_leg;
+		init_pntr = &init_leg;
+		run_pntr = &run_leg;
+		stop_pntr = &stop_leg;
+		error_damping_pntr = &error_damping_leg;
+		error_pntr = &error_leg;
+		
+		// set the ID in the ethercat output struct
+		out.id = PORTH.IN>>4;
+		
+		#ifdef ENABLE_DEBUG
+		printf("Initilizing Leg\n");
 		#endif
 	}
 		
@@ -165,11 +165,10 @@ void updateInput(void) {
 
 	// Handle heartbeat counter, reset step timer if the medulla has been read by computer
 	if (in.counter != out.counter)
-	{
-		setTimeStep(timerValue(STEP_TIMER));
-		resetTimer(STEP_TIMER);
 		out.counter = in.counter;
-	}
+	
+	// set the time to the curret timer value
+	setTimeStep(timerValue(STEP_TIMER));
 	
 	// Call the updateInput functin for this particular medulla
 	updateInput_pntr(&in,&out);

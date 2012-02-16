@@ -17,10 +17,13 @@ void initilize_leg(void) {
 	// Init Toe Switch
 	#ifdef ENABLE_TOESW
 	PORTA.PIN4CTRL = PORT_OPC_PULLUP_gc;
+	#ifdef ENABLE_TOESW_DEBOUNCE
+	toeCounter = 0;
+	#endif
 	#endif
 	
 	// Voltage monitor
-	#ifdef ENABLE_MOTOR_POWER_MONITOR
+	#ifdef ENABLE_MOTOR_POWER
 	initADC(&ADCB);					// Init ADC
 	initADC_CH(&(ADCB.CH0), 0);		// Configure channel 0 to monitor motor power input
 	#endif
@@ -68,22 +71,42 @@ void updateInput_leg(uControllerInput *in, uControllerOutput *out) {
 	
 	// Check Limit Switches
 	#ifdef ENABLE_LIMITSW
-	if (checkLimitSW() != 0)
+	if ((checkLimitSW() & 0b11101111) != 0)
 		LimitSWCounter++;
-	else if ((checkLimitSW() == 0) && (LimitSWCounter > 0))
+	else if (((checkLimitSW() & 0b11101111) == 0) && (LimitSWCounter > 0))
 		LimitSWCounter--;
 	if (LimitSWCounter > 100)
-		out->limitSW = checkLimitSW();
+		out->limitSW = (checkLimitSW() & 0b11101111);
 	#endif
 	
 	// Check Toe Switch
 	#ifdef ENABLE_TOESW
-	if ((PORTA.IN & 1<<4) == 0) 
-		// If the to switch is not pressed
-		out->toe_switch = 0;
-	else
-		// If the toe switch is pressed
+	#ifdef ENABLE_TOESW_DEBOUNCE
+	if (((PORTA.IN & 1<<4) != 0)) {
+		// If the to switch is pressed
+		if (toeCounter < 100)
+			toeCounter++;
+	}
+	else if (((PORTA.IN & 1<<4) == 0)) {
+		// If the toe switch is not pressed
+		if (toeCounter > 0)
+			toeCounter--;
+	}
+	
+	if (toeCounter == 100)
 		out->toe_switch = 1;
+	else if (toeCounter == 0)
+		out->toe_switch = 0;
+	#else
+	if (((PORTA.IN & 1<<4) != 0)) {
+		// If the to switch is pressed
+		out->toe_switch = 1;
+	}
+	else {
+		// If the toe switch is not pressed
+		out->toe_switch = 0;
+	}
+	#endif
 	#endif
 	
 	#ifdef ENABLE_MOTOR_DEBUG
@@ -97,18 +120,41 @@ void updateInput_leg(uControllerInput *in, uControllerOutput *out) {
 	// Read Motor Encoder
 	status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
 	// Check if the BiSS read was valid
-	while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
+	//while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
+	//	status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
+	//}
+	
+	if ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) { // Error happened
 		status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
+		if ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) { // second error happened
+		}
+		else {
+			out->encoder[0] = *((uint32_t*)biss);
+		}
 	}
-	out->encoder[0] = *((uint32_t*)biss);
+	else {
+		out->encoder[0] = *((uint32_t*)biss);
+	}
+	
 	
 	// Read Leg Encoder
 	status = readBiSS_bang_motor(biss, &PORTC,1<<5,1<<6);
 	// Check if the BiSS read was valid
-	while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
-		status = readBiSS_bang_motor(biss, &PORTD,1<<5,1<<6);
+	//while ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) {
+	//	status = readBiSS_bang_motor(biss, &PORTD,1<<5,1<<6);
+	//}
+	
+	if ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) { // Error happened
+		status = readBiSS_bang(biss, &PORTF,1<<5,1<<7);
+		if ((status == 0xFF) || ((status & BISS_ERROR_bm) == 0)) { // second error happened
+		}
+		else {
+			out->encoder[1] = *((uint32_t*)biss);
+		}
 	}
-	out->encoder[1] = *((uint32_t*)biss);
+	else {
+		out->encoder[1] = *((uint32_t*)biss);
+	}
 	#endif
 	
 	#ifdef ENABLE_INC_ENCODER
@@ -131,7 +177,7 @@ void updateInput_leg(uControllerInput *in, uControllerOutput *out) {
 	#endif
 	
 	// Read the power monitor ADCs
-	#ifdef ENABLE_MOTOR_POWER_MONITOR
+	#ifdef ENABLE_MOTOR_POWER
 	out->motor_power = readADC_CH(ADCB.CH0);
 	#endif
 	

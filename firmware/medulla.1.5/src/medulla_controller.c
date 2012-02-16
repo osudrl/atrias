@@ -18,7 +18,7 @@ uint16_t		SM0_addr, SM1_addr, SM2_addr, SM3_addr, SM2_len, SM3_len;
 static int	uart_putchar(char c, FILE *stream);
 static FILE mystdout = FDEV_SETUP_STREAM (uart_putchar, NULL, _FDEV_SETUP_WRITE);
 uint8_t			rs_data;
-int8_t			eStop_count;
+int16_t			eStop_count;
 
 // Interrupt handeler for the step timer overflow.
 ISR(TCD1_OVF_vect) {
@@ -61,7 +61,7 @@ void medulla_run(void* in, void* out) {
 	//******** Loop ********
 	timer_Start(WATCHDOG_TIMER,TC_CLKSEL_DIV64_gc);
 	TCD1.INTCTRLA =TC_OVFINTLVL_HI_gc;
-	timer_Start(STEP_TIMER,TC_CLKSEL_DIV4_gc);
+	timer_Start(STEP_TIMER,TC_CLKSEL_DIV2_gc);
 	sei();	// Enable interrupt
 	while(1) {
 		updateInput();
@@ -132,7 +132,7 @@ void medulla_run(void* in, void* out) {
 			else if ((checkEStop() == 0) && (eStop_count > 0))
 				eStop_count -= 1;
 
-			if (eStop_count > 100) {
+			if (eStop_count > 200) {
 				if (currentState != ERROR)
 				currentState = ERROR;
 				eStop = 1;
