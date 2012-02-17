@@ -18,7 +18,7 @@
 	<property name="upright_length" value="1" />
 	<property name="boom_length" value="1" />
 	<property name="pendulum_length" value="0.9" />
-	<property name="spring_stiffness" value="500" />
+	<property name="spring_stiffness" value="3.5" />
 	<property name="leg_seg_damping" value="0" />
 	
 	<!-- Initial Condition -->
@@ -40,6 +40,7 @@
 
 		<joint name="world_upright_joint" type="fixed">
 			<!-- anchor xyz="0 0 0" / -->
+			<axis xyz="0 0 1" rpy="0 0 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="world" />
 			<child link="upright_link"/>
@@ -110,6 +111,7 @@
 
 		<gazebo reference="boom_link">
 			<material>Gazebo/Red</material>
+			<static>true</static>
 		</gazebo>
 
 
@@ -119,8 +121,8 @@
 
 
 		<joint name="pendulum_joint" type="continuous">
-			<axis xyz="1 0 0" />
-			<origin xyz="${boom_length} 0 0" rpy="${M_PI/18/5} 0 0" />
+			<axis xyz="0 1 0" />
+			<origin xyz="${boom_length} 0 0" rpy="0 ${M_PI/18/5} 0" />
 			<parent link="boom_link" />
 			<child link="pendulum_link"/>
 		</joint>
@@ -131,8 +133,8 @@
 				<mass value="1"/>
 				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
 				<inertia ixx="0.245" ixy="0" ixz="0"
-				         iyy="1" iyz="0"
-				         izz="1" />
+				         iyy="0.245" iyz="0"
+				         izz="0.245" />
 			</inertial>
 			<visual>
 				<origin xyz="0 0 ${-pendulum_length/2}" rpy="0 0 0" />
@@ -150,6 +152,30 @@
 
 		<gazebo reference="pendulum_link">
 			<material>Gazebo/Red</material>
+		</gazebo>
+
+		<gazebo>
+			<controller:spring name="pendulum_spring" plugin="libspring.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> upright_link </bodyName1>
+				<bodyName2> pendulum_link </bodyName2>
+				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
+			</controller:spring>
+		</gazebo>
+		<gazebo>	
+			<controller:gazebo_ros_p3d name="p3d_base_controller" plugin="libgazebo_ros_p3d.so">
+						   <alwaysOn>true</alwaysOn>
+						   <updateRate>100.0</updateRate>
+						   <bodyName>pendulum_link</bodyName>
+						   <topicName>pendulum_pose_ground_truth</topicName>
+						   <gaussianNoise>0.01</gaussianNoise>
+						   <frameName>map</frameName>
+						   <xyzOffsets>25.7 25.7 0</xyzOffsets> <!-- initialize odometry for fake localization-->
+						   <rpyOffsets>0 0 0</rpyOffsets>
+						   <interface:position name="p3d_base_position"/>
+			</controller:gazebo_ros_p3d>
+
 		</gazebo>
 
 	</xacro:macro>
