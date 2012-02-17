@@ -115,8 +115,8 @@
 #define TRAN_B_OFF_ANGLE			0.00361156
 
 // Hip Medulla sensors:
-#define MIN_HIP_COUNT				13672
-#define MAX_HIP_COUNT				22756
+#define MIN_HIP_COUNT				9698 //13672
+#define MAX_HIP_COUNT				18612 //22756
 #define MIN_HIP_ANGLE				-0.157079633
 #define MAX_HIP_ANGLE				0.20943951
 
@@ -174,7 +174,8 @@
 #define ROLLOVER16BIT_THRESHOLD	        	32768
 #define MAX_16BIT				65536
 
-#define SEC_PER_CNT				125E-9
+#define SEC_PER_CNT1				6.25E-8
+#define SEC_PER_CNT				1.25E-7
 
 #define ADC_VAL_TO_VOLTAGE(val)                 (val * (2.68/255.0))
 

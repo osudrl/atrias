@@ -69,6 +69,8 @@ int                 motorAinc_offset_ticks = 0;
 int                 motorBinc_offset_ticks = 0;
 float               motorAinc_offset_angle = 0.0;
 float               motorBinc_offset_angle = 0.0;
+uint32_t	    last_medulla_time[NUM_OF_MEDULLAS_ON_ROBOT];
+uint32_t	    current_medulla_time[NUM_OF_MEDULLAS_ON_ROBOT];
 
 static unsigned char command = CMD_RUN;
 
@@ -269,6 +271,7 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ )
     {
         uc_in[i]->command = STATE_RUN;
+	last_medulla_time[i] = uc_out[i]->timestep;
     }
 
     for ( i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++ ) {
@@ -295,6 +298,20 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
+    int i = 0;
+
+    // Compute current medulla times
+    for (i = 0; i < 4; i++) {
+	if ((uc_out[i]->timestep - last_medulla_time[i]) > 100000) {
+	    current_medulla_time[i] =  0xFFFF+uc_out[i]->timestep;
+	    //printk("Overflow: %d - %d = %d\n", current_medulla_time[i],last_medulla_time[i],current_medulla_time[i]-last_medulla_time[i]);
+	}
+	else {
+	    current_medulla_time[i] = uc_out[i]->timestep;
+	    //printk("%d - %d = %d\n",current_medulla_time[i],last_medulla_time[i],current_medulla_time[i]-last_medulla_time[i]);
+	}
+    }
+
     // Create pointers to controller I/O
     c_in  = &shm->controller_input[shm->io_index];
     c_out = &shm->controller_output[shm->io_index];
@@ -304,29 +321,30 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->leg_angleB       = LEG_B_LEG_ENC_TO_ANGLE(uc_out[B_INDEX]->LEG_SEG_ANGLE);
     c_in->motor_angleA     = LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE) - TRAN_A_OFF_ANGLE;
     c_in->motor_angleB     = LEG_B_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE) - TRAN_B_OFF_ANGLE;
-
+    //printk("Leg Time: %d\n",current_medulla_time[A_INDEX]-last_medulla_time[A_INDEX]);
     c_in->motor_angleA_inc = motorAinc_offset_angle + ((((int)uc_out[A_INDEX]->encoder[2])-motorAinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
     c_in->motor_angleB_inc = motorBinc_offset_angle + ((((int)uc_out[B_INDEX]->encoder[2])-motorBinc_offset_ticks)*INC_ENCODER_RAD_PER_TICK);
 
     c_in->motor_velocityA = (c_in->motor_angleA - last_motor_angleA)
-        / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
+        / ( (float)(current_medulla_time[A_INDEX]-last_medulla_time[A_INDEX]) * SEC_PER_CNT1 );
     c_in->motor_velocityB = (c_in->motor_angleB - last_motor_angleB)
-        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );
+        / ( (float)(current_medulla_time[B_INDEX]-last_medulla_time[B_INDEX]) * SEC_PER_CNT1 );
 
     c_in->leg_velocityA = (c_in->leg_angleA - last_leg_angleA)
-        / ( (float)uc_out[A_INDEX]->timestep * SEC_PER_CNT );
+        / ( (float)(current_medulla_time[A_INDEX]-last_medulla_time[A_INDEX]) * SEC_PER_CNT1 );
     c_in->leg_velocityB = (c_in->leg_angleB - last_leg_angleB)
-        / ( (float)uc_out[B_INDEX]->timestep * SEC_PER_CNT );
+        / ( (float)(current_medulla_time[B_INDEX]-last_medulla_time[B_INDEX]) * SEC_PER_CNT1 );
 
     // Hip Inputs
     c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
-    c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)uc_out[HIP_INDEX]->timestep * SEC_PER_CNT);
+    //c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)(uc_out[HIP_INDEX]->timestep) * SEC_PER_CNT );
+    c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)(current_medulla_time[HIP_INDEX]-last_medulla_time[HIP_INDEX]) * SEC_PER_CNT1 );
     last_hip_angle = c_in->hip_angle;
-
-
+    printk("%d\n",uc_out[HIP_INDEX]->encoder[1]);
     c_in->toe_switch = uc_out[B_INDEX]->toe_switch;
 
     last_motor_angleA = c_in->motor_angleA;
+
     last_motor_angleB = c_in->motor_angleB;
     last_leg_angleA        = c_in->leg_angleA;
     last_leg_angleB        = c_in->leg_angleB;
@@ -352,11 +370,11 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
     // Update boom angles
     c_in->body_angle = (((float)(uc_out[BOOM_INDEX]->encoder[0]))-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;
-    c_in->body_angle_vel = (c_in->body_angle - last_body_angle) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
+    c_in->body_angle_vel = (c_in->body_angle - last_body_angle) / ((float)(uc_out[BOOM_INDEX]->timestep) * SEC_PER_CNT);
     last_body_angle = c_in->body_angle;
 
     c_in->zPosition = BOOM_PIVOT_HEIGHT + BOOM_LENGTH*sin(c_in->body_angle) + BOOM_ROBOT_OFFSET;
-    c_in->zVelocity = (c_in->zPosition - last_zPosition) / ((float)uc_out[BOOM_INDEX]->timestep * SEC_PER_CNT);
+    c_in->zVelocity = (c_in->zPosition - last_zPosition) / ((float)(uc_out[BOOM_INDEX]->timestep) * SEC_PER_CNT);
     last_zPosition = c_in->zPosition;
 
     if (ABS((int32_t)(uc_out[BOOM_INDEX]->encoder[1]) - last_xPositionEncoder) > 10000) {   // Has the encoder wrapped around?
@@ -394,6 +412,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     uc_in[HIP_INDEX]->counter++;
     uc_in[BOOM_INDEX]->counter++;
 
+    for (i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++)
+	last_medulla_time[i] = uc_out[i]->timestep;
 
     // Increment and rollover i/o index for datalogging.
     shm->io_index = (++shm->io_index) % SHM_TO_USPACE_ENTRIES;
