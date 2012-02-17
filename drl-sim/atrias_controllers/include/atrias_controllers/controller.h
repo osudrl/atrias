@@ -123,6 +123,14 @@ typedef struct {
 
     float time_of_last_stance;
 
+    float phase;
+    float desired_motor_position_A;
+    float desired_motor_position_B;
+    float desired_def_A;
+    float desired_def_B;
+
+
+
 } ControllerInput;
 
 typedef struct {
@@ -239,7 +247,17 @@ typedef struct {
 
     float time_of_last_stance;
     float last_hip_angle;
+
+    float force_sum_A;
+    float force_sum_B;
+
+    float phase;
+    float desired_motor_position_A;
+    float desired_motor_position_B;
+    float desired_def_A;
+    float desired_def_B;
 } RaibertControllerState;
+
 
 typedef struct {
     // Inputs
