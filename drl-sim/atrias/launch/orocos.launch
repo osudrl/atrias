@@ -1,7 +1,7 @@
 <launch>
     <!-- Start data publishing node. -->
     <node name    = "atrias_gui"
-          pkg     = "gui"
+          pkg     = "atrias_gui"
           type    = "atrias_gui"
           output  = "screen">
     </node>
