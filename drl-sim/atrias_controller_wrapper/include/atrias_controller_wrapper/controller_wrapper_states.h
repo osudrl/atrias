@@ -36,7 +36,7 @@
 
 /*****************************************************************************/
 
-Shm shm;
+ControllerWrapperData shm;
 
 unsigned char initialize_shm( void );
 //void takedown_shm( void );

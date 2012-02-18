@@ -167,17 +167,10 @@ typedef struct {
 
     ControllerData      controller_data[2];
 
-    int                 io_index;
-
     ControllerInput     controller_input;
     ControllerOutput    controller_output;
     ControllerState     controller_state;
-
-    // Messages
-    //unsigned char       msg_index;
-    //unsigned char       msg_priority;
-    //unsigned char       msg[SHM_TO_USPACE_MSGS][100];
-} Shm;
+} ControllerWrapperData;
 
 
 //======================================================//
