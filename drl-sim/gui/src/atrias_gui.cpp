@@ -302,7 +302,7 @@ int main (int argc, char **argv) {
     raibert_stance_p_gain_hscale->set_range(0., 6000.);
     raibert_stance_d_gain_hscale->set_range(0., 150.);
     raibert_stance_spring_threshold_hscale->set_range(0., 1.);
-	raibert_desired_height_hscale->set_range(0., 3.);
+    raibert_desired_height_hscale->set_range(0., 3.);
     raibert_leg_force_gain_hscale->set_range(0., 1.);
     raibert_preferred_leg_len_hscale->set_range(0.7, 1.);
     raibert_flight_p_gain_hscale->set_range(0., 1000.);
@@ -320,7 +320,7 @@ int main (int argc, char **argv) {
     raibert_stance_p_gain_spinbutton->set_range(0., 6000.);
     raibert_stance_d_gain_spinbutton->set_range(0., 150.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
-	raibert_desired_height_spinbutton->set_range(0., 3.);
+    raibert_desired_height_spinbutton->set_range(0., 3.);
     raibert_leg_force_gain_spinbutton->set_range(0., 1.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
@@ -332,11 +332,11 @@ int main (int argc, char **argv) {
 	// HScales
     hubicki_desired_velocity_hscale->set_range(-5., 5.);
     hubicki_hor_vel_gain_hscale->set_range(0., 10.);
-    hubicki_leg_angle_gain_hscale->set_range(0., 1.);
+    hubicki_leg_angle_gain_hscale->set_range(0., 200.);
     hubicki_stance_p_gain_hscale->set_range(0., 6000.);
     hubicki_stance_d_gain_hscale->set_range(0., 150.);
     hubicki_stance_spring_threshold_hscale->set_range(0., 1.);
-	hubicki_desired_height_hscale->set_range(0., 3.);
+    hubicki_desired_height_hscale->set_range(0., 3.);
     hubicki_leg_force_gain_hscale->set_range(0., 1.);
     hubicki_preferred_leg_len_hscale->set_range(0.7, 1.);
     hubicki_flight_p_gain_hscale->set_range(0., 1000.);
@@ -350,12 +350,12 @@ int main (int argc, char **argv) {
 	// Spinbuttons
     hubicki_desired_velocity_spinbutton->set_range(-5., 5.);
     hubicki_hor_vel_gain_spinbutton->set_range(0., 10.);
-    hubicki_leg_angle_gain_spinbutton->set_range(0., 1.);
+    hubicki_leg_angle_gain_spinbutton->set_range(0., 200.);
     hubicki_stance_p_gain_spinbutton->set_range(0., 6000.);
     hubicki_stance_d_gain_spinbutton->set_range(0., 150.);
     hubicki_stance_spring_threshold_spinbutton->set_range(0., 0.4);
-	hubicki_desired_height_spinbutton->set_range(0., 3.);
-    hubicki_leg_force_gain_spinbutton->set_range(0., 1.);
+    hubicki_desired_height_spinbutton->set_range(0., 3.);
+    hubicki_leg_force_gain_spinbutton->set_range(0., 6000.);
     hubicki_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     hubicki_flight_p_gain_spinbutton->set_range(0., 4000.);
     hubicki_flight_d_gain_spinbutton->set_range(0., 150.);
