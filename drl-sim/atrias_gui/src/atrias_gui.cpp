@@ -889,18 +889,10 @@ bool poke_controller (void) {
     sprintf(buffer,"%0.2f",ad.thermistorB[2]);
     MedullaB_TempC->set_text(buffer);
 
-<<<<<<< .working
     sprintf(buffer,"%0.1f",ad.motorVoltageB);
-=======
-    sprintf(buffer,"%0.1f",ad.motorVoltageB);
->>>>>>> .merge-right.r735
     MedullaB_VMotor->set_text(buffer);
 
-<<<<<<< .working
     sprintf(buffer,"%0.1f",ad.logicVoltageB);
-=======
-    sprintf(buffer,"%0.1f",ad.logicVoltageB);
->>>>>>> .merge-right.r735
     MedullaB_VLogic->set_text(buffer);
 
 //	ROS_INFO("MedulaA_Error: %d",ad.medullaStatusA);
