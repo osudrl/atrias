@@ -759,10 +759,10 @@ bool poke_controller (void) {
             ((HubickiControllerData *) (&(cr.control_data.elems)))->flight_hip_d_gain = hubicki_flight_hip_d_gain->get_value();
 
             // Set the state label.
-            if (ad.response.status == CMD_DISABLE)
+            if (ad.status == CMD_DISABLE)
                 hubicki_state_label->set_label("Disabled");
             else
-                if (((HubickiControllerState *) (&(ad.response.control_state.elems)))->in_flight)
+                if (((HubickiControllerState *) (&(ad.control_state.elems)))->in_flight)
                 hubicki_state_label->set_label("Flight");
             else
                 hubicki_state_label->set_label("Stance");
