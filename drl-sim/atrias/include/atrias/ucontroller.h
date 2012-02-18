@@ -183,9 +183,17 @@
 #define ADC_TO_TEMP(val)                        ((1.0/( (1.0/298.15) + (1.0/3988.0)*log(THERM_VAL_TO_R(val)/10000))) - 273.15)
 #define THERM_MAX_VAL                           39
 
+// Calculates the input voltage to a voltage divider. On the current menial board there is a 30/1 ratio between input and output voltage.
+// This also accounts for the small offset in the ADC measurement. 
 #define POWER_ADC_TO_V(val)                     ((ADC_VAL_TO_VOLTAGE(val)*30) - 2)
-#define MOTOR_POWER_MIN                         70
-#define LOGIC_POWER_MIN                         35
+
+// If the motor voltage is between the max and min values, then we want to disable. We assume that below the minumum voltage we are not
+// trying to move the motors, so it's okay if we don't disable. Also, the amps will be disabled so even if we try and move the motor it won't move
+#define MOTOR_POWER_DANGER_MAX                  140   // 44 Volts
+#define MOTOR_POWER_DANGER_MIN					10   // 3 Volts
+
+// If the logic power is below this level then we should be concerned and disable everything
+#define LOGIC_POWER_MIN                         31  // 10 Volts 
 
 // For GCC running on a 32-bit machine to minimize the size in memory of these structs, the smallest
 // values must come first.  This is important for compatability with the avr-gcc compiled code.

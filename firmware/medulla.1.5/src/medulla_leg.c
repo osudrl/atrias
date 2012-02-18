@@ -27,7 +27,7 @@ void initilize_leg(void) {
 	initADC(&ADCB);					// Init ADC
 	initADC_CH(&(ADCB.CH0), 0);		// Configure channel 0 to monitor motor power input
 	#endif
-	
+		
 	#ifdef ENABLE_LOGIC_POWER_MONITOR
 	initADC(&ADCB);					// Init ADC
 	initADC_CH(&(ADCB.CH1), 1);		// Configure channel 1 to monitor logic power input
@@ -282,7 +282,7 @@ MedullaState run_leg(uControllerInput *in, uControllerOutput *out) {
 	
 	// Check the input voltages agains the minimums
 	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	if (out->motor_power < MOTOR_POWER_MIN)
+	if ((out->motor_power < MOTOR_POWER_DANGER_MAX) && (out->motor_power > MOTOR_POWER_DANGER_MAX))
 		MotorPowerCounter++;
 	else {
 		if (MotorPowerCounter > 0)

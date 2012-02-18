@@ -14,7 +14,7 @@
 #include "medulla_boom.h"
 
 #define ENABLE_DEBUG
-//#define ENABLE_MOTOR_PASSTHROUGH
+#define ENABLE_MOTOR_PASSTHROUGH
 
 #define MEDULLA_BOOM
 #define MEDULLA_HIP
@@ -39,6 +39,11 @@ MedullaState (*error_pntr)(void);
 
 
 int main(void) {
+	medulla_run((void*)(&in),(void*)(&out));
+	return 0;
+}
+
+void motor_pass_through(void) {
 	#ifdef ENABLE_MOTOR_PASSTHROUGH
 	CLK.PSCTRL = 0x00;															// no division on peripheral clocks
 	Config32MHzClock();
@@ -53,9 +58,6 @@ int main(void) {
 			UARTWriteChar(&USARTE0, USARTF0.DATA);
 	}
 	#endif
-	
-	medulla_run((void*)(&in),(void*)(&out));
-	return 0;
 }
 
 void init(void) {
@@ -105,6 +107,10 @@ void init(void) {
 		#ifdef ENABLE_DEBUG
 		//printf("Initilizing Boom\n");
 		#endif
+	}
+	else if ((PORTH.IN>>4) == 0) {
+		// If the ID is 0b0000 then we run the motor pass through code
+		motor_pass_through();
 	}
 	else {
 		// If it's not a hip or a boom then it must be a leg, we don't really care which one, we will

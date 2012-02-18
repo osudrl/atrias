@@ -190,7 +190,7 @@ MedullaState run_hip(uControllerInput *in, uControllerOutput *out) {
 	
 	// Check the input voltages agains the minimums
 	#ifdef ENABLE_MOTOR_POWER_MONITOR
-	if (out->motor_power < MOTOR_POWER_MIN)
+	if ((out->motor_power < MOTOR_POWER_DANGER_MAX) && (out->motor_power > MOTOR_POWER_DANGER_MAX))
 		MotorPowerCounter++;
 	else {
 		if (MotorPowerCounter > 0)

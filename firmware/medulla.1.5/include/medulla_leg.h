@@ -27,7 +27,7 @@
 #define ENABLE_DEBUG
 #define ENABLE_THERM
 #define ENABLE_MOTOR_POWER
-//#define ENABLE_MOTOR_POWER_MONITOR
+#define ENABLE_MOTOR_POWER_MONITOR
 #define ENABLE_LOGIC_POWER_MONITOR
 //#define ENABLE_DAMPING_REGIONS
 
@@ -50,7 +50,7 @@ uint16_t toeCounter;
 int8_t ThermistorCounter;
 #endif
 
-#ifdef ENABLE_MOTOR_POWER
+#ifdef ENABLE_MOTOR_POWER_MONITOR
 uint16_t	MotorPowerCounter;
 #endif
 
