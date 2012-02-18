@@ -120,7 +120,13 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
             curSeconds = time(NULL);
             struct tm *tInfo;
             tInfo = localtime(&curSeconds);
-            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+// Hubicki, added option to change directory - 02-10-2012
+//            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+
+	    sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/mnt/hurst/Elxperimental_Data/ForceControlCalibration", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+// End Hubicki change
+
+
         }
         else {   // If filename is specified, use that as logfilename.
             ROS_INFO("data_subscriber: Setting logfile name as requested by GUI.");
