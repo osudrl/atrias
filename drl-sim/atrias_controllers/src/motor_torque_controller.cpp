@@ -1,15 +1,15 @@
 // Devin Koepl
 
-#include <atrias_controllers/controller.h>
+#include <atrias_controllers/motor_torque_controller.h>
 
-extern void initialize_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void initialize_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;
 }
 
 
-extern void update_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void update_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA = MTR_TRQ_CONTROLLER_DATA(data)->mtr_trqA;
@@ -18,7 +18,7 @@ extern void update_motor_torque_controller(ControllerInput *input, ControllerOut
 }
 
 
-extern void takedown_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void takedown_motor_torque_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;

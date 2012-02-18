@@ -1,6 +1,6 @@
 // Devin Koepl
 
-#include <atrias_controllers/controller.h>
+#include <atrias_controllers/raibert_controller.h>
 
 #define ESTIMATED_SPRING_STIFFNESS			0.
 #define ESTIMATED_GEAR_RATIO				20
@@ -8,7 +8,7 @@
 void flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 void stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
-extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	RAIBERT_CONTROLLER_STATE(state)->in_flight = true;
@@ -26,7 +26,7 @@ extern void initialize_raibert_controller(ControllerInput *input, ControllerOutp
 }
 
 
-extern void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	//RAIBERT_CONTROLLER_STATE(state)->in_flight = false;
@@ -61,7 +61,7 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 
 }
 
-extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA 	 = 0.;

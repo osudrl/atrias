@@ -1,7 +1,7 @@
 // Test Controller
 // By: Colan Dray and Michael Anderson
 
-#include <atrias_controllers/controller.h>
+#include <atrias_controllers/test_controller.h>
 
 #define ANGLE_CALCULATION_A(AAA) (PI/2.0 - PI + acos((AAA)))
 #define ANGLE_CALCULATION_B(BBB) (PI/2.0 + PI - acos((BBB)))
@@ -21,7 +21,7 @@ int controllerIteration = 1;
 
 enum {AIR_PHASE, SHORT_LEG_STANCE_PHASE, LONG_LEG_STANCE_PHASE};
 
-extern void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
+void initialize_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     output->motor_torqueA = output->motor_torqueB = 0.0;
     TEST_CONTROLLER_STATE(state)->springDeflectionAverageANew = 0.0;
@@ -39,7 +39,7 @@ extern void initialize_test_controller(ControllerInput *input, ControllerOutput 
     ROS_INFO("Test Controller Initialized.\n");
 }
 
-extern void update_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
+void update_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     TEST_CONTROLLER_STATE(state)->legAngle = (input->leg_angleA + input->leg_angleB) / 2.;
     TEST_CONTROLLER_STATE(state)->legLength = -0.5 * sin(input->leg_angleA) - 0.5 * sin(input->leg_angleB);
@@ -115,7 +115,7 @@ extern void update_test_controller(ControllerInput *input, ControllerOutput *out
     TEST_CONTROLLER_STATE(state)->lastZPosition = input->zPosition;
 }
 
-extern void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
+void takedown_test_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
     output->motor_torqueA = output->motor_torqueB = 0.0;
     ROS_INFO("Test Controller Stopped.\n");

@@ -1,0 +1,37 @@
+#import("atrias_controller_wrapper")
+import("atrias_ecat_master")
+import("atrias_controller_switcher")
+#import("rtt_std_msgs")
+
+require("ros_integration")
+
+print.log(Info, "Starting ATRIAS deployment script.")
+
+# Load necessary components.
+#loadComponent("atrias_cw", "AtriasControllerWrapper")
+loadComponent("atrias_em", "AtriasEthercatMaster")
+loadComponent("atrias_cs", "AtriasControllerSwitcher")
+
+# Set activity properties.
+#setActivity("atrias_cw", 0.001, HighestPriority, ORO_SCHED_RT)
+setActivity("atrias_em", 0.001, HighestPriority, ORO_SCHED_RT)
+setActivity("atrias_cs",  0.02, HighestPriority, ORO_SCHED_OTHER)
+
+# Create connections
+
+#var ConnPolicy adata
+#adata.transport = 3
+#adata.name_id = "/data_out_50_hz"
+#stream("atrias_cs.data_out_50_hz", adata)
+
+stream("atrias_cs.atrias_controller_requests", ros.topic("/atrias_controller_requests"))
+stream("atrias_cs.data_out_50_hz", ros.topic("/data_out_50_hz"))
+stream("atrias_cs.data_out_1000_hz", ros.topic("/data_out_1000_hz"))
+
+# Configure components.
+#atrias_cw.configure()
+atrias_em.configure()
+atrias_cs.configure()
+
+# Start components.
+#atrias_cs.start()

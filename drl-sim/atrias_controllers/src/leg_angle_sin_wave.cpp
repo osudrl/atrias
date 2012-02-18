@@ -1,6 +1,6 @@
 // Devin Koepl
 
-#include <atrias_controllers/controller.h>
+#include <atrias_controllers/leg_angle_sin_wave.h>
 
 #define MID_MOT_ANG_A	 -1.0254
 #define MID_MOT_ANG_B		4.167
@@ -11,7 +11,7 @@ typedef struct
 	float time;
 } SineData;
 
-extern void initialize_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void initialize_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	SIN_WAVE_CONTROLLER_STATE(state)->time = 0.;
@@ -20,7 +20,7 @@ extern void initialize_leg_angle_sin_wave(ControllerInput *input, ControllerOutp
 }
 
 
-extern void update_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void update_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	// We use a constant timestep of 1ms because this is the rate that this function is actually being called at.
@@ -58,7 +58,7 @@ extern void update_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *
 }
 
 
-extern void takedown_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void takedown_leg_angle_sin_wave(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;

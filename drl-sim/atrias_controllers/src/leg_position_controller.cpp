@@ -1,10 +1,4 @@
-#include <atrias_controllers/controller.h>
-
-#define DELTA_Y (0.5*sin(input->leg_angleB) + 0.5*sin(input->leg_angleA))
-#define DELTA_X (-0.5*cos(input->leg_angleB) - 0.5*cos(input->leg_angleA))
-#define LEG_LENGTH sqrt(DELTA_Y*DELTA_Y + DELTA_X*DELTA_X)
-
-#define Lab 0.15557
+#include <atrias_controllers/leg_position_controller.h>
 
 extern void initialize_leg_position_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, 
 	ControllerData *data)
@@ -43,3 +37,4 @@ extern void takedown_leg_position_controller(ControllerInput* input, ControllerO
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;
 }
+

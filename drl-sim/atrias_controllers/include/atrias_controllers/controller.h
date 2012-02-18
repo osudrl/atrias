@@ -1,50 +1,36 @@
 // Devin Koepl
 
 
-#ifndef FUNCS_H_CONTROLLER
-#define FUNCS_H_CONTROLLER
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 #include <drl_library/drl_math.h>
 
 #include <stdio.h>
 
-#ifdef COMPILE_FOR_RTAI
-#include <linux/types.h>
-#include <rtai_math.h>
-#else
 #include <stdint.h>
 #include <math.h>
-#endif
 
 #define TEST_CONTROLLER_MAGIC 24
 
-#define SIZE_OF_CONTROLLER_DATA 		100
-#define SIZE_OF_CONTROLLER_STATE_DATA   	256
+#define SIZE_OF_CONTROLLER_DATA         200
+#define SIZE_OF_CONTROLLER_STATE_DATA   256
 
 //======================================================//
 
 // Debugging print statements.
 
 //#define DEBUG_CONTROLLERS
-#undef	DEBUG_CONTROLLERS
+#undef  DEBUG_CONTROLLERS
 
 
 #ifdef DEBUG_CONTROLLERS
-#ifdef COMPILE_FOR_RTAI
-//#include <rtai_sem.h>
-#include <geometry_msgs/Vector3.h>
-#define PRINT_MSG	rt_printk
-#define PRINT_WARN	rt_printk
-//#define PRINT_MSG	rtai_print_to_screen
-//#define PRINT_WARN	rtai_print_to_screen
-#else
 #include <ros/ros.h>
-#define PRINT_MSG	ROS_INFO
-#define PRINT_WARN	ROS_WARN
-#endif
+#define PRINT_MSG   ROS_INFO
+#define PRINT_WARN  ROS_WARN
 #else
-#define PRINT_MSG	// printf
-#define PRINT_WARN	// printf
+#define PRINT_MSG   // printf
+#define PRINT_WARN  // printf
 #endif
 
 // Temporary for testing in uspace.
@@ -57,23 +43,36 @@
 
 // Controller types available.
 
-#define NO_CONTROLLER 				0
-#define MOTOR_TORQUE_CONTROLLER 		1
-#define MOTOR_POSITION_CONTROLLER 		2
-#define LEG_TORQUE_CONTROLLER			3
-#define LEG_POSITION_CONTROLLER 		4
-#define SINE_WAVE_CONTROLLER			5
-#define RAIBERT_CONTROLLER			6
-#define HUBICKI_CONTROLLER			7
-#define TEST_CONTROLLER 			8
-#define EQU_GAIT_CONTROLLER 			9
-#define FORCE_CONTROLLER			10
+#define NO_CONTROLLER                   0
+#define MOTOR_TORQUE_CONTROLLER         1
+#define MOTOR_POSITION_CONTROLLER       2
+#define LEG_TORQUE_CONTROLLER           3
+#define LEG_POSITION_CONTROLLER         4
+#define SINE_WAVE_CONTROLLER            5
+#define RAIBERT_CONTROLLER              6
+#define HUBICKI_CONTROLLER              7
+#define TEST_CONTROLLER                 8
+#define EQU_GAIT_CONTROLLER             9
+#define FORCE_CONTROLLER                10
 
 //======================================================//
 
 // If the controller commands both motors to have a torque below this value, assume that no controller is present,
 // and command a small torque to keep the robot off of its hardstops.
-#define MIN_TRQ_THRESH					1E-9
+#define MIN_TRQ_THRESH                  1E-9
+
+
+// ============================================================================
+// From old uspace_kern_shm.h
+// ============================================================================
+
+#define SHM_TO_USPACE_ENTRIES   1000000
+#define SHM_TO_USPACE_MSGS      100
+
+#define NO_MSG          0
+#define INFO_MSG        1
+#define WARN_MSG        2
+#define ERROR_MSG       3
 
 //======================================================//
 
@@ -128,10 +127,8 @@ typedef struct {
     float desired_motor_position_B;
     float desired_def_A;
     float desired_def_B;
-
-
-
 } ControllerInput;
+
 
 typedef struct {
     float motor_torqueA;
@@ -158,6 +155,30 @@ typedef struct {
     // Controller specific space.
     unsigned char data[SIZE_OF_CONTROLLER_DATA];
 } ControllerData;
+
+
+// ============================================================================
+// Data to controller wrapper.
+// ============================================================================
+
+typedef struct {
+    unsigned char       control_index;
+    unsigned char       req_switch;
+
+    ControllerData      controller_data[2];
+
+    int                 io_index;
+
+    ControllerInput     controller_input;
+    ControllerOutput    controller_output;
+    ControllerState     controller_state;
+
+    // Messages
+    //unsigned char       msg_index;
+    //unsigned char       msg_priority;
+    //unsigned char       msg[SHM_TO_USPACE_MSGS][100];
+} Shm;
+
 
 //======================================================//
 
@@ -360,4 +381,5 @@ typedef struct {
 #define TEST_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((TestControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 #define FORCE_CONTROLLER_STATE(CONTROLLER_STATE_PTR) ((ForceControllerState *)(&(CONTROLLER_STATE_PTR->data)))
 
-#endif // FUNCS_H_CONTROLLER
+#endif // CONTROLLER_H
+

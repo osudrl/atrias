@@ -1,6 +1,6 @@
-#include <atrias_controllers/controller.h>
+#include <atrias_controllers/leg_force_controller.h>
 
-extern void initialize_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, 
+void initialize_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, 
 	ControllerData *data)
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;
@@ -9,7 +9,7 @@ extern void initialize_leg_force_controller(ControllerInput* input, ControllerOu
 
 
 
-extern void update_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, ControllerData *data)
+void update_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, ControllerData *data)
 {	
 	float springASum = 0;
 	float springBSum = 0;
@@ -37,7 +37,7 @@ extern void update_leg_force_controller(ControllerInput* input, ControllerOutput
 }
 
 
-extern void takedown_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, ControllerData *data)
+void takedown_leg_force_controller(ControllerInput* input, ControllerOutput* output, ControllerState* state, ControllerData *data)
 {
 	output->motor_torqueA = output->motor_torqueB = 0.;
 }

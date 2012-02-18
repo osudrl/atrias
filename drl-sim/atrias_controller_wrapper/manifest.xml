@@ -3,8 +3,15 @@
         This package contains the components of the atrias_controller_wrapper package
     </description>
     <!--NOTE: set the license and author before you publish this code-->
-    <license></license>
-    <author>Unknown Author</author>
+    <author>Soo-Hyun Yoo</author>
+    <license>BSD</license>
+    <review status="unreviewed" notes="" />
+    <url>http://ros.org/wiki/atrias_controller_wrapper</url>
+
+    <depend package="roscpp" />
     <depend package="rtt" />
+    <depend package="atrias" />
+    <depend package="atrias_controllers" />
+    <depend package="drl_library" />
 </package>
 

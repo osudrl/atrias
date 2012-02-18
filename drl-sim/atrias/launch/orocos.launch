@@ -1,0 +1,17 @@
+<launch>
+    <!-- Start data publishing node. -->
+    <node name    = "atrias_gui"
+          pkg     = "gui"
+          type    = "atrias_gui"
+          output  = "screen">
+    </node>
+
+    <!-- Launch the Orocos script for atrias_ecat_master -->
+    <node name    = "atrias_ecat_master_rosnode"
+          pkg     = "ocl"
+          type    = "deployer-gnulinux"
+          args    = "-s $(find atrias_ecat_master)/application.ops -linfo --"
+          output  = "screen">
+    </node>
+</launch>
+
