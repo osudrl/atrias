@@ -44,6 +44,7 @@
 #include <ros/ros.h>
 #define PRINT_MSG   ROS_INFO
 #define PRINT_WARN  ROS_WARN
+#endif
 #else
 #define PRINT_MSG   // printf
 #define PRINT_WARN  // printf
