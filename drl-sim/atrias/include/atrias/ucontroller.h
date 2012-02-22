@@ -8,9 +8,9 @@
 #ifndef FUNCS_H_UCONTROLLER
 #define FUNCS_H_UCONTROLLER
 
-//#ifdef _AVR_
+#ifdef _AVR_
 #include <stdint.h>
-//#endif
+#endif
 
 // Medulla IDs
 #define MEDULLA_A_ID 				0b0000
