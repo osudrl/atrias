@@ -8,6 +8,14 @@
 
 #include <stdio.h>
 
+#ifdef COMPILE_FOR_RTAI
+#include <linux/types.h>
+#include <rtai_math.h>
+#else
+#include <stdint.h>
+#include <math.h>
+#endif
+
 #include <stdint.h>
 #include <math.h>
 
@@ -25,6 +33,14 @@
 
 
 #ifdef DEBUG_CONTROLLERS
+#ifdef COMPILE_FOR_RTAI
+//#include <rtai_sem.h>
+#include <geometry_msgs/Vector3.h>
+#define PRINT_MSG       rt_printk
+#define PRINT_WARN      rt_printk
+//#define PRINT_MSG     rtai_print_to_screen
+//#define PRINT_WARN    rtai_print_to_screen
+#else
 #include <ros/ros.h>
 #define PRINT_MSG   ROS_INFO
 #define PRINT_WARN  ROS_WARN
