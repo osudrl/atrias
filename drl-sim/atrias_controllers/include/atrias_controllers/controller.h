@@ -16,9 +16,6 @@
 #include <math.h>
 #endif
 
-#include <stdint.h>
-#include <math.h>
-
 #define TEST_CONTROLLER_MAGIC 24
 
 #define SIZE_OF_CONTROLLER_DATA         200
