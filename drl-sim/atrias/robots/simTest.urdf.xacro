@@ -1,45 +1,57 @@
 <?xml version="1.0"?>
 <robot name="atrias_robot"
-	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
-	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
-	xmlns:xacro="http://www.ros.org/wiki/xacro"
-	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
-	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
-	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
-	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
-	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+			 xmlns:xacro="http://www.ros.org/wiki/xacro"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+			 xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+			 xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+			 xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+			 xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
 
-	<!-- Constants -->
 	<property name="M_PI" value="3.14159"/>
 	<property name="SQRT_2" value="1.41421356"/>
 
-	<!-- Physical Properties -->
-	<property name="A_length" value="1" />
-	<property name="B_length" value="1" />
-	<property name="spring_stiffness" value="500" />
-	<property name="leg_seg_damping" value="0" />
-	
-	<!-- Initial Condition -->
-	<property name="initial_height" value="${A_length/SQRT_2 + B_length/SQRT_2}" />
-
-	<!-- Visual Properties -->
 	<property name="body_size" value="0.25 0.15 0.15" />
+
+	<property name="visual_motor_radius" value="0.015" />
 	<property name="leg_segment_radius" value="0.02" />
+	<property name="toe_radius" value="0.02" />
+
+	<property name="visual_motor_length" value="0.4" />
+	<property name="thigh_length" value="0.500" />
+	<property name="shin_length" value="0.350" />
+	<property name="lower_length" value="0.500" />
+	<property name="fourBar_length" value="0.500" />
+
+	<property name="body_mass" value="0.500" />
+	<property name="motor_mass" value="0.500" />
+	<property name="thigh_mass" value="0.500" />
+	<property name="shin_mass" value="0.350" />
+	<property name="lower_mass" value="0.350" />
+	<property name="fourBar_mass" value="0.500" />
+
+	<property name="spring_stiffness" value="10000" />
+	<property name="motor_damping" value="10000000" />
+	<property name="motor_friction" value="10000000" />
+	<property name="leg_damping" value="0" />
+	<property name="leg_friction" value="0" />
 
 	<xacro:macro name="atrias_robot">
 
-	<!--#########################################################################-->
-	<!--					Body					-->
-	<!--#########################################################################-->
+
+		<!--#########################################################################-->
+		<!--								Body                                     -->
+		<!--#########################################################################-->
 
 		<link name="body_link">
 			<inertial>
-				<mass value="10" />
+				<mass value="${body_mass}" />
 				<origin xyz="0 0 0" />
-				<inertia ixx="1.37" ixy="0" ixz="0"
-				         iyy="1.37" iyz="0"
-				         izz="1" />
+			<inertia ixx="0.8" ixy="0.01" ixz="0.01"
+					 iyy="0.7" iyz="0.01"
+				     izz="0.9" />
 			</inertial>   
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
@@ -57,168 +69,321 @@
 		<gazebo reference="body_link">
 			<material>Gazebo/BumpyMetal</material>
 		</gazebo>
-<!--
+
+
+		<!--#########################################################################-->
+		<!--								Thigh Motor                              -->
+		<!--#########################################################################-->
+		
+		<joint name="hip_thighMotor_joint" type="revolute">
+			<axis xyz="0 1 0" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<parent link="body_link" />
+			<child link="thighMotor_link" />
+			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="10000000000000" velocity="100000000000000" />
+			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
+		</joint>
+
+		<link name="thighMotor_link">
+			<inertial>
+				<mass value="${motor_mass}"/>
+				<origin xyz="0 0 0" />
+				<inertia ixx="5" ixy="0" ixz="0"
+				         iyy="5" iyz="0"
+				         izz="5" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 ${-M_PI/4} 0" />
+				<geometry>
+				  <cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 ${-M_PI/4} 0" />
+				<geometry>
+					<cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
+				</geometry>
+			</collision>
+		</link>
+
+		<gazebo reference="thighMotor_link">
+			<material> Gazebo/Green </material>
+		</gazebo>
+
 		<gazebo>
-			<controller:position_body name="position_block" plugin="libposition_body.so">
+			<controller:spring name="thighSpring" plugin="libspring.so">
 				<alwaysOn> true </alwaysOn>
 				<updateRate> 10000 </updateRate>
-				<bodyName> body_link </bodyName>
-			</controller:position_body>
+				<bodyName1> thighMotor_link </bodyName1>
+				<bodyName2> thigh_link </bodyName2>
+				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
+			</controller:spring>
 		</gazebo>
--->
-		<!--#########################################################################-->
-		<!--				 Leg A					-->
-		<!--#########################################################################-->
 
 
-		<joint name="body_legA_joint" type="continuous">
-			<axis xyz="1 0 0" />
-			<!-- anchor xyz="0 0 0" / -->
-			<origin xyz="0 0 0" rpy="${-M_PI/4} 0 0" />
+		<!--#########################################################################-->
+		<!--					Shin Motor                                           -->
+		<!--#########################################################################-->
+
+		<joint name="hip_shinMotor_joint" type="revolute">
+			<axis xyz="0 1 0" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="body_link" />
-			<child link="legA_link"/>
+			<child link="shinMotor_link"/>
+			<limit lower="${-5*M_PI/4+2.8362}" upper="${-5*M_PI/4+5.4978}" effort="10000000000000" velocity="100000000000000" />
+			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
+		</joint>
+
+		<link name="shinMotor_link">
+			<inertial>
+				<mass value="${motor_mass}"/>
+				<origin xyz="0 0 0" />
+				<inertia ixx="5" ixy="0" ixz="0"
+				         iyy="5" iyz="0"
+				         izz="5" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 ${M_PI/4} 0" />
+				<geometry>
+				  <cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 ${M_PI/4} 0" />
+				<geometry>
+					<cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
+				</geometry>
+			</collision>
+		</link>
+
+		<gazebo reference="shinMotor_link">
+			<material>Gazebo/Green</material>
+		</gazebo>
+
+		<gazebo>
+			<controller:spring name="shinSpring" plugin="libspring.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> shinMotor_link </bodyName1>
+				<bodyName2> shin_link </bodyName2>
+				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
+			</controller:spring>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--							 Thigh 										-->
+		<!--#########################################################################-->
+
+
+		<joint name="body_thigh_joint" type="continuous">
+			<axis xyz="0 1 0" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<parent link="body_link" />
+			<child link="thigh_link"/>
+			<!--limit lower="${-M_PI/4-0.6545}" upper="${-M_PI/4+2.7053}" effort="1000000000000" velocity="100000000000000" /-->
+			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
 		</joint>
 
 
-		<link name="legA_link">
+		<link name="thigh_link">
 			<inertial>
-				<mass value="0.66149"/>
-				<origin xyz="0 ${A_length/2} 0" rpy="0 0 0" />
+				<mass value="${thigh_mass}"/>
+				<origin xyz="${thigh_length/SQRT_2/2} 0 ${-thigh_length/SQRT_2/2}" />
 				<inertia ixx="0.01910" ixy="0" ixz="0"
 				         iyy="0.01910" iyz="0"
 				         izz="0.01910" />
 			</inertial>
 			<visual>
-				<origin xyz="0 ${A_length/2} 0" rpy="${-M_PI/2} 0 0" />
+				<origin xyz="${thigh_length/SQRT_2/2} 0 ${-thigh_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
 				<geometry>
-				  <cylinder length="${A_length}" radius="${leg_segment_radius}" />
+				  <cylinder length="${thigh_length}" radius="${leg_segment_radius}" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 ${A_length/2} 0" rpy="${-M_PI/2} 0 0"  />
+				<origin xyz="${thigh_length/SQRT_2/2} 0 ${-thigh_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
 				<geometry>
-					<cylinder length="${A_length}" radius="${leg_segment_radius}" />
+					<cylinder length="${thigh_length}" radius="${leg_segment_radius}" />
 				</geometry>
 			</collision>
 		</link>
-		<gazebo reference="legA_link">
+
+		<gazebo reference="thigh_link">
 			<material>Gazebo/Red</material>
 		</gazebo>
 
-		<gazebo>
-			<controller:joint_impedance name="leg_seg_frictionA" plugin="libjoint_impedance.so">
-				<alwaysOn> true </alwaysOn>
-				<updateRate> 10000 </updateRate>
-				<bodyName1> body_link </bodyName1>
-				<bodyName2> legA_link </bodyName2>
-				<rotationalDamping> ${leg_seg_damping} </rotationalDamping>
-			</controller:joint_impedance>
-		</gazebo>
-
 
 		<!--#########################################################################-->
-		<!--				 Leg B					-->
+		<!--							 Shin 			 							-->
 		<!--#########################################################################-->
 
-
-		<joint name="legA_legB_joint" type="continuous">
-			<axis xyz="1 0 0" />
-			<!-- anchor xyz="0 0 0" / -->
-			<origin xyz="0 ${A_length} 0" rpy="${M_PI/4} 0 0" />
-			<parent link="legA_link" />
-			<child link="legB_link"/>
+		<joint name="body_shin_joint" type="continuous">
+			<axis xyz="0 1 0" />
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<parent link="body_link" />
+			<child link="shin_link"/>
+			<!--limit lower="${-5*M_PI/4+2.4871}" upper="${-5*M_PI/4+5.4978}" effort="100000000000" velocity="100000000000000" /-->
+			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
 		</joint>
 
-
-		<link name="legB_link">
+		<link name="shin_link">
 			<inertial>
-				<mass value="0.68292"/>
-				<!--mass value="9999999999" /-->
-				<origin xyz="0 ${B_length/2} 0" rpy="0 0 0" />
+				<mass value="${shin_mass}"/>
+				<origin xyz="${-shin_length/SQRT_2/2} 0 ${-shin_length/SQRT_2/2}" />
 				<inertia ixx="0.02116" ixy="0" ixz="0"
 				         iyy="0.02116" iyz="0"
 				         izz="0.02116" />
 			</inertial>
 			<visual>
-				<origin xyz="0 ${B_length/2} 0" rpy="${-M_PI/2} 0 0" />
+				<origin xyz="${-shin_length/SQRT_2/2} 0 ${-shin_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
 				<geometry>
-				  <cylinder length="${B_length}" radius="${leg_segment_radius}" />
+				  <cylinder length="${shin_length}" radius="${leg_segment_radius}" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="0 ${B_length/2} 0" rpy="${-M_PI/2} 0 0" />
+				<origin xyz="${-shin_length/SQRT_2/2} 0 ${-shin_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
 				<geometry>
-					<cylinder length="${B_length}" radius="${leg_segment_radius}" />
+					<cylinder length="${shin_length}" radius="${leg_segment_radius}" />
 				</geometry>
 			</collision>
 		</link>
-		<gazebo reference="legB_link">
+
+		<gazebo reference="shin_link">
 			<material>Gazebo/Red</material>
 		</gazebo>
 
-		<gazebo>
-			<controller:joint_impedance name="leg_seg_frictionB" plugin="libjoint_impedance.so">
-				<alwaysOn> true </alwaysOn>
-				<updateRate> 10000 </updateRate>
-				<bodyName1> legA_link </bodyName1>
-				<bodyName2> legB_link </bodyName2>
-				<rotationalDamping> ${leg_seg_damping} </rotationalDamping>
-			</controller:joint_impedance>
-		</gazebo>
-
-
-		<gazebo>
-			<controller:position_body name="position_legB" plugin="libposition_body.so">
-				<alwaysOn> true </alwaysOn>
-				<updateRate> 10000 </updateRate>
-				<bodyName> legB_link </bodyName>
-			</controller:position_body>
-		</gazebo>
-
 
 		<!--#########################################################################-->
-		<!--				Spring 					     -->
+		<!--								 Lower Link					 			-->
 		<!--#########################################################################-->
-<!--
-		<gazebo>
-			<controller:spring name="springA" plugin="libspring.so">
-				<alwaysOn> true </alwaysOn>
-				<updateRate> 10000 </updateRate>
-				<bodyName1> legA_link </bodyName1>
-				<bodyName2> legB_link </bodyName2>
-				<rotationalStiffness> ${spring_stiffness} </rotationalStiffness>
-			</controller:spring>
-		</gazebo>
 
--->
-<!--
-		<joint name="legB_ground_joint" type="continuous">
-			<origin xyz="0 ${B_length} 0" />
-			<parent link="legB_link" />
-			<child link="ground_link" />
-			<axis xyz="1 0 0" />
+		<joint name="thigh_lower_joint" type="continuous">
+			<axis xyz="0 1 0" />
+			<origin xyz="${thigh_length/SQRT_2} 0 ${-thigh_length/SQRT_2}" rpy="0 0 0" />
+			<parent link="thigh_link" />
+			<child link="lower_link"/>
+			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
+			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
 		</joint>
-		
-		<link name="ground_link">
+
+
+		<link name="lower_link">
 			<inertial>
-				<mass value="0.68292"/>
-				<origin xyz="0 0 0" rpy="0 0 0" />
-				<inertia ixx="0.02116" ixy="0" ixz="0"
-				         iyy="0.02116" iyz="0"
-				         izz="0.02116" />
+				<mass value="${lower_mass}"/>
+				<origin xyz="${-lower_length/SQRT_2/2} 0 ${-lower_length/SQRT_2/2}" />
+				<inertia ixx="0.00633" ixy="0" ixz="0"
+				         iyy="0.00633" iyz="0"
+				         izz="0.00633" />
 			</inertial>
+			<visual>
+				<origin xyz="${-lower_length/SQRT_2/2} 0 ${-lower_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
+				<geometry>
+				  <cylinder length="${lower_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="${-lower_length/SQRT_2/2} 0 ${-lower_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
+				<geometry>
+					<cylinder length="${lower_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
 		</link>
 
-
-
-		<gazebo>
-			<controller:position_body name="position_ground" plugin="libposition_body.so">
-				<alwaysOn> true </alwaysOn>
-				<updateRate> 10000 </updateRate>
-				<bodyName> ground_link </bodyName>
-			</controller:position_body>
+		<gazebo reference="lower_link">
+			<material>Gazebo/Red</material>
 		</gazebo>
--->
+
+
+		<!--#########################################################################-->
+		<!--								 Four Bar	 							-->
+		<!--#########################################################################-->
+
+		<joint name="shin_fourBar_joint" type="continuous">
+			<axis xyz="0 1 0" />
+			<origin xyz="${-shin_length/SQRT_2} 0 ${-shin_length/SQRT_2}" rpy="0 0 0" />
+			<parent link="shin_link" />
+			<child link="fourBar_link"/>
+			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
+			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
+		</joint>
+
+		<link name="fourBar_link">
+			<inertial>
+				<mass value="${fourBar_mass}"/>
+				<origin xyz="${fourBar_length/SQRT_2/2} 0 ${-fourBar_length/SQRT_2/2}" />
+				<inertia ixx="0.006243" ixy="0" ixz="0"
+				         iyy="0.0061243" iyz="0"
+				         izz="0.0001243" />
+			</inertial>
+			<visual>
+				<origin xyz="${fourBar_length/SQRT_2/2} 0 ${-fourBar_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
+				<geometry>
+				  <cylinder length="${fourBar_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="${fourBar_length/SQRT_2/2} 0 ${-fourBar_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
+				<geometry>
+					<cylinder length="${fourBar_length}" radius="${leg_segment_radius}" />
+				</geometry>
+			</collision>
+		</link>
+
+		<gazebo reference="fourBar_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--							Four Bar Linkage Joint						-->
+		<!--#########################################################################-->
+		
+		<gazebo>
+			<joint:hinge name="lower_fourBar_joint">
+				<body1>lower_link</body1>
+				<body2>fourBar_link</body2>
+				<anchor>lower_link</anchor>
+				<axis>0 1 0</axis>
+				<anchorOffset>${-(lower_length-0.15)/SQRT_2} 0 ${-(lower_length-0.15)/SQRT_2}</anchorOffset>
+			</joint:hinge>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--							Toe											-->
+		<!--#########################################################################-->
+		
+		<joint name="lower_toe_joint" type="fixed">
+			<origin xyz="${-lower_length/SQRT_2} 0 ${-lower_length/SQRT_2}" rpy="0 0 0" />
+			<parent link="lower_link" />
+			<child link="toe_link"/>
+		</joint>
+
+		<link name="toe_link">
+			<inertial>
+				<mass value="0.000001"/>
+				<origin xyz="0 0 0" />
+				<inertia ixx="0.0000001" ixy="0" ixz="0"
+				         iyy="0.0000001" iyz="0"
+				         izz="0.0000001" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+				  <sphere radius="${toe_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+					<sphere radius="${toe_radius}" />
+				</geometry>
+			</collision>
+		</link>
+
+		<gazebo reference="toe_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
 
 
 	</xacro:macro>
