@@ -46,59 +46,45 @@
 		
 		<link name="world" />
 
-		<joint name="world_joint" type="fixed">
+		<joint name="world_joint" type="continuous">
 			<origin xyz="0 0 0" rpy="0 0 0" />
+			<axis xyz="0 1 0" />
 			<parent link="world" />
 			<child link="world_link"/>
 		</joint>
 
 		<link name="world_link">
 			<inertial>
-				<mass value="0.0000001"/>
+				<mass value="0.00001"/>
 				<origin xyz="0 0 0" />
-				<inertia ixx="0.00000001" ixy="0" ixz="0"
-				         iyy="0.00000001" iyz="0"
-				         izz="0.00000001" />
+				<inertia ixx="0.00001" ixy="0" ixz="0"
+				         iyy="0.00001" iyz="0"
+				         izz="0.00001" />
 			</inertial>
-			<visual>
-				<origin xyz="0 0 0" rpy="0 0 0" />
-				<geometry>
-				  <cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
-				</geometry>
-			</visual>
-			<collision>
-				<origin xyz="0 0 0" rpy="0 0 0" />
-				<geometry>
-					<cylinder length="${visual_motor_length}" radius="${visual_motor_radius}" />
-				</geometry>
-			</collision>
 		</link>
-		<gazebo reference="world_link">
-			<material>Gazebo/Blue</material>
-		</gazebo>
 
 		<joint name="planar_joint" type="prismatic">
 			<origin xyz="0 0 1.5" rpy="0 0 0" />
 			<axis xyz="0 0 1" />
-			<limit upper="100" lower="0" effort="1000000000" velocity="1000000000"/>
+			<limit upper="100" lower="-100" effort="1000000000" velocity="1000000000"/>
 			<parent link="world_link" />
-			<child link="planar_link"/>
+			<child link="body_no_twist_link"/>
 		</joint>
 
-		<link name="planar_link">
+		<link name="body_no_twist_link">
 			<inertial>
-				<mass value="0.0000001"/>
+				<mass value="0.00001"/>
 				<origin xyz="0 0 0" />
-				<inertia ixx="0.00000001" ixy="0" ixz="0"
-				         iyy="0.00000001" iyz="0"
-				         izz="0.00000001" />
+				<inertia ixx="0.00001" ixy="0" ixz="0"
+				         iyy="0.00001" iyz="0"
+				         izz="0.00001" />
 			</inertial>
 		</link>
 
 		<joint name="body_no_twist_joint" type="continuous">
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<axis xyz="0 1 0" />
-			<parent link="planar_link" />
+			<parent link="body_no_twist_link" />
 			<child link="body_link"/>
 		</joint>
 
