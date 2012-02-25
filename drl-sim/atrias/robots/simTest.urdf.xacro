@@ -27,10 +27,11 @@
 
 	<property name="body_mass" value="0.500" />
 	<property name="motor_mass" value="0.500" />
-	<property name="thigh_mass" value="0.500" />
-	<property name="shin_mass" value="0.350" />
-	<property name="lower_mass" value="0.350" />
-	<property name="fourBar_mass" value="0.500" />
+	<property name="thigh_mass" value="3.132" />
+	<property name="shin_mass" value="3.137" />
+	<property name="lower_mass" value="0.204" />
+	<property name="fourBar_mass" value="0.166" />
+	<property name="toe_mass" value="0.087" />
 
 	<property name="spring_stiffness" value="10000" />
 	<property name="motor_damping" value="10000000" />
@@ -94,11 +95,11 @@
 
 		<link name="body_link">
 			<inertial>
+				<origin xyz="0 0 0.002" />
 				<mass value="${body_mass}" />
-				<origin xyz="0 0.5 0" />
-			<inertia ixx="0.8" ixy="0.01" ixz="0.01"
-					 iyy="0.7" iyz="0.01"
-				     izz="0.9" />
+				<inertia ixx="0.0932" ixy="0.0044" ixz="-0.0019"
+						 iyy="0.0833" iyz="-0.0102"
+					     izz="0.0785" />
 			</inertial>   
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0" />
@@ -134,10 +135,10 @@
 		<link name="thighMotor_link">
 			<inertial>
 				<mass value="${motor_mass}"/>
-				<origin xyz="0 0 0" />
-				<inertia ixx="5" ixy="0" ixz="0"
-				         iyy="5" iyz="0"
-				         izz="5" />
+				<origin xyz="0 -0.044 0" />
+				<inertia ixx="4" ixy="0" ixz="0"
+				         iyy="7.25" iyz="0"
+				         izz="4" />
 			</inertial>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 ${-M_PI/4} 0" />
@@ -184,10 +185,10 @@
 		<link name="shinMotor_link">
 			<inertial>
 				<mass value="${motor_mass}"/>
-				<origin xyz="0 0 0" />
-				<inertia ixx="5" ixy="0" ixz="0"
-				         iyy="5" iyz="0"
-				         izz="5" />
+				<origin xyz="0 0.044 0" />
+				<inertia ixx="4" ixy="0" ixz="0"
+				         iyy="7.25" iyz="0"
+				         izz="4" />
 			</inertial>
 			<visual>
 				<origin xyz="0 0 0" rpy="0 ${M_PI/4} 0" />
@@ -236,10 +237,10 @@
 		<link name="thigh_link">
 			<inertial>
 				<mass value="${thigh_mass}"/>
-				<origin xyz="${thigh_length/SQRT_2/2} 0 ${-thigh_length/SQRT_2/2}" />
-				<inertia ixx="0.01910" ixy="0" ixz="0"
-				         iyy="0.01910" iyz="0"
-				         izz="0.01910" />
+				<origin xyz="0.100 -0.020 -0.011" />
+				<inertia ixx="0.0339" ixy="0.0056" ixz="-0.0179"
+				         iyy="0.0688" iyz="-0.0017"
+				         izz="0.0512" />
 			</inertial>
 			<visual>
 				<origin xyz="${thigh_length/SQRT_2/2} 0 ${-thigh_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
@@ -276,10 +277,10 @@
 		<link name="shin_link">
 			<inertial>
 				<mass value="${shin_mass}"/>
-				<origin xyz="${-shin_length/SQRT_2/2} 0 ${-shin_length/SQRT_2/2}" />
-				<inertia ixx="0.02116" ixy="0" ixz="0"
-				         iyy="0.02116" iyz="0"
-				         izz="0.02116" />
+				<origin xyz="-0.0979 0.0200 -0.0081" />
+				<inertia ixx="0.0309" ixy="0.0054" ixz="0.0154"
+				         iyy="0.0637" iyz="0.0014"
+				         izz="0.0493" />
 			</inertial>
 			<visual>
 				<origin xyz="${-shin_length/SQRT_2/2} 0 ${-shin_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
@@ -317,10 +318,10 @@
 		<link name="lower_link">
 			<inertial>
 				<mass value="${lower_mass}"/>
-				<origin xyz="${-lower_length/SQRT_2/2} 0 ${-lower_length/SQRT_2/2}" />
-				<inertia ixx="0.00633" ixy="0" ixz="0"
-				         iyy="0.00633" iyz="0"
-				         izz="0.00633" />
+				<origin xyz="-0.127 0 -0.141" />
+				<inertia ixx="0.0027" ixy="0" ixz="0.0026"
+				         iyy="0.0054" iyz="0"
+				         izz="0.0028" />
 			</inertial>
 			<visual>
 				<origin xyz="${-lower_length/SQRT_2/2} 0 ${-lower_length/SQRT_2/2}" rpy="0 ${M_PI/4} 0" />
@@ -357,10 +358,10 @@
 		<link name="fourBar_link">
 			<inertial>
 				<mass value="${fourBar_mass}"/>
-				<origin xyz="${fourBar_length/SQRT_2/2} 0 ${-fourBar_length/SQRT_2/2}" />
-				<inertia ixx="0.006243" ixy="0" ixz="0"
-				         iyy="0.0061243" iyz="0"
-				         izz="0.0001243" />
+				<origin xyz="0.1633 0 -0.1633" />
+				<inertia ixx="0.0033" ixy="0" ixz="-0.0032"
+				         iyy="0.0063" iyz="0"
+				         izz="0.0033" />
 			</inertial>
 			<visual>
 				<origin xyz="${fourBar_length/SQRT_2/2} 0 ${-fourBar_length/SQRT_2/2}" rpy="0 ${-M_PI/4} 0" />
@@ -408,7 +409,7 @@
 
 		<link name="toe_link">
 			<inertial>
-				<mass value="0.000001"/>
+				<mass value="${toe_mass}"/>
 				<origin xyz="0 0 0" />
 				<inertia ixx="0.0000001" ixy="0" ixz="0"
 				         iyy="0.0000001" iyz="0"
