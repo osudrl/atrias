@@ -10,8 +10,7 @@
   <node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 1. -urdf -param robot_description -model atrias" respawn="false" output="screen" />
 
   <!-- start the guis -->
-  <node name="atrias_gui" pkg="atrias_gui" type="atrias_gui" output="screen" />
-  <node name="simulation_gui" pkg="atrias_gui" type="position_body_gui" output="screen" />
-
+  <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />
+  <node name="simulation_gui" pkg="gui" type="position_body_gui" output="screen" />
 
 </launch>
