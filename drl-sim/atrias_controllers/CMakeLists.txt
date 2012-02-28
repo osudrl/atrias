@@ -97,11 +97,11 @@ else(EXISTS /usr/realtime)
 endif(EXISTS /usr/realtime)
 
 # Check to see if gazebo installed.
-#execute_process(
-#	COMMAND rospack find gazebo
-#	OUTPUT_VARIABLE GAZEBO_INSTALLED
-#	OUTPUT_STRIP_TRAILING_WHITESPACE
-#)
+execute_process(
+	COMMAND rospack find gazebo
+	OUTPUT_VARIABLE GAZEBO_INSTALLED
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # If it is then build the controller wrappers.
 if(EXISTS "${GAZEBO_INSTALLED}")
