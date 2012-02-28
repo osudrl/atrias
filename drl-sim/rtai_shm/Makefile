@@ -8,7 +8,7 @@ EXTRA_CFLAGS := \
 	-ffast-math \
 	-mhard-float
 
-LINUX_SOURCE_DIR=/usr/src/linux-`uname -r`
+LINUX_SOURCE_DIR=/usr/src/linux
 MODULES_DIR=/lib/modules/`uname -r`
 
 CC=$(shell rtai-config --cc)
