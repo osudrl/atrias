@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<!-- ATRIAS 2.0 Robot Model -->
+<!-- Adapted for ATRIAS 2.0 in Winter Term 2012 by Andrew Peekema and Matthew Rueben -->
+
+<robot
+
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- Mathematical Constants -->
+	<property name="M_PI" value="3.14159"/>
+	<property name="SQRT_2" value="1.41421356"/>
+
+	<!-- macro name used to insert this entire file into the header file when parsed by xacro -->
+	<xacro:macro name="atrias_planar_constraint" params="attachmentLink">
+
+		<!--#########################################################################-->
+		<!--							Planar Motion								-->
+		<!--#########################################################################-->
+		
+		<link name="world" />
+
+		<joint name="world_joint" type="continuous">
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<axis xyz="0 1 0" />
+			<parent link="world" />
+			<child link="world_link"/>
+		</joint>
+
+		<link name="world_link">
+			<inertial>
+				<mass value="0.00001"/>
+				<origin xyz="0 0 0" />
+				<inertia ixx="0.00001" ixy="0" ixz="0"
+				         iyy="0.00001" iyz="0"
+				         izz="0.00001" />
+			</inertial>
+		</link>
+
+		<joint name="planar_joint" type="prismatic">
+			<origin xyz="0 0 1.5" rpy="0 0 0" />
+			<axis xyz="0 0 1" />
+			<limit upper="100" lower="-100" effort="1000000000" velocity="1000000000"/>
+			<parent link="world_link" />
+			<child link="body_no_twist_link"/>
+		</joint>
+
+		<link name="body_no_twist_link">
+			<inertial>
+				<mass value="0.00001"/>
+				<origin xyz="0 0 0" />
+				<inertia ixx="0.00001" ixy="0" ixz="0"
+				         iyy="0.00001" iyz="0"
+				         izz="0.00001" />
+			</inertial>
+		</link>
+
+		<joint name="body_no_twist_joint" type="continuous">
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<axis xyz="0 1 0" />
+			<parent link="body_no_twist_link" />
+			<child link="${attachmentLink}"/>
+		</joint>
+
+
+	</xacro:macro>
+
+
+</robot>
+

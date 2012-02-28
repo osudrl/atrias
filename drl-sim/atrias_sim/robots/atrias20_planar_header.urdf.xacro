@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!-- Header File for ATRIAS 2.0 Robot Model -->
+<!-- Adapted for ATRIAS 2.0 in Winter Term 2012 by Andrew Peekema and Matthew Rueben -->
+
+<robot name="atrias"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- get robot model macro --> 
+	<include filename="atrias20_leg.urdf.xacro" />
+	<include filename="atrias20_planar_constraint.urdf.xacro" />
+
+	<!-- constrains and builds the atrias leg model -->
+	<xacro:atrias_planar_constraint attachmentLink="leg_body_link" />
+	<xacro:atrias_leg bodyLink="leg_body_link" />
+
+	<!-- initializes the all-in-one controller with the correct link names, etc. -->
+	<gazebo>
+		<controller:all_in_one_controller_wrapper name="all_in_one_controller_wrapper" plugin="liball_in_one_controller_wrapper.so">
+			<alwaysOn> true </alwaysOn>
+			<updateRate> 1000 </updateRate>
+			<bodyName> leg_body_link </bodyName>
+			<motorAName> thighMotor_link </motorAName>
+			<motorBName> shinMotor_link </motorBName>
+			<legAName> thigh_link </legAName>
+			<legBName> shin_link </legBName>
+		</controller:all_in_one_controller_wrapper>
+	</gazebo>
+
+</robot>

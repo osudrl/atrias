@@ -1,0 +1,238 @@
+<model:physical name="atrias_model"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz" 
+  xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model" 
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" 
+  xmlns:window="http://playerstage.sourceforge.net/gazebo/xmlschema/#window" 
+  xmlns:param="http://playerstage.sourceforge.net/gazebo/xmlschema/#param" 
+  xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" 
+  xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+  xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+  xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint" 
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" 
+  xmlns:ui="http://playerstage.sourceforge.net/gazebo/xmlschema/#ui"
+  xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering" 
+  xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable" 
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics">
+
+	<property name="initial_height" value="1" />
+
+<!--#########################################################################-->
+<!--																	Body	 				 												-->
+<!--#########################################################################-->
+
+  <body:box name="body_body">
+    <xyz> 0.0 0.0 ${initial_height} </xyz>
+    <rpy> 0.0 0.0 0.0 </rpy>
+    <geom:box name="body_geom">
+		  <xyz> 0.0 0.0 0 </xyz>
+		  <rpy> 0.0 0.0 0.0 </rpy>
+      <mesh> unit_box </mesh>
+      <size> 0.25 0.15 0.15 </size>
+      <visual>
+        <size> 0.25 0.15 0.15 </size>
+        <material>Gazebo/BumpyMetal </material>
+        <mesh> unit_box </mesh>
+				<mass> 30 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+<!--#########################################################################-->
+<!--																	Motor A				 												-->
+<!--#########################################################################-->
+
+  <body:box name="motorA_body">
+    <xyz>0.0 0.0 1 </xyz>
+    <rpy>0.0 112.5 0.0</rpy>
+    <geom:box name="motorA_geom">
+		  <xyz>0.0 0.0 0 </xyz>
+		  <rpy>0.0 0.0 0.0</rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.4 0.03 0.03 </size>
+      <visual>
+        <size> 0.4 0.03 0.03 </size>
+        <material> Gazebo/RedTransparent</material>
+        <mesh> unit_box</mesh>
+				<mass> 1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="motorA_body_joint">
+		<body1> motorA_body </body1>
+		<body2> body_body </body2>
+		<anchor> body_body </anchor>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+<!--#########################################################################-->
+<!--																	Motor B				 												-->
+<!--#########################################################################-->
+
+  <body:box name="motorB_body">
+    <xyz>0.0 0.0 1 </xyz>
+    <rpy>0.0 67.5 0.0</rpy>
+    <geom:box name="motorB_geom">
+		  <xyz>0.0 0.0 0 </xyz>
+		  <rpy>0.0 0.0 0.0</rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.4 0.03 0.03 </size>
+      <visual>
+        <size> 0.4 0.03 0.03 </size>
+        <material> Gazebo/GreenTransparent</material>
+        <mesh> unit_box</mesh>
+				<mass> 1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="motorB_body_joint">
+		<body1> motorB_body </body1>
+		<body2> body_body </body2>
+		<anchor> body_body </anchor>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+<!--#########################################################################-->
+<!--																	 Leg A 				 												-->
+<!--#########################################################################-->
+
+  <body:box name="legA_body">
+    <xyz> 0.0 0.0 1 </xyz>
+    <rpy> 0.0 0 0.0 </rpy>
+    <geom:box name="legA_geom">
+		  <xyz> -0.0765 0.0 -0.1848 </xyz>
+		  <rpy> 0.0 112.5 0.0 </rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.4 0.03 0.03 </size>
+      <visual>
+        <size> 0.4 0.03 0.03 </size>
+        <material> Gazebo/Red</material>
+        <mesh> unit_box</mesh>
+				<mass> 0.1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="legA_motorA_joint">
+		<body1> legA_body </body1>
+		<body2> motorA_body </body2>
+		<anchor> motorA_body </anchor>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+<!--#########################################################################-->
+<!--																	 Leg B 				 					 							-->
+<!--#########################################################################-->
+
+  <body:box name="legB_body">
+    <xyz> 0.0 0.0 1 </xyz>
+    <rpy> 0.0 0 0.0 </rpy>
+    <geom:box name="legB_geom">
+		  <xyz> 0.0957 0.0 -0.2310 </xyz>
+		  <rpy> 0.0 67.5 0.0 </rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.5 0.03 0.03 </size>
+      <visual>
+        <size> 0.5 0.03 0.03 </size>
+        <material> Gazebo/Green</material>
+        <mesh> unit_box</mesh>
+				<mass> 0.1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="legB_motorA_joint">
+		<body1> legB_body </body1>
+		<body2> motorB_body </body2>
+		<anchor> motorB_body </anchor>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+<!--#########################################################################-->
+<!--																	 Leg C 				 									 			-->
+<!--#########################################################################-->
+
+  <body:box name="legC_body">
+    <xyz> 0.0 0.0 1 </xyz>
+    <rpy> 0.0 0 0.0 </rpy>
+    <geom:box name="legC_geom">
+		  <xyz> -0.0574 0.0 -0.6005 </xyz>
+		  <rpy> 0.0 67.5 0.0 </rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.5 0.03 0.03 </size>
+      <visual>
+        <size> 0.5 0.03 0.03 </size>
+        <material> Gazebo/Red </material>
+        <mesh> unit_box </mesh>
+				<mass> 0.1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="legC_legA_joint">
+		<body1> legC_body </body1>
+		<body2> legA_body </body2>
+		<anchor> legA_body </anchor>
+		<anchorOffset> -0.1531 0 -0.3696 </anchorOffset>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+<!--#########################################################################-->
+<!--																	 Leg D 				 					 							-->
+<!--#########################################################################-->
+
+  <body:box name="legD_body">
+    <xyz> 0.0 0.0 1 </xyz>
+    <rpy> 0.0 0 0.0 </rpy>
+    <geom:box name="legD_geom">
+		  <xyz> 0.0957 0.0 -0.6929 </xyz>
+		  <rpy> 0.0 112.5 0.0 </rpy>
+      <mesh>unit_box</mesh>
+      <size> 0.5 0.03 0.03 </size>
+      <visual>
+        <size> 0.5 0.03 0.03 </size>
+        <material> Gazebo/Green </material>
+        <mesh> unit_box </mesh>
+				<mass> 0.1 </mass>
+      </visual>
+    </geom:box>
+  </body:box> 
+
+	<joint:hinge name="legD_legB_joint">
+		<body1> legD_body </body1>
+		<body2> legB_body </body2>
+		<anchor> legB_body </anchor>
+		<anchorOffset> 0.1913 0 -0.4619 </anchorOffset>
+		<axis> 0 1 0 </axis>
+		<erp> 0.4 </erp>
+		<cfm> 0.008 </cfm>
+	</joint:hinge>
+
+  <joint:hinge name="legC_legD_joint">
+    <body1> legC_body </body1>
+    <body2> legD_body </body2>
+    <anchor> legD_body </anchor>
+    <axis> 0 1 0 </axis>
+    <anchorOffset> 0.0383 0 -0.8315 </anchorOffset>
+  </joint:hinge>
+
+<!--	<controller:tester name="box_force_controller" plugin="libtester.so">-->
+<!--		<alwaysOn>true</alwaysOn>-->
+<!--		<updateRate>15.0</updateRate>-->
+<!--		<topicName>box_force</topicName>-->
+<!--		<bodyName>box_body</bodyName>-->
+<!--	</controller:tester>-->
+</model:physical>

@@ -1,0 +1,16 @@
+<!-- Devin Koepl -->
+
+<launch>
+  <node name="gazebo" pkg="gazebo" type="gazebo" args="$(find atrias)/worlds/simple.world" respawn="false" output="screen"/>
+
+  <!-- send atrias.xml to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find atrias)/robots/all_in_one.urdf.xacro'" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 1. -urdf -param robot_description -model atrias" respawn="false" output="screen" />
+
+  <!-- start the guis -->
+  <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />
+  <node name="simulation_gui" pkg="atrias_position_body_gui" type="position_body_gui" output="screen" />
+
+</launch>

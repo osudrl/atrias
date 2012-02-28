@@ -1,0 +1,21 @@
+<package>
+  <description brief="atrias_sim">
+
+     atrias_sim
+
+  </description>
+  <author>Andrew Peekema</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_sim</url>
+
+  <depend package="atrias_controllers" />
+  <depend package="gazebo" />
+
+    <export>
+		<gazebo plugin_path="${prefix}/lib" />
+	</export>
+
+</package>
+
+
