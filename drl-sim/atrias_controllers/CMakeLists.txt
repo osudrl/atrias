@@ -96,30 +96,6 @@ else(EXISTS /usr/realtime)
 	message("RTAI not detected, skipping building the wireless kernel interface.")
 endif(EXISTS /usr/realtime)
 
-# Check to see if gazebo installed.
-execute_process(
-	COMMAND rospack find gazebo
-	OUTPUT_VARIABLE GAZEBO_INSTALLED
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# If it is then build the controller wrappers.
-if(EXISTS "${GAZEBO_INSTALLED}")
-	# Build the controller wrappers.
-
-	message("Building the simulator.")
-
-	# XXX These need to be fixed and re-included.
-	rosbuild_add_library(all_in_one_controller_wrapper src/all_in_one_controller_wrapper.cpp src/control_switcher_state_machine.cpp ${CONTROLLERS})
-        target_link_libraries(all_in_one_controller_wrapper ${ECAT_LIBRARY})
-	rosbuild_link_boost(all_in_one_controller_wrapper thread)
-
-	#rosbuild_add_library(ecat_interface src/ecat_interface.cpp)
-	#rosbuild_link_boost(ecat_interface thread)
-else(EXISTS "${GAZEBO_INSTALLED}")
-	message("Gazebo not detected, so not going to build the simulation.")
-endif(EXISTS "${GAZEBO_INSTALLED}")
-
 #rosbuild_add_executable(tester src/tester.cpp src/data_logger.cpp)
 
 rosbuild_add_executable(data_subscriber src/data_subscriber.cpp)
