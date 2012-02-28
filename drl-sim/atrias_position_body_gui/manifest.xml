@@ -1,0 +1,14 @@
+<package>
+  <description brief="atrias_position_body_gui">
+
+     atrias_position_body_gui
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_position_body_gui</url>
+
+</package>
+
+
