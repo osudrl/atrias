@@ -2,7 +2,7 @@
 //! @brief The interface between the GUI and the robot control logic.
 //! @author Devin Koepl
 
-#include <gui/atrias_gui.h>
+#include <atrias_gui/atrias_gui.h>
 #include <cmath>
 
 //! @brief Initializes the GUI and controls.
