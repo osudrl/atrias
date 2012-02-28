@@ -11,6 +11,6 @@
 
   <!-- start the guis -->
   <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />
-  <node name="simulation_gui" pkg="gui" type="position_body_gui" output="screen" />
+  <node name="simulation_gui" pkg="atrias_position_body_gui" type="position_body_gui" output="screen" />
 
 </launch>
