@@ -17,6 +17,7 @@
 	<depend package="atrias" />
         <depend package="atrias_controllers" />
     <depend package="atrias_msgs" />
+    <depend package="gazebo" />
 
 	<export>
 		<cpp cflags="-I${prefix}/include" />

@@ -3,7 +3,7 @@
 //! @author Devin Koepl
 //! @author Colan Dray
 
-#include <gui/position_body_gui.h>
+#include <atrias_position_body_gui/position_body_gui.h>
 
 //! @brief Initializes the GUI and controls.
 //! @param argc An integer that is one more than the number of command line arguments.
