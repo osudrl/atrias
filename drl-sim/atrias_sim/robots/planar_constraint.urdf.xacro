@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 
-<!-- ATRIAS 2.0 Robot Model -->
-<!-- Adapted for ATRIAS 2.0 in Winter Term 2012 by Andrew Peekema and Matthew Rueben -->
+<!-- Planar Linkage -->
+<!-- Created for ATRIAS 2.0 in Winter Term 2012 by Andrew Peekema and Matthew Rueben -->
 
 <robot
-
 	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
 	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
 	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
@@ -20,7 +19,7 @@
 	<property name="SQRT_2" value="1.41421356"/>
 
 	<!-- macro name used to insert this entire file into the header file when parsed by xacro -->
-	<xacro:macro name="atrias_planar_constraint" params="attachmentLink">
+	<xacro:macro name="planar_constraint" params="child_attachment_link">
 
 		<!--#########################################################################-->
 		<!--							Planar Motion								-->
@@ -67,7 +66,7 @@
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<axis xyz="0 1 0" />
 			<parent link="body_no_twist_link" />
-			<child link="${attachmentLink}"/>
+			<child link="${child_attachment_link}"/>
 		</joint>
 
 

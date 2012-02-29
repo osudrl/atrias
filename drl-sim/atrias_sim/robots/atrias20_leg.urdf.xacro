@@ -4,7 +4,6 @@
 <!-- Adapted for ATRIAS 2.0 in Winter Term 2012 by Andrew Peekema and Matthew Rueben -->
 
 <robot
-
 	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
 	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
 	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
@@ -48,16 +47,16 @@
 	<property name="leg_damping" value="0" />
 	<property name="leg_friction" value="0" />
 
-	<!-- macro name used to insert this entire file into the header file when parsed by xacro -->
-	<xacro:macro name="atrias_leg" params="bodyLink">
+	<!-- macro to use in the header file when parsed by xacro -->
+	<xacro:macro name="atrias_leg" params="hip_link *origin">
 
 		<!--#########################################################################-->
 		<!--								Body                                     -->
 		<!--#########################################################################-->
 
-		<link name="${bodyLink}">
+		<link name="${hip_link}">
 			<inertial>
-				<origin xyz="0 0 0.002" />
+				<insert_block name="origin" />
 				<mass value="${body_mass}" />
 				<inertia ixx="0.0932" ixy="0.0044" ixz="-0.0019"
 						 iyy="0.0833" iyz="-0.0102"
@@ -76,7 +75,7 @@
 				</geometry>
 			</collision>
 		</link>
-		<gazebo reference="${bodyLink}">
+		<gazebo reference="${hip_link}">
 			<material>Gazebo/BumpyMetal</material>
 		</gazebo>
 
@@ -88,7 +87,7 @@
 		<joint name="hip_thighMotor_joint" type="revolute">
 			<axis xyz="0 1 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
-			<parent link="${bodyLink}" />
+			<parent link="${hip_link}" />
 			<child link="thighMotor_link" />
 			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="10000000000000" velocity="100000000000000" />
 			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
@@ -138,7 +137,7 @@
 		<joint name="hip_shinMotor_joint" type="revolute">
 			<axis xyz="0 1 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
-			<parent link="${bodyLink}" />
+			<parent link="${hip_link}" />
 			<child link="shinMotor_link"/>
 			<limit lower="${-5*M_PI/4+2.8362}" upper="${-5*M_PI/4+5.4978}" effort="10000000000000" velocity="100000000000000" />
 			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
@@ -189,7 +188,7 @@
 		<joint name="body_thigh_joint" type="continuous">
 			<axis xyz="0 1 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
-			<parent link="${bodyLink}" />
+			<parent link="${hip_link}" />
 			<child link="thigh_link"/>
 			<!--limit lower="${-M_PI/4-0.6545}" upper="${-M_PI/4+2.7053}" effort="1000000000000" velocity="100000000000000" /-->
 			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
@@ -230,7 +229,7 @@
 		<joint name="body_shin_joint" type="continuous">
 			<axis xyz="0 1 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
-			<parent link="${bodyLink}" />
+			<parent link="${hip_link}" />
 			<child link="shin_link"/>
 			<!--limit lower="${-5*M_PI/4+2.4871}" upper="${-5*M_PI/4+5.4978}" effort="100000000000" velocity="100000000000000" /-->
 			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
