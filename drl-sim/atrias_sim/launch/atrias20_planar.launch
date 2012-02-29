@@ -3,7 +3,7 @@
 
 <launch>
 
-	<node name="cleanup_gazebo" pkg="atrias_sim" type="atrias.sh" />
+	<node name="cleanup_gazebo" pkg="atrias_sim" type="clean_gazebo_tmp.sh" />
 
 	<!-- launch Gazebo with world file "simple.world" -->
 	<node name="gazebo" pkg="gazebo" type="gazebo" args="$(find atrias_sim)/worlds/simple.world" respawn="false" output="screen"/>
@@ -15,6 +15,6 @@
 	<node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 1.0 -urdf -param robot_description -model atrias" respawn="true" output="screen" />
 
 	<!-- start the simulation gui for controlling the robot -->
-	<node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />  
+	<node name="atrias_gui" pkg="atrias_gui" type="atrias_gui" output="screen" />  
 
 </launch>
