@@ -38,7 +38,8 @@
 #include <atrias_controllers/controller.h>
 #include <atrias_sim/control_switcher_state_machine.h>
 
-#include <atrias_controllers/atrias_srv.h>
+#include <atrias_msgs/atrias_data.h>
+#include <atrias_msgs/atrias_controller_requests.h>
 
 #include <drl_library/drl_math.h>
 
@@ -78,8 +79,6 @@ class AllInOneControllerWrapper : public Controller
 
   /// \brief Update the controller
   protected: virtual void UpdateChild();
-  protected: virtual void InitChild();
-  protected: virtual void FiniChild();
 
   /// \brief A pointer to the parent entity
   private: Model *myParent;
@@ -116,14 +115,11 @@ class AllInOneControllerWrapper : public Controller
 	private: void generate_controller_input();
 
 	// GUI Interface
-	private: bool atrias_gui_callback(atrias_controllers::atrias_srv::Request&, atrias_controllers::atrias_srv::Response&);
-	private: ros::NodeHandle *nh;
-	private: ros::ServiceServer gui_srv;
+	void atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr);
+	ros::Subscriber atrias_sim_sub;
+	ros::Publisher atrias_sim_pub;
 
-  // Custom Callback Queue
-  private: ros::CallbackQueue queue;
-  private: boost::thread* callback_queuethread;
-  private: void QueueThread();
+	atrias_msgs::atrias_data ad;
 
 	private: bool motors_enabled;
 	private: int controller;
