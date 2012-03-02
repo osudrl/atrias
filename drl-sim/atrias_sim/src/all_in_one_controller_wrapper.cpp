@@ -141,6 +141,36 @@ void AllInOneControllerWrapper::poke_ros() {
     ros::spinOnce();
 
     if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
+        if (this->controller_state->state == CSSM_STATE_ENABLED)
+        {
+            ad.status = CMD_RUN;
+        }
+        else
+        {
+            ad.status = CMD_DISABLE;
+        }
+
+        ad.time = Simulator::Instance()->GetSimTime().Double();
+        ad.body_angle = this->controller_input->body_angle;
+        ad.motor_angleA = this->controller_input->motor_angleA;
+        ad.motor_angleB = this->controller_input->motor_angleB;
+        ad.leg_angleA = this->controller_input->leg_angleA;
+        ad.leg_angleB = this->controller_input->leg_angleB;
+        ad.motor_torqueA = this->controller_output->motor_torqueA;
+        ad.motor_torqueB = this->controller_output->motor_torqueB;
+        ad.xPosition = this->controller_input->xPosition;
+        ad.yPosition = this->controller_input->yPosition;
+        ad.zPosition = this->controller_input->zPosition;
+        ad.xVelocity = this->controller_input->xVelocity;
+        ad.yVelocity = this->controller_input->yVelocity;
+        ad.zVelocity = this->controller_input->zVelocity;
+
+        // Clone data from the gui into the controller's data memory.
+        for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+        {
+            ad.control_state[i] = this->controller_state->data[i];
+        }
+
         atrias_sim_pub.publish(ad);
         atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
     }
@@ -180,52 +210,16 @@ void AllInOneControllerWrapper::generate_controller_input()
     this->controller_input->leg_velocityB = -this->legB->GetWorldAngularVel().y;
 }
 
-// Simulation wants data.
-
 void AllInOneControllerWrapper::atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr)
 {
-    int i;
-
     // Grab the request.
     this->controller_data->command = cr.command;
     this->controller_data->controller_requested = cr.controller_requested;
 
     // Clone data from the gui into the controller's data memory.
-    for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
+    for (int i=0; i<SIZE_OF_CONTROLLER_DATA; i++)
     {
         this->controller_data->data[i] = cr.control_data[i];
     }
-
-    // Pack the response.
-    if (this->controller_state->state == CSSM_STATE_ENABLED)
-    {
-        ad.status = CMD_RUN;
-    }
-    else
-    {
-        ad.status = CMD_DISABLE;
-    }
-
-    ad.time = Simulator::Instance()->GetSimTime().Double();
-    ad.body_angle = this->controller_input->body_angle;
-    ad.motor_angleA = this->controller_input->motor_angleA;
-    ad.motor_angleB = this->controller_input->motor_angleB;
-    ad.leg_angleA = this->controller_input->leg_angleA;
-    ad.leg_angleB = this->controller_input->leg_angleB;
-    ad.motor_torqueA = this->controller_output->motor_torqueA;
-    ad.motor_torqueB = this->controller_output->motor_torqueB;
-    ad.xPosition = this->controller_input->xPosition;
-    ad.yPosition = this->controller_input->yPosition;
-    ad.zPosition = this->controller_input->zPosition;
-    ad.xVelocity = this->controller_input->xVelocity;
-    ad.yVelocity = this->controller_input->yVelocity;
-    ad.zVelocity = this->controller_input->zVelocity;
-
-    // Clone data from the gui into the controller's data memory.
-    for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
-    {
-        ad.control_state[i] = this->controller_state->data[i];
-    }
 }
-
 
