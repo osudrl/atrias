@@ -116,10 +116,13 @@ class AllInOneControllerWrapper : public Controller
 
 	// GUI Interface
 	void atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr);
+	atrias_msgs::atrias_data ad;
+
 	ros::Subscriber atrias_sim_sub;
 	ros::Publisher atrias_sim_pub;
 
-	atrias_msgs::atrias_data ad;
+    void poke_ros();
+    int atrias_data_publish_counter;
 
 	private: bool motors_enabled;
 	private: int controller;

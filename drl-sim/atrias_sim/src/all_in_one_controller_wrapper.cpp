@@ -33,6 +33,8 @@ AllInOneControllerWrapper::AllInOneControllerWrapper(Entity *parent)
     this->controller_data = new ControllerData();
 
     this->controller_state->state = CSSM_STATE_INIT;
+
+    atrias_data_publish_counter = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,13 +107,12 @@ void AllInOneControllerWrapper::LoadChild(XMLConfigNode *node)
     control_switcher_state_machine(controller_input, controller_output, controller_state, controller_data);
     int argc = 0;
     char** argv = NULL;
-    ros::init(argc, argv, "gui_interface", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
+    //ros::init(argc, argv, "gui_interface", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
+    ros::init(argc, argv, "gui_interface");
+    ros::NodeHandle nh;
 
-	ros::NodeHandle nh;
-
-	atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, this->atrias_gui_callback);
+    atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &AllInOneControllerWrapper::atrias_gui_callback, this);
     atrias_sim_pub = nh.advertise<atrias_msgs::atrias_data>("atrias_data_50_hz", 10);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +124,8 @@ void AllInOneControllerWrapper::UpdateChild()
 
     this->generate_controller_input();
 
+    this->poke_ros();
+
     control_switcher_state_machine(this->controller_input, this->controller_output, this->controller_state, this->controller_data);
 
     this->controller_output->motor_torqueA = CLAMP(this->controller_output->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
@@ -132,6 +135,15 @@ void AllInOneControllerWrapper::UpdateChild()
     this->motorB->SetTorque(Vector3(0., -this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
 
     this->lock.unlock();
+}
+
+void AllInOneControllerWrapper::poke_ros() {
+    ros::spinOnce();
+
+    if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
+        atrias_sim_pub.publish(ad);
+        atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
+    }
 }
 
 void AllInOneControllerWrapper::generate_controller_input()
