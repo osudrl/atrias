@@ -53,8 +53,6 @@ AllInOneControllerWrapper::~AllInOneControllerWrapper()
     delete this->controller_output;
     delete this->controller_state;
     delete this->controller_data;
-
-    delete this->nh;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +106,12 @@ void AllInOneControllerWrapper::LoadChild(XMLConfigNode *node)
     int argc = 0;
     char** argv = NULL;
     ros::init(argc, argv, "gui_interface", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
-    this->nh = new ros::NodeHandle();
-    ros::AdvertiseServiceOptions aso = ros::AdvertiseServiceOptions::create<atrias_controllers::atrias_srv > (
-            "gui_interface_srv", boost::bind(&AllInOneControllerWrapper::atrias_gui_callback, this, _1, _2), ros::VoidPtr(), &this->queue);
-    this->gui_srv = this->nh->advertiseService(aso);
+
+	ros::NodeHandle nh;
+
+	atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, this->atrias_gui_callback);
+    atrias_sim_pub = nh.advertise<atrias_msgs::atrias_data>("atrias_data_50_hz", 10);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -168,83 +168,52 @@ void AllInOneControllerWrapper::generate_controller_input()
     this->controller_input->leg_velocityB = -this->legB->GetWorldAngularVel().y;
 }
 
-// Initialize the controller
-
-void AllInOneControllerWrapper::InitChild()
-{
-    callback_queuethread = new boost::thread(boost::bind(&AllInOneControllerWrapper::QueueThread, this));
-}
-
-// Shutdown
-
-void AllInOneControllerWrapper::FiniChild()
-{
-    // Callback Queue
-    queue.clear();
-    queue.disable();
-    nh->shutdown();
-    callback_queuethread->join();
-}
-
 // Simulation wants data.
 
-bool AllInOneControllerWrapper::atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)
+void AllInOneControllerWrapper::atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr)
 {
     int i;
 
     // Grab the request.
-    this->controller_data->command = req.command;
-    this->controller_data->controller_requested = req.controller_requested;
+    this->controller_data->command = cr.command;
+    this->controller_data->controller_requested = cr.controller_requested;
 
     // Clone data from the gui into the controller's data memory.
     for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
     {
-        this->controller_data->data[i] = req.control_data[i];
+        this->controller_data->data[i] = cr.control_data[i];
     }
 
     // Pack the response.
     if (this->controller_state->state == CSSM_STATE_ENABLED)
     {
-        res.status = CMD_RUN;
+        ad.status = CMD_RUN;
     }
     else
     {
-        res.status = CMD_DISABLE;
+        ad.status = CMD_DISABLE;
     }
 
-    res.time = Simulator::Instance()->GetSimTime().Double();
-    res.body_angle = this->controller_input->body_angle;
-    res.motor_angleA = this->controller_input->motor_angleA;
-    res.motor_angleB = this->controller_input->motor_angleB;
-    res.leg_angleA = this->controller_input->leg_angleA;
-    res.leg_angleB = this->controller_input->leg_angleB;
-    res.motor_torqueA = this->controller_output->motor_torqueA;
-    res.motor_torqueB = this->controller_output->motor_torqueB;
-    res.xPosition = this->controller_input->xPosition;
-    res.yPosition = this->controller_input->yPosition;
-    res.zPosition = this->controller_input->zPosition;
-    res.xVelocity = this->controller_input->xVelocity;
-    res.yVelocity = this->controller_input->yVelocity;
-    res.zVelocity = this->controller_input->zVelocity;
+    ad.time = Simulator::Instance()->GetSimTime().Double();
+    ad.body_angle = this->controller_input->body_angle;
+    ad.motor_angleA = this->controller_input->motor_angleA;
+    ad.motor_angleB = this->controller_input->motor_angleB;
+    ad.leg_angleA = this->controller_input->leg_angleA;
+    ad.leg_angleB = this->controller_input->leg_angleB;
+    ad.motor_torqueA = this->controller_output->motor_torqueA;
+    ad.motor_torqueB = this->controller_output->motor_torqueB;
+    ad.xPosition = this->controller_input->xPosition;
+    ad.yPosition = this->controller_input->yPosition;
+    ad.zPosition = this->controller_input->zPosition;
+    ad.xVelocity = this->controller_input->xVelocity;
+    ad.yVelocity = this->controller_input->yVelocity;
+    ad.zVelocity = this->controller_input->zVelocity;
 
     // Clone data from the gui into the controller's data memory.
     for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
     {
-        res.control_state[i] = this->controller_state->data[i];
-    }
-
-    return true;
-}
-
-// Manage the callback thread.
-
-void AllInOneControllerWrapper::QueueThread()
-{
-    static const double timeout = 0.01;
-
-    while (nh->ok())
-    {
-        //    std::cout << "CALLING STUFF\n";
-        queue.callAvailable(ros::WallDuration(timeout));
+        ad.control_state[i] = this->controller_state->data[i];
     }
 }
+
+
