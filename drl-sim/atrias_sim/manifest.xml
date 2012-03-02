@@ -11,6 +11,7 @@
 
   <depend package="atrias_controllers" />
   <depend package="atrias_msgs" />
+  <depend package="drl_plugins" />
   <depend package="gazebo" />
 
     <export>
