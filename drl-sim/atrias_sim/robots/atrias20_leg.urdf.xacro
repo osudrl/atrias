@@ -362,8 +362,8 @@
 		<!--							Toe											-->
 		<!--#########################################################################-->
 		
-		<joint name="lower_toe_joint" type="fixed">
-			<origin xyz="${-lower_length/SQRT_2} 0 ${-lower_length/SQRT_2}" rpy="0 0 0" />
+		<joint name="lower_toe_joint" type="continuous">
+			<axis xyz="1 0 0" />
 			<parent link="lower_link" />
 			<child link="toe_link"/>
 		</joint>

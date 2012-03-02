@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<robot
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- Constants -->
+	<property name="M_PI" value="3.14159"/>
+	<property name="SQRT_2" value="1.41421356"/>
+
+	<!-- Physical Properties -->
+	<property name="upright_length" value="0.5" />
+	<property name="yaw_length" value="2" />
+	<property name="pitch_length" value="1.795" />
+
+	<property name="yaw_mass" value="14.19014" />
+	<property name="pitch_mass" value="2.66782" />
+
+	<!-- Visual Properties -->
+	<property name="upright_radius" value="0.02" />
+	<property name="yaw_radius" value="0.02" />
+	<property name="pitch_radius" value="0.02" />
+
+	<xacro:macro name="boom21" params="initial_pitch_angle child_link">
+
+		<link name="world" />
+
+		<!--#########################################################################-->
+		<!--				 			Yaw											-->
+		<!--#########################################################################-->
+
+		<joint name="upright_yaw_joint" type="continuous">
+			<axis xyz="0 0 1" />
+			<origin xyz="0 0 ${upright_length}" rpy="0 0 0" />
+			<parent link="world" />
+			<child link="yaw_link"/>
+		</joint>
+
+		<link name="yaw_link">
+			<inertial>
+				<mass value="${yaw_mass}"/>
+				<origin xyz="0 ${yaw_length/3} 0" rpy="0 0 0" />
+				<inertia ixx="0.01" ixy="0" ixz="0"
+				         iyy="0.01" iyz="0"
+				         izz="0.01" />
+			</inertial>
+	<!--		<visual>
+				<origin xyz="0 ${yaw_length/SQRT_2/2} ${yaw_length/SQRT_2/2}" rpy="${-M_PI/4} 0 0" />
+				<geometry>
+				  <cylinder length="${yaw_length}" radius="${yaw_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 ${yaw_length/SQRT_2/2} ${yaw_length/SQRT_2/2}" rpy="${-M_PI/4} 0 0" />
+				<geometry>
+					<cylinder length="${yaw_length}" radius="${yaw_radius}" />
+				</geometry>
+			</collision>
+-->		</link>
+
+		<gazebo reference="yaw_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				 			Pitch                                    -->
+		<!--#########################################################################-->
+
+
+		<joint name="yaw_pitch_joint" type="continuous">
+			<axis xyz="1 0 0" />
+			<origin xyz="0 0 0" rpy="${initial_pitch_angle} 0 0" />
+			<limit lower="${-M_PI/180*25}" upper="${M_PI/180*25}" effort="100000" velocity="100000" />
+			<parent link="yaw_link" />
+			<child link="pitch_link"/>
+		</joint>
+
+
+		<link name="pitch_link">
+			<inertial>
+				<mass value="${pitch_mass}"/>
+				<origin xyz="0 ${pitch_length/2} 0" />
+				<inertia ixx="0.01" ixy="0" ixz="0"
+				         iyy="0.01" iyz="0"
+				         izz="0.01" />
+			</inertial>
+	<!--		<visual>
+				<origin xyz="0 ${pitch_length/2} 0" rpy="${M_PI/2} 0 0" />
+				<geometry>
+				  <cylinder length="${pitch_length}" radius="${pitch_radius}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 ${pitch_length/2} 0" rpy="${M_PI/2} 0 0" />
+				<geometry>
+					<cylinder length="${pitch_length}" radius="${pitch_radius}" />
+				</geometry>
+			</collision>
+-->		</link>
+
+		<gazebo reference="pitch_link">
+			<material>Gazebo/Red</material>
+		</gazebo>
+
+
+		<!--#########################################################################-->
+		<!--				 			Roll Joint                                   -->
+		<!--#########################################################################-->
+
+		<joint name="pitch_roll_joint" type="continuous">
+			<axis xyz="0 1 0" />
+			<origin xyz="0 ${pitch_length} 0" rpy="0 0 0" />
+			<parent link="pitch_link" />
+			<child link="${child_link}"/>
+		</joint>
+
+	</xacro:macro>
+
+
+</robot>
+
