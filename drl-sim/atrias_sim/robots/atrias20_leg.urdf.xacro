@@ -41,9 +41,9 @@
 	<property name="toe_mass" value="0.087" />
 
 	<!-- Spring/Damping Coefficients -->
-	<property name="spring_stiffness" value="10000" />
-	<property name="motor_damping" value="10000000" />
-	<property name="motor_friction" value="10000000" />
+	<property name="spring_stiffness" value="1200" />			<!-- N*m/rad -->
+	<property name="motor_damping" value="${2*0.5*34.64}" />	<!-- 2*Zeta*sqrt(K) (Guessed Zeta)-->
+	<property name="motor_friction" value="10" />				<!-- Guess -->
 	<property name="leg_damping" value="0" />
 	<property name="leg_friction" value="0" />
 
@@ -89,7 +89,7 @@
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}" />
 			<child link="thighMotor_link" />
-			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="10000000000000" velocity="100000000000000" />
+			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="1000000" velocity="1000000" />
 			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
 		</joint>
 
@@ -364,6 +364,7 @@
 		
 		<joint name="lower_toe_joint" type="continuous">
 			<axis xyz="1 0 0" />
+			<origin xyz="${-fourBar_length/SQRT_2} 0 ${-fourBar_length/SQRT_2}" rpy="0 0 0" />
 			<parent link="lower_link" />
 			<child link="toe_link"/>
 		</joint>

@@ -22,11 +22,11 @@
 	<include filename="boom21.urdf.xacro" />
 
 	<!-- constrains and builds the atrias leg model.  
-		NOTE: initial_pitch_angle must be less than 25 Deg -->
-	<xacro:boom21 initial_pitch_angle="${M_PI/180*15}" child_link="leg_hip_link" />
+		NOTE: initial_pitch_angle must be inside +-25 Deg -->
+	<xacro:boom21 initial_pitch_angle="${M_PI/180*15}" child_link="leg_hip_link" child_offset="0.075"/>
 
 	<xacro:atrias_leg hip_link="leg_hip_link">
-		<origin xyz="0 0 0.002" />
+		<origin xyz="0 0 0.002" />	<!-- Center of rotation to center of mass   -->
 	</xacro:atrias_leg>
 
 	<!-- initializes the all-in-one controller with the correct link names, etc. -->
