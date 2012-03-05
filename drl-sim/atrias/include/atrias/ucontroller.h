@@ -76,9 +76,9 @@
 #define LEG_A_TRAN_ENC_TO_ANGLE(val) 		LEG_A_CALIB_LOC + (val-TRAN_A_CALIB_VAL)*TRAN_A_RAD_PER_CNT
 #define LEG_A_LEG_ENC_TO_ANGLE(val) 		LEG_A_CALIB_LOC + (val-LEG_A_CALIB_VAL)*LEG_A_RAD_PER_CNT
 
-#define LEG_A_CALIB_VAL                         355011585.0
+#define LEG_A_CALIB_VAL                         352351997.0
 #define LEG_A_RAD_PER_CNT			4.9016592164112157e-09
-#define TRAN_A_CALIB_VAL                        284744564.0
+#define TRAN_A_CALIB_VAL                        284287500.0
 #define TRAN_A_RAD_PER_CNT			4.9009447987843945e-09
 
 #define MEDULLA_A_ENC_MAX			563013448
@@ -90,9 +90,9 @@
 #define LEG_B_TRAN_ENC_TO_ANGLE(val) 		LEG_B_CALIB_LOC - (val-TRAN_B_CALIB_VAL)*TRAN_B_RAD_PER_CNT
 #define LEG_B_LEG_ENC_TO_ANGLE(val) 		LEG_B_CALIB_LOC - (val-LEG_B_CALIB_VAL)*LEG_B_RAD_PER_CNT
 
-#define LEG_B_CALIB_VAL                         349365629.0
+#define LEG_B_CALIB_VAL                         348884314.0
 #define LEG_B_RAD_PER_CNT			4.9117396941444945e-09
-#define TRAN_B_CALIB_VAL                        285370373.0
+#define TRAN_B_CALIB_VAL                        285247647.0
 #define TRAN_B_RAD_PER_CNT			4.9113235275589447e-09
 
 #define MEDULLA_B_ENC_MAX			557704303
@@ -111,8 +111,8 @@
 
 // Need to set these during sensor calibration if you want the spring deflections
 // to be computed accurately.  Add these offsets to the transmission angle.
-#define TRAN_A_OFF_ANGLE			0.00199723
-#define TRAN_B_OFF_ANGLE			0.00361156
+#define TRAN_A_OFF_ANGLE			-0.014725
+#define TRAN_B_OFF_ANGLE			0.020483
 
 // Hip Medulla sensors:
 #define MIN_HIP_COUNT				9698 //13672
@@ -131,7 +131,7 @@
 
 #define BOOM_PIVOT_HEIGHT			0.9144
 #define	BOOM_LENGTH				1.8796
-#define BOOM_ROBOT_OFFSET			0.0133
+#define BOOM_ROBOT_OFFSET			0.1303
 
 // Pan (angle about the room):
 #define BOOM_PAN_GEAR_RATIO 			(1/10.3439)   // Gear ratio between boom rotation and boom rotation encoder
@@ -145,7 +145,11 @@
 #define BOOM_RAD_PER_CNT			((2.0*PI)/131072.0)
 #define BOOM_TILT_OFFSET			37300.0
 #define BOOM_HOPPING_RADIUS			2.032
-#define BOOM_ENC_ROLLOVER_DISTANCE		12.7674	
+#define BOOM_ENC_ROLLOVER_DISTANCE		12.7674
+
+#define BOOM_PITCH_OFFSET			1931
+#define BOOM_PITCH_RAD_PER_CNT			0.001533980787886
+#define BOOM_PITCH_GEAR_RATIO			0.5
 
 // Roll (robot angle on the boom):
 #define BOOM_ROLL_GEAR_RATIO		        1.84615385
@@ -175,7 +179,7 @@
 #define MAX_16BIT				65536
 
 #define SEC_PER_CNT1				6.25E-8
-#define SEC_PER_CNT				1.25E-7
+#define SEC_PER_CNT				6.25E-8 //1.25E-7
 
 #define ADC_VAL_TO_VOLTAGE(val)                 (val * (2.68/255.0))
 

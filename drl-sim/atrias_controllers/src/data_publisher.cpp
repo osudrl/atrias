@@ -53,7 +53,7 @@ void callbackShm (const ros::TimerEvent&) {
         aData.medullaStatusA = c_in->medullaStatusA;
         aData.medullaStatusB = c_in->medullaStatusB;
 
-        aData.time_of_last_stance = c_in->time_of_last_stance;
+        aData.time_of_last_stance = c_in->stance_time;
 
         aData.motor_torqueA = c_out->motor_torqueA;
         aData.motor_torqueB = c_out->motor_torqueB;

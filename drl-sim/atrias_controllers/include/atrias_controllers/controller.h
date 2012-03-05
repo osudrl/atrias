@@ -33,8 +33,8 @@
 #ifdef COMPILE_FOR_RTAI
 //#include <rtai_sem.h>
 #include <geometry_msgs/Vector3.h>
-#define PRINT_MSG       rt_printk
-#define PRINT_WARN      rt_printk
+#define PRINT_MSG       printk
+#define PRINT_WARN      printk
 //#define PRINT_MSG     rtai_print_to_screen
 //#define PRINT_WARN    rtai_print_to_screen
 #else
@@ -95,6 +95,8 @@
 typedef struct {
     float body_angle;
     float body_angle_vel;
+    float body_pitch;
+    float body_pitch_vel;
     float motor_angleA;
     float motor_angleA_inc;
     float motor_angleB;
@@ -122,6 +124,7 @@ typedef struct {
     unsigned char motor_currentB;
 
     unsigned char toe_switch;
+    unsigned char toe_force;
 
     unsigned char command;
 
@@ -134,13 +137,13 @@ typedef struct {
     unsigned char medullaStatusA;
     unsigned char medullaStatusB;
 
-    float time_of_last_stance;
+    float stance_time;
 
     float phase;
-    float desired_motor_position_A;
-    float desired_motor_position_B;
-    float desired_def_A;
-    float desired_def_B;
+    float desired_motor_angleA;
+    float desired_motor_angleB;
+    float desired_spring_defA;
+    float desired_spring_defB;
 } ControllerInput;
 
 
@@ -268,22 +271,19 @@ typedef struct {
     float peak_ht;
     float last_leg_len;
     float last_stance_hip_angle;
-
     float time;
     float time_lo;
     float time_td;
-
-    float time_of_last_stance;
+    float stance_time;
     float last_hip_angle;
-
-    float force_sum_A;
-    float force_sum_B;
-
+    float spring_def_sumA;
+    float spring_def_sumB;
     float phase;
-    float desired_motor_position_A;
-    float desired_motor_position_B;
-    float desired_def_A;
-    float desired_def_B;
+    float desired_motor_angleA;
+    float desired_motor_angleB;
+    float desired_spring_defA;
+    float desired_spring_defB;
+    float toe_switch_debounce;
 } RaibertControllerState;
 
 
