@@ -16,8 +16,8 @@ extern void update_leg_position_controller(ControllerInput* input, ControllerOut
 	float des_mtr_angB = LEG_POS_CONTROLLER_DATA(data)->leg_ang + PI - acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 
-	if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
-		des_hip_ang = input->body_angle;
+//	if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
+	des_hip_ang = CLAMP(des_hip_ang,-2.007,0.148);
 
 	output->motor_torqueA = LEG_POS_CONTROLLER_DATA(data)->p_gain * (des_mtr_angA - input->motor_angleA) 
 		- LEG_POS_CONTROLLER_DATA(data)->d_gain * input->motor_velocityA;
