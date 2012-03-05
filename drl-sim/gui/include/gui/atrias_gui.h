@@ -144,8 +144,10 @@ Gtk::DrawingArea *drawing_area;
 
 Gtk::ProgressBar *motor_torqueA_progress_bar,
                  *motor_torqueB_progress_bar,
+                 *motor_torqueHip_progress_bar,
                  *motor_velocityA_progress_bar,
                  *motor_velocityB_progress_bar,
+                 *motor_velocityHip_progress_bar,
                  *spring_deflectionA_progress_bar,
                  *spring_deflectionB_progress_bar;
 
@@ -161,8 +163,10 @@ Gtk::Entry  *xPosDisplay,
             *zVelDisplay,
             *torqueADisplay,
             *torqueBDisplay,
+            *torqueHipDisplay,
             *velocityADisplay,
             *velocityBDisplay,
+            *velocityHipDisplay,
             *spring_deflection_A_entry,
             *spring_deflection_B_entry;
 

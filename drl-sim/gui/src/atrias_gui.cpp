@@ -202,6 +202,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
     gui->get_widget("motor_torqueB_progress_bar", motor_torqueB_progress_bar);
+    gui->get_widget("motor_torqueHip_progress_bar", motor_torqueHip_progress_bar);
 
     gui->get_widget("log_file_chkbox", log_file_chkbox);
     gui->get_widget("log_frequency_spin", log_frequency_spin);
@@ -216,6 +217,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("torqueADisplay", torqueADisplay);
     gui->get_widget("torqueBDisplay", torqueBDisplay);
+    gui->get_widget("torqueHipDisplay", torqueHipDisplay);
 
     gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
     gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
@@ -224,9 +226,11 @@ int main (int argc, char **argv) {
 
     gui->get_widget("velocityADisplay", velocityADisplay);
     gui->get_widget("velocityBDisplay", velocityBDisplay);
+    gui->get_widget("velocityHipDisplay", velocityHipDisplay);
 
     gui->get_widget("motor_velocityA_progress_bar", motor_velocityA_progress_bar);
     gui->get_widget("motor_velocityB_progress_bar", motor_velocityB_progress_bar);
+    gui->get_widget("motor_velocityHip_progress_bar", motor_velocityHip_progress_bar);
     
     gui->get_widget("restart_button", restart_button);
     gui->get_widget("enable_button", enable_button);
@@ -806,16 +810,22 @@ bool poke_controller (void) {
     torqueADisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", atrias_srv.response.motor_torqueB);
     torqueBDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", atrias_srv.response.motor_torque_hip);
+    torqueHipDisplay->set_text(buffer);
 
     motor_torqueA_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueA), MTR_MAX_TRQ) / MTR_MAX_TRQ);
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
+    motor_torqueHip_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_torque_hip), MTR_MAX_TRQ) / MTR_MAX_TRQ);
 
     motor_velocityA_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_velocityA * 477.45), 1327) / 1327);
     motor_velocityB_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_velocityB * 477.45), 1327) / 1327);
+    motor_velocityHip_progress_bar->set_fraction(MIN(ABS(atrias_srv.response.motor_velocity_hip), 10) / 10);
     sprintf(buffer, "%0.2f", atrias_srv.response.motor_velocityA * 477.45);
     velocityADisplay->set_text(buffer);
     sprintf(buffer, "%0.2f", atrias_srv.response.motor_velocityB * 477.45);
     velocityBDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", atrias_srv.response.motor_velocity_hip);
+    velocityHipDisplay->set_text(buffer);
    
     // Update spring deflection displays.
     sprintf(buffer, "%0.8f", atrias_srv.response.motor_angleA - atrias_srv.response.leg_angleA);

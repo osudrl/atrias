@@ -3419,6 +3419,82 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
+              <object class="GtkVBox" id="vboxTorqVel_Hip">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkVBox" id="vbox6">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkLabel" id="label45">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Torque Hip</property>
+                      </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="torqueHipDisplay">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="editable">False</property>
+                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueHip_progress_bar">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label46">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Velocity Hip</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="velocityHipDisplay">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_velocityHip_progress_bar">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">8</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkVBox" id="vboxTorqVel_B1">
                 <property name="visible">True</property>
                 <child>
@@ -3491,7 +3567,7 @@ You may only switch controllers with the motors disabled.</property>
                 </child>
               </object>
               <packing>
-                <property name="position">8</property>
+                <property name="position">9</property>
               </packing>
             </child>
           </object>
