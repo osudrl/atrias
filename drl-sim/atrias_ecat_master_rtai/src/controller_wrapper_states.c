@@ -185,7 +185,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("  Yaw Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[0]);
     //printk("Pitch Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[2]);
     //printk("Timestep: %d\n", uc_out[2]->timestep);
-    printk("                                                                                                Toe Switch: %d\n",uc_out[A_INDEX]->toe_switch);
+    //printk("                                                                                                Toe Switch: %d\n",uc_out[A_INDEX]->toe_switch);
     //printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
 
     ///printk("%d,%d,%d,%d\n",uc_out[0]->error_flags,uc_out[1]->error_flags,uc_out[2]->error_flags,uc_out[3]->error_flags);
@@ -383,8 +383,10 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->logicVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power);
     c_in->logicVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power);
 
-    c_in->medullaStatusA = uc_out[A_INDEX]->error_flags;
-    c_in->medullaStatusB = uc_out[B_INDEX]->error_flags;
+    c_in->medullaStatusA |= uc_out[A_INDEX]->error_flags;
+    c_in->medullaStatusB |= uc_out[B_INDEX]->error_flags;
+    c_in->medullaStatusHip |= uc_out[HIP_INDEX]->error_flags;
+    c_in->medullaStatusBoom |= uc_out[BOOM_INDEX]->error_flags;
 
     // Update boom angles
     c_in->body_angle = (((float)(uc_out[BOOM_INDEX]->encoder[0]))-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;

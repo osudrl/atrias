@@ -196,15 +196,16 @@ Gtk::Entry  *MedullaA_TempA,
             *MedullaA_VLogic,
             *MedullaA_VMotor;
 
-Gtk::Label  *MedullaA_Error;
-
 Gtk::Entry  *MedullaB_TempA,
             *MedullaB_TempB,
             *MedullaB_TempC,
             *MedullaB_VLogic,
             *MedullaB_VMotor;
 
-Gtk::Label  *MedullaB_Error;
+Gtk::Entry  *medullaAError_entry,
+	    *medullaBError_entry,
+	    *medullaHipError_entry,
+	    *medullaBoomError_entry;
 
 /*
  * End Medulla Status

@@ -136,6 +136,8 @@ typedef struct {
     float logicVoltageB;
     unsigned char medullaStatusA;
     unsigned char medullaStatusB;
+    unsigned char medullaStatusHip;
+    unsigned char medullaStatusBoom;
 
     float stance_time;
 

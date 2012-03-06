@@ -244,14 +244,17 @@ int main (int argc, char **argv) {
     gui->get_widget("MedullaA_TempC",MedullaA_TempC);
     gui->get_widget("MedullaA_VLogic",MedullaA_VLogic);
     gui->get_widget("MedullaA_VMotor",MedullaA_VMotor);
-    gui->get_widget("MedullaA_Error",MedullaA_Error);
 
     gui->get_widget("MedullaB_TempA",MedullaB_TempA);
     gui->get_widget("MedullaB_TempB",MedullaB_TempB);
     gui->get_widget("MedullaB_TempC",MedullaB_TempC);
     gui->get_widget("MedullaB_VLogic",MedullaB_VLogic);
     gui->get_widget("MedullaB_VMotor",MedullaB_VMotor);
-    gui->get_widget("MedullaB_Error",MedullaB_Error);
+
+    gui->get_widget("medullaAError_entry",medullaAError_entry);
+    gui->get_widget("medullaBError_entry",medullaBError_entry);
+    gui->get_widget("medullaHipError_entry",medullaHipError_entry);
+    gui->get_widget("medullaBoomError_entry",medullaBoomError_entry);
 
 
     raibert_state_label->set_label("Initializing");
@@ -889,53 +892,85 @@ bool poke_controller (void) {
     MedullaB_VLogic->set_text(buffer);
 
 //	ROS_INFO("MedulaA_Error: %d",atrias_srv.response.medullaStatusA);
-    if (atrias_srv.response.medullaStatusA)
-    {
-        Glib::ustring error;
-	printf("%d\n",atrias_srv.response.medullaStatusA);
-        if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
-            error += "EStop Pressed ";
-        if (atrias_srv.response.medullaStatusA & STATUS_LIMITSW)
-            error += "Limit Switch ";
-        if (atrias_srv.response.medullaStatusA & STATUS_OVER_TEMP)
-            error += "Motor Over Temperature ";
-        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
-            error += "Motor Out of Range ";
-        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
-            error += "Motor Control Disabled ";
-        if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
-            error += "Motor Voltage Low ";
-        if (atrias_srv.response.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
-            error += "Logic Voltage Low ";
-        if (atrias_srv.response.medullaStatusA & STATUS_ENCODER_ERROR)
+    Glib::ustring error;
+    if (atrias_srv.response.medullaStatusA & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low, ";
+    if (atrias_srv.response.medullaStatusA & STATUS_ENCODER_ERROR)
             error += "Encoder Error ";
 
-        MedullaA_Error->set_text(error);
-    }
+    medullaAError_entry->set_text(error);
 
-    if (atrias_srv.response.medullaStatusB)
-    {
-        Glib::ustring error;
-        if (atrias_srv.response.medullaStatusB & STATUS_ESTOP)
-            error += "EStop Pressed ";
-        if (atrias_srv.response.medullaStatusB & STATUS_LIMITSW)
-            error += "Limit Switch ";
-        if (atrias_srv.response.medullaStatusB & STATUS_OVER_TEMP)
-            error += "Motor Over Temperature ";
-        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
-            error += "Motor Out of Range ";
-        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
-            error += "Motor Control Disabled ";
-        if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
-            error += "Motor Voltage Low ";
-        if (atrias_srv.response.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
-            error += "Logic Voltage Low ";
-        if (atrias_srv.response.medullaStatusB & STATUS_ENCODER_ERROR)
-            error += "Encoder Error ";
+    error = "";
+    if (atrias_srv.response.medullaStatusB & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (atrias_srv.response.medullaStatusB & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (atrias_srv.response.medullaStatusB & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (atrias_srv.response.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (atrias_srv.response.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (atrias_srv.response.medullaStatusB & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
 
-        MedullaB_Error->set_text(error);
-    }
+    medullaBError_entry->set_text(error); 
+    
+    error = "";
+    if (atrias_srv.response.medullaStatusHip & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (atrias_srv.response.medullaStatusHip & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
 
+    medullaHipError_entry->set_text(error); 
+
+    error = "";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (atrias_srv.response.medullaStatusBoom & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
+    
+    medullaBoomError_entry->set_text(error); 
     /* End Medulla status*/
 
     return true;

@@ -3495,6 +3495,15 @@ You may only switch controllers with the motors disabled.</property>
               </packing>
             </child>
             <child>
+              <object class="GtkVSeparator" id="vseparator12">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">9</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkVBox" id="vboxTorqVel_B1">
                 <property name="visible">True</property>
                 <child>
@@ -3567,7 +3576,7 @@ You may only switch controllers with the motors disabled.</property>
                 </child>
               </object>
               <packing>
-                <property name="position">9</property>
+                <property name="position">10</property>
               </packing>
             </child>
           </object>
@@ -3589,6 +3598,7 @@ You may only switch controllers with the motors disabled.</property>
             <property name="visible">True</property>
             <child>
               <object class="GtkVBox" id="vboxMedullaA">
+                <property name="width_request">1</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="label18">
@@ -3793,37 +3803,6 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkVBox" id="vboxErrors">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label30">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">Error Codes</property>
-                        <attributes>
-                          <attribute name="weight" value="ultraheavy"/>
-                          <attribute name="foreground" value="#ffff00000000"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="MedullaA_Error">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">NO ERRORS</property>
-                        <property name="selectable">True</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -3841,6 +3820,7 @@ You may only switch controllers with the motors disabled.</property>
             </child>
             <child>
               <object class="GtkVBox" id="vboxMedullaB">
+                <property name="width_request">1</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="label31">
@@ -4050,40 +4030,137 @@ You may only switch controllers with the motors disabled.</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVSeparator" id="vseparator11">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTable" id="table5">
+                <property name="width_request">200</property>
+                <property name="visible">True</property>
+                <property name="n_rows">5</property>
+                <property name="n_columns">2</property>
                 <child>
-                  <object class="GtkVBox" id="vboxErrors1">
+                  <object class="GtkLabel" id="medullaErrorLabel">
                     <property name="visible">True</property>
-                    <child>
-                      <object class="GtkLabel" id="label43">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">Error Codes</property>
-                        <attributes>
-                          <attribute name="weight" value="ultraheavy"/>
-                          <attribute name="foreground" value="#ffff00000000"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="MedullaB_Error">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">NO ERRORS</property>
-                        <property name="selectable">True</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
+                    <property name="label" translatable="yes">Medulla Errors</property>
                   </object>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="right_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="medullaAErrorLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Medulla A</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="medullaBErrorLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Medulla B</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                    <property name="x_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="medullaHipErrorLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Medulla Hip</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                    <property name="x_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="medullaBoomErrorLabel">
+                    <property name="visible">True</property>
+                    <property name="xpad">4</property>
+                    <property name="ypad">1</property>
+                    <property name="label" translatable="yes">Medulla Boom</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="x_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="medullaAError_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="medullaBError_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="medullaHipError_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="medullaBoomError_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>

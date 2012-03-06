@@ -31,4 +31,6 @@ float32 logicVoltageA
 float32 logicVoltageB
 uint8 medullaStatusA
 uint8 medullaStatusB
+uint8 medullaStatusHip
+uint8 medullaStatusBoom
 

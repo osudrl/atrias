@@ -332,6 +332,8 @@ bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_co
     res.logicVoltageB   = shm->controller_input[shm->io_index - 1].logicVoltageB;
     res.medullaStatusA  = shm->controller_input[shm->io_index - 1].medullaStatusA;
     res.medullaStatusB  = shm->controller_input[shm->io_index - 1].medullaStatusB;
+    res.medullaStatusHip = shm->controller_input[shm->io_index - 1].medullaStatusHip;
+    res.medullaStatusBoom  = shm->controller_input[shm->io_index - 1].medullaStatusBoom;
 
     res.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
     res.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;
