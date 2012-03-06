@@ -164,6 +164,7 @@ CFLAGS += -Wall
 CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += -include stdint.h
 
 
 #---------------- Compiler Options C++ ----------------

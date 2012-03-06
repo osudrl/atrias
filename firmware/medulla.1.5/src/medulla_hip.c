@@ -81,7 +81,6 @@ void updateInput_hip(uControllerInput *in, uControllerOutput *out) {
 	
 	// Handle Overflows
 	if (ABS((int32_t)encoderData[1] - (int32_t)encPrevious) > 1000) {
-		//printf("%d - %d = %d\n",encoderData[1], encPrevious,encoderData[1] - encPrevious);
 		if (((int32_t)encoderData[1] - (int32_t)encPrevious) < 0)
 			encBaseValue += 0x1FFF;
 		else

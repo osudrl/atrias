@@ -26,7 +26,6 @@
 #define ENABLE_MOTOR_POWER_MONITOR
 #define ENABLE_LOGIC_POWER_MONITOR
 //#define ENABLE_DAMPING_REGIONS
-//#define ENABLE_MOTOR_PASSTHROUGH
 
 #define ABS(x)	(((x) < 0) ? -(x) : (x))
 #define DAMPING_INVERSE_P_GAIN 1

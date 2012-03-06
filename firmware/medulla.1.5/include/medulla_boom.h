@@ -10,8 +10,11 @@
 #include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
 #include <util/delay.h>
 
+#define _MEDULLA_BOOM
+
 #include "medulla_controller.h"
 #include "ssi.h"
+#include "ssi_13bit.h"
 
 #define ABS(x)	(((x) < 0) ? -(x) : (x))
 

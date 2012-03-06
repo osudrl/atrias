@@ -16,10 +16,19 @@ void initilize_leg(void) {
 	
 	// Init Toe Switch
 	#ifdef ENABLE_TOESW
-	PORTA.PIN4CTRL = PORT_OPC_PULLUP_gc;
-	#ifdef ENABLE_TOESW_DEBOUNCE
-	toeCounter = 0;
+		if ((PORTH.IN>>4) == MEDULLA_B_ID) {
+		PORTA.PIN4CTRL = PORT_OPC_PULLUP_gc;
+		#ifdef ENABLE_TOESW_DEBOUNCE
+		toeCounter = 0;
+		#endif
+	}
 	#endif
+	
+	#ifdef ENABLE_TOE_FORCE
+	if ((PORTH.IN>>4) == MEDULLA_A_ID) {
+		initADC(&ADCA);					// Init ADC
+		initADC_CH(&(ADCA.CH3), 4);
+	}
 	#endif
 	
 	// Voltage monitor
@@ -81,32 +90,40 @@ void updateInput_leg(uControllerInput *in, uControllerOutput *out) {
 	
 	// Check Toe Switch
 	#ifdef ENABLE_TOESW
-	#ifdef ENABLE_TOESW_DEBOUNCE
-	if (((PORTA.IN & 1<<4) != 0)) {
-		// If the to switch is pressed
-		if (toeCounter < 100)
-			toeCounter++;
-	}
-	else if (((PORTA.IN & 1<<4) == 0)) {
-		// If the toe switch is not pressed
-		if (toeCounter > 0)
-			toeCounter--;
-	}
-	
-	if (toeCounter == 100)
-		out->toe_switch = 1;
-	else if (toeCounter == 0)
-		out->toe_switch = 0;
-	#else
-	if (((PORTA.IN & 1<<4) != 0)) {
-		// If the to switch is pressed
-		out->toe_switch = 1;
-	}
-	else {
-		// If the toe switch is not pressed
-		out->toe_switch = 0;
+	if (out->id == MEDULLA_B_ID) {
+		#ifdef ENABLE_TOESW_DEBOUNCE
+		if (((PORTA.IN & 1<<4) != 0)) {
+			// If the to switch is pressed
+			if (toeCounter < 100)
+				toeCounter++;
+		}
+		else if (((PORTA.IN & 1<<4) == 0)) {
+			// If the toe switch is not pressed
+			if (toeCounter > 0)
+				toeCounter--;
+		}
+		
+		if (toeCounter == 100)
+			out->toe_switch = 1;
+		else if (toeCounter == 0)
+			out->toe_switch = 0;
+		#else
+		if (((PORTA.IN & 1<<4) != 0)) {
+			// If the to switch is pressed
+			out->toe_switch = 1;
+		}
+		else {
+			// If the toe switch is not pressed
+			out->toe_switch = 0;
+		}
+		#endif
 	}
 	#endif
+	
+	#ifdef ENABLE_TOE_FORCE
+	if (out->id == MEDULLA_A_ID) {
+		out->toe_switch = readADC_CH(ADCA.CH3);
+	}
 	#endif
 	
 	#ifdef ENABLE_MOTOR_DEBUG

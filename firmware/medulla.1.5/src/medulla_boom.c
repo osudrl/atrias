@@ -4,6 +4,7 @@ void initilize_boom(void) {
 	// Init 3 SSI encoders
 	#ifdef ENABLE_ENCODERS
 	initSSI_bang();
+	initSSI_13();
 	
 	// Get some initial previous values
 	//yawEncoderPrevVal = readSSI_bang(&PORTC,5,6);
@@ -17,10 +18,14 @@ void initilize_boom(void) {
 
 void updateInput_boom(uControllerInput *in, uControllerOutput *out) {
 	uint32_t encoderVals[3] = {0,0,0};
+	uint16_t encoderData[2] = {0,0};
 	
 	// Read the encoders
 	#ifdef ENABLE_ENCODERS
 	readSSI_bang(encoderVals);
+	readSSI_13(encoderData);
+	out->encoder[2] = (((uint32_t)encoderData[1]) & 0xFFF);
+	
 	/*
 	// Handle overflow
 	if (ABS(yawEncoderCurr - yawEncoderPrevVal) > 1000) {

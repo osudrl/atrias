@@ -3,27 +3,39 @@
 #define NBITS	13
 
 // Define ports and things
+
+#ifndef _MEDULLA_BOOM
 #define PORT_SSI0 PORTC
-#define PORT_SSI1 PORTF
 #define SSI0_DAT 6
 #define SSI0_DAT_bm 1<<6
 #define SSI0_CLK_bm 1<<5
+#endif
+
+#define PORT_SSI1 PORTF
 #define SSI1_DAT 7
 #define SSI1_DAT_bm 1<<7
 #define SSI1_CLK_bm 1<<5
 
+#ifndef _MEDULLA_BOOM
 #define SSI0_SAMPLE	((PORT_SSI0.IN & SSI0_DAT_bm) >> SSI0_DAT)
+#endif
 #define SSI1_SAMPLE	((PORT_SSI1.IN & SSI1_DAT_bm) >> SSI1_DAT)
 
 void initSSI_13() {
 
+	#ifndef _MEDULLA_BOOM
 	PORT_SSI0.OUTSET	= SSI0_CLK_bm;				// clocks high...
+	#endif
 	PORT_SSI1.OUTSET	= SSI1_CLK_bm;
 	
+	#ifndef _MEDULLA_BOOM
 	PORT_SSI0.DIRSET	= SSI0_CLK_bm;				// clocks -> output
+	#endif
 	PORT_SSI1.DIRSET	= SSI1_CLK_bm;
 
+	#ifndef _MEDULLA_BOOM
 	PORT_SSI0.DIRCLR	= SSI0_DAT_bm;				// data -> input
+	#endif
 	PORT_SSI1.DIRCLR	= SSI1_DAT_bm;
 
 }
@@ -54,7 +66,9 @@ void readSSI_13(uint16_t *data) {
 	for(i=4;i>=0;i--) {
 
 		// toggle clock low
+		#ifndef _MEDULLA_BOOM
 		PORT_SSI0.OUTTGL	= SSI0_CLK_bm;
+		#endif
 		PORT_SSI1.OUTTGL	= SSI1_CLK_bm;
 
 
@@ -62,7 +76,9 @@ void readSSI_13(uint16_t *data) {
 //		__asm__ volatile ( "nop" );
 
 		// toggle clock high
+		#ifndef _MEDULLA_BOOM
 		PORT_SSI0.OUTTGL	= SSI0_CLK_bm;
+		#endif
 		PORT_SSI1.OUTTGL	= SSI1_CLK_bm;
 
 //		__asm__ volatile ( "nop" );								// wait some cycles...
@@ -72,14 +88,18 @@ void readSSI_13(uint16_t *data) {
 
 		// sample the ports
 //		temp[i] = (SSI3_SAMPLE<<3) | (SSI2_SAMPLE<<2) | (SSI1_SAMPLE<<1) | (SSI0_SAMPLE);
+		#ifndef _MEDULLA_BOOM
 		tmp0H	|= SSI0_SAMPLE << i;
+		#endif
 		tmp1H	|= SSI1_SAMPLE << i;
 	}
 	
 	for(i=7;i>=0;i--) {
 
 		// toggle clock low
+		#ifndef _MEDULLA_BOOM
 		PORT_SSI0.OUTTGL	= SSI0_CLK_bm;
+		#endif
 		PORT_SSI1.OUTTGL	= SSI1_CLK_bm;
 
 
@@ -87,7 +107,9 @@ void readSSI_13(uint16_t *data) {
 //		__asm__ volatile ( "nop" );
 
 		// toggle clock high
+		#ifndef _MEDULLA_BOOM
 		PORT_SSI0.OUTTGL	= SSI0_CLK_bm;
+		#endif
 		PORT_SSI1.OUTTGL	= SSI1_CLK_bm;
 
 //		__asm__ volatile ( "nop" );								// wait some cycles...
@@ -97,18 +119,24 @@ void readSSI_13(uint16_t *data) {
 
 		// sample the ports
 //		temp[i] = (SSI3_SAMPLE<<3) | (SSI2_SAMPLE<<2) | (SSI1_SAMPLE<<1) | (SSI0_SAMPLE);
+		#ifndef _MEDULLA_BOOM
 		tmp0L	|= SSI0_SAMPLE << i;
+		#endif
 		tmp1L	|= SSI1_SAMPLE << i;
 
 	}
 	
 
 	//one more toggle...
+	#ifndef _MEDULLA_BOOM
 	PORT_SSI0.OUTTGL	= SSI0_CLK_bm;
+	#endif
 	PORT_SSI1.OUTTGL	= SSI1_CLK_bm;
 	
 	//TODO: this will probably need some casting
+	#ifndef _MEDULLA_BOOM
 	data[0] = (tmp0H<<8) | (tmp0L);
+	#endif
 	data[1] = (tmp1H<<8) | (tmp1L);
 	
 	
@@ -116,7 +144,9 @@ void readSSI_13(uint16_t *data) {
 	_delay_us(15);
 	
 	//clks high
+	#ifndef _MEDULLA_BOOM
 	PORT_SSI0.OUTSET	= SSI0_CLK_bm;
+	#endif
 	PORT_SSI1.OUTSET	= SSI1_CLK_bm;
 	
 /*
