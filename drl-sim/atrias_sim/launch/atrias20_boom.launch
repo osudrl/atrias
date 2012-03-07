@@ -5,6 +5,8 @@
 
 	<node name="cleanup_gazebo" pkg="atrias_sim" type="clean_gazebo_tmp.sh" />
 
+	<node name="pause_physics" pkg="atrias_sim" type="pause_physics.sh" />
+
 	<!-- launch Gazebo with world file "simple.world" -->
 	<node name="gazebo" pkg="gazebo" type="gazebo" args="$(find atrias_sim)/worlds/simple.world" respawn="false" output="screen"/>
 
