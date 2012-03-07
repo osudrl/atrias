@@ -16,17 +16,23 @@
     
 	<!-- Constants -->
 	<property name="M_PI" value="3.14159"/>
-		
+	<property name="angle" value="${M_PI/180*1}" />
+    <!-- Note: "a" is the calculated value of angle because of xacro limitations -->
+	<property name="a" value="0.01745" /> 
+	<property name="cos_a" value="${1 - a*a/2 + a*a*a*a/4/3/2 - a*a*a*a*a*a/6/5/4/3/2}" />
+	<property name="sin_a" value="${a - a*a*a/3/2 + a*a*a*a*a/5/4/3/2 - a*a*a*a*a*a*a/7/6/5/4/3/2}" />
+
 	<!-- get robot model macro --> 
 	<include filename="atrias20_leg.urdf.xacro" />
 	<include filename="boom21.urdf.xacro" />
 
 	<!-- constrains and builds the atrias leg model.  
 		NOTE: initial_pitch_angle must be inside +-25 Deg -->
-	<xacro:boom21 initial_pitch_angle="${M_PI/180*15}" child_link="leg_hip_link" child_offset="0.075"/>
+	<xacro:boom21 initial_pitch_angle="${angle}" child_link="leg_hip_link" child_offset="0.075"/>
 
-	<xacro:atrias_leg hip_link="leg_hip_link">
+	<xacro:atrias_leg hip_link="leg_hip_link" >
 		<origin xyz="0 0 0.002" />	<!-- Center of rotation to center of mass   -->
+		<axis>${cos_a} 0 ${sin_a}</axis>  <!-- Axis of rotation for 4-bar linkage -->
 	</xacro:atrias_leg>
 
 	<!-- initializes the all-in-one controller with the correct link names, etc. -->

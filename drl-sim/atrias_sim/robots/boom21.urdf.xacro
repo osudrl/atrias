@@ -15,17 +15,16 @@
 	<property name="SQRT_2" value="1.41421356"/>
 
 	<!-- Physical Properties -->
-	<property name="upright_length" value="0.5" />
-	<property name="yaw_length" value="2" />
+	<property name="upright_length" value="0.93" />
+	<property name="yaw_length" value="2.4" />
 	<property name="pitch_length" value="1.795" />
 
 	<property name="yaw_mass" value="14.19014" />
 	<property name="pitch_mass" value="2.66782" />
 
 	<!-- Visual Properties -->
-	<property name="upright_radius" value="0.02" />
-	<property name="yaw_radius" value="0.02" />
-	<property name="pitch_radius" value="0.02" />
+	<property name="yaw_radius" value="0.034" />
+	<property name="pitch_radius" value="0.049" />
 
 	<xacro:macro name="boom21" params="initial_pitch_angle child_link child_offset">
 
@@ -51,13 +50,13 @@
 				         izz="6.2744" />
 			</inertial>
 		<visual>
-				<origin xyz="${yaw_length/SQRT_2/2} ${yaw_length/SQRT_2/2} 0" rpy="0 ${M_PI/2} ${M_PI/4}" />
+				<origin xyz="1 0.7 0" rpy="0 ${M_PI/2} 0.6107" />
 				<geometry>
 				  <cylinder length="${yaw_length}" radius="${yaw_radius}" />
 				</geometry>
 			</visual>
 			<collision>
-				<origin xyz="${yaw_length/SQRT_2/2} ${yaw_length/SQRT_2/2} 0" rpy="0 ${M_PI/2} ${M_PI/4}" />
+				<origin xyz="1 0.7 0" rpy="0 ${M_PI/2} 0.6107" />
 				<geometry>
 					<cylinder length="${yaw_length}" radius="${yaw_radius}" />
 				</geometry>

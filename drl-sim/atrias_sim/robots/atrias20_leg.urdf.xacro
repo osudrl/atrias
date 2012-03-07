@@ -47,8 +47,9 @@
 	<property name="leg_damping" value="0" />
 	<property name="leg_friction" value="0" />
 
+
 	<!-- macro to use in the header file when parsed by xacro -->
-	<xacro:macro name="atrias_leg" params="hip_link *origin">
+	<xacro:macro name="atrias_leg" params="hip_link *origin *axis" >
 
 		<!--#########################################################################-->
 		<!--								Body                                     -->
@@ -347,12 +348,13 @@
 		<!--							Four Bar Linkage Joint						-->
 		<!--#########################################################################-->
 		
+		<!-- Calculate four bar linkage axis -->
 		<gazebo>
 			<joint:hinge name="lower_fourBar_joint">
 				<body1>lower_link</body1>
 				<body2>fourBar_link</body2>
 				<anchor>lower_link</anchor>
-				<axis>0 1 0</axis>
+				<insert_block name="axis" />
 				<anchorOffset>${-(lower_length-0.15)/SQRT_2} 0 ${-(lower_length-0.15)/SQRT_2}</anchorOffset>
 			</joint:hinge>
 		</gazebo>
