@@ -28,9 +28,9 @@
 
 	<!-- constrains and builds the atrias leg model.  
 		NOTE: initial_pitch_angle must be inside +-25 Deg -->
-	<xacro:boom21 initial_pitch_angle="${angle}" child_link="leg_hip_link" child_offset="0.075"/>
+	<xacro:boom21 initial_pitch_angle="${angle}" child_link="leg_hip_link1" child_offset="0.075" child_pitch="0" biped="0" />
 
-	<xacro:atrias_leg hip_link="leg_hip_link" >
+	<xacro:atrias_leg hip_link="leg_hip_link" suffix="1" >
 		<origin xyz="0 0 0.002" />	<!-- Center of rotation to center of mass   -->
 		<axis>${cos_a} 0 ${sin_a}</axis>  <!-- Axis of rotation for 4-bar linkage -->
 	</xacro:atrias_leg>
@@ -40,11 +40,11 @@
 		<controller:all_in_one_controller_wrapper name="all_in_one_controller_wrapper" plugin="liball_in_one_controller_wrapper.so">
 			<alwaysOn> true </alwaysOn>
 			<updateRate> 1000 </updateRate>
-			<bodyName> leg_hip_link </bodyName>
-			<motorAName> thighMotor_link </motorAName>
-			<motorBName> shinMotor_link </motorBName>
-			<legAName> thigh_link </legAName>
-			<legBName> shin_link </legBName>
+			<bodyName> leg_hip_link1 </bodyName>
+			<motorAName> thighMotor_link1 </motorAName>
+			<motorBName> shinMotor_link1 </motorBName>
+			<legAName> thigh_link1 </legAName>
+			<legBName> shin_link1 </legBName>
 		</controller:all_in_one_controller_wrapper>
 	</gazebo>
 

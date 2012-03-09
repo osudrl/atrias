@@ -26,7 +26,7 @@
 	<property name="yaw_radius" value="0.034" />
 	<property name="pitch_radius" value="0.049" />
 
-	<xacro:macro name="boom21" params="initial_pitch_angle child_link child_offset">
+	<xacro:macro name="boom21" params="initial_pitch_angle child_link child_offset child_pitch biped">
 
 		<link name="world" />
 
@@ -115,7 +115,7 @@
 
 		<joint name="pitch_roll_joint" type="continuous">
 			<axis xyz="0 1 0" />
-			<origin xyz="${pitch_length + child_offset} 0 0" rpy="0 ${-M_PI/2} ${-M_PI/2}" /> <!-- y along boom, z upwards -->
+			<origin xyz="${pitch_length + child_offset} ${-0.08*biped} 0" rpy="${-M_PI/2*biped} ${-M_PI/2 + M_PI/2*biped} ${-M_PI/2 + M_PI/2*biped + child_pitch}" />
 			<parent link="pitch_link" />
 			<child link="${child_link}"/>
 		</joint>
