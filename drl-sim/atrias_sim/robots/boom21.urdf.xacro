@@ -35,8 +35,8 @@
 		<!--#########################################################################-->
 
 		<joint name="upright_yaw_joint" type="continuous">
-			<axis xyz="0 1 0" />
 			<origin xyz="0 0 ${upright_length}" rpy="${M_PI/2} 0 0" />	<!-- x along boom, y upwards -->
+			<axis xyz="0 1 0" />
 			<parent link="world" />
 			<child link="yaw_link"/>
 		</joint>
@@ -74,8 +74,8 @@
 
 
 		<joint name="yaw_pitch_joint" type="continuous">
-			<axis xyz="0 0 1" />
 			<origin xyz="0 0 0" rpy="0 0 ${initial_pitch_angle}" />
+			<axis xyz="0 0 1" />
 			<limit lower="${-M_PI/180*25}" upper="${M_PI/180*25}" effort="100000" velocity="100000" />
 			<parent link="yaw_link" />
 			<child link="pitch_link"/>
@@ -114,8 +114,8 @@
 		<!--#########################################################################-->
 
 		<joint name="pitch_roll_joint" type="continuous">
-			<axis xyz="0 1 0" />
 			<origin xyz="${pitch_length + child_offset} ${-0.08*biped} 0" rpy="${-M_PI/2*biped} ${-M_PI/2 + M_PI/2*biped} ${-M_PI/2 + M_PI/2*biped + child_pitch}" />
+			<axis xyz="${biped} ${1-biped} 0" />
 			<parent link="pitch_link" />
 			<child link="${child_link}"/>
 		</joint>
