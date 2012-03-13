@@ -14,7 +14,7 @@
 	<param name="robot_description" command="$(find xacro)/xacro.py '$(find atrias_sim)/robots/atrias20_planar_header.urdf.xacro'" />
 
 	<!-- push robot description to factory and spawn robot in Gazebo -->
-	<node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 0 -urdf -param robot_description -model atrias" respawn="true" output="screen" />
+	<node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 0 -urdf -param robot_description -model atrias" respawn="false" output="screen" />
 
 	<!-- start the simulation gui for controlling the robot -->
 	<node name="atrias_gui" pkg="atrias_gui" type="atrias_gui" output="screen" />  

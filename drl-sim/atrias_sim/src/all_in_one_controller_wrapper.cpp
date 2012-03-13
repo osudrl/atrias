@@ -140,7 +140,7 @@ void AllInOneControllerWrapper::UpdateChild()
 void AllInOneControllerWrapper::poke_ros() {
     ros::spinOnce();
 
-    if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
+    //if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
         if (this->controller_state->state == CSSM_STATE_ENABLED)
         {
             ad.status = CMD_RUN;
@@ -150,7 +150,7 @@ void AllInOneControllerWrapper::poke_ros() {
             ad.status = CMD_DISABLE;
         }
 
-        ad.time = Simulator::Instance()->GetSimTime().Double();
+        ad.time = (uint32_t) Simulator::Instance()->GetSimTime().Double();
         ad.body_angle = this->controller_input->body_angle;
         ad.motor_angleA = this->controller_input->motor_angleA;
         ad.motor_angleB = this->controller_input->motor_angleB;
@@ -166,14 +166,14 @@ void AllInOneControllerWrapper::poke_ros() {
         ad.zVelocity = this->controller_input->zVelocity;
 
         // Clone data from the gui into the controller's data memory.
-        for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+        for (int i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
         {
             ad.control_state[i] = this->controller_state->data[i];
         }
 
         atrias_sim_pub.publish(ad);
         atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
-    }
+    //}
 }
 
 void AllInOneControllerWrapper::generate_controller_input()
