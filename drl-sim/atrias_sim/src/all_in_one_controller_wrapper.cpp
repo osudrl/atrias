@@ -140,7 +140,7 @@ void AllInOneControllerWrapper::UpdateChild()
 void AllInOneControllerWrapper::poke_ros() {
     ros::spinOnce();
 
-    //if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
+    if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
         if (this->controller_state->state == CSSM_STATE_ENABLED)
         {
             ad.status = CMD_RUN;
@@ -172,8 +172,8 @@ void AllInOneControllerWrapper::poke_ros() {
         }
 
         atrias_sim_pub.publish(ad);
-        atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
-    //}
+    }
+    atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
 }
 
 void AllInOneControllerWrapper::generate_controller_input()
