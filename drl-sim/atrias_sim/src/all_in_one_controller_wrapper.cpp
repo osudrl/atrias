@@ -140,37 +140,37 @@ void AllInOneControllerWrapper::UpdateChild()
 void AllInOneControllerWrapper::poke_ros() {
     ros::spinOnce();
 
+    if (this->controller_state->state == CSSM_STATE_ENABLED)
+    {
+        ad.status = CMD_RUN;
+    }
+    else
+    {
+        ad.status = CMD_DISABLE;
+    }
+
+    ad.time = (uint32_t) Simulator::Instance()->GetSimTime().Double();
+    ad.body_angle = this->controller_input->body_angle;
+    ad.motor_angleA = this->controller_input->motor_angleA;
+    ad.motor_angleB = this->controller_input->motor_angleB;
+    ad.leg_angleA = this->controller_input->leg_angleA;
+    ad.leg_angleB = this->controller_input->leg_angleB;
+    ad.motor_torqueA = this->controller_output->motor_torqueA;
+    ad.motor_torqueB = this->controller_output->motor_torqueB;
+    ad.xPosition = this->controller_input->xPosition;
+    ad.yPosition = this->controller_input->yPosition;
+    ad.zPosition = this->controller_input->zPosition;
+    ad.xVelocity = this->controller_input->xVelocity;
+    ad.yVelocity = this->controller_input->yVelocity;
+    ad.zVelocity = this->controller_input->zVelocity;
+
+    // Clone data from the gui into the controller's data memory.
+    for (int i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
+    {
+        ad.control_state[i] = this->controller_state->data[i];
+    }
+
     if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
-        if (this->controller_state->state == CSSM_STATE_ENABLED)
-        {
-            ad.status = CMD_RUN;
-        }
-        else
-        {
-            ad.status = CMD_DISABLE;
-        }
-
-        ad.time = (uint32_t) Simulator::Instance()->GetSimTime().Double();
-        ad.body_angle = this->controller_input->body_angle;
-        ad.motor_angleA = this->controller_input->motor_angleA;
-        ad.motor_angleB = this->controller_input->motor_angleB;
-        ad.leg_angleA = this->controller_input->leg_angleA;
-        ad.leg_angleB = this->controller_input->leg_angleB;
-        ad.motor_torqueA = this->controller_output->motor_torqueA;
-        ad.motor_torqueB = this->controller_output->motor_torqueB;
-        ad.xPosition = this->controller_input->xPosition;
-        ad.yPosition = this->controller_input->yPosition;
-        ad.zPosition = this->controller_input->zPosition;
-        ad.xVelocity = this->controller_input->xVelocity;
-        ad.yVelocity = this->controller_input->yVelocity;
-        ad.zVelocity = this->controller_input->zVelocity;
-
-        // Clone data from the gui into the controller's data memory.
-        for (int i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
-        {
-            ad.control_state[i] = this->controller_state->data[i];
-        }
-
         atrias_sim_pub.publish(ad);
     }
     atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
