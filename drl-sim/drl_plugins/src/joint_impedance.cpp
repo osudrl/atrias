@@ -27,6 +27,7 @@ JointImpedance::JointImpedance(Entity *parent)
 	this->rotationalStictionP			= new ParamT<float>("rotationalStiction", 0., 0);
 	this->restLengthP 						= new ParamT<float>("restLength", 0., 0);
 	this->restAngleP							= new ParamT<float>("restAngle", 0., 0);
+	this->rotationalFrictionP			= new ParamT<float>("rotationalFriction", 0., 0);
   Param::End();
 }
 
@@ -44,6 +45,7 @@ JointImpedance::~JointImpedance()
 	delete this->rotationalStictionP;
 	delete this->restLengthP;
 	delete this->restAngleP;
+	delete this->rotationalFrictionP;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +78,10 @@ void JointImpedance::LoadChild(XMLConfigNode *node)
 
   this->rotationalStictionP->Load(node);
   this->rotationalStiction = this->rotationalStictionP->GetValue();
+
+	// Get friction parameter
+  this->rotationalFrictionP->Load(node);
+  this->rotationalFriction = this->rotationalFrictionP->GetValue();
 
 	// Get rest length parameters
   this->restLengthP->Load(node);
@@ -121,10 +127,20 @@ void JointImpedance::UpdateChild()
 	vel2 = this->body2->GetRelativeAngularVel().y;
 
 	Vector3 torque(0., (angle2 - angle1) * rotationalStiffness + (vel2 - vel1) * rotationalDamping, 0.);
+	
+	if ((vel2 - vel1) > 0)
+	{
+		torque += Vector3(0., rotationalFriction, 0.);
+	}
+	else if ((vel2 - vel1) < 0)
+	{
+		torque += Vector3(0., -rotationalFriction, 0.);
+	}
 
 	if (torque != torque)
 	{
 		torque = Vector3(0., 0., 0.);
+    	ROS_ERROR("gazebo_ros_force controller torque variable is malformed)");
 	}
 
   this->body1->SetTorque(torque);

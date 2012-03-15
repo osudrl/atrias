@@ -107,6 +107,10 @@ class JointImpedance : public Controller
   private: ParamT<float> *rotationalStictionP; 
   private: float rotationalStiction;
 
+	// Friction
+  private: ParamT<float> *rotationalFrictionP; 
+  private: float rotationalFriction;
+
 	// Zero force length and angle
   private: ParamT<float> *restLengthP; 
   private: float restLength;
