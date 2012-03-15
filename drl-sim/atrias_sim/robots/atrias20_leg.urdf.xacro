@@ -41,11 +41,9 @@
 	<property name="toe_mass" value="0.087" />
 
 	<!-- Spring/Damping Coefficients -->
-	<property name="spring_stiffness" value="1200" />			<!-- N*m/rad -->
-	<property name="motor_damping" value="${2*0.5*34.64}" />	<!-- 2*Zeta*sqrt(K) (Guessed Zeta)-->
-	<property name="motor_friction" value="10" />				<!-- Guess -->
-	<property name="leg_damping" value="0" />
-	<property name="leg_friction" value="0" />
+	<property name="spring_stiffness" value="1200" />	<!-- N*m/rad -->
+	<property name="motor_damping" value="500" />		<!-- N*m*s/rad -->
+	<property name="motor_friction" value="0.1" />		<!-- N*m -->
 
 
 	<!-- macro to use in the header file when parsed by xacro -->
@@ -76,23 +74,32 @@
 				</geometry>
 			</collision>
 		</link>
+
 		<gazebo reference="${hip_link}${suffix}">
 			<material>Gazebo/BumpyMetal</material>
 		</gazebo>
-
+<!--
+        <gazebo>
+            <controller:position_body name="position_body" plugin="libposition_body.so">
+                <alwaysOn> true </alwaysOn>
+                <updateRate> 10000 </updateRate>
+                <bodyName> ${hip_link}${suffix} </bodyName>
+            </controller:position_body>
+        </gazebo>
+-->
 
 		<!--#########################################################################-->
 		<!--								Thigh Motor                              -->
 		<!--#########################################################################-->
 		
-		<joint name="hip_thighMotor_joint${suffix}" type="revolute">
+		<joint name="hip_thighMotor_joint${suffix}" type="continuous">
 			<axis xyz="0 1 0" />
+			<dynamics damping="0.0" friction="1000" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}${suffix}" />
 			<child link="thighMotor_link${suffix}" />
-			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="1000000" velocity="1000000" />
-			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
-		</joint>
+<!--			<limit lower="${-M_PI/4-0.3054}" upper="${-M_PI/4+2.3562}" effort="1000000" velocity="1000000" />
+-->		</joint>
 
 		<link name="thighMotor_link${suffix}">
 			<inertial>
@@ -119,8 +126,17 @@
 		<gazebo reference="thighMotor_link${suffix}">
 			<material> Gazebo/Green </material>
 		</gazebo>
-
+		
 		<gazebo>
+            <controller:joint_impedance name="thighDamping${suffix}" plugin="libjoint_impedance.so">
+                <alwaysOn> true </alwaysOn>
+                <updateRate> 10000 </updateRate>
+				<bodyName1> ${hip_link}${suffix} </bodyName1>
+				<bodyName2> thighMotor_link${suffix} </bodyName2>
+                <rotationalDamping> ${motor_damping} </rotationalDamping>
+                <rotationalFriction> ${motor_friction} </rotationalFriction>
+            </controller:joint_impedance>
+
 			<controller:spring name="thighSpring${suffix}" plugin="libspring.so">
 				<alwaysOn> true </alwaysOn>
 				<updateRate> 10000 </updateRate>
@@ -135,14 +151,13 @@
 		<!--					Shin Motor                                           -->
 		<!--#########################################################################-->
 
-		<joint name="hip_shinMotor_joint${suffix}" type="revolute">
+		<joint name="hip_shinMotor_joint${suffix}" type="continuous">
 			<axis xyz="0 1 0" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}${suffix}" />
 			<child link="shinMotor_link${suffix}"/>
-			<limit lower="${-5*M_PI/4+2.8362}" upper="${-5*M_PI/4+5.4978}" effort="10000000000000" velocity="100000000000000" />
-			<dynamics damping="${motor_damping}" friction="${motor_friction}" />
-		</joint>
+<!--			<limit lower="${-5*M_PI/4+2.8362}" upper="${-5*M_PI/4+5.4978}" effort="10000000000000" velocity="100000000000000" />
+-->		</joint>
 
 		<link name="shinMotor_link${suffix}">
 			<inertial>
@@ -170,7 +185,16 @@
 			<material>Gazebo/Green</material>
 		</gazebo>
 
-		<gazebo>
+        <gazebo>
+            <controller:joint_impedance name="shinDamping${suffix}" plugin="libjoint_impedance.so">
+                <alwaysOn> true </alwaysOn>
+                <updateRate> 10000 </updateRate>
+				<bodyName1> ${hip_link}${suffix} </bodyName1>
+				<bodyName2> shinMotor_link${suffix} </bodyName2>
+                <rotationalDamping> ${motor_damping} </rotationalDamping>
+                <rotationalFriction> ${motor_friction} </rotationalFriction>
+            </controller:joint_impedance>
+
 			<controller:spring name="shinSpring${suffix}" plugin="libspring.so">
 				<alwaysOn> true </alwaysOn>
 				<updateRate> 10000 </updateRate>
@@ -191,9 +215,8 @@
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}${suffix}" />
 			<child link="thigh_link${suffix}"/>
-			<!--limit lower="${-M_PI/4-0.6545}" upper="${-M_PI/4+2.7053}" effort="1000000000000" velocity="100000000000000" /-->
-			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
-		</joint>
+<!--			<limit lower="${-M_PI/4-0.6545}" upper="${-M_PI/4+2.7053}" effort="1000000000000" velocity="100000000000000" />
+-->		</joint>
 
 
 		<link name="thigh_link${suffix}">
@@ -232,9 +255,8 @@
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}${suffix}" />
 			<child link="shin_link${suffix}"/>
-			<!--limit lower="${-5*M_PI/4+2.4871}" upper="${-5*M_PI/4+5.4978}" effort="100000000000" velocity="100000000000000" /-->
-			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
-		</joint>
+<!--			<limit lower="${-5*M_PI/4+2.4871}" upper="${-5*M_PI/4+5.4978}" effort="100000000000" velocity="100000000000000" />
+-->		</joint>
 
 		<link name="shin_link${suffix}">
 			<inertial>
@@ -267,13 +289,12 @@
 		<!--								 Lower Link					 			-->
 		<!--#########################################################################-->
 
-		<joint name="thigh_lower_joint${suffix}" type="continuous">
+		<joint name="thigh_lower_joint${suffix}" type="revolute">
 			<axis xyz="0 1 0" />
 			<origin xyz="${thigh_length/SQRT_2} 0 ${-thigh_length/SQRT_2}" rpy="0 0 0" />
 			<parent link="thigh_link${suffix}" />
 			<child link="lower_link${suffix}"/>
-			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
-			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
+			<limit lower="${-M_PI/2+0.05}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
 		</joint>
 
 
@@ -308,13 +329,12 @@
 		<!--								 Four Bar	 							-->
 		<!--#########################################################################-->
 
-		<joint name="shin_fourBar_joint${suffix}" type="continuous">
+		<joint name="shin_fourBar_joint${suffix}" type="revolute">
 			<axis xyz="0 1 0" />
 			<origin xyz="${-shin_length/SQRT_2} 0 ${-shin_length/SQRT_2}" rpy="0 0 0" />
 			<parent link="shin_link${suffix}" />
 			<child link="fourBar_link${suffix}"/>
-			<limit lower="${-M_PI/2}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
-			<dynamics damping="${leg_damping}" friction="${leg_friction}" />
+			<limit lower="${-M_PI/2+0.05}" upper="${M_PI/2}" effort="10000000000000" velocity="100000000000000" />
 		</joint>
 
 		<link name="fourBar_link${suffix}">
@@ -337,6 +357,7 @@
 					<cylinder length="${fourBar_length}" radius="${leg_segment_radius}" />
 				</geometry>
 			</collision>
+
 		</link>
 
 		<gazebo reference="fourBar_link${suffix}">
@@ -362,7 +383,7 @@
 		<!--#########################################################################-->
 		<!--							Toe											-->
 		<!--#########################################################################-->
-		
+
 		<joint name="lower_toe_joint${suffix}" type="continuous">
 			<axis xyz="1 0 0" />
 			<origin xyz="${-fourBar_length/SQRT_2} 0 ${-fourBar_length/SQRT_2}" rpy="0 0 0" />
@@ -393,10 +414,12 @@
 		</link>
 
 		<gazebo reference="toe_link${suffix}">
+			<mu1 value="100.0" />
+			<mu2 value="100.0" />
+			<kp  value="1000000.0" />
+			<kd  value="1.0" />
 			<material>Gazebo/Red</material>
 		</gazebo>
-
-
 
 	</xacro:macro>
 

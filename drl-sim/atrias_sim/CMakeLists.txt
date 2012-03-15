@@ -44,6 +44,9 @@ set(CONTROLLERS ${atrias_controllers_PACKAGE_PATH}/src/no_controller.cpp
                 ${atrias_controllers_PACKAGE_PATH}/src/hubicki_controller.cpp
                 ${atrias_controllers_PACKAGE_PATH}/src/test_controller.cpp)
 
+rosbuild_find_ros_package(atrias_controller_switcher)
+include_directories(${atrias_controller_switcher_PACKAGE_PATH}/include)
+
 # Check to see if gazebo installed.
 execute_process(
     COMMAND rospack find gazebo

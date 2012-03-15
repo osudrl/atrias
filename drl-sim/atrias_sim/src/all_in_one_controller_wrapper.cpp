@@ -132,7 +132,9 @@ void AllInOneControllerWrapper::UpdateChild()
     this->controller_output->motor_torqueB = CLAMP(this->controller_output->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
 
     this->motorA->SetTorque(Vector3(0., -this->controller_output->motor_torqueA * GEAR_RATIO, 0.));
+    this->body->SetTorque(Vector3(0., this->controller_output->motor_torqueA * GEAR_RATIO, 0.));
     this->motorB->SetTorque(Vector3(0., -this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
+    this->body->SetTorque(Vector3(0., this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
 
     this->lock.unlock();
 }
@@ -170,7 +172,7 @@ void AllInOneControllerWrapper::poke_ros() {
         ad.control_state[i] = this->controller_state->data[i];
     }
 
-    if (atrias_data_publish_counter % 20 == 0) {   // 50 Hz publish rate.
+    if ((atrias_data_publish_counter % 20) == 0) {   // 50 Hz publish rate.
         atrias_sim_pub.publish(ad);
     }
     atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;

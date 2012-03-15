@@ -155,6 +155,17 @@
 		</gazebo>
 
 		<gazebo>
+			<controller:joint_impedance name="pendulum_damping" plugin="libjoint_impedance.so">
+				<alwaysOn> true </alwaysOn>
+				<updateRate> 10000 </updateRate>
+				<bodyName1> upright_link </bodyName1>
+				<bodyName2> pendulum_link </bodyName2>
+				<rotationalDamping> 0 </rotationalDamping>
+				<rotationalFriction> 0.01 </rotationalFriction>
+			</controller:joint_impedance>
+		</gazebo>
+
+		<gazebo>
 			<controller:spring name="pendulum_spring" plugin="libspring.so">
 				<alwaysOn> true </alwaysOn>
 				<updateRate> 10000 </updateRate>

@@ -64,7 +64,6 @@ extern void control_switcher_state_machine(ControllerInput *controller_input, Co
 
             break;
     }
-
     controller_output->motor_torqueA = controller_output->motor_torqueB = 0.;
 }
 

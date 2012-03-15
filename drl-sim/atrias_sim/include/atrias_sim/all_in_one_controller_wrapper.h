@@ -36,7 +36,7 @@
 #include <atrias/atrias_parameters.1.h>
 
 #include <atrias_controllers/controller.h>
-#include <atrias_sim/control_switcher_state_machine.h>
+#include <atrias_controller_switcher/control_switcher_state_machine.h>
 
 #include <atrias_msgs/atrias_data.h>
 #include <atrias_msgs/atrias_controller_requests.h>

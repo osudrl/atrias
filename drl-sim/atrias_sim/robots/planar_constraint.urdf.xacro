@@ -27,7 +27,7 @@
 		
 		<link name="world" />
 
-		<joint name="world_joint" type="continuous">
+		<joint name="world_joint" type="fixed">
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<axis xyz="0 1 0" />
 			<parent link="world" />
@@ -44,7 +44,7 @@
 			</inertial>
 		</link>
 
-		<joint name="planar_joint" type="prismatic">
+		<joint name="planar_joint" type="fixed">
 			<origin xyz="0 0 1.5" rpy="0 0 0" />
 			<axis xyz="0 0 1" />
 			<limit upper="100" lower="-100" effort="1000000000" velocity="1000000000"/>
