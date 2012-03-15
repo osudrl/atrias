@@ -1,0 +1,28 @@
+Library Converter Report - Wednesday, June 16, 2010 10:03:19 AM
+Converting Y:\PADSLibary\drl_passives.pt07...
+Could not open library file or invalid library version.
+
+Converting Y:\PADSLibary\drl_passives.pd07...
+0805 - OK
+Records converted: 1
+Errors: 0
+
+Converting Y:\PADSLibary\drl_passives.ld07...
+CAP-SMALL - OK
+CAPA-SMALL - OK
+CAPAH-SMALL - OK
+CAPH-SMALL - OK
+INDUCTOR - OK
+LED - OK
+LED-V - OK
+RESB-H-SMALL - OK
+RESB-V-SMALL - OK
+RESZ-H-SMALL - OK
+RESZ-V-SMALL - OK
+Records converted: 11
+Errors: 0
+
+Converting Y:\PADSLibary\drl_passives.ln07...
+Records converted: 0
+Errors: 0
+
