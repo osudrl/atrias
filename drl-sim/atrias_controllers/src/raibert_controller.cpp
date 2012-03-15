@@ -22,7 +22,7 @@ void initialize_raibert_controller(ControllerInput *input, ControllerOutput *out
 
 	PRINT_MSG("Raibert Controller Initialized.\n");
 
-	RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance = RAIBERT_CONTROLLER_STATE(state)->time;
+	RAIBERT_CONTROLLER_STATE(state)->stance_time = RAIBERT_CONTROLLER_STATE(state)->time;
 }
 
 
@@ -197,10 +197,10 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	//	&& ( ABS(spring_defB) < RAIBERT_CONTROLLER_DATA(data)->flight_spring_threshold ) ) )
 	if ( input->toe_switch == 1 )
 	{
-		RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance = RAIBERT_CONTROLLER_STATE(state)->time;
+		RAIBERT_CONTROLLER_STATE(state)->stance_time = RAIBERT_CONTROLLER_STATE(state)->time;
 	}
 
-	//if ( input->toe_switch == 0 && 1000 < (RAIBERT_CONTROLLER_STATE(state)->time - RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance))
+	//if ( input->toe_switch == 0 && 1000 < (RAIBERT_CONTROLLER_STATE(state)->time - RAIBERT_CONTROLLER_STATE(state)->stance_time))
 	if ( input->toe_switch == 0 )
 	{
 		// Check to see if lift off has occured.

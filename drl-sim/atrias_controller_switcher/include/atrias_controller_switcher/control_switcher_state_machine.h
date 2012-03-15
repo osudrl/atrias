@@ -3,11 +3,7 @@
 #ifndef FUNCS_H_CONTROL_SWITCHER_STATE_MACHINE
 #define FUNCS_H_CONTROL_SWITCHER_STATE_MACHINE
 
-//#ifndef COMPILE_FOR_RTAI
-//#include <stdint.h>
-//#else
-//#include <rtai_sem.h>
-//#endif
+#include <stdint.h>
 
 #include <atrias/ucontroller.h>
 
