@@ -42,8 +42,8 @@
 
 	<!-- Spring/Damping Coefficients -->
 	<property name="spring_stiffness" value="1200" />	<!-- N*m/rad -->
-	<property name="motor_damping" value="500" />		<!-- N*m*s/rad -->
-	<property name="motor_friction" value="0.1" />		<!-- N*m -->
+	<property name="motor_damping" value="10" />		<!-- N*m*s/rad -->
+	<property name="motor_friction" value="10" />		<!-- N*m -->
 
 
 	<!-- macro to use in the header file when parsed by xacro -->
@@ -78,7 +78,7 @@
 		<gazebo reference="${hip_link}${suffix}">
 			<material>Gazebo/BumpyMetal</material>
 		</gazebo>
-<!--
+
         <gazebo>
             <controller:position_body name="position_body" plugin="libposition_body.so">
                 <alwaysOn> true </alwaysOn>
@@ -86,7 +86,7 @@
                 <bodyName> ${hip_link}${suffix} </bodyName>
             </controller:position_body>
         </gazebo>
--->
+
 
 		<!--#########################################################################-->
 		<!--								Thigh Motor                              -->
@@ -94,7 +94,6 @@
 		
 		<joint name="hip_thighMotor_joint${suffix}" type="continuous">
 			<axis xyz="0 1 0" />
-			<dynamics damping="0.0" friction="1000" />
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<parent link="${hip_link}${suffix}" />
 			<child link="thighMotor_link${suffix}" />
