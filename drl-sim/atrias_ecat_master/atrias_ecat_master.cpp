@@ -5,6 +5,8 @@
  *  Details.
  */
 
+//#define REAL_TIME
+
 // Orocos
 #include <rtt/os/main.h>
 
@@ -41,14 +43,20 @@ class AtriasEthercatMaster : public TaskContext {
     OutputPort<atrias_msgs::atrias_debug>               debugOutPort;
     std::string prop_answer;
 
-int usec1, usec2, usecLast, usecDiff1, usecDiff2;
-
 int counter;
+
+atrias_msgs::atrias_data ad;
+atrias_msgs::atrias_debug debugOut;
+
+
+#ifndef REAL_TIME
+int usec1, usec2, usecLast, usecDiff1, usecDiff2;
 
 // Get system time. NOTE: This counts as a system call, which is not
 // realtime-safe.. but whatever?
 struct timeval tv;
 struct tm *tm;
+#endif // REAL_TIME
 
 public:
     AtriasEthercatMaster(std::string name):
@@ -81,11 +89,14 @@ public:
         log(Info) << "AEM configured !" <<endlog();
         init_master();
 
+        #ifndef REAL_TIME
         usec1     = 0;
         usec2     = 0;
         usecLast  = 0;
         usecDiff1 = 0;
         usecDiff2 = 0;
+        #endif // REAL_TIME
+
         return true;
     }
 
@@ -95,15 +106,14 @@ public:
     }
 
     void updateHook() {
+        #ifndef REAL_TIME
         gettimeofday (&tv, NULL);
         tm = localtime (&tv.tv_sec);
-
-        //std_msgs::String msg;
-        //std::stringstream ss;
 
         usec1     = tm->tm_sec*1000000 + tv.tv_usec;
         usecDiff1 = usec1 - usecLast;
         usecLast  = usec1;
+        #endif // REAL_TIME
 
         // Does ACS have a new controller request?
         atrias_msgs::atrias_controller_requests cr;
@@ -129,8 +139,6 @@ public:
         }
 
         // Send data to ACS.
-        atrias_msgs::atrias_data ad;
-
         ControllerInput* c_in = &shm.controller_input;
         ControllerOutput* c_out = &shm.controller_output;
         ControllerState* c_state = &shm.controller_state;
@@ -187,36 +195,25 @@ public:
         ad.motor_torqueA = c_out->motor_torqueA;
         ad.motor_torqueB = c_out->motor_torqueB;
 
-        //log(Info) << "[AEM] c_in->thermistorB[0]: " << c_in->thermistorB[0] << endlog();
-        //log(Info) << "[AEM] ad.thermistorB[0]: " << ad.thermistorB[0] << endlog();
-
         // Write to port.
         dataOutPort.write(ad);
 
         counter++;
 
+        #ifndef REAL_TIME
         gettimeofday (&tv, NULL);
         tm = localtime (&tv.tv_sec);
 
         usec2     = tm->tm_sec*1000000 + tv.tv_usec;
         usecDiff2 = usec2 - usec1;
 
-
-        atrias_msgs::atrias_debug debugOut;
         char buffer[250];
         sprintf(buffer, "AEM updateHook!  Loop interval: %d,  time: %d", usecDiff1, usecDiff2);
         debugOut.string1 = buffer;
         debugOut.float1  = usecDiff1;
         debugOut.float2  = usecDiff2;
         debugOutPort.write(debugOut);
-
-        //ss << "AEM executes updateHook!  Time: " << usecDiff;
-        //log(Info) << "AEM updateHook!  Loop interval: " << usecDiff1 << "  Loop time: " << usecDiff2 << endlog();
-
-        //msg.data = ss.str();
-        //chatter_pub.publish(msg);
-
-        //log(Info) << ss.str() << endlog();
+        #endif // REAL_TIME
     }
 
     void stopHook() {
