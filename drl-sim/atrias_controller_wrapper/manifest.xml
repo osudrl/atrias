@@ -13,5 +13,9 @@
     <depend package="atrias" />
     <depend package="atrias_controllers" />
     <depend package="drl_library" />
+
+    <export>
+        <cpp cflags="-I{prefix}/include" />
+    </export>
 </package>
 
