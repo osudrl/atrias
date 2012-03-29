@@ -390,7 +390,6 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
 
     // Increment and rollover i/o index for datalogging.
-    shm.io_index = (++shm.io_index) % SHM_TO_USPACE_ENTRIES;
 
     if ((uc_out[A_INDEX]->state == 5) || (uc_out[B_INDEX]->state == 5))
         return STATE_ERROR;

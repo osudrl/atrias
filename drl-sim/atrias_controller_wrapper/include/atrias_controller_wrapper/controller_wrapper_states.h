@@ -11,6 +11,8 @@
 #ifndef ATRIAS_CONTROLLER_WRAPPER_H
 #define ATRIAS_CONTROLLER_WRAPPER_H
 
+#include <stdint.h>
+
 // ATRIAS
 #include <atrias/ucontroller.h>
 
