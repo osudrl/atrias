@@ -1,10 +1,6 @@
 import("atrias_ecat_master")
 import("atrias_controller_switcher")
 
-require("ros_integration")
-
-print.log(Info, "Starting ATRIAS deployment script.")
-
 # Load necessary components.
 loadComponent("atrias_em", "AtriasEthercatMaster")
 loadComponent("atrias_cs", "AtriasControllerSwitcher")
