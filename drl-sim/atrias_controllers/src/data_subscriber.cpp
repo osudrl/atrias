@@ -113,13 +113,11 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
     if (req.isLogging) {
         ROS_INFO("data_subscriber: Logging.");
         char buffer[256];   // Create buffer to store filename.
+        time_t curSeconds =  time(NULL);
+        struct tm *tInfo = localtime(&curSeconds);
 
         if (req.logfilename == "") {   // If filename is unspecified, set one based on date and time.
             ROS_INFO("data_subscriber: Logfile name unspecified. Deciding logfile name based on date and time.");
-            time_t curSeconds;
-            curSeconds = time(NULL);
-            struct tm *tInfo;
-            tInfo = localtime(&curSeconds);
 // Hubicki, added option to change directory - 02-10-2012
 //            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 
@@ -134,7 +132,19 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
         }
 
         ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
-        log_file_fp = fopen(buffer, "w");   // Open logfile.
+        try {
+            ROS_INFO("TRY BLOCK");
+            log_file_fp = fopen(buffer, "w");   // Open logfile.
+            if (log_file_fp == NULL) {
+                throw "/mnt/hurst is not mounted!";
+            }
+        }
+        catch (char const* str) {
+            ROS_INFO("CATCH BLOCK");
+	        sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            log_file_fp = fopen(buffer, "w");   // Try opening again.
+        }
+
         fprintf(log_file_fp, "Time (ms), Body Angle, Body Angle Velocity, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Time of Last Stance, Motor A Torque, Motor B Torque, Motor Hip Torque\n");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
