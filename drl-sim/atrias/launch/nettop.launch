@@ -1,4 +1,5 @@
 <launch>
+    <env name="ROS_MASTER_URI" value="http://drl-sim:11311" />
     <!-- Set up nettop as remote machine. -->
 <!--
     <machine name    = "drl-zotac"
@@ -6,7 +7,6 @@
              user    = "drl"
              password="robot" />
 -->
-    <env name="ROS_HOSTNAME" value="192.168.1.109" />
 
     <!-- Start the ecat kernel interface. -->
 <!--
@@ -17,7 +17,6 @@
           type    = "wireless_kern_interface"
           output  = "screen">
         <!-- Nettop should connect to ROS master node running on desktop. -->
-        <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
     </node>
 
     <!-- Start data publishing node. -->
@@ -29,7 +28,6 @@
           type    = "data_publisher"
           output  = "screen">
         <!-- Nettop should connect to ROS master node running on desktop. -->
-        <env name="ROS_MASTER_URI" value="http://192.168.1.100:11311" />
     </node>
 </launch>
 
