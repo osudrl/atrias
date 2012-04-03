@@ -111,49 +111,48 @@ void datalogCallback(const atrias_msgs::atrias_data &aData) {
 //! @brief Get logfile name published by GUI and open file to write.
 bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atrias_controllers::data_subscriber_srv::Response& res) {
     if (req.isLogging) {
-        ROS_INFO("data_subscriber: Logging.");
+        ROS_INFO("[data_subscriber] Logging.");
         char buffer[256];   // Create buffer to store filename.
         time_t curSeconds =  time(NULL);
         struct tm *tInfo = localtime(&curSeconds);
 
         if (req.logfilename == "") {   // If filename is unspecified, set one based on date and time.
-            ROS_INFO("data_subscriber: Logfile name unspecified. Deciding logfile name based on date and time.");
+            ROS_INFO("[data_subscriber] Logfile name unspecified. Deciding logfile name based on date and time.");
 // Hubicki, added option to change directory - 02-10-2012
 //            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 
-	    sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/mnt/hurst/Elxperimental_Data/ForceControlCalibration", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+	    sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/mnt/hurst/Experimental_Data/ForceControlCalibration", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 // End Hubicki change
 
 
         }
         else {   // If filename is specified, use that as logfilename.
-            ROS_INFO("data_subscriber: Setting logfile name as requested by GUI.");
+            ROS_INFO("[data_subscriber] Setting logfile name as requested by GUI.");
             sprintf(buffer, "%s", req.logfilename.c_str());
         }
 
-        ROS_INFO("data_subscriber: Opening logfile at %s", buffer);
         try {
-            ROS_INFO("TRY BLOCK");
             log_file_fp = fopen(buffer, "w");   // Open logfile.
             if (log_file_fp == NULL) {
-                throw "/mnt/hurst is not mounted!";
+                throw "[data_subscriber] /mnt/hurst is not mounted!";
             }
         }
         catch (char const* str) {
-            ROS_INFO("CATCH BLOCK");
+            ROS_INFO(str);
 	        sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
             log_file_fp = fopen(buffer, "w");   // Try opening again.
         }
+        ROS_INFO("[data_subscriber] Opening logfile at %s", buffer);
 
         fprintf(log_file_fp, "Time (ms), Body Angle, Body Angle Velocity, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Time of Last Stance, Motor A Torque, Motor B Torque, Motor Hip Torque\n");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }
     else if (!req.isLogging) {
-        ROS_INFO("data_subscriber: Not logging.");
+        ROS_INFO("[data_subscriber] Not logging.");
         if (log_file_fp != NULL) {   // Check if logfile is open because serviceCallback could be run if logfilename is set but isLogging is off.
             fclose(log_file_fp);
-            ROS_INFO("data_subscriber: Closing logfile.");
+            ROS_INFO("[data_subscriber] Closing logfile.");
         }
         res.logfilename = "";   // Respond with blank logfilename.
         isLogging = false;
@@ -170,7 +169,7 @@ int main (int argc, char **argv) {
     ros::NodeHandle nh;
 
     // Subscribe to data stream from data_publisher on nettop.
-    data_subscriber = nh.subscribe("datalog_downlink", 0, datalogCallback);
+    data_subscriber = nh.subscribe("atrias_data_1000_hz", 0, datalogCallback);
 
     // Provide a much lower-frequency data stream for visualization purposes by
     // re-publishing every few atrias_data fetched by datalogCallback. We
@@ -179,7 +178,7 @@ int main (int argc, char **argv) {
     //
     // TODO: Eventually, GUI should read stuff from this stream instead of
     // asking for data from wireless_kern_interface.
-    data_visualization_publisher = nh.advertise<atrias_msgs::atrias_data>("data_visualization_stream", 0);
+    data_visualization_publisher = nh.advertise<atrias_msgs::atrias_data>("atrias_data_50_hz", 0);
 
     // Service for GUI.
     data_subscriber_srv = nh.advertiseService("data_subscriber_srv", serviceCallback);
