@@ -211,6 +211,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
     gui->get_widget("motor_torqueB_progress_bar", motor_torqueB_progress_bar);
+    gui->get_widget("motor_torqueHip_progress_bar", motor_torqueHip_progress_bar);
 
     gui->get_widget("log_file_chkbox", log_file_chkbox);
     gui->get_widget("log_frequency_spin", log_frequency_spin);
@@ -225,6 +226,7 @@ int main (int argc, char **argv) {
 
     gui->get_widget("torqueADisplay", torqueADisplay);
     gui->get_widget("torqueBDisplay", torqueBDisplay);
+    gui->get_widget("torqueHipDisplay", torqueHipDisplay);
 
     gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
     gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
@@ -233,9 +235,11 @@ int main (int argc, char **argv) {
 
     gui->get_widget("velocityADisplay", velocityADisplay);
     gui->get_widget("velocityBDisplay", velocityBDisplay);
+    gui->get_widget("velocityHipDisplay", velocityHipDisplay);
 
     gui->get_widget("motor_velocityA_progress_bar", motor_velocityA_progress_bar);
     gui->get_widget("motor_velocityB_progress_bar", motor_velocityB_progress_bar);
+    gui->get_widget("motor_velocityHip_progress_bar", motor_velocityHip_progress_bar);
     
     gui->get_widget("restart_button", restart_button);
     gui->get_widget("enable_button", enable_button);
@@ -249,14 +253,17 @@ int main (int argc, char **argv) {
     gui->get_widget("MedullaA_TempC",MedullaA_TempC);
     gui->get_widget("MedullaA_VLogic",MedullaA_VLogic);
     gui->get_widget("MedullaA_VMotor",MedullaA_VMotor);
-    gui->get_widget("MedullaA_Error",MedullaA_Error);
 
     gui->get_widget("MedullaB_TempA",MedullaB_TempA);
     gui->get_widget("MedullaB_TempB",MedullaB_TempB);
     gui->get_widget("MedullaB_TempC",MedullaB_TempC);
     gui->get_widget("MedullaB_VLogic",MedullaB_VLogic);
     gui->get_widget("MedullaB_VMotor",MedullaB_VMotor);
-    gui->get_widget("MedullaB_Error",MedullaB_Error);
+
+    gui->get_widget("medullaAError_entry",medullaAError_entry);
+    gui->get_widget("medullaBError_entry",medullaBError_entry);
+    gui->get_widget("medullaHipError_entry",medullaHipError_entry);
+    gui->get_widget("medullaBoomError_entry",medullaBoomError_entry);
 
 
     raibert_state_label->set_label("Initializing");
@@ -311,7 +318,7 @@ int main (int argc, char **argv) {
     raibert_stance_p_gain_hscale->set_range(0., 6000.);
     raibert_stance_d_gain_hscale->set_range(0., 150.);
     raibert_stance_spring_threshold_hscale->set_range(0., 1.);
-	raibert_desired_height_hscale->set_range(0., 3.);
+    raibert_desired_height_hscale->set_range(0., 3.);
     raibert_leg_force_gain_hscale->set_range(0., 1.);
     raibert_preferred_leg_len_hscale->set_range(0.7, 1.);
     raibert_flight_p_gain_hscale->set_range(0., 1000.);
@@ -324,13 +331,13 @@ int main (int argc, char **argv) {
 
 	// Spinbuttons
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
-    raibert_hor_vel_gain_spinbutton->set_range(0., 10.);
-    raibert_leg_angle_gain_spinbutton->set_range(0., 1.);
+    raibert_hor_vel_gain_spinbutton->set_range(-10., 10.);
+    raibert_leg_angle_gain_spinbutton->set_range(-0.2, 0.2);
     raibert_stance_p_gain_spinbutton->set_range(0., 6000.);
     raibert_stance_d_gain_spinbutton->set_range(0., 150.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
-	raibert_desired_height_spinbutton->set_range(0., 3.);
-    raibert_leg_force_gain_spinbutton->set_range(0., 1.);
+    raibert_desired_height_spinbutton->set_range(0., 10.);
+    raibert_leg_force_gain_spinbutton->set_range(0., 6000.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
     raibert_flight_d_gain_spinbutton->set_range(0., 150.);
@@ -341,11 +348,11 @@ int main (int argc, char **argv) {
 	// HScales
     hubicki_desired_velocity_hscale->set_range(-5., 5.);
     hubicki_hor_vel_gain_hscale->set_range(0., 10.);
-    hubicki_leg_angle_gain_hscale->set_range(0., 1.);
+    hubicki_leg_angle_gain_hscale->set_range(0., 200.);
     hubicki_stance_p_gain_hscale->set_range(0., 6000.);
     hubicki_stance_d_gain_hscale->set_range(0., 150.);
     hubicki_stance_spring_threshold_hscale->set_range(0., 1.);
-	hubicki_desired_height_hscale->set_range(0., 3.);
+    hubicki_desired_height_hscale->set_range(0., 3.);
     hubicki_leg_force_gain_hscale->set_range(0., 1.);
     hubicki_preferred_leg_len_hscale->set_range(0.7, 1.);
     hubicki_flight_p_gain_hscale->set_range(0., 1000.);
@@ -359,12 +366,12 @@ int main (int argc, char **argv) {
 	// Spinbuttons
     hubicki_desired_velocity_spinbutton->set_range(-5., 5.);
     hubicki_hor_vel_gain_spinbutton->set_range(0., 10.);
-    hubicki_leg_angle_gain_spinbutton->set_range(0., 1.);
+    hubicki_leg_angle_gain_spinbutton->set_range(0., 200.);
     hubicki_stance_p_gain_spinbutton->set_range(0., 6000.);
     hubicki_stance_d_gain_spinbutton->set_range(0., 150.);
     hubicki_stance_spring_threshold_spinbutton->set_range(0., 0.4);
-	hubicki_desired_height_spinbutton->set_range(0., 3.);
-    hubicki_leg_force_gain_spinbutton->set_range(0., 1.);
+    hubicki_desired_height_spinbutton->set_range(0., 3.);
+    hubicki_leg_force_gain_spinbutton->set_range(0., 6000.);
     hubicki_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     hubicki_flight_p_gain_spinbutton->set_range(0., 4000.);
     hubicki_flight_d_gain_spinbutton->set_range(0., 150.);
@@ -393,13 +400,13 @@ int main (int argc, char **argv) {
     test_flight_status_image->set(red_image_path);
 
     /* Force Control Tab */
-    force_control_p_gainA->set_range(0.0,100000.0);
-    force_control_d_gainA->set_range(0.0,300.0);
-    force_control_i_gainA->set_range(0.0,30000.0);
-    force_control_p_gainB->set_range(0.0,100000.0);
-    force_control_d_gainB->set_range(0.0,300.0);
-    force_control_i_gainB->set_range(0.0,30000.0);
-    force_control_spring_deflection->set_range(-0.2,0.2);
+    force_control_p_gainA->set_range(0.0,5000.0);
+    force_control_d_gainA->set_range(0.0,50.0);
+    force_control_i_gainA->set_range(0.0,0.0);
+    force_control_p_gainB->set_range(10.0,500.0);
+    force_control_d_gainB->set_range(0.0,10.0);
+    force_control_i_gainB->set_range(30.0,960.0);
+    force_control_spring_deflection->set_range(0.0,500.0);
 
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
@@ -500,18 +507,18 @@ int main (int argc, char **argv) {
     raibert_flight_hip_d_gain->set_value(0.0);
 
 	// Spinbutton default values for Raibert controller
-    raibert_desired_velocity_spinbutton->set_value(0.25);
-    raibert_hor_vel_gain_spinbutton->set_value(0.25);
-    raibert_leg_angle_gain_spinbutton->set_value(0.125);
-    raibert_stance_p_gain_spinbutton->set_value(6000.);
-    raibert_stance_d_gain_spinbutton->set_value(120.);
-    raibert_stance_spring_threshold_spinbutton->set_value(0.075);
-    raibert_desired_height_spinbutton->set_value(1.5);
-    raibert_leg_force_gain_spinbutton->set_value(0.3);
-    raibert_preferred_leg_len_spinbutton->set_value(0.9);
-    raibert_flight_p_gain_spinbutton->set_value(750.);
-    raibert_flight_d_gain_spinbutton->set_value(150.);
-    raibert_flight_spring_threshold_spinbutton->set_value(0.035);
+    raibert_desired_velocity_spinbutton->set_value(0.0);
+    raibert_hor_vel_gain_spinbutton->set_value(0.0);
+    raibert_leg_angle_gain_spinbutton->set_value(0.0);
+    raibert_stance_p_gain_spinbutton->set_value(0.0);
+    raibert_stance_d_gain_spinbutton->set_value(0.0);
+    raibert_stance_spring_threshold_spinbutton->set_value(0.0);
+    raibert_desired_height_spinbutton->set_value(1.0);
+    raibert_leg_force_gain_spinbutton->set_value(0.0);
+    raibert_preferred_leg_len_spinbutton->set_value(0.90);
+    raibert_flight_p_gain_spinbutton->set_value(1000.0);
+    raibert_flight_d_gain_spinbutton->set_value(15.0);
+    raibert_flight_spring_threshold_spinbutton->set_value(0.0);
 
 	// HScale default values for Hubicki controller
     hubicki_desired_velocity_hscale->set_value(0.);
@@ -573,7 +580,6 @@ int main (int argc, char **argv) {
     controller_notebook->signal_switch_page().connect(sigc::ptr_fun(switch_controllers));
 
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(poke_controller), 50); // 50 is the timeout in milliseconds
-    //sigc::connection conn2 = Glib::signal_timeout().connect(sigc::ptr_fun(poke_ros), 17); // 10 is the timeout in milliseconds
 
     ROS_INFO("GUI: Running.");
     gtk.run(*window);
@@ -651,10 +657,6 @@ void switch_controllers (GtkNotebookPage* page, guint page_num) {
     leg_length_hscale->set_value(LEG_LENGTH);
     leg_angle_hscale->set_value(LEG_ANGLE);
 
-}
-
-bool poke_ros (void) {
-    ros::spinOnce();
 }
 
 //! @brief Probes and updates the active controller then sends updated commands to the robot.
@@ -804,9 +806,6 @@ bool poke_controller (void) {
 	    break;
     }
 
-    //if (atrias_client.call(atrias_srv))
-    //    draw_leg();
-
     if (cr.command == CMD_RESTART)
         cr.command = CMD_DISABLE;
 
@@ -826,9 +825,11 @@ bool poke_controller (void) {
 
     motor_torqueA_progress_bar->set_fraction(MIN(ABS(ad.motor_torqueA), MTR_MAX_TRQ) / MTR_MAX_TRQ);
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(ad.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);
+    motor_torqueHip_progress_bar->set_fraction(MIN(ABS(ad.motor_torque_hip), MTR_MAX_TRQ) / MTR_MAX_TRQ);
 
     motor_velocityA_progress_bar->set_fraction(MIN(ABS(ad.motor_velocityA * 477.45), 1327) / 1327);
     motor_velocityB_progress_bar->set_fraction(MIN(ABS(ad.motor_velocityB * 477.45), 1327) / 1327);
+    motor_velocityHip_progress_bar->set_fraction(MIN(ABS(ad.motor_velocity_hip), 10) / 10);
     sprintf(buffer, "%0.2f", ad.motor_velocityA * 477.45);
     velocityADisplay->set_text(buffer);
     sprintf(buffer, "%0.2f", ad.motor_velocityB * 477.45);
@@ -895,54 +896,86 @@ bool poke_controller (void) {
     sprintf(buffer,"%0.1f",ad.logicVoltageB);
     MedullaB_VLogic->set_text(buffer);
 
-//	ROS_INFO("MedulaA_Error: %d",ad.medullaStatusA);
-    if (ad.medullaStatusA)
-    {
-        Glib::ustring error;
-        printf("%d\n",ad.medullaStatusA);
-        if (ad.medullaStatusA & STATUS_ESTOP)
-            error += "EStop Pressed ";
-        if (ad.medullaStatusA & STATUS_LIMITSW)
-            error += "Limit Switch ";
-        if (ad.medullaStatusA & STATUS_OVER_TEMP)
-            error += "Motor Over Temperature ";
-        if (ad.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
-            error += "Motor Out of Range ";
-        if (ad.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
-            error += "Motor Control Disabled ";
-        if (ad.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
-            error += "Motor Voltage Low ";
-        if (ad.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
-            error += "Logic Voltage Low ";
-        if (ad.medullaStatusA & STATUS_ENCODER_ERROR)
+//	ROS_INFO("MedulaA_Error: %d",atrias_srv.response.medullaStatusA);
+    Glib::ustring error;
+    if (ad.medullaStatusA & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (ad.medullaStatusA & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (ad.medullaStatusA & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (ad.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (ad.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (ad.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low, ";
+    if (ad.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low, ";
+    if (ad.medullaStatusA & STATUS_ENCODER_ERROR)
             error += "Encoder Error ";
 
-        MedullaA_Error->set_text(error);
-    }
+    medullaAError_entry->set_text(error);
 
-    if (ad.medullaStatusB)
-    {
-        Glib::ustring error;
-        if (ad.medullaStatusB & STATUS_ESTOP)
-            error += "EStop Pressed ";
-        if (ad.medullaStatusB & STATUS_LIMITSW)
-            error += "Limit Switch ";
-        if (ad.medullaStatusB & STATUS_OVER_TEMP)
-            error += "Motor Over Temperature ";
-        if (ad.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
-            error += "Motor Out of Range ";
-        if (ad.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
-            error += "Motor Control Disabled ";
-        if (ad.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
-            error += "Motor Voltage Low ";
-        if (ad.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
-            error += "Logic Voltage Low ";
-        if (ad.medullaStatusB & STATUS_ENCODER_ERROR)
-            error += "Encoder Error ";
+    error = "";
+    if (ad.medullaStatusB & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (ad.medullaStatusB & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (ad.medullaStatusB & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (ad.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (ad.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (ad.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (ad.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (ad.medullaStatusB & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
 
-        MedullaB_Error->set_text(error);
-    }
+    medullaBError_entry->set_text(error); 
+    
+    error = "";
+    if (ad.medullaStatusHip & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (ad.medullaStatusHip & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (ad.medullaStatusHip & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (ad.medullaStatusHip & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (ad.medullaStatusHip & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (ad.medullaStatusHip & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (ad.medullaStatusHip & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (ad.medullaStatusHip & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
 
+    medullaHipError_entry->set_text(error); 
+
+    error = "";
+    if (ad.medullaStatusBoom & STATUS_ESTOP)
+        error += "EStop Pressed, ";
+    if (ad.medullaStatusBoom & STATUS_LIMITSW)
+        error += "Limit Switch, ";
+    if (ad.medullaStatusBoom & STATUS_OVER_TEMP)
+        error += "Motor Over Temperature, ";
+    if (ad.medullaStatusBoom & STATUS_MOTOR_OUT_OF_RANGE)
+        error += "Motor Out of Range, ";
+    if (ad.medullaStatusBoom & STATUS_MOTOR_CTRL_DISABLE)
+        error += "Motor Control Disabled, ";
+    if (ad.medullaStatusBoom & STATUS_MOTOR_VOLTAGE_LOW)
+        error += "Motor Voltage Low ";
+    if (ad.medullaStatusBoom & STATUS_LOGIC_VOLTAGE_LOW)
+        error += "Logic Voltage Low ";
+    if (ad.medullaStatusBoom & STATUS_ENCODER_ERROR)
+        error += "Encoder Error ";
+    
+    medullaBoomError_entry->set_text(error); 
     /* End Medulla status*/
 
     return true;
@@ -993,10 +1026,5 @@ void draw_leg () {
     cc->move_to(start_x, start_y);
     cc->rel_line_to(-motor_radius * cos(ad.motor_angleB), motor_radius * sin(ad.motor_angleB));
     cc->stroke();
-}
-
-//! @brief Draw a simple, live plot of the last 30 seconds.
-void draw_plot () {
-
 }
 

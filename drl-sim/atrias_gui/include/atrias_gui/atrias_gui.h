@@ -13,7 +13,6 @@
 #include <atrias/ucontroller.h>
 
 #include <atrias_controllers/controller.h>
-//#include <atrias_controllers/atrias_srv.h>
 #include <atrias_controllers/data_subscriber_srv.h>
 
 #include <atrias_msgs/atrias_controller_requests.h>
@@ -147,8 +146,10 @@ Gtk::DrawingArea *drawing_area;
 
 Gtk::ProgressBar *motor_torqueA_progress_bar,
                  *motor_torqueB_progress_bar,
+                 *motor_torqueHip_progress_bar,
                  *motor_velocityA_progress_bar,
                  *motor_velocityB_progress_bar,
+                 *motor_velocityHip_progress_bar,
                  *spring_deflectionA_progress_bar,
                  *spring_deflectionB_progress_bar;
 
@@ -164,8 +165,10 @@ Gtk::Entry  *xPosDisplay,
             *zVelDisplay,
             *torqueADisplay,
             *torqueBDisplay,
+            *torqueHipDisplay,
             *velocityADisplay,
             *velocityBDisplay,
+            *velocityHipDisplay,
             *spring_deflection_A_entry,
             *spring_deflection_B_entry;
 
@@ -199,14 +202,15 @@ Gtk::Entry  *MedullaA_TempA,
             *MedullaA_VLogic,
             *MedullaA_VMotor;
 
-Gtk::Label  *MedullaA_Error;
-
 Gtk::Entry  *MedullaB_TempA,
             *MedullaB_TempB,
             *MedullaB_TempC,
             *MedullaB_VLogic,
             *MedullaB_VMotor;
 
+Gtk::Entry  *medullaAError_entry,
+	    *medullaBError_entry,
+	    *medullaHipError_entry,
 Gtk::Label  *MedullaB_Error;
 
 /*
@@ -218,9 +222,7 @@ double last_d_gain;
 
 long nextLogTime;
 
-//void visCallback(const &atrias_msgs::atrias_data);
 bool poke_controller( void );
-bool poke_ros( void );
 std::string format_float ( float );
 
 void log_chkbox_toggled( void );
