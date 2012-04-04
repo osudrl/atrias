@@ -211,7 +211,7 @@ Gtk::Entry  *MedullaB_TempA,
 Gtk::Entry  *medullaAError_entry,
 	    *medullaBError_entry,
 	    *medullaHipError_entry,
-Gtk::Label  *MedullaB_Error;
+	    *medullaBoomError_entry;
 
 /*
  * End Medulla Status
