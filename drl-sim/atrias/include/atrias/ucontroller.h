@@ -111,10 +111,10 @@
 #define TRAN_B_OFF_ANGLE			0.020483
 
 // Hip Medulla sensors:
-#define MIN_HIP_COUNT				9698 //13672
-#define MAX_HIP_COUNT				18612 //22756
-#define MIN_HIP_ANGLE				-0.157079633
-#define MAX_HIP_ANGLE				0.20943951
+#define MIN_HIP_COUNT				9704
+#define MAX_HIP_COUNT				18806
+#define MIN_HIP_ANGLE				-0.20943951 //157079633
+#define MAX_HIP_ANGLE				0.157079633
 
 // Boom Medulla sensors:
 // Boom length: 1.858m (not to CoM of robot)
@@ -152,10 +152,12 @@
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-60.0
-#define MTR_MAX_TRQ  				60.0
-#define MTR_MAX_TRQ_LIMIT			60.0
-#define MTR_MIN_TRQ_LIMIT			-60.0
+#define MTR_MIN_TRQ				-120.0
+#define MTR_MAX_TRQ  				120.0
+#define MTR_MIN_HIP_TRQ				-60.0
+#define MTR_MAX_HIP_TRQ				60.0
+#define MTR_MAX_TRQ_LIMIT			120.0
+#define MTR_MIN_TRQ_LIMIT			-120.0
 #define MTR_MAX_HIP_TRQ_LIMIT			60.0
 #define MTR_MIN_HIP_TRQ_LIMIT			-60
 #define MTR_MIN_CNT				-19900
