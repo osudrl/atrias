@@ -391,13 +391,13 @@ int main (int argc, char **argv) {
     test_flight_status_image->set(red_image_path);
 
     /* Force Control Tab */
-    force_control_p_gainA->set_range(0.0,100000.0);
-    force_control_d_gainA->set_range(0.0,300.0);
-    force_control_i_gainA->set_range(0.0,30000.0);
-    force_control_p_gainB->set_range(0.0,100000.0);
-    force_control_d_gainB->set_range(0.0,300.0);
-    force_control_i_gainB->set_range(0.0,30000.0);
-    force_control_spring_deflection->set_range(-0.2,0.2);
+    force_control_p_gainA->set_range(0.0,5000.0);
+    force_control_d_gainA->set_range(0.0,50.0);
+    force_control_i_gainA->set_range(0.0,0.0);
+    force_control_p_gainB->set_range(10.0,500.0);
+    force_control_d_gainB->set_range(0.0,10.0);
+    force_control_i_gainB->set_range(30.0,960.0);
+    force_control_spring_deflection->set_range(0.0,500.0);
 
     // Create the path to the data file with the last state of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
