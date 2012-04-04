@@ -14,6 +14,8 @@
   <depend package="atrias_msgs" />
   <depend package="drl_plugins" />
   <depend package="gazebo" />
+  <depend package="atrias_gui" />
+  <depend package="atrias_position_body_gui" />
 
     <export>
 		<cpp cflags="-I${prefix}/include" />
