@@ -25,8 +25,7 @@
 -->
     <node name    = "data_publisher"
           pkg     = "atrias_controllers"
-          type    = "data_publisher"
-          output  = "screen">
+          type    = "data_publisher" >
         <!-- Nettop should connect to ROS master node running on desktop. -->
     </node>
 </launch>
