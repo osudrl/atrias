@@ -16,7 +16,9 @@
 //#include <sstream>             // Testing Publisher
 
 #include <atrias_controllers/uspace_kern_shm.h>
-#include <atrias_controllers/atrias_srv.h>
+//#include <atrias_controllers/atrias_srv.h>
+#include <atrias_msgs/atrias_data.h>
+#include <atrias_msgs/atrias_controller_requests.h>
 
 // Macros for
 #define QUOTEME_(x) #x
@@ -31,7 +33,13 @@ static Shm * shm;
 //*****************************************************************************
 
 // Get control parameters from GUI over ROS service atrias_srv.
-bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response &);
+//bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &, atrias_controllers::atrias_srv::Response &);
+ros::Subscriber atrias_wki_sub;
+//ros::Publisher atrias_wki_pub;
+
+void atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr);
+//atrias_msgs::atrias_data ad;
+uint64_t counter;
 
 void print_msg(int);
 void * msg_task(void *);
@@ -50,6 +58,8 @@ void * datalogging_task(void *);
 int main(int argc, char **argv)
 {
     int i;
+
+    counter = 0;
 
     pthread_t datalogging_thread;
     pthread_t msg_thread;
@@ -71,9 +81,12 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "gui_interface");
     ros::NodeHandle nh;
-    ros::ServiceServer gui_srv = nh.advertiseService("gui_interface_srv", atrias_gui_callback);
+    //ros::ServiceServer gui_srv = nh.advertiseService("gui_interface_srv", atrias_gui_callback);
+    atrias_wki_sub = nh.subscribe("atrias_controller_requests", 0, atrias_gui_callback);
+    //atrias_wki_pub = nh.advertise<atrias_msgs::atrias_data>("atrias_data_1000_hz", 10);
 
-    ROS_INFO("Service advertised.");
+    //ROS_INFO("Service advertised.");
+    ROS_INFO("Subscribed to GUI.");
 
     //*************************************************************************
 
@@ -194,44 +207,61 @@ void log_data_entry(FILE * fp, int i)
 
 // Datalog while the robot is running.
 
-void * datalogging_task(void * arg)
-{
-    int i = 0;
-
-    FILE *fp = fopen(QUOTEME(LOG_FILENAME), "w");
-
-    // This print cannot be a ROS_INFO, because of a problem in the ROS header file?
-    //ROS_INFO( "Writing %u log entries to %s.", shm->io_index, QUOTEME(LOG_FILENAME) );
-
-    // Create file header.
-    // fprintf(fp, "Body Angle, Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B, Body Angular Velocity, Motor Velocity A, Motor Velocity B, Leg Velocity A, Leg Velocity B, Height, Horizontal Velocity, Vertical Velocity, Motor Torque A, Motor Torque B, Motor Current A, Motor Current B\n");
-
-	fprintf( fp, "Motor Angle A, Motor Angle B, Leg Angle A, Leg Angle B\n");
-
-    while (ros::ok())
-    {
-        if (i != shm->io_index)
-        {
-            log_data_entry(fp, i);
-
-            i = (++i) % SHM_TO_USPACE_ENTRIES;
-        }
-
-        pthread_yield();
-        ros::spinOnce;
-    }
-
-    while (i != shm->io_index)
-    {
-        log_data_entry(fp, i);
-
-        i = (++i) % SHM_TO_USPACE_ENTRIES;
-    }
-
-    fclose(fp);
-
-    pthread_exit(NULL);
-}
+//void * datalogging_task(void * arg) {
+//    int i;
+//
+//    while (ros::ok()) {
+//        if (counter != shm->io_index) {
+//            // Populate response from userspace buffer.
+//        
+//            ad.body_angle      = shm->controller_input[shm->io_index - 1].body_angle;
+//            ad.motor_angleA    = shm->controller_input[shm->io_index - 1].motor_angleA;
+//            ad.motor_angleB    = shm->controller_input[shm->io_index - 1].motor_angleB;
+//            ad.leg_angleA      = shm->controller_input[shm->io_index - 1].leg_angleA;
+//            ad.leg_angleB      = shm->controller_input[shm->io_index - 1].leg_angleB;
+//            ad.xPosition       = shm->controller_input[shm->io_index - 1].xPosition;
+//            ad.yPosition       = shm->controller_input[shm->io_index - 1].yPosition;
+//            ad.zPosition       = shm->controller_input[shm->io_index - 1].zPosition;
+//            ad.xVelocity       = shm->controller_input[shm->io_index - 1].xVelocity;
+//            ad.yVelocity       = shm->controller_input[shm->io_index - 1].yVelocity;
+//            ad.zVelocity       = shm->controller_input[shm->io_index - 1].zVelocity;
+//            ad.thermistorA[0]  = shm->controller_input[shm->io_index - 1].thermistorA[0];
+//            ad.thermistorA[1]  = shm->controller_input[shm->io_index - 1].thermistorA[1];
+//            ad.thermistorA[2]  = shm->controller_input[shm->io_index - 1].thermistorA[2];
+//            ad.thermistorB[0]  = shm->controller_input[shm->io_index - 1].thermistorB[0];
+//            ad.thermistorB[1]  = shm->controller_input[shm->io_index - 1].thermistorB[1];
+//            ad.thermistorB[2]  = shm->controller_input[shm->io_index - 1].thermistorB[2];
+//            ad.motorVoltageA   = shm->controller_input[shm->io_index - 1].motorVoltageA;
+//            ad.motorVoltageB   = shm->controller_input[shm->io_index - 1].motorVoltageB;
+//            ad.logicVoltageA   = shm->controller_input[shm->io_index - 1].logicVoltageA;
+//            ad.logicVoltageB   = shm->controller_input[shm->io_index - 1].logicVoltageB;
+//            ad.medullaStatusA  = shm->controller_input[shm->io_index - 1].medullaStatusA;
+//            ad.medullaStatusB  = shm->controller_input[shm->io_index - 1].medullaStatusB;
+//            ad.medullaStatusHip = shm->controller_input[shm->io_index - 1].medullaStatusHip;
+//            ad.medullaStatusBoom  = shm->controller_input[shm->io_index - 1].medullaStatusBoom;
+//        
+//            ad.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
+//            ad.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;
+//            ad.motor_torque_hip= shm->controller_output[shm->io_index - 1].motor_torque_hip;
+//        
+//            ad.motor_velocityA   = shm->controller_input[shm->io_index - 1].motor_velocityA;
+//            ad.motor_velocityB   = shm->controller_input[shm->io_index - 1].motor_velocityB;
+//            ad.motor_velocity_hip= shm->controller_input[shm->io_index - 1].hip_angle_vel;
+//            
+//            for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++) {
+//                ad.control_state[i] = shm->controller_state.data[i];
+//            }
+//
+//            atrias_wki_pub.publish(ad);
+//
+//            counter = (counter+1) % SHM_TO_USPACE_ENTRIES;
+//        }
+//
+//    	ros::spinOnce();
+//    }
+//
+//    pthread_exit(NULL);
+//}
 
 /****************************************************************************/
 
@@ -289,64 +319,19 @@ void rt_msg_print( void )
 
 //*****************************************************************************
 
-bool atrias_gui_callback(atrias_controllers::atrias_srv::Request &req, atrias_controllers::atrias_srv::Response &res)
-{
+void atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr) {
     int i;
 
     //*************************************************************************
 
     // Load request into the kernel buffer.
 
-    shm->controller_data[1 - shm->control_index].command = req.command;
-    shm->controller_data[1 - shm->control_index].controller_requested = req.controller_requested;
+    shm->controller_data[1 - shm->control_index].command = cr.command;
+    shm->controller_data[1 - shm->control_index].controller_requested = cr.controller_requested;
 
     for (i = 0; i < SIZE_OF_CONTROLLER_DATA; i++)
-        shm->controller_data[1 - shm->control_index].data[i] = req.control_data[i];
+        shm->controller_data[1 - shm->control_index].data[i] = cr.control_data[i];
 
     shm->req_switch = true;
-
-    //*************************************************************************
-
-    // Populate response from userspace buffer.
-
-    res.body_angle      = shm->controller_input[shm->io_index - 1].body_angle;
-    res.motor_angleA    = shm->controller_input[shm->io_index - 1].motor_angleA;
-    res.motor_angleB    = shm->controller_input[shm->io_index - 1].motor_angleB;
-    res.leg_angleA      = shm->controller_input[shm->io_index - 1].leg_angleA;
-    res.leg_angleB      = shm->controller_input[shm->io_index - 1].leg_angleB;
-    res.xPosition       = shm->controller_input[shm->io_index - 1].xPosition;
-    res.yPosition       = shm->controller_input[shm->io_index - 1].yPosition;
-    res.zPosition       = shm->controller_input[shm->io_index - 1].zPosition;
-    res.xVelocity       = shm->controller_input[shm->io_index - 1].xVelocity;
-    res.yVelocity       = shm->controller_input[shm->io_index - 1].yVelocity;
-    res.zVelocity       = shm->controller_input[shm->io_index - 1].zVelocity;
-    res.thermistorA[0]  = shm->controller_input[shm->io_index - 1].thermistorA[0];
-    res.thermistorA[1]  = shm->controller_input[shm->io_index - 1].thermistorA[1];
-    res.thermistorA[2]  = shm->controller_input[shm->io_index - 1].thermistorA[2];
-    res.thermistorB[0]  = shm->controller_input[shm->io_index - 1].thermistorB[0];
-    res.thermistorB[1]  = shm->controller_input[shm->io_index - 1].thermistorB[1];
-    res.thermistorB[2]  = shm->controller_input[shm->io_index - 1].thermistorB[2];
-    res.motorVoltageA   = shm->controller_input[shm->io_index - 1].motorVoltageA;
-    res.motorVoltageB   = shm->controller_input[shm->io_index - 1].motorVoltageB;
-    res.logicVoltageA   = shm->controller_input[shm->io_index - 1].logicVoltageA;
-    res.logicVoltageB   = shm->controller_input[shm->io_index - 1].logicVoltageB;
-    res.medullaStatusA  = shm->controller_input[shm->io_index - 1].medullaStatusA;
-    res.medullaStatusB  = shm->controller_input[shm->io_index - 1].medullaStatusB;
-    res.medullaStatusHip = shm->controller_input[shm->io_index - 1].medullaStatusHip;
-    res.medullaStatusBoom  = shm->controller_input[shm->io_index - 1].medullaStatusBoom;
-
-    res.motor_torqueA   = shm->controller_output[shm->io_index - 1].motor_torqueA;
-    res.motor_torqueB   = shm->controller_output[shm->io_index - 1].motor_torqueB;
-    res.motor_torque_hip= shm->controller_output[shm->io_index - 1].motor_torque_hip;
-
-    res.motor_velocityA   = shm->controller_input[shm->io_index - 1].motor_velocityA;
-    res.motor_velocityB   = shm->controller_input[shm->io_index - 1].motor_velocityB;
-    res.motor_velocity_hip= shm->controller_input[shm->io_index - 1].hip_angle_vel;
-    
-    for (i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
-        res.control_state[i] = shm->controller_state.data[i];
-
-    //*************************************************************************
-
-    return true;
 }
+
