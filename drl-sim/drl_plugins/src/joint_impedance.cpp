@@ -126,7 +126,7 @@ void JointImpedance::UpdateChild()
 	vel1 = this->body1->GetRelativeAngularVel().y;
 	vel2 = this->body2->GetRelativeAngularVel().y;
 
-	Vector3 torque(0., (angle2 - angle1) * rotationalStiffness + (vel2 - vel1) * rotationalDamping, 0.);
+    Vector3 torque(0., (vel2 - vel1) * rotationalDamping, 0.);
 	
 	if ((vel2 - vel1) > 0)
 	{
@@ -139,8 +139,8 @@ void JointImpedance::UpdateChild()
 
 	if (torque != torque)
 	{
+    	ROS_ERROR("gazebo_ros_force controller torque = (%f, %f, %f)", torque[0], torque[1], torque[2]);
 		torque = Vector3(0., 0., 0.);
-    	ROS_ERROR("gazebo_ros_force controller torque variable is malformed)");
 	}
 
   this->body1->SetTorque(torque);
