@@ -9,9 +9,6 @@
     <url>http://ros.org/wiki/atrias_controller_switcher</url>
 
     <depend package="roscpp" />
-    <depend package="rtt" />
-    <depend package="rtt_std_msgs" />
-    <depend package="rtt_atrias_msgs" />
     <depend package="atrias" />
     <depend package="atrias_msgs" />
     <depend package="atrias_controllers" />
