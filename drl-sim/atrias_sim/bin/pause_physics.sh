@@ -3,7 +3,7 @@
 paused=0
 while [ ${paused} == 0 ]
 do
-	gazebo=`rosnode list | grep gazebo`
+	gazebo=`rosservice list | grep pause_physics`
 	
 	if [ -n "${gazebo}" ]; then
 		rosservice call /gazebo/pause_physics
