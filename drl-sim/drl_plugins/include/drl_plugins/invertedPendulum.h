@@ -11,9 +11,13 @@
 #include <gazebo/Controller.hh>
 #include <gazebo/Param.hh>
 #include <gazebo/Model.hh>
+#include <gazebo/PhysicsFactory.hh>
 
 // For error messages
 #include <ros/ros.h>
+
+// For Math
+#include <math.h>
 
 using namespace gazebo;
 
@@ -42,6 +46,16 @@ class InvertedPendulum : public Controller
   /// \brief Inputs
   private: ParamT<std::string> *bodyName1P; 
   private: std::string bodyName1;
+
+  /// \brief Controller variables
+  private: Vector3 force_vec;
+  private: float zPos, xPos, zVel, zVelPrev;
+  private: float pi, l0, alpha, k;
+  private: float F, phi, xfp, l, stance, td;
+
+  template <typename T> int sgn(T val) {
+      return (T(0) < val) - (val < T(0));
+      }
 
 };
 

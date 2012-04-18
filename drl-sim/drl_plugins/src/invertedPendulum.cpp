@@ -19,6 +19,18 @@ InvertedPendulum::InvertedPendulum(Entity *parent)
   Param::Begin(&this->parameters);
   this->bodyName1P = new ParamT<std::string>("bodyName1","link", 1);
   Param::End();
+
+  // Parameters
+  pi = 3.14159265;
+  l0 = 1; 
+  alpha = 73.1*pi/180;
+  k = 25000;
+  stance = 0;
+  zVelPrev = -1;
+  td = 1;
+  
+  // Initial Conditions (Position, velocity)
+  this->myParent->SetLinearVel(Vector3(3.699, 0, 0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,19 +64,42 @@ void InvertedPendulum::LoadChild(XMLConfigNode *node)
 // Update the controller
 void InvertedPendulum::UpdateChild()
 {
-	Vector3 force_vec;
-	float xPos;
-
 	//Use the command ROS_INFO for debugging
     //ROS_INFO("xPos = %f\n", xPos); 
-
+    
+    zPos = this->body1->GetWorldPose().pos.z;
     xPos = this->body1->GetWorldPose().pos.x;
-	if ( xPos <= 0.5 ) {
-		force_vec = Vector3(0.1, 0., 0.);
+    zVel = this->body1->GetWorldLinearVel().z;
+
+	if ( stance == 0 ) {  // Flight
+		force_vec = Vector3(0., 0., 0.);
+        if (( sgn(zVel) != sgn(zVelPrev) ) && ( zPos > l0*cos(alpha) ) ) {
+            td = 1;
+        }
+        if ( ( zVel < 0 ) && ( zPos < l0*sin(alpha) ) && ( td == 1 ) ) {  // Landing
+            xfp = xPos + l0*cos(alpha);
+            stance = 1;
+        }
+        else if ( zPos < l0*sin(alpha) ) {
+            ROS_FATAL("Unstable Solution");
+        }
 	}
-    else {
-		force_vec = Vector3(-0.1, 0., 0.);
+
+    if ( stance == 1 ) {
+        // leg length
+        l = sqrt(pow((xPos-xfp),2) + pow(zPos,2));
+        phi = atan((xPos-xfp)/zPos) + pi/2;
+        F = k*(l0-l);
+        force_vec = Vector3(-F*cos(phi), 0., F*sin(phi));
+        if ( l >= l0 ) {
+            stance = 0;
+        }
+        td = 0;
     }
+    
+    ROS_INFO("xPos = %f, zPos = %f, stance = %f, zVel = %f, td = %f", xPos, zPos, stance, zVel, td);
 
     this->body1->SetForce(force_vec);
+
+    zVelPrev = zVel;
 }
