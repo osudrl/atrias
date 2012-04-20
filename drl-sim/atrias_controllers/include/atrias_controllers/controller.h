@@ -365,6 +365,8 @@ typedef struct {
     float springDeflectionB[250];
     float velABuf[100];
     float velBBuf[100];
+    int chirp_on;
+    int elapsed_time;
     int velBufLoc;
     int ringBufferLocation;
 } ForceControllerState;

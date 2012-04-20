@@ -62,7 +62,7 @@ void callbackShm (const ros::TimerEvent&) {
         // Publish the data. This takes up the majority of the loop time.
         data_publisher.publish(aData);
 
-        i = (i++) % SHM_TO_USPACE_ENTRIES;
+        i = (i+1) % SHM_TO_USPACE_ENTRIES;
         ROS_INFO("%d %d", i, shm->io_index);
     }
         ROS_INFO("shm not updated yet!");

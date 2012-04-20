@@ -10,15 +10,7 @@
 #include <atrias_controllers/controller.h>
 
 #define SHM_NAME		"SHM_NAME"
-#define SHM_TO_USPACE_ENTRIES	1000000
 
-// Messages
-#define SHM_TO_USPACE_MSGS	100
-
-#define NO_MSG			0
-#define INFO_MSG		1
-#define WARN_MSG		2
-#define ERROR_MSG		3
 
 /**
  * @brief Data to the kernel.
