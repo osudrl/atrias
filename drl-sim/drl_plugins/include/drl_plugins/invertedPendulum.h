@@ -19,7 +19,12 @@
 // For Math
 #include <math.h>
 
+// File Operations
+#include <iostream>
+#include <fstream>
+
 using namespace gazebo;
+using namespace std;
 
 class InvertedPendulum : public Controller
 {
@@ -51,11 +56,13 @@ class InvertedPendulum : public Controller
   private: Vector3 force_vec;
   private: float zPos, xPos, zVel, zVelPrev;
   private: float pi, l0, alpha, k;
-  private: float F, phi, xfp, l, stance, td;
+  private: float F, phi, xfp, l, stance, touchDown;
 
   template <typename T> int sgn(T val) {
       return (T(0) < val) - (val < T(0));
       }
+  
+  private: ofstream file;
 
 };
 

@@ -6,6 +6,8 @@
 // Register the controller using the gazebo controller factory
 GZ_REGISTER_DYNAMIC_CONTROLLER("invertedPendulum", InvertedPendulum);
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor
 InvertedPendulum::InvertedPendulum(Entity *parent)
@@ -27,10 +29,15 @@ InvertedPendulum::InvertedPendulum(Entity *parent)
   k = 25000;
   stance = 0;
   zVelPrev = -1;
-  td = 1;
+  touchDown = 1;
   
   // Initial Conditions (Position, velocity)
   this->myParent->SetLinearVel(Vector3(3.699, 0, 0));
+
+  // Open file for writing data
+  file.open("/home/drl/GazeboInvertedPendulum.txt", ios::out);
+  file << "xPos zPos stance\n";
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,35 +78,42 @@ void InvertedPendulum::UpdateChild()
     xPos = this->body1->GetWorldPose().pos.x;
     zVel = this->body1->GetWorldLinearVel().z;
 
-	if ( stance == 0 ) {  // Flight
-		force_vec = Vector3(0., 0., 0.);
+    // Flight
+	if ( stance == 0 ) {
+        // Test stance conditions
         if (( sgn(zVel) != sgn(zVelPrev) ) && ( zPos > l0*cos(alpha) ) ) {
-            td = 1;
+            touchDown = 1;
         }
-        if ( ( zVel < 0 ) && ( zPos < l0*sin(alpha) ) && ( td == 1 ) ) {  // Landing
+        if ( ( zVel < 0 ) && ( zPos <= l0*sin(alpha) ) && ( touchDown == 1 ) ) {
             xfp = xPos + l0*cos(alpha);
             stance = 1;
         }
         else if ( zPos < l0*sin(alpha) ) {
-            ROS_FATAL("Unstable Solution");
+            ROS_ERROR("Unstable Solution");
         }
+        // No force needed
+		force_vec = Vector3(0., 0., 0.);
 	}
-
-    if ( stance == 1 ) {
-        // leg length
-        l = sqrt(pow((xPos-xfp),2) + pow(zPos,2));
-        phi = atan((xPos-xfp)/zPos) + pi/2;
-        F = k*(l0-l);
-        force_vec = Vector3(-F*cos(phi), 0., F*sin(phi));
+    // Stance
+    else if ( stance == 1 ) {
+        // Test flight conditions
+        l = sqrt(pow((xPos-xfp),2) + pow((zPos-0),2));
         if ( l >= l0 ) {
             stance = 0;
+            touchDown = 0;
         }
-        td = 0;
+        // Calculate the spring force
+        force_vec = Vector3(k*(l0-l)*(xPos-xfp)/l, 0., k*(l0-l)*(zPos-0)/l);
     }
     
-    ROS_INFO("xPos = %f, zPos = %f, stance = %f, zVel = %f, td = %f", xPos, zPos, stance, zVel, td);
+    ROS_INFO("xPos = %f, zPos = %f, stance = %f, zVel = %f, touchDown = %f", xPos, zPos, stance, zVel, touchDown);
 
+    // Write data to file
+    file << xPos << " " << zPos << " " << stance << "\n";
+
+    // Apply the force
     this->body1->SetForce(force_vec);
 
     zVelPrev = zVel;
+
 }
