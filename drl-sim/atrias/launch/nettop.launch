@@ -1,5 +1,5 @@
 <launch>
-    <env name="ROS_MASTER_URI" value="http://drl-sim:11311" />
+    <env name="ROS_MASTER_URI" value="http://drl-qrio:11311" />
     <!-- Set up nettop as remote machine. -->
 <!--
     <machine name    = "drl-zotac"
@@ -23,10 +23,16 @@
 <!--
     <node machine = "drl-zotac"
 -->
+<!--
     <node name    = "data_publisher"
           pkg     = "atrias_controllers"
           type    = "data_publisher" >
-        <!-- Nettop should connect to ROS master node running on desktop. -->
     </node>
+-->
+
+    <!-- Start the data logger. -->
+    <node name    = "data_logger"
+          pkg     = "atrias_controllers"
+          type    = "data_logger" />
 </launch>
 

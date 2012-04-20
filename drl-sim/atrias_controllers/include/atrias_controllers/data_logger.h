@@ -21,12 +21,10 @@
 
 FILE *log_file_fp;   // Pointer to logfile.
 bool isLogging;   // Should I be logging?
+static Shm* shm;   // Shared memory interface to kernel.
 
-ros::Subscriber data_subscriber;
-//ros::Publisher data_visualization_publisher;
+ros::Publisher data_publisher;
 ros::ServiceServer data_subscriber_srv;
-
-static Shm * shm;   // shm interface to kernel.
 
 ros::Timer timer;
 
@@ -34,5 +32,9 @@ ControllerInput* c_in;
 ControllerOutput* c_out;
 
 int i;
+
+// Instantiate ROS msg AtriasData. Publisher will use this format to publish
+// over the ROS network.
+atrias_msgs::atrias_data aData;
 
 #endif // FUNCS_H_DATA_LOGGER
