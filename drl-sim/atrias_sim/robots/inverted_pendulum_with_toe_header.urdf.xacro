@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!-- Header File for inverted pendulum model -->
+<!-- Andrew Peekema -->
+
+<robot name="invertedPendulum"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- get robot model macro --> 
+	<include filename="inverted_pendulum_mass.urdf.xacro" />
+	<include filename="inverted_pendulum_toe.urdf.xacro" />
+
+	<!-- builds the model -->
+	<xacro:invertedPendulumMass massName="pointMass" />
+	<xacro:invertedPendulumToe massName="pointMass" toeName="toe" />
+
+	<!-- initialize the controller -->
+    <gazebo>
+        <controller:invertedPendulum name="Inverted_Pendulum" plugin="libinvertedPendulumWithToe.so">
+            <alwaysOn> true </alwaysOn>
+            <updateRate> 10000 </updateRate>
+            <bodyName1> pointMass </bodyName1>
+            <bodyName2> toe </bodyName2>
+        </controller:invertedPendulum>
+    </gazebo>
+
+</robot>

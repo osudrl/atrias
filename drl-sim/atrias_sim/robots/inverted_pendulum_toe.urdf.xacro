@@ -17,35 +17,45 @@
 	<property name="M_PI" value="3.14159"/>
 	<property name="SQRT_2" value="1.41421356"/>
 
-	<!--#########################################################################-->
-	<!--							Point Mass                                   -->
-	<!--#########################################################################-->
+    <xacro:macro name="invertedPendulumToe" params="toeName massName" >
 
-	<link name="toe">
-		<inertial>
-			<origin xyz="0 0 0" rpy="0 0 0" />
-			<mass value="0.0001" />
-			<inertia ixx="0.001" ixy="0.0" ixz="0.0"
-					 iyy="0.0001" iyz="0.0"
-				     izz="0.0001" />
-		</inertial>
-		<visual>
-			<origin xyz="0 0 0" rpy="0 0 0" />
-			<geometry>
-			  <sphere radius="0.05" />
-			</geometry>
-		</visual>
-		<collision>
-			<origin xyz="0 0 0" rpy="0 0 0" />
-			<geometry>
-			  <sphere radius="0.05" />
-			</geometry>
-		</collision>
-	</link>
+    	<!--#########################################################################-->
+    	<!--							Toe                                          -->
+    	<!--#########################################################################-->
+    
+        <joint name="free_joint" type="floating">
+           <origin xyz="0 0 -0.9" rpy="0 0 0" />
+           <parent link="${massName}" />
+           <child link="${toeName}" />
+        </joint>
 
-	<gazebo reference="pointMass">
-		<material>Gazebo/Red</material>
-	</gazebo>
+    	<link name="${toeName}">
+    		<inertial>
+    			<origin xyz="0 0 0" rpy="0 0 0" />
+    			<mass value="0.0001" />
+    			<inertia ixx="0.001" ixy="0.0" ixz="0.0"
+    					 iyy="0.0001" iyz="0.0"
+    				     izz="0.0001" />
+    		</inertial>
+    		<visual>
+    			<origin xyz="0 0 0" rpy="0 0 0" />
+    			<geometry>
+    			  <sphere radius="0.05" />
+    			</geometry>
+    		</visual>
+    		<collision>
+    			<origin xyz="0 0 0" rpy="0 0 0" />
+    			<geometry>
+    			  <sphere radius="0.05" />
+    			</geometry>
+    		</collision>
+    	</link>
+    
+    	<gazebo reference="${toeName}">
+    		<material>Gazebo/Red</material>
+    	</gazebo>
+
+    </xacro:macro>
 
 
 </robot>
