@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!-- Inverted Penulum Model -->
+
+<robot name="toe"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#slider"
+	xmlns:xacro="http://www.ros.org/wiki/xacro"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:geo="http://willowgarage.com/xmlschema/#geo" 
+	xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom" 
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body" >
+
+	<!-- Mathematical Constants -->
+	<property name="M_PI" value="3.14159"/>
+	<property name="SQRT_2" value="1.41421356"/>
+
+	<!--#########################################################################-->
+	<!--							Point Mass                                   -->
+	<!--#########################################################################-->
+
+	<link name="toe">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<mass value="0.0001" />
+			<inertia ixx="0.001" ixy="0.0" ixz="0.0"
+					 iyy="0.0001" iyz="0.0"
+				     izz="0.0001" />
+		</inertial>
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+			  <sphere radius="0.05" />
+			</geometry>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+			  <sphere radius="0.05" />
+			</geometry>
+		</collision>
+	</link>
+
+	<gazebo reference="pointMass">
+		<material>Gazebo/Red</material>
+	</gazebo>
+
+
+</robot>
+
