@@ -46,8 +46,8 @@ class AtriasEthercatMaster : public TaskContext {
 int counter;
 
 atrias_msgs::atrias_data ad;
+atrias_msgs::atrias_controller_requests cr;
 atrias_msgs::atrias_debug debugOut;
-
 
 #ifndef REAL_TIME
 int usec1, usec2, usecLast, usecDiff1, usecDiff2;
@@ -116,7 +116,6 @@ public:
         #endif // REAL_TIME
 
         // Does ACS have a new controller request?
-        atrias_msgs::atrias_controller_requests cr;
         if (NewData == crInPort.read(cr)) {
             //log(Info) << "[AEM] command: " << cr.command << endlog();
             //log(Info) << "[AEM] controller_requested: " << (int) cr.controller_requested << endlog();
