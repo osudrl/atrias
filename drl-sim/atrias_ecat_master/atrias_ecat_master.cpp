@@ -5,7 +5,7 @@
  *  Details.
  */
 
-//#define REAL_TIME
+#define REAL_TIME
 
 // Orocos
 #include <rtt/os/main.h>
@@ -24,6 +24,7 @@
 //#include <iostream>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <sys/mman.h>
 //#include <sstream>
 
 // ATRIAS
@@ -96,6 +97,12 @@ public:
         usecDiff1 = 0;
         usecDiff2 = 0;
         #endif // REAL_TIME
+
+        if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
+            perror("mlockall");
+        }
+
+        dataOutPort.setDataSample(ad);   // Show data sample to the port.
 
         return true;
     }
@@ -216,6 +223,10 @@ public:
     }
 
     void stopHook() {
+        if (munlockall() == -1) {
+            perror("munlockall");
+        }
+
         log(Info) << "AEM stopping !" <<endlog();
     }
 
