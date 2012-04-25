@@ -24,12 +24,12 @@
 
 	<!-- initialize the controller -->
     <gazebo>
-        <controller:invertedPendulum name="Inverted_Pendulum" plugin="libinvertedPendulumWithToe.so">
+        <controller:invertedPendulumWithToe name="Inverted_Pendulum_With_Toe" plugin="libinvertedPendulumWithToe.so">
             <alwaysOn> true </alwaysOn>
             <updateRate> 10000 </updateRate>
             <bodyName1> pointMass </bodyName1>
             <bodyName2> toe </bodyName2>
-        </controller:invertedPendulum>
+        </controller:invertedPendulumWithToe>
     </gazebo>
 
 </robot>

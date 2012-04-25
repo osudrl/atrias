@@ -26,7 +26,7 @@
   <!-- here's the global contact cfm/erp -->
   <physics:ode>
   	<!-- Testing -->
-	<stepTime>0.005</stepTime>
+	<stepTime>0.001</stepTime>
 		<!-- 5 kHz -->
     	<!-- <stepTime> 0.0002 </stepTime> -->
 		<!-- 6 kHz -->
@@ -35,7 +35,7 @@
 <!--    <stepTime> 0.000142857143 </stepTime>-->
 		<!-- 8 kHz -->
 		<!-- <stepTime> 0.000125 </stepTime> -->
-	<!-- Make Gazebo run realtime (if the computer can handle it) -->
+	<!-- Make Gazebo run realtime (-1) (if the computer can handle it) -->
 	<updateRate>-1</updateRate> 
     <gravity>0 0 -9.81</gravity>
     <cfm>0.0000000001</cfm>
