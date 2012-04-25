@@ -48,4 +48,9 @@ uint8 motor_currentB
 
 uint8 toe_switch
 
+float32 phase
+float32 desired_motor_angleA
+float32 desired_motor_angleB
+float32 desired_spring_defA
+float32 desired_spring_defB
 

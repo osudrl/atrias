@@ -98,13 +98,20 @@ void datalogCallback(const ros::TimerEvent&) {
             aData.motor_torqueB = c_out->motor_torqueB;
             aData.motor_torque_hip = c_out->motor_torque_hip;
 
+            aData.phase = c_in->phase;
+            aData.desired_motor_angleA = c_in->desired_motor_angleA;
+            aData.desired_motor_angleB = c_in->desired_motor_angleB;
+            aData.desired_spring_defA  = c_in->desired_spring_defA;
+            aData.desired_spring_defB  = c_in->desired_spring_defB;
+
+
             // Publish the data. This takes up the majority of the loop time.
             data_publisher.publish(aData);
         }
     
         if (isLogging) {   // This is needed for some reason. Just checking that log_file_fp != NULL allows this node to die.
             if (log_file_fp != NULL) {
-                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                fprintf(log_file_fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                     format_float(i).c_str(),
     
                     format_float(c_in->body_angle).c_str(),
@@ -156,7 +163,13 @@ void datalogCallback(const ros::TimerEvent&) {
     
                     format_float(c_out->motor_torqueA).c_str(),
                     format_float(c_out->motor_torqueB).c_str(),
-                    format_float(c_out->motor_torque_hip).c_str());
+                    format_float(c_out->motor_torque_hip).c_str(),
+
+		    format_float(c_in->phase).c_str(),
+                    format_float(c_in->desired_motor_angleA).c_str(),
+                    format_float(c_in->desired_motor_angleB).c_str(),
+                    format_float(c_in->desired_spring_defA).c_str(),
+                    format_float(c_in->desired_spring_defB).c_str());
             }
             else {
                 ROS_ERROR("data_subscriber cannot open log file.");
@@ -204,7 +217,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
         }
         ROS_INFO("[data_subscriber] Opening logfile at %s", buffer);
 
-        fprintf(log_file_fp, "Time (ms), Body Angle, Body Angle Velocity, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Time of Last Stance, Motor A Torque, Motor B Torque, Motor Hip Torque\n");   // TODO: Need units for these labels.
+        fprintf(log_file_fp, "Time (ms), Body Angle, Body Angle Velocity, Motor A Angle, Motor A Angle (inc), Motor B Angle, Motor B Angle (inc), Leg A Angle, Leg B Angle, Motor A Velocity, Motor B Velocity, Leg A Velocity, Leg B Velocity, Hip Angle, Hip Angular Velocity, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Motor A Current, Motor B Current, Toe Switch, Command, Thermistor A0, Thermistor A1, Thermistor A2, Thermistor B0, Thermistor B1, Thermistor B2, Motor A Voltage, Motor B Voltage, Logic A Voltage, Logic B Voltage, Medulla A Status, Medulla B Status, Time of Last Stance, Motor A Torque, Motor B Torque, Motor Hip Torque, Phase, Desired Motor Angle A, Desired Motor Angle B, Desired Spring Deflection A, Desired Spring Deflection B\n");   // TODO: Need units for these labels.
         res.logfilename = buffer;   // Respond with new logfilename.
         isLogging = true;   // data_subscriber should start logging.
     }
