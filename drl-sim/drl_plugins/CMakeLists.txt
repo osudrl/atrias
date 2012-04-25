@@ -44,3 +44,6 @@ rosbuild_link_boost(position_body thread)
 
 rosbuild_add_library(invertedPendulum src/invertedPendulum.cpp)
 rosbuild_link_boost(invertedPendulum thread)
+
+rosbuild_add_library(invertedPendulumWithToe src/invertedPendulumWithToe.cpp)
+rosbuild_link_boost(invertedPendulumWithToe thread)
