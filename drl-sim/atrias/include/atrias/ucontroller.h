@@ -152,14 +152,18 @@
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-120.0
-#define MTR_MAX_TRQ  				120.0
+#define MTR_MIN_TRQ				-60.0
+#define MTR_MAX_TRQ  				60.0
+
 #define MTR_MIN_HIP_TRQ				-60.0
 #define MTR_MAX_HIP_TRQ				60.0
-#define MTR_MAX_TRQ_LIMIT			120.0
-#define MTR_MIN_TRQ_LIMIT			-120.0
+
+#define MTR_MAX_TRQ_LIMIT			60.0
+#define MTR_MIN_TRQ_LIMIT			-60.0
+
 #define MTR_MAX_HIP_TRQ_LIMIT			60.0
 #define MTR_MIN_HIP_TRQ_LIMIT			-60
+
 #define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900
 #define MTR_ZERO_CNT				0
@@ -221,6 +225,7 @@ typedef struct
 	
 	uint16_t 	timestep;
 	uint16_t	counter;
+//	int16_t		ampCurrent;
 	
 	uint8_t		id;
 	uint8_t		state;
