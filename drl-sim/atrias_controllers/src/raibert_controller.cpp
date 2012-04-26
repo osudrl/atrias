@@ -154,7 +154,7 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 
 	// Leg length limits
 	float safety_length_long = 0.97;
-	float safety_length_short = 0.4;
+	float safety_length_short = 0.6;
 
 	//  Motor A angle limits
 	float safety_angleA_short = -2./3.*PI;
@@ -236,10 +236,6 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	// Deflection sum error for integral gain
 	RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA = CLAMP(RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA + (input->desired_spring_defA - spring_defA), -10.0, 10.0);
 	RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB = CLAMP(RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB + (input->desired_spring_defB - spring_defB), -10.0, 10.0);
-
-	float safety_length_long = 0.97;
-	float safety_length_short = 0.75;
-	float leg_length = cos((2.0 * PI + input->leg_angleA - input->leg_angleB ) / 2.0);
 
 	// When leg length reaches virtual safety limits, add damping to slow motors before real hardstops are hit.
 	if(leg_length != CLAMP(leg_length, safety_length_short, safety_length_long) || 
