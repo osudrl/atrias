@@ -207,6 +207,19 @@ int main (int argc, char **argv) {
     gui->get_widget("force_control_i_gainB", force_control_i_gainB);
     gui->get_widget("force_control_spring_deflection", force_control_spring_deflection);
 
+    /* Demo Controller */ 
+    gui->get_widget("demo_ctrl_p_scale", demo_ctrl_p_scale);
+    gui->get_widget("demo_ctrl_d_scale", demo_ctrl_d_scale);
+    gui->get_widget("demo_ctrl_amplitude_scale", demo_ctrl_amplitude_scale);
+    gui->get_widget("demo_ctrl_start_btn", demo_ctrl_start_btn);
+    gui->get_widget("demo_ctrl_stop_btn", demo_ctrl_stop_btn);
+    gui->get_widget("demo_ctrl_controller1_btn", demo_ctrl_controller1_btn);
+    gui->get_widget("demo_ctrl_controller2_btn", demo_ctrl_controller2_btn);
+    gui->get_widget("demo_ctrl_controller3_btn", demo_ctrl_controller3_btn);
+    gui->get_widget("demo_ctrl_controller4_btn", demo_ctrl_controller4_btn); 
+    demo_ctrl_state = DEMO_CTRL_STOPPED;
+    /* End Demo Controller */
+
     gui->get_widget("drawing_area", drawing_area);
 
     gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
@@ -332,12 +345,12 @@ int main (int argc, char **argv) {
 	// Spinbuttons
     raibert_desired_velocity_spinbutton->set_range(-5., 5.);
     raibert_hor_vel_gain_spinbutton->set_range(-10., 10.);
-    raibert_leg_angle_gain_spinbutton->set_range(-0.2, 0.2);
+    raibert_leg_angle_gain_spinbutton->set_range(0., 5000.);
     raibert_stance_p_gain_spinbutton->set_range(0., 6000.);
     raibert_stance_d_gain_spinbutton->set_range(0., 150.);
     raibert_stance_spring_threshold_spinbutton->set_range(0., 0.4);
     raibert_desired_height_spinbutton->set_range(0., 10.);
-    raibert_leg_force_gain_spinbutton->set_range(0., 6000.);
+    raibert_leg_force_gain_spinbutton->set_range(0., 50000.);
     raibert_preferred_leg_len_spinbutton->set_range(0.7, 1.);
     raibert_flight_p_gain_spinbutton->set_range(0., 4000.);
     raibert_flight_d_gain_spinbutton->set_range(0., 150.);
@@ -406,9 +419,14 @@ int main (int argc, char **argv) {
     force_control_p_gainB->set_range(10.0,500.0);
     force_control_d_gainB->set_range(0.0,10.0);
     force_control_i_gainB->set_range(30.0,960.0);
-    force_control_spring_deflection->set_range(0.0,500.0);
+    force_control_spring_deflection->set_range(0.0,50.0);
 
-    // Create the path to the data file with the last state of the gui gains.
+    /* Demo Controller Tab */
+    demo_ctrl_p_scale->set_range(0.0,5000.0);
+    demo_ctrl_d_scale->set_range(0.0,60.0);
+    demo_ctrl_amplitude_scale->set_range(0.0,3.0);
+
+    // Create the path to the data file with the last stademo_ctrl_p_scalete of the gui gains.
     std::string gui_state_file = std::string(argv[0]);
     gui_state_file = gui_state_file.substr(0, gui_state_file.rfind("/bin"));
     gui_state_file = gui_state_file.append("/src/gui_last_state.dat");
@@ -564,6 +582,11 @@ int main (int argc, char **argv) {
     test_slider_springDeflectionA->set_value(0.0);
     test_slider_springDeflectionB->set_value(0.0);
 
+    // Demo Controller
+    demo_ctrl_p_scale->set_value(1000.0);
+    demo_ctrl_d_scale->set_value(20.0);
+    demo_ctrl_amplitude_scale->set_value(1.0);
+
     /*
      * #end Initialize GUI region 
      *
@@ -578,6 +601,9 @@ int main (int argc, char **argv) {
     enable_button->signal_clicked().connect(sigc::ptr_fun(enable_motors));
     disable_button->signal_clicked().connect(sigc::ptr_fun(disable_motors));
     controller_notebook->signal_switch_page().connect(sigc::ptr_fun(switch_controllers));
+
+    demo_ctrl_start_btn->signal_clicked().connect(sigc::ptr_fun(start_demo));
+    demo_ctrl_stop_btn->signal_clicked().connect(sigc::ptr_fun(stop_demo));
 
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(poke_controller), 50); // 50 is the timeout in milliseconds
 
@@ -657,6 +683,14 @@ void switch_controllers (GtkNotebookPage* page, guint page_num) {
     leg_length_hscale->set_value(LEG_LENGTH);
     leg_angle_hscale->set_value(LEG_ANGLE);
 
+}
+
+void start_demo(void) {
+    demo_ctrl_state = DEMO_CTRL_STARTED;
+}
+
+void stop_demo(void) {
+    demo_ctrl_state = DEMO_CTRL_STOPPED;
 }
 
 //! @brief Probes and updates the active controller then sends updated commands to the robot.
@@ -803,6 +837,20 @@ bool poke_controller (void) {
             ((ForceControllerData *) (&(cr.control_data.elems)))->d_gainB = force_control_d_gainB->get_value();
             ((ForceControllerData *) (&(cr.control_data.elems)))->i_gainB = force_control_i_gainB->get_value();
             ((ForceControllerData *) (&(cr.control_data.elems)))->spring_deflection = force_control_spring_deflection->get_value();
+	    break;
+	case DEMO_CONTROLLER:
+	    ((DemoControllerData *) (&(cr.control_data.elems)))->commandedState = demo_ctrl_state;
+	    if (demo_ctrl_controller1_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 0;
+	    else if (demo_ctrl_controller2_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 1;
+	    else if (demo_ctrl_controller3_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 2;
+	    else if (demo_ctrl_controller4_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 3;
+            ((DemoControllerData *) (&(cr.control_data.elems)))->amplitude = demo_ctrl_amplitude_scale->get_value();
+	    ((DemoControllerData *) (&(cr.control_data.elems)))->p_gain = demo_ctrl_p_scale->get_value();
+            ((DemoControllerData *) (&(cr.control_data.elems)))->d_gain = demo_ctrl_d_scale->get_value();
 	    break;
     }
 

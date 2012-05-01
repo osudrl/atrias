@@ -142,6 +142,29 @@ Gtk::HScale *force_control_p_gainA,
             *force_control_i_gainB,
             *force_control_spring_deflection;
 
+// Demo Controller
+Gtk::Scale *demo_ctrl_p_scale,
+	   *demo_ctrl_d_scale,
+	   *demo_ctrl_amplitude_scale;
+
+Gtk::Button *demo_ctrl_start_btn,
+	    *demo_ctrl_stop_btn;
+
+Gtk::RadioButton *demo_ctrl_controller1_btn,
+		 *demo_ctrl_controller2_btn,
+		 *demo_ctrl_controller3_btn,
+		 *demo_ctrl_controller4_btn;
+
+int demo_ctrl_state;
+#define DEMO_CTRL_STOPPED 0
+#define DEMO_CTRL_STARTED 1
+
+void start_demo(void);
+void stop_demo(void);
+
+// End Demo Controller
+
+
 Gtk::DrawingArea *drawing_area;
 
 Gtk::ProgressBar *motor_torqueA_progress_bar,

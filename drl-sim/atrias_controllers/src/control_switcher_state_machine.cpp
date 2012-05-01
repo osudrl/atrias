@@ -132,6 +132,12 @@ extern void switch_controllers(ControllerState * controller_state, ControllerDat
             takedown_controller = &takedown_leg_force_controller;
 
             break;
+	case DEMO_CONTROLLER:
+            initialize_controller = &initialize_demo_controller;
+            update_controller = &update_demo_controller;
+            takedown_controller = &takedown_demo_controller;
+
+            break;
 
     }
 
