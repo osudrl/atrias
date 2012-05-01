@@ -30,6 +30,14 @@ extern void initialize_raibert_controller(ControllerInput *input, ControllerOutp
 // UPDATE ROUTINE
 extern void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
+	
+	//float stance_trigger_height = 0.913;	 // For floor height
+	//float stance_trigger_height = 0.904;	 // For foam 1 height
+	float stance_trigger_height = 0.910;  // For foam 2 height (trial 1)
+	//float stance_trigger_height = 0.913;  // For foam 2 height (trial 2)
+	//float stance_trigger_height = 0.915;  // For foam 2 height (trial 3)
+	//float stance_trigger_height = 0.85;  // For rocks height
+
 	// UPDATE LEG CONTROL
 	if (RAIBERT_CONTROLLER_STATE(state)->in_flight)
 	{
@@ -56,7 +64,7 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 		// Based on toe switch.
 		//if ((input->toe_switch == 1.0) && (RAIBERT_CONTROLLER_STATE(state)->toe_switch_debounce >= 3.0))
 		// Based on z position.	(Will not work as is for horizontal hopping)	
-		if (input->zPosition <= 0.908)
+		if (input->zPosition <= stance_trigger_height)
 		{
 			RAIBERT_CONTROLLER_STATE(state)->in_flight = false;
 		}
@@ -82,7 +90,7 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 		// Based on toe switch.
 		//if ((input->toe_switch == 0.0) && (RAIBERT_CONTROLLER_STATE(state)->toe_switch_debounce >= 3.0))
 		// Based on z position and time of stance.
-		if  ((input->zPosition > 0.908) && (RAIBERT_CONTROLLER_STATE(state)->stance_time > 50.0))
+		if  ((input->zPosition > stance_trigger_height) && (RAIBERT_CONTROLLER_STATE(state)->stance_time > 50.0))
 		{
 			RAIBERT_CONTROLLER_STATE(state)->in_flight = true;
 		}
@@ -146,6 +154,14 @@ void flight_controller(ControllerInput *input, ControllerOutput *output, Control
 void stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data)
 {
 	
+	//*******************************
+	// CONTROL SWITCHER!!!!
+	//*******************************
+	
+	// 0 -> FORCE CONTROL,  1 -> POSITION CONTROL
+	int STANCE_POSITION_CONTROL = 0;
+
+
 	//*********************
 	//   SAFETY VALUES
 	//*********************
@@ -202,15 +218,35 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	//****************************************
 
 	// Quartic Coefficients fitted to MATLAB Simulation Force Profile
-	float coeffA = -1.4442*pow(10,6);
-	float coeffB =  6.4643*pow(10,5);
-	float coeffC = -1.6339*pow(10,5);
-	float coeffD =  2.0380*pow(10,4);
-	float coeffE =  0;
+	
+	// COEFFICIENTS FOR 1.0 meter drop height
+	//float coeffA = -1.4442*pow(10,6);
+	//float coeffB =  6.4643*pow(10,5);
+	//float coeffC = -1.6339*pow(10,5);
+	//float coeffD =  2.0380*pow(10,4);
+	//float coeffE =  0.;
 
-	float t = RAIBERT_CONTROLLER_STATE(state)->stance_time;
+	// COEFFICIENTS FOR 0.95 meter drop height
+	//float coeffA = -3.4031*pow(10,5);
+	//float coeffB =  1.5565*pow(10,5);
+	//float coeffC = -8.0154*pow(10,4);
+	//float coeffD =  1.4323*pow(10,4);
+	//float coeffE = -1.9488;
+
+	// COEFFICIENTS FOR 0.96 meter drop height... computed by fitting polynomial to steady-state hopping
+	float coeffA = -5.5078*pow(10,3);
+	float coeffB = -1.5446*pow(10,4);
+	float coeffC = -4.5040*pow(10,4);
+	float coeffD =  1.1778*pow(10,4);
+	float coeffE = -3.6484;
+
+	float t = ((float) RAIBERT_CONTROLLER_STATE(state)->stance_time) / 1000.;
 	// Quartic approximation of force profile
-	float desired_force = coeffA*pow(t,4) + coeffB*pow(t,3) + coeffC*pow(t,2) + coeffD*pow(t,1) + coeffE;
+	float desired_force = CLAMP(coeffA*pow(t,4) + coeffB*pow(t,3) + coeffC*pow(t,2) + coeffD*pow(t,1) + coeffE, 0, 1500);
+
+	// DEBUG PRINT FORCE
+	printk("Desired Force: %d \n", (int) desired_force);
+	// END DEBUG
 
 	// Forces to Torques based on current kinematic configuration
 	float desired_torque = 0.5*desired_force*cos(PI + asin(leg_length));
@@ -237,6 +273,37 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA = CLAMP(RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA + (input->desired_spring_defA - spring_defA), -10.0, 10.0);
 	RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB = CLAMP(RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB + (input->desired_spring_defB - spring_defB), -10.0, 10.0);
 
+
+
+
+//*****************************************************************
+// POSITION CONTROL COMPUTATIONS
+//*****************************************************************
+
+	// Get values from GUI
+			float leg_angle_gain = RAIBERT_CONTROLLER_DATA(data)->hor_vel_gain;
+			// SAME DESIRED LEG ANGLE AS FLIGHT CONTROLLER
+			float desired_leg_angle = PI / 2.0 + leg_angle_gain;
+
+	// POSITION COEFFICIENTS FOR 0.96 meter drop height... computed by fitting polynomial to steady-state hopping
+	float PcoeffA = 6.2939;
+	float PcoeffB = -3.6861;
+	float PcoeffC = 0.97695;
+	float PcoeffD =  -0.092146;
+	float PcoeffE = 0.9005;
+
+	float desired_length = CLAMP(PcoeffA*pow(t,4) + PcoeffB*pow(t,3) + PcoeffC*pow(t,2) + PcoeffD*pow(t,1) + PcoeffE, 0.85, 0.9045);
+
+	input->desired_motor_angleA = desired_leg_angle - PI + acos(desired_length);
+	input->desired_motor_angleB = desired_leg_angle + PI - acos(desired_length);
+
+	// FEEDFORWARD HOLDING TORQUE
+	float feed_position_torque = 10.;
+
+	//**********************************************************
+	// CONTROLLING "IF" STATEMENT:  SAFETY FIRST, then selects between position and force control
+	//**********************************************************
+
 	// When leg length reaches virtual safety limits, add damping to slow motors before real hardstops are hit.
 	if(leg_length != CLAMP(leg_length, safety_length_short, safety_length_long) || 
 		input->motor_angleA != CLAMP(input->motor_angleA, safety_angleA_short, safety_angleA_long) || 
@@ -247,13 +314,27 @@ void stance_controller(ControllerInput *input, ControllerOutput *output, Control
 	}
 	else
 	{
-		// Leg A, PID control with feed forward.
-		input->desired_motor_angleA = input->motor_angleA + (input->desired_spring_defA - spring_defA);
-		output->motor_torqueA = (FORCE_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_D_GAIN * (input->motor_velocityA)) + (FORCE_I_GAIN * RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA) + feed_forward_torqueA;
+		
+		
+		if(STANCE_POSITION_CONTROL == 1) // POSITION CONTROL
+		{
+			// Leg PD control.
+			output->motor_torqueA = (FORCE_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_D_GAIN * input->motor_velocityA) - feed_position_torque;
+			output->motor_torqueB = (FORCE_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_D_GAIN * input->motor_velocityB) + feed_position_torque;
+		}
+		else // FORCE CONTROL
+		{
+			// Leg A, PID control with feed forward.
+			input->desired_motor_angleA = input->motor_angleA + (input->desired_spring_defA - spring_defA);
+			output->motor_torqueA = (FORCE_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_D_GAIN * (input->motor_velocityA)) + (FORCE_I_GAIN * RAIBERT_CONTROLLER_STATE(state)->spring_def_sumA) + feed_forward_torqueA;
 
-		// Leg B, PID control with feed forward.
-		input->desired_motor_angleB = input->motor_angleB + (input->desired_spring_defB - spring_defB);
-		output->motor_torqueB = (FORCE_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_D_GAIN * (input->motor_velocityB)) + (FORCE_I_GAIN * RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB) + feed_forward_torqueB;
+			// Leg B, PID control with feed forward.
+			input->desired_motor_angleB = input->motor_angleB + (input->desired_spring_defB - spring_defB);
+			output->motor_torqueB = (FORCE_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_D_GAIN * (input->motor_velocityB)) + (FORCE_I_GAIN * RAIBERT_CONTROLLER_STATE(state)->spring_def_sumB) + feed_forward_torqueB;
+		}
+
+
+
 	}
 
 	// Update stance time.
