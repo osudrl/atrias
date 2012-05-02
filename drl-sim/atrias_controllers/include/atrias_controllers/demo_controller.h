@@ -18,7 +18,7 @@ typedef struct {
 	float x;
 	float y;
 	float z;
-	float x_val;
+	float x_vel;
 	float y_vel;
 	float z_vel;
 } CartPosition;

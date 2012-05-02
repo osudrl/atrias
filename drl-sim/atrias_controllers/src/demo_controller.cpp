@@ -157,6 +157,13 @@ RobotPosition demo1(ControllerInput *input, ControllerOutput *output, Controller
 {
 	CartPosition desPos;
 
+	desPos.x=0.05*cos(2*PI*0);
+	desPos.y=0.05*sin(2*PI*0);
+	desPos.z=-0.75;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
+
 
 	return cartesianToRobot(desPos);
 }
@@ -192,6 +199,48 @@ RobotPosition cartesianToRobot(CartPosition posIn)
 {
 	RobotPosition posOut;
 
+	// Store Cartesian Values	
+	float x = posIn.x;
+	float y = posIn.y;
+	float z = posIn.z;
+
+	float dx = posIn.x_vel;
+	float dy = posIn.y_vel;
+	float dz = posIn.x_vel;
+
+	// Constants
+	float lh = 0.15;  // Hip Link Length (m)
+		
+	
+	// ***********************
+	// Compute Robot Positions
+	// ***********************
+
+	// Useful Values
+	float lf = CLAMP(sqrt(pow(z,2) + pow(y,2) - pow(lh,2)), 0.3, 1.0);
+
+	// Robot Coordinate Computations
+	posOut.hip_ang = CLAMP( PI/2. - asin(lh/lf) - atan2(-z,y) , -0.1, 0.1);
+	posOut.leg_ang = CLAMP( atan2(lf, x) , 0.1, PI-0.1); 
+	posOut.leg_len = CLAMP(lf/sin(leg_ang),0.5,0.95);
+
+	// *************************
+	// Compute Robot Velocities
+	// *************************
+
+	// Useful Values
+	float dlf = (z*dz + y*dy)/lf;
+	float dlf_inv = (-z*dz - y*dy)/pow(lf,3);
+	float dlf_x = (dlf*x - lf*dx)/pow(x,2);
+
+	posOut.leg_ang_vel = 0.0;	
+	posOut.leg_len_vel = 0.0;
+	posOut.hip_ang_vel = 0.0;
+
+//	leg_ang_vel = (-lh*dlf_inv)/sqrt(1-pow(lh/lf,2)) + (dz*y - z*dy)/(pow(y,2) + pow(z,2));
+//	hip_ang_vel = dlf_x/(1 + pow(lf/x,2));	
+//	leg_len_vel = dlf/sin(leg_ang) - lf*hip_ang_vel/(sin(leg_ang)*tan(leg_ang));
+	
 
 	return posOut;	
 }
