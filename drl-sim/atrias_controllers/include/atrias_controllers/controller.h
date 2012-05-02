@@ -378,6 +378,8 @@ typedef struct {
     float amplitude;
     float p_gain;
     float d_gain;
+    float hip_p_gain;
+    float hip_d_gain;
 } DemoControllerData;
 
 typedef struct {
@@ -388,6 +390,8 @@ typedef struct {
     float des_leg_ang_vel;
     float des_leg_len;
     float des_leg_len_vel;
+    float des_hip_ang;
+    float des_hip_ang_vel;
 } DemoControllerState;
 
 // Macros for dereferencing pointers.

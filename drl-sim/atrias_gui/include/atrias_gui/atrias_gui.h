@@ -145,7 +145,9 @@ Gtk::HScale *force_control_p_gainA,
 // Demo Controller
 Gtk::Scale *demo_ctrl_p_scale,
 	   *demo_ctrl_d_scale,
-	   *demo_ctrl_amplitude_scale;
+	   *demo_ctrl_amplitude_scale,
+	   *demo_ctrl_hip_p_scale,
+	   *demo_ctrl_hip_d_scale;
 
 Gtk::Button *demo_ctrl_start_btn,
 	    *demo_ctrl_stop_btn;

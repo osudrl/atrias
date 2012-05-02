@@ -15,7 +15,7 @@ void initialize_demo_controller(ControllerInput *input, ControllerOutput *output
 {
 	DEMO_CONTROLLER_STATE(state)->time = 0.;
 
-	output->motor_torqueA = output->motor_torqueB = 0.;
+	output->motor_torqueA = output->motor_torqueB = output->motor_torque_hip = 0.;
 
 	DEMO_CONTROLLER_STATE(state)->des_leg_ang = 0.0; 
 	DEMO_CONTROLLER_STATE(state)->des_leg_ang_vel = 0.0;
@@ -86,6 +86,9 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
 		output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
 			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
+
+		output->motor_torque_hip = DEMO_CONTROLLER_DATA(data)->hip_p_gain * (DEMO_CONTROLLER_STATE(state)->des_hip_ang - input->hip_angle) 
+			+ DEMO_CONTROLLER_DATA(data)->hip_d_gain * (DEMO_CONTROLLER_STATE(state)->des_hip_ang_vel - input->hip_angle_vel);
 	}
 	else
 	{

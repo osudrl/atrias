@@ -210,6 +210,8 @@ int main (int argc, char **argv) {
     /* Demo Controller */ 
     gui->get_widget("demo_ctrl_p_scale", demo_ctrl_p_scale);
     gui->get_widget("demo_ctrl_d_scale", demo_ctrl_d_scale);
+    gui->get_widget("demo_ctrl_hip_p_scale", demo_ctrl_hip_p_scale);
+    gui->get_widget("demo_ctrl_hip_d_scale", demo_ctrl_hip_d_scale);
     gui->get_widget("demo_ctrl_amplitude_scale", demo_ctrl_amplitude_scale);
     gui->get_widget("demo_ctrl_start_btn", demo_ctrl_start_btn);
     gui->get_widget("demo_ctrl_stop_btn", demo_ctrl_stop_btn);
@@ -424,6 +426,8 @@ int main (int argc, char **argv) {
     /* Demo Controller Tab */
     demo_ctrl_p_scale->set_range(0.0,5000.0);
     demo_ctrl_d_scale->set_range(0.0,60.0);
+    demo_ctrl_hip_p_scale->set_range(0.0,3000.0);
+    demo_ctrl_hip_d_scale->set_range(0.0,50.0);
     demo_ctrl_amplitude_scale->set_range(0.0,3.0);
 
     // Create the path to the data file with the last stademo_ctrl_p_scalete of the gui gains.
@@ -585,6 +589,8 @@ int main (int argc, char **argv) {
     // Demo Controller
     demo_ctrl_p_scale->set_value(1000.0);
     demo_ctrl_d_scale->set_value(20.0);
+    demo_ctrl_hip_p_scale->set_value(2000.0);
+    demo_ctrl_hip_d_scale->set_value(20.0);
     demo_ctrl_amplitude_scale->set_value(1.0);
 
     /*
@@ -841,16 +847,18 @@ bool poke_controller (void) {
 	case DEMO_CONTROLLER:
 	    ((DemoControllerData *) (&(cr.control_data.elems)))->commandedState = demo_ctrl_state;
 	    if (demo_ctrl_controller1_btn->get_active())
-            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 0;
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 0;
 	    else if (demo_ctrl_controller2_btn->get_active())
-            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 1;
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 1;
 	    else if (demo_ctrl_controller3_btn->get_active())
-            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 2;
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 2;
 	    else if (demo_ctrl_controller4_btn->get_active())
-            	((DemoControllerData *) (&(cr.control_data.elems)))->demo = 3;
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 3;
             ((DemoControllerData *) (&(cr.control_data.elems)))->amplitude = demo_ctrl_amplitude_scale->get_value();
 	    ((DemoControllerData *) (&(cr.control_data.elems)))->p_gain = demo_ctrl_p_scale->get_value();
             ((DemoControllerData *) (&(cr.control_data.elems)))->d_gain = demo_ctrl_d_scale->get_value();
+	    ((DemoControllerData *) (&(cr.control_data.elems)))->hip_p_gain = demo_ctrl_hip_p_scale->get_value();
+            ((DemoControllerData *) (&(cr.control_data.elems)))->hip_d_gain = demo_ctrl_hip_d_scale->get_value();
 	    break;
     }
 
