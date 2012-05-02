@@ -11,7 +11,8 @@ CONTROLLERS=no_controller.o \
 	raibert_controller.o \
 	hubicki_controller.o \
 	test_controller.o  \
-        leg_force_controller.o
+        leg_force_controller.o \
+	demo_controller.o
 
 obj-m := rtai_controller.o 
 
@@ -61,6 +62,7 @@ links:
 	ln -sf ../../atrias_controllers/src/hubicki_controller.cpp hubicki_controller.c
 	ln -sf ../../atrias_controllers/src/test_controller.cpp test_controller.c
 	ln -sf ../../atrias_controllers/src/leg_force_controller.cpp leg_force_controller.c
+	ln -sf ../../atrias_controllers/src/demo_controller.cpp demo_controller.c
 
 install:
 	insmod rtai_controller.ko

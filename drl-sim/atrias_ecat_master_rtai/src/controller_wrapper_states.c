@@ -180,15 +180,15 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("Motor Encoder B: %d\n",encAverage[2]);
     //printk("Leg Encoder   B: %d\n\n",encAverage[3]);
     //printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));
-    printk("ERROR Code[A]: %d\n",uc_out[A_INDEX]->error_flags);
+    //printk("ERROR Code[A]: %d\n",uc_out[A_INDEX]->error_flags);
     //printk("   LimitSW[A]: %d\n\n",uc_out[A_INDEX]->limitSW);
-    printk("ERROR Code[B]: %d\n",uc_out[B_INDEX]->error_flags);
-    printk("ERROR Code[HIP]: %d\n",uc_out[HIP_INDEX]->error_flags);
-    printk("ERROR Code[BOOM]: %d\n",uc_out[BOOM_INDEX]->error_flags);
+    //printk("ERROR Code[B]: %d\n",uc_out[B_INDEX]->error_flags);
+    //printk("ERROR Code[HIP]: %d\n",uc_out[HIP_INDEX]->error_flags);
+    //printk("ERROR Code[BOOM]: %d\n",uc_out[BOOM_INDEX]->error_flags);
     //printk("   LimitSW[B]: %d\n\n\n",uc_out[B_INDEX]->limitSW);
     //printk("  Yaw Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[0]);
     //printk("Pitch Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[2]);
-    printk("Current %d\n", uc_out[A_INDEX]->encoder[3]);
+    //printk("Current %d\n", uc_out[A_INDEX]->encoder[3]);
     //printk("SizeOf: %d\n", 8*sizeof(uControllerOutput));
     //printk("Timestep: %d\n", uc_out[2]->timestep);
     //printk("                                                                                                Toe Switch: %d\n",uc_out[B_INDEX]->toe_switch);
@@ -311,9 +311,9 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 	averageCounter++;
 
 
-    last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
+    //last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
     
-    last_body_cnt = (int32_t)(uc_out[BOOM_INDEX]->encoder[0]);
+    //last_body_cnt = (int32_t)(uc_out[BOOM_INDEX]->encoder[0]);
 
     if (averageCounter < 128)
 	return STATE_INIT;
@@ -326,7 +326,7 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 3; i++) {
 	if ((uc_out[i]->timestep - last_medulla_time[i]) > 100000) {
 	    current_medulla_time[i] =  0xFFFF+uc_out[i]->timestep;
 	    //printk("Overflow: %d - %d = %d\n", current_medulla_time[i],last_medulla_time[i],current_medulla_time[i]-last_medulla_time[i]);
@@ -394,8 +394,9 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->medullaStatusA |= uc_out[A_INDEX]->error_flags;
     c_in->medullaStatusB |= uc_out[B_INDEX]->error_flags;
     c_in->medullaStatusHip |= uc_out[HIP_INDEX]->error_flags;
-    c_in->medullaStatusBoom |= uc_out[BOOM_INDEX]->error_flags;
+    //c_in->medullaStatusBoom |= uc_out[BOOM_INDEX]->error_flags;
 
+    /*
     // Update boom angles
     if (ABS((int32_t)(uc_out[BOOM_INDEX]->encoder[0]) - last_body_cnt) > 1000) {
 	if (((int32_t)(uc_out[BOOM_INDEX]->encoder[0]) - last_body_cnt) < 0)
@@ -431,6 +432,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->xPosition = (((float)(uc_out[BOOM_INDEX]->encoder[1]))*BOOM_RAD_PER_CNT*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO) + xPositionBase;
     c_in->xVelocity = (c_in->xPosition - last_xPosition) / ((float)(current_medulla_time[BOOM_INDEX]-last_medulla_time[BOOM_INDEX]) * SEC_PER_CNT1 );
     last_xPosition = c_in->xPosition;
+    */
 
     // clear motor torques, this might help with the "ghost" problem. 
     c_out->motor_torqueA = 0.0;
@@ -456,7 +458,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     uc_in[A_INDEX]->counter++;
     uc_in[B_INDEX]->counter++;
     uc_in[HIP_INDEX]->counter++;
-    uc_in[BOOM_INDEX]->counter++;
+    //uc_in[BOOM_INDEX]->counter++;
 
     for (i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++)
 	last_medulla_time[i] = uc_out[i]->timestep;

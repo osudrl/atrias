@@ -38,7 +38,7 @@
 #include <drl_library/discretize.h>
 #include <drl_library/drl_math.h>
 
-#define NUM_OF_MEDULLAS_ON_ROBOT            4
+#define NUM_OF_MEDULLAS_ON_ROBOT            3
 #define NUM_OF_SLAVES_IN_SIMULATION_MACHINE 1
 
 #define A_INDEX    1

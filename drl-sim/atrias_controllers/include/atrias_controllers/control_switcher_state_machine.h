@@ -68,6 +68,10 @@ extern void takedown_raibert_controller(ControllerInput*, ControllerOutput*, Con
 extern void initialize_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void update_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 extern void takedown_test_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+
+extern void initialize_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void update_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+extern void takedown_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 //==================================================================================//
 
 extern void control_switcher_state_machine(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
