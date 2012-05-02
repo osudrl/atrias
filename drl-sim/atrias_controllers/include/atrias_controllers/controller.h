@@ -176,6 +176,16 @@ typedef struct {
     unsigned char data[SIZE_OF_CONTROLLER_DATA];
 } ControllerData;
 
+// Struct for storing robot configuration and velocities
+typedef struct {
+    float leg_ang; 
+    float leg_ang_vel;
+    float leg_len;
+    float leg_len_vel;
+    float hip_ang;
+    float hip_ang_vel;
+} RobotPosition
+
 
 // ============================================================================
 // Data to controller wrapper.
@@ -386,12 +396,7 @@ typedef struct {
     int currentState;
     int currentDemo;
     float time;
-    float des_leg_ang; 
-    float des_leg_ang_vel;
-    float des_leg_len;
-    float des_leg_len_vel;
-    float des_hip_ang;
-    float des_hip_ang_vel;
+    RobotPosition desiredPos;
 } DemoControllerState;
 
 // Macros for dereferencing pointers.

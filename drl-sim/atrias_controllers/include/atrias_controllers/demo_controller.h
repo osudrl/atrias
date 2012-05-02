@@ -20,9 +20,9 @@ void takedown_demo_controller(ControllerInput*, ControllerOutput*, ControllerSta
 void start_demo(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 void stop_demo(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 
-void demo1(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
-void demo2(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
-void demo3(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
-void demo4(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+RobotPosition demo1(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+RobotPosition demo2(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+RobotPosition demo3(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+RobotPosition demo4(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 
 #endif // DEMO_CONTROLLER_H
