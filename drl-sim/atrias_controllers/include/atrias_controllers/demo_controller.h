@@ -13,6 +13,16 @@
 #define DEMO_STATE_RUNNING 2
 #define DEMO_STATE_STOPPING 3
 
+
+typedef struct {
+	float x;
+	float y;
+	float z;
+	float x_val;
+	float y_vel;
+	float z_vel;
+} CartPosition;
+
 void initialize_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 void update_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
 void takedown_demo_controller(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
@@ -24,5 +34,7 @@ RobotPosition demo1(ControllerInput*, ControllerOutput*, ControllerState*, Contr
 RobotPosition demo2(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 RobotPosition demo3(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 RobotPosition demo4(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+
+RobotPosition cartesianToRobot(CartPosition);
 
 #endif // DEMO_CONTROLLER_H

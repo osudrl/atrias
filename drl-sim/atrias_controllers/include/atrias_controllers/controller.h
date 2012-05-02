@@ -184,7 +184,7 @@ typedef struct {
     float leg_len_vel;
     float hip_ang;
     float hip_ang_vel;
-} RobotPosition
+} RobotPosition;
 
 
 // ============================================================================
@@ -397,6 +397,7 @@ typedef struct {
     int currentDemo;
     float time;
     RobotPosition desiredPos;
+    RobotPosition lastDemoPos;
 } DemoControllerState;
 
 // Macros for dereferencing pointers.
