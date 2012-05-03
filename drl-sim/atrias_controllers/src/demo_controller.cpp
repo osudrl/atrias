@@ -6,7 +6,12 @@
 #define MID_MOT_ANG_B		4.167
 #define F_SLOW .1
 
-#define START_TIME 5.0
+#define START_TIME 2.0
+
+#define DELTA_Y (0.5*sin(input->motor_angleB) + 0.5*sin(input->motor_angleA))
+#define DELTA_X (-0.5*cos(input->motor_angleB) - 0.5*cos(input->motor_angleA))
+#define LEG_LENGTH sqrt(DELTA_Y*DELTA_Y + DELTA_X*DELTA_X)
+#define LEG_ANGLE ((0.0*PI) - (atan2(DELTA_Y,DELTA_X)))
 
 typedef struct
 {
@@ -19,12 +24,14 @@ void initialize_demo_controller(ControllerInput *input, ControllerOutput *output
 
 	output->motor_torqueA = output->motor_torqueB = output->motor_torque_hip = 0.;
 
-	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang = 0.0; 
+	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang = LEG_ANGLE; 
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel = 0.0;
-	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len = 0.0;
+	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len = LEG_LENGTH;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel = 0.0;
-	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = 0.0; 
+	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = 0.135; 
 	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel = 0.0;
+
+	printk("Hip Pos: %d\n", (int)(1000.0*input->hip_angle));
 
 	DEMO_CONTROLLER_STATE(state)->currentState = DEMO_STATE_STOPPED;
 	DEMO_CONTROLLER_STATE(state)->currentDemo = DEMO_CONTROLLER_DATA(data)->commandedDemo;
@@ -46,7 +53,9 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 		{
 			DEMO_CONTROLLER_STATE(state)->time = 0.;
 			DEMO_CONTROLLER_STATE(state)->currentState = DEMO_STATE_STARTING;
-			printk("ENABLING\n");
+			DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_ang = LEG_ANGLE;
+			DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_len = LEG_LENGTH;
+			DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang = input->hip_angle;
 		}
 	}
 
@@ -82,29 +91,19 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 	}
 
 
-	// If we are not in the stopped state, then decode the desired leg angle, leg length, and hip angle into motor torques
-	if (DEMO_CONTROLLER_STATE(state)->currentState != DEMO_STATE_STOPPED) 
-	{
-		float des_mtr_angA = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang - PI + acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len);
-		float des_mtr_angB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang + PI - acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len); 
+	float des_mtr_angA = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang - PI + acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len);
+	float des_mtr_angB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang + PI - acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len); 
 
-		float des_mtr_ang_velA = -DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
-		float des_mtr_ang_velB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
+	float des_mtr_ang_velA = -DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
+	float des_mtr_ang_velB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
 
-		output->motor_torqueA = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angA - input->motor_angleA) 
-			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
-		output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
-			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
+	output->motor_torqueA = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angA - input->motor_angleA) 
+		+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
+	output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
+		+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
 
-		output->motor_torque_hip = DEMO_CONTROLLER_DATA(data)->hip_p_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang - input->hip_angle) 
-			+ DEMO_CONTROLLER_DATA(data)->hip_d_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel - input->hip_angle_vel);
-	}
-	else
-	{
-		output->motor_torqueA = 0.0;
-		output->motor_torqueB = 0.0;
-		output->motor_torque_hip = 0.0;
-	}
+	output->motor_torque_hip = DEMO_CONTROLLER_DATA(data)->hip_p_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang - input->hip_angle) 
+		+ DEMO_CONTROLLER_DATA(data)->hip_d_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel - input->hip_angle_vel);
 
 }
 
@@ -113,16 +112,16 @@ void start_demo(ControllerInput *input, ControllerOutput *output, ControllerStat
 	RobotPosition demoStart;
 	switch (DEMO_CONTROLLER_STATE(state)->currentDemo)
 	{
-		case DEMO1: demoStart = demo1(input, output, state, data, 0.0);
-		case DEMO2: demoStart = demo2(input, output, state, data, 0.0);
-		case DEMO3: demoStart = demo3(input, output, state, data, 0.0);
-		case DEMO4: demoStart = demo4(input, output, state, data, 0.0);
+		case DEMO1: demoStart = demo1(input, output, state, data, 0.0); break;
+		case DEMO2: demoStart = demo2(input, output, state, data, 0.0); break;
+		case DEMO3: demoStart = demo3(input, output, state, data, 0.0); break;
+		case DEMO4: demoStart = demo4(input, output, state, data, 0.0); break;
 	}
 
 	// calculate current position
-	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang = ((demoStart.leg_ang-(PI/2))/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + (PI/2);
-	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len = ((demoStart.leg_len-0.9)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + 0.9;
-	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = ((demoStart.hip_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time;
+	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang = ((demoStart.leg_ang-DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_ang;
+	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len = ((demoStart.leg_len-DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_len)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_len;
+	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = ((demoStart.hip_ang-DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel = 0.0;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel = 0.0;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel = 0.0;
@@ -140,7 +139,7 @@ void stop_demo(ControllerInput *input, ControllerOutput *output, ControllerState
 	// calculate current position
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang = (((PI/2) - DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_ang;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len = ((0.9 - DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_len)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.leg_len;
-	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = ((0.0 - DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang;
+	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang = ((0.135 - DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang)/START_TIME) * DEMO_CONTROLLER_STATE(state)->time + DEMO_CONTROLLER_STATE(state)->lastDemoPos.hip_ang;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel = 0.0;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel = 0.0;
 	DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel = 0.0;
@@ -155,23 +154,30 @@ void stop_demo(ControllerInput *input, ControllerOutput *output, ControllerState
 
 RobotPosition demo1(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
 {
+	// Planer elipse
 	CartPosition desPos;
 
-	desPos.x=0.05*cos(2*PI*0);
-	desPos.y=0.05*sin(2*PI*0);
+	desPos.x=0.35*cos(2*PI*time);
+	desPos.y=0.07*sin(2*PI*time) + 0.15;
 	desPos.z=-0.75;
 	desPos.x_vel = 0.0;
 	desPos.y_vel = 0.0;
 	desPos.z_vel = 0.0;
-
 
 	return cartesianToRobot(desPos);
 }
 
 RobotPosition demo2(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
 {	
+	// Planer Figure eight
 	CartPosition desPos;
 
+	desPos.x = 0.25*sin(2.0*PI*1.0*time);
+	desPos.y = 0.1*cos(2.0*PI*1.0*time)*sin(2.0*PI*1.0*time) + 0.15;
+	desPos.z = -0.75;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
 
 	return cartesianToRobot(desPos);
 
@@ -180,8 +186,24 @@ RobotPosition demo2(ControllerInput *input, ControllerOutput *output, Controller
 RobotPosition demo3(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
 {	
 	CartPosition desPos;
+	
+	float rads = 2.0*PI*DEMO_CONTROLLER_DATA(data)->amplitude*time;
 
+	desPos.x = (0.2*sin(rads))*cos(rads/20);
+	desPos.y = 0.07*cos(rads) + 0.15;
+	desPos.z = (-.2*sin(rads))*sin(rads/20)-.75;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
 
+/*
+	desPos.x = (0.2*sin(rads));
+	desPos.y = 0.07*cos(rads) + 0.15;
+	desPos.z = (-.2*sin(rads))-.75;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
+*/
 	return cartesianToRobot(desPos);
 
 }
@@ -220,9 +242,9 @@ RobotPosition cartesianToRobot(CartPosition posIn)
 	float lf = CLAMP(sqrt(pow(z,2) + pow(y,2) - pow(lh,2)), 0.3, 1.0);
 
 	// Robot Coordinate Computations
-	posOut.hip_ang = CLAMP( PI/2. - asin(lh/lf) - atan2(-z,y) , -0.1, 0.1);
+	posOut.hip_ang = CLAMP(-1.0* (PI/2. - asin(lh/lf) - atan2(-z,y)) , -0.195, 0.125);
 	posOut.leg_ang = CLAMP( atan2(lf, x) , 0.1, PI-0.1); 
-	posOut.leg_len = CLAMP(lf/sin(leg_ang),0.5,0.95);
+	posOut.leg_len = CLAMP(lf/sin(posOut.leg_ang),0.5,0.95);
 
 	// *************************
 	// Compute Robot Velocities
@@ -237,9 +259,9 @@ RobotPosition cartesianToRobot(CartPosition posIn)
 	posOut.leg_len_vel = 0.0;
 	posOut.hip_ang_vel = 0.0;
 
-//	leg_ang_vel = (-lh*dlf_inv)/sqrt(1-pow(lh/lf,2)) + (dz*y - z*dy)/(pow(y,2) + pow(z,2));
+//	leg_ang_vel = -1.0*((-lh*dlf_inv)/sqrt(1-pow(lh/lf,2)) + (dz*y - z*dy)/(pow(y,2) + pow(z,2)));
 //	hip_ang_vel = dlf_x/(1 + pow(lf/x,2));	
-//	leg_len_vel = dlf/sin(leg_ang) - lf*hip_ang_vel/(sin(leg_ang)*tan(leg_ang));
+//	leg_len_vel = dlf/sin(posOut.leg_ang) - lf*hip_ang_vel/(sin(posOut.leg_ang)*tan(posOut.leg_ang));
 	
 
 	return posOut;	

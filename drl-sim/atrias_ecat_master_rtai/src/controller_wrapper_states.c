@@ -192,7 +192,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("SizeOf: %d\n", 8*sizeof(uControllerOutput));
     //printk("Timestep: %d\n", uc_out[2]->timestep);
     //printk("                                                                                                Toe Switch: %d\n",uc_out[B_INDEX]->toe_switch);
-    //printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
+    printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
 
     ///printk("%d,%d,%d,%d\n",uc_out[0]->error_flags,uc_out[1]->error_flags,uc_out[2]->error_flags,uc_out[3]->error_flags);
 
