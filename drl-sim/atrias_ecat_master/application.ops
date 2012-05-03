@@ -7,7 +7,7 @@ loadComponent("atrias_cs", "AtriasControllerSwitcher")
 
 # Set activity properties.
 setActivity("atrias_em", 0.001, HighestPriority, ORO_SCHED_RT)
-setActivity("atrias_cs", 0.0005, 60, ORO_SCHED_RT)
+setActivity("atrias_cs", 0.0005, 80, ORO_SCHED_OTHER)
 
 # Create connections
 var ConnPolicy controller_req
