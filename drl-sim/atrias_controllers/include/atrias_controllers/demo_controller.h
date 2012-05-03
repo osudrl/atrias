@@ -36,5 +36,6 @@ RobotPosition demo3(ControllerInput*, ControllerOutput*, ControllerState*, Contr
 RobotPosition demo4(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 
 RobotPosition cartesianToRobot(CartPosition);
+RobotPosition setTorques(ControllerInput*, ControllerOutput*, ControllerData*, RobotPosition);
 
 #endif // DEMO_CONTROLLER_H

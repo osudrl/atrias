@@ -398,6 +398,8 @@ typedef struct {
     float time;
     RobotPosition desiredPos;
     RobotPosition lastDemoPos;
+    float desTorqueA;
+    float desTorqueB;
 } DemoControllerState;
 
 // Macros for dereferencing pointers.

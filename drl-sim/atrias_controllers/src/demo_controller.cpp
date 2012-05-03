@@ -73,7 +73,7 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO3)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo3(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
 		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO4)
-			DEMO_CONTROLLER_STATE(state)->desiredPos = demo4(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
+			DEMO_CONTROLLER_STATE(state)->desiredPos = demo4(input, output, state, data, 1);
 			
 
 		// If we are currently running a demo and the stop demo button is pressed, go to demo_stopping
@@ -91,16 +91,25 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 	}
 
 
-	float des_mtr_angA = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang - PI + acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len);
-	float des_mtr_angB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang + PI - acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len); 
+	// This is a hack, but for DEMO4, the force controller demo, we don't want to use this position controller code. Instead the demo will directly set desiredTorque variables
+	if (DEMO_CONTROLLER_STATE(state)->currentDemo != DEMO4)
+	{
+		float des_mtr_angA = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang - PI + acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len);
+		float des_mtr_angB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang + PI - acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len); 
 
-	float des_mtr_ang_velA = -DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
-	float des_mtr_ang_velB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
+		float des_mtr_ang_velA = -DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
+		float des_mtr_ang_velB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len_vel / 2. / sin(des_mtr_angA - des_mtr_angB) - DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang_vel / 2.;
 
-	output->motor_torqueA = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angA - input->motor_angleA) 
-		+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
-	output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
-		+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
+		output->motor_torqueA = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angA - input->motor_angleA) 
+			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
+		output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
+			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
+	}
+	else
+	{
+		output->motor_torqueA = DEMO_CONTROLLER_STATE(state)->desTorqueA;
+		output->motor_torqueB = DEMO_CONTROLLER_STATE(state)->desTorqueB;
+	}
 
 	output->motor_torque_hip = DEMO_CONTROLLER_DATA(data)->hip_p_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang - input->hip_angle) 
 		+ DEMO_CONTROLLER_DATA(data)->hip_d_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang_vel - input->hip_angle_vel);
@@ -210,8 +219,90 @@ RobotPosition demo3(ControllerInput *input, ControllerOutput *output, Controller
 
 RobotPosition demo4(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
 {	
-	CartPosition desPos;
 
+	// Leg length limits
+	float safety_length_long = 0.97;
+	float safety_length_short = 0.4;
+
+	//  Motor A angle limits
+	float safety_angleA_short = -2./3.*PI;
+	float safety_angleA_long = 0.;	
+
+	// Motor B angle limits
+	float safety_angleB_short = PI;
+	float safety_angleB_long = 5./3.*PI;	
+
+	// Leg length calculation
+	float leg_length = cos((2.0 * PI + input->leg_angleA - input->leg_angleB ) / 2.0);
+
+
+	// If outside of safety limits, Engage damping controller 
+	// Logic:  if value is not equal to its "CLAMPED" value, it must be out of range
+	if(leg_length != CLAMP(leg_length, safety_length_short, safety_length_long) || 
+		input->motor_angleA != CLAMP(input->motor_angleA, safety_angleA_short, safety_angleA_long) || 
+		input->motor_angleB != CLAMP(input->motor_angleB, safety_angleB_short, safety_angleB_long))
+	{
+		// Damping controller engages, with hard-coded gains
+		DEMO_CONTROLLER_STATE(state)->desTorqueA = - 100.0 * input->motor_velocityA;
+		DEMO_CONTROLLER_STATE(state)->desTorqueB = - 100.0 * input->motor_velocityB;
+	}
+	// Else, engage normal controller
+	else
+	{
+		// Get values from GUI.
+		float desired_force = 0;
+		float FORCE_P_GAIN = DEMO_CONTROLLER_DATA(data)->p_gain;
+		float FORCE_D_GAIN = DEMO_CONTROLLER_DATA(data)->d_gain;
+
+		// Calculate spring deflections.
+		float spring_defA = input->motor_angleA - input->leg_angleA;
+		float spring_defB = input->motor_angleB - input->leg_angleB;
+
+		// Known Values
+		float MOTOR_CONSTANT = 0.12226; // Nm per A
+		//float SPRING_CONSTANT = 310.; // A per rad  via rough calibration 2012-03-01
+		float SPRING_CONSTANT = 1175.*1.108; // Nm per rad  via spring tester 2012-03-28
+		float GEAR_RATIO = 50.;
+
+		// Using the current leg configuration, converts the desired axial force into a desired leg torque 
+		float desired_torque = 0.5*desired_force*cos(PI + asin(leg_length));
+
+		// Inverse spring function:  Converts desired torques into desired deflection angles.
+		//		float desired_spring_def = desired_torque/(MOTOR_CONSTANT*SPRING_CONSTANT*GEAR_RATIO);
+		float desired_spring_def = desired_torque/(SPRING_CONSTANT); 
+
+		// NOTE: defA is NEGATIVE when compressed.  Should be opposite sign of defB.
+		input->desired_spring_defA = desired_spring_def;
+		input->desired_spring_defB = -1.0*desired_spring_def;
+
+		// Leg A, PD control.
+		input->desired_motor_angleA = input->motor_angleA + (input->desired_spring_defA - spring_defA);
+		DEMO_CONTROLLER_STATE(state)->desTorqueA = (FORCE_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_D_GAIN * (input->motor_velocityA));
+
+		// Leg B, PD control.
+		input->desired_motor_angleB = input->motor_angleB + (input->desired_spring_defB - spring_defB);
+		DEMO_CONTROLLER_STATE(state)->desTorqueB = (FORCE_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_D_GAIN * (input->motor_velocityB));
+	}
+
+	RobotPosition desPos;
+	if (time == 0)	// Return our desired starting position
+	{
+		desPos.leg_ang = PI/2;
+		desPos.leg_ang_vel = 0.0;
+		desPos.leg_len = 0.9;
+		desPos.leg_len_vel = 0.0;
+		desPos.hip_ang = 0.0;
+		desPos.hip_ang_vel = 0.0;
+	}
+	else
+	{
+		desPos.leg_ang = LEG_ANGLE;
+		desPos.leg_ang_vel = 0.0;
+		desPos.leg_len = LEG_LENGTH;
+		desPos.leg_len_vel = 0.0;
+		desPos.hip_ang = 0.0;
+		desPos.hip_ang_vel = 0.0;
+	}
 
 	return cartesianToRobot(desPos);
 

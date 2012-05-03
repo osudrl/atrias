@@ -878,6 +878,10 @@ bool poke_controller (void) {
     torqueADisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", ad.motor_torqueB);
     torqueBDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", ad.motor_torque_hip);
+    torqueHipDisplay->set_text(buffer);
+
+  
 
     motor_torqueA_progress_bar->set_fraction(MIN(ABS(ad.motor_torqueA), MTR_MAX_TRQ) / MTR_MAX_TRQ);
     motor_torqueB_progress_bar->set_fraction(MIN(ABS(ad.motor_torqueB), MTR_MAX_TRQ) / MTR_MAX_TRQ);

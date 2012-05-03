@@ -3142,7 +3142,7 @@ You may only switch controllers with the motors disabled.</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkRadioButton" id="demo_ctrl_controller1_btn">
-                                <property name="label" translatable="yes">Demo 1</property>
+                                <property name="label" translatable="yes">Circle in Plane</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -3159,7 +3159,7 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                             <child>
                               <object class="GtkRadioButton" id="demo_ctrl_controller2_btn">
-                                <property name="label" translatable="yes">Demo 2</property>
+                                <property name="label" translatable="yes">Figure-eight in Plane</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -3177,7 +3177,7 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                             <child>
                               <object class="GtkRadioButton" id="demo_ctrl_controller3_btn">
-                                <property name="label" translatable="yes">Demo 3</property>
+                                <property name="label" translatable="yes">Range of Motion</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -3195,7 +3195,7 @@ You may only switch controllers with the motors disabled.</property>
                             </child>
                             <child>
                               <object class="GtkRadioButton" id="demo_ctrl_controller4_btn">
-                                <property name="label" translatable="yes">Demo 4</property>
+                                <property name="label" translatable="yes">Zero Force Control</property>
                                 <property name="width_request">927</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
