@@ -11,7 +11,7 @@
 #include <rtt/os/main.h>
 
 #include <rtt/RTT.hpp>
-#include <rtt/Logger.hpp>
+//#include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/OperationCaller.hpp>
@@ -44,20 +44,24 @@ class AtriasEthercatMaster : public TaskContext {
     OutputPort<atrias_msgs::atrias_debug>               debugOutPort;
     std::string prop_answer;
 
-int counter;
+    int counter;
 
-atrias_msgs::atrias_data ad;
-atrias_msgs::atrias_controller_requests cr;
-atrias_msgs::atrias_debug debugOut;
+    atrias_msgs::atrias_data ad;
+    atrias_msgs::atrias_controller_requests cr;
+    atrias_msgs::atrias_debug debugOut;
 
-#ifndef REAL_TIME
-int usec1, usec2, usecLast, usecDiff1, usecDiff2;
+    ControllerInput* c_in;
+    ControllerOutput* c_out;
+    ControllerState* c_state;
 
-// Get system time. NOTE: This counts as a system call, which is not
-// realtime-safe.. but whatever?
-struct timeval tv;
-struct tm *tm;
-#endif // REAL_TIME
+    #ifndef REAL_TIME
+    int usec1, usec2, usecLast, usecDiff1, usecDiff2;
+
+    // Get system time. NOTE: This counts as a system call, which is not
+    // realtime-safe.. but whatever?
+    struct timeval tv;
+    struct tm *tm;
+    #endif // REAL_TIME
 
 public:
     AtriasEthercatMaster(std::string name):
@@ -67,12 +71,16 @@ public:
         debugOutPort    ("debug_out"),
         prop_answer     ("aem_prop_answer")
     {
-        log(Info) << "AtriasEthercatMaster constructed !" <<endlog();
+        //log(Info) << "AtriasEthercatMaster constructed !" <<endlog();
 
-        this->addEventPort  (crInPort);
+        this->addPort       (crInPort);
         this->addPort       (dataOutPort);
         this->addPort       (debugOutPort);
         this->addProperty   ("answer", prop_answer);
+
+        c_in = &shm.controller_input;
+        c_out = &shm.controller_output;
+        c_state = &shm.controller_state;
 
         // Add operation with flag ClientThread. See Section 3.4 of Orocos
         // Component Manual.
@@ -87,7 +95,7 @@ public:
     }
 
     bool configureHook() {
-        log(Info) << "AEM configured !" <<endlog();
+        //log(Info) << "AEM configured !" <<endlog();
         init_master();
 
         #ifndef REAL_TIME
@@ -108,7 +116,7 @@ public:
     }
 
     bool startHook() {
-        log(Info) << "AEM started !" <<endlog();
+        //log(Info) << "AEM started !" <<endlog();
         return true;
     }
 
@@ -145,10 +153,6 @@ public:
         }
 
         // Send data to ACS.
-        ControllerInput* c_in = &shm.controller_input;
-        ControllerOutput* c_out = &shm.controller_output;
-        ControllerState* c_state = &shm.controller_state;
-
         ad.time = counter;
         ad.body_angle       = c_in->body_angle;
         ad.body_angle_vel   = c_in->body_angle_vel;
@@ -227,11 +231,11 @@ public:
             perror("munlockall");
         }
 
-        log(Info) << "AEM stopping !" <<endlog();
+        //log(Info) << "AEM stopping !" <<endlog();
     }
 
     void cleanupHook() {
-        log(Info) << "AEM cleaning up !" <<endlog();
+        //log(Info) << "AEM cleaning up !" <<endlog();
     }
 };
 ORO_CREATE_COMPONENT(AtriasEthercatMaster)
