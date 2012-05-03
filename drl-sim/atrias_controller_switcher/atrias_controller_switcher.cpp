@@ -9,7 +9,7 @@
 #include <rtt/os/main.h>
 
 #include <rtt/RTT.hpp>
-#include <rtt/Logger.hpp>
+//#include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/OperationCaller.hpp>
@@ -45,9 +45,13 @@ class AtriasControllerSwitcher : public TaskContext {
     OutputPort<atrias_msgs::atrias_data>                data50HzOutPort;
     OutputPort<atrias_msgs::atrias_data>                data1000HzOutPort;
 
+    int counter;
+
     std::string prop_answer;
 
-    int counter;
+    atrias_msgs::atrias_controller_requests cr;
+    atrias_msgs::atrias_data ad;
+    atrias_msgs::atrias_debug adebug;
 
 public:
     AtriasControllerSwitcher(std::string name):
@@ -61,7 +65,7 @@ public:
         data1000HzOutPort   ("data_1000_hz_out"),
         prop_answer         ("acw_prop_answer")
     {
-        log(Info) << "AtriasControllerSwitcher constructed !" <<endlog();
+        //log(Info) << "AtriasControllerSwitcher constructed !" <<endlog();
 
         this->addEventPort  (dataInPort);
         this->addEventPort  (debugInPort);
@@ -80,20 +84,19 @@ public:
     }
 
     bool configureHook() {
-        log(Info) << "ACS configured !" <<endlog();
+        // Show ports what data sizes to expect to guarantee real-time transfer.
+        crOutPort.setDataSample(cr);
+
+        //log(Info) << "ACS configured !" <<endlog();
         return true;
     }
 
     bool startHook() {
-        log(Info) << "ACS started !" <<endlog();
+        //log(Info) << "ACS started !" <<endlog();
         return true;
     }
 
     void updateHook() {
-        atrias_msgs::atrias_controller_requests cr;
-        atrias_msgs::atrias_data ad;
-        atrias_msgs::atrias_debug adebug;
-
         // Check for new controller requests from GUI.
         if (NewData == crInPort.read(cr)) {
             //log(Info) << "[ACS] Controller requested: " << (int) cr.controller_requested << endlog();
@@ -125,11 +128,11 @@ public:
     }
 
     void stopHook() {
-        log(Info) << "ACS stopping !" <<endlog();
+        //log(Info) << "ACS stopping !" <<endlog();
     }
 
     void cleanupHook() {
-        log(Info) << "ACS cleaning up !" <<endlog();
+        //log(Info) << "ACS cleaning up !" <<endlog();
     }
 };
 ORO_CREATE_COMPONENT(AtriasControllerSwitcher)
