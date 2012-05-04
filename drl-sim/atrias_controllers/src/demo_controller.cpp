@@ -66,13 +66,13 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 
 	else if (DEMO_CONTROLLER_STATE(state)->currentState == DEMO_STATE_RUNNING)
 	{
-		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO1)
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO1)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo1(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
-		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO2)
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO2)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo2(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
-		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO3)
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO3)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo3(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
-		if (DEMO_CONTROLLER_STATE(data)->currentDemo == DEMO4)
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO4)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo4(input, output, state, data, 1);
 			
 
@@ -92,7 +92,12 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 
 
 	// This is a hack, but for DEMO4, the force controller demo, we don't want to use this position controller code. Instead the demo will directly set desiredTorque variables
-	if (DEMO_CONTROLLER_STATE(state)->currentDemo != DEMO4)
+	if ((DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO4) && (DEMO_CONTROLLER_STATE(state)->currentState == DEMO_STATE_RUNNING))
+	{
+		output->motor_torqueA = DEMO_CONTROLLER_STATE(state)->desTorqueA;
+		output->motor_torqueB = DEMO_CONTROLLER_STATE(state)->desTorqueB;
+	}
+	else
 	{
 		float des_mtr_angA = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang - PI + acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len);
 		float des_mtr_angB = DEMO_CONTROLLER_STATE(state)->desiredPos.leg_ang + PI - acos(DEMO_CONTROLLER_STATE(state)->desiredPos.leg_len); 
@@ -104,11 +109,6 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velA - input->motor_velocityA);
 		output->motor_torqueB = DEMO_CONTROLLER_DATA(data)->p_gain * (des_mtr_angB - input->motor_angleB) 
 			+ DEMO_CONTROLLER_DATA(data)->d_gain * (des_mtr_ang_velB - input->motor_velocityB);
-	}
-	else
-	{
-		output->motor_torqueA = DEMO_CONTROLLER_STATE(state)->desTorqueA;
-		output->motor_torqueB = DEMO_CONTROLLER_STATE(state)->desTorqueB;
 	}
 
 	output->motor_torque_hip = DEMO_CONTROLLER_DATA(data)->hip_p_gain * (DEMO_CONTROLLER_STATE(state)->desiredPos.hip_ang - input->hip_angle) 
@@ -178,15 +178,28 @@ RobotPosition demo1(ControllerInput *input, ControllerOutput *output, Controller
 
 RobotPosition demo2(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
 {	
-	// Planer Figure eight
+	
 	CartPosition desPos;
-
+	
+	// Planar Figure eight
+	/*
 	desPos.x = 0.25*sin(2.0*PI*1.0*time);
 	desPos.y = 0.1*cos(2.0*PI*1.0*time)*sin(2.0*PI*1.0*time) + 0.15;
 	desPos.z = -0.75;
 	desPos.x_vel = 0.0;
 	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0; */
+
+	// Piriform Curve (Running Shape)
+	float rads = 2.0*PI*DEMO_CONTROLLER_DATA(data)->amplitude*time;
+
+	desPos.x = 0.30*(((1+cos(-rads))*cos(0.5)) + ((sin(-rads)*0.6*(1+cos(-rads)))*-sin(0.5)))-0.27;
+	desPos.y = 0.2 + 0.05*sin(rads);
+	desPos.z = 0.25*(((1+cos(-rads))*sin(0.5)) + ((sin(-rads)*0.6*(1+cos(-rads)))*cos(0.5)))-0.91;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
 	desPos.z_vel = 0.0;
+
 
 	return cartesianToRobot(desPos);
 
@@ -196,6 +209,7 @@ RobotPosition demo3(ControllerInput *input, ControllerOutput *output, Controller
 {	
 	CartPosition desPos;
 	
+
 	float rads = 2.0*PI*DEMO_CONTROLLER_DATA(data)->amplitude*time;
 
 	desPos.x = (0.2*sin(rads))*cos(rads/20);
@@ -304,7 +318,7 @@ RobotPosition demo4(ControllerInput *input, ControllerOutput *output, Controller
 		desPos.hip_ang_vel = 0.0;
 	}
 
-	return cartesianToRobot(desPos);
+	return desPos;
 
 }
 
