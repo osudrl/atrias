@@ -155,7 +155,9 @@ Gtk::Button *demo_ctrl_start_btn,
 Gtk::RadioButton *demo_ctrl_controller1_btn,
 		 *demo_ctrl_controller2_btn,
 		 *demo_ctrl_controller3_btn,
-		 *demo_ctrl_controller4_btn;
+		 *demo_ctrl_controller4_btn,
+		 *demo_ctrl_controller5_btn,
+		 *demo_ctrl_controller6_btn;
 
 int demo_ctrl_state;
 #define DEMO_CTRL_STOPPED 0

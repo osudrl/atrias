@@ -219,6 +219,8 @@ int main (int argc, char **argv) {
     gui->get_widget("demo_ctrl_controller2_btn", demo_ctrl_controller2_btn);
     gui->get_widget("demo_ctrl_controller3_btn", demo_ctrl_controller3_btn);
     gui->get_widget("demo_ctrl_controller4_btn", demo_ctrl_controller4_btn); 
+    gui->get_widget("demo_ctrl_controller5_btn", demo_ctrl_controller5_btn); 
+    gui->get_widget("demo_ctrl_controller6_btn", demo_ctrl_controller6_btn); 
     demo_ctrl_state = DEMO_CTRL_STOPPED;
     /* End Demo Controller */
 
@@ -854,6 +856,11 @@ bool poke_controller (void) {
             	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 2;
 	    else if (demo_ctrl_controller4_btn->get_active())
             	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 3;
+	    else if (demo_ctrl_controller5_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 4;
+	    else if (demo_ctrl_controller6_btn->get_active())
+            	((DemoControllerData *) (&(cr.control_data.elems)))->commandedDemo = 5;
+
             ((DemoControllerData *) (&(cr.control_data.elems)))->amplitude = demo_ctrl_amplitude_scale->get_value();
 	    ((DemoControllerData *) (&(cr.control_data.elems)))->p_gain = demo_ctrl_p_scale->get_value();
             ((DemoControllerData *) (&(cr.control_data.elems)))->d_gain = demo_ctrl_d_scale->get_value();
