@@ -4,10 +4,10 @@
 # This does not delete any files from the local directory even if the files are
 # deleted on zotac-3.
 
-if [ $HOSTNAME = "drl-qrio" ]; then
+if [ $HOSTNAME != "zotac-3" ]; then
     rsync -avz -e ssh drl@zotac-3:atrias/drl-sim/atrias/log_files/*.log `rospack find atrias`/log_files
 else
     # TODO: This script should be able to work from anywhere.
-    echo "This script should be run from the desktop!"
+    echo "This script should not be run on the robot!"
 fi
 
