@@ -74,6 +74,7 @@ void InvertedPendulumWithToe::LoadChild(XMLConfigNode *node)
   // Mass Initial Conditions (velocity)
   this->lock.lock();
   this->body1->SetLinearVel(Vector3(3.699, 0, 0));
+  this->body2->SetLinearVel(Vector3(10.0, 0, 0));
   this->lock.unlock();
 }
 
@@ -103,12 +104,12 @@ void InvertedPendulumWithToe::UpdateChild()
         }
         if ( ( zVelM < 0 ) && ( zPosM <= l0*sin(alpha) ) && ( touchDown == 1 ) ) {
             xfp = xPosM + l0*cos(alpha);
-            orig_pose = this->body2->GetWorldPose();
+            /*orig_pose = this->body2->GetWorldPose();
             pose = orig_pose;
             pose.pos.x = xfp;
             pose.pos.y = 0.0;
             pose.pos.z = 0.050;
-            this->body2->SetWorldPose(pose);
+            this->body2->SetWorldPose(pose); */
             stance = 1;
         }
         else if ( zPosM < l0*sin(alpha) ) {
@@ -120,18 +121,18 @@ void InvertedPendulumWithToe::UpdateChild()
 	}
     // Stance
     else if ( stance == 1 ) {
+        l = sqrt(pow((xPosM-xfp),2) + pow((zPosM-0),2));
+        Fx = k*(l0-l)*(xPosM-xfp)/l;
+        Fz = k*(l0-l)*(zPosM-0)/l;
+        /*l = sqrt(pow((xPosM-xPosF),2) + pow((zPosM-zPosF),2));
+        Fx = k*(l0-l)*(xPosM-xPosF)/l;
+        Fz = k*(l0-l)*(zPosM-zPosF)/l; */
+
         // Test flight conditions
-        //l = sqrt(pow((xPosM-xfp),2) + pow((zPosM-0),2));
-        l = sqrt(pow((xPosM-xPosF),2) + pow((zPosM-zPosF),2));
         if ( l >= l0 ) {
             stance = 0;
             touchDown = 0;
         }
-        // Calculate the spring force
-        //Fx = k*(l0-l)*(xPosM-xfp)/l;
-        //Fz = k*(l0-l)*(zPosM-0)/l;
-        Fx = k*(l0-l)*(xPosM-xPosF)/l;
-        Fz = k*(l0-l)*(zPosM-zPosF)/l;
         force_on_mass = Vector3(Fx, 0., Fz);
         force_on_toe = Vector3(-Fx, 0., -Fz);
     }
@@ -143,8 +144,14 @@ void InvertedPendulumWithToe::UpdateChild()
     file << xPosM << " " << zPosM << " " << stance << "\n";
 
     // Apply the force
+    // SetForce IS APPLIED IN THE BODY FRAME!!!
+    // Use GetWorldPose and RotateVector()
     this->body1->SetForce(force_on_mass);
-    this->body2->SetForce(force_on_toe);
+    //this->body2->SetForce(force_on_toe);
+    // Need to use AddForce, not SetForce
+    // This is becasue SetForce will ignore any ground interaction and only apply the specified force. This leads to very odd physical behavior when the body comes into contact with the ground (i.e. flying off into the distance)
+    // However, the AddForce command is not in the ROS version of gazebo (as of 4/30/12).
+    this->body2->AddForce(Vector3(0.01, 0., 0.));
 
     zVelMPrev = zVelM;
 
