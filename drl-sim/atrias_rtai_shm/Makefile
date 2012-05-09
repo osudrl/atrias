@@ -26,5 +26,5 @@ kern: shm.c
 	$(MAKE) -C "$(LINUX_SOURCE_DIR)" M="$(PWD)" modules
 
 clean:
-	rm -rf *.o *.mod.* Module.* modules.*
+	rm -rf *.o *.mod.* Module.* modules.* *.ko .*.cmd .tmp_versions/rt_shm.mod
 	
