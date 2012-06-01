@@ -54,6 +54,7 @@ float               last_motor_angleB = 0.;
 float               last_leg_angleA   = 0.;
 float               last_leg_angleB   = 0.;
 float               last_hip_angle    = 0.;
+uint32_t			hip_base_count	  = 0;
 
 float		    legAoffset = 0.0;
 float		    legBoffset = 0.0;
@@ -306,6 +307,8 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
     legBoffset = ((float)LEG_B_TRAN_ENC_TO_ANGLE(encAverage[2])) - ((float)LEG_B_LEG_ENC_TO_ANGLE(encAverage[3]));
     //printk("A: %d - %d = %d\n",(int)(LEG_A_TRAN_ENC_TO_ANGLE(uc_out[A_INDEX]->TRANS_ANGLE)*1000.0),(int)(LEG_A_LEG_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE)*1000.0),(int)(legAoffset*1000.0));
     //printk("B: %d - %d = %d\n",(int)(LEG_A_TRAN_ENC_TO_ANGLE(uc_out[B_INDEX]->TRANS_ANGLE)*1000.0),(int)(LEG_B_LEG_ENC_TO_ANGLE(uc_out[A_INDEX]->LEG_SEG_ANGLE)*1000.0),(int)(legBoffset*1000.0));
+	
+	hip_base_count = uc_out[HIP_INDEX]->encoder[1];
 
     if (uc_out[A_INDEX]->state == STATE_RUN)
 	averageCounter++;
@@ -361,7 +364,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         / ( (float)(current_medulla_time[B_INDEX]-last_medulla_time[B_INDEX]) * SEC_PER_CNT1 );
 
     // Hip Inputs
-    c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
+    //c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
+	c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, hip_base_count, hip_base_count+HIP_COUNT_RANGE);
     //c_in->hip_angle = ((float)(uc_out[HIP_INDEX]->encoder[1]))*(2.0*PI)/8192.0;
     c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)(current_medulla_time[HIP_INDEX]-last_medulla_time[HIP_INDEX]) * SEC_PER_CNT1 );
     //printk("%d\n",(c_in->hip_angle - last_hip_angle));
