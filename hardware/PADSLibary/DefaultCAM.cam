@@ -12,7 +12,7 @@ CAM_SECTION PARENT
 CAM_VERSION V2007.0
 CAM_DOC_LIST PARENT
 {
-CAM_DOC_DIRECTORY C:\Users\Kit\Documents\DRL\atrias_trunk\hardware\amp_breakout_v1\CAM
+CAM_DOC_DIRECTORY C:\Users\Kit\Documents\DRL\atrias_trunk\hardware\strain_gauge_digitizer_v1\CAM
 CAM_DOC_NAME TopCopper
 {
 DOC_PLOT_TYPE Routing
@@ -272,16 +272,16 @@ DOC_CONNECTIONS None
 DOC_OUTLINES None Black
 DOC_SLOTS None None
 DOC_REFDES Black None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
-DOC_PARTTYPES Black None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
+DOC_PARTTYPES None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_ATTRIBUTES None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_TESTPOINTS None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
-DOC_OUTLINE_LAYERS N Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y Y
+DOC_OUTLINE_LAYERS N Y N N N N N N N N N N N N N N N N N N N N N N N N N N N N
 DOC_PADS None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_VIAS None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_ROUTES None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_COPPER None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
-DOC_LINES None Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black
-DOC_TEXT None Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black Black
+DOC_LINES None Black None None None None None None None None None None None None None None None None None None None None None None None None None None None None
+DOC_TEXT None Black None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_KEEPOUTS None None None None None None None None None None None None None None None None None None None None None None None None None None None None None None
 DOC_PINS_ADV 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 DOC_PAD_OVERSIZE 0
@@ -372,6 +372,21 @@ DOC_DRILL_LIST Y
 DOC_DRILL_FILE Y
 }
 }
+CAM_DRILL_SPEED_FEED_TABLE PARENT
+{
+DRILL_RANGE_1 381000 761619 95 300
+DRILL_RANGE_2 762000 1523619 197 550
+DRILL_RANGE_3 1524000 1904619 139 550
+DRILL_RANGE_4 1905000 2285619 107 550
+DRILL_RANGE_5 2286000 2666619 89 550
+DRILL_RANGE_6 2667000 3047619 81 550
+DRILL_RANGE_7 3048000 3428619 74 550
+DRILL_RANGE_8 3429000 3809619 66 550
+DRILL_RANGE_9 3810000 4571619 69 658
+DRILL_RANGE_10 4572000 5333619 35 794
+DRILL_RANGE_11 5334000 6095619 35 900
+DRILL_RANGE_12 6096000 7619619 35 1033
+}
 CAM_AUGMENT_ON_THE_FLY Y
 CAM_APERTURE_TABLE PARENT
 {
@@ -400,6 +415,23 @@ APERTURE_22 31 3381000 0 RND
 APERTURE_23 32 1828800 1524000 RECT
 APERTURE_24 33 300000 0 RND
 APERTURE_25 34 3081000 0 RND
+APERTURE_26 35 3300000 900000 RECT
+APERTURE_27 36 1950000 0 SQR
+APERTURE_28 37 1950000 0 RND
+APERTURE_29 38 1143000 1447800 RECT
+APERTURE_30 39 525000 2400000 RECT
+APERTURE_31 40 2400000 525000 RECT
+APERTURE_32 41 2100000 1350000 RECT
+APERTURE_33 42 1650000 1350000 RECT
+APERTURE_34 43 3681000 1281000 RECT
+APERTURE_35 44 2331000 0 SQR
+APERTURE_36 45 2331000 0 RND
+APERTURE_37 46 1524000 1828800 RECT
+APERTURE_38 47 114300 0 RND
+APERTURE_39 48 906000 2781000 RECT
+APERTURE_40 49 2781000 906000 RECT
+APERTURE_41 50 2481000 1731000 RECT
+APERTURE_42 51 2031000 1731000 RECT
 }
 CAM_DRILL_SYMBOL_TABLE_EXTENDED PARENT
 {

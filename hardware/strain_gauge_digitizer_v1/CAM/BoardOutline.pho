@@ -3,7 +3,7 @@
 G04 PADS 9.3.1 Build Number: 456998 generated Gerber (RS-274-X) file*
 G04 PC Version=2.1*
 *
-%IN "menial_board_21.pcb"*%
+%IN "strain_gauge_digitizer_"*%
 *
 %MOIN*%
 *
@@ -54,24 +54,24 @@ G04 PC Aperture Table*
 *
 *
 G04 PC Circuitry*
-G04 Layer Name menial_board_21.pcb - circuitry*
+G04 Layer Name strain_gauge_digitizer_ - circuitry*
 %LPD*%
 *
 *
 G04 PC Custom Flashes*
-G04 Layer Name menial_board_21.pcb - flashes*
+G04 Layer Name strain_gauge_digitizer_ - flashes*
 %LPD*%
 *
 *
 G04 PC Circuitry*
-G04 Layer Name menial_board_21.pcb - circuitry*
+G04 Layer Name strain_gauge_digitizer_ - circuitry*
 %LPD*%
 *
 G54D10*
 G54D19*
 G01X100000Y100000D02*
-X670000D01*
-Y405000*
+X275000D01*
+Y175000*
 X100000*
 Y100000*
 X0Y0D02*
