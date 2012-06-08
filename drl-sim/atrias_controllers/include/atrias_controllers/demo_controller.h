@@ -7,6 +7,8 @@
 #define DEMO2 1
 #define DEMO3 2
 #define DEMO4 3
+#define DEMO5 4
+#define DEMO6 5
 
 #define DEMO_STATE_STOPPED 0
 #define DEMO_STATE_STARTING 1
@@ -34,6 +36,8 @@ RobotPosition demo1(ControllerInput*, ControllerOutput*, ControllerState*, Contr
 RobotPosition demo2(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 RobotPosition demo3(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 RobotPosition demo4(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+RobotPosition demo5(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
+RobotPosition demo6(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*, float);
 
 RobotPosition cartesianToRobot(CartPosition);
 RobotPosition setTorques(ControllerInput*, ControllerOutput*, ControllerData*, RobotPosition);

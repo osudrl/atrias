@@ -111,8 +111,8 @@
 #define TRAN_B_OFF_ANGLE			0.020483
 
 // Hip Medulla sensors:
-#define MIN_HIP_COUNT				9704
-#define MAX_HIP_COUNT				18806
+#define MIN_HIP_COUNT				5593
+#define MAX_HIP_COUNT				14625
 #define HIP_COUNT_RANGE				9102
 #define MIN_HIP_ANGLE				-0.20943951 //157079633
 #define MAX_HIP_ANGLE				0.157079633

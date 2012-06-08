@@ -193,7 +193,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("SizeOf: %d\n", 8*sizeof(uControllerOutput));
     //printk("Timestep: %d\n", uc_out[2]->timestep);
     //printk("                                                                                                Toe Switch: %d\n",uc_out[B_INDEX]->toe_switch);
-    printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
+    //printk("												Hip Encoder: %d,%d\n",uc_out[HIP_INDEX]->encoder[1],(int)(UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT)*1000.0));
 
     ///printk("%d,%d,%d,%d\n",uc_out[0]->error_flags,uc_out[1]->error_flags,uc_out[2]->error_flags,uc_out[3]->error_flags);
 
@@ -329,7 +329,7 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i = 0;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 4; i++) {
 	if ((uc_out[i]->timestep - last_medulla_time[i]) > 100000) {
 	    current_medulla_time[i] =  0xFFFF+uc_out[i]->timestep;
 	    //printk("Overflow: %d - %d = %d\n", current_medulla_time[i],last_medulla_time[i],current_medulla_time[i]-last_medulla_time[i]);
@@ -365,7 +365,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 
     // Hip Inputs
     //c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, MIN_HIP_COUNT, MAX_HIP_COUNT);
-	c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, hip_base_count, hip_base_count+HIP_COUNT_RANGE);
+    c_in->hip_angle = UNDISCRETIZE(uc_out[HIP_INDEX]->encoder[1], MAX_HIP_ANGLE, MIN_HIP_ANGLE, hip_base_count, hip_base_count+HIP_COUNT_RANGE);
+    //printk("Hip Angle: %d\n",(int)(c_in->hip_angle*1000));
     //c_in->hip_angle = ((float)(uc_out[HIP_INDEX]->encoder[1]))*(2.0*PI)/8192.0;
     c_in->hip_angle_vel = (c_in->hip_angle - last_hip_angle) / ((float)(current_medulla_time[HIP_INDEX]-last_medulla_time[HIP_INDEX]) * SEC_PER_CNT1 );
     //printk("%d\n",(c_in->hip_angle - last_hip_angle));
@@ -398,9 +399,9 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->medullaStatusA |= uc_out[A_INDEX]->error_flags;
     c_in->medullaStatusB |= uc_out[B_INDEX]->error_flags;
     c_in->medullaStatusHip |= uc_out[HIP_INDEX]->error_flags;
-    //c_in->medullaStatusBoom |= uc_out[BOOM_INDEX]->error_flags;
+    c_in->medullaStatusBoom |= uc_out[BOOM_INDEX]->error_flags;
 
-    /*
+    
     // Update boom angles
     if (ABS((int32_t)(uc_out[BOOM_INDEX]->encoder[0]) - last_body_cnt) > 1000) {
 	if (((int32_t)(uc_out[BOOM_INDEX]->encoder[0]) - last_body_cnt) < 0)
@@ -436,7 +437,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->xPosition = (((float)(uc_out[BOOM_INDEX]->encoder[1]))*BOOM_RAD_PER_CNT*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO) + xPositionBase;
     c_in->xVelocity = (c_in->xPosition - last_xPosition) / ((float)(current_medulla_time[BOOM_INDEX]-last_medulla_time[BOOM_INDEX]) * SEC_PER_CNT1 );
     last_xPosition = c_in->xPosition;
-    */
+    
 
     // clear motor torques, this might help with the "ghost" problem. 
     c_out->motor_torqueA = 0.0;
@@ -462,7 +463,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     uc_in[A_INDEX]->counter++;
     uc_in[B_INDEX]->counter++;
     uc_in[HIP_INDEX]->counter++;
-    //uc_in[BOOM_INDEX]->counter++;
+    uc_in[BOOM_INDEX]->counter++;
 
     for (i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++)
 	last_medulla_time[i] = uc_out[i]->timestep;

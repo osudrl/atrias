@@ -13,6 +13,9 @@
 #define LEG_LENGTH sqrt(DELTA_Y*DELTA_Y + DELTA_X*DELTA_X)
 #define LEG_ANGLE ((0.0*PI) - (atan2(DELTA_Y,DELTA_X)))
 
+#define FORCE_CONTROLLER_P_GAIN 3250
+#define FORCE_CONTROLLER_D_GAIN 4
+
 typedef struct
 {
 	float time;
@@ -74,7 +77,11 @@ void update_demo_controller(ControllerInput *input, ControllerOutput *output, Co
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo3(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
 		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO4)
 			DEMO_CONTROLLER_STATE(state)->desiredPos = demo4(input, output, state, data, 1);
-			
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO5)
+			DEMO_CONTROLLER_STATE(state)->desiredPos = demo5(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
+		if (DEMO_CONTROLLER_STATE(state)->currentDemo == DEMO6)
+			DEMO_CONTROLLER_STATE(state)->desiredPos = demo6(input, output, state, data, DEMO_CONTROLLER_STATE(state)->time);
+	
 
 		// If we are currently running a demo and the stop demo button is pressed, go to demo_stopping
 		if (DEMO_CONTROLLER_DATA(data)->commandedState == 0)
@@ -265,8 +272,8 @@ RobotPosition demo4(ControllerInput *input, ControllerOutput *output, Controller
 	{
 		// Get values from GUI.
 		float desired_force = 0;
-		float FORCE_P_GAIN = DEMO_CONTROLLER_DATA(data)->p_gain;
-		float FORCE_D_GAIN = DEMO_CONTROLLER_DATA(data)->d_gain;
+		//float FORCE_P_GAIN = DEMO_CONTROLLER_DATA(data)->p_gain;
+		//float FORCE_D_GAIN = DEMO_CONTROLLER_DATA(data)->d_gain;
 
 		// Calculate spring deflections.
 		float spring_defA = input->motor_angleA - input->leg_angleA;
@@ -291,11 +298,11 @@ RobotPosition demo4(ControllerInput *input, ControllerOutput *output, Controller
 
 		// Leg A, PD control.
 		input->desired_motor_angleA = input->motor_angleA + (input->desired_spring_defA - spring_defA);
-		DEMO_CONTROLLER_STATE(state)->desTorqueA = (FORCE_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_D_GAIN * (input->motor_velocityA));
+		DEMO_CONTROLLER_STATE(state)->desTorqueA = (FORCE_CONTROLLER_P_GAIN * (input->desired_motor_angleA - input->motor_angleA)) - (FORCE_CONTROLLER_D_GAIN * (input->motor_velocityA));
 
 		// Leg B, PD control.
 		input->desired_motor_angleB = input->motor_angleB + (input->desired_spring_defB - spring_defB);
-		DEMO_CONTROLLER_STATE(state)->desTorqueB = (FORCE_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_D_GAIN * (input->motor_velocityB));
+		DEMO_CONTROLLER_STATE(state)->desTorqueB = (FORCE_CONTROLLER_P_GAIN * (input->desired_motor_angleB - input->motor_angleB)) - (FORCE_CONTROLLER_D_GAIN * (input->motor_velocityB));
 	}
 
 	RobotPosition desPos;
@@ -322,6 +329,39 @@ RobotPosition demo4(ControllerInput *input, ControllerOutput *output, Controller
 
 }
 
+RobotPosition demo5(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
+{
+	// Example of cartesian demo
+	CartPosition desPos;
+
+	desPos.x= 0.0;
+	desPos.y= 0.15;
+	desPos.z= 0.75;
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
+
+	return cartesianToRobot(desPos);
+}
+
+RobotPosition demo6(ControllerInput *input, ControllerOutput *output, ControllerState *state, ControllerData *data, float time)
+{	
+	
+	RobotPosition desPos;
+	
+	// Example of robot coordinate demo
+	
+	desPos.leg_ang = PI/2.0;
+	desPos.leg_len = 0.8;
+	desPos.hip_ang = 0.0;
+	desPos.leg_ang_vel = 0.0;
+	desPos.leg_len_vel = 0.0;
+	desPos.hip_ang_vel = 0.0;
+
+
+	return desPos;
+
+}
 RobotPosition cartesianToRobot(CartPosition posIn)
 {
 	RobotPosition posOut;
