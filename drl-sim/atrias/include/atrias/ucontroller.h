@@ -140,7 +140,7 @@
 #define TILT_CNT_THRESH				30000
 
 #define BOOM_RAD_PER_CNT			((2.0*PI)/131072.0)
-#define BOOM_TILT_OFFSET			37300.0
+#define BOOM_TILT_OFFSET			42700.0
 #define BOOM_HOPPING_RADIUS			2.032
 #define BOOM_ENC_ROLLOVER_DISTANCE		12.7674
 
@@ -153,17 +153,17 @@
 
 // For motors
 #define MTR_DIR_bm				(1<<15)
-#define MTR_MIN_TRQ				-60.0
-#define MTR_MAX_TRQ  				60.0
+#define MTR_MIN_TRQ				-120.0
+#define MTR_MAX_TRQ  				120.0
 
 #define MTR_MIN_HIP_TRQ				-60.0
 #define MTR_MAX_HIP_TRQ				60.0
 
-#define MTR_MAX_TRQ_LIMIT			60.0
-#define MTR_MIN_TRQ_LIMIT			-60.0
+#define MTR_MAX_TRQ_LIMIT			120.0
+#define MTR_MIN_TRQ_LIMIT			-120.0
 
 #define MTR_MAX_HIP_TRQ_LIMIT			60.0
-#define MTR_MIN_HIP_TRQ_LIMIT			-60
+#define MTR_MIN_HIP_TRQ_LIMIT			-60.0
 
 #define MTR_MIN_CNT				-19900
 #define MTR_MAX_CNT 				19900

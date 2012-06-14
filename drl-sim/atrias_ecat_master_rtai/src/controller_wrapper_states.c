@@ -181,12 +181,13 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     //printk("Motor Encoder B: %d\n",encAverage[2]);
     //printk("Leg Encoder   B: %d\n\n",encAverage[3]);
     //printk("Spring Deflection B: %d\n\n", (encAverage[2]-TRAN_B_CALIB_VAL)-(encAverage[3]-LEG_B_CALIB_VAL));
-    //printk("ERROR Code[A]: %d\n",uc_out[A_INDEX]->error_flags);
-    //printk("   LimitSW[A]: %d\n\n",uc_out[A_INDEX]->limitSW);
-    //printk("ERROR Code[B]: %d\n",uc_out[B_INDEX]->error_flags);
+    printk("ERROR Code[A]: %d\n",uc_out[A_INDEX]->error_flags);
+    printk("   LimitSW[A]: %d\n\n",uc_out[A_INDEX]->limitSW);
+    printk("ERROR Code[B]: %d\n",uc_out[B_INDEX]->error_flags);
     //printk("ERROR Code[HIP]: %d\n",uc_out[HIP_INDEX]->error_flags);
+    printk("%d, %d, %d\n",(int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0])),(int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1])),(int)(ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2])));
     //printk("ERROR Code[BOOM]: %d\n",uc_out[BOOM_INDEX]->error_flags);
-    //printk("   LimitSW[B]: %d\n\n\n",uc_out[B_INDEX]->limitSW);
+    printk("   LimitSW[B]: %d\n\n\n",uc_out[B_INDEX]->limitSW);
     //printk("  Yaw Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[0]);
     //printk("Pitch Encoder: %d\n", uc_out[BOOM_INDEX]->encoder[2]);
     //printk("Current %d\n", uc_out[A_INDEX]->encoder[3]);
@@ -314,9 +315,9 @@ unsigned char state_initialize( uControllerInput ** uc_in, uControllerOutput ** 
 	averageCounter++;
 
 
-    //last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
+    last_xPositionEncoder = (int32_t)(uc_out[BOOM_INDEX]->encoder[1]);
     
-    //last_body_cnt = (int32_t)(uc_out[BOOM_INDEX]->encoder[0]);
+    last_body_cnt = (int32_t)(uc_out[BOOM_INDEX]->encoder[0]);
 
     if (averageCounter < 128)
 	return STATE_INIT;
@@ -390,6 +391,8 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     c_in->thermistorB[1] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1]);
     c_in->thermistorB[2] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2]);
 
+    printk("%d, %d, %d\n",ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0]),ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1]),ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2]));
+
     c_in->motorVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power);
     c_in->motorVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->motor_power);
 
@@ -410,7 +413,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
 	    body_angle_cnt_base -= 0x1FFFF;
     }
     last_body_cnt = (int32_t)(uc_out[BOOM_INDEX]->encoder[0]);
-
+    printk("%d\n",uc_out[BOOM_INDEX]->encoder[0]);
     c_in->body_angle = (((float)((int32_t)(uc_out[BOOM_INDEX]->encoder[0])+body_angle_cnt_base))-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;
 //    c_in->body_angle = ((float)(body_angle_cnt_base)-BOOM_TILT_OFFSET)*BOOM_RAD_PER_CNT*BOOM_TILT_GEAR_RATIO;
     c_in->body_angle_vel = (c_in->body_angle - last_body_angle) / ((float)(current_medulla_time[BOOM_INDEX]-last_medulla_time[BOOM_INDEX]) * SEC_PER_CNT1 );
