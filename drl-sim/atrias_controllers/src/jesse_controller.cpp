@@ -1,41 +1,41 @@
 #include <atrias_controllers/controller.h>
 
-#define raibert_ESTIMATED_SPRING_STIFFNESS  0.
-#define raibert_ESTIMATED_GEAR_RATIO        20
+#define RAIBERT_ESTIMATED_SPRING_STIFFNESS  0.
+#define RAIBERT_ESTIMATED_GEAR_RATIO        20
 
-void raibert_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
-void raibert_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void RAIBERT_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void RAIBERT_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
-extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void initialize_RAIBERT_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	raibert_CONTROLLER_STATE(state)->in_flight = true;
-	raibert_CONTROLLER_STATE(state)->after_mid_stance = false;
-	raibert_CONTROLLER_STATE(state)->stance_time = 0.0;
-	raibert_CONTROLLER_STATE(state)->peak_ht = 1.0;	//peak height
+	RAIBERT_CONTROLLER_STATE(state)->in_flight = true;
+	RAIBERT_CONTROLLER_STATE(state)->after_mid_stance = false;
+	RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
+	RAIBERT_CONTROLLER_STATE(state)->peak_ht = 1.0;	//peak height
 
 	output->motor_torqueA    = 0.;
 	output->motor_torqueB    = 0.;
 	output->motor_torque_hip = 0.;
 
-	PRINT_MSG("raibert Controller Initialized.\n");
+	PRINT_MSG("RAIBERT Controller Initialized.\n");
 
-	raibert_CONTROLLER_STATE(state)->time_of_last_stance = raibert_CONTROLLER_STATE(state)->time;
+	RAIBERT_CONTROLLER_STATE(state)->time_of_last_stance = RAIBERT_CONTROLLER_STATE(state)->time;
 }
 
 
-extern void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void update_RAIBERT_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	//raibert_CONTROLLER_STATE(state)->in_flight = false;
+	//RAIBERT_CONTROLLER_STATE(state)->in_flight = false;
 
-	if ( raibert_CONTROLLER_STATE(state)->in_flight )
+	if ( RAIBERT_CONTROLLER_STATE(state)->in_flight )
 	{
-		raibert_flight_controller(input, output, state, data);
+		RAIBERT_flight_controller(input, output, state, data);
 	}
 	else
 	{
-		raibert_stance_controller(input, output, state, data);
+		RAIBERT_stance_controller(input, output, state, data);
 	}	
 	
 
@@ -43,19 +43,19 @@ extern void update_raibert_controller(ControllerInput *input, ControllerOutput *
 	// Do that now.
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 
-	//  Added raibert
+	//  Added RAIBERT
 	des_hip_ang = CLAMP( des_hip_ang, -0.2007, 0.148 );
-	// End raibert	
+	// End RAIBERT	
 
-	output->motor_torque_hip = raibert_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
-                - raibert_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
+	output->motor_torque_hip = RAIBERT_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
+                - RAIBERT_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
 
-	raibert_CONTROLLER_STATE(state)->last_leg_len = cos( ( 2.*PI + input->leg_angleA - input->leg_angleB ) / 2. );
+	RAIBERT_CONTROLLER_STATE(state)->last_leg_len = cos( ( 2.*PI + input->leg_angleA - input->leg_angleB ) / 2. );
 
 }
 
 
-extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void takedown_RAIBERT_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA 	 = 0.;
@@ -63,10 +63,10 @@ extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput
 	output->motor_torque_hip = 0.;
 }
 
-void raibert_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void RAIBERT_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	float raibert_CONTROLLER_STATE(state)->stance_time = 0.0;
+	float RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
 	float stance_trigger_height = 0.910; 
     float des_mtr_angA = LEG_POS_CONTROLLER_DATA(data)->leg_ang - PI + acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
 	float des_mtr_angB = LEG_POS_CONTROLLER_DATA(data)->leg_ang + PI - acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
@@ -88,12 +88,12 @@ void raibert_flight_controller(ControllerInput *input, ControllerOutput *output,
 		// Check to see if ground contact has occured.
 		PRINT_MSG("TD!\n");
 
-		raibert_CONTROLLER_STATE(state)->in_flight = false;
+		RAIBERT_CONTROLLER_STATE(state)->in_flight = false;
 	}
 
 }
 
-void raibert_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void RAIBERT_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	float des_mtr_angA = LEG_POS_CONTROLLER_DATA(data)->leg_ang - PI + acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
@@ -111,17 +111,17 @@ void raibert_stance_controller(ControllerInput *input, ControllerOutput *output,
 	output->motor_torque_hip = LEG_POS_CONTROLLER_DATA(data)->hip_p_gain * (des_hip_ang - input->hip_angle)
 		- LEG_POS_CONTROLLER_DATA(data)->hip_d_gain * input->hip_angle_vel;
 //	printk("                                                                                              %d\n",(int)((des_hip_ang)*1000));
-	if (raibert_CONTROLLER_STATE(state)->stance_time > 10) && (input->zPosition >= stance_trigger_height-0.01) && (input->toe_switch == 0)
+	if (RAIBERT_CONTROLLER_STATE(state)->stance_time > 10) && (input->zPosition >= stance_trigger_height-0.01) && (input->toe_switch == 0)
 	{
 		// Check to see if lift off has occured.
 
 		PRINT_MSG("LO!\n");
 
-		raibert_CONTROLLER_STATE(state)->in_flight = true;
+		RAIBERT_CONTROLLER_STATE(state)->in_flight = true;
 
 
 	}	
-	raibert_CONTROLLER_STATE(state)->stance_time += 1.0;
+	RAIBERT_CONTROLLER_STATE(state)->stance_time += 1.0;
 
 }
 
