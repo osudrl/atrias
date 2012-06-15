@@ -1,41 +1,41 @@
 #include <atrias_controllers/controller.h>
 
-#define HUBICKI_ESTIMATED_SPRING_STIFFNESS  0.
-#define HUBICKI_ESTIMATED_GEAR_RATIO        20
+#define raibert_ESTIMATED_SPRING_STIFFNESS  0.
+#define raibert_ESTIMATED_GEAR_RATIO        20
 
-void hubicki_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
-void hubicki_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void raibert_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+void raibert_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
-extern void initialize_hubicki_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	HUBICKI_CONTROLLER_STATE(state)->in_flight = true;
-	HUBICKI_CONTROLLER_STATE(state)->after_mid_stance = false;
-	HUBICKI_CONTROLLER_STATE(state)->stance_time = 0.0;
-	HUBICKI_CONTROLLER_STATE(state)->peak_ht = 1.0;	//peak height
+	raibert_CONTROLLER_STATE(state)->in_flight = true;
+	raibert_CONTROLLER_STATE(state)->after_mid_stance = false;
+	raibert_CONTROLLER_STATE(state)->stance_time = 0.0;
+	raibert_CONTROLLER_STATE(state)->peak_ht = 1.0;	//peak height
 
 	output->motor_torqueA    = 0.;
 	output->motor_torqueB    = 0.;
 	output->motor_torque_hip = 0.;
 
-	PRINT_MSG("Hubicki Controller Initialized.\n");
+	PRINT_MSG("raibert Controller Initialized.\n");
 
-	HUBICKI_CONTROLLER_STATE(state)->time_of_last_stance = HUBICKI_CONTROLLER_STATE(state)->time;
+	raibert_CONTROLLER_STATE(state)->time_of_last_stance = raibert_CONTROLLER_STATE(state)->time;
 }
 
 
-extern void update_hubicki_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void update_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	//HUBICKI_CONTROLLER_STATE(state)->in_flight = false;
+	//raibert_CONTROLLER_STATE(state)->in_flight = false;
 
-	if ( HUBICKI_CONTROLLER_STATE(state)->in_flight )
+	if ( raibert_CONTROLLER_STATE(state)->in_flight )
 	{
-		hubicki_flight_controller(input, output, state, data);
+		raibert_flight_controller(input, output, state, data);
 	}
 	else
 	{
-		hubicki_stance_controller(input, output, state, data);
+		raibert_stance_controller(input, output, state, data);
 	}	
 	
 
@@ -43,19 +43,19 @@ extern void update_hubicki_controller(ControllerInput *input, ControllerOutput *
 	// Do that now.
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 
-	//  Added Hubicki
+	//  Added raibert
 	des_hip_ang = CLAMP( des_hip_ang, -0.2007, 0.148 );
-	// End Hubicki	
+	// End raibert	
 
-	output->motor_torque_hip = HUBICKI_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
-                - HUBICKI_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
+	output->motor_torque_hip = raibert_CONTROLLER_DATA(data)->stance_hip_p_gain * (des_hip_ang - input->hip_angle)
+                - raibert_CONTROLLER_DATA(data)->stance_hip_d_gain * input->hip_angle_vel;
 
-	HUBICKI_CONTROLLER_STATE(state)->last_leg_len = cos( ( 2.*PI + input->leg_angleA - input->leg_angleB ) / 2. );
+	raibert_CONTROLLER_STATE(state)->last_leg_len = cos( ( 2.*PI + input->leg_angleA - input->leg_angleB ) / 2. );
 
 }
 
 
-extern void takedown_hubicki_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	output->motor_torqueA 	 = 0.;
@@ -63,7 +63,7 @@ extern void takedown_hubicki_controller(ControllerInput *input, ControllerOutput
 	output->motor_torque_hip = 0.;
 }
 
-void hubicki_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void raibert_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	float RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
@@ -88,12 +88,12 @@ void hubicki_flight_controller(ControllerInput *input, ControllerOutput *output,
 		// Check to see if ground contact has occured.
 		PRINT_MSG("TD!\n");
 
-		HUBICKI_CONTROLLER_STATE(state)->in_flight = false;
+		raibert_CONTROLLER_STATE(state)->in_flight = false;
 	}
 
 }
 
-void hubicki_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
+void raibert_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
 	float des_mtr_angA = LEG_POS_CONTROLLER_DATA(data)->leg_ang - PI + acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
@@ -117,7 +117,7 @@ void hubicki_stance_controller(ControllerInput *input, ControllerOutput *output,
 
 		PRINT_MSG("LO!\n");
 
-		HUBICKI_CONTROLLER_STATE(state)->in_flight = true;
+		raibert_CONTROLLER_STATE(state)->in_flight = true;
 
 
 	}	
