@@ -66,7 +66,7 @@ extern void takedown_raibert_controller(ControllerInput *input, ControllerOutput
 void raibert_flight_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	float RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
+	float raibert_CONTROLLER_STATE(state)->stance_time = 0.0;
 	float stance_trigger_height = 0.910; 
     float des_mtr_angA = LEG_POS_CONTROLLER_DATA(data)->leg_ang - PI + acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
 	float des_mtr_angB = LEG_POS_CONTROLLER_DATA(data)->leg_ang + PI - acos( LEG_POS_CONTROLLER_DATA(data)->leg_len );
@@ -111,7 +111,7 @@ void raibert_stance_controller(ControllerInput *input, ControllerOutput *output,
 	output->motor_torque_hip = LEG_POS_CONTROLLER_DATA(data)->hip_p_gain * (des_hip_ang - input->hip_angle)
 		- LEG_POS_CONTROLLER_DATA(data)->hip_d_gain * input->hip_angle_vel;
 //	printk("                                                                                              %d\n",(int)((des_hip_ang)*1000));
-	if (RAIBERT_CONTROLLER_STATE(state)->stance_time > 10) && (input->zPosition >= stance_trigger_height-0.01) && (input->toe_switch == 0)
+	if (raibert_CONTROLLER_STATE(state)->stance_time > 10) && (input->zPosition >= stance_trigger_height-0.01) && (input->toe_switch == 0)
 	{
 		// Check to see if lift off has occured.
 
@@ -121,7 +121,7 @@ void raibert_stance_controller(ControllerInput *input, ControllerOutput *output,
 
 
 	}	
-	RAIBERT_CONTROLLER_STATE(state)->stance_time += 1.0;
+	raibert_CONTROLLER_STATE(state)->stance_time += 1.0;
 
 }
 
