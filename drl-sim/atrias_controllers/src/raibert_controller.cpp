@@ -6,6 +6,7 @@
 void RAIBERT_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 void RAIBERT_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
+//06/19/12 13:18
 float l_leg;
 
 extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
@@ -74,8 +75,8 @@ void RAIBERT_flight_controller (ControllerInput *input, ControllerOutput *output
 	float alpha_TD=RAIBERT_CONTROLLER_DATA(data)->des_hop_ht;
  	
 	// convert into motor angle
-	float des_mtr_angA = alpha_TD + PI/2 - PI + acos(l_leg);
-        float des_mtr_angB = des_mtr_angA + 2 * PI - 2 * acos(l_leg);
+	float des_mtr_angA = alpha_TD - PI + acos(l_leg);
+    float des_mtr_angB = des_mtr_angA + 2 * PI - 2 * acos(l_leg);
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 	
 	printk("A: %d, B: %d\n",(int)(des_mtr_angA*100),(int)(des_mtr_angB*100));
