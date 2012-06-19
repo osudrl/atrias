@@ -6,7 +6,7 @@
 void RAIBERT_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 void RAIBERT_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
-float movavg2,movavg1,movavg0,tapex,yapex;
+float leg_length;
 
 extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
@@ -75,32 +75,11 @@ void RAIBERT_flight_controller (ControllerInput *input, ControllerOutput *output
 {
 	RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
 	float stance_trigger_height = 0.910; 
- //   float des_mtr_angA = RAIBERT_CONTROLLER_DATA(data)->des_hor_vel + PI/2 - PI + acos(0.9);
- //   float des_mtr_angB = RAIBERT_CONTROLLER_DATA(data)->des_hor_vel + PI/2 + PI - acos(0.9);
-	// calculate moving average of z-velocity
-	movavg2=movavg1;
-	movavg1=movavg;
-	movavg=(movavg2+movavg1+input->zVelocity)/3; //current averaged z-velocity
-	// find apex
-	if (movavg1 > 0 ) && (movavg <=0 )
-	{
-			tapex=input->time;
-			yapex=input->zPosition;
-	}
-	// adjust TD-angle
-	if (movavg<=0) && (tapex != input->time) && (((yapex-9.81/2*(input->time-tapex)^2)/RAIBERT_CONTROLLER_DATA(data)->leg_length)<=1)
-	{
-		des_leg_angle=asin((yapex-9.81/2*((input->time-tapex)*1000)^2)/RAIBERT_CONTROLLER_DATA(data)->leg_length);
-	}
-	else
-	{
-		des_leg_ang=PI/2;
-	{
-	// clamp TD-angle
-	des_leg_ang = CLAMP( des_leg_ang, 1.2, PI/2 );
+	leg_length=RAIBERT_CONTROLLER_DATA(data)->*des_leg_length*
+ 	
 	// convert into motor angle
-	float des_mtr_angA = des_leg_angle + PI/2 - PI + acos(0.9);
-    float des_mtr_angB = des_leg_angle + PI/2 + PI - acos(0.9);
+	float des_mtr_angA = des_leg_angle + PI/2 - PI + acos(leg_length);
+    float des_mtr_angB = des_mtr_angA + 2 * PI - 2 * acos(leg_length);
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 	
 	printk("A: %d, B: %d\n",(int)(des_mtr_angA*100),(int)(des_mtr_angB*100));
@@ -129,10 +108,12 @@ void RAIBERT_flight_controller (ControllerInput *input, ControllerOutput *output
 void RAIBERT_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	float des_mtr_angA = (input->leg_angleA + input->leg_angleB)/2.0 - PI + acos(0.9);
-	float des_mtr_angB = (input->leg_angleA + input->leg_angleB)/2.0 + PI - acos(0.9);
+	leg_length=RAIBERT_CONTROLLER_DATA(data)->*des_leg_length*;
+	float des_mtr_angA = (input->leg_angleA + input->leg_angleB)/2.0 - PI + acos(leg_length);
+	float des_mtr_angB = (input->leg_angleA + input->leg_angleB)/2.0 + PI - acos(leg_length);
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
-	float stance_trigger_height = 0.910; 
+	float stance_trigger_height = leg_length + 0.01; 
+	leg_length=RAIBERT_CONTROLLER_DATA(data)->*des_leg_length*
 
 //	if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
 	des_hip_ang = CLAMP(des_hip_ang,-0.2007,0.148);
