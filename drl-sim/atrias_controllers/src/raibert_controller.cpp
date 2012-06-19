@@ -6,7 +6,7 @@
 void RAIBERT_flight_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 void RAIBERT_stance_controller(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
 
-float leg_length;
+float l_leg;
 
 extern void initialize_raibert_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
@@ -70,12 +70,12 @@ void RAIBERT_flight_controller (ControllerInput *input, ControllerOutput *output
 {
 	RAIBERT_CONTROLLER_STATE(state)->stance_time = 0.0;
 	float stance_trigger_height = 0.910; 
-	leg_length=RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len;
+	l_leg=RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len;
 	float alpha_TD=RAIBERT_CONTROLLER_DATA(data)->des_hop_ht;
  	
 	// convert into motor angle
-	float des_mtr_angA = alpha_TD + PI/2 - PI + acos(leg_length);
-        float des_mtr_angB = des_mtr_angA + 2 * PI - 2 * acos(leg_length);
+	float des_mtr_angA = alpha_TD + PI/2 - PI + acos(l_leg);
+        float des_mtr_angB = des_mtr_angA + 2 * PI - 2 * acos(l_leg);
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
 	
 	printk("A: %d, B: %d\n",(int)(des_mtr_angA*100),(int)(des_mtr_angB*100));
@@ -104,11 +104,11 @@ void RAIBERT_flight_controller (ControllerInput *input, ControllerOutput *output
 void RAIBERT_stance_controller(ControllerInput *input, ControllerOutput *output, ControllerState *state, 
 	ControllerData *data)
 {
-	float des_mtr_angA = (input->leg_angleA + input->leg_angleB)/2.0 - PI + acos(leg_length);
-	float des_mtr_angB = (input->leg_angleA + input->leg_angleB)/2.0 + PI - acos(leg_length);
+	float des_mtr_angA = (input->leg_angleA + input->leg_angleB)/2.0 - PI + acos(l_leg);
+	float des_mtr_angB = (input->leg_angleA + input->leg_angleB)/2.0 + PI - acos(l_leg);
 	float des_hip_ang = 0.99366*input->body_angle + 0.03705;
-	leg_length=RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len;
-	float stance_trigger_height = leg_length + 0.01; 
+	l_leg=RAIBERT_CONTROLLER_DATA(data)->preferred_leg_len;
+	float stance_trigger_height = l_leg + 0.01; 
 
 //	if ((des_hip_ang < -0.2007) || (des_hip_ang > 0.148))
 	des_hip_ang = CLAMP(des_hip_ang,-0.2007,0.148);
