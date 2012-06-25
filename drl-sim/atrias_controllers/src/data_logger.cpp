@@ -192,9 +192,9 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
         if (req.logfilename == "") {   // If filename is unspecified, set one based on date and time.
             ROS_INFO("[data_subscriber] Logfile name unspecified. Deciding logfile name based on date and time.");
 // Hubicki, added option to change directory - 02-10-2012
-//            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+//            sprintf(buffer, "%s/atrias_rtai_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 
-            sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/mnt/hurst/Experimental_Data/ForceControlCalibration", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+            sprintf(buffer, "%s/atrias_rtai_%02d%02d%02d_%02d%02d%02d.log", "/mnt/hurst/Experimental_Data/ForceControlCalibration", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 // End Hubicki change
 
 
@@ -212,7 +212,7 @@ bool serviceCallback(atrias_controllers::data_subscriber_srv::Request& req, atri
         }
         catch (char const* str) {
             ROS_INFO(str);
-                sprintf(buffer, "%s/atrias_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+                sprintf(buffer, "%s/atrias_rtai_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
             log_file_fp = fopen(buffer, "w");   // Try opening again.
         }
         ROS_INFO("[data_subscriber] Opening logfile at %s", buffer);
