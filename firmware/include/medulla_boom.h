@@ -7,7 +7,7 @@
 //	This program reads the encoders on the boom
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
+#include "../../drl-sim/atrias/include/atrias/ucontroller.h"
 #include <util/delay.h>
 
 #define _MEDULLA_BOOM

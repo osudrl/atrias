@@ -7,7 +7,7 @@
 //	This program reads sensors and controls one half of an atrias 2.* hip
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
+#include "../../drl-sim/atrias/include/atrias/ucontroller.h"
 #include <util/delay.h>
 
 #include "medulla_controller.h"

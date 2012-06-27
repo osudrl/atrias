@@ -5,7 +5,7 @@
 //	leg.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../../../drl-sim/atrias/include/atrias/ucontroller.h"
+#include "../../drl-sim/atrias/include/atrias/ucontroller.h"
 #include <util/delay.h>
 
 #include "medulla_controller.h"

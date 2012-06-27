@@ -11,7 +11,7 @@ void initAmp(USART_t * amp_usart, PORT_t * usart_port, PORT_t * pwm_port, TC1_t 
 
 	timer->CTRLA	= ( timer->CTRLA & ~TC1_CLKSEL_gm ) | TC_CLKSEL_DIV1_gc;
 
-	hires->CTRL	= HIRES_HREN_TC1_gc;
+	hires->CTRLA	= HIRES_HREN_TC1_gc;
 	
 	timer->PER = PERIOD;
 	
