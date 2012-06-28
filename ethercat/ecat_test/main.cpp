@@ -56,14 +56,35 @@ int main(int argc, char ** argv) {
 	uint32_t*      encoder  = (uint32_t*)      (domain_pd + encoder_off);
 	
 	(*command) = 0;
+	
+	timespec cur_time;
+	clock_gettime(CLOCK_REALTIME, &cur_time);
+	ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
+	ecrt_slave_config_dc(sc, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - (cur_time.tv_nsec % LOOP_PERIOD_NS), 0, 0);
+	
+	long tgt_time = cur_time.tv_nsec;
+	timespec wait_time = {
+		0,
+		0
+	};
+	
+	ec_master_state_t master_state;
+	
 	while (!done) {
 		ecrt_master_receive(ec_master);
 		ecrt_domain_process(domain);
+
 		(*command)++;
 		printf("command: %3u, timestep: %3u, encoder: %8u\n", (unsigned int) *command, *timestep, (unsigned int) *encoder);
+		
+		clock_gettime(CLOCK_REALTIME, &cur_time);
+		ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
+		ecrt_master_sync_reference_clock(ec_master);
+		ecrt_master_sync_slave_clocks(ec_master);
 		ecrt_domain_queue(domain);
 		ecrt_master_send(ec_master);
-		usleep(10000);
+		wait_time.tv_nsec = LOOP_PERIOD_NS - (cur_time.tv_nsec % LOOP_PERIOD_NS);
+		nanosleep(&wait_time, NULL);
 	}
 	
 	ecrt_release_master(ec_master);
