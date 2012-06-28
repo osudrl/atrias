@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<EtherCATInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EtherCATInfo.xsd" Version="1.2">
+	<Vendor>
+		<Id>1551</Id>
+		<Name>OSU Dynamic Robotics Laboratory</Name>
+	</Vendor>
+	<Descriptions>
+		<Groups>
+			<Group>
+				<Type>Medulla</Type>
+				<Name LcId="1033">Medulla 1.5</Name>
+			</Group>
+		</Groups>
+		<Devices>
+			<Device Physics="YY">
+				<Type ProductCode="#x00000001" RevisionNo="#x00000001">ATRIAS 2.1 (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 (Medulla 1.5)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
+				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Sm Enable="0" />
+				<Sm Enable="0" />
+				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<RxPdo Fixed="1" Sm="2">
+					<Index>#x1600</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0003</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Current</Name>
+						<DataType>INT</DataType>
+					</Entry>
+				</RxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A00</Index>
+					<Name>uControllerOutput</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestep</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder 0</Name>
+						<DataType>UDINT</DataType>
+					</Entry>
+				</TxPdo>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0300</AssignActivate>
+						<CycleTimeSync0 Factor="1">0</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+					<!--<OpMode>
+						<Name>DcOff</Name>
+						<Desc>DC unused</Desc>
+						<AssignActivate>#x0000</AssignActivate>
+					</OpMode>-->
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>05040008FF000000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+		</Devices>
+	</Descriptions>
+</EtherCATInfo>
