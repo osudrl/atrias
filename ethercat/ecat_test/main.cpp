@@ -71,9 +71,6 @@ int main(int argc, char ** argv) {
 	ec_master_state_t master_state;
 	
 	while (!done) {
-		ecrt_master_receive(ec_master);
-		ecrt_domain_process(domain);
-
 		(*command)++;
 		printf("command: %3u, timestep: %3u, encoder: %8u\n", (unsigned int) *command, *timestep, (unsigned int) *encoder);
 		
@@ -83,6 +80,9 @@ int main(int argc, char ** argv) {
 		ecrt_master_sync_slave_clocks(ec_master);
 		ecrt_domain_queue(domain);
 		ecrt_master_send(ec_master);
+		usleep(10);
+		ecrt_master_receive(ec_master);
+		ecrt_domain_process(domain);
 		wait_time.tv_nsec = LOOP_PERIOD_NS - (cur_time.tv_nsec % LOOP_PERIOD_NS);
 		nanosleep(&wait_time, NULL);
 	}

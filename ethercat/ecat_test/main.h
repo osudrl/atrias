@@ -7,7 +7,7 @@
 #define VENDOR_ID    0x060F
 #define PRODUCT_CODE 0x0001
 
-#define LOOP_PERIOD_NS 1000000
+#define LOOP_PERIOD_NS 10000000
 
 #define EC_NEWTIMEVAL2NANO(TV) \
     (((TV).tv_sec - 946684800ULL) * 1000000000ULL + (TV).tv_nsec)
