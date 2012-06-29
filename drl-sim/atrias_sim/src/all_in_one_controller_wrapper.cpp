@@ -27,12 +27,12 @@ AllInOneControllerWrapper::AllInOneControllerWrapper(Entity *parent)
     this->legBNameP = new ParamT<std::string > ("legBName", "link", 1);
     Param::End();
 
-    this->controller_input = new ControllerInput();
-    this->controller_output = new ControllerOutput();
-    this->controller_state = new ControllerState();
+    this->controllerInput = new ControllerInput();
+    this->controllerOutput = new ControllerOutput();
+    this->controllerStatus = new ControllerState();
     this->controller_data = new ControllerData();
 
-    this->controller_state->state = CSSM_STATE_INIT;
+    this->controllerStatus->state = CSSM_STATE_INIT;
 
     atrias_data_publish_counter = 0;
 }
@@ -42,7 +42,7 @@ AllInOneControllerWrapper::AllInOneControllerWrapper(Entity *parent)
 
 AllInOneControllerWrapper::~AllInOneControllerWrapper()
 {
-    controller_state->state = CSSM_STATE_FINI;
+    controllerStatus->state = CSSM_STATE_FINI;
     //control_switcher_state_machine(controller_input, controller_output, controller_state, controller_data);
 
     delete this->bodyNameP;
@@ -51,9 +51,9 @@ AllInOneControllerWrapper::~AllInOneControllerWrapper()
     delete this->legANameP;
     delete this->legBNameP;
 
-    delete this->controller_input;
-    delete this->controller_output;
-    delete this->controller_state;
+    delete this->controllerInput;
+    delete this->controllerOutput;
+    delete this->controllerStatus;
     delete this->controller_data;
 }
 
@@ -104,7 +104,7 @@ void AllInOneControllerWrapper::LoadChild(XMLConfigNode *node)
         ROS_ERROR("gazebo_ros_force controller update rate is less than physics update rate, wrench applied will be diluted (applied intermittently)");
 
     this->generate_controller_input();
-    control_switcher_state_machine(controller_input, controller_output, controller_state, controller_data);
+    control_switcher_state_machine(controllerInput, controllerOutput, controllerStatus, controller_data);
     int argc = 0;
     char** argv = NULL;
     //ros::init(argc, argv, "gui_interface", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
@@ -126,15 +126,15 @@ void AllInOneControllerWrapper::UpdateChild()
 
     this->poke_ros();
 
-    control_switcher_state_machine(this->controller_input, this->controller_output, this->controller_state, this->controller_data);
+    control_switcher_state_machine(this->controllerInput, this->controllerOutput, this->controllerStatus, this->controller_data);
 
-    this->controller_output->motor_torqueA = CLAMP(this->controller_output->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
-    this->controller_output->motor_torqueB = CLAMP(this->controller_output->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
+    this->controllerOutput->motor_torqueA = CLAMP(this->controllerOutput->motor_torqueA, MTR_MIN_TRQ, MTR_MAX_TRQ);
+    this->controllerOutput->motor_torqueB = CLAMP(this->controllerOutput->motor_torqueB, MTR_MIN_TRQ, MTR_MAX_TRQ);
 
-    this->motorA->SetTorque(Vector3(0., -this->controller_output->motor_torqueA * GEAR_RATIO, 0.));
-    this->body->SetTorque(Vector3(0., this->controller_output->motor_torqueA * GEAR_RATIO, 0.));
-    this->motorB->SetTorque(Vector3(0., -this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
-    this->body->SetTorque(Vector3(0., this->controller_output->motor_torqueB * GEAR_RATIO, 0.));
+    this->motorA->SetTorque(Vector3(0., -this->controllerOutput->motor_torqueA * GEAR_RATIO, 0.));
+    this->body->SetTorque(Vector3(0., this->controllerOutput->motor_torqueA * GEAR_RATIO, 0.));
+    this->motorB->SetTorque(Vector3(0., -this->controllerOutput->motor_torqueB * GEAR_RATIO, 0.));
+    this->body->SetTorque(Vector3(0., this->controllerOutput->motor_torqueB * GEAR_RATIO, 0.));
 
     this->lock.unlock();
 }
@@ -142,38 +142,38 @@ void AllInOneControllerWrapper::UpdateChild()
 void AllInOneControllerWrapper::poke_ros() {
     ros::spinOnce();
 
-    if (this->controller_state->state == CSSM_STATE_ENABLED)
+    if (this->controllerStatus->state == CSSM_STATE_ENABLED)
     {
-        ad.status = CMD_RUN;
+        cs.status = CMD_RUN;
     }
     else
     {
-        ad.status = CMD_DISABLE;
+        cs.status = CMD_DISABLE;
     }
 
-    ad.time = (uint32_t) Simulator::Instance()->GetSimTime().Double();
-    ad.body_angle = this->controller_input->body_angle;
-    ad.motor_angleA = this->controller_input->motor_angleA;
-    ad.motor_angleB = this->controller_input->motor_angleB;
-    ad.leg_angleA = this->controller_input->leg_angleA;
-    ad.leg_angleB = this->controller_input->leg_angleB;
-    ad.motor_torqueA = this->controller_output->motor_torqueA;
-    ad.motor_torqueB = this->controller_output->motor_torqueB;
-    ad.xPosition = this->controller_input->xPosition;
-    ad.yPosition = this->controller_input->yPosition;
-    ad.zPosition = this->controller_input->zPosition;
-    ad.xVelocity = this->controller_input->xVelocity;
-    ad.yVelocity = this->controller_input->yVelocity;
-    ad.zVelocity = this->controller_input->zVelocity;
+    cs.time = (uint32_t) Simulator::Instance()->GetSimTime().Double();
+    cs.body_angle = this->controllerInput->body_angle;
+    cs.motor_angleA = this->controllerInput->motor_angleA;
+    cs.motor_angleB = this->controllerInput->motor_angleB;
+    cs.leg_angleA = this->controllerInput->leg_angleA;
+    cs.leg_angleB = this->controllerInput->leg_angleB;
+    cs.motor_torqueA = this->controllerOutput->motor_torqueA;
+    cs.motor_torqueB = this->controllerOutput->motor_torqueB;
+    cs.xPosition = this->controllerInput->xPosition;
+    cs.yPosition = this->controllerInput->yPosition;
+    cs.zPosition = this->controllerInput->zPosition;
+    cs.xVelocity = this->controllerInput->xVelocity;
+    cs.yVelocity = this->controllerInput->yVelocity;
+    cs.zVelocity = this->controllerInput->zVelocity;
 
     // Clone data from the gui into the controller's data memory.
     for (int i = 0; i < SIZE_OF_CONTROLLER_STATE_DATA; i++)
     {
-        ad.control_state[i] = this->controller_state->data[i];
+        cs.control_state[i] = this->controllerStatus->data[i];
     }
 
     if ((atrias_data_publish_counter % 20) == 0) {   // 50 Hz publish rate.
-        atrias_sim_pub.publish(ad);
+        atrias_sim_pub.publish(cs);
     }
     atrias_data_publish_counter = (atrias_data_publish_counter + 1) % 1000;
 }
@@ -184,32 +184,32 @@ void AllInOneControllerWrapper::generate_controller_input()
     Vector3 axis;
 
     this->body->GetWorldPose().rot.GetAsAxis(axis, angle);
-    this->controller_input->body_angle = angle * axis.y;
+    this->controllerInput->body_angle = angle * axis.y;
     this->motorA->GetWorldPose().rot.GetAsAxis(axis, angle);
-    this->controller_input->motor_angleA = -angle * axis.y + 3. * PI / 4. - PI;
+    this->controllerInput->motor_angleA = -angle * axis.y + 3. * PI / 4. - PI;
     //ROS_INFO("maA = %.3f", angle);
     this->motorB->GetWorldPose().rot.GetAsAxis(axis, angle);
-    this->controller_input->motor_angleB = -angle * axis.y + PI / 4. + PI;
+    this->controllerInput->motor_angleB = -angle * axis.y + PI / 4. + PI;
     //ROS_INFO("maB = %.3f", angle);
     this->legA->GetWorldPose().rot.GetAsAxis(axis, angle);
-    this->controller_input->leg_angleA = -angle * axis.y + 3. * PI / 4. - PI;
+    this->controllerInput->leg_angleA = -angle * axis.y + 3. * PI / 4. - PI;
     //ROS_INFO("laA = %.3f", angle);
     this->legB->GetWorldPose().rot.GetAsAxis(axis, angle);
-    this->controller_input->leg_angleB = -angle * axis.y + PI / 4. + PI;
+    this->controllerInput->leg_angleB = -angle * axis.y + PI / 4. + PI;
     //ROS_INFO("laB = %.3f\n\n", angle);
 
-    this->controller_input->xPosition = this->body->GetWorldPose().pos.x;
-    this->controller_input->yPosition = this->body->GetWorldPose().pos.y;
-    this->controller_input->zPosition = this->body->GetWorldPose().pos.z;
+    this->controllerInput->xPosition = this->body->GetWorldPose().pos.x;
+    this->controllerInput->yPosition = this->body->GetWorldPose().pos.y;
+    this->controllerInput->zPosition = this->body->GetWorldPose().pos.z;
 
-    this->controller_input->xVelocity = this->body->GetWorldLinearVel().x;
-    this->controller_input->yVelocity = this->body->GetWorldLinearVel().y;
-    this->controller_input->zVelocity = this->body->GetWorldLinearVel().z;
+    this->controllerInput->xVelocity = this->body->GetWorldLinearVel().x;
+    this->controllerInput->yVelocity = this->body->GetWorldLinearVel().y;
+    this->controllerInput->zVelocity = this->body->GetWorldLinearVel().z;
 
-    this->controller_input->motor_velocityA = -this->motorA->GetWorldAngularVel().y;
-    this->controller_input->motor_velocityB = -this->motorB->GetWorldAngularVel().y;
-    this->controller_input->leg_velocityA = -this->legA->GetWorldAngularVel().y;
-    this->controller_input->leg_velocityB = -this->legB->GetWorldAngularVel().y;
+    this->controllerInput->motor_velocityA = -this->motorA->GetWorldAngularVel().y;
+    this->controllerInput->motor_velocityB = -this->motorB->GetWorldAngularVel().y;
+    this->controllerInput->leg_velocityA = -this->legA->GetWorldAngularVel().y;
+    this->controllerInput->leg_velocityB = -this->legB->GetWorldAngularVel().y;
 }
 
 void AllInOneControllerWrapper::atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr)

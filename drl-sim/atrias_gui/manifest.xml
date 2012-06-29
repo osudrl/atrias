@@ -1,25 +1,17 @@
-<!-- Devin Koepl -->
-
 <package>
   <description brief="atrias_gui">
 
      atrias_gui
 
   </description>
-  <author>Devin Koepl</author>
+  <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/atrias_gui</url>
-
-    <depend package="roscpp" />
-    <depend package="drl_library" />
-    <depend package="atrias" />
-    <depend package="atrias_controllers" />
-    <depend package="atrias_msgs" />
-
-    <export>
-      <cpp cflags="-I${prefix}/include" />
-    </export>
+  <depend package="roscpp"/>
+  <depend package="drl_library"/>
+  <depend package="atrias_control"/>
+  <depend package="atrias_msgs"/>
 
 </package>
 

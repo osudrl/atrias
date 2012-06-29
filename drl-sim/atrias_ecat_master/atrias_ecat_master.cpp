@@ -5,13 +5,13 @@
  *  Details.
  */
 
-#define REAL_TIME
+//#define REAL_TIME
 
 // Orocos
 #include <rtt/os/main.h>
 
 #include <rtt/RTT.hpp>
-//#include <rtt/Logger.hpp>
+#include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/OperationCaller.hpp>
@@ -29,8 +29,9 @@
 
 // ATRIAS
 #include <atrias_ecat_master/uspace_controller_wrapper.h>
-#include <atrias_msgs/atrias_controller_requests.h>   // Inputs from GUI.
-#include <atrias_msgs/atrias_data.h>   // Data stream.
+#include <atrias_controller_wrapper/controller_wrapper_states.h>
+#include <atrias_msgs/controller_input.h>   // Inputs from GUI.
+#include <atrias_msgs/controller_status.h>   // Data stream.
 #include <atrias_msgs/atrias_debug.h>   // Debug stream.
 
 using namespace std;
@@ -39,20 +40,15 @@ using namespace Orocos;
 
 
 class AtriasEthercatMaster : public TaskContext {
-    InputPort<atrias_msgs::atrias_controller_requests>  crInPort;
-    OutputPort<atrias_msgs::atrias_data>                dataOutPort;
+    InputPort<atrias_msgs::controller_input>            ciInPort;
+    OutputPort<atrias_msgs::controller_status>          csOutPort;
     OutputPort<atrias_msgs::atrias_debug>               debugOutPort;
-    std::string prop_answer;
 
     int counter;
 
-    atrias_msgs::atrias_data ad;
-    atrias_msgs::atrias_controller_requests cr;
+    atrias_msgs::controller_status cs;
+    atrias_msgs::controller_input ci;
     atrias_msgs::atrias_debug debugOut;
-
-    ControllerInput* c_in;
-    ControllerOutput* c_out;
-    ControllerState* c_state;
 
     #ifndef REAL_TIME
     int usec1, usec2, usecLast, usecDiff1, usecDiff2;
@@ -66,25 +62,15 @@ class AtriasEthercatMaster : public TaskContext {
 public:
     AtriasEthercatMaster(std::string name):
         RTT::TaskContext(name),
-        crInPort        ("controller_requests_in"),
-        dataOutPort     ("data_out"),
-        debugOutPort    ("debug_out"),
-        prop_answer     ("aem_prop_answer")
+        ciInPort        ("ci_in"),
+        csOutPort       ("cs_out"),
+        debugOutPort    ("debug_out")
     {
-        //log(Info) << "AtriasEthercatMaster constructed !" <<endlog();
+        log(Info) << "[AEM] constructed!" << endlog();
 
-        this->addPort       (crInPort);
-        this->addPort       (dataOutPort);
+        this->addPort       (ciInPort);
+        this->addPort       (csOutPort);
         this->addPort       (debugOutPort);
-        this->addProperty   ("answer", prop_answer);
-
-        c_in = &shm.controller_input;
-        c_out = &shm.controller_output;
-        c_state = &shm.controller_state;
-
-        // Add operation with flag ClientThread. See Section 3.4 of Orocos
-        // Component Manual.
-        //this->addOperation("publish", &AtriasEthercatMaster::publish, this, ClientThread).doc("Publish data?");
 
         //#ifdef BUILD_AS_EXECUTABLE
         //// Syntax: Activity (int scheduler, int priority, Seconds period, base::RunnableInterface *r=0, const std::string &name="Activity")
@@ -95,7 +81,7 @@ public:
     }
 
     bool configureHook() {
-        //log(Info) << "AEM configured !" <<endlog();
+        log(Info) << "[AEM] configured!" << endlog();
         init_master();
 
         #ifndef REAL_TIME
@@ -106,17 +92,25 @@ public:
         usecDiff2 = 0;
         #endif // REAL_TIME
 
+        // Lock memory.
         if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
             perror("mlockall");
         }
 
-        dataOutPort.setDataSample(ad);   // Show data sample to the port.
+        // Show data sample to the port (this is supposed to be necessary for
+        // real-time operation).
+        csOutPort.setDataSample(cs);
+
+        // Initialize bad timestamp counters.
+        for (int i=0; i<NUM_OF_MEDULLAS_ON_ROBOT; i++) {
+            medulla_bad_timestamp_counter[i] = 0;
+        }
 
         return true;
     }
 
     bool startHook() {
-        //log(Info) << "AEM started !" <<endlog();
+        log(Info) << "[AEM] started!" << endlog();
         return true;
     }
 
@@ -131,82 +125,26 @@ public:
         #endif // REAL_TIME
 
         // Does ACS have a new controller request?
-        if (NewData == crInPort.read(cr)) {
+        if (NewData == ciInPort.read(ci)) {
             //log(Info) << "[AEM] command: " << cr.command << endlog();
             //log(Info) << "[AEM] controller_requested: " << (int) cr.controller_requested << endlog();
 
-            // Load controller request information into other control index...
-            shm.controller_data[1 - shm.control_index].command = cr.command;
-            shm.controller_data[1 - shm.control_index].controller_requested = cr.controller_requested;
-            for (int i=0; i<SIZE_OF_CONTROLLER_DATA; i++) {   // TODO: SIZE_OF_CONTROLLER_DATA is 100, but this number is hardcoded into the ROS msg. This may need to change.
-                shm.controller_data[1 - shm.control_index].data[i] = cr.control_data[i];
-            }
-
-            // ...then request the switch.
-            shm.req_switch = true;
+            // Load controller request information
+            cwd.controllerStatus.state.command = ci.command;
+            cwd.controllerInput = ci;
         }
 
         // Run the cyclic task of running the controller wrapper and
         // sending/receiving over EtherCAT.
-        if (atrias_connected) {
+        //if (atrias_connected) {
             cyclic_task();
-        }
+        //}
 
         // Send data to ACS.
-        ad.time = counter;
-        ad.body_angle       = c_in->body_angle;
-        ad.body_angle_vel   = c_in->body_angle_vel;
-        ad.motor_angleA     = c_in->motor_angleA;
-        ad.motor_angleA_inc = c_in->motor_angleA_inc;
-        ad.motor_angleB     = c_in->motor_angleB;
-        ad.motor_angleB_inc = c_in->motor_angleB_inc;
-        ad.leg_angleA       = c_in->leg_angleA;
-        ad.leg_angleB       = c_in->leg_angleB;
-
-        ad.motor_velocityA = c_in->motor_velocityA;
-        ad.motor_velocityB = c_in->motor_velocityB;
-        ad.leg_velocityA   = c_in->leg_velocityA;
-        ad.leg_velocityB   = c_in->leg_velocityB;
-
-        ad.hip_angle     = c_in->hip_angle;
-        ad.hip_angle_vel = c_in->hip_angle_vel;
-
-        ad.xPosition = c_in->xPosition;
-        ad.yPosition = c_in->yPosition;
-        ad.zPosition = c_in->zPosition;
-
-        ad.xVelocity = c_in->xVelocity;
-        ad.yVelocity = c_in->yVelocity;
-        ad.zVelocity = c_in->zVelocity;
-
-        ad.motor_currentA = c_in->motor_currentA;
-        ad.motor_currentB = c_in->motor_currentB;
-
-        ad.toe_switch = c_in->toe_switch;
-
-        ad.command = c_in->command;
-
-        for (int i=0; i<3; i++) {
-            ad.thermistorA[i] = c_in->thermistorA[i];
-            ad.thermistorB[i] = c_in->thermistorB[i];
-        }
-        //ad.thermistorB[0] = 4.0;
-        ad.motorVoltageA  = c_in->motorVoltageA;
-        ad.motorVoltageB  = c_in->motorVoltageB;
-        ad.logicVoltageA  = c_in->logicVoltageA;
-        ad.logicVoltageB  = c_in->logicVoltageB;
-        ad.medullaStatusA = c_in->medullaStatusA;
-        ad.medullaStatusB = c_in->medullaStatusB;
-
-        for (int i=0; i<SIZE_OF_CONTROLLER_STATE_DATA; i++) {
-            ad.control_state[i] = c_state->data[i];
-        }
-
-        ad.motor_torqueA = c_out->motor_torqueA;
-        ad.motor_torqueB = c_out->motor_torqueB;
+        cs = cwd.controllerStatus;
 
         // Write to port.
-        dataOutPort.write(ad);
+        csOutPort.write(cs);
 
         counter++;
 
@@ -217,25 +155,27 @@ public:
         usec2     = tm->tm_sec*1000000 + tv.tv_usec;
         usecDiff2 = usec2 - usec1;
 
-        char buffer[250];
+        /*char buffer[250];
         sprintf(buffer, "AEM updateHook!  Loop interval: %d,  time: %d", usecDiff1, usecDiff2);
         debugOut.string1 = buffer;
         debugOut.float1  = usecDiff1;
         debugOut.float2  = usecDiff2;
-        debugOutPort.write(debugOut);
+        debugOutPort.write(debugOut);*/
+        cwd.controllerStatus.state.loopTime = usecDiff2;
         #endif // REAL_TIME
     }
 
     void stopHook() {
+        // Unlock memory.
         if (munlockall() == -1) {
             perror("munlockall");
         }
 
-        //log(Info) << "AEM stopping !" <<endlog();
+        log(Info) << "[AEM] stopped!" << endlog();
     }
 
     void cleanupHook() {
-        //log(Info) << "AEM cleaning up !" <<endlog();
+        log(Info) << "[AEM] cleaned up!" << endlog();
     }
 };
 ORO_CREATE_COMPONENT(AtriasEthercatMaster)

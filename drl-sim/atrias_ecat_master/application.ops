@@ -4,6 +4,7 @@ import("atrias_controller_switcher")
 # Load necessary components.
 loadComponent("atrias_em", "AtriasEthercatMaster")
 loadComponent("atrias_cs", "AtriasControllerSwitcher")
+loadComponent("atrias_dl", "AtriasDataLogger")
 
 # Set activity properties.
 setActivity("atrias_em", 0.001, HighestPriority, ORO_SCHED_RT)
@@ -14,14 +15,14 @@ var ConnPolicy controller_req
 var ConnPolicy adata
 var ConnPolicy adebug
 
-connect("atrias_em.data_out",  "atrias_cs.data_in",  adata)
+connect("atrias_em.cs_out",    "atrias_cs.cs_in",  adata)
 connect("atrias_em.debug_out", "atrias_cs.debug_in", adebug)
-connect("atrias_cs.controller_requests_out", "atrias_em.controller_requests_in", controller_req)
+connect("atrias_cs.ci_out",    "atrias_em.ci_in", controller_req)
 
-stream("atrias_cs.controller_requests_in", ros.topic("/atrias_controller_requests"))
-stream("atrias_cs.debug_out",        ros.topic("/atrias_cs_debug_out"))
-stream("atrias_cs.data_50_hz_out",   ros.topic("/atrias_data_50_hz"))
-stream("atrias_cs.data_1000_hz_out", ros.topic("/atrias_data_1000_hz"))
+stream("atrias_cs.ci_in",          ros.topic("/controller_input"))
+stream("atrias_cs.debug_out",      ros.topic("/atrias_cs_debug_out"))
+stream("atrias_cs.cs_50_hz_out",   ros.topic("/controller_status_50_hz"))
+stream("atrias_cs.cs_1000_hz_out", ros.topic("/controller_status_1000_hz"))
 
 # Configure components.
 atrias_em.configure()

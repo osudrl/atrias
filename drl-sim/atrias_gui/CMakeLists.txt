@@ -34,6 +34,7 @@ rosbuild_add_boost_directories()
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(atrias_gui src/atrias_gui.cpp)
+rosbuild_add_executable(atrias_gui src/StatusGui.cpp)
 
 include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
 pkg_check_modules(GTKMM REQUIRED gtkmm-2.4)
@@ -41,4 +42,5 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 link_directories(${GTKMM_LIBRARY_DIRS})
 
 target_link_libraries(atrias_gui ${GTKMM_LIBRARIES})
+target_link_libraries(atrias_gui roslib)
 

@@ -1,0 +1,17 @@
+* Automatically zero torques on takedown
+* Zero out controller output struct before sending to controller
+* Make sure to free array data in ByteArray's
+* Controller_state_machine and GUI need to verify library functions when
+  controller is loaded and throw an error on failure
+* GUI load controller GUI when controller's box is ticked and library when
+  controller tab is actually opened
+* When loading controller GUI description file ensure all loaded GUI element
+  names are prefixed with the controller's package name
+* Don't detect controller packages names taht are not legal GUI element names
+* Do all lib functions need to be defined (takedown?)
+* Built-in dummy controller
+
+Updates for later:
+* Smart-pointer ByteArrays
+* Smart verification of controller GUI element names
+* Default value loading/saving for controllers

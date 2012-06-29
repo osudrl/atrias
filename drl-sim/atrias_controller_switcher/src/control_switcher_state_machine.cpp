@@ -1,139 +1,147 @@
-// Devin Koepl
+/*
+ * Acts as the proxy between the ethercat master and the controller libraries
+ *
+ * Author: Michael Anderson
+ */
 
 #include <atrias_controller_switcher/control_switcher_state_machine.h>
 
-extern void control_switcher_state_machine(ControllerInput *controller_input, ControllerOutput *controller_output,
-        ControllerState *controller_state, ControllerData *controller_data)
+extern void control_switcher_state_machine(controller_input &input, controller_status &status)
 {
-    switch (controller_state->state)
+    switch (state)
     {
         case CSSM_STATE_DISABLED:
-            if (controller_data->command == CMD_RUN)
+            if (input.command == CMD_RUN)
             {
-                controller_state->state = CSSM_STATE_ENABLED;
-                printf("Controller enabled.\n");
+            	state = status.cssm_state = CSSM_STATE_ENABLED;
+                //printf("Controller enabled.\n");
             }
-            else if ((controller_data->command == CMD_DISABLE)
-                    && (controller_data->controller_requested != controller_state->controller_loaded))
+            else if ((input.command == CMD_DISABLE)
+                    && (input.controller_requested != currentController))
             {
                 // The user requests a different controller.
-                takedown_controller(controller_input, controller_output, controller_state, controller_data);
-                switch_controllers(controller_state, controller_data);
-                initialize_controller(controller_input, controller_output, controller_state, controller_data);
-                printf("Switching to controller %u.\n", controller_data->controller_requested);
+                switch_controllers(input.controller_requested);
             }
+        	status.state.motor_torqueA = status.state.motor_torqueB = status.state.motor_torque_hip = 0.;
+            status.cssm_state = state;
 
             break;
         case CSSM_STATE_ERROR:
-            if (controller_data->command == CMD_DISABLE)
+            if (input.command == CMD_DISABLE)
             {
-                controller_state->state = CSSM_STATE_DISABLED;
-                printf("Error -> Disabled.\n");
+                state = CSSM_STATE_DISABLED;
+                //printf("Error -> Disabled.\n");
             }
+            status.cssm_state = state;
 
             break;
         case CSSM_STATE_ENABLED:
-            if (controller_data->command == CMD_DISABLE)
+            if (input.command == CMD_DISABLE || input.command == CMD_RESTART)
             {
-                controller_state->state = CSSM_STATE_DISABLED;
-                printf("Controller disabled.\n");
+            	state = status.cssm_state = CSSM_STATE_DISABLED;
+                //printf("Controller disabled.\n");
             }
+            if (controller_loaded) {
+            	robot_state tmp = status.state;
+            	ControllerOutput output;
+				VECTOR_TO_BYTE_ARRAY(input.controller_input, cInput);
+				output.motor_torqueA = output.motor_torqueB = output.motor_torque_hip = 0.;
+				update_controller(tmp, cInput, &output, cStatus);
+				byteArrayToVector(cStatus, status.status);
 
-            update_controller(controller_input, controller_output, controller_state, controller_data);
+				//Clamp and set the motor torques
+				status.state.motor_torqueA = CLAMP(output.motor_torqueA, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
+				status.state.motor_torqueB = CLAMP(output.motor_torqueB, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
+				status.state.motor_torque_hip = CLAMP(output.motor_torque_hip, MTR_MIN_TRQ_LIMIT, MTR_MAX_TRQ_LIMIT);
 
+                status.state.in_flight        = output.in_flight;
+                status.state.des_leg_angle    = output.des_leg_angle;
+                status.state.des_leg_length   = output.des_leg_length;
+                status.state.des_hip_angle    = output.des_hip_angle;
+                status.state.motor_torqueA    = output.motor_torqueA;
+                status.state.motor_torqueB    = output.motor_torqueB;
+                status.state.motor_torque_hip = output.motor_torque_hip;
+                status.state.flightHipP       = output.flightHipP;
+                status.state.flightHipD       = output.flightHipD;
+                status.state.flightKneeP      = output.flightKneeP;
+                status.state.flightKneeD      = output.flightKneeD;
+                status.state.stanceHipP       = output.stanceHipP;
+                status.state.stanceHipD       = output.stanceHipD;
+                status.state.stanceKneeP      = output.stanceKneeP;
+                status.state.stanceKneeD      = output.stanceKneeD;
+                status.state.stance_time      = output.stance_time;
+
+				status.cssm_state = state;
+    		}
+            else {
+            	state = status.cssm_state = CSSM_STATE_ERROR;
+            }
             // Return to the wrapper now.
             return;
         case CSSM_STATE_INIT:
-            initialize_controller = &initialize_no_controller;
-            update_controller = &update_no_controller;
-            takedown_controller = &takedown_no_controller;
-
-            initialize_controller(controller_input, controller_output, controller_state, controller_data);
-
-            controller_state->state = CSSM_STATE_DISABLED;
-
-            printf("Initializing controller.\n");
+            controller_loaded = false;
+            byteArraysInitialized = false;
+            state = status.cssm_state = CSSM_STATE_DISABLED;
 
             break;
         case CSSM_STATE_FINI:
-            takedown_controller(controller_input, controller_output, controller_state, controller_data);
+        	if (controller_loaded)
+        		takedown_controller();
 
-            controller_state->state = CSSM_STATE_DISABLED;
-
-            printf("Taking down controller.\n");
+            state = status.cssm_state = CSSM_STATE_DISABLED;
 
             break;
+        case CSSM_STATE_LOAD_FAIL:
+            status.cssm_state = state;
+        	state = CSSM_STATE_DISABLED;
+        	break;
     }
-
-    controller_output->motor_torqueA = controller_output->motor_torqueB = 0.;
 }
 
-extern void switch_controllers(ControllerState * controller_state, ControllerData * controller_data)
+extern void switch_controllers(std::string name)
 {
-    switch (controller_data->controller_requested)
-    {
-        case NO_CONTROLLER:
-            initialize_controller = &initialize_no_controller;
-            update_controller = &update_no_controller;
-            takedown_controller = &takedown_no_controller;
+	controller_loaded = false;
 
-            break;
-        case MOTOR_TORQUE_CONTROLLER:
-            initialize_controller = &initialize_motor_torque_controller;
-            update_controller = &update_motor_torque_controller;
-            takedown_controller = &takedown_motor_torque_controller;
+	if (byteArraysInitialized) {
+		FREE_BYTE_ARRAY(cInput);
+		FREE_BYTE_ARRAY(cStatus);
+		byteArraysInitialized = false;
+	}
+	if (takedown_controller)
+		takedown_controller();
+	if (controller_handle)
+		dlclose(controller_handle);
 
-            break;
-        case MOTOR_POSITION_CONTROLLER:
-            initialize_controller = &initialize_motor_position_controller;
-            update_controller = &update_motor_position_controller;
-            takedown_controller = &takedown_motor_position_controller;
+	if (name != "" && name != "none") {
+		currentController = name;
 
-            break;
-        case LEG_TORQUE_CONTROLLER:
-            initialize_controller = &initialize_leg_torque_controller;
-            update_controller = &update_leg_torque_controller;
-            takedown_controller = &takedown_leg_torque_controller;
+		//TODO: Make sure getting ros package paths is realtime-safe (probably not)
+		controller_metadata md = loadControllerMetadata(ros::package::getPath(name), name);
+		controller_handle = dlopen(md.coreLibPath.c_str(), RTLD_NOW);
 
-            break;
-        case LEG_POSITION_CONTROLLER:
-            initialize_controller = &initialize_leg_position_controller;
-            update_controller = &update_leg_position_controller;
-            takedown_controller = &takedown_leg_position_controller;
+		initialize_controller = (ControllerInitResult(*)())dlsym(controller_handle, "controllerInit");
+		update_controller = (void(*)(robot_state, ByteArray, ControllerOutput*, ByteArray&))dlsym(controller_handle, "controllerUpdate");
+		takedown_controller = (void(*)())dlsym(controller_handle, "controllerTakedown");
 
-            break;
-        case SINE_WAVE_CONTROLLER:
-            initialize_controller = &initialize_leg_angle_sin_wave;
-            update_controller = &update_leg_angle_sin_wave;
-            takedown_controller = &takedown_leg_angle_sin_wave;
-
-            break;
-        case RAIBERT_CONTROLLER:
-            initialize_controller = &initialize_raibert_controller;
-            update_controller = &update_raibert_controller;
-            takedown_controller = &takedown_raibert_controller;
-
-            break;
-        case EQU_GAIT_CONTROLLER:
-            initialize_controller = &initialize_no_controller;
-            update_controller = &update_no_controller;
-            takedown_controller = &takedown_no_controller;
-
-            break;
-        case TEST_CONTROLLER:
-            initialize_controller = &initialize_test_controller;
-            update_controller = &update_test_controller;
-            takedown_controller = &takedown_test_controller;
-
-            break;
-	case FORCE_CONTROLLER:
-            initialize_controller = &initialize_leg_force_controller;
-            update_controller = &update_leg_force_controller;
-            takedown_controller = &takedown_leg_force_controller;
-
-            break;
-
-    }
-
-    controller_state->controller_loaded = controller_data->controller_requested;
+		if (initialize_controller && update_controller && takedown_controller) {
+			ControllerInitResult cir = initialize_controller();
+			if (!cir.error) {
+				cInput = NEW_BYTE_ARRAY(cir.controllerInputSize);
+				cStatus = NEW_BYTE_ARRAY(cir.controllerStatusSize);
+				byteArraysInitialized = true;
+				controller_loaded = true;
+				return;
+			}
+			printf("Controller initialization function returned an error!\n");
+			state = CSSM_STATE_LOAD_FAIL;
+			return;
+		}
+		if (!initialize_controller)
+			printf("Controller library initialization function is missing!\n");
+		if (!update_controller)
+			printf("Controller library initialization function is missing!\n");
+		if (!takedown_controller)
+			printf("Controller library initialization function is missing!\n");
+		state = CSSM_STATE_LOAD_FAIL;
+	}
 }

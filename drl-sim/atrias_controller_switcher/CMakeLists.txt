@@ -47,19 +47,6 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 # documentation.
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
-# TODO: This shouldn't be necessary once controllers are modular.
-rosbuild_find_ros_package(atrias_controllers)
-include_directories(${atrias_controllers_PACKAGE_PATH}/include)
-set(CONTROLLERS ${atrias_controllers_PACKAGE_PATH}/src/no_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/motor_torque_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/motor_position_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/leg_torque_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/leg_force_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/leg_position_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/leg_angle_sin_wave.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/raibert_controller.cpp
-                ${atrias_controllers_PACKAGE_PATH}/src/test_controller.cpp)
-
 orocos_component(atrias_controller_switcher atrias_controller_switcher.cpp)
 
 #orocos_install_headers(atrias_controller_switcher-component.hpp)

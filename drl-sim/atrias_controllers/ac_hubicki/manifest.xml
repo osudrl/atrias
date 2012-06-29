@@ -1,0 +1,18 @@
+<package>
+  <description brief="hubicki">
+
+     hubicki
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hubicki</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_control"/>
+  <depend package="drl_library"/>
+  <depend package="atrias_msgs"/>
+
+</package>
+
+

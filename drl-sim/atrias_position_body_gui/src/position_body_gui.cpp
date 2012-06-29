@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     }
 
     // Grab pointers to GUI objects
-    gui->get_widget("window", window);
+    gui->get_widget("window", controller_window);
 
     gui->get_widget("xPosSpin", xPosSpin);
     gui->get_widget("yPosSpin", yPosSpin);
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     // TODO Connect rotation CheckButtons and SpinButtons to functions.
 
     while (!simulation_client.call(simulation_srv));
-    gtk.run(*window);
+    gtk.run(*controller_window);
 
     return 0;
 }

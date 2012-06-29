@@ -16,16 +16,15 @@
 #include <ecrt.h>
 
 // ATRIAS robot
-#include <atrias/ucontroller.h>
+#include <atrias_control/ucontroller.h>
 
 // DRL Library
 #include <drl_library/discretize.h>
 #include <drl_library/drl_math.h>
 
 // Local
+#include <atrias_control/controller.h>
 #include <atrias_controller_wrapper/controller_wrapper_states.h>
-#include <atrias_controllers/controller.h>
-#include <atrias_controller_switcher/control_switcher_state_machine.h>
 
 /*****************************************************************************/
 

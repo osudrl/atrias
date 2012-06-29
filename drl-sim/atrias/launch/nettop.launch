@@ -1,38 +1,17 @@
 <launch>
     <env name="ROS_MASTER_URI" value="http://drl-qrio:11311" />
-    <!-- Set up nettop as remote machine. -->
-<!--
-    <machine name    = "drl-zotac"
-             address = "192.168.1.109"
-             user    = "drl"
-             password="robot" />
--->
 
-    <!-- Start the ecat kernel interface. -->
-<!--
-    <node machine = "drl-zotac"
--->
-    <node name    = "wireless_kern_interface"
-          pkg     = "atrias_controllers"
-          type    = "wireless_kern_interface"
+    <!-- Launch the Orocos script for atrias_ecat_master -->
+    <node name    = "atrias_ecat_master_rosnode"
+          pkg     = "ocl"
+          type    = "deployer-gnulinux"
+          args    = "-s $(find atrias_ecat_master)/application.ops -linfo --"
           output  = "screen">
-        <!-- Nettop should connect to ROS master node running on desktop. -->
     </node>
-
-    <!-- Start data publishing node. -->
-<!--
-    <node machine = "drl-zotac"
--->
-<!--
-    <node name    = "data_publisher"
-          pkg     = "atrias_controllers"
-          type    = "data_publisher" >
-    </node>
--->
 
     <!-- Start the data logger. -->
     <node name    = "data_logger"
-          pkg     = "atrias_controllers"
+          pkg     = "atrias"
           type    = "data_logger" />
 </launch>
 

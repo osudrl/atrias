@@ -1,203 +1,52 @@
 // Devin Koepl
 
+#ifndef ATRIAS_GUI_H_
+#define ATRIAS_GUI_H_
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <gtkmm.h>
 #include <cairomm/context.h>
+#include <glib/gtypes.h>
+#include <sigc++/connection.h>
 
 #include <time.h>
-#include <string.h> /* where is this used? */
+#include <string.h>
+#include <vector>
+#include <map>
+#include <dlfcn.h>
 
 #include <ros/ros.h>
+#include <ros/package.h>
 
-#include <atrias/ucontroller.h>
+#include <atrias_control/ucontroller.h>
+#include <atrias_control/controller.h>
+#include <atrias_control/controller_metadata.h>
 
-#include <atrias_controllers/controller.h>
-#include <atrias_controllers/data_subscriber_srv.h>
-
-#include <atrias_msgs/atrias_controller_requests.h>
-#include <atrias_msgs/atrias_data.h>
+#include <atrias_msgs/controller_input.h>
+#include <atrias_msgs/controller_status.h>
+#include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/data_log_srv.h>
 
 #include <drl_library/drl_math.h>
+#include <atrias_gui/StatusGui.h>
+
+#define CONTROLLER_LOAD_PAGE 0
+
+using namespace atrias_msgs;
 
 // GUI objects
-Gtk::Window *window;
+Glib::RefPtr<Gtk::Builder> gui;
+Gtk::Window *controller_window;
 
 Gtk::Notebook *controller_notebook;
-
-std::string red_image_path, 
-            green_image_path;
-
-Gtk::HScale *motor_torqueA_hscale,
-            *motor_torqueB_hscale,
-	    *motor_torque_hip_hscale;
-
-Gtk::HScale *motor_positionA_hscale,
-            *motor_positionB_hscale,
-            *p_motor_position_hscale,
-            *d_motor_position_hscale;
-
-Gtk::HScale *leg_length_torque_hscale,
-            *leg_angle_torque_hscale,
-            *leg_length_hscale,
-            *leg_angle_hscale,
-            *p_leg_position_hscale,
-            *d_leg_position_hscale,
-	    *hip_position_ang,
-	    *hip_position_p,
-	    *hip_position_d;
-
-Gtk::SpinButton *p_leg_position_spin, 
-                *d_leg_position_spin;
-
-Gtk::HScale *leg_angle_amplitude_hscale,
-            *leg_angle_frequency_hscale,
-            *leg_length_amplitude_hscale,
-            *leg_length_frequency_hscale,
-            *p_sine_wave_hscale,
-            *d_sine_wave_hscale;
-
-Gtk::Label *raibert_state_label;
-Gtk::HScale *raibert_desired_velocity_hscale,
-            *raibert_desired_height_hscale,
-            *raibert_hor_vel_gain_hscale,
-            *raibert_leg_force_gain_hscale,
-            *raibert_leg_angle_gain_hscale,
-            *raibert_stance_p_gain_hscale,
-            *raibert_stance_d_gain_hscale,
-            *raibert_stance_spring_threshold_hscale,
-            *raibert_preferred_leg_len_hscale,
-            *raibert_flight_p_gain_hscale,
-            *raibert_flight_d_gain_hscale,
-            *raibert_flight_spring_threshold_hscale,
-            *raibert_stance_hip_p_gain,
-            *raibert_stance_hip_d_gain,
-            *raibert_flight_hip_p_gain,
-            *raibert_flight_hip_d_gain;
-
-Gtk::SpinButton *raibert_desired_velocity_spinbutton,
-                *raibert_desired_height_spinbutton,
-                *raibert_hor_vel_gain_spinbutton,
-                *raibert_leg_force_gain_spinbutton,
-                *raibert_leg_angle_gain_spinbutton,
-                *raibert_stance_p_gain_spinbutton,
-                *raibert_stance_d_gain_spinbutton,
-                *raibert_stance_spring_threshold_spinbutton,
-                *raibert_preferred_leg_len_spinbutton,
-                *raibert_flight_p_gain_spinbutton,
-                *raibert_flight_d_gain_spinbutton,
-                *raibert_flight_spring_threshold_spinbutton;
-
-Gtk::Label *hubicki_state_label;
-Gtk::HScale *hubicki_desired_velocity_hscale,
-            *hubicki_desired_height_hscale,
-            *hubicki_hor_vel_gain_hscale,
-            *hubicki_leg_force_gain_hscale,
-            *hubicki_leg_angle_gain_hscale,
-            *hubicki_stance_p_gain_hscale,
-            *hubicki_stance_d_gain_hscale,
-            *hubicki_stance_spring_threshold_hscale,
-            *hubicki_preferred_leg_len_hscale,
-            *hubicki_flight_p_gain_hscale,
-            *hubicki_flight_d_gain_hscale,
-            *hubicki_flight_spring_threshold_hscale,
-            *hubicki_stance_hip_p_gain,
-            *hubicki_stance_hip_d_gain,
-            *hubicki_flight_hip_p_gain,
-            *hubicki_flight_hip_d_gain;
-
-Gtk::SpinButton *hubicki_desired_velocity_spinbutton,
-                *hubicki_desired_height_spinbutton,
-                *hubicki_hor_vel_gain_spinbutton,
-                *hubicki_leg_force_gain_spinbutton,
-                *hubicki_leg_angle_gain_spinbutton,
-                *hubicki_stance_p_gain_spinbutton,
-                *hubicki_stance_d_gain_spinbutton,
-                *hubicki_stance_spring_threshold_spinbutton,
-                *hubicki_preferred_leg_len_spinbutton,
-                *hubicki_flight_p_gain_spinbutton,
-                *hubicki_flight_d_gain_spinbutton,
-                *hubicki_flight_spring_threshold_spinbutton;
-
-Gtk::Image  *test_motors_status_image,
-            *test_flight_status_image;
-
-Gtk::Label *test_label;
-Gtk::HScale *test_slider_flightKP,
-            *test_slider_flightKD,
-            *test_slider_stanceKP,
-            *test_slider_stanceKD,
-            *test_slider_desiredLengthLong,
-            *test_slider_desiredLengthShort,
-            *test_slider_toeSwitchThreshold,
-            *test_slider_springDeflectionThreshold,
-            *test_slider_springDeflectionA,
-            *test_slider_springDeflectionB;
-
-Gtk::HScale *force_control_p_gainA,
-            *force_control_d_gainA,
-            *force_control_i_gainA,
-            *force_control_p_gainB,
-            *force_control_d_gainB,
-            *force_control_i_gainB,
-            *force_control_spring_deflection;
-
-// Demo Controller
-Gtk::Scale *demo_ctrl_p_scale,
-	   *demo_ctrl_d_scale,
-	   *demo_ctrl_amplitude_scale,
-	   *demo_ctrl_hip_p_scale,
-	   *demo_ctrl_hip_d_scale;
-
-Gtk::Button *demo_ctrl_start_btn,
-	    *demo_ctrl_stop_btn;
-
-Gtk::RadioButton *demo_ctrl_controller1_btn,
-		 *demo_ctrl_controller2_btn,
-		 *demo_ctrl_controller3_btn,
-		 *demo_ctrl_controller4_btn,
-		 *demo_ctrl_controller5_btn,
-		 *demo_ctrl_controller6_btn;
-
-int demo_ctrl_state;
-#define DEMO_CTRL_STOPPED 0
-#define DEMO_CTRL_STARTED 1
-
-void start_demo(void);
-void stop_demo(void);
-
-// End Demo Controller
-
+Gtk::TreeView *controller_tree_view;
 
 Gtk::DrawingArea *drawing_area;
-
-Gtk::ProgressBar *motor_torqueA_progress_bar,
-                 *motor_torqueB_progress_bar,
-                 *motor_torqueHip_progress_bar,
-                 *motor_velocityA_progress_bar,
-                 *motor_velocityB_progress_bar,
-                 *motor_velocityHip_progress_bar,
-                 *spring_deflectionA_progress_bar,
-                 *spring_deflectionB_progress_bar;
 
 Gtk::CheckButton *log_file_chkbox;
 Gtk::SpinButton *log_frequency_spin;
 Gtk::FileChooserButton *log_file_chooser;
-
-Gtk::Entry  *xPosDisplay,
-            *yPosDisplay,
-            *zPosDisplay,
-            *xVelDisplay,
-            *yVelDisplay,
-            *zVelDisplay,
-            *torqueADisplay,
-            *torqueBDisplay,
-            *torqueHipDisplay,
-            *velocityADisplay,
-            *velocityBDisplay,
-            *velocityHipDisplay,
-            *spring_deflection_A_entry,
-            *spring_deflection_B_entry;
 
 Gtk::Button *restart_button,
             *enable_button,
@@ -206,59 +55,68 @@ Gtk::Button *restart_button,
 Cairo::RefPtr<Cairo::Context> cc;
 Gtk::Allocation drawing_allocation;
 
-//FILE *logFile;
-
 ros::ServiceClient datalog_client;
 
 ros::Subscriber atrias_gui_sub;
 ros::Publisher atrias_gui_pub;
 
-atrias_msgs::atrias_data ad;
-atrias_msgs::atrias_controller_requests cr;
+StatusGui *statusGui;
 
-atrias_controllers::data_subscriber_srv data_subscriber_srv;
+controller_status cs;
+controller_input ci;
 
+data_log_srv dls;
 
-/*
- * Medulla Status
- */
-
-Gtk::Entry  *MedullaA_TempA,
-            *MedullaA_TempB,
-            *MedullaA_TempC,
-            *MedullaA_VLogic,
-            *MedullaA_VMotor;
-
-Gtk::Entry  *MedullaB_TempA,
-            *MedullaB_TempB,
-            *MedullaB_TempC,
-            *MedullaB_VLogic,
-            *MedullaB_VMotor;
-
-Gtk::Entry  *medullaAError_entry,
-	    *medullaBError_entry,
-	    *medullaHipError_entry,
-	    *medullaBoomError_entry;
-
-/*
- * End Medulla Status
- */
-
-double last_p_gain;
-double last_d_gain;
+Glib::RefPtr<Gtk::ListStore> controllerListStore;
+Gtk::TreeModelColumn<bool> controllerListActiveColumn;
+Gtk::TreeModelColumn<std::string> controllerListNameColumn;
+Gtk::TreeModelColumn<std::string> controllerListDescColumn;
 
 long nextLogTime;
 
-bool poke_controller( void );
-std::string format_float ( float );
+std::vector<std::string> controllerList; //List of all available controllers
 
-void log_chkbox_toggled( void );
+std::vector<std::string> controllerNames; //This maps controllers to controller package names in the order they were detected
+std::vector<uint16_t> controllerDetectedIDs; //This maps controller page numbers to their detection IDs
+/*
+ * Maps controller detection ID's to whether a controller has already had its resources loaded.
+ * This is necessary to allow resources to be preserved between loads while preventing memory leaks
+ */
+std::vector<bool> controllerResourcesLoaded;
+std::map<std::string, ControllerInitResult> controllerInitResults;
+std::map<std::string, void*> controllerHandles; //The pointers needed to access the controller GUI libraries
+std::map<std::string, controller_metadata> controllerMetadata;
+std::map<std::string, Gtk::Widget*> controllerTabs;
+uint8_t currentControllerID;
 
+ControllerInitResult (*controllerInit)(Glib::RefPtr<Gtk::Builder> gui);
+void (*controllerUpdate)(robot_state, ByteArray, ByteArray&);
+void (*controllerStandby)(robot_state);
+void (*controllerTakedown)();
 
-void restart_robot( void );
-void enable_motors( void );
-void disable_motors( void );
+bool controller_loaded;
+bool controller_status_initialized;
+
+bool byteArraysInitialized;
+ByteArray cInput; //Stores controller inputs from GUI plugins
+ByteArray cStatus; //Stores controller status from GUI plugins
+
+bool poke_controller();
+bool load_controller(std::string name, uint16_t controllerID);
+void unload_controller(std::string name);
+void detect_controllers();
+void controller_checkbox_toggled(const Gtk::TreeModel::Path& path, const Gtk::TreeModel::iterator& iter);
+
+void show_error_dialog(std::string message);
+
+void log_chkbox_toggled();
+
+void restart_robot();
+void enable_motors();
+void disable_motors();
 
 void switch_controllers(GtkNotebookPage *, guint);
 
 void draw_leg();
+
+#endif

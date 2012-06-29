@@ -1,0 +1,2 @@
+description=A basic controller for vertical hopping.
+author=Mikhail Jones and Devin Koepl

@@ -24,9 +24,6 @@
 // C
 #include <stdlib.h>
 
-// ATRIAS
-#include <atrias_controller_wrapper/controller_wrapper_states.h>
-
 using namespace std;
 using namespace RTT;
 using namespace Orocos;

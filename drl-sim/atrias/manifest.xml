@@ -1,19 +1,20 @@
 <package>
-  <description brief="atrias">
+	<description brief="atrias">
 
-     atrias
+		atrias
 
-  </description>
-  <author>Devin Koepl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+	</description>
+	<author>Devin Koepl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes="" />
 	<url>http://ros.org/wiki/atrias</url>
 
-	<depend package="roscpp" />
+    <depend package="roscpp" />
+    <depend package="atrias_msgs" />
 
-	<export>
-		<cpp cflags="-I${prefix}/include" />
-  </export>
+    <export>
+        <cpp cflags="-I${prefix}/include" />
+    </export>
 
 </package>
 

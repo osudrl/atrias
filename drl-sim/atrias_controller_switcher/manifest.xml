@@ -8,10 +8,10 @@
     <review status="unreviewed" notes="" />
     <url>http://ros.org/wiki/atrias_controller_switcher</url>
 
+    <depend package="roslib" />
     <depend package="roscpp" />
-    <depend package="atrias" />
+    <depend package="atrias_control" />
     <depend package="atrias_msgs" />
-    <depend package="atrias_controllers" />
     <depend package="drl_library" />
 
 	<export>

@@ -10,6 +10,6 @@
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find atrias_sim)/robots/inverted_pendulum_with_toe_header.urdf.xacro'" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 0.959 -urdf -param robot_description -model invertedPendulum" respawn="false" output="screen" />
+  <node name="atrias_simulation" pkg="gazebo" type="spawn_model" args="-z 1.009 -urdf -param robot_description -model invertedPendulum" respawn="false" output="screen" />
 
 </launch>

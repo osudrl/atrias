@@ -13,7 +13,7 @@
 #include <drl_plugins/position_body_srv.h>
 
 // GUI objects
-Gtk::Window *window;
+Gtk::Window *controller_window;
 
 Gtk::SpinButton *xPosSpin;
 Gtk::SpinButton *yPosSpin;

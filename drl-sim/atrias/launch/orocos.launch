@@ -13,5 +13,10 @@
           args    = "-s $(find atrias_ecat_master)/application.ops -linfo --"
           output  = "screen">
     </node>
+
+    <!-- Start the data logger. -->
+    <node name    = "data_logger"
+          pkg     = "atrias"
+          type    = "data_logger" />
 </launch>
 

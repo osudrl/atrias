@@ -10,8 +10,8 @@
 
     <depend package="roscpp" />
     <depend package="rtt" />
-    <depend package="atrias" />
-    <depend package="atrias_controllers" />
+    <depend package="atrias_control" />
+    <depend package="atrias_controller_switcher" />
     <depend package="drl_library" />
 
     <export>

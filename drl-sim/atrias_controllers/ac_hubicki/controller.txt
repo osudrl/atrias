@@ -1,0 +1,2 @@
+description=A modified version of the Raibert controller with some improvements.
+author=Christian Hubicki

@@ -13,7 +13,6 @@
 #include <gazebo/Model.hh>
 #include <gazebo/PhysicsFactory.hh>
 #include <gazebo/Pose3d.hh>
-#include <gazebo/Physics.hh>
 
 // For error messages
 #include <ros/ros.h>

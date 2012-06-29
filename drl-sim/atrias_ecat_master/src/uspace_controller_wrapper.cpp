@@ -48,7 +48,6 @@ void cyclic_task(void) {
     // uc_in and uc_out are arrays of pointers to Medulla sync manager memory
     // addresses, defined in init_master().
     control_wrapper_state_machine( uc_in, uc_out );
-    control_switcher_state_machine( &shm.controller_input, &shm.controller_output, &shm.controller_state, shm.controller_data );
 
     // send process data
     ecrt_domain_queue(domain1);
@@ -82,7 +81,7 @@ int init_master(void) {
     //ec_slave_config_t *sc;
     //struct sigaction sa;
     //struct itimerval tv;
-    
+
     printf("[AEM] Requesting master 0...\n");
     if (!(master = ecrt_request_master(0))) {
         fprintf(stderr, "[AEM] Requesting master 0 failed!\n");
@@ -187,4 +186,3 @@ int init_master(void) {
 
     return 0;
 }
-

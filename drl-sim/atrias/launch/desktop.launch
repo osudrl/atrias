@@ -4,18 +4,5 @@
           pkg    = "atrias_gui"
           type   = "atrias_gui"
           output = "screen" />
-
-    <!-- Start data subscriber node -->
-<!--
-    <node name   = "data_subscriber"
-          pkg    = "atrias_controllers"
-          type   = "data_subscriber"
-          output = "screen" />
--->
-
-    <!-- Include data plotter. -->
-<!--
-    <include file="$(find atrias)/launch/data_plotter.launch" />
--->
 </launch>
 

@@ -9,7 +9,7 @@
 #include <rtt/os/main.h>
 
 #include <rtt/RTT.hpp>
-//#include <rtt/Logger.hpp>
+#include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>
 #include <rtt/OperationCaller.hpp>
@@ -25,8 +25,8 @@
 //#include <sstream>
 
 // ATRIAS
-#include <atrias_msgs/atrias_controller_requests.h>   // Inputs from GUI.
-#include <atrias_msgs/atrias_data.h>   // Data stream.
+#include <atrias_msgs/controller_input.h>   // Inputs from GUI.
+#include <atrias_msgs/controller_status.h>   // Data stream.
 #include <atrias_msgs/atrias_debug.h>   // Debug stream.
 
 using namespace std;
@@ -35,46 +35,42 @@ using namespace Orocos;
 
 class AtriasControllerSwitcher : public TaskContext {
     // I/O with AEM.
-    InputPort<atrias_msgs::atrias_data>                 dataInPort;
+    InputPort<atrias_msgs::controller_status>           csInPort;
     InputPort<atrias_msgs::atrias_debug>                debugInPort;
-    OutputPort<atrias_msgs::atrias_controller_requests> crOutPort;
+    OutputPort<atrias_msgs::controller_input>           ciOutPort;
 
     // I/O with ROS topics.
-    InputPort<atrias_msgs::atrias_controller_requests>  crInPort;
+    InputPort<atrias_msgs::controller_input>            ciInPort;
     OutputPort<atrias_msgs::atrias_debug>               debugOutPort;
-    OutputPort<atrias_msgs::atrias_data>                data50HzOutPort;
-    OutputPort<atrias_msgs::atrias_data>                data1000HzOutPort;
+    OutputPort<atrias_msgs::controller_status>          cs50HzOutPort;
+    OutputPort<atrias_msgs::controller_status>          cs1000HzOutPort;
 
     int counter;
 
-    std::string prop_answer;
-
-    atrias_msgs::atrias_controller_requests cr;
-    atrias_msgs::atrias_data ad;
+    atrias_msgs::controller_input ci;
+    atrias_msgs::controller_status cs;
     atrias_msgs::atrias_debug adebug;
 
 public:
     AtriasControllerSwitcher(std::string name):
         RTT::TaskContext(name),
-        dataInPort          ("data_in"),
+        csInPort            ("cs_in"),
         debugInPort         ("debug_in"),
-        crOutPort           ("controller_requests_out"),
-        crInPort            ("controller_requests_in"),
+        ciOutPort           ("ci_out"),
+        ciInPort            ("ci_in"),
         debugOutPort        ("debug_out"),
-        data50HzOutPort     ("data_50_hz_out"),
-        data1000HzOutPort   ("data_1000_hz_out"),
-        prop_answer         ("acw_prop_answer")
+        cs50HzOutPort       ("cs_50_hz_out"),
+        cs1000HzOutPort     ("cs_1000_hz_out")
     {
         //log(Info) << "AtriasControllerSwitcher constructed !" <<endlog();
 
-        this->addEventPort  (dataInPort);
+        this->addEventPort  (csInPort);
         this->addEventPort  (debugInPort);
-        this->addPort       (crOutPort);
-        this->addEventPort  (crInPort);
+        this->addPort       (ciOutPort);
+        this->addEventPort  (ciInPort);
         this->addPort       (debugOutPort);
-        this->addPort       (data50HzOutPort);
-        this->addPort       (data1000HzOutPort);
-        this->addProperty   ("answer", prop_answer);
+        this->addPort       (cs50HzOutPort);
+        this->addPort       (cs1000HzOutPort);
 
         counter = 0;
 
@@ -85,40 +81,40 @@ public:
 
     bool configureHook() {
         // Show ports what data sizes to expect to guarantee real-time transfer.
-        crOutPort.setDataSample(cr);
+        ciOutPort.setDataSample(ci);
 
-        //log(Info) << "ACS configured !" <<endlog();
+        log(Info) << "[ACS] configured!" << endlog();
         return true;
     }
 
     bool startHook() {
-        //log(Info) << "ACS started !" <<endlog();
+        log(Info) << "[ACS] started!" << endlog();
         return true;
     }
 
     void updateHook() {
         // Check for new controller requests from GUI.
-        if (NewData == crInPort.read(cr)) {
+        if (NewData == ciInPort.read(ci)) {
             //log(Info) << "[ACS] Controller requested: " << (int) cr.controller_requested << endlog();
             // Pass on the controller request to AEM.
-            crOutPort.write(cr);
+            ciOutPort.write(ci);
         }
 
         // Check for new data from AEM.
-        if (NewData == dataInPort.read(ad)) {
+        if (NewData == csInPort.read(cs)) {
             //log(Info) << "[ACS] Data received from AEM." << endlog();
             //log(Info) << "[ACS] ad.thermistorB[0]: " << ad.thermistorB[0] << endlog();
 
             // Write data to ROS topics.
             if (counter % 20 == 0) {   // 1000/20 = 50 Hz
-                data50HzOutPort.write(ad);
+                cs50HzOutPort.write(cs);
                 //counter = 0;
 
                 // Print state machine information.
                 //log(Info) << "[ACS] Time: " << (int) ad.time << "  Counter: " << counter << "  Command: " << (int) ad.command << "  Controller requested: " << (int) cr.controller_requested << endlog();
             }
-            data1000HzOutPort.write(ad);
-            counter++;
+            cs1000HzOutPort.write(cs);
+            counter = (counter+1) % 1000;
         }
 
         if (NewData == debugInPort.read(adebug)) {
@@ -128,11 +124,11 @@ public:
     }
 
     void stopHook() {
-        //log(Info) << "ACS stopping !" <<endlog();
+        log(Info) << "[ACS] stopped!" << endlog();
     }
 
     void cleanupHook() {
-        //log(Info) << "ACS cleaning up !" <<endlog();
+        log(Info) << "[ACS] cleaned up!" << endlog();
     }
 };
 ORO_CREATE_COMPONENT(AtriasControllerSwitcher)

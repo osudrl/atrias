@@ -4,29 +4,20 @@
 #define FUNCS_H_CONTROL_SWITCHER_STATE_MACHINE
 
 #include <stdint.h>
+#include <dlfcn.h>
 
-#include <atrias/ucontroller.h>
+#include <ros/package.h>
 
-#include <atrias_controllers/controller.h>
+#include <atrias_control/ucontroller.h>
+#include <atrias_control/controller.h>
 
-// TODO: All of this will be unnecessary once we figure out how to load/unload
-// controllers with roslaunch or Orocos.
-#include <atrias_controllers/no_controller.h>
-#include <atrias_controllers/motor_torque_controller.h>
-#include <atrias_controllers/motor_position_controller.h>
-#include <atrias_controllers/leg_torque_controller.h>
-#include <atrias_controllers/leg_position_controller.h>
-#include <atrias_controllers/leg_force_controller.h>
-#include <atrias_controllers/leg_angle_sin_wave.h>
-#include <atrias_controllers/raibert_controller.h>
-#include <atrias_controllers/test_controller.h>
+#include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/controller_input.h>
+#include <atrias_msgs/controller_status.h>
 
-// Control switcher state machine (CSSM) states.
-#define CSSM_STATE_DISABLED		0
-#define CSSM_STATE_ERROR		1
-#define CSSM_STATE_ENABLED	 	2
-#define CSSM_STATE_INIT		 	3
-#define CSSM_STATE_FINI		 	4
+#include <drl_library/drl_math.h>
+
+#include <atrias_control/controller_metadata.h>
 
 //==================================================================================//
 
@@ -35,16 +26,23 @@
 
 // Control function pointers.
 
-static void (*initialize_controller)(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
-static void (*update_controller)(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
-static void (*takedown_controller)(ControllerInput*, ControllerOutput*, ControllerState*, ControllerData*);
+ControllerInitResult (*initialize_controller)();
+void (*update_controller)(robot_state, ByteArray, ControllerOutput*, ByteArray&);
+void (*takedown_controller)();
 
 //==================================================================================//
 
-extern void control_switcher_state_machine(ControllerInput *, ControllerOutput *, ControllerState *, ControllerData *);
+extern void init();
+extern void control_switcher_state_machine(controller_input&, controller_status&);
+extern void switch_controllers(std::string name);
 
-extern void switch_controllers(ControllerState *, ControllerData *);
+bool byteArraysInitialized;
+ByteArray cInput; //Stores controller inputs from controller plugins
+ByteArray cStatus; //Stores controller status from controller plugins
 
-//extern unsigned char get_state();
+bool controller_loaded;
+void* controller_handle;
+std::string currentController;
+uint8_t state = CSSM_STATE_INIT;
 
 #endif // FUNCS_H_CONTROL_SWITCHER_STATE_MACHINE

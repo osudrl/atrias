@@ -35,11 +35,11 @@
 
 #include <atrias/atrias_parameters.1.h>
 
-#include <atrias_controllers/controller.h>
+#include <atrias_control/controller.h>
 #include <atrias_controller_switcher/control_switcher_state_machine.h>
 
-#include <atrias_msgs/atrias_data.h>
-#include <atrias_msgs/atrias_controller_requests.h>
+#include <atrias_msgs/controller_input.h>
+#include <atrias_msgs/controller_status.h>
 
 #include <drl_library/drl_math.h>
 
@@ -107,16 +107,15 @@ class AllInOneControllerWrapper : public Controller
   private: ParamT<std::string> *legBNameP; 
   private: std::string legBName;
 
-	private: ControllerInput *controller_input;
-	private: ControllerOutput *controller_output;
-	private: ControllerState *controller_state;
-	private: ControllerData *controller_data;
+	private: controller_input *controllerInput;
+	private: controller_status *controllerStatus;
+	private: ControllerOutput *controllerOutput;
 
 	private: void generate_controller_input();
 
 	// GUI Interface
-	void atrias_gui_callback(const atrias_msgs::atrias_controller_requests &cr);
-	atrias_msgs::atrias_data ad;
+	void atrias_gui_callback(const atrias_msgs::controller_input &cr);
+	atrias_msgs::controller_status cs;
 
 	ros::Subscriber atrias_sim_sub;
 	ros::Publisher atrias_sim_pub;
@@ -125,7 +124,7 @@ class AllInOneControllerWrapper : public Controller
     int atrias_data_publish_counter;
 
 	private: bool motors_enabled;
-	private: int controller;
+	private: std::string controller;
 };
 
 }

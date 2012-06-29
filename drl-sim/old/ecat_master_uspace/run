@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Devin Koepl
-
-./ldmod
-
-./ec_control_wrapper
-
-./remod
