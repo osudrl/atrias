@@ -1,5 +1,5 @@
 <launch>
-    <env name="ROS_MASTER_URI" value="http://drl-qrio:11311" />
+    <env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />
 
     <!-- Launch the Orocos script for atrias_ecat_master -->
     <node name    = "atrias_ecat_master_rosnode"
