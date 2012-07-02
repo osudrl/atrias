@@ -9,8 +9,8 @@ fi
 (echo 0 ; while [ true ] ; do sleep 1 ; done) > /dev/cpu_dma_latency &
 CPU_DMA_LATENCY_PID="$!"
 
-cset set -c 1 user
-cset set -c 0 system
+cset set -c 1,3 user
+cset set -c 0,2 system
 cset proc -k on --force -t system -f root
 
 cset shield -e roslaunch -- atrias nettop.launch
