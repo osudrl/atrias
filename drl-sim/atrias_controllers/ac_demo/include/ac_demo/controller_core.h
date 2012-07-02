@@ -17,6 +17,8 @@
 #define DEMO2 1
 #define DEMO3 2
 #define DEMO4 3
+#define DEMO5 2
+#define DEMO6 3
 
 #define DEMO_STATE_STOPPED 0
 #define DEMO_STATE_STARTING 1
@@ -27,11 +29,14 @@
 #define MID_MOT_ANG_B       4.167
 #define F_SLOW .1
 
+#define FORCE_CONTROLLER_P_GAIN 3250
+#define FORCE_CONTROLLER_D_GAIN 4
+
 #define START_TIME 2.0
 
 uint8_t currentState;
 uint8_t currentDemo;
-float eclapsedTime;
+float elapsedTime;
 RobotPosition desiredPos;
 RobotPosition lastDemoPos;
 float desTorqueA;
@@ -46,13 +51,15 @@ typedef struct {
     float z_vel;
 } CartPosition;
 
-void start_demo(robot_state* state, InputData* id, ControllerOutput* output);
-void stop_demo(robot_state* state, InputData* id, ControllerOutput* output);
+void start_demo(robot_state& state, InputData* id, ControllerOutput* output);
+void stop_demo(robot_state& state, InputData* id, ControllerOutput* output);
 
-RobotPosition demo1(robot_state* state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo2(robot_state* state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo3(robot_state* state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo4(robot_state* state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, float);
 
 RobotPosition cartesianToRobot(CartPosition);
 RobotPosition setTorques(robot_state* state, InputData* id, ControllerOutput* output);
