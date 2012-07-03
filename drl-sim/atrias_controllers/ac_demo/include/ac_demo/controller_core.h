@@ -36,7 +36,7 @@
 
 uint8_t currentState;
 uint8_t currentDemo;
-float elapsedTime;
+double elapsedTime;
 RobotPosition desiredPos;
 RobotPosition lastDemoPos;
 float desTorqueA;
