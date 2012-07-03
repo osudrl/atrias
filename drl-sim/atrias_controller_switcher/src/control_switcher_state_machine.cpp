@@ -119,6 +119,13 @@ extern void switch_controllers(std::string name)
 		controller_metadata md = loadControllerMetadata(ros::package::getPath(name), name);
 		controller_handle = dlopen(md.coreLibPath.c_str(), RTLD_NOW);
 
+		if (!controller_handle) {
+			printf("Controller library loading failed!\n");
+			printf("Library path: %s\n", md.coreLibPath.c_str());
+			state = CSSM_STATE_LOAD_FAIL;
+			return;
+		}
+
 		initialize_controller = (ControllerInitResult(*)())dlsym(controller_handle, "controllerInit");
 		update_controller = (void(*)(robot_state, ByteArray, ControllerOutput*, ByteArray&))dlsym(controller_handle, "controllerUpdate");
 		takedown_controller = (void(*)())dlsym(controller_handle, "controllerTakedown");
@@ -139,9 +146,9 @@ extern void switch_controllers(std::string name)
 		if (!initialize_controller)
 			printf("Controller library initialization function is missing!\n");
 		if (!update_controller)
-			printf("Controller library initialization function is missing!\n");
+			printf("Controller library update function is missing!\n");
 		if (!takedown_controller)
-			printf("Controller library initialization function is missing!\n");
+			printf("Controller library takedown function is missing!\n");
 		state = CSSM_STATE_LOAD_FAIL;
 	}
 }

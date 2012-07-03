@@ -17,8 +17,8 @@
 #define DEMO2 1
 #define DEMO3 2
 #define DEMO4 3
-#define DEMO5 2
-#define DEMO6 3
+#define DEMO5 4
+#define DEMO6 5
 
 #define DEMO_STATE_STOPPED 0
 #define DEMO_STATE_STARTING 1
