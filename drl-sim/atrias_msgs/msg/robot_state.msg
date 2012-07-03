@@ -8,6 +8,7 @@ float32 body_pitch
 float32 body_pitch_vel
 
 # Leg A
+uint8 limit_switch_A
 float32 leg_angleA
 float32 leg_velocityA
 float32 motor_angleA
@@ -21,6 +22,7 @@ float32 desired_spring_defA
 float32 logicVoltageA
 
 # Leg B
+uint8 limit_switch_B
 float32 leg_angleB
 float32 leg_velocityB
 float32 motor_angleB
