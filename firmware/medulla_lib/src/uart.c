@@ -106,7 +106,7 @@ int uart_tx_data(uart_port_t *port, void *data, uint8_t data_length) {
 
 	_uart_buffer_t *current_buffer = _uart_get_hw_buffer(port);
 
-	bool not_currently_transmitting = (current_buffer->tx_buffer_end == current_buffer->tx_buffer_start);
+	uint16_t current_end = current_buffer->tx_buffer_end;
 
 	int byte_cnt = 0; // this is defined outside the loop so we can see how many bytes we actually wrote
 	for (byte_cnt = 0; byte_cnt < data_length; byte_cnt++) {
@@ -121,9 +121,10 @@ int uart_tx_data(uart_port_t *port, void *data, uint8_t data_length) {
 	}
 
 	// If we were not in the middle of transmittind data, then we should start of the transmit by putting the first byte into the output buffer
-	if (not_currently_transmitting) {
+	if (current_buffer->currently_transmitting == false) {
 		port->uart_register->DATA = current_buffer->tx_buffer[current_buffer->tx_buffer_start];
 		current_buffer->tx_buffer_start = ((current_buffer->tx_buffer_start+1)%current_buffer->tx_buffer_size);
+		current_buffer->currently_transmitting = true;
 	}
 
 	// Return the number of bytes that were actually put into the buffer
