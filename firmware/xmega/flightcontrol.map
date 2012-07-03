@@ -1,0 +1,789 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o (exit)
+/usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+                              test.o (__do_copy_data)
+/usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+                              test.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+                              test.o (sprintf)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o) (vfprintf)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o) (strnlen_P)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o) (strnlen)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o) (fputc)
+/usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                              /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o) (__ultoa_invert)
+
+Allocating common symbols
+Common symbol       size              file
+
+serial              0x10              test.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x0000000000000000 0x0000000000100000 xr
+data             0x0000000000802000 0x000000000000ffa0 rw !x
+eeprom           0x0000000000810000 0x0000000000010000 rw !x
+fuse             0x0000000000820000 0x0000000000000400 rw !x
+lock             0x0000000000830000 0x0000000000000400 rw !x
+signature        0x0000000000840000 0x0000000000000400 rw !x
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+LOAD test.o
+LOAD usart_driver.o
+LOAD uart.o
+LOAD adc.o
+LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libm.a
+LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
+LOAD /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a
+LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x0000000000000000      0xc1a
+ *(.vectors)
+ .vectors       0x0000000000000000      0x1f4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+                0x0000000000000000                __vectors
+                0x0000000000000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x00000000000001f4                . = ALIGN (0x2)
+                0x00000000000001f4                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000000000001f4        0x0 linker stubs
+ *(.trampolines*)
+                0x00000000000001f4                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00000000000001f4                __ctors_start = .
+ *(.ctors)
+                0x00000000000001f4                __ctors_end = .
+                0x00000000000001f4                __dtors_start = .
+ *(.dtors)
+                0x00000000000001f4                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00000000000001f4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+                0x00000000000001f4                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000000000001f4       0x18 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x000000000000020c       0x1a /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+                0x000000000000020c                __do_copy_data
+ .init4         0x0000000000000226       0x10 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+                0x0000000000000226                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000000000000236        0x8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ *(.init9)
+ *(.text)
+ .text          0x000000000000023e        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+                0x000000000000023e                __vector_38
+                0x000000000000023e                __vector_104
+                0x000000000000023e                __vector_22
+                0x000000000000023e                __vector_63
+                0x000000000000023e                __vector_28
+                0x000000000000023e                __vector_67
+                0x000000000000023e                __vector_1
+                0x000000000000023e                __vector_32
+                0x000000000000023e                __vector_75
+                0x000000000000023e                __vector_71
+                0x000000000000023e                __vector_91
+                0x000000000000023e                __vector_34
+                0x000000000000023e                __vector_62
+                0x000000000000023e                __vector_77
+                0x000000000000023e                __vector_102
+                0x000000000000023e                __vector_24
+                0x000000000000023e                __vector_12
+                0x000000000000023e                __vector_55
+                0x000000000000023e                __vector_69
+                0x000000000000023e                __vector_81
+                0x000000000000023e                __vector_90
+                0x000000000000023e                __vector_46
+                0x000000000000023e                __bad_interrupt
+                0x000000000000023e                __vector_122
+                0x000000000000023e                __vector_72
+                0x000000000000023e                __vector_114
+                0x000000000000023e                __vector_6
+                0x000000000000023e                __vector_110
+                0x000000000000023e                __vector_31
+                0x000000000000023e                __vector_92
+                0x000000000000023e                __vector_35
+                0x000000000000023e                __vector_78
+                0x000000000000023e                __vector_74
+                0x000000000000023e                __vector_117
+                0x000000000000023e                __vector_39
+                0x000000000000023e                __vector_107
+                0x000000000000023e                __vector_3
+                0x000000000000023e                __vector_105
+                0x000000000000023e                __vector_98
+                0x000000000000023e                __vector_23
+                0x000000000000023e                __vector_68
+                0x000000000000023e                __vector_30
+                0x000000000000023e                __vector_73
+                0x000000000000023e                __vector_45
+                0x000000000000023e                __vector_25
+                0x000000000000023e                __vector_93
+                0x000000000000023e                __vector_61
+                0x000000000000023e                __vector_11
+                0x000000000000023e                __vector_54
+                0x000000000000023e                __vector_99
+                0x000000000000023e                __vector_13
+                0x000000000000023e                __vector_17
+                0x000000000000023e                __vector_19
+                0x000000000000023e                __vector_56
+                0x000000000000023e                __vector_7
+                0x000000000000023e                __vector_49
+                0x000000000000023e                __vector_123
+                0x000000000000023e                __vector_41
+                0x000000000000023e                __vector_86
+                0x000000000000023e                __vector_100
+                0x000000000000023e                __vector_101
+                0x000000000000023e                __vector_64
+                0x000000000000023e                __vector_88
+                0x000000000000023e                __vector_109
+                0x000000000000023e                __vector_43
+                0x000000000000023e                __vector_27
+                0x000000000000023e                __vector_5
+                0x000000000000023e                __vector_113
+                0x000000000000023e                __vector_33
+                0x000000000000023e                __vector_76
+                0x000000000000023e                __vector_115
+                0x000000000000023e                __vector_47
+                0x000000000000023e                __vector_52
+                0x000000000000023e                __vector_37
+                0x000000000000023e                __vector_95
+                0x000000000000023e                __vector_103
+                0x000000000000023e                __vector_96
+                0x000000000000023e                __vector_89
+                0x000000000000023e                __vector_108
+                0x000000000000023e                __vector_4
+                0x000000000000023e                __vector_44
+                0x000000000000023e                __vector_82
+                0x000000000000023e                __vector_106
+                0x000000000000023e                __vector_118
+                0x000000000000023e                __vector_51
+                0x000000000000023e                __vector_9
+                0x000000000000023e                __vector_2
+                0x000000000000023e                __vector_21
+                0x000000000000023e                __vector_15
+                0x000000000000023e                __vector_66
+                0x000000000000023e                __vector_36
+                0x000000000000023e                __vector_79
+                0x000000000000023e                __vector_58
+                0x000000000000023e                __vector_70
+                0x000000000000023e                __vector_83
+                0x000000000000023e                __vector_29
+                0x000000000000023e                __vector_60
+                0x000000000000023e                __vector_121
+                0x000000000000023e                __vector_40
+                0x000000000000023e                __vector_85
+                0x000000000000023e                __vector_94
+                0x000000000000023e                __vector_8
+                0x000000000000023e                __vector_26
+                0x000000000000023e                __vector_48
+                0x000000000000023e                __vector_124
+                0x000000000000023e                __vector_116
+                0x000000000000023e                __vector_112
+                0x000000000000023e                __vector_111
+                0x000000000000023e                __vector_80
+                0x000000000000023e                __vector_14
+                0x000000000000023e                __vector_84
+                0x000000000000023e                __vector_57
+                0x000000000000023e                __vector_53
+                0x000000000000023e                __vector_10
+                0x000000000000023e                __vector_50
+                0x000000000000023e                __vector_16
+                0x000000000000023e                __vector_59
+                0x000000000000023e                __vector_18
+                0x000000000000023e                __vector_97
+                0x000000000000023e                __vector_20
+                0x000000000000023e                __vector_42
+                0x000000000000023e                __vector_87
+                0x000000000000023e                __vector_65
+ .text          0x0000000000000242      0x1a6 test.o
+                0x0000000000000242                main
+                0x0000000000000314                __vector_119
+                0x000000000000037e                __vector_120
+ .text          0x00000000000003e8      0x12e usart_driver.o
+                0x00000000000003e8                USART_InterruptDriver_Initialize
+                0x00000000000003fc                USART_InterruptDriver_DreInterruptLevel_Set
+                0x0000000000000404                USART_TXBuffer_FreeSpace
+                0x0000000000000418                USART_TXBuffer_PutByte
+                0x0000000000000456                USART_RXBufferData_Available
+                0x0000000000000466                USART_RXBuffer_GetByte
+                0x0000000000000480                USART_RXComplete
+                0x00000000000004ac                USART_DataRegEmpty
+                0x00000000000004e8                USART_NineBits_PutChar
+                0x00000000000004fe                USART_NineBits_GetChar
+ .text          0x0000000000000516       0xca uart.o
+                0x0000000000000516                uartInit
+                0x0000000000000598                sendchar
+                0x00000000000005b6                sendstring
+ .text          0x00000000000005e0       0x8e adc.o
+                0x00000000000005e0                adcInit
+                0x0000000000000604                adcRead
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+ .text          0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                0x000000000000066e                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .text.libgcc   0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .text.libgcc   0x000000000000066e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .text.avr-libc
+                0x000000000000066e       0x54 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+                0x000000000000066e                sprintf
+ .text.avr-libc
+                0x00000000000006c2      0x414 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+                0x00000000000006c2                vfprintf
+ .text.avr-libc
+                0x0000000000000ad6       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+                0x0000000000000ad6                strnlen_P
+ .text.avr-libc
+                0x0000000000000aec       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+                0x0000000000000aec                strnlen
+ .text.avr-libc
+                0x0000000000000b02       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+                0x0000000000000b02                fputc
+ .text.avr-libc
+                0x0000000000000b5a       0xbc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                0x0000000000000b5a                __ultoa_invert
+                0x0000000000000c16                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x0000000000000c16        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+                0x0000000000000c16                exit
+                0x0000000000000c16                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x0000000000000c16        0x4 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000000000000c1a                _etext = .
+
+.data           0x0000000000802000       0x12 load address 0x0000000000000c1a
+                0x0000000000802000                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x0000000000802000        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ .data          0x0000000000802000       0x12 test.o
+ .data          0x0000000000802012        0x0 usart_driver.o
+ .data          0x0000000000802012        0x0 uart.o
+ .data          0x0000000000802012        0x0 adc.o
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+ .data          0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x0000000000802012                . = ALIGN (0x2)
+                0x0000000000802012                _edata = .
+                0x0000000000802012                PROVIDE (__data_end, .)
+
+.bss            0x0000000000802012       0x10
+                0x0000000000802012                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ .bss           0x0000000000802012        0x0 test.o
+ .bss           0x0000000000802012        0x0 usart_driver.o
+ .bss           0x0000000000802012        0x0 uart.o
+ .bss           0x0000000000802012        0x0 adc.o
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+ .bss           0x0000000000802012        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x0000000000802012       0x10 test.o
+                0x0000000000802012                serial
+                0x0000000000802022                PROVIDE (__bss_end, .)
+                0x0000000000000c1a                __data_load_start = LOADADDR (.data)
+                0x0000000000000c2c                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0000000000802022        0x0
+                0x0000000000802022                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0000000000802022                PROVIDE (__noinit_end, .)
+                0x0000000000802022                _end = .
+                0x0000000000802022                PROVIDE (__heap_start, .)
+
+.eeprom         0x0000000000810000        0x0
+ *(.eeprom*)
+                0x0000000000810000                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab           0x0000000000000000     0x1d70
+ *(.stab)
+ .stab          0x0000000000000000      0x714 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ .stab          0x0000000000000714      0x3cc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+                                        0x3d8 (size before relaxing)
+ .stab          0x0000000000000ae0      0xaf8 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+                                        0xcd8 (size before relaxing)
+ .stab          0x00000000000015d8       0x9c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+                                         0xa8 (size before relaxing)
+ .stab          0x0000000000001674       0x9c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+                                         0xa8 (size before relaxing)
+ .stab          0x0000000000001710      0x1e0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+                                        0x3c0 (size before relaxing)
+ .stab          0x00000000000018f0      0x480 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                                        0x48c (size before relaxing)
+
+.stabstr        0x0000000000000000      0xc89
+ *(.stabstr)
+ .stabstr       0x0000000000000000      0xc89 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000       0x80
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x20 test.o
+ .debug_aranges
+                0x0000000000000020       0x20 usart_driver.o
+ .debug_aranges
+                0x0000000000000040       0x20 uart.o
+ .debug_aranges
+                0x0000000000000060       0x20 adc.o
+
+.debug_pubnames
+                0x0000000000000000      0x1ea
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x0000000000000000       0x48 test.o
+ .debug_pubnames
+                0x0000000000000048      0x13d usart_driver.o
+ .debug_pubnames
+                0x0000000000000185       0x3b uart.o
+ .debug_pubnames
+                0x00000000000001c0       0x2a adc.o
+
+.debug_info     0x0000000000000000     0x1789
+ *(.debug_info)
+ .debug_info    0x0000000000000000      0x97e test.o
+ .debug_info    0x000000000000097e      0x5bb usart_driver.o
+ .debug_info    0x0000000000000f39      0x367 uart.o
+ .debug_info    0x00000000000012a0      0x4e9 adc.o
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev   0x0000000000000000      0x61c
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000      0x1f8 test.o
+ .debug_abbrev  0x00000000000001f8      0x22a usart_driver.o
+ .debug_abbrev  0x0000000000000422      0x10d uart.o
+ .debug_abbrev  0x000000000000052f       0xed adc.o
+
+.debug_line     0x0000000000000000      0x77b
+ *(.debug_line)
+ .debug_line    0x0000000000000000      0x1b4 test.o
+ .debug_line    0x00000000000001b4      0x306 usart_driver.o
+ .debug_line    0x00000000000004ba      0x184 uart.o
+ .debug_line    0x000000000000063e      0x13d adc.o
+
+.debug_frame    0x0000000000000000      0x160
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000       0x40 test.o
+ .debug_frame   0x0000000000000040       0xb0 usart_driver.o
+ .debug_frame   0x00000000000000f0       0x40 uart.o
+ .debug_frame   0x0000000000000130       0x30 adc.o
+
+.debug_str      0x0000000000000000      0x7d4
+ *(.debug_str)
+ .debug_str     0x0000000000000000      0x4bd test.o
+                                        0x53d (size before relaxing)
+ .debug_str     0x00000000000004bd      0x178 usart_driver.o
+                                        0x3a2 (size before relaxing)
+ .debug_str     0x0000000000000635      0x189 uart.o
+                                        0x390 (size before relaxing)
+ .debug_str     0x00000000000007be       0x16 adc.o
+                                        0x28f (size before relaxing)
+
+.debug_loc      0x0000000000000000      0x4a9
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000      0x347 usart_driver.o
+ .debug_loc     0x0000000000000347      0x112 uart.o
+ .debug_loc     0x0000000000000459       0x50 adc.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(flightcontrol.elf elf32-avr)
+LOAD linker stubs
+
+.debug_pubtypes
+                0x0000000000000000      0x358
+ .debug_pubtypes
+                0x0000000000000000      0x155 test.o
+ .debug_pubtypes
+                0x0000000000000155       0xc1 usart_driver.o
+ .debug_pubtypes
+                0x0000000000000216       0xf8 uart.o
+ .debug_pubtypes
+                0x000000000000030e       0x4a adc.o
+
+Cross Reference Table
+
+Symbol                                            File
+USART_DataRegEmpty                                usart_driver.o
+                                                  test.o
+USART_InterruptDriver_DreInterruptLevel_Set       usart_driver.o
+USART_InterruptDriver_Initialize                  usart_driver.o
+                                                  uart.o
+USART_NineBits_GetChar                            usart_driver.o
+USART_NineBits_PutChar                            usart_driver.o
+USART_RXBufferData_Available                      usart_driver.o
+USART_RXBuffer_GetByte                            usart_driver.o
+USART_RXComplete                                  usart_driver.o
+                                                  test.o
+USART_TXBuffer_FreeSpace                          usart_driver.o
+USART_TXBuffer_PutByte                            usart_driver.o
+                                                  uart.o
+__bad_interrupt                                   /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__bss_end                                         /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+__data_end                                        /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+__data_load_start                                 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+__data_start                                      /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+__do_clear_bss                                    /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+                                                  test.o
+__do_copy_data                                    /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+                                                  test.o
+__heap_end                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__init                                            /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__stack                                           /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__ultoa_invert                                    /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+__vector_1                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_10                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_100                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_101                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_102                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_103                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_104                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_105                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_106                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_107                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_108                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_109                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_11                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_110                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_111                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_112                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_113                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_114                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_115                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_116                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_117                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_118                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_119                                      test.o
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_12                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_120                                      test.o
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_121                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_122                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_123                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_124                                      /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_13                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_14                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_15                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_16                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_17                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_18                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_19                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_2                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_20                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_21                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_22                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_23                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_24                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_25                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_26                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_27                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_28                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_29                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_3                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_30                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_31                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_32                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_33                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_34                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_35                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_36                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_37                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_38                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_39                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_4                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_40                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_41                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_42                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_43                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_44                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_45                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_46                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_47                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_48                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_49                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_5                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_50                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_51                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_52                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_53                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_54                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_55                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_56                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_57                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_58                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_59                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_6                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_60                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_61                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_62                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_63                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_64                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_65                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_66                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_67                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_68                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_69                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_7                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_70                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_71                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_72                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_73                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_74                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_75                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_76                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_77                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_78                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_79                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_8                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_80                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_81                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_82                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_83                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_84                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_85                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_86                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_87                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_88                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_89                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_9                                        /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_90                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_91                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_92                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_93                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_94                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_95                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_96                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_97                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_98                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_99                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_default                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vectors                                         /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+_exit                                             /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+adcInit                                           adc.o
+                                                  test.o
+adcRead                                           adc.o
+                                                  test.o
+exit                                              /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+fputc                                             /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+main                                              test.o
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+sendchar                                          uart.o
+sendstring                                        uart.o
+                                                  test.o
+serial                                            test.o
+sprintf                                           /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+                                                  test.o
+strnlen                                           /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+strnlen_P                                         /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+uartInit                                          uart.o
+                                                  test.o
+vfprintf                                          /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
