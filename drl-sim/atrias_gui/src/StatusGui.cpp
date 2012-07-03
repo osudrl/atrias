@@ -231,6 +231,8 @@ void StatusGui::update_medulla_status(controller_status cs) {
     if (cs.state.medullaStatusA & STATUS_ENCODER_ERROR)
             error += "Encoder Error ";
 
+    error += decode_limit_switch(cs.state.limit_switch_A);
+
     medullaAError_entry->set_text(error);
 
     error = "";
@@ -250,6 +252,8 @@ void StatusGui::update_medulla_status(controller_status cs) {
         error += "Logic Voltage Low ";
     if (cs.state.medullaStatusB & STATUS_ENCODER_ERROR)
         error += "Encoder Error ";
+ 
+    error += decode_limit_switch(cs.state.limit_switch_B);
 
     medullaBError_entry->set_text(error);
 
@@ -293,3 +297,27 @@ void StatusGui::update_medulla_status(controller_status cs) {
 
     medullaBoomError_entry->set_text(error);
 }
+
+Gtk::ustring StatusGui::decode_limit_switch(uint8_t switches) {
+	Gtk::ustring limitSW;
+
+	if (switches | 0b00000001)
+		limitSW += "SW 0 Pressed, ";
+	if (switches | 0b00000010)
+		limitSW += "SW 1 Pressed, ";
+	if (switches | 0b00000100)
+		limitSW += "SW 2 Pressed, ";
+	if (switches | 0b00001000)
+		limitSW += "SW 3 Pressed, ";
+	if (switches | 0b00010000)
+		limitSW += "SW 4 Pressed, ";
+	if (switches | 0b00100000)
+		limitSW += "SW 5 Pressed, ";
+	if (switches | 0b01000000)
+		limitSW += "SW 6 Pressed, ";
+	if (switches | 0b10000000)
+		limitSW += "SW 7 Pressed, ";
+
+
+}
+

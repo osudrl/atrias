@@ -226,6 +226,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         cwd.controllerStatus.state.thermistorA[0] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0]);
         cwd.controllerStatus.state.thermistorA[1] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1]);
         cwd.controllerStatus.state.thermistorA[2] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2]);
+	cwd.controllerStatus.state.limit_switch_A = uc_out[A_INDEX]->limitSW;
 
         cwd.controllerStatus.state.motorVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power);
         cwd.controllerStatus.state.logicVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power);
@@ -250,6 +251,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         cwd.controllerStatus.state.thermistorB[0] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0]);
         cwd.controllerStatus.state.thermistorB[1] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1]);
         cwd.controllerStatus.state.thermistorB[2] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2]);
+	cwd.controllerStatus.state.limit_switch_B = uc_out[B_INDEX]->limitSW;
 
         cwd.controllerStatus.state.motorVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->motor_power);
         cwd.controllerStatus.state.logicVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power);
