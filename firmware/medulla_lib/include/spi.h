@@ -20,13 +20,14 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 
-// These get hard coded because they are the physical pins attached to the SPI hardware
-#define SPI_CS 4
-#define SPI_MOSI 5
-#define SPI_MISO 6
-#define SPI_CLK 7
-
-/// This struct stores all the conficuration data for an SPI port.
+/** @brief Stores all the information neccesary to use an SPI port
+ *
+ *  This struct is used by the SPI library to keep track of a port's
+ *  configuration. It is possible to have two port structs defined for the same
+ *  xMega SPI hardware. It is not possible to transmit or receive with both
+ *  ports at the same time, using two different structs on the same hardware
+ *  will work.
+ */
 typedef struct {
 	PORT_t *spi_port; 			/**< IO port containing the SPI pins */
 	SPI_t *spi_register;			/**< SPI register address */
@@ -34,7 +35,14 @@ typedef struct {
 	bool transaction_underway;		/**< If there is currently an ongoing transaction */
 } spi_port_t;
 
-// Stores pointers and sizes of an SPI port's tx and rx buffers
+/** @brief Stores pointers and sizes of an SPI port's tx and rx buffers
+ *
+ *  When a SPI transaction is started, the information about the data buffers
+ *  are stored in structs of this type. There is a global _spi_buffer_t struct
+ *  defined for each hardware SPI port, which is connected to the interrupts for
+ *  that hardware. This not only speeds up ISRs, but it also makes ensures that
+ *  multiple SPI transactions cannot be started on the same hardware.
+ */
 typedef struct {
 	uint8_t *tx_buffer;			/**< Pointer to the address of the tx buffer */
 	uint8_t tx_buffer_size;			/**< Length of tx buffer, length must be < 255 bytes */
@@ -44,9 +52,22 @@ typedef struct {
 	spi_port_t *spi_port;
 } _spi_buffer_t;
 
-// Stores poitners to spi_port_t structs used inside interrupts
-_spi_buffer_t _spi_buffer_c, _spi_buffer_d, _spi_buffer_e, _spi_buffer_f;
+_spi_buffer_t _spi_buffer_c,	/**< @brief Struct for storing buffer information for SPIC */
+              _spi_buffer_d,	/**< @brief Struct for storing buffer informatino for SPID */
+              _spi_buffer_e,	/**< @brief Struct for storing buffer informatino for SPIE */
+              _spi_buffer_f;	/**< @brief Struct for storing buffer informatino for SPIF */
 
+/** @brief Macro that defines the SPI interrupt service routine
+ *
+ *  The interrupt handlers for all of the SPI interrupts are the same except for
+ *  which hardware and _spi_buffer_t structs they reference. Because we want the
+ *  the ISR to run as efficiently as possible the generic interupt handler is
+ *  defined as macro. This removes function call overhead.
+ *
+ *  @param _SPI_REGISTER SPI_t register for the SPI port to use
+ *  @param _SPI_BUFFER Globally defined _spi_buffer_t from which to get buffer
+ *  information.
+ */
 #define _SPI_HANDLE_INTERRUPT(_SPI_REGISTER, _SPI_BUFFER) \
 	/* we just send a bunch of clock pulses, if we were reading data, collect it into the buffer before incrementing*/ \
 	if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.rx_buffer_size) \

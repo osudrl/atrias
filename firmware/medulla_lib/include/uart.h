@@ -91,14 +91,14 @@ typedef struct {
 } _uart_buffer_t;
 
 // _uart_buffer_t structs for each hardware USART port
-_uart_buffer_t _uart_buffer_c0,		/**< Struct for storing the buffer information for USARTC0 */
-               _uart_buffer_c1,         /**< Struct for storing the buffer information for USARTC1 */
-               _uart_buffer_d0,         /**< Struct for storing the buffer information for USARTD0 */
-               _uart_buffer_d1,         /**< Struct for storing the buffer information for USARTD1 */
-               _uart_buffer_e0,         /**< Struct for storing the buffer information for USARTE0 */
-               _uart_buffer_e1,         /**< Struct for storing the buffer information for USARTE1 */
-               _uart_buffer_f0,         /**< Struct for storing the buffer information for USARTF0 */
-               _uart_buffer_f1;         /**< Struct for storing the buffer information for USARTF1 */
+_uart_buffer_t _uart_buffer_c0,		/**< @brief Struct for storing the buffer information for USARTC0 */
+               _uart_buffer_c1,         /**< @brief Struct for storing the buffer information for USARTC1 */
+               _uart_buffer_d0,         /**< @brief Struct for storing the buffer information for USARTD0 */
+               _uart_buffer_d1,         /**< @brief Struct for storing the buffer information for USARTD1 */
+               _uart_buffer_e0,         /**< @brief Struct for storing the buffer information for USARTE0 */
+               _uart_buffer_e1,         /**< @brief Struct for storing the buffer information for USARTE1 */
+               _uart_buffer_f0,         /**< @brief Struct for storing the buffer information for USARTF0 */
+               _uart_buffer_f1;         /**< @brief Struct for storing the buffer information for USARTF1 */
 
 /** @brief Macro for handling the transmit complete interrupt
  *

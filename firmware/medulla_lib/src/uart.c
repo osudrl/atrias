@@ -106,8 +106,6 @@ int uart_tx_data(uart_port_t *port, void *data, uint8_t data_length) {
 
 	_uart_buffer_t *current_buffer = _uart_get_hw_buffer(port);
 
-	uint16_t current_end = current_buffer->tx_buffer_end;
-
 	int byte_cnt = 0; // this is defined outside the loop so we can see how many bytes we actually wrote
 	for (byte_cnt = 0; byte_cnt < data_length; byte_cnt++) {
 		// Check the buffer is full
