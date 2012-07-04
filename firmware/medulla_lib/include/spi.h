@@ -26,9 +26,6 @@
 #define SPI_MISO 6
 #define SPI_CLK 7
 
-/// This is a typedef for a function pointer to a callback function.
-typedef void (*spi_callback_t)(void);
-
 /// This struct stores all the conficuration data for an SPI port.
 typedef struct {
 	PORT_t *spi_port; 			/**< IO port containing the SPI pins */
@@ -50,60 +47,51 @@ typedef struct {
 // Stores poitners to spi_port_t structs used inside interrupts
 _spi_buffer_t _spi_buffer_c, _spi_buffer_d, _spi_buffer_e, _spi_buffer_f;
 
-#define _SPI_HANDLE_INTERRUPT(spi_buffer) \
-        PORTC.OUTSET = 1; \
-        /* Just finished transmitting a byte, so increment buffer location */ \
-        spi_buffer.io_buffer_position++; \
-        /* we just read in some data, so we need to get it out of the input register */ \
-        if (spi_buffer.io_buffer_position < spi_buffer.rx_buffer_size) \
-                spi_buffer.rx_buffer[spi_buffer.io_buffer_position] = _SPI.DATA; \
-        \
-        /* If we still need to send or receive data, then start the data transfer */ \
-        if (spi_buffer.io_buffer_position < spi_buffer.tx_buffer_size) { \
-                /* If there is data still to be transmitted, then write it to the output buffer */ \
-                _SPI.DATA = spi_buffer.tx_buffer[spi_buffer.io_buffer_position]; \
-        } \
-        else if (spi_buffer.io_buffer_position < spi_buffer.rx_buffer_size) { \
-                /* If there is no data to be transmitted, but there is still data to be read, send zeros until all the data is in */ \
-                _SPI.DATA = 0; \
-        } \
-        else { \
-                /* we are done with the transmission, clean up */ \
-                spi_buffer.spi_port->transaction_underway = false; \
-                spi_buffer.spi_port = 0; \
-        } \
-        PORTC.OUTCLR = 1;\
-        reti(); \
+#define _SPI_HANDLE_INTERRUPT(_SPI_REGISTER, _SPI_BUFFER) \
+	/* we just send a bunch of clock pulses, if we were reading data, collect it into the buffer before incrementing*/ \
+	if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.rx_buffer_size) \
+		_SPI_BUFFER.rx_buffer[_SPI_BUFFER.io_buffer_position] = _SPI_REGISTER.DATA; \
+	\
+	/* Just finished transmitting or receiving a byte, so increment buffer location */ \
+	_SPI_BUFFER.io_buffer_position++; \
+	\
+	/* If we still need to send or receive data, then start the data transfer */ \
+	if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.tx_buffer_size) { \
+		/* If there is data still to be transmitted, then write it to the output buffer */ \
+		_SPI_REGISTER.DATA = _SPI_BUFFER.tx_buffer[_SPI_BUFFER.io_buffer_position]; \
+	} \
+	else if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.rx_buffer_size) { \
+		/* If there is no data to be transmitted, but there is still data to be read, send zeros until all the data is in */ \
+		_SPI_REGISTER.DATA = 0; \
+	} \
+	else { \
+		/* we are done with the transmission, clean up */ \
+		_SPI_BUFFER.spi_port->transaction_underway = false; \
+		_SPI_BUFFER.spi_port = 0; \
+	} \
+	
 
-#ifdef SPI_USING_PORTC
-ISR(SPIC_INT_vect, ISR_NAKED) {
-        #define _SPI SPIC
-        _SPI_HANDLE_INTERRUPT(_spi_buffer_c);
-        #undef _SPI
+#ifdef SPI_USES_PORTC
+ISR(SPIC_INT_vect) {
+	_SPI_HANDLE_INTERRUPT(SPIC,_spi_buffer_c);
 }
 #endif
 
-#ifdef SPI_USING_PORTD
-ISR(SPID_INT_vect,ISR_NAKED) {
-        #define _SPI SPIF
-        _SPI_HANDLE_INTERRUPT(_spi_buffer_d);
-        #undef _SPI
+#ifdef SPI_USES_PORTD
+ISR(SPID_INT_vect) {
+	_SPI_HANDLE_INTERRUPT(SPID,_spi_buffer_d);
 }
 #endif
 
-#ifdef SPI_USING_PORTE
-ISR(SPIE_INT_vect,ISR_NAKED) {
-        #define _SPI SPIE
-        _SPI_HANDLE_INTERRUPT(_spi_buffer_e);
-        #undef _SPI
+#ifdef SPI_USES_PORTE
+ISR(SPIE_INT_vect) {
+	_SPI_HANDLE_INTERRUPT(SPIE,_spi_buffer_e);
 }
 #endif
 
-#ifdef SPI_USING_PORTF
-ISR(SPIF_INT_vect,ISR_NAKED) {
-        #define _SPI SPIF
-        _SPI_HANDLE_INTERRUPT(_spi_buffer_f);
-        #undef _SPI
+#ifdef SPI_USES_PORTF
+ISR(SPIF_INT_vect) {
+	_SPI_HANDLE_INTERRUPT(SPIF,_spi_buffer_f);
 }
 #endif
 

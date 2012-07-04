@@ -17,18 +17,18 @@ spi_port_t spi_init_port(PORT_t *spi_port, SPI_t *spi_register, bool uses_chip_s
 	port.transaction_underway = false;
 
 	// Configure the SPI registers
-	port.spi_register->CTRL = SPI_ENABLE_bm | SPI_MASTER_bm | SPI_MODE_0_gc | SPI_PRESCALER_DIV4_gc;// | SPI_CLK2X_bm;
+	port.spi_register->CTRL = SPI_ENABLE_bm | SPI_MASTER_bm | SPI_MODE_0_gc | SPI_PRESCALER_DIV16_gc;// | SPI_CLK2X_bm;
 	port.spi_register->INTCTRL = SPI_INTLVL_MED_gc;
 	
 	return port;
 }
 
-int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length) {
+inline int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length) {
 	// To start just a transmit, all we need to do is start a transmit_receive transaction with the rx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, data, data_length, 0, 0);
 }
 
-int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length) {
+inline int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length) {
 	// To start just a receive, we just need to start a transmit/receive transaction with a tx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, 0, 0, data, data_length);
 }
