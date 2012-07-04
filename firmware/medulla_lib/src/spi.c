@@ -1,5 +1,11 @@
 #include "spi.h"
 
+// These get hard coded because they are the physical pins attached to the SPI hardware
+#define SPI_CS 4
+#define SPI_MOSI 5
+#define SPI_MISO 6
+#define SPI_CLK 7
+
 /// Configures the buffers for a spi port
 static void _spi_configure_buffers(_spi_buffer_t *spi_buffer, uint8_t *tx_data, uint8_t tx_data_length, uint8_t *rx_data, uint8_t rx_data_length);
 

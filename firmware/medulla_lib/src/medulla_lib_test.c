@@ -7,10 +7,10 @@
 
 #include "uart.h"
 #include "spi.h"
-#include "clock.h"
+#include "cpu.h"
 
 int main(void) {
-	Config32MHzClock();	
+	cpu_set_clock_source(cpu_32mhz_clock);
 	PORTC.DIRSET = 0b11;
 	PMIC.CTRL = PMIC_MEDLVLEN_bm;
 	sei();
