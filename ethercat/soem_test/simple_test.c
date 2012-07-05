@@ -26,9 +26,38 @@
 #include "ethercatprint.h"
 
 #include <time.h>
+#define LOOP_PERIOD_NS 1000000
+#define OFFSET_NS       100000
+
+struct timespec wakeupTime = {
+	0,
+	0
+};
+
+struct timespec curTime = {
+	0,
+	0
+};
+
+struct timespec sleeptime = {
+	0,
+	0
+};
+int error;
+
+int diff(struct timespec newtime, struct timespec oldtime) {
+	return 1000000000*(newtime.tv_sec - oldtime.tv_sec) + newtime.tv_nsec - oldtime.tv_nsec;
+}
+
+void wait_for_next_cycle(int64 DCtime) {
+	clock_gettime(CLOCK_MONOTONIC, &curTime);
+	sleeptime.tv_nsec = (LOOP_PERIOD_NS - ((DCtime + LOOP_PERIOD_NS/2) % LOOP_PERIOD_NS
+	                    - (LOOP_PERIOD_NS/2)) - diff(curTime, wakeupTime)) % LOOP_PERIOD_NS;
+	nanosleep(&sleeptime, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &wakeupTime);
+}
 
 #define EC_TIMEOUTMON          500
-#define TARGET_DC_OFFSET_NS 100000
 
 char IOmap[4096];
 pthread_t thread1;
@@ -77,7 +106,6 @@ void simpletest(char *ifname)
 			expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
 			printf("Calculated workcounter %d\n", expectedWKC);
 			ec_slave[0].state = EC_STATE_OPERATIONAL;
-			ec_slave[1].state = EC_STATE_OPERATIONAL;
 			/* send one valid process data to make outputs in slaves happy*/
 			ec_send_processdata();
 			ec_receive_processdata(EC_TIMEOUTRET);
@@ -91,33 +119,21 @@ void simpletest(char *ifname)
 				ec_receive_processdata(EC_TIMEOUTRET);
 				ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
 			}
-			while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL || ec_slave[1].state != EC_STATE_OPERATIONAL));
-			if (ec_slave[0].state == EC_STATE_OPERATIONAL && ec_slave[1].state == EC_STATE_OPERATIONAL)
+			while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
+			if (ec_slave[0].state == EC_STATE_OPERATIONAL)
 			{
 				printf("Operational state reached for all slaves.\n");
 				wkc_count = 0;
 				inOP = TRUE;
 				ec_dcsync0(1, TRUE, 1000000, 0);
-				ec_dcsync0(2, TRUE, 1000000, 0);
 				usleep(100000);
-				// Timing stuff
-				struct timespec cur_time;
-				clock_gettime(CLOCK_REALTIME, &cur_time);
-				struct timespec wait_time = {
-					0,
-					0
-				};
-				struct timespec target_time = {
-					0,
-					0
-				};
 				/* cyclic loop */
 				for(i = 1; i <= 1000000; i++)
 				{
 					ec_slave[0].outputs[0] = i % 256;
 
 					ec_send_processdata();
-					wkc = ec_receive_processdata(EC_TIMEOUTRET);
+					wkc = ec_receive_processdata(500);
 
 					if(wkc >= expectedWKC)
 					{
@@ -136,9 +152,7 @@ void simpletest(char *ifname)
 						//printf(" T:%lld\n",ec_DCtime);
 						needlf = TRUE;
 					}
-					clock_gettime(CLOCK_REALTIME, &cur_time);
-					wait_time.tv_nsec = 1000000 - (cur_time.tv_nsec % 1000000);
-					nanosleep(&wait_time, NULL);
+					wait_for_next_cycle(ec_DCtime);
 				}
 				inOP = FALSE;
 			}
@@ -158,7 +172,6 @@ void simpletest(char *ifname)
 			}
 			printf("\nRequest init state for all slaves\n");
 			ec_slave[0].state = EC_STATE_INIT;
-			ec_slave[1].state = EC_STATE_INIT;
 			/* request INIT state for all slaves */
 			ec_writestate(0);
 		}
