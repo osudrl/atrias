@@ -156,9 +156,9 @@ void stop_demo(robot_state& state, InputData* id, ControllerOutput* output)
 	}
 }
 
-RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output, float time)
+RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output, double time)
 {
-	// Planer elipse
+	// Planar ellipse
 	CartPosition desPos;
 
 	desPos.x=0.35*cos(2*PI*time);
@@ -171,7 +171,7 @@ RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output,
 	return cartesianToRobot(desPos);
 }
 
-RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output, float time)
+RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output, double time)
 {
 	CartPosition desPos;
 
@@ -199,7 +199,7 @@ RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output,
 
 }
 
-RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output, float time)
+RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output, double time)
 {
 	CartPosition desPos;
 
@@ -224,7 +224,7 @@ RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output,
 
 }
 
-RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output, float time)
+RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output, double time)
 {
 	// Leg length limits
 	float safety_length_long = 0.97;
@@ -314,22 +314,44 @@ RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output,
 
 }
 
-RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, float time)
-{
-	// Example of cartesian demo
+RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, double time)
+{	// Planer elipse
 	CartPosition desPos;
 
-	desPos.x= 0.0;
+	float freq = 1.5;
+
+	float Xa0 = 0.0735;
+	float Xa1 = 0.2655;
+	float Xb1 = 0.0855;
+	float Xa2 = -0.0164;
+	float Xb2 = 0.0333;
+	float Xa3 = 0.0054;
+	float Xb3 = 0.0014;
+	float Xa4 = -0.0070;
+	float Xb4 = 0.0029;
+
+	float Ya0 = -0.7476;
+	float Ya1 = 0.0725;
+	float Yb1 = -0.1820;
+	float Ya2 = -0.0006;
+	float Yb2 = -0.0115;
+	float Ya3 = 0.0090;
+	float Yb3 = -0.0031;
+	float Ya4 = 0.0040;
+	float Yb4 = 0.0075;
+
+	desPos.x= 1.0*(Xa0 + Xa1*cos(2*1*freq*PI*time) + Xb1*sin(2*1*freq*PI*time) + Xa2*cos(2*2*freq*PI*time) + Xb2*sin(2*2*freq*PI*time) + Xa3*cos(2*3*freq*PI*time) + Xb3*sin(2*3*freq*PI*time) + Xa4*cos(2*4*freq*PI*time) + Xb4*sin(2*4*freq*PI*time));
 	desPos.y= 0.15;
-	desPos.z= 0.75;
+	desPos.z= Ya0 +	Ya1*cos(2*1*freq*PI*time) + Yb1*sin(2*1*freq*PI*time) + Ya2*cos(2*2*freq*PI*time) + Yb2*sin(2*2*freq*PI*time) + Ya3*cos(2*3*freq*PI*time) + Yb3*sin(2*3*freq*PI*time) + Ya4*cos(2*4*freq*PI*time) + Yb4*sin(2*4*freq*PI*time);
 	desPos.x_vel = 0.0;
 	desPos.y_vel = 0.0;
 	desPos.z_vel = 0.0;
 
 	return cartesianToRobot(desPos);
+
 }
 
-RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, float time)
+RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, double time)
 {
 	RobotPosition desPos;
 

@@ -54,12 +54,12 @@ typedef struct {
 void start_demo(robot_state& state, InputData* id, ControllerOutput* output);
 void stop_demo(robot_state& state, InputData* id, ControllerOutput* output);
 
-RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, float);
-RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, float);
+RobotPosition demo1(robot_state& state, InputData* id, ControllerOutput* output, double time);
+RobotPosition demo2(robot_state& state, InputData* id, ControllerOutput* output, double time);
+RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output, double time);
+RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output, double time);
+RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, double time);
+RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, double time);
 
 RobotPosition cartesianToRobot(CartPosition);
 RobotPosition setTorques(robot_state* state, InputData* id, ControllerOutput* output);
