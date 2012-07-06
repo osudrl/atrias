@@ -19,7 +19,7 @@
 TARGET = medulla_lib_test
 
 # Any other files to build (include extension)
-SOURCES = uart.c spi.c cpu.c
+SOURCES = uart.c spi.c cpu.c ethercat.c io_pin.c
 
 
 # MCU name

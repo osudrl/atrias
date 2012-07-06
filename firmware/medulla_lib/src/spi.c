@@ -19,22 +19,31 @@ spi_port_t spi_init_port(PORT_t *spi_port, SPI_t *spi_register, bool uses_chip_s
 	// Configure the IO directions for the SPI pins
 	port.spi_port->DIRSET = (1<<SPI_MOSI) | (1<<SPI_CLK);
 	port.spi_port->DIRCLR = 1<<SPI_MISO;
-	port.spi_port->DIRSET = 1<<SPI_CS;
+	port.spi_port->DIRSET = 1<<SPI_CS;	// CS needs to be an output, otherwise it the hardware might not transmit bytes
+
+	if (uses_chip_select)
+		// If we are using the CS line, then it should idle high
+		port.spi_port->OUTSET = 1<<SPI_CS;
+
 	port.transaction_underway = false;
 
 	// Configure the SPI registers
-	port.spi_register->CTRL = SPI_ENABLE_bm | SPI_MASTER_bm | SPI_MODE_0_gc | SPI_PRESCALER_DIV16_gc;// | SPI_CLK2X_bm;
+	port.spi_register->CTRL = SPI_ENABLE_bm | SPI_MASTER_bm | SPI_MODE_0_gc | SPI_PRESCALER_DIV16_gc;
 	port.spi_register->INTCTRL = SPI_INTLVL_MED_gc;
 	
 	return port;
 }
 
 inline int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length) {
+	if (data_length == 0)	// Don't even bother transmitting
+		return 0;
 	// To start just a transmit, all we need to do is start a transmit_receive transaction with the rx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, data, data_length, 0, 0);
 }
 
 inline int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length) {
+	if (data_length == 0) // Don't bother receiveing
+		return 0;
 	// To start just a receive, we just need to start a transmit/receive transaction with a tx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, 0, 0, data, data_length);
 }
@@ -106,5 +115,15 @@ static void _spi_configure_buffers(_spi_buffer_t *spi_buffer, uint8_t *tx_data, 
         else
                 spi_buffer->spi_port->spi_register->DATA = spi_buffer->tx_buffer[0];
 
+}
+
+void spi_assert_cs(spi_port_t *spi_port) {
+	if (spi_port->uses_chip_select)
+		spi_port->spi_port->OUTCLR = (1<<SPI_CS);
+}
+
+void spi_deassert_cs(spi_port_t *spi_port) {
+	if (spi_port->uses_chip_select)
+		spi_port->spi_port->OUTSET = (1<<SPI_CS);
 }
 

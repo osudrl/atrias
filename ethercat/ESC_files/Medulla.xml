@@ -13,8 +13,68 @@
 		</Groups>
 		<Devices>
 			<Device Physics="YY">
-				<Type ProductCode="#x00000001" RevisionNo="#x00000001">ATRIAS 2.1 (Medulla 1.5)</Type>
-				<Name LcId="1033"><![CDATA[ATRIAS 2.1 (Medulla 1.5)]]></Name>
+				<Type ProductCode="#x00000004" RevisionNo="#x00000003">ATRIAS 2.1 EtherCAT Test (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 EtherCAT Test (Medulla 1.5)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
+				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Sm Enable="0" />
+				<Sm Enable="0" />
+				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<RxPdo Fixed="1" Sm="2">
+					<Index>#x1600</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0003</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Current</Name>
+						<DataType>INT</DataType>
+					</Entry>
+				</RxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A00</Index>
+					<Name>uControllerOutput</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestep</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder 0</Name>
+						<DataType>UDINT</DataType>
+					</Entry>
+				</TxPdo>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0300</AssignActivate>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+			<Device Physics="YY">
+				<Type ProductCode="#x00000001" RevisionNo="#x00000001">ATRIAS 2.1 Leg (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Leg (Medulla 1.5)]]></Name>
 				<GroupType>Medulla</GroupType>
 				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
 				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
@@ -33,29 +93,489 @@
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0003</Index>
-						<SubIndex>2</SubIndex>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
 						<BitLen>16</BitLen>
+						<Name>Counter</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0004</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
 						<Name>Motor Current</Name>
-						<DataType>INT</DataType>
+						<DataType>DINT</DataType>
 					</Entry>
 				</RxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A00</Index>
-					<Name>uControllerOutput</Name>
+					<Name>uController Status</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>ID</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>State</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Limit Switch</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Toe Switch</Name>
+						<DataType>USINT</DataType>
+					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>1</SubIndex>
 						<BitLen>16</BitLen>
-						<Name>Timestep</Name>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A01</Index>
+					<Name>Motor Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A02</Index>
+					<Name>Leg Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A03</Index>
+					<Name>Power</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Logic Voltage</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0006</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A04</Index>
+					<Name>Thermistors</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 0</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
 						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 1</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 2</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 3</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 4</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 5</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					
+				</TxPdo>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0300</AssignActivate>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+			<Device Physics="YY">
+				<Type ProductCode="#x00000002" RevisionNo="#x00000001">ATRIAS 2.1 Hip (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Hip (Medulla 1.5)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
+				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Sm Enable="0" />
+				<Sm Enable="0" />
+				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<RxPdo Fixed="1" Sm="2">
+					<Index>#x1600</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Counter</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0004</Index>
+						<SubIndex>1</SubIndex>
 						<BitLen>32</BitLen>
-						<Name>Encoder 0</Name>
+						<Name>Motor Current</Name>
+						<DataType>DINT</DataType>
+					</Entry>
+				</RxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A00</Index>
+					<Name>uController Status</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>ID</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>State</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Limit Switch</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A01</Index>
+					<Name>Hip Encoder</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A02</Index>
+					<Name>Power</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Logic Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A03</Index>
+					<Name>Thermistors</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 0</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 1</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Thermistor 2</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					
+				</TxPdo>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0300</AssignActivate>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+			<Device Physics="YY">
+				<Type ProductCode="#x00000003" RevisionNo="#x00000001">ATRIAS 2.1 Boom (Medulla 1.5)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Boom (Medulla 1.5)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
+				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Sm Enable="0" />
+				<Sm Enable="0" />
+				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<RxPdo Fixed="1" Sm="2">
+					<Index>#x1600</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Counter</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+				</RxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A00</Index>
+					<Name>uController Status</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>ID</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>State</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A01</Index>
+					<Name>X Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
 						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A02</Index>
+					<Name>Pitch Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A03</Index>
+					<Name>Z Encoder</Name>
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A04</Index>
+					<Name>Power</Name>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Logic Voltage</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>3</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestamp</Name>
+						<DataType>UINT</DataType>
 					</Entry>
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
@@ -63,18 +583,13 @@
 						<Name>DcSync</Name>
 						<Desc>DC for synchronization</Desc>
 						<AssignActivate>#x0300</AssignActivate>
-						<CycleTimeSync0 Factor="1">0</CycleTimeSync0>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
 						<ShiftTimeSync0>0</ShiftTimeSync0>
 					</OpMode>
-					<!--<OpMode>
-						<Name>DcOff</Name>
-						<Desc>DC unused</Desc>
-						<AssignActivate>#x0000</AssignActivate>
-					</OpMode>-->
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05040008FF000000000000000000</ConfigData>
+					<ConfigData>05040008FFFF0000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 		</Devices>

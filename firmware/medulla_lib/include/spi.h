@@ -178,4 +178,7 @@ int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length);
  */
 int spi_start_transmit_receive(spi_port_t *spi_port, void *tx_data, uint8_t tx_data_length, void *rx_data, uint8_t rx_data_length); 
 
+void spi_assert_cs(spi_port_t *spi_port);
+void spi_deassert_cs(spi_port_t *spi_port);
+
 #endif //SPI_H
