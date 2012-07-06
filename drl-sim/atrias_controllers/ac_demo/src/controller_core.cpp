@@ -203,6 +203,153 @@ RobotPosition demo3(robot_state& state, InputData* id, ControllerOutput* output,
 {
 	CartPosition desPos;
 
+	// Period of Sweep (seconds)
+	float period = 5;
+
+	float t = time % period;
+
+	// Relative Phase Lengths
+	float phase1 = 1.;
+	float phase2 = 1.;
+	float phase3 = 1.;
+	float phase4 = 1.;
+	float phase5 = 1.;
+	float phase6 = 1.;
+
+	// Robot Range Limits
+	float l_min = 0.5;
+	float l_max = 0.97;
+	float tA_min = -2./3.*PI;
+	float tA_max = 0.0;
+	float tB_min = PI;
+	float tB_max = 5./3.*PI;
+
+
+
+	// COMPUTE LENGTHS OF SWEEP PHASES
+	float total_rel_phase = phase1 + phase2 + phase3 + phase4 + phase5 + phase6;
+
+	float stop1 = phase1*period/total_rel_phase;
+	float stop2 = phase2*period/total_rel_phase + stop1;
+	float stop3 = phase3*period/total_rel_phase + stop2;
+	float stop4 = phase4*period/total_rel_phase + stop3;
+	float stop5 = phase5*period/total_rel_phase + stop4;
+	float stop6 = phase6*period/total_rel_phase + stop5;
+
+
+	float leg_length;
+	float leg_angle;
+
+	if(t <= stop1)
+	{
+		// Phase 1: Iterate tL, constant length
+
+		// Compute tL limits
+		float tLi = tA_min + PI - acos(l_max);
+		float tLf = tB_max - PI + acos(l_max);
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - 0)/(stop1 - 0);
+
+		// Assign robot coordinates
+		leg_angle = (tLf - tLi)*t_relative + tLi;
+		leg_length = l_max
+
+	}
+	else if(t <= stop2)
+	{
+		// Phase 2: Iterate tA, constant tB
+		
+		// Compute tA limits
+		float tAi = 2*acos(l_max) = tB_max - 2*PI;
+		float tAf = tA_max;
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - stop1)/(stop2 - stop1);
+
+		// Interpolate tA
+		float tA = (tAf - tAi)*t_relative + tAi;
+
+		// Assign robot coordinates
+		leg_angle = 1/2*(tA + tB_max);
+		leg_length = cos(1/2*(tA - tB_max));
+
+
+	}
+	else if(t <= stop3)
+	{
+		// Phase 3: Iterate tB, constant tA
+		
+		// Compute tB limits
+		float tBi = tB_max;
+		float tBf = 2*PI - 2*acos(l_min) + tA_max;
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - stop2)/(stop3 - stop2);
+
+		// Interpolate tB
+		float tB = (tBf - tBi)*t_relative + tBi;
+
+		// Assign robot coordinates
+		leg_angle = 1/2*(tA_max + tB);
+		leg_length = cos(1/2*(tA_max - tB));
+	}
+	else if(t <= stop4)
+	{
+		// Phase 4: Iterate tL, constant length
+
+		// Compute tL limits
+		float tLi = tA_max + PI - acos(l_max);
+		float tLf = tB_min - PI + acos(l_max);
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - stop3)/(stop4 - stop3);
+
+		// Assign robot coordinates
+		leg_angle = (tLf - tLi)*t_relative + tLi;
+		leg_length = l_max
+	}
+	else if(t <= stop5)
+	{
+		// Phase 5: Iterate tA, constant tB
+		
+		// Compute tA limits
+		float tAi = 2*acos(l_min) = tB_min - 2*PI;
+		float tAf = tA_min;
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - stop4)/(stop5 - stop4);
+
+		// Interpolate tA
+		float tA = (tAf - tAi)*t_relative + tAi;
+
+		// Assign robot coordinates
+		leg_angle = 1/2*(tA + tB_min);
+		leg_length = cos(1/2*(tA - tB_min));
+	}
+	else if(t <= stop6)
+	{
+		// Phase 6: Iterate tB, constant tA
+		
+		// Compute tB limits
+		float tBi = tB_min;
+		float tBf = 2*PI - 2*acos(l_max) + tA_min;
+
+		// Compute time relative to ends of phase (0.0 - 1.0)
+		float t_relative = (t - stop5)/(stop6 - stop5);
+
+		// Interpolate tB
+		float tB = (tBf - tBi)*t_relative + tBi;
+
+		// Assign robot coordinates
+		leg_angle = 1/2*(tA_min + tB);
+		leg_length = cos(1/2*(tA_min - tB));
+	}
+	else
+	{
+		// Error
+	}
+
 	float rads = 2.0*PI*id->amplitude*time;
 
 	desPos.x = (0.2*sin(rads))*cos(rads/20);
@@ -315,10 +462,52 @@ RobotPosition demo4(robot_state& state, InputData* id, ControllerOutput* output,
 }
 
 RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output, double time)
-{	// Planer elipse
+{	
+
+	// Mock-Walking Motion
+
 	CartPosition desPos;
 
-	float freq = 1.5;
+	float freq = 4.0; // Hz
+
+	float Xa0 = 0.0735;
+	float Xa1 = 0.2655;
+	float Xb1 = 0.0855;
+	float Xa2 = -0.0164;
+	float Xb2 = 0.0333;
+	float Xa3 = 0.0054;
+	float Xb3 = 0.0014;
+	float Xa4 = -0.0070;
+	float Xb4 = 0.0029;
+
+	float Ya0 = -0.8390;
+	float Ya1 = 0.0290;
+	float Yb1 = -0.0728;
+	float Ya2 = -0.0002;
+	float Yb2 = -0.0046;
+	float Ya3 = 0.0036;
+	float Yb3 = -0.0013;
+	float Ya4 = 0.0016;
+	float Yb4 = 0.0030;
+
+	desPos.x= 1.0*(Xa0 + Xa1*cos(2*1*freq*PI*time) + Xb1*sin(2*1*freq*PI*time) + Xa2*cos(2*2*freq*PI*time) + Xb2*sin(2*2*freq*PI*time) + Xa3*cos(2*3*freq*PI*time) + Xb3*sin(2*3*freq*PI*time) + Xa4*cos(2*4*freq*PI*time) + Xb4*sin(2*4*freq*PI*time));
+	desPos.y= 0.15;
+	desPos.z= Ya0 +	Ya1*cos(2*1*freq*PI*time) + Yb1*sin(2*1*freq*PI*time) + Ya2*cos(2*2*freq*PI*time) + Yb2*sin(2*2*freq*PI*time) + Ya3*cos(2*3*freq*PI*time) + Yb3*sin(2*3*freq*PI*time) + Ya4*cos(2*4*freq*PI*time) + Yb4*sin(2*4*freq*PI*time);
+	desPos.x_vel = 0.0;
+	desPos.y_vel = 0.0;
+	desPos.z_vel = 0.0;
+
+	return cartesianToRobot(desPos);
+
+}
+
+RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, double time)
+{
+	// Mock-Running Motion
+
+	CartPosition desPos;
+
+	float freq = 1.5; // Hz
 
 	float Xa0 = 0.0735;
 	float Xa1 = 0.2655;
@@ -348,24 +537,6 @@ RobotPosition demo5(robot_state& state, InputData* id, ControllerOutput* output,
 	desPos.z_vel = 0.0;
 
 	return cartesianToRobot(desPos);
-
-}
-
-RobotPosition demo6(robot_state& state, InputData* id, ControllerOutput* output, double time)
-{
-	RobotPosition desPos;
-
-	// Example of robot coordinate demo
-
-	desPos.leg_ang = PI/2.0;
-	desPos.leg_len = 0.8;
-	desPos.hip_ang = 0.0;
-	desPos.leg_ang_vel = 0.0;
-	desPos.leg_len_vel = 0.0;
-	desPos.hip_ang_vel = 0.0;
-
-
-	return desPos;
 
 }
 
