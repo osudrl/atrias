@@ -1,5 +1,5 @@
 <launch>
-    <env name="ROS_MASTER_URI" value="http://drl-qrio:11311" />
+    <env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />
 
     <!-- Start data publishing node. -->
     <!--<node name    = "atrias_gui"

@@ -108,10 +108,10 @@ int init_master(void) {
     }
 
     printf("[AEM] Getting slave configurations...\n");
-    if (!(sc_medulla_boom = ecrt_master_slave_config(master, MEDULLA_BOOM_POS, VENDOR_ID, PRODUCT_CODE))) {
-        fprintf(stderr, "[AEM] Failed to get Medulla BOOM slave configuration.\n");
-        return -1;
-    }
+//    if (!(sc_medulla_boom = ecrt_master_slave_config(master, MEDULLA_BOOM_POS, VENDOR_ID, PRODUCT_CODE))) {
+//        fprintf(stderr, "[AEM] Failed to get Medulla BOOM slave configuration.\n");
+//        return -1;
+//    }
 
     if (!(sc_medullaB = ecrt_master_slave_config(master, MEDULLA_B_POS, VENDOR_ID, PRODUCT_CODE))) {
         fprintf(stderr, "Failed to get Medulla B slave configuration.\n");
@@ -130,10 +130,10 @@ int init_master(void) {
 
 #ifdef CONFIGURE_PDOS
     printf("Configuring PDOs...\n");
-    if (ecrt_slave_config_pdos(sc_medulla_boom, EC_END, medulla_boom_sync)) {
-        fprintf(stderr, "Failed to configure PDOs.\n");
-        return -1;
-    }
+//    if (ecrt_slave_config_pdos(sc_medulla_boom, EC_END, medulla_boom_sync)) {
+//        fprintf(stderr, "Failed to configure PDOs.\n");
+//        return -1;
+//    }
 
     if (ecrt_slave_config_pdos(sc_medullaB, EC_END, medullaB_sync)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
@@ -175,12 +175,12 @@ int init_master(void) {
     uc_in[0] = (uControllerInput*) (domain1_pd + off_medullaA_rx);
     uc_in[1] = (uControllerInput*) (domain1_pd + off_medullaB_rx);
     uc_in[2] = (uControllerInput*) (domain1_pd + off_medulla_hip_rx);
-    uc_in[3] = (uControllerInput*) (domain1_pd + off_medulla_boom_rx);
+//    uc_in[3] = (uControllerInput*) (domain1_pd + off_medulla_boom_rx);
 
     uc_out[0] = (uControllerOutput*) (domain1_pd + off_medullaA_tx);
     uc_out[1] = (uControllerOutput*) (domain1_pd + off_medullaB_tx);
     uc_out[2] = (uControllerOutput*) (domain1_pd + off_medulla_hip_tx);
-    uc_out[3] = (uControllerOutput*) (domain1_pd + off_medulla_boom_tx);
+//    uc_out[3] = (uControllerOutput*) (domain1_pd + off_medulla_boom_tx);
 
     printf("[UCW] EtherCAT master initialized.\n");
 

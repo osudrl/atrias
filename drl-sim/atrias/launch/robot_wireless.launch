@@ -1,6 +1,8 @@
 <!-- Michael Anderson -->
 
 <launch>
+  <env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />
+
   <!-- start the ecat kernel interface -->
   <node name="wireless_kern_interface" pkg="atrias_controllers" launch-prefix="xterm -e gdb -ex run --args" type="wireless_kern_interface" />
 

@@ -200,7 +200,7 @@ int calculate_velocity(float& velocity, float& curVal, float& prevVal, uint32_t&
 unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out, unsigned char last_state )
 {
     int i = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++) {
         if (uc_out[i]) {
             if ((uc_out[i]->timestep - last_medulla_time[i]) > 100000) {
                 current_medulla_time[i] =  ((uint32_t) 0xFFFF)+((uint32_t)uc_out[i]->timestep);
@@ -226,7 +226,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         cwd.controllerStatus.state.thermistorA[0] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[0]);
         cwd.controllerStatus.state.thermistorA[1] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[1]);
         cwd.controllerStatus.state.thermistorA[2] =ADC_TO_TEMP(uc_out[A_INDEX]->thermistor[2]);
-	cwd.controllerStatus.state.limit_switch_A = uc_out[A_INDEX]->limitSW;
+        cwd.controllerStatus.state.limit_switch_A |= uc_out[A_INDEX]->limitSW;
 
         cwd.controllerStatus.state.motorVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->motor_power);
         cwd.controllerStatus.state.logicVoltageA =POWER_ADC_TO_V(uc_out[A_INDEX]->logic_power);
@@ -251,7 +251,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         cwd.controllerStatus.state.thermistorB[0] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[0]);
         cwd.controllerStatus.state.thermistorB[1] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[1]);
         cwd.controllerStatus.state.thermistorB[2] =ADC_TO_TEMP(uc_out[B_INDEX]->thermistor[2]);
-	cwd.controllerStatus.state.limit_switch_B = uc_out[B_INDEX]->limitSW;
+        cwd.controllerStatus.state.limit_switch_B |= uc_out[B_INDEX]->limitSW;
 
         cwd.controllerStatus.state.motorVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->motor_power);
         cwd.controllerStatus.state.logicVoltageB =POWER_ADC_TO_V(uc_out[B_INDEX]->logic_power);
@@ -273,7 +273,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
     }
 
     cwd.controllerStatus.state.command = cwd.controllerInput.command;
-
+/*
     // Medulla stuff for boom
     if (uc_out[BOOM_INDEX]) {
         // Update boom angles
@@ -309,7 +309,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
         cwd.controllerStatus.state.xPosition = (((float)(uc_out[BOOM_INDEX]->encoder[1]))*BOOM_RAD_PER_CNT*BOOM_HOPPING_RADIUS*BOOM_PAN_GEAR_RATIO) + xPositionBase;
         medulla_bad_timestamp_counter[BOOM_INDEX] += calculate_velocity(cwd.controllerStatus.state.xVelocity, cwd.controllerStatus.state.xPosition, last_xPosition, current_medulla_time[BOOM_INDEX], last_medulla_time[BOOM_INDEX]);
     }
-
+*/
     // Update the controller
     control_switcher_state_machine(cwd.controllerInput, cwd.controllerStatus);
     //printf("TORQUE A: %i\n", (int)cwd.controllerStatus.state.motor_torqueA);
@@ -335,7 +335,7 @@ unsigned char state_run( uControllerInput ** uc_in, uControllerOutput ** uc_out,
             last_medulla_time[i] = uc_out[i]->timestep;
     }
 
-    for (i = 0; i > NUM_OF_MEDULLAS_ON_ROBOT; i++) {
+    for (i = 0; i < NUM_OF_MEDULLAS_ON_ROBOT; i++) {
         if (uc_out[i]) {
             if (uc_out[i]->state == 5)   // If the medulla is in error
                 return STATE_ERROR;
