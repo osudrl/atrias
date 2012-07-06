@@ -31,7 +31,7 @@ int main(void) {
 
 	io_pin_t eeprom = io_init_pin(PORTE,0);
 	io_pin_t irq = io_init_pin(PORTE,1);
-	volatile ecat_slave_t ecat = ecat_init_slave(&PORTE,&SPIE,eeprom,irq);
+	ecat_slave_t ecat = ecat_init_slave(&PORTE,&SPIE,eeprom,irq);
 	ecat_init_sync_managers(&ecat,rx_sm,6,0x1000,tx_sm,6,0x2000);
 
 	ecat_pdo_entry_t rx_pdos[] = {{&command,1},{&motor_current,2}};

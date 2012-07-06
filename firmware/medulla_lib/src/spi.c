@@ -7,7 +7,7 @@
 #define SPI_CLK 7
 
 /// Configures the buffers for a spi port
-static void _spi_configure_buffers(_spi_buffer_t *spi_buffer, uint8_t *tx_data, uint8_t tx_data_length, uint8_t *rx_data, uint8_t rx_data_length);
+static void _spi_configure_buffers(volatile _spi_buffer_t *spi_buffer, uint8_t *tx_data, uint8_t tx_data_length, uint8_t *rx_data, uint8_t rx_data_length);
 
 spi_port_t spi_init_port(PORT_t *spi_port, SPI_t *spi_register, bool uses_chip_select) {
 	// Store values into the spi_port_t struct
@@ -34,21 +34,21 @@ spi_port_t spi_init_port(PORT_t *spi_port, SPI_t *spi_register, bool uses_chip_s
 	return port;
 }
 
-inline int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length) {
+inline int spi_start_transmit(volatile spi_port_t *spi_port, void *data, uint8_t data_length) {
 	if (data_length == 0)	// Don't even bother transmitting
 		return 0;
 	// To start just a transmit, all we need to do is start a transmit_receive transaction with the rx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, data, data_length, 0, 0);
 }
 
-inline int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length) {
+inline int spi_start_receive(volatile spi_port_t *spi_port, void *data, uint8_t data_length) {
 	if (data_length == 0) // Don't bother receiveing
 		return 0;
 	// To start just a receive, we just need to start a transmit/receive transaction with a tx_data_length set to zero.
 	return spi_start_transmit_receive(spi_port, 0, 0, data, data_length);
 }
 
-int spi_start_transmit_receive(spi_port_t *spi_port, void *tx_data, uint8_t tx_data_length, void *rx_data, uint8_t rx_data_length) {
+int spi_start_transmit_receive(volatile spi_port_t *spi_port, void *tx_data, uint8_t tx_data_length, void *rx_data, uint8_t rx_data_length) {
 	// If this spi_port already has a transfer underway, then returrn -1
 	if (spi_port->transaction_underway == true)
 		return -1;
@@ -96,7 +96,7 @@ int spi_start_transmit_receive(spi_port_t *spi_port, void *tx_data, uint8_t tx_d
 	return 0;
 }
 
-static void _spi_configure_buffers(_spi_buffer_t *spi_buffer, uint8_t *tx_data, uint8_t tx_data_length, uint8_t *rx_data, uint8_t rx_data_length) {
+static void _spi_configure_buffers(volatile _spi_buffer_t *spi_buffer, uint8_t *tx_data, uint8_t tx_data_length, uint8_t *rx_data, uint8_t rx_data_length) {
 
         // set output bufffer address and length
         spi_buffer->tx_buffer = tx_data;
@@ -117,12 +117,12 @@ static void _spi_configure_buffers(_spi_buffer_t *spi_buffer, uint8_t *tx_data, 
 
 }
 
-void spi_assert_cs(spi_port_t *spi_port) {
+inline void spi_assert_cs(volatile spi_port_t *spi_port) {
 	if (spi_port->uses_chip_select)
 		spi_port->spi_port->OUTCLR = (1<<SPI_CS);
 }
 
-void spi_deassert_cs(spi_port_t *spi_port) {
+inline void spi_deassert_cs(volatile spi_port_t *spi_port) {
 	if (spi_port->uses_chip_select)
 		spi_port->spi_port->OUTSET = (1<<SPI_CS);
 }

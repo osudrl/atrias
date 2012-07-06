@@ -9,11 +9,18 @@
  *  to run while SPI communications are running. Callbacks are provided on
  *  conpletion of transmit and receive.
  *
- *  NOTE: The io buffer cannot be larger than 255 bytes, so any one data transfer
+ *  @note The io buffer cannot be larger than 255 bytes, so any one data transfer
  *  cannot be larger than this.
- * 
- *  NOTE 2: The slave select pin will always be set as an output. This is the
+ *
+ *  @par
+ *  @note The slave select pin will always be set as an output. This is the
  *  only way that the SPI hardware will go into SPI master mode. 
+ *
+ *  @par
+ *  @note Because the spi_port_t struct can be modified inside the intrrupt
+ *  context it is important to define all spi_port_t variables as volatile. If
+ *  this is not done, gcc not see that the variable can change. This can cause
+ *  problems in particular while waiting for the transaction_underway flag.
  */
 
 #include <avr/io.h>
@@ -49,7 +56,7 @@ typedef struct {
 	uint8_t *rx_buffer;			/**< Pointer to the address of the rx buffer */
 	uint8_t rx_buffer_size;			/**< Length of rx buffer, length must be < 255 bytes */
 	uint8_t io_buffer_position;		/**< Current read/write position in the rx buffer */
-	spi_port_t *spi_port;
+	volatile spi_port_t *spi_port;
 } _spi_buffer_t;
 
 _spi_buffer_t _spi_buffer_c,	/**< @brief Struct for storing buffer information for SPIC */
@@ -144,7 +151,7 @@ spi_port_t spi_init_port(PORT_t *spi_port, SPI_t *spi_register, bool  uses_chip_
  *  @return -1 - SPI port is busy
  *  @return -2 - SPI hardware is busy
  */
-int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length);
+int spi_start_transmit(volatile spi_port_t *spi_port, void *data, uint8_t data_length);
 
 /** @brief Start a receive SPI transaction
  *
@@ -158,7 +165,7 @@ int spi_start_transmit(spi_port_t *spi_port, void *data, uint8_t data_length);
  *  @return -1 - SPI port is busy
  *  @return -2 - SPI hardware is busy
  */
-int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length);
+int spi_start_receive(volatile spi_port_t *spi_port, void *data, uint8_t data_length);
 
 /** @brief Start a transmit/receive SPI transaction
  *
@@ -176,9 +183,18 @@ int spi_start_receive(spi_port_t *spi_port, void *data, uint8_t data_length);
  *  @return -1 - SPI port is busy
  *  @return -2 - SPI hardware is busy
  */
-int spi_start_transmit_receive(spi_port_t *spi_port, void *tx_data, uint8_t tx_data_length, void *rx_data, uint8_t rx_data_length); 
+int spi_start_transmit_receive(volatile spi_port_t *spi_port, void *tx_data, uint8_t tx_data_length, void *rx_data, uint8_t rx_data_length); 
 
-void spi_assert_cs(spi_port_t *spi_port);
-void spi_deassert_cs(spi_port_t *spi_port);
+/** @brief Asserts the Chip Select (Slave Select) pin if enabled
+ *
+ *  @param spi_port SPI port to assert CS pin on
+ */
+void spi_assert_cs(volatile spi_port_t *spi_port);
+
+/** @brief Releases the Chip Select (Slave Select) pin if it is enabled
+ *
+ *  @param spi_port SPI port to deassert CS pin on
+ */
+void spi_deassert_cs(volatile spi_port_t *spi_port);
 
 #endif //SPI_H
