@@ -172,12 +172,12 @@ bool serviceCallback(atrias_msgs::data_log_srv::Request& req, atrias_msgs::data_
         }
         catch (char const* str) {
             ROS_INFO(str);
-	        sprintf(buffer, "%s/atrias_preempt_rt_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/newgui/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
+	        sprintf(buffer, "%s/atrias_preempt_rt_%02d%02d%02d_%02d%02d%02d.log", "/home/drl/atrias/trunk/drl-sim/atrias/log_files", tInfo->tm_year%100, tInfo->tm_mon+1, tInfo->tm_mday, tInfo->tm_hour, tInfo->tm_min, tInfo->tm_sec);
 
             try {
                 log_file_fp = fopen(buffer, "w");   // Try opening again.
                 if (log_file_fp == NULL) {
-                    throw "[data_logger] /home/drl/newgui/drl-sim/atrias/log_files is inaccessible!";
+                    throw "[data_logger] /home/drl/atrias/trunk/drl-sim/atrias/log_files is inaccessible!";
                 }
             }
             catch (char const* str) {
