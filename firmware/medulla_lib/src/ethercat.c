@@ -1,6 +1,4 @@
 #include "ethercat.h"
-#include <stdio.h>
-#include <util/delay.h>
 
 ecat_slave_t ecat_init_slave(PORT_t *spi_port, SPI_t *spi_register, io_pin_t eeprom_pin, io_pin_t irq_pin) {
 	ecat_slave_t slave;

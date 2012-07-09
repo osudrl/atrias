@@ -165,7 +165,7 @@ ISR(USARTD0_TXC_vect) {
         _UART_TX_HANDLER(USARTD0,_uart_buffer_d0);
 }
 
-ISR(USARTCD_RXC_vect) {
+ISR(USARTD0_RXC_vect) {
 	_UART_RX_HANDLER(USARTD0,_uart_buffer_d0);
 }
 #endif

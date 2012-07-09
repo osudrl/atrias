@@ -8,6 +8,7 @@
 #include "cpu.h"
 #include "ethercat.h"
 #include "io_pin.h"
+#include "pwm.h"
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -17,17 +18,20 @@ uint8_t status;
 
 int main(void) {
 	cpu_set_clock_source(cpu_32mhz_clock);
-	PORTC.DIRSET = 0b11;
-	PMIC.CTRL = PMIC_MEDLVLEN_bm;
+	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
 	sei();
+
+	//PORTC.DIRSET = 0b11;
 
 	uint8_t outbuffer[128];
 	uint8_t inbuffer[128];
-	uint8_t rx_sm[6];
-	uint8_t tx_sm[6];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
 	printf("Starting\n");
+
+	/*
+	uint8_t rx_sm[6];
+	uint8_t tx_sm[6];
 
 	io_pin_t eeprom = io_init_pin(PORTE,0);
 	io_pin_t irq = io_init_pin(PORTE,1);
@@ -44,9 +48,19 @@ int main(void) {
 		*timestep = *command;
 		*encoder0 = ((uint32_t)(*command))*1000;
 		ecat_write_tx_sm(&ecat);
-	}
+	}*/
 
-	while(1);
+	io_pin_t pwm_pin = io_init_pin(PORTF,5);
+	pwm_output_t pwm = pwm_initilize_output(pwm_pin,pwm_div64,1000);
+
+	pwm_enable_output(&pwm);
+
+	uint16_t cnt = 0;
+	while(1) {
+		cnt = (cnt+1)%1024;
+		pwm_set_output(&pwm,cnt);
+		_delay_ms(10);
+	}
 	return 1;
 }
 
