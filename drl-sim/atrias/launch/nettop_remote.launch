@@ -1,22 +1,17 @@
 <launch>
-    <machine name       = "zotac-1" 
-             address    = "zotac-1" 
+    <!-- Run desktop.launch on local machine. -->
+    <include file="$(find atrias)/launch/desktop.launch" />
+
+    <!-- Set up remote machine information. -->
+    <machine name       = "zotac-1"
+             address    = "zotac-1"
              user       = "drl"
              env-loader = "/opt/ros/electric/setup.sh"
              default    = "true" />
-    <!--<env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />-->
 
-    <!-- Launch the Orocos script for atrias_ecat_master -->
-    <node name    = "atrias_ecat_master_rosnode"
-          pkg     = "ocl"
-          type    = "deployer-gnulinux"
-          args    = "-s $(find atrias_ecat_master)/application.ops -linfo --"
-          output  = "screen">
-    </node>
-
-    <!-- Start the data logger. -->
-    <node name    = "data_logger"
+    <!-- Start the magic shell on the remote machine. -->
+    <node name    = "magic_shell"
           pkg     = "atrias"
-          type    = "data_logger" />
+          type    = "realtime_nettop.sh" />
 </launch>
 
