@@ -5,12 +5,12 @@
     <!-- Set up remote machine information. -->
     <machine name       = "zotac-1"
              address    = "zotac-1"
-             user       = "drl"
-             env-loader = "/opt/ros/electric/setup.sh"
+             user       = "root"
+             env-loader = "/opt/ros/fuerte/env.sh"
              default    = "true" />
 
-    <!-- Start the magic shell on the remote machine. -->
-    <node name    = "magic_shell"
+    <!-- Start the Utterly Confusing Latency-Arresting Kernel Utility on the remote machine. -->
+    <node name    = "uclaku"
           pkg     = "atrias"
           type    = "realtime_nettop.sh" />
 </launch>
