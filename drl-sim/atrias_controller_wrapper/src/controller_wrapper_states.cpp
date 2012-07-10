@@ -23,7 +23,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
         buffer[0][(bufferPos[0]++)] = uc_out[A_INDEX]->TRANS_ANGLE;
         buffer[1][(bufferPos[1]++)] = uc_out[A_INDEX]->LEG_SEG_ANGLE;
     }
-    if (uc_out[A_INDEX]) {
+    if (uc_out[B_INDEX]) {
         buffer[2][(bufferPos[2]++)] = uc_out[B_INDEX]->TRANS_ANGLE;
         buffer[3][(bufferPos[3]++)] = uc_out[B_INDEX]->LEG_SEG_ANGLE;
     }
@@ -48,6 +48,7 @@ void control_wrapper_state_machine( uControllerInput ** uc_in, uControllerOutput
     encAverage[1] /= 128;
     encAverage[2] /= 128;
     encAverage[3] /= 128;
+
 
     static unsigned char last_state = STATE_IDLE;
     static unsigned char next_state = STATE_IDLE;
