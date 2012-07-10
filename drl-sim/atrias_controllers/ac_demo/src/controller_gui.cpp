@@ -28,6 +28,8 @@ ControllerInitResult guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("controller6_btn", demo_ctrl_controller6_btn);
     demo_ctrl_state = DEMO_CTRL_STOPPED;
 
+    demo_ctrl_controller2_btn->set_sensitive(false);
+
     if (demo_ctrl_p_scale && demo_ctrl_d_scale && demo_ctrl_hip_p_scale
             && demo_ctrl_hip_d_scale && demo_ctrl_amplitude_scale && demo_ctrl_start_btn
             && demo_ctrl_stop_btn && demo_ctrl_controller1_btn && demo_ctrl_controller2_btn
