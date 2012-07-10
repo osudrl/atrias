@@ -28,7 +28,7 @@ public:
 
 private:
 	void update_medulla_status(controller_status);
-	GLib::ustring decode_limit_switch(uint8_t switches);
+	void decode_limit_switch(Glib::ustring *error, uint8_t switches);
 	void update_robot_status(controller_status);
 
 	//CPU Usage variables
