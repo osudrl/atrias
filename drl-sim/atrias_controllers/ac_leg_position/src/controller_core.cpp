@@ -29,9 +29,6 @@ void controllerUpdate(robot_state state, ByteArray input, ControllerOutput *outp
     output->motor_torqueA = id->p_gain * (des_mtr_angA - state.motor_angleA) - id->d_gain * state.motor_velocityA;
     output->motor_torqueB = id->p_gain * (des_mtr_angB - state.motor_angleB) - id->d_gain * state.motor_velocityB;
     output->motor_torque_hip = id->hip_p_gain * (des_hip_ang - state.motor_angle_hip) - id->hip_d_gain * state.motor_velocity_hip;
-    
-    printf("Des Leg Ang %f, Des Leg Len: %f, Mtr B Pos: %f, Mtr B Vel %f, Des Mtr B pos: %f, P Gain %f, D Gain %f, B Torque: %f\n",
-            id->leg_ang, id->leg_len, state.motor_angleB, state.motor_velocityB, des_mtr_angB, id->p_gain, id->d_gain, output->motor_torqueB);
 }
 
 void controllerTakedown() {
