@@ -11,12 +11,12 @@ CPU_DMA_LATENCY_PID="$!"
 
 cset set -c 1,3 user
 cset set -c 0,2 system
-cset proc -k on --force -t system -f root
+cset proc -k on --force -m -t system -f root
 
 cset shield -e roslaunch -- atrias nettop.launch
 
-cset proc -k on --force -t root -f system
-cset proc -k on --force -t root -f user
+#cset proc -k on --force -t root -f system
+#cset proc -k on --force -t root -f user
 cset set -d user
 cset set -d system
 
