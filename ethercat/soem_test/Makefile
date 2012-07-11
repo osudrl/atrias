@@ -19,6 +19,8 @@
 
 APPNAME = simple_test
 
+LIBS += rt
+
 all: $(APPNAME)
 
 include $(PRJ_ROOT)/make/app.mk

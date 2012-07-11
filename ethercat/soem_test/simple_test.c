@@ -134,6 +134,8 @@ void simpletest(char *ifname)
 
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
+					ec_send_processdata();
+					wkc = ec_receive_processdata(500);
 
 					if(wkc >= expectedWKC)
 					{
