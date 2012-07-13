@@ -21,13 +21,17 @@ pwm_output_t pwm_initilize_output(io_pin_t pwm_pin, pwm_clk_div_t clock_divider,
 		pwm.tc0_register = &TCF0;
 		pwm.tc1_register = &TCF1;
 	}
-	else 
+	else {
+		pwm.tc0_register = 0;
+		pwm.tc1_register = 0;
+		pwm.cc_register = 0; 
 		return pwm; // This port doesn't have pwm on it
+	}
 
 	// Now that we have both counter registers for this port, then we have to figure out which counter to use
 	if (pwm_pin.pin < 4) {// Use TC0 if we are on pins 0-3
 		pwm.tc1_register = 0; // Clear the tc1 register value to indicate we are using TC0
-		pwm.cc_register = (uint16_t)((uint8_t*)pwm.tc0_register + 0x28 + 0x2*pwm_pin.pin); // Note: We need to cast the tcx_register to a uint8_t pointer so that we can add to the memory address normally. (If we don't C will add two bytes for every 1 integer we add.
+		pwm.cc_register = (uint16_t*)((uint8_t*)pwm.tc0_register + 0x28 + 0x2*pwm_pin.pin); // Note: We need to cast the tcx_register to a uint8_t pointer so that we can add to the memory address normally. (If we don't C will add two bytes for every 1 integer we add.
 		
 		// Now configure the counter
 		pwm.tc0_register->PER = cnt_max;
@@ -43,8 +47,12 @@ pwm_output_t pwm_initilize_output(io_pin_t pwm_pin, pwm_clk_div_t clock_divider,
 		pwm.tc1_register->CTRLB = (pwm.tc1_register->CTRLB & ~TC1_WGMODE_gm) | TC_WGMODE_SS_gc; 
 		pwm.tc1_register->CTRLA = (pwm.tc1_register->CTRLA & ~TC1_CLKSEL_gm) | clock_divider;
 	}
-	else
+	else {
+		pwm.tc0_register = 0;
+		pwm.tc1_register = 0;
+		pwm.cc_register = 0; 
 		return pwm; // This pin cannot generate PWM
+	}
 
 	// If we have we have gotten this far without returning, then we are good to configure the pin as an output
 	io_set_direction(pwm_pin,io_output);
@@ -72,6 +80,7 @@ void pwm_disable_output(pwm_output_t *pwm_output) {
 }
 
 void pwm_set_output(pwm_output_t *pwm_output, uint16_t value) {
-	*(pwm_output->cc_register) = value;
+	if (pwm_output->cc_register) // Make sure that the cc pointer actually points to something before we use it
+		*(pwm_output->cc_register) = value;
 }
 

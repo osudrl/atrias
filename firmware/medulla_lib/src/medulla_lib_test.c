@@ -9,6 +9,13 @@
 #include "ethercat.h"
 #include "io_pin.h"
 #include "pwm.h"
+#include "limit_switch.h"
+#include "estop.h"
+
+//LIMIT_SW_USES_PORT(PORTK)
+//LIMIT_SW_USES_COUNTER(TCC0)
+ESTOP_USES_PORT(PORTJ)
+//ESTOP_USES_COUNTER(TCC0)
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -16,18 +23,35 @@ uint16_t *timestep;
 uint32_t *encoder0;
 uint8_t status;
 
+void handle_estop() {
+	PORTA.OUTTGL = 1<<7;
+}
+
 int main(void) {
 	cpu_set_clock_source(cpu_32mhz_clock);
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
+	cpu_configure_interrupt_level(cpu_interrupt_level_high, true);
 	sei();
-
-	//PORTC.DIRSET = 0b11;
+	PORTA.DIRSET = 1<<7;
+	//PORTC.DIRSET = 0b1111;
+//	PORTC.OUTSET = 0b100;
+	//if (limit_sw_enable_port(&limitSW) == 0)
+//		PORTC.OUTSET = 0b1;
 
 	uint8_t outbuffer[128];
 	uint8_t inbuffer[128];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
 	printf("Starting\n");
+
+	io_pin_t panic_pin = io_init_pin(PORTJ,6);
+	io_pin_t estop_pin = io_init_pin(PORTJ,7);
+	estop_port_t estop = estop_init_port(panic_pin,estop_pin,&TCC0,&handle_estop);
+	estop_enable_port(&estop);
+
+	//limit_sw_port_t limitSW = limit_sw_init_port(&PORTK, 0b100, &TCC0, *handle_estop);
+	//_delay_ms(10);
+	//limit_sw_enable_port(&limitSW);
 
 	/*
 	uint8_t rx_sm[6];
@@ -50,16 +74,16 @@ int main(void) {
 		ecat_write_tx_sm(&ecat);
 	}*/
 
-	io_pin_t pwm_pin = io_init_pin(PORTF,5);
-	pwm_output_t pwm = pwm_initilize_output(pwm_pin,pwm_div64,1000);
+//	io_pin_t pwm_pin = io_init_pin(PORTF,5);
+//	pwm_output_t pwm = pwm_initilize_output(pwm_pin,pwm_div64,1000);
 
-	pwm_enable_output(&pwm);
+//	pwm_enable_output(&pwm);
 
-	uint16_t cnt = 0;
+//	uint16_t cnt = 0;
 	while(1) {
-		cnt = (cnt+1)%1024;
-		pwm_set_output(&pwm,cnt);
-		_delay_ms(10);
+//		cnt = (cnt+1)%1024;
+//		pwm_set_output(&pwm,cnt);
+//		_delay_ms(10);
 	}
 	return 1;
 }
