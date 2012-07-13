@@ -29,6 +29,11 @@
 #define LOOP_PERIOD_NS 1000000
 #define OFFSET_NS       100000
 
+struct timespec startTime = {
+	0,
+	0
+};
+
 struct timespec wakeupTime = {
 	0,
 	0
@@ -49,10 +54,16 @@ int diff(struct timespec newtime, struct timespec oldtime) {
 	return 1000000000*(newtime.tv_sec - oldtime.tv_sec) + newtime.tv_nsec - oldtime.tv_nsec;
 }
 
-void wait_for_next_cycle(int64 DCtime) {
+void wait_for_next_cycle() {
+	clock_gettime(CLOCK_MONOTONIC, &curTime);
+	sleeptime.tv_nsec = LOOP_PERIOD_NS - curTime.tv_nsec % LOOP_PERIOD_NS;
+	nanosleep(&sleeptime, NULL);
+}
+
+void wait_for_next_cycle_dc(int64 DCtime) {
 	clock_gettime(CLOCK_MONOTONIC, &curTime);
 	sleeptime.tv_nsec = (LOOP_PERIOD_NS - ((DCtime + LOOP_PERIOD_NS/2) % LOOP_PERIOD_NS
-	                    - (LOOP_PERIOD_NS/2)) - diff(curTime, wakeupTime)) % LOOP_PERIOD_NS;
+	                                       - (LOOP_PERIOD_NS/2)) - diff(curTime, wakeupTime)) % LOOP_PERIOD_NS;
 	nanosleep(&sleeptime, NULL);
 	clock_gettime(CLOCK_MONOTONIC, &wakeupTime);
 }
@@ -88,6 +99,7 @@ void simpletest(char *ifname)
 			ec_config_map(&IOmap);
 
 			ec_configdc();
+			clock_gettime(CLOCK_MONOTONIC, &startTime);
 
 			printf("Slaves mapped, state to SAFE_OP.\n");
 			/* wait for all slaves to reach SAFE_OP state */
@@ -131,11 +143,12 @@ void simpletest(char *ifname)
 				for(i = 1; i <= 1000000; i++)
 				{
 					ec_slave[0].outputs[0] = i % 256;
-
+					
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
-					ec_send_processdata();
-					wkc = ec_receive_processdata(500);
+					
+					clock_gettime(CLOCK_MONOTONIC, &curTime);
+					printf("%u, %u\n", wkc, ec_FPWRw(1, 0x912, /*(1000000000*(curTime.tv_sec - startTime.tv_sec) + curTime.tv_nsec - startTime.tv_nsec) % 1 << 31*/ 0x0016, 500));
 
 					if(wkc >= expectedWKC)
 					{
@@ -154,7 +167,7 @@ void simpletest(char *ifname)
 						//printf(" T:%lld\n",ec_DCtime);
 						needlf = TRUE;
 					}
-					wait_for_next_cycle(ec_DCtime);
+					wait_for_next_cycle();
 				}
 				inOP = FALSE;
 			}
