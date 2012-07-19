@@ -158,14 +158,14 @@ inline uint8_t uart_rx_byte(uart_port_t *port) {
 static _uart_buffer_t* _uart_get_hw_buffer(uart_port_t *port) {
 	_uart_buffer_t *current_buffer;
 	switch ((intptr_t)(port->uart_register)) {
-		case (intptr_t)(&USARTC0): current_buffer = &_uart_buffer_c0; break;
-		case (intptr_t)(&USARTC1): current_buffer = &_uart_buffer_c1; break;
-		case (intptr_t)(&USARTD0): current_buffer = &_uart_buffer_d0; break;
-		case (intptr_t)(&USARTD1): current_buffer = &_uart_buffer_d1; break;
-		case (intptr_t)(&USARTE0): current_buffer = &_uart_buffer_e0; break;
-		case (intptr_t)(&USARTE1): current_buffer = &_uart_buffer_e1; break;
-		case (intptr_t)(&USARTF0): current_buffer = &_uart_buffer_f0; break;
-		case (intptr_t)(&USARTF1): current_buffer = &_uart_buffer_f1; break;
+		case (intptr_t)(&USARTC0): current_buffer = &_uart_buffer_USARTC0; break;
+		case (intptr_t)(&USARTC1): current_buffer = &_uart_buffer_USARTC1; break;
+		case (intptr_t)(&USARTD0): current_buffer = &_uart_buffer_USARTD0; break;
+		case (intptr_t)(&USARTD1): current_buffer = &_uart_buffer_USARTD1; break;
+		case (intptr_t)(&USARTE0): current_buffer = &_uart_buffer_USARTE0; break;
+		case (intptr_t)(&USARTE1): current_buffer = &_uart_buffer_USARTE1; break;
+		case (intptr_t)(&USARTF0): current_buffer = &_uart_buffer_USARTF0; break;
+		case (intptr_t)(&USARTF1): current_buffer = &_uart_buffer_USARTF1; break;
 		default: current_buffer = 0;
 	}
 	

@@ -55,35 +55,35 @@ int spi_start_transmit_receive(volatile spi_port_t *spi_port, void *tx_data, uin
 	
 	// If the hardware already has a transfer underway, then return -2. Otherwise, take cntrol of the hardware
 	if (spi_port->spi_register == &SPIC) {
-		if (_spi_buffer_c.spi_port != 0)
+		if (_spi_buffer_SPIC.spi_port != 0)
 			return -2;
 		else { 
-			_spi_buffer_c.spi_port = spi_port;
-			_spi_configure_buffers(&_spi_buffer_c, tx_data, tx_data_length, rx_data, rx_data_length);
+			_spi_buffer_SPIC.spi_port = spi_port;
+			_spi_configure_buffers(&_spi_buffer_SPIC, tx_data, tx_data_length, rx_data, rx_data_length);
 		}
 	}
 	else if (spi_port->spi_register == &SPID) {
-		if (_spi_buffer_d.spi_port != 0)
+		if (_spi_buffer_SPID.spi_port != 0)
 			return -2;
 		else {
-			_spi_buffer_d.spi_port = spi_port;
-			_spi_configure_buffers(&_spi_buffer_d, tx_data, tx_data_length, rx_data, rx_data_length);
+			_spi_buffer_SPID.spi_port = spi_port;
+			_spi_configure_buffers(&_spi_buffer_SPID, tx_data, tx_data_length, rx_data, rx_data_length);
 		}
 	}
 	else if (spi_port->spi_register == &SPIE) {
-		if (_spi_buffer_e.spi_port != 0)
+		if (_spi_buffer_SPIE.spi_port != 0)
 			return -2;
 		else {
-			_spi_buffer_e.spi_port = spi_port;
-			_spi_configure_buffers(&_spi_buffer_e, tx_data, tx_data_length, rx_data, rx_data_length);
+			_spi_buffer_SPIE.spi_port = spi_port;
+			_spi_configure_buffers(&_spi_buffer_SPIE, tx_data, tx_data_length, rx_data, rx_data_length);
 		}
 	}
 	else if (spi_port->spi_register == &SPIF) {
-		if (_spi_buffer_f.spi_port != 0)
+		if (_spi_buffer_SPIF.spi_port != 0)
 			return -2;
 		else { 
-			_spi_buffer_f.spi_port = spi_port;
-			_spi_configure_buffers(&_spi_buffer_f, tx_data, tx_data_length, rx_data, rx_data_length);
+			_spi_buffer_SPIF.spi_port = spi_port;
+			_spi_configure_buffers(&_spi_buffer_SPIF, tx_data, tx_data_length, rx_data, rx_data_length);
 		}
 	}
 	else

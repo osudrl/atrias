@@ -91,134 +91,47 @@ typedef struct {
 } _uart_buffer_t;
 
 // _uart_buffer_t structs for each hardware USART port
-_uart_buffer_t _uart_buffer_c0,		/**< @brief Struct for storing the buffer information for USARTC0 */
-               _uart_buffer_c1,         /**< @brief Struct for storing the buffer information for USARTC1 */
-               _uart_buffer_d0,         /**< @brief Struct for storing the buffer information for USARTD0 */
-               _uart_buffer_d1,         /**< @brief Struct for storing the buffer information for USARTD1 */
-               _uart_buffer_e0,         /**< @brief Struct for storing the buffer information for USARTE0 */
-               _uart_buffer_e1,         /**< @brief Struct for storing the buffer information for USARTE1 */
-               _uart_buffer_f0,         /**< @brief Struct for storing the buffer information for USARTF0 */
-               _uart_buffer_f1;         /**< @brief Struct for storing the buffer information for USARTF1 */
+_uart_buffer_t _uart_buffer_USARTC0,		/**< @brief Struct for storing the buffer information for USARTC0 */
+               _uart_buffer_USARTC1,		/**< @brief Struct for storing the buffer information for USARTC1 */
+               _uart_buffer_USARTD0,		/**< @brief Struct for storing the buffer information for USARTD0 */
+               _uart_buffer_USARTD1,		/**< @brief Struct for storing the buffer information for USARTD1 */
+               _uart_buffer_USARTE0,		/**< @brief Struct for storing the buffer information for USARTE0 */
+               _uart_buffer_USARTE1,		/**< @brief Struct for storing the buffer information for USARTE1 */
+               _uart_buffer_USARTF0,		/**< @brief Struct for storing the buffer information for USARTF0 */
+               _uart_buffer_USARTF1;		/**< @brief Struct for storing the buffer information for USARTF1 */
 
-/** @brief Macro for handling the transmit complete interrupt
+/** @brief Macro to define the interrupt handler for a uart port.
  *
- *  To reduce overhead in the interrupt service rutines, we use a macro to
- *  define behavior of the ISRs. This macro is used in all of the transmit
- *  receive interrupts.
+ *  Because this driver is interrupt driven, interrupt service rutines need to
+ *  be define to handle the interrupts. Calling this macro inserts the interrupt
+ *  handlers for a single port into the users's program. This is usually done at
+ *  the top of the main source file.
  *
- *  @param _UART_REG The USART_t struct of USART being used
- *  @param _UART_BUFFER The global _uart_buffer_t struct for the port
+ *  @param USART_PORT USART_t struct for which to define the interrupt
  */
-#define _UART_TX_HANDLER(_UART_REG, _UART_BUFFER) \
-	if (_UART_BUFFER.tx_buffer_start != _UART_BUFFER.tx_buffer_end) { \
+#define UART_USES_PORT(USART_PORT) \
+ISR(USART_PORT##_TXC_vect) { \
+	if (_uart_buffer_##USART_PORT.tx_buffer_start != _uart_buffer_##USART_PORT.tx_buffer_end) { \
                 /* There is actually data to send, so increment the start position and send that byte. Make sure to handle wrap arounds*/ \
-		_UART_BUFFER.currently_transmitting = true; \
-                _UART_REG.DATA = _UART_BUFFER.tx_buffer[_UART_BUFFER.tx_buffer_start];      /* write the data into the output buffer */ \
-                _UART_BUFFER.tx_buffer_start = (_UART_BUFFER.tx_buffer_start+1)%_UART_BUFFER.tx_buffer_size; \
+		_uart_buffer_##USART_PORT.currently_transmitting = true; \
+                USART_PORT.DATA = _uart_buffer_##USART_PORT.tx_buffer[_uart_buffer_##USART_PORT.tx_buffer_start];      /* write the data into the output buffer */ \
+                _uart_buffer_##USART_PORT.tx_buffer_start = (_uart_buffer_##USART_PORT.tx_buffer_start+1)%_uart_buffer_##USART_PORT.tx_buffer_size; \
         } \
 	else \
-		_UART_BUFFER.currently_transmitting = false; \
-
-/** @brief Macro for handling the receive complete interrupt
- *
- *  To reduce overhead in the interrupt service rutines, we use a macro to
- *  define behavior of the ISRs. This macro is used in all of the receive
- *  receive interrupts.
- *
- *  @param _UART_REG The USART_t struct of USART being used
- *  @param _UART_BUFFER The global _uart_buffer_t struct for the port
- */
-#define _UART_RX_HANDLER(_UART_REG, _UART_BUFFER) \
+		_uart_buffer_##USART_PORT.currently_transmitting = false; \
+} \
+\
+ISR(USART_PORT##_RXC_vect) { \
         /* Check if the buffer is full, if it is, then throw out the oldest data by incrementing rx_buffer_start */ \
-	if (((_UART_BUFFER.rx_buffer_start != 0) && (_UART_BUFFER.rx_buffer_end == _UART_BUFFER.rx_buffer_start-1)) \
-	   || ((_UART_BUFFER.rx_buffer_start == 0) && (_UART_BUFFER.rx_buffer_end == _UART_BUFFER.rx_buffer_size-1))) { \
+	if (((_uart_buffer_##USART_PORT.rx_buffer_start != 0) && (_uart_buffer_##USART_PORT.rx_buffer_end == _uart_buffer_##USART_PORT.rx_buffer_start-1)) \
+	   || ((_uart_buffer_##USART_PORT.rx_buffer_start == 0) && (_uart_buffer_##USART_PORT.rx_buffer_end == _uart_buffer_##USART_PORT.rx_buffer_size-1))) { \
 		/* There is not enough room, so make so space */ \
-		_UART_BUFFER.rx_buffer_start = ((_UART_BUFFER.rx_buffer_start+1) % _UART_BUFFER.rx_buffer_size); \
+		_uart_buffer_##USART_PORT.rx_buffer_start = ((_uart_buffer_##USART_PORT.rx_buffer_start+1) % _uart_buffer_##USART_PORT.rx_buffer_size); \
 	} \
 	/* Now that we have space, copy the byte into the buffer and increment the end */ \
-	_UART_BUFFER.rx_buffer[_UART_BUFFER.rx_buffer_end] = _UART_REG.DATA; \
-	_UART_BUFFER.rx_buffer_end = ((_UART_BUFFER.rx_buffer_end+1) % _UART_BUFFER.rx_buffer_size); \
-        
-
-#ifdef UART_USES_C0
-ISR(USARTC0_TXC_vect) {
-	_UART_TX_HANDLER(USARTC0,_uart_buffer_c0);
-}
-
-ISR(USARTC0_RXC_vect) {
-	_UART_RX_HANDLER(USARTC0,_uart_buffer_c0);
-}
-#endif
-
-#ifdef UART_USES_C1
-ISR(USARTC1_TXC_vect) {
-        _UART_TX_HANDLER(USARTC1,_uart_buffer_c1);
-}
-
-ISR(USARTC1_RXC_vect) {
-	_UART_RX_HANDLER(USARTC1,_uart_buffer_c1);
-}
-#endif
-
-#ifdef UART_USES_D0
-ISR(USARTD0_TXC_vect) {
-        _UART_TX_HANDLER(USARTD0,_uart_buffer_d0);
-}
-
-ISR(USARTD0_RXC_vect) {
-	_UART_RX_HANDLER(USARTD0,_uart_buffer_d0);
-}
-#endif
-
-#ifdef UART_USES_D1
-ISR(USARTD1_TXC_vect) {
-        _UART_TX_HANDLER(USARTD1,_uart_buffer_d1);
-}
-
-ISR(USARTD1_RXC_vect) {
-	_UART_RX_HANDLER(USARTD1,_uart_buffer_d1);
-}
-#endif
-
-#ifdef UART_USES_E0
-ISR(USARTE0_TXC_vect) {
-        _UART_TX_HANDLER(USARTE0,_uart_buffer_e0);
-}
-
-ISR(USARTE0_RXC_vect) {
-	_UART_RX_HANDLER(USARTE0,_uart_buffer_e0);
-}
-#endif
-
-#ifdef UART_USES_E1
-ISR(USARTE1_TXC_vect) {
-        _UART_TX_HANDLER(USARTE1,_uart_buffer_e1);
-}
-
-ISR(USARTE1_RXC_vect) {
-	_UART_RX_HANDLER(USARTE1,_uart_buffer_e1);
-}
-#endif
-
-#ifdef UART_USES_F0
-ISR(USARTF0_TXC_vect) {
-        _UART_TX_HANDLER(USARTF0,_uart_buffer_f0);
-}
-
-ISR(USARTF0_RXC_vect) {
-	_UART_RX_HANDLER(USARTF0,_uart_buffer_f0);
-}
-#endif
-
-#ifdef UART_USES_F1
-ISR(USARTF1_TXC_vect) {
-        _UART_TX_HANDLER(USARTF1,_uart_buffer_f1);
-}
-
-ISR(USARTF1_RXC_vect) {
-	_UART_RX_HANDLER(USARTF1,_uart_buffer_f1);
-}
-#endif
+	_uart_buffer_##USART_PORT.rx_buffer[_uart_buffer_##USART_PORT.rx_buffer_end] = USART_PORT.DATA; \
+	_uart_buffer_##USART_PORT.rx_buffer_end = ((_uart_buffer_##USART_PORT.rx_buffer_end+1) % _uart_buffer_##USART_PORT.rx_buffer_size); \
+} \
 
 /** @brief Initilize a UART port.
  *

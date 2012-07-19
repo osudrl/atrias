@@ -44,6 +44,13 @@ typedef struct {
 	uint16_t tx_sm_phy_addr;	/**< Physical address of tx sync manager memory in ESC */
 } ecat_slave_t;
 
+/** @brief This macro aleasees SPI_USES_PORT to ECAT_USES_PORT.
+ *  This allows users to simply use ECAT_USES_PORT instead of SPI_USES PORT when
+ *  they are using this driver. This doesn't change the functionality of the
+ *  SPI_USES_PORT macro, it just makes the users code more readable.
+ */
+#define ECAT_USES_PORT SPI_USES_PORT
+
 /** @brief Struct used to transmit information about PDO entries
  *
  *  This struct is used to pass information about the PDO entries into the

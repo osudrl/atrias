@@ -59,70 +59,44 @@ typedef struct {
 	volatile spi_port_t *spi_port;
 } _spi_buffer_t;
 
-_spi_buffer_t _spi_buffer_c,	/**< @brief Struct for storing buffer information for SPIC */
-              _spi_buffer_d,	/**< @brief Struct for storing buffer informatino for SPID */
-              _spi_buffer_e,	/**< @brief Struct for storing buffer informatino for SPIE */
-              _spi_buffer_f;	/**< @brief Struct for storing buffer informatino for SPIF */
+_spi_buffer_t _spi_buffer_SPIC,	/**< @brief Struct for storing buffer information for SPIC */
+              _spi_buffer_SPID,	/**< @brief Struct for storing buffer informatino for SPID */
+              _spi_buffer_SPIE,	/**< @brief Struct for storing buffer informatino for SPIE */
+              _spi_buffer_SPIF;	/**< @brief Struct for storing buffer informatino for SPIF */
 
-/** @brief Macro that defines the SPI interrupt service routine
+/** @brief This macro includes the appropreate interrupt handler for the SPI driver
+ *  Any program that uses the SPI port driver should call this macro at the
+ *  before the beginning of their program. This will make sure the appropreate
+ *  ISR is compiled in.
  *
- *  The interrupt handlers for all of the SPI interrupts are the same except for
- *  which hardware and _spi_buffer_t structs they reference. Because we want the
- *  the ISR to run as efficiently as possible the generic interupt handler is
- *  defined as macro. This removes function call overhead.
- *
- *  @param _SPI_REGISTER SPI_t register for the SPI port to use
- *  @param _SPI_BUFFER Globally defined _spi_buffer_t from which to get buffer
+ *  @param SPI_PORT SPI_t register for the SPI port to use
  *  information.
  */
-#define _SPI_HANDLE_INTERRUPT(_SPI_REGISTER, _SPI_BUFFER) \
+
+#define SPI_USES_PORT(SPI_PORT) \
+ISR(SPI_PORT##_INT_vect) {\
 	/* we just send a bunch of clock pulses, if we were reading data, collect it into the buffer before incrementing*/ \
-	if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.rx_buffer_size) \
-		_SPI_BUFFER.rx_buffer[_SPI_BUFFER.io_buffer_position] = _SPI_REGISTER.DATA; \
+	if (_spi_buffer_##SPI_PORT.io_buffer_position < _spi_buffer_##SPI_PORT.rx_buffer_size) \
+		_spi_buffer_##SPI_PORT.rx_buffer[_spi_buffer_##SPI_PORT.io_buffer_position] = SPI_PORT.DATA; \
 	\
 	/* Just finished transmitting or receiving a byte, so increment buffer location */ \
-	_SPI_BUFFER.io_buffer_position++; \
+	_spi_buffer_##SPI_PORT.io_buffer_position++; \
 	\
 	/* If we still need to send or receive data, then start the data transfer */ \
-	if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.tx_buffer_size) { \
+	if (_spi_buffer_##SPI_PORT.io_buffer_position < _spi_buffer_##SPI_PORT.tx_buffer_size) { \
 		/* If there is data still to be transmitted, then write it to the output buffer */ \
-		_SPI_REGISTER.DATA = _SPI_BUFFER.tx_buffer[_SPI_BUFFER.io_buffer_position]; \
+		SPI_PORT.DATA = _spi_buffer_##SPI_PORT.tx_buffer[_spi_buffer_##SPI_PORT.io_buffer_position]; \
 	} \
-	else if (_SPI_BUFFER.io_buffer_position < _SPI_BUFFER.rx_buffer_size) { \
+	else if (_spi_buffer_##SPI_PORT.io_buffer_position < _spi_buffer_##SPI_PORT.rx_buffer_size) { \
 		/* If there is no data to be transmitted, but there is still data to be read, send zeros until all the data is in */ \
-		_SPI_REGISTER.DATA = 0; \
+		SPI_PORT.DATA = 0; \
 	} \
 	else { \
 		/* we are done with the transmission, clean up */ \
-		_SPI_BUFFER.spi_port->transaction_underway = false; \
-		_SPI_BUFFER.spi_port = 0; \
+		_spi_buffer_##SPI_PORT.spi_port->transaction_underway = false; \
+		_spi_buffer_##SPI_PORT.spi_port = 0; \
 	} \
-	
-
-#ifdef SPI_USES_PORTC
-ISR(SPIC_INT_vect) {
-	_SPI_HANDLE_INTERRUPT(SPIC,_spi_buffer_c);
-}
-#endif
-
-#ifdef SPI_USES_PORTD
-ISR(SPID_INT_vect) {
-	_SPI_HANDLE_INTERRUPT(SPID,_spi_buffer_d);
-}
-#endif
-
-#ifdef SPI_USES_PORTE
-ISR(SPIE_INT_vect) {
-	_SPI_HANDLE_INTERRUPT(SPIE,_spi_buffer_e);
-}
-#endif
-
-#ifdef SPI_USES_PORTF
-ISR(SPIF_INT_vect) {
-	_SPI_HANDLE_INTERRUPT(SPIF,_spi_buffer_f);
-}
-#endif
-
+}\
 
 
 /** @brief Initilizes a hardware SPI port on the xMega

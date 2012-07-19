@@ -1,9 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define UART_USES_E0
-#define SPI_USES_PORTE
-
 #include "uart.h"
 #include "cpu.h"
 #include "ethercat.h"
@@ -11,11 +8,17 @@
 #include "pwm.h"
 #include "limit_switch.h"
 #include "estop.h"
+#include "biss.h"
 
 //LIMIT_SW_USES_PORT(PORTK)
 //LIMIT_SW_USES_COUNTER(TCC0)
-ESTOP_USES_PORT(PORTJ)
+//ESTOP_USES_PORT(PORTJ)
 //ESTOP_USES_COUNTER(TCC0)
+//ECAT_USES_PORT(SPIE)
+//UART_USES_PORT(USARTE0)
+BISS_USES_SPI_PORT(SPIC);
+BISS_USES_IO_PORT(PORTC);
+BISS_USES_TIMER(TCC0,PORTC);
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -42,18 +45,23 @@ int main(void) {
 	uint8_t inbuffer[128];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
-	printf("Starting\n");
+	printf("HELP ME, I'M STUCK IN A MICROCONTROLLER\n");
 
+//	uint8_t amp_out[128];
+//	uint8_t amp_in[128];
+//	uart_port_t amp_port = uart_init_port(&PORTD, &USARTD0, uart_baud_115200, amp_out, 128, amp_in, 128);
+//	uart_connect_port(&amp_port, false);
+/*
 	io_pin_t panic_pin = io_init_pin(PORTJ,6);
 	io_pin_t estop_pin = io_init_pin(PORTJ,7);
 	estop_port_t estop = estop_init_port(panic_pin,estop_pin,&TCC0,&handle_estop);
 	estop_enable_port(&estop);
-
+*/
 	//limit_sw_port_t limitSW = limit_sw_init_port(&PORTK, 0b100, &TCC0, *handle_estop);
 	//_delay_ms(10);
 	//limit_sw_enable_port(&limitSW);
 
-	/*
+/*	
 	uint8_t rx_sm[6];
 	uint8_t tx_sm[6];
 
@@ -72,19 +80,45 @@ int main(void) {
 		*timestep = *command;
 		*encoder0 = ((uint32_t)(*command))*1000;
 		ecat_write_tx_sm(&ecat);
-	}*/
-
+		_delay_ms(100);
+	}
+*/
 //	io_pin_t pwm_pin = io_init_pin(PORTF,5);
 //	pwm_output_t pwm = pwm_initilize_output(pwm_pin,pwm_div64,1000);
 
 //	pwm_enable_output(&pwm);
-
-//	uint16_t cnt = 0;
+/*
+	uint16_t cnt1 = 0;
+	uint16_t cnt2 = 0;
+	uint8_t dat1[] = {'B','B','B','B','B','B','B'};
+	uint8_t dat2[128];
 	while(1) {
-//		cnt = (cnt+1)%1024;
-//		pwm_set_output(&pwm,cnt);
-//		_delay_ms(10);
+		cnt1 = uart_rx_data(&debug_port,dat1,128);
+		cnt2 = uart_rx_data(&amp_port,dat2,128);
+
+		uart_tx_data(&amp_port,dat1,cnt1);
+		uart_tx_data(&debug_port,dat2,cnt2);
+	
 	}
+*/
+/*	_delay_ms(5000);
+	io_pin_t cs = io_init_pin(PORTF,0);
+	usart_adc_t adc = usart_adc_init(&PORTF,&USARTF0,cs,0,0,0,0);
+	while(1) {
+		usart_adc_start_read(&adc,0xFF);
+	};*/
+//	_delay_ms(5000);
+	uint32_t enc_val;
+	uint16_t timestep;
+	biss_encoder_t encoder = biss_init_encoder(&PORTC, &SPIC,0, &TCC0,4, &enc_val, &timestep);
+
+	while(1) {
+		PORTA.OUTTGL = 1<<7;
+		biss_start_reading(&encoder);
+		_delay_ms(10);
+	} 
+
+	while (1);
 	return 1;
 }
 
