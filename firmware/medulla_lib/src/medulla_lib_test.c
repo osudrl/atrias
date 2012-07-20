@@ -10,15 +10,13 @@
 #include "estop.h"
 #include "biss.h"
 
+UART_USES_PORT(USARTE0)
+ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_PORT(PORTK)
 //LIMIT_SW_USES_COUNTER(TCC0)
-//ESTOP_USES_PORT(PORTJ)
+ESTOP_USES_PORT(PORTJ)
 //ESTOP_USES_COUNTER(TCC0)
-//ECAT_USES_PORT(SPIE)
-//UART_USES_PORT(USARTE0)
-BISS_USES_SPI_PORT(SPIC);
-BISS_USES_IO_PORT(PORTC);
-BISS_USES_TIMER(TCC0,PORTC);
+BISS_USES_SPI_PORT(SPIC)
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -45,18 +43,13 @@ int main(void) {
 	uint8_t inbuffer[128];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
-	printf("HELP ME, I'M STUCK IN A MICROCONTROLLER\n");
+	printf("Starting\n");
 
-//	uint8_t amp_out[128];
-//	uint8_t amp_in[128];
-//	uart_port_t amp_port = uart_init_port(&PORTD, &USARTD0, uart_baud_115200, amp_out, 128, amp_in, 128);
-//	uart_connect_port(&amp_port, false);
-/*
 	io_pin_t panic_pin = io_init_pin(PORTJ,6);
 	io_pin_t estop_pin = io_init_pin(PORTJ,7);
 	estop_port_t estop = estop_init_port(panic_pin,estop_pin,&TCC0,&handle_estop);
 	estop_enable_port(&estop);
-*/
+
 	//limit_sw_port_t limitSW = limit_sw_init_port(&PORTK, 0b100, &TCC0, *handle_estop);
 	//_delay_ms(10);
 	//limit_sw_enable_port(&limitSW);
@@ -80,45 +73,41 @@ int main(void) {
 		*timestep = *command;
 		*encoder0 = ((uint32_t)(*command))*1000;
 		ecat_write_tx_sm(&ecat);
-		_delay_ms(100);
 	}
 */
 //	io_pin_t pwm_pin = io_init_pin(PORTF,5);
 //	pwm_output_t pwm = pwm_initilize_output(pwm_pin,pwm_div64,1000);
 
 //	pwm_enable_output(&pwm);
-/*
-	uint16_t cnt1 = 0;
-	uint16_t cnt2 = 0;
-	uint8_t dat1[] = {'B','B','B','B','B','B','B'};
-	uint8_t dat2[128];
-	while(1) {
-		cnt1 = uart_rx_data(&debug_port,dat1,128);
-		cnt2 = uart_rx_data(&amp_port,dat2,128);
 
-		uart_tx_data(&amp_port,dat1,cnt1);
-		uart_tx_data(&debug_port,dat2,cnt2);
-	
-	}
-*/
-/*	_delay_ms(5000);
-	io_pin_t cs = io_init_pin(PORTF,0);
-	usart_adc_t adc = usart_adc_init(&PORTF,&USARTF0,cs,0,0,0,0);
-	while(1) {
-		usart_adc_start_read(&adc,0xFF);
-	};*/
-//	_delay_ms(5000);
+//	uint16_t cnt = 0;
+//	while(1) {
+//		cnt = (cnt+1)%1024;
+//		pwm_set_output(&pwm,cnt);
+//		_delay_ms(10);
+//	}
+
+
 	uint32_t enc_val;
-	uint16_t timestep;
-	biss_encoder_t encoder = biss_init_encoder(&PORTC, &SPIC,0, &TCC0,4, &enc_val, &timestep);
+	uint16_t timer_val;
 
+	TCC1.CTRLA = TC_CLKSEL_DIV8_gc;
+
+	biss_encoder_t encoder = biss_init_encoder(&PORTC,&SPIC,&TCC1,4,&enc_val,&timer_val);
 	while(1) {
-		PORTA.OUTTGL = 1<<7;
 		biss_start_reading(&encoder);
-		_delay_ms(10);
-	} 
+		// wait for read to complete
+		while (!biss_read_complete(&encoder));
+//		biss_process_data(&encoder);
+		if (biss_process_data(&encoder) & (1<<6))
+			printf("Encoder: %0lu Timestamp: %u\n",enc_val,timer_val);
+		else
+			printf("Encoder Warning\n");
+		
+		_delay_ms(1);
+	}
 
-	while (1);
+	while(1);
 	return 1;
 }
 

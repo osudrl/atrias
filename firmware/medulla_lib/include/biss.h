@@ -35,7 +35,6 @@
  */
 typedef struct {
 	spi_port_t spi_port; /**< SPI port used to communicate with the encoder */
-	TC0_t *clock_timer; /**< Pointer to a timer that will be used to generate the clock during the ack period */
 	TC0_t *timestamp_timer; /**< Timer register to read the timestamp from */
 	uint32_t *data_pointer; /**< Pointer to where the data is being stored */
 	uint16_t *timestamp_pointer; /**< Pointer to where the timestamp is to be stored */
@@ -57,55 +56,6 @@ biss_encoder_t *_biss_encoder_PORTC, /**< Pointer to the encoder struct being us
  *  @param SPI_PORT SPI_t struct for which to define the interrupt.
  */ 
 #define BISS_USES_SPI_PORT SPI_USES_PORT
-
-/** @brief Macro to create the IO port interrupt handler
- *
- *  This macro generates the required IO port interrupt handler to correctly
- *  handle the BISS Ack signal. This macro should be called with the PORT_t
- *  struct of any ports on which the Biss-C driver is being used. It should be
- *  called outside of any functions, it is usually placed at the top of the
- *  users C file.
- *
- *  @param PORT PORT_t struct of the PORT on which the interupt is to operate.
- */
-#define BISS_USES_IO_PORT(PORT) \
-ISR(PORT##_INT1_vect) { \
-	/* Stop the clock generation */ \
-	_biss_encoder_##PORT->clock_timer->CTRLA = 0; \
-	\
-	/* Disable interrupts on the data pin */ \
-	_biss_encoder_##PORT->spi_port.spi_port->INTCTRL &= ~PORT_INT1LVL_gm; \
-	\
-	/* We are assured that this interrupt will only trigger when clock is high, so now start two more clocks */ \
-	_biss_encoder_##PORT->spi_port.spi_port->OUTCLR = (1<<7); \
-	_delay_us(0.125); \
-	_biss_encoder_##PORT->spi_port.spi_port->OUTSET = (1<<7); \
-	_delay_us(0.125); \
-	_biss_encoder_##PORT->spi_port.spi_port->OUTCLR = (1<<7); \
-	_delay_us(0.125); \
-	_biss_encoder_##PORT->spi_port.spi_port->OUTSET = (1<<7); \
-	\
-	/* Now enable the SPI driver start clocking in the data and exit this interrupt */ \
-	_biss_encoder_##PORT->spi_port.spi_register->CTRL |= SPI_ENABLE_bm; \
-	spi_start_receive(&(_biss_encoder_##PORT->spi_port), _biss_encoder_##PORT->input_buffer,5); \
-} \
-
-/** @brief Interrupt handler for clock generation during the Ack period.
- *
- *  This macro defines an interrupt handeler for a timer that is being used for
- *  Ack period clock generation. This interrupt hadler must be defined but the
- *  driver's user for each timer/biss port that is being used. This is usually
- *  done by calling the macro at the top of the main source file.
- *
- *  @param TIMER TCx_t struct of the timer that is used for Ack clock
- *  generation.
- *  @param PORT PORT_t struct of the port that this timer is used for.
- */
-#define BISS_USES_TIMER(TIMER, PORT) \
-ISR(TIMER##_OVF_vect, ISR_NAKED) { \
-	PORT.OUTTGL = (1<<7);\
-	reti();\
-} \
 
 /** @brief Creates and initilizes a Biss-C encoder struct
  *
@@ -130,7 +80,7 @@ ISR(TIMER##_OVF_vect, ISR_NAKED) { \
  *  @param timestamp_pointer Pointer to the location to write the timestamp.
  *  @return Retuns the newly configured biss_encoder_t struct
  */
-biss_encoder_t biss_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *clock_timer, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer);
+biss_encoder_t biss_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer);
 
 /** @brief Starts an encoder read cycle
  *
