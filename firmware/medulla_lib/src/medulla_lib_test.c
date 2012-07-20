@@ -8,7 +8,7 @@
 #include "pwm.h"
 #include "limit_switch.h"
 #include "estop.h"
-#include "biss.h"
+#include "ssi.h"
 
 UART_USES_PORT(USARTE0)
 ECAT_USES_PORT(SPIE)
@@ -16,7 +16,7 @@ ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_COUNTER(TCC0)
 ESTOP_USES_PORT(PORTJ)
 //ESTOP_USES_COUNTER(TCC0)
-BISS_USES_SPI_PORT(SPIC)
+SSI_USES_SPI_PORT(SPIC)
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -93,18 +93,15 @@ int main(void) {
 
 	TCC1.CTRLA = TC_CLKSEL_DIV8_gc;
 
-	biss_encoder_t encoder = biss_init_encoder(&PORTC,&SPIC,&TCC1,4,&enc_val,&timer_val);
+	ssi_encoder_t encoder = ssi_init_encoder(&PORTC,&SPIC,&TCC1,&enc_val,13,&timer_val);
 	while(1) {
-		biss_start_reading(&encoder);
+		ssi_start_reading(&encoder);
 		// wait for read to complete
-		while (!biss_read_complete(&encoder));
-//		biss_process_data(&encoder);
-		if (biss_process_data(&encoder) & (1<<6))
-			printf("Encoder: %0lu Timestamp: %u\n",enc_val,timer_val);
-		else
-			printf("Encoder Warning\n");
+		while (!ssi_read_complete(&encoder));
+		ssi_process_data(&encoder);
+		printf("Encoder: %0lu Timestamp: %u\n",enc_val,timer_val);
 		
-		_delay_ms(1);
+		_delay_ms(100);
 	}
 
 	while(1);

@@ -42,11 +42,6 @@ typedef struct {
 	uint16_t cnt_per_us; /**< The number of timestep counts per milisecond */
 } biss_encoder_t;
 
-biss_encoder_t *_biss_encoder_PORTC, /**< Pointer to the encoder struct being used on PORTC */
-               *_biss_encoder_PORTD, /**< Pointer to the encoder struct being used on PORTD */
-               *_biss_encoder_PORTE, /**< Pointer to the encoder struct being used on PORTE */
-               *_biss_encoder_PORTF; /**< Pointer to the encoder struct being used on PORTF */
-
 /** @brief Alias the SPI interrupt macro
  *
  *  This Alias is simply to make the user's program easier to understad. Instead
@@ -71,8 +66,6 @@ biss_encoder_t *_biss_encoder_PORTC, /**< Pointer to the encoder struct being us
  *  @param spi_port Pointer to the IO port register the encoder is conencted to.
  *  @param spi_register Pointer to the SPI register that the encoder is
  *  connected to.
- *  @param clock_timer Pointer to the registers of the timer used for Ack period
- *  clock generation.
  *  @param timestamp_timer Pointer to the register of the timer used to generate
  *  the timestamps.
  *  @param cnt_per_us Number of timestamp_timer ticks in one microsecond.
