@@ -1,23 +1,29 @@
-# Makefile for the Medulla library
+# Makefile for Medulla programs that use the medulla library
 # Written by: Kit Morton
 
 # MCU Options
 MCU = atxmega128a1
 F_CPU = 32000000
 
+# Output file name (without extension)
+OUTPUT = medulla_lib_test
+OUTPUT_DIR = .
+
 # Source Files
-SOURCES = uart.c spi.c cpu.c ethercat.c io_pin.c pwm.c limit_switch.c estop.c biss_encoder.c ssi_encoder.c quadrature_encoder.c
+SOURCES = medulla_lib_test.c
 
-# Output file and directory
-OUTPUT = medulla_lib
-OUTPUT_DIR = ../lib
-
-# GCC Options
-OBJDIR = ../build
-INCLUDE_DIRS = ../include
+# Build Options
+OBJDIR = .
+INCLUDE_DIRS = ../medulla_lib/include
 OPT = 2
+LIB_DIRS = ../medulla_lib/lib
+LIBS = -lm -lmedulla_lib
 
-# Create the compiler options
+# AVR Dude options
+PROGRAMMER = avrisp2
+PORT = usb
+
+# Create the compiler flags
 CFLAGS  = -DF_CPU=$(F_CPU)UL
 CFLAGS += -O$(OPT)
 CFLAGS += -Wall
@@ -25,6 +31,11 @@ CFLAGS += -include stdint.h
 CFLAGS += $(patsubst %,-I%,$(INCLUDE_DIRS))
 CFLAGS += -mmcu=$(MCU)
 CFLAGS += -std=gnu99
+
+# Create linker flgas
+LDFLAGS  = $(patsubst %,-L%,$(LIB_DIRS))
+LDFLAGS += $(LIBS)
+
 
 # Define all object files
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))
@@ -43,23 +54,32 @@ COPY = cp
 
 # Define rules
 
-all: $(OUTPUT).a
+all: $(OUTPUT).hex
 
 clean:
 	$(REMOVE) $(OBJS)
-	$(REMOVE) $(OUTPUT_DIR)/lib$(OUTPUT).a
+	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).elf
+	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).hex
+
+program: all
+	$(AVRDUDE) -p $(MCU) -P $(PORT) -c $(PROGRAMMER) -U flash:w:$(OUTPUT).hex
+
+%.hex : %.elf
+	@echo
+	@echo Linking $<
+	$(OBJCOPY) -O ihex $(OUTPUT_DIR)/$< $(OUTPUT_DIR)/$@
 
 $(OBJDIR)/%.o : %.c
 	@echo
 	@echo Building $<
 	$(CC) -c $(CFLAGS) $< -o $@
 
-.SECONDARY : $(OUTPUT).a
+.SECONDARY : $(OUTPUT).elf
 .PRECIOUS : $(OBJS)
-%.a : $(OBJS)
+%.elf : $(OBJS)
 	@echo
 	@echo Linking $@
-	$(AR) $(OUTPUT_DIR)/lib$@ $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) --output $(OUTPUT_DIR)/$@ $(LDFLAGS)
 
 # Make build directories
 $(shell mkdir $(OBJDIR) 2>/dev/null)
