@@ -1,5 +1,9 @@
 #include "io_pin.h"
 
+inline io_pin_t io_init_pin(PORT_t *port, uint8_t pin) {
+	return (io_pin_t){port,pin,(register8_t*)(((uint8_t*)port)+0x10+pin)};
+}
+
 inline void io_set_direction (io_pin_t pin, io_pin_direction_t direction) {
 	(*((uint8_t*)pin.io_port+direction)) = 1<<pin.pin;
 	/* This works because adding the integer value of an io_pin_direction_t to

@@ -47,17 +47,17 @@ typedef enum {
 	io_low = 0
 } io_pin_level_t;
 
-/** @brief Macro for initilizing an io_pin_t struct.
+/** @brief Initilizes an io_pin_t struct.
  *
- *  The IO_init_pin macro creates a struct definition for an io_pin_t struct.
+ *  The IO_init_pin function creates a struct definition for an io_pin_t struct.
  *  This is the preferred way to initilize an io_pin_t because it ensures that
  *  all the nessesary values will be in place.
  *
- *  @param port The physical xMega port the pin is on.
+ *  @param port Pointer to the physical xMega port the pin is on.
  *  @param pin Pin on the given port. (Pin is zero indexed)
  *  @return Returns a io_pin_t struct that can be used to reference the given pin.
  */
-#define io_init_pin(port, pin) {&port, pin, &(port.PIN##pin##CTRL)}
+io_pin_t  io_init_pin(PORT_t *port, uint8_t pin);
 
 /** @brief Sets the direction of a DIO pin.
  *

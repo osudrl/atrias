@@ -45,9 +45,7 @@ int main(void) {
 	uart_connect_port(&debug_port, true);
 	printf("Starting\n");
 
-	io_pin_t panic_pin = io_init_pin(PORTJ,6);
-	io_pin_t estop_pin = io_init_pin(PORTJ,7);
-	estop_port_t estop = estop_init_port(panic_pin,estop_pin,&TCC0,&handle_estop);
+	estop_port_t estop = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCC0,&handle_estop);
 	estop_enable_port(&estop);
 
 	//limit_sw_port_t limitSW = limit_sw_init_port(&PORTK, 0b100, &TCC0, *handle_estop);

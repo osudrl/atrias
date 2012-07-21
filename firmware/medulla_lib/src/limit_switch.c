@@ -13,18 +13,7 @@ limit_sw_port_t limit_sw_init_port(PORT_t *limit_sw_port, uint8_t pin_mask, void
 
 	// we now will enable the pullup resistor and input sense configuration on all the mask pins. To do this we will set the MPCMASK register so we don't have to manually configure each pullup.
 	PORTCFG.MPCMASK = pin_mask;
-
-	// However, we do need to loop through and find a pin that is being used
-	uint8_t bit;
-	for (bit = 0; bit < 8; bit++){
-		if (pin_mask & (1<<bit))
-			break;
-	}
-	// now bit should be a bit position of a used pin. However if we didn't find a pin and we got to the end of the loop. Then bit won't point to a used pin. So we have to check anyway.
-	if (pin_mask & (1<<bit)) {
-		*((uint8_t*)limit_sw_port+0x10+bit) = PORT_OPC_PULLUP_gc | PORT_ISC_RISING_gc;
-	}
-
+	limit_sw_port->PIN0CTRL = PORT_OPC_PULLUP_gc | PORT_ISC_RISING_gc;
 	PORTCFG.MPCMASK = 0;
 
 	((TC1_t*)(port.counter_pntr))->PER = 32000;
