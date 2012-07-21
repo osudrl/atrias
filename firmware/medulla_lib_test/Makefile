@@ -54,7 +54,7 @@ COPY = cp
 
 # Define rules
 
-all: $(OUTPUT).hex
+all: $(OUTPUT).hex size
 
 clean:
 	$(REMOVE) $(OBJS)
@@ -63,6 +63,10 @@ clean:
 
 program: all
 	$(AVRDUDE) -p $(MCU) -P $(PORT) -c $(PROGRAMMER) -U flash:w:$(OUTPUT).hex
+
+size:
+	@if test -f $(OUTPUT_DIR)/$(OUTPUT).elf; then echo; echo Size of: $(OUTPUT).elf; $(SIZE) --mcu=$(MCU) --format=avr $(OUTPUT_DIR)/$(OUTPUT).elf; \
+	2>/dev/null; echo; fi
 
 %.hex : %.elf
 	@echo
@@ -86,5 +90,5 @@ $(shell mkdir $(OBJDIR) 2>/dev/null)
 $(shell mkdir $(OUTPUT_DIR) 2>/dev/null)
 
 # List phony targets
-.PHONY : all clean
+.PHONY : all clean program size
 
