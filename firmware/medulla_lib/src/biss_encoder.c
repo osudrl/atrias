@@ -1,12 +1,12 @@
-#include "biss.h"
+#include "biss_encoder.h"
 
-#define _BISS_SEND_CLOCK \
+#define _BISS_ENCODER_SEND_CLOCK \
 encoder->spi_port.spi_port->OUTCLR = (1<<7); \
 _delay_us(0.125);        /* Half of the 2 Mhz period*/ \
 encoder->spi_port.spi_port->OUTSET = (1<<7); \
 _delay_us(0.125);        /* Other half of the 2 Mhz period*/
 
-biss_encoder_t biss_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer) {
+biss_encoder_t biss_encoder_init(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer) {
 
 	biss_encoder_t encoder;
 
@@ -24,9 +24,9 @@ biss_encoder_t biss_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *ti
 	return encoder;
 }
 
-int biss_start_reading(biss_encoder_t *encoder) {
+int biss_encoder_start_reading(biss_encoder_t *encoder) {
 	// first check that we are not already reading
-	if (biss_read_complete(encoder) == false)
+	if (biss_encoder_read_complete(encoder) == false)
 		return -1;
 
 	// Check that the encoder is ready to be read from. MISO has be high
@@ -45,7 +45,7 @@ int biss_start_reading(biss_encoder_t *encoder) {
 	encoder->spi_port.spi_port->OUTSET = (1<<7);
 	sei();
 	_delay_us(0.125);
-	_BISS_SEND_CLOCK // Now send the second clock
+	_BISS_ENCODER_SEND_CLOCK // Now send the second clock
 	
 	encoder->spi_port.spi_port->OUTCLR = (1<<7);                                                             
         _delay_us(0.0625);
@@ -58,7 +58,7 @@ int biss_start_reading(biss_encoder_t *encoder) {
 	encoder->spi_port.spi_port->OUTSET = (1<<7);
         _delay_us(0.125);
 	
-	_BISS_SEND_CLOCK
+	_BISS_ENCODER_SEND_CLOCK
 
 	encoder->spi_port.spi_register->CTRL |= SPI_ENABLE_bm;
 	spi_start_receive(&(encoder->spi_port), encoder->input_buffer,5);
@@ -67,7 +67,7 @@ int biss_start_reading(biss_encoder_t *encoder) {
 	return 0;
 }
 
-uint8_t biss_process_data(biss_encoder_t *encoder) {
+uint8_t biss_encoder_process_data(biss_encoder_t *encoder) {
 	// Fill the data pointer. Since the xMega is little-endian, we have to swap the byte order, by shiffing the data in one byte at a time.
 	*(encoder->data_pointer) = ((uint32_t)encoder->input_buffer[0]) << 24 |
 	                           ((uint32_t)encoder->input_buffer[1]) << 16 |
@@ -80,12 +80,12 @@ uint8_t biss_process_data(biss_encoder_t *encoder) {
 	return encoder->input_buffer[4];
 }
 
-bool biss_read_complete(biss_encoder_t *encoder) {
+bool biss_encoder_read_complete(biss_encoder_t *encoder) {
 	return !(encoder->spi_port.transaction_underway);
 }
 
-bool biss_data_valid(biss_encoder_t *encoder) {
-	return biss_read_complete(encoder) && (encoder->input_buffer[4] & (1<<7));
+bool biss_encoder_data_valid(biss_encoder_t *encoder) {
+	return biss_encoder_read_complete(encoder) && (encoder->input_buffer[4] & (1<<7));
 }
 
 

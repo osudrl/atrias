@@ -1,5 +1,5 @@
-#ifndef BISS_H
-#define BISS_H
+#ifndef BISS_ENCODER_H
+#define BISS_ENCODER_H
 
 /** @file
  *  @brief This driver implements communication between the xMega and a Biss C encoder.
@@ -7,19 +7,8 @@
  *  This driver handles all the interface and data management reuqired for using
  *  a Biss-C encoder. To follow the Biss-C spec the driver must continually
  *  clock the CLK pin for an arbitrary amount of time until the encoder finishes
- *  it's measurement and sends an Ack signal. To achieve this, this driver uses
- *  a timer and corresponding timer interrupt to asyncronously generate this
- *  clock signal.
- *
- *  To make this driver completely asyncronous, three interrupts are used. The 
- *  SPI interrupt is used, when data is actually being clocked in and is
- *  included in the user program using the BISS_USES_SPI_PORT macro which is an
- *  alias to the SPI_USES_PORT macro. A timer interrupt is also required for
- *  clock signal generation during Ack, this interrupt is defined by passing a
- *  pair of a timer and port which will be used together to the SPI_USES_TIMER
- *  macro. Lastly there is an DIO port interrupt which is used to detect actual
- *  Ack signal from the encoder. This interrupt is defined by passing the port
- *  to the BISS_USES_IO_PORT macro.
+ *  it's measurement and sends an Ack signal. This means that every call to
+ *  biss_encoder_start_reading() takes approximately 18 uS to return. 
  *
  *  This driver can also generate a timestamp for the exact time when the
  *  encoder position was sampled. A pointer to a timer counter must be passed
@@ -50,14 +39,14 @@ typedef struct {
  *  
  *  @param SPI_PORT SPI_t struct for which to define the interrupt.
  */ 
-#define BISS_USES_SPI_PORT SPI_USES_PORT
+#define BISS_ENCODER_USES_PORT SPI_USES_PORT
 
 /** @brief Creates and initilizes a Biss-C encoder struct
  *
- *  This function sets up a new Biss-C encoder. The clock_timer and
- *  timestamp_timer pointers are defined as void pointers so that either a TC0_t
- *  or TC1_t pointer can be passed into this function. Do not pass anything
- *  other than a TC0_t* or TC1_t* into these parameters.
+ *  This function sets up a new Biss-C encoder. The timestamp_timer pointer 
+ *  is defined as void pointers so that either a TC0_t or TC1_t pointer can be
+ *  passed into this function. Do not pass anything other than a TC0_t* or TC1_t*
+ *  into this parameter.
  *
  *  The cnt_per_us parmeter should be the number of clock ticks the timestamp_timer
  *  increments by in one microsecond. This value is used to generate accurate
@@ -73,19 +62,22 @@ typedef struct {
  *  @param timestamp_pointer Pointer to the location to write the timestamp.
  *  @return Retuns the newly configured biss_encoder_t struct
  */
-biss_encoder_t biss_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer);
+biss_encoder_t biss_encoder_init(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint16_t cnt_per_us, uint32_t *data_pointer, uint16_t *timestamp_pointer);
 
 /** @brief Starts an encoder read cycle
  *
- *  This function kicks off the asycronous read process to get the posision of
- *  the encoder.
+ *  This function starts reading the position from the encoder. This function
+ *  manually sends out all the clock pulses needed before data actually starts
+ *  being received. Because this means the funcion has to wait for the Ack
+ *  signal from the encoder, this function usually takes ~18uS to complete, and
+ *  could take as long as 20uS.
  *
  *  @param encoder Pointer to the biss encoder struct for the encoder to read
  *  @return 0 - Read sucessfully started
  *  @return -1 - Read is already underway, new read has not been started.
  *  @return -2 - The encoder is reporting that it is not ready to be read.
  */
-int biss_start_reading(biss_encoder_t *encoder);
+int biss_encoder_start_reading(biss_encoder_t *encoder);
 
 /** @brief Processes the data received from the encoder
  *
@@ -98,7 +90,7 @@ int biss_start_reading(biss_encoder_t *encoder);
  *  @param encoder Pointer to the biss encoder struct for the encoder to read
  *  @return status byte returned by encoder.
  */
-uint8_t biss_process_data(biss_encoder_t *encoder);
+uint8_t biss_encoder_process_data(biss_encoder_t *encoder);
 
 /** @brief Checks if an encoder read is in progress
  *
@@ -108,7 +100,7 @@ uint8_t biss_process_data(biss_encoder_t *encoder);
  *  @return true - The read has completed and the interface is idle.
  *  @return false - The encoder posision is currently being read.
  */
-bool biss_read_complete(biss_encoder_t *encoder);
+bool biss_encoder_read_complete(biss_encoder_t *encoder);
 
 /** @brief Parses the status byte and returns if the read contains valid data.
  *
@@ -123,6 +115,6 @@ bool biss_read_complete(biss_encoder_t *encoder);
  *  @return true - Data in input buffer is valid
  *  @return false - Data in input buffer is bad and should not be used.
  */
-bool biss_data_valid(biss_encoder_t *encoder);
+bool biss_encoder_data_valid(biss_encoder_t *encoder);
 
-#endif //BISS_H
+#endif //BISS_ENCODER_H

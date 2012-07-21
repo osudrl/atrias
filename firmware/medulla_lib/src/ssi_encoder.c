@@ -1,12 +1,12 @@
-#include "ssi.h"
+#include "ssi_encoder.h"
 
-#define _SSI_SEND_CLOCK \
+#define _SSI_ENCODER_SEND_CLOCK \
 encoder->spi_port.spi_port->OUTCLR = (1<<7); \
 _delay_us(0.125);        /* Half of the 2 Mhz period*/ \
 encoder->spi_port.spi_port->OUTSET = (1<<7); \
 _delay_us(0.125);        /* Other half of the 2 Mhz period*/
 
-ssi_encoder_t ssi_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint32_t *data_pointer, uint8_t data_length, uint16_t *timestamp_pointer) {
+ssi_encoder_t ssi_encoder_init(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint32_t *data_pointer, uint8_t data_length, uint16_t *timestamp_pointer) {
 
 	ssi_encoder_t encoder;
 
@@ -28,9 +28,9 @@ ssi_encoder_t ssi_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *time
 	return encoder;
 }
 
-int ssi_start_reading(ssi_encoder_t *encoder) {
+int ssi_encoder_start_reading(ssi_encoder_t *encoder) {
 	// first check that we are not already reading
-	if (ssi_read_complete(encoder) == false)
+	if (ssi_encoder_read_complete(encoder) == false)
 		return -1;
 
 	// Check that the encoder is ready to be read from. MISO has be high
@@ -40,8 +40,6 @@ int ssi_start_reading(ssi_encoder_t *encoder) {
 	//We need to figure out how many extra bits we need to clock in at the beginning
 	uint8_t extra_bits = encoder->data_length % 8;
 	uint8_t data_bytes = encoder->data_length / 8;
-
-	printf("Extra Bits: %d\n", extra_bits);
 
 	// clear out the data buffer
 	encoder->input_buffer[0] = 0;
@@ -55,12 +53,12 @@ int ssi_start_reading(ssi_encoder_t *encoder) {
 	encoder->spi_port.spi_register->CTRL &= ~SPI_ENABLE_bm;
 	
 	// First record the start time, and then send start bit
+	cli();
 	*(encoder->timestamp_pointer) = encoder->timestamp_timer->CNT;
-	encoder->spi_port.spi_port->OUTSET = (1<<7);
-
-	_SSI_SEND_CLOCK
+	_SSI_ENCODER_SEND_CLOCK
+	sei();
 	
-	encoder->spi_port.spi_port->OUTCLR = (1<<7);                                                             
+	encoder->spi_port.spi_port->OUTCLR = (1<<7); 
         _delay_us(0.0625);
 	while (extra_bits != 0) {
 		encoder->spi_port.spi_port->OUTCLR = (1<<7);
@@ -77,7 +75,7 @@ int ssi_start_reading(ssi_encoder_t *encoder) {
 	return 0;
 }
 
-void ssi_process_data(ssi_encoder_t *encoder) {
+void ssi_encoder_process_data(ssi_encoder_t *encoder) {
 	// Fill the data pointer. Since the xMega is little-endian, we have to swap the byte order, by shiffing the data in one byte at a time.
 	*(encoder->data_pointer) = ((uint32_t)encoder->input_buffer[0]) << 24 |
 	                           ((uint32_t)encoder->input_buffer[1]) << 16 |
@@ -86,7 +84,7 @@ void ssi_process_data(ssi_encoder_t *encoder) {
 
 }
 
-bool ssi_read_complete(ssi_encoder_t *encoder) {
+bool ssi_encoder_read_complete(ssi_encoder_t *encoder) {
 	return !(encoder->spi_port.transaction_underway);
 }
 

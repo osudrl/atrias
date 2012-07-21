@@ -8,7 +8,7 @@
 #include "pwm.h"
 #include "limit_switch.h"
 #include "estop.h"
-#include "ssi.h"
+#include "ssi_encoder.h"
 
 UART_USES_PORT(USARTE0)
 ECAT_USES_PORT(SPIE)
@@ -16,7 +16,7 @@ ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_COUNTER(TCC0)
 ESTOP_USES_PORT(PORTJ)
 //ESTOP_USES_COUNTER(TCC0)
-SSI_USES_SPI_PORT(SPIC)
+SSI_ENCODER_USES_PORT(SPIC)
 
 uint8_t *command;
 uint16_t *motor_current;
@@ -93,12 +93,12 @@ int main(void) {
 
 	TCC1.CTRLA = TC_CLKSEL_DIV8_gc;
 
-	ssi_encoder_t encoder = ssi_init_encoder(&PORTC,&SPIC,&TCC1,&enc_val,13,&timer_val);
+	ssi_encoder_t encoder = ssi_encoder_init(&PORTC,&SPIC,&TCC1,&enc_val,17,&timer_val);
 	while(1) {
-		ssi_start_reading(&encoder);
+		ssi_encoder_start_reading(&encoder);
 		// wait for read to complete
-		while (!ssi_read_complete(&encoder));
-		ssi_process_data(&encoder);
+		while (!ssi_encoder_read_complete(&encoder));
+		ssi_encoder_process_data(&encoder);
 		printf("Encoder: %0lu Timestamp: %u\n",enc_val,timer_val);
 		
 		_delay_ms(100);

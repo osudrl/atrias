@@ -1,5 +1,5 @@
-#ifndef SSI_H
-#define SSI_H
+#ifndef SSI_ENCODER_H
+#define SSI_ENCODER_H
 
 /** @file
  *  @brief This driver implements communication between the xMega and an ssi encoder.
@@ -38,14 +38,14 @@ typedef struct {
  *  
  *  @param SPI_PORT SPI_t struct for which to define the interrupt.
  */ 
-#define SSI_USES_SPI_PORT SPI_USES_PORT
+#define SSI_ENCODER_USES_PORT SPI_USES_PORT
 
 /** @brief Creates and initilizes a SSI encoder struct
  *
- *  This function sets up a new SSI encoder. The clock_timer and
- *  timestamp_timer pointers are defined as void pointers so that either a TC0_t
- *  or TC1_t pointer can be passed into this function. Do not pass anything
- *  other than a TC0_t* or TC1_t* into these parameters.
+ *  This function sets up a new SSI encoder. The timestamp_timer pointer is defined
+ *  as void pointers so that either a TC0_t or TC1_t pointer can be passed into
+ *  this function. Do not pass anything other than a TC0_t* or TC1_t* into this
+ *  parameter.
  *
  *  The cnt_per_us parmeter should be the number of clock ticks the timestamp_timer
  *  increments by in one microsecond. This value is used to generate accurate
@@ -61,7 +61,7 @@ typedef struct {
  *  @param timestamp_pointer Pointer to the location to write the timestamp.
  *  @return Retuns the newly configured biss_encoder_t struct
  */
-ssi_encoder_t ssi_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint32_t *data_pointer, uint8_t data_length, uint16_t *timestamp_pointer);
+ssi_encoder_t ssi_encoder_init(PORT_t *spi_port, SPI_t *spi_register, void *timestamp_timer, uint32_t *data_pointer, uint8_t data_length, uint16_t *timestamp_pointer);
 
 /** @brief Starts an encoder read cycle
  *
@@ -74,7 +74,7 @@ ssi_encoder_t ssi_init_encoder(PORT_t *spi_port, SPI_t *spi_register, void *time
  *  @return -1 - Read is already underway, new read has not been started.
  *  @return -2 - The encoder is reporting that it is not ready to be read.
  */
-int ssi_start_reading(ssi_encoder_t *encoder);
+int ssi_encoder_start_reading(ssi_encoder_t *encoder);
 
 /** @brief Processes the data received from the encoder
  *
@@ -85,7 +85,7 @@ int ssi_start_reading(ssi_encoder_t *encoder);
  *
  *  @param encoder Pointer to the ssi encoder struct for the encoder to read
  */
-void ssi_process_data(ssi_encoder_t *encoder);
+void ssi_encoder_process_data(ssi_encoder_t *encoder);
 
 /** @brief Checks if an encoder read is in progress
  *
@@ -95,6 +95,6 @@ void ssi_process_data(ssi_encoder_t *encoder);
  *  @return true - The read has completed and the interface is idle.
  *  @return false - The encoder posision is currently being read.
  */
-bool ssi_read_complete(ssi_encoder_t *encoder);
+bool ssi_encoder_read_complete(ssi_encoder_t *encoder);
 
 #endif //SSI_H
