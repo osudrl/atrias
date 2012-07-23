@@ -13,6 +13,7 @@
 #include "dzralte_comm.h"
 
 UART_USES_PORT(USARTE0)
+UART_USES_PORT(USARTC0)
 //ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_PORT(PORTK)
 //LIMIT_SW_USES_COUNTER(TCC0)
@@ -47,17 +48,19 @@ int main(void) {
 	uint8_t inbuffer[128];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
-	printf("Starting\n");
 
-	dzralte_generate_command(&message_list, 63,0,dzralte_write_cmd, 0x01,0x00,0,02,false);
-	printf("%X ",message_list.message[0].command_header[0]);
-	printf("%X ",message_list.message[0].command_header[1]);
-	printf("%X ",message_list.message[0].command_header[2]);
-	printf("%X ",message_list.message[0].command_header[3]);
-	printf("%X ",message_list.message[0].command_header[4]);
-	printf("%X ",message_list.message[0].command_header[5]);
-	printf("%X ",message_list.message[0].command_header[6]);
-	printf("%X\n",message_list.message[0].command_header[7]);
+	uart_port_t amp_port = uart_init_port(&PORTC, &USARTC0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
+	uart_connect_port(&amp_port, true);
+
+	uint16_t write_command = 0xF;
+	dzralte_generate_message(&message_list, 63,0,dzralte_write_cmd, 0x07,0x00,&write_command,2);
+	dzralte_send_message(&message_list,0,0,&amp_port,false);
+
+	while (!dzralte_response_received(&message_list,0,0)) {
+		dzralte_check_responses(&message_list,&amp_port);
+		_delay_ms(100);
+	}
+	uart_tx_data(&debug_port,message_list.message[0].response_header,8);
 
 //	estop_port_t estop = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCC0,&handle_estop);
 //	estop_enable_port(&estop);

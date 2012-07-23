@@ -172,6 +172,25 @@ static _uart_buffer_t* _uart_get_hw_buffer(uart_port_t *port) {
 	return current_buffer;
 }
 
+uint16_t uart_received_bytes(uart_port_t *port) {
+	_uart_buffer_t *buffer = _uart_get_hw_buffer(port);
+	
+	// Check if the buffer wraps around
+	if (buffer->rx_buffer_start <= buffer->rx_buffer_end) {
+		// Buffer doesn't wrap around
+		return buffer->rx_buffer_end - buffer->rx_buffer_start;
+	}
+	else {
+		// It does wrap around
+		return (buffer->rx_buffer_size - buffer->rx_buffer_start) + buffer->rx_buffer_end;
+	}
+}
+
+uint8_t uart_rx_peek(uart_port_t *port, uint16_t byte) {
+	_uart_buffer_t *buffer = _uart_get_hw_buffer(port);
+	return buffer->rx_buffer[(buffer->rx_buffer_start+byte)%buffer->rx_buffer_size];
+}
+
 static int _uart_stdio_put_char(char c, FILE *stream) {
 	if (_uart_stdio_port == 0)
 		// No uart port has been assigned as a stdio port, return an error

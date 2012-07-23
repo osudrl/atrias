@@ -41,8 +41,8 @@ typedef struct {
 	uint8_t response_header[8]; /**< Buffer to store the response packet */
 	uint8_t *data_buffer;       /**< Buffer to store the data section of the packet in */
 	uint16_t data_length;       /**< Length of the data section of the packet in bytes*/
+	uint16_t data_CRC;          /**< CRC for data secion of last transmit */
 	uint8_t sequence;           /**< Sequence number associated with this message */
-	bool regenerate_data_CRC;   /**< If true the data_CRC will be regenerated on every transmit */
 	bool waiting_for_response;  /**< True when the message is waiting for a response */
 } dzralte_message_t;
 
@@ -53,7 +53,7 @@ typedef struct {
  *  this message list. A struct is used because you can't typedef an array and
  *  have it work as one would expect.
  */
-typedef struct {dzralte_message_t message[15];} dzralte_message_list_t;
+typedef struct {dzralte_message_t message[17];} dzralte_message_list_t;
 
 /** @brief Creates a message struct that can be sent at any time.
  *
@@ -78,10 +78,9 @@ typedef struct {dzralte_message_t message[15];} dzralte_message_list_t;
  *  @param offset Register offset from index to write or read
  *  @param data_buffer Pointer to where to read from or write message data to
  *  @param data_length Length of data section of message in bytes
- *  @param regenerate_data_CRC Set true to regenerate the data section CRC on every transmit
  *  @return Pointer to the generated message in the internal message list
  */
-dzralte_message_t* dzralte_generate_command(dzralte_message_list_t *message_list, uint8_t address, uint8_t sequence, dzralte_command_type_t command, uint8_t index, uint8_t offset, void *data_buffer, uint16_t data_length, bool regenerate_data_CRC);
+dzralte_message_t* dzralte_generate_message(dzralte_message_list_t *message_list, uint8_t address, uint8_t sequence, dzralte_command_type_t command, uint8_t index, uint8_t offset, void *data_buffer, uint16_t data_length);
 
 /** @brief Send a created message to the amplifier
  *
@@ -95,8 +94,9 @@ dzralte_message_t* dzralte_generate_command(dzralte_message_list_t *message_list
  *  @param message Pointer to the message to be sent
  *  @param sequence Sequence of the message to send
  *  @param port uart port to transmit the message through
+ *  @param regenerate_data_CRC Set true to regenerate the data section CRC, otherwise the previos CRC is used
  */
-void dzralte_send_message(dzralte_message_list_t *message_list, dzralte_message_t *message, uint8_t sequence, uart_port_t *port);
+void dzralte_send_message(dzralte_message_list_t *message_list, dzralte_message_t *message, uint8_t sequence, uart_port_t *port, bool regenerate_data_CRC);
 
 /** @brief Checks the uart input buffer for complete message responses
  *
@@ -108,10 +108,9 @@ void dzralte_send_message(dzralte_message_list_t *message_list, dzralte_message_
  *
  *  @param message_list pointer to the user's message list
  *  @param port pointer to the uart to use
- *  @return true - At least one message was received
- *  @return false -  No complete messages were received
+ *  @return Number of messages processed
  */
-bool dzralte_check_responses(dzralte_message_list_t *message_list, uart_port_t *port);
+uint8_t dzralte_check_responses(dzralte_message_list_t *message_list, uart_port_t *port);
 
 /** @brief Checks if a message has received a response
  *

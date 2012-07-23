@@ -1,4 +1,5 @@
 #include "dzralte_comm.h"
+#include "stdio.h"
 
 uint16_t const _dzralte_crc_lookup_table[256] = {
 0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
@@ -35,12 +36,12 @@ uint16_t const _dzralte_crc_lookup_table[256] = {
 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-dzralte_message_t* dzralte_generate_command(dzralte_message_list_t *message_list, uint8_t address, uint8_t sequence, dzralte_command_type_t command, uint8_t index, uint8_t offset, void *data_buffer, uint16_t data_length, bool regenerate_data_CRC) {
+dzralte_message_t* dzralte_generate_message(dzralte_message_list_t *message_list, uint8_t address, uint8_t sequence, dzralte_command_type_t command, uint8_t index, uint8_t offset, void *data_buffer, uint16_t data_length) {
 	// Configure the struct
 	message_list->message[sequence].sequence = sequence;	
-	message_list->message[sequence].regenerate_data_CRC = regenerate_data_CRC;
 	message_list->message[sequence].waiting_for_response = false;
 	message_list->message[sequence].data_length = data_length;
+	message_list->message[sequence].data_buffer = data_buffer;
 
 	// Assemble the header data
 	message_list->message[sequence].command_header[0] = _DZRALTE_SOF;
@@ -50,21 +51,91 @@ dzralte_message_t* dzralte_generate_command(dzralte_message_list_t *message_list
 	message_list->message[sequence].command_header[4] = offset;
 	message_list->message[sequence].command_header[5] = data_length/2;
 
-	// Generate CRC
+	// Generate header CRC
 	uint16_t accumulator = 0;
 	for (uint8_t byte = 0; byte < 6; byte++)
 		accumulator = (accumulator << 8) ^ _dzralte_crc_lookup_table[(accumulator >> 8) ^ message_list->message[sequence].command_header[byte]];
 
 	message_list->message[sequence].command_header[6] = accumulator >> 8;
 	message_list->message[sequence].command_header[7] = accumulator & 0xFF;
+
+	// Generate data section CRC
+	accumulator = 0;
+	for (uint8_t byte = 0; byte < data_length; byte++)
+		accumulator = (accumulator << 8) ^ _dzralte_crc_lookup_table[(accumulator >> 8) ^ message_list->message[sequence].data_buffer[byte]];
+	
+	message_list->message[sequence].data_CRC = accumulator;
+
+	return &(message_list->message[sequence]);
 }
 
-void dzralte_send_message(dzralte_message_list_t *message_list, dzralte_message_t *message, uint8_t sequence, uart_port_t *port) {
+void dzralte_send_message(dzralte_message_list_t *message_list, dzralte_message_t *message, uint8_t sequence, uart_port_t *port, bool regenerate_data_CRC) {
+	// Check if we were passed a pointer, if we weren't, then set the pointer to the correct message
+	if (message == 0)
+		message = &(message_list->message[sequence]);
+
+	// Check if we need to regenerate the CRC, if we do, then generate it
+	if (regenerate_data_CRC) {
+		uint16_t accumulator = 0;
+		for (uint8_t byte = 0; byte < message->data_length; byte++)
+			accumulator = (accumulator << 8) ^ _dzralte_crc_lookup_table[(accumulator >> 8) ^ message->data_buffer[byte]];
+		message->data_CRC = accumulator;
+	}
+
+	// Now put the message into the transmit buffer
+	uart_tx_data(port,message->command_header,8);
+	uart_tx_data(port,message->data_buffer,message->data_length);
+	uart_tx_byte(port,message->data_CRC>>8);
+	uart_tx_byte(port,message->data_CRC & 0xFF);
+
+	// Set the waiting for response variable
+	message->waiting_for_response = true;
 }
 
-bool dzralte_check_responses(dzralte_message_list_t *message_list, uart_port_t *port) {
+uint8_t dzralte_check_responses(dzralte_message_list_t *message_list, uart_port_t *port) {
+	// First check that the first byte in the buffer is the SOF char, if it's not, throw out bytes until there is one
+	while ((uart_rx_peek(port,0) != _DZRALTE_SOF) && uart_received_bytes(port) != 0)
+		// pull the char out of the buffer
+		uart_rx_byte(port);
+
+	int message_counter = 0;
+	// now read from the receive buffer until there is no more
+	while (1) {	// This infinite loop might be a bad idea, but it shouldn't actually ever be infinite
+		// Check that the whole message is in the buffer
+		if (uart_received_bytes(port) < 8)
+			// The whole header isn't even in the buffer, so just return
+			return message_counter;
+		
+		if (uart_received_bytes(port) < (8 + (uart_rx_peek(port,5) ? uart_rx_peek(port,5)+2 : 0)))
+			// The header is in the buffer, but the data section isn't, so return
+			return message_counter;
+
+		// Now that we know the message is here, get the sequence
+		uint8_t sequence = uart_rx_peek(port,2)>>2;
+	
+		// check that the sequence is waiting for a response
+		if (!message_list->message[sequence].waiting_for_response)
+			sequence = 16; // we will read into this useless buffer just to get it out of the serial buffer
+		else
+			message_counter+=1;
+	
+		// Pull the header out
+		uart_rx_data(port,message_list->message[sequence].response_header,8);
+	
+		// Now pull out the data section
+		uart_rx_data(port,message_list->message[sequence].data_buffer,message_list->message[sequence].response_header[5]+2);
+	
+		// Signal that the message was received
+		message_list->message[sequence].waiting_for_response = false;
+	}
+
+	return message_counter;
 }
 
 bool dzralte_response_received(dzralte_message_list_t *message_list, dzralte_message_t *message, uint8_t sequence) {
+	// Get pointer to the message
+	if (message == 0)
+		message = &(message_list->message[sequence]);
+	return !message->waiting_for_response;
 }
 

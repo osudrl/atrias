@@ -234,4 +234,18 @@ int uart_rx_data(uart_port_t *port, void *data, uint8_t data_length);
  */
 uint8_t uart_rx_byte(uart_port_t *port);
 
+/** @brief Gets the number of bytes in the receive buffer
+ *  
+ *  @param port Port to get the receive buffer size
+ */
+uint16_t uart_received_bytes(uart_port_t *port);
+
+/** @brief Gets a byte from the rx buffer without removing it
+ *  
+ *  @param port Port to peed the buffer of
+ *  @param byte byte position in the buffer (from start)
+ *  @return byte the byte in the buffer
+ */
+uint8_t uart_rx_peek(uart_port_t *port, uint16_t byte);
+
 #endif //UART_H
