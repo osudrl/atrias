@@ -6,7 +6,7 @@ MCU = atxmega128a1
 F_CPU = 32000000
 
 # Source Files
-SOURCES = uart.c spi.c cpu.c ethercat.c io_pin.c pwm.c limit_switch.c estop.c biss_encoder.c ssi_encoder.c quadrature_encoder.c
+SOURCES = uart.c spi.c cpu.c ethercat.c io_pin.c pwm.c limit_switch.c estop.c biss_encoder.c ssi_encoder.c quadrature_encoder.c dzralte_comm.c
 
 # Output file and directory
 OUTPUT = medulla_lib
@@ -47,7 +47,7 @@ all: $(OUTPUT).a
 
 clean:
 	$(REMOVE) $(OBJS)
-	$(REMOVE) $(OUTPUT_DIR)/lib$(OUTPUT).a
+	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).a
 
 $(OBJDIR)/%.o : %.c
 	@echo
@@ -59,7 +59,7 @@ $(OBJDIR)/%.o : %.c
 %.a : $(OBJS)
 	@echo
 	@echo Linking $@
-	$(AR) $(OUTPUT_DIR)/lib$@ $(OBJS)
+	$(AR) $(OUTPUT_DIR)/$@ $(OBJS)
 
 # Make build directories
 $(shell mkdir $(OBJDIR) 2>/dev/null)

@@ -9,20 +9,24 @@
 #include "limit_switch.h"
 #include "estop.h"
 #include "ssi_encoder.h"
+#include "quadrature_encoder.h"
+#include "dzralte_comm.h"
 
 UART_USES_PORT(USARTE0)
-ECAT_USES_PORT(SPIE)
+//ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_PORT(PORTK)
 //LIMIT_SW_USES_COUNTER(TCC0)
-ESTOP_USES_PORT(PORTJ)
+//ESTOP_USES_PORT(PORTJ)
 //ESTOP_USES_COUNTER(TCC0)
-SSI_ENCODER_USES_PORT(SPIC)
+//SSI_ENCODER_USES_PORT(SPIC)
 
 uint8_t *command;
 uint16_t *motor_current;
 uint16_t *timestep;
 uint32_t *encoder0;
 uint8_t status;
+
+dzralte_message_list_t message_list;
 
 void handle_estop() {
 	PORTA.OUTTGL = 1<<7;
@@ -45,8 +49,18 @@ int main(void) {
 	uart_connect_port(&debug_port, true);
 	printf("Starting\n");
 
-	estop_port_t estop = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCC0,&handle_estop);
-	estop_enable_port(&estop);
+	dzralte_generate_command(&message_list, 63,0,dzralte_write_cmd, 0x01,0x00,0,02,false);
+	printf("%X ",message_list.message[0].command_header[0]);
+	printf("%X ",message_list.message[0].command_header[1]);
+	printf("%X ",message_list.message[0].command_header[2]);
+	printf("%X ",message_list.message[0].command_header[3]);
+	printf("%X ",message_list.message[0].command_header[4]);
+	printf("%X ",message_list.message[0].command_header[5]);
+	printf("%X ",message_list.message[0].command_header[6]);
+	printf("%X\n",message_list.message[0].command_header[7]);
+
+//	estop_port_t estop = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCC0,&handle_estop);
+//	estop_enable_port(&estop);
 
 	//limit_sw_port_t limitSW = limit_sw_init_port(&PORTK, 0b100, &TCC0, *handle_estop);
 	//_delay_ms(10);
@@ -85,7 +99,7 @@ int main(void) {
 //		_delay_ms(10);
 //	}
 
-
+/*
 	uint32_t enc_val;
 	uint16_t timer_val;
 
@@ -101,7 +115,14 @@ int main(void) {
 		
 		_delay_ms(100);
 	}
-
+*/
+/*
+	quadrature_encoder_t encoder = quadrature_encoder_init(io_init_pin(&PORTD,0),io_init_pin(&PORTD,4),true,&TCD0,2048);
+	while (1) {
+		printf("%u\n",quadrature_encoder_get_value(&encoder));
+		_delay_ms(100);
+	}
+*/
 	while(1);
 	return 1;
 }

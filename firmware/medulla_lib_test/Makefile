@@ -12,12 +12,13 @@ OUTPUT_DIR = .
 # Source Files
 SOURCES = medulla_lib_test.c
 
+# Medulla_lib stuff
+MEDULLA_LIB_DIR = ../medulla_lib
+
 # Build Options
 OBJDIR = .
-INCLUDE_DIRS = ../medulla_lib/include
+INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include
 OPT = 2
-LIB_DIRS = ../medulla_lib/lib
-LIBS = -lm -lmedulla_lib
 
 # AVR Dude options
 PROGRAMMER = avrisp2
@@ -31,11 +32,7 @@ CFLAGS += -include stdint.h
 CFLAGS += $(patsubst %,-I%,$(INCLUDE_DIRS))
 CFLAGS += -mmcu=$(MCU)
 CFLAGS += -std=gnu99
-
-# Create linker flgas
-LDFLAGS  = $(patsubst %,-L%,$(LIB_DIRS))
-LDFLAGS += $(LIBS)
-
+CFLAGS += -lm
 
 # Define all object files
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))
@@ -80,10 +77,10 @@ $(OBJDIR)/%.o : %.c
 
 .SECONDARY : $(OUTPUT).elf
 .PRECIOUS : $(OBJS)
-%.elf : $(OBJS)
+%.elf : $(OBJS) $(MEDULLA_LIB_DIR)/lib/medulla_lib.a
 	@echo
 	@echo Linking $@
-	$(CC) $(CFLAGS) $(OBJS) --output $(OUTPUT_DIR)/$@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJS) --output $(OUTPUT_DIR)/$@ $(LDFLAGS) $(MEDULLA_LIB_DIR)/lib/medulla_lib.a
 
 # Make build directories
 $(shell mkdir $(OBJDIR) 2>/dev/null)

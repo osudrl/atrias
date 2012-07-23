@@ -41,12 +41,12 @@ typedef struct {
  *  @param index_pin IO pin that the index output is connected to.
  *  @param uses_index True if the index pin should be used to reset the timer.
  *  @param counter_reg Pointer a TC0_t or TC1_t register to use for counting.
- *  @param counts_per_reg Number of encoder counts per revolution.
+ *  @param lines_per_rev Number of encoder counts per revolution.
  *  @return quadrature_encoder_t striuct to keep track of the configuration.
  */ 
 quadrature_encoder_t quadrature_encoder_init(io_pin_t quadrature_base_pin, io_pin_t index_pin, bool uses_index, void *counter_reg, uint16_t lines_per_rev);
 
-/** @breif Gets the current encoder position from the counter
+/** @brief Gets the current encoder position from the counter
  *
  *  @param encoder pointer to the encoder struct to get the position for.
  *  @return 16 bit position of the encoder in encoder coutns.
