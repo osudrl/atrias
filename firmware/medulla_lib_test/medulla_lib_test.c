@@ -11,9 +11,12 @@
 #include "ssi_encoder.h"
 #include "quadrature_encoder.h"
 #include "dzralte_comm.h"
+#include "adc.h"
 
 UART_USES_PORT(USARTE0)
 UART_USES_PORT(USARTC0)
+ADC_USES_PORT(ADCB)
+ADC_USES_PORT(ADCA)
 //ECAT_USES_PORT(SPIE)
 //LIMIT_SW_USES_PORT(PORTK)
 //LIMIT_SW_USES_COUNTER(TCC0)
@@ -37,6 +40,7 @@ int main(void) {
 	cpu_set_clock_source(cpu_32mhz_clock);
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
 	cpu_configure_interrupt_level(cpu_interrupt_level_high, true);
+	cpu_configure_interrupt_level(cpu_interrupt_level_low, true);
 	sei();
 	PORTA.DIRSET = 1<<7;
 	//PORTC.DIRSET = 0b1111;
@@ -48,7 +52,8 @@ int main(void) {
 	uint8_t inbuffer[128];
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
-
+	printf("Starting...\n");
+/*
 	uart_port_t amp_port = uart_init_port(&PORTC, &USARTC0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&amp_port, true);
 
@@ -61,7 +66,7 @@ int main(void) {
 		_delay_ms(100);
 	}
 	uart_tx_data(&debug_port,message_list.message[0].response_header,8);
-
+*/
 //	estop_port_t estop = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCC0,&handle_estop);
 //	estop_enable_port(&estop);
 
@@ -126,6 +131,41 @@ int main(void) {
 		_delay_ms(100);
 	}
 */
+	PORTC.DIRSET = 0b11;
+	uint16_t adc0,adc1,adc2,adc3,adc4,adc5,adc6,adc7;
+	uint16_t adca1,adca2,adca3,adca4,adca5,adca6,adca7;
+	adc_port_t adcb = adc_init_port(&ADCB);
+	adc_port_t adca = adc_init_port(&ADCA);
+	adc_init_pin(&adcb, 0, &adc0);
+	adc_init_pin(&adcb, 1, &adc1);
+	adc_init_pin(&adcb, 2, &adc2);
+	adc_init_pin(&adcb, 3, &adc3);
+	adc_init_pin(&adcb, 4, &adc4);
+	adc_init_pin(&adcb, 5, &adc5);
+	adc_init_pin(&adcb, 6, &adc6);
+	adc_init_pin(&adcb, 7, &adc7);
+	adc_connect_port(&adcb);
+
+	adc_init_pin(&adca, 1, &adca1);
+	adc_init_pin(&adca, 2, &adca2);
+	adc_init_pin(&adca, 3, &adca3);
+	adc_init_pin(&adca, 4, &adca4);
+	adc_init_pin(&adca, 5, &adca5);
+	adc_init_pin(&adca, 6, &adca6);
+	adc_init_pin(&adca, 7, &adca7);
+	adc_connect_port(&adca);
+
+
+	while (1) {
+		adc_start_read(&adcb,0xFF);
+		adc_start_read(&adca,0b11111110);
+
+		while ( (!adc_read_complete(&adca))) {};
+		printf("%04u %04u %04u %04u %04u %04u %04u %04u ",adc0,adc1,adc2,adc3,adc4,adc5,adc6,adc7); 
+		printf("%04u %04u %04u %04u %04u %04u %04u\n",adca1,adca2,adca3,adca4,adca5,adca6,adca7); 
+		_delay_ms(100);
+	} 
+
 	while(1);
 	return 1;
 }
