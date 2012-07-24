@@ -144,7 +144,6 @@ int main(void) {
 	adc_init_pin(&adcb, 5, &adc5);
 	adc_init_pin(&adcb, 6, &adc6);
 	adc_init_pin(&adcb, 7, &adc7);
-	adc_connect_port(&adcb);
 
 	adc_init_pin(&adca, 1, &adca1);
 	adc_init_pin(&adca, 2, &adca2);
@@ -153,12 +152,10 @@ int main(void) {
 	adc_init_pin(&adca, 5, &adca5);
 	adc_init_pin(&adca, 6, &adca6);
 	adc_init_pin(&adca, 7, &adca7);
-	adc_connect_port(&adca);
-
 
 	while (1) {
-		adc_start_read(&adcb,0xFF);
-		adc_start_read(&adca,0b11111110);
+		adc_start_read(&adcb);
+		adc_start_read(&adca);
 
 		while ( (!adc_read_complete(&adca))) {};
 		printf("%04u %04u %04u %04u %04u %04u %04u %04u ",adc0,adc1,adc2,adc3,adc4,adc5,adc6,adc7); 

@@ -30,73 +30,84 @@ adc_port_t adc_init_port(ADC_t *adc) {
 	adc->CH2.CTRL = ADC_CH_INPUTMODE_SINGLEENDED_gc;
 	adc->CH3.CTRL = ADC_CH_INPUTMODE_SINGLEENDED_gc;
 
-	return port;
-}
-
-void adc_connect_port(adc_port_t *adc) {
-	if (adc->adc_port == &ADCA)
-		_adc_port_ADCA = adc;
-	else if (adc->adc_port == &ADCB)
-		_adc_port_ADCB = adc;
+	// Set up the interrupt
+	adc->CH3.INTCTRL = ADC_CH_INTLVL_LO_gc;
 	
-	// Enable the interrupt for this port
-	adc->adc_port->CH0.INTCTRL = ADC_CH_INTLVL_LO_gc;
-	adc->adc_port->CH1.INTCTRL = ADC_CH_INTLVL_LO_gc;
-	adc->adc_port->CH2.INTCTRL = ADC_CH_INTLVL_LO_gc;
-	adc->adc_port->CH3.INTCTRL = ADC_CH_INTLVL_LO_gc;
+	// return the adc struc
+	return port;
 }
 
 void adc_init_pin(adc_port_t *adc, uint8_t pin, uint16_t *pin_data) {
 	adc->adc_output_pointers[pin] = pin_data;
+	adc->pin_mask |= (1<<pin);
 }
 
-void adc_start_read(adc_port_t *adc, uint8_t pin_mask) {
-	PORTC.OUTSET = 0b10;
-	adc->pin_mask = pin_mask;
+void adc_start_read(adc_port_t *adc) {
+	// We signal that a buffer contains old data, by setting the msb. The user will never know
+	// So let's mark all the buffers as having old data
 	
-	// setup and start channel 1 if it's used
-	if (pin_mask & 0b00000001) {
-		adc->adc_port->CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
-		adc->adc_port->CH0.CTRL |= ADC_CH_START_bm;
+	if (adc->adc_port == &ADCA) {
+		_adc_buffer_ADCA[0] |= 0x8000;
+		_adc_buffer_ADCA[1] |= 0x8000;
+		_adc_buffer_ADCA[2] |= 0x8000;
+		_adc_buffer_ADCA[3] |= 0x8000;
+		_adc_buffer_ADCA[4] |= 0x8000;
+		_adc_buffer_ADCA[5] |= 0x8000;
+		_adc_buffer_ADCA[6] |= 0x8000;
+		_adc_buffer_ADCA[7] |= 0x8000;
 	}
-	else if (pin_mask & 0b00010000) {
-		adc->adc_port->CH0.MUXCTRL = ADC_CH_MUXPOS_PIN4_gc;
-		adc->adc_port->CH0.CTRL |= ADC_CH_START_bm;
+	else if (adc->adc_port == &ADCB) {
+		_adc_buffer_ADCB[0] |= 0x8000;
+		_adc_buffer_ADCB[1] |= 0x8000;
+		_adc_buffer_ADCB[2] |= 0x8000;
+		_adc_buffer_ADCB[3] |= 0x8000;
+		_adc_buffer_ADCB[4] |= 0x8000;
+		_adc_buffer_ADCB[5] |= 0x8000;
+		_adc_buffer_ADCB[6] |= 0x8000;
+		_adc_buffer_ADCB[7] |= 0x8000;
 	}
+	
+	// rest the ADC channel mux registers to read the first four pins
+	adc->adc_port->CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
+	adc->adc_port->CH1.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc;
+	adc->adc_port->CH2.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc;
+	adc->adc_port->CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc;
 
-	PORTC.OUTCLR = 0b10;
-	// setup and start channel 2 if it's used
-	if (pin_mask & 0b00000010) {
-		adc->adc_port->CH1.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc;
-		adc->adc_port->CH1.CTRL |= ADC_CH_START_bm;
-	}
-	else if (pin_mask & 0b00100000) {
-		adc->adc_port->CH1.MUXCTRL = ADC_CH_MUXPOS_PIN5_gc;
-		adc->adc_port->CH1.CTRL |= ADC_CH_START_bm;
-	}
-
-	// setup and start channel 3 if it's used
-	if (pin_mask & 0b00000100) {
-		adc->adc_port->CH2.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc;
-		adc->adc_port->CH2.CTRL |= ADC_CH_START_bm;
-	}
-	else if (pin_mask & 0b01000000) {
-		adc->adc_port->CH2.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc;
-		adc->adc_port->CH2.CTRL |= ADC_CH_START_bm;
-	}
-
-	// setup and start channel 4 if it's used
-	if (pin_mask & 0b00001000) {
-		adc->adc_port->CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc;
-		adc->adc_port->CH3.CTRL |= ADC_CH_START_bm;
-	}
-	else if (pin_mask & 0b10000000) {
-		adc->adc_port->CH3.MUXCTRL = ADC_CH_MUXPOS_PIN7_gc;
-		adc->adc_port->CH3.CTRL |= ADC_CH_START_bm;
-	}
+	// Start all the channels reading, when they are all done, the channel interrupt will fire.
+	adc->adc_port->CTRLA = ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH2START_bm;
 }
 
 bool adc_read_complete(adc_port_t *adc) {
-	return adc->pin_mask == 0;
+	// All the data has been read when the MSb of pin 7 in the hardware buffer is 0
+	uint16_t *data_buffer;
+	if (adc->adc_port == &ADCA)
+		data_buffer = _adc_buffer_ADCA;
+	else if (adc->adc_port == &ADCB)
+		data_buffer = _adc_buffer_ADCB;
+	else 
+		return false;
+
+	if (data_buffer[7] & 0x8000)
+		return false; // Still reading
+	else {
+		// done reading, so copy the desired buffers. Mask out the upper bits so the user doesn't have to worry about our funky singlas
+		if (adc->pin_mask & 0b00000001)
+			*(adc->adc_output_pointers[0]) = data_buffer[0] & 0xFFF;
+		if (adc->pin_mask & 0b00000010)
+			*(adc->adc_output_pointers[1]) = data_buffer[1] & 0xFFF;
+		if (adc->pin_mask & 0b00000100)
+			*(adc->adc_output_pointers[2]) = data_buffer[2] & 0xFFF;
+		if (adc->pin_mask & 0b00001000)
+			*(adc->adc_output_pointers[3]) = data_buffer[3] & 0xFFF;
+		if (adc->pin_mask & 0b00010000)
+			*(adc->adc_output_pointers[4]) = data_buffer[4] & 0xFFF;
+		if (adc->pin_mask & 0b00100000)
+			*(adc->adc_output_pointers[5]) = data_buffer[5] & 0xFFF;
+		if (adc->pin_mask & 0b01000000)
+			*(adc->adc_output_pointers[6]) = data_buffer[6] & 0xFFF;
+		if (adc->pin_mask & 0b1000000)
+			*(adc->adc_output_pointers[7]) = data_buffer[7] & 0xFFF;
+		return true;
+	}
 }
 
