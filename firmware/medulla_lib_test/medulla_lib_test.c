@@ -154,10 +154,12 @@ int main(void) {
 	adc_init_pin(&adca, 7, &adca7);
 
 	while (1) {
+		PORTC.OUTSET = 0b10;
 		adc_start_read(&adcb);
 		adc_start_read(&adca);
 
-		while ( (!adc_read_complete(&adca))) {};
+		while ( (!adc_read_complete(&adcb)) || (!adc_read_complete(&adca))){};
+		PORTC.OUTCLR = 0b10;
 		printf("%04u %04u %04u %04u %04u %04u %04u %04u ",adc0,adc1,adc2,adc3,adc4,adc5,adc6,adc7); 
 		printf("%04u %04u %04u %04u %04u %04u %04u\n",adca1,adca2,adca3,adca4,adca5,adca6,adca7); 
 		_delay_ms(100);

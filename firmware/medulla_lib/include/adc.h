@@ -37,8 +37,7 @@ uint16_t _adc_buffer_ADCA[8], /**< Internal buffer to store conversion result fr
  *  @param ADC ADC_t port for the ADC to define the ISR for.
  **/
 #define ADC_USES_PORT(ADC) \
-ISR(ADC##_CH3_vect, ISR_NOBLOCK) { \
-	PORTC.OUTSET = 1;\
+ISR(ADC##_CH3_vect) { \
 	if (_adc_buffer_##ADC[0] & 0x8000) { \
 		/* We just read pins 0-3, so copy all the data into the port buffers */ \
 		_adc_buffer_##ADC[0] = ADC.CH0.RES; \
@@ -52,7 +51,7 @@ ISR(ADC##_CH3_vect, ISR_NOBLOCK) { \
 		ADC.CH2.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc; \
 		ADC.CH3.MUXCTRL = ADC_CH_MUXPOS_PIN7_gc; \
 		/** Start the converter cycle for the new pins*/\
-		ADC.CTRLA = ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH2START_bm; \
+		ADC.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm; \
 	} \
 	else { \
 		/* We just finished reading pins 4-7 so read that data into the port buffer */ \
@@ -61,7 +60,6 @@ ISR(ADC##_CH3_vect, ISR_NOBLOCK) { \
 		_adc_buffer_##ADC[6] = ADC.CH2.RES; \
 		_adc_buffer_##ADC[7] = ADC.CH3.RES; \
 	} \
-	PORTC.OUTCLR = 1;\
 } \
 
 /** @brief Initilize a port of ADC inputs

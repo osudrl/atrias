@@ -45,7 +45,6 @@ void adc_init_pin(adc_port_t *adc, uint8_t pin, uint16_t *pin_data) {
 void adc_start_read(adc_port_t *adc) {
 	// We signal that a buffer contains old data, by setting the msb. The user will never know
 	// So let's mark all the buffers as having old data
-	
 	if (adc->adc_port == &ADCA) {
 		_adc_buffer_ADCA[0] |= 0x8000;
 		_adc_buffer_ADCA[1] |= 0x8000;
@@ -74,7 +73,7 @@ void adc_start_read(adc_port_t *adc) {
 	adc->adc_port->CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc;
 
 	// Start all the channels reading, when they are all done, the channel interrupt will fire.
-	adc->adc_port->CTRLA = ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH2START_bm;
+	adc->adc_port->CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
 }
 
 bool adc_read_complete(adc_port_t *adc) {
