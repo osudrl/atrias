@@ -145,13 +145,6 @@
 						<Name>Toe Sensor</Name>
 						<DataType>UINT</DataType>
 					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A01</Index>
@@ -206,13 +199,6 @@
 						<Name>Logic Voltage</Name>
 						<DataType>UINT</DataType>
 					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>3</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A04</Index>
@@ -257,13 +243,6 @@
 						<SubIndex>5</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 5</Name>
-						<DataType>UINT</DataType>
-					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					
@@ -348,13 +327,6 @@
 						<Name>Limit Switch</Name>
 						<DataType>USINT</DataType>
 					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A01</Index>
@@ -391,13 +363,6 @@
 						<Name>Logic Voltage</Name>
 						<DataType>UINT</DataType>
 					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>3</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A03</Index>
@@ -422,13 +387,6 @@
 						<BitLen>8</BitLen>
 						<Name>Thermistor 2</Name>
 						<DataType>USINT</DataType>
-					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
 					</Entry>
 					
 				</TxPdo>
@@ -498,13 +456,6 @@
 						<Name>Error Flags</Name>
 						<DataType>USINT</DataType>
 					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A01</Index>
@@ -568,13 +519,6 @@
 						<SubIndex>2</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Logic Voltage</Name>
-						<DataType>UINT</DataType>
-					</Entry>
-					<Entry>
-						<Index>#x0006</Index>
-						<SubIndex>3</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 				</TxPdo>
