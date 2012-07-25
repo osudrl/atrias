@@ -16,8 +16,8 @@
 				<Type ProductCode="#x00000004" RevisionNo="#x00000003">ATRIAS 2.1 EtherCAT Test (Medulla 1.5)</Type>
 				<Name LcId="1033"><![CDATA[ATRIAS 2.1 EtherCAT Test (Medulla 1.5)]]></Name>
 				<GroupType>Medulla</GroupType>
-				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
-				<Fmmu OpOnly="1" Sm="3">Inputs</Fmmu>
+				<Fmmu Sm="2">Outputs</Fmmu>
+				<Fmmu Sm="3">Inputs</Fmmu>
 				<Sm Enable="0" />
 				<Sm Enable="0" />
 				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
@@ -69,7 +69,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008FFFF0000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -141,9 +141,9 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
-						<Name>Toe Switch</Name>
-						<DataType>USINT</DataType>
+						<BitLen>16</BitLen>
+						<Name>Toe Sensor</Name>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
@@ -220,44 +220,44 @@
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>1</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 0</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>2</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 1</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>3</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 2</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>4</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 3</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 4</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 5</Name>
-						<DataType>USINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
@@ -279,7 +279,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008FFFF0000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -443,7 +443,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008FFFF0000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -589,7 +589,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05040008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008FFFF0000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 		</Devices>
