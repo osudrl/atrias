@@ -245,7 +245,24 @@
 						<Name>Thermistor 5</Name>
 						<DataType>UINT</DataType>
 					</Entry>
-					
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A05</Index>
+					<Name>Measured Current</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Amp 1 Measured Current</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Amp 2 Measured Current</Name>
+						<DataType>UINT</DataType>
+					</Entry>
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
@@ -387,8 +404,25 @@
 						<BitLen>8</BitLen>
 						<Name>Thermistor 2</Name>
 						<DataType>USINT</DataType>
+					</Entry>	
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A04</Index>
+					<Name>Measured Current</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Amp 1 Measured Current</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Amp 2 Measured Current</Name>
+						<DataType>UINT</DataType>
 					</Entry>
-					
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
