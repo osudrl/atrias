@@ -413,16 +413,9 @@
 						<Index>#x0005</Index>
 						<SubIndex>1</SubIndex>
 						<BitLen>16</BitLen>
-						<Name>Amp 1 Measured Current</Name>
+						<Name>Amp Measured Current</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
-					<Entry>
-						<Index>#x0005</Index>
-						<SubIndex>2</SubIndex>
-						<BitLen>16</BitLen>
-						<Name>Amp 2 Measured Current</Name>
-						<DataType>UINT</DataType>
-					</Entry>
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
