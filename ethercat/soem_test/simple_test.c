@@ -26,6 +26,7 @@
 #include "ethercatprint.h"
 
 #include <time.h>
+#include <stdint.h>
 #define LOOP_PERIOD_NS 1000000
 #define OFFSET_NS       100000
 
@@ -140,14 +141,14 @@ void simpletest(char *ifname)
 				ec_dcsync0(1, TRUE, 1000000, 0);
 				usleep(100000);
 				/* cyclic loop */
+				uint8_t num = 0;
 				for(i = 1; i <= 1000000; i++)
 				{
-					ec_slave[1].outputs[0]++;
+					if (num != ec_slave[1].outputs[0]) printf("%u\t%u\n", num, ec_slave[1].outputs[0]);
+					ec_slave[1].outputs[0] = ++num;
 					
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
-					
-					printf("%u\n", ec_slave[1].outputs[0]);
 					
 					clock_gettime(CLOCK_MONOTONIC, &curTime);
 					//printf("%u, %u\n", wkc, ec_FPWRw(1, 0x912, /*(1000000000*(curTime.tv_sec - startTime.tv_sec) + curTime.tv_nsec - startTime.tv_nsec) % 1 << 31*/ 0x0016, 500));
@@ -275,8 +276,8 @@ void ecatcheck( void *ptr )
 					}
 				}
 			}
-			if(!ec_group[currentgroup].docheckstate)
-				printf("OK : all slaves resumed OPERATIONAL.\n");
+			//if(!ec_group[currentgroup].docheckstate)
+			//	printf("OK : all slaves resumed OPERATIONAL.\n");
 		}
 		usleep(10000);
 	}
