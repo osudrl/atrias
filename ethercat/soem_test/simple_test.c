@@ -96,7 +96,7 @@ void simpletest(char *ifname)
 		{
 			printf("%d slaves found and configured.\n",ec_slavecount);
 
-			ec_config_map(&IOmap);
+			ec_config_map(IOmap);
 
 			ec_configdc();
 			clock_gettime(CLOCK_MONOTONIC, &startTime);
@@ -142,13 +142,15 @@ void simpletest(char *ifname)
 				/* cyclic loop */
 				for(i = 1; i <= 1000000; i++)
 				{
-					ec_slave[0].outputs[0] = i % 256;
+					ec_slave[1].outputs[0]++;
 					
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
 					
+					printf("%u\n", ec_slave[1].outputs[0]);
+					
 					clock_gettime(CLOCK_MONOTONIC, &curTime);
-					printf("%u, %u\n", wkc, ec_FPWRw(1, 0x912, /*(1000000000*(curTime.tv_sec - startTime.tv_sec) + curTime.tv_nsec - startTime.tv_nsec) % 1 << 31*/ 0x0016, 500));
+					//printf("%u, %u\n", wkc, ec_FPWRw(1, 0x912, /*(1000000000*(curTime.tv_sec - startTime.tv_sec) + curTime.tv_nsec - startTime.tv_nsec) % 1 << 31*/ 0x0016, 500));
 
 					if(wkc >= expectedWKC)
 					{
