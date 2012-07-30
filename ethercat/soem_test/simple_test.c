@@ -149,6 +149,8 @@ void simpletest(char *ifname)
 					
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
+					ec_send_processdata();
+					wkc = ec_receive_processdata(500);
 					
 					clock_gettime(CLOCK_MONOTONIC, &curTime);
 					//printf("%u, %u\n", wkc, ec_FPWRw(1, 0x912, /*(1000000000*(curTime.tv_sec - startTime.tv_sec) + curTime.tv_nsec - startTime.tv_nsec) % 1 << 31*/ 0x0016, 500));
