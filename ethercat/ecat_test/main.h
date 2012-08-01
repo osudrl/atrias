@@ -22,14 +22,26 @@ volatile bool done = false;
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
     {0x0005, 0x01, 8}, /* Command */
-    {0x0003, 0x02, 16}, /* Motor Current */
-    {0x0006, 0x01, 16}, /* Timestep */
-    {0x0007, 0x02, 32}, /* Encoder 0 */
+    {0x0006, 0x01, 16}, /* Counter */
+    {0x0005, 0x01, 8}, /* ID */
+    {0x0005, 0x02, 8}, /* State */
+    {0x0005, 0x03, 8}, /* Error Flags */
+    {0x0007, 0x01, 32}, /* Encoder */
+    {0x0006, 0x02, 16}, /* Timestamp */
+    {0x0007, 0x01, 32}, /* Encoder */
+    {0x0006, 0x02, 16}, /* Timestamp */
+    {0x0007, 0x01, 32}, /* Encoder */
+    {0x0006, 0x02, 16}, /* Timestamp */
+    {0x0006, 0x02, 16}, /* Logic Voltage */
 };
 
 ec_pdo_info_t slave_0_pdos[] = {
     {0x1600, 2, slave_0_pdo_entries + 0}, /* uControllerInput */
-    {0x1a00, 2, slave_0_pdo_entries + 2}, /* uControllerOutput */
+    {0x1a00, 3, slave_0_pdo_entries + 2}, /* uController Status */
+    {0x1a01, 2, slave_0_pdo_entries + 5}, /* X Encoder */
+    {0x1a02, 2, slave_0_pdo_entries + 7}, /* Pitch Encoder */
+    {0x1a03, 2, slave_0_pdo_entries + 9}, /* Z Encoder */
+    {0x1a04, 1, slave_0_pdo_entries + 11}, /* Power */
 };
 
 ec_sync_info_t slave_0_syncs[] = {
