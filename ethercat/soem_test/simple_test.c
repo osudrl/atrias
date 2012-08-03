@@ -139,6 +139,7 @@ void simpletest(char *ifname)
 				wkc_count = 0;
 				inOP = TRUE;
 				ec_dcsync0(1, TRUE, 1000000, 0);
+				//ec_dcsync0(2, TRUE, 1000000, 0);
 				usleep(100000);
 				/* cyclic loop */
 				uint8_t num = 0;
@@ -149,7 +150,11 @@ void simpletest(char *ifname)
 					
 					ec_send_processdata();
 					wkc = ec_receive_processdata(500);
+					if (ec_slave[1].outputs[0] != ec_slave[1].inputs[0])
+						printf("Whoa.\n");
+					//ec_slave[1].outputs[0] = ec_slave[1].inputs[0] + 1;
 					ec_send_processdata();
+					printf("%u\n", ec_slave[1].outputs[0]);
 					wkc = ec_receive_processdata(500);
 					
 					clock_gettime(CLOCK_MONOTONIC, &curTime);
