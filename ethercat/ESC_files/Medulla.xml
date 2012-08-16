@@ -73,7 +73,7 @@
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
-				<Type ProductCode="#x00000001" RevisionNo="#x00000004">ATRIAS 2.1 Leg (Medulla 1.5)</Type>
+				<Type ProductCode="#x00000001" RevisionNo="#x00000005">ATRIAS 2.1 Leg (Medulla 1.5)</Type>
 				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Leg (Medulla 1.5)]]></Name>
 				<GroupType>Medulla</GroupType>
 				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
@@ -128,12 +128,19 @@
 						<Index>#x0005</Index>
 						<SubIndex>4</SubIndex>
 						<BitLen>8</BitLen>
-						<Name>Error Flags</Name>
+						<Name>Counter</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>6</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Limit Switch</Name>
 						<DataType>USINT</DataType>
