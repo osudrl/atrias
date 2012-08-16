@@ -20,8 +20,8 @@
 				<Fmmu Sm="3">Inputs</Fmmu>
 				<Sm Enable="0" />
 				<Sm Enable="0" />
-				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
-				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
+				<Sm StartAddress="#x1000" ControlByte="#x24" Enable="1">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x20" Enable="1">Inputs</Sm>
 				<RxPdo Fixed="1" Sm="2">
 					<Index>#x1600</Index>
 					<Name>uControllerInput</Name>
@@ -73,7 +73,7 @@
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
-				<Type ProductCode="#x00000001" RevisionNo="#x00000001">ATRIAS 2.1 Leg (Medulla 1.5)</Type>
+				<Type ProductCode="#x00000001" RevisionNo="#x00000004">ATRIAS 2.1 Leg (Medulla 1.5)</Type>
 				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Leg (Medulla 1.5)]]></Name>
 				<GroupType>Medulla</GroupType>
 				<Fmmu OpOnly="1" Sm="2">Outputs</Fmmu>
@@ -153,14 +153,14 @@
 						<Index>#x0007</Index>
 						<SubIndex>1</SubIndex>
 						<BitLen>32</BitLen>
-						<Name>Encoder</Name>
+						<Name>Motor Encoder</Name>
 						<DataType>UDINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>3</SubIndex>
 						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
+						<Name>Motor Encoder Timestamp</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 				</TxPdo>
@@ -171,14 +171,32 @@
 						<Index>#x0007</Index>
 						<SubIndex>2</SubIndex>
 						<BitLen>32</BitLen>
-						<Name>Encoder</Name>
+						<Name>Leg Encoder</Name>
 						<DataType>UDINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>4</SubIndex>
 						<BitLen>16</BitLen>
-						<Name>Timestamp</Name>
+						<Name>Leg Encoder Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A02</Index>
+					<Name>Incremental Encoder</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>5</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder</Name>
+						<DataType>UDINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>6</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder Timestamp</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 				</TxPdo>
@@ -187,14 +205,14 @@
 					<Name>Power</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>5</SubIndex>
+						<SubIndex>7</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Motor Voltage</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>6</SubIndex>
+						<SubIndex>8</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Logic Voltage</Name>
 						<DataType>UINT</DataType>
@@ -205,42 +223,42 @@
 					<Name>Thermistors</Name>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>7</SubIndex>
+						<SubIndex>9</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 0</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>8</SubIndex>
+						<SubIndex>10</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 1</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>9</SubIndex>
+						<SubIndex>11</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 2</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>10</SubIndex>
+						<SubIndex>12</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 3</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>11</SubIndex>
+						<SubIndex>13</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 4</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>12</SubIndex>
+						<SubIndex>17</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Thermistor 5</Name>
 						<DataType>UINT</DataType>
