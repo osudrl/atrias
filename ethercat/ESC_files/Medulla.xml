@@ -197,7 +197,7 @@
 						<SubIndex>5</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Incremental Encoder</Name>
-						<DataType>UDINT</DataType>
+						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
