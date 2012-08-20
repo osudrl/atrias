@@ -1,0 +1,26 @@
+import("atrias_rt_ops")
+
+loadComponent("affinitySetter", "DeployerAffinitySetter")
+
+# Create a dummy ROS stream to fool RTT-ROS integration into starting up
+var ConnPolicy dummy_policy
+dummy_policy.transport = 3
+dummy_policy.name_id = "/dummy_topic"
+stream("affinitySetter.dummyOutput", dummy_policy)
+
+affinitySetter.configure()
+
+# Load necessary components.
+loadComponent("atrias_rt", "RTOps")
+
+# Set priority and scheduler.
+setActivity("atrias_rt", 0, HighestPriority, ORO_SCHED_RT)
+
+# Configure components.
+atrias_rt.configure()
+
+# Fix our realtime
+atrias_rt.setCpuAffinity(10)
+
+# Start components.
+atrias_rt.start()

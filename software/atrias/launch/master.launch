@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find atrias)/launch/desktop.launch" />
+    <include file="$(find atrias)/launch/nettop.launch" />
+</launch>
+

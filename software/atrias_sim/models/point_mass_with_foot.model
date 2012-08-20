@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<gazebo version="1.0">
+  <model name="point_mass" static="false">
+    <origin pose="0 0 0 0 0 0"/>
+
+    <link name="foot_link_name">
+      <origin pose="0 0 0.5 0 0 0"/>
+
+      <inertial mass="80">
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+  
+      <collision name="collision">
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <surface>
+          <contact>
+            <ode soft_erp="1" max_vel="0"/>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <material script="Gazebo/Blue"/>
+      </visual>
+
+    </link>
+
+    <!-- Mass -->
+    <link name="mass_link_name" gravity="1" self_collide="0" kinematic="1">
+      <origin pose="0 0 1 0 0 0"/>
+
+      <inertial mass="80">
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+  
+      <collision name="collision">
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <surface>
+          <contact>
+            <ode soft_erp="1" max_vel="0"/>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <material script="Gazebo/Red"/>
+      </visual>
+
+    </link>
+    <!--
+    <link name="mass_link_name" gravity="1" self_collide="0" kinematic="1">
+      <origin pose="0 0 1 0 0 0"/>
+
+      <inertial mass="80">
+	<origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+  
+      <collision name="collision">
+	<origin pose="0 0 0 0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+	<surface>
+          <friction>
+            <ode mu='0.0' mu2='0.0' fdir1='0.0 0.0 0.0' slip1='0.0' slip2='0.0'/>
+          </friction>
+          <bounce restitution_coefficient='0.0' threshold='0.0'/>
+          <contact>
+            <ode soft_cfm='0.0' soft_erp='0.2' kp='10000000000000.0' kd='100000000000.0' max_vel='-1.0' min_depth='0.0'/>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual" cast_shadows="true">
+	<origin pose="0 0 0 0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <material script="Gazebo/Red"/>
+      </visual>
+    </link>
+    -->
+
+
+    <!-- Foot -->
+    <!--
+    <link name="foot_link_name" gravity="1" self_collide="0" kinematic="1">
+      <origin pose="0 0 0.5 0 0 0"/>
+
+      <inertial mass="80">
+	<origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+  
+      <collision name="collision">
+	<origin pose="0 0 0 0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+	<surface>
+          <friction>
+            <ode mu='0.0' mu2='0.0' fdir1='0.0 0.0 0.0' slip1='0.0' slip2='0.0'/>
+          </friction>
+          <bounce restitution_coefficient='0.0' threshold='0.0'/>
+          <contact>
+            <ode soft_cfm='0.0' soft_erp='0.2' kp='10000000000000.0' kd='100000000000.0' max_vel='-1.0' min_depth='0.0'/>
+          </contact>
+        </surface>
+      </collision>
+
+      <visual name="visual" cast_shadows="true">
+	<origin pose="0 0 0 0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+        <material script="Gazebo/Blue"/>
+      </visual>
+    </link>
+    -->
+    
+    <!--
+    <plugin name="inverted_pendulum_with_foot" filename="libinverted_pendulum_with_foot.so"/>
+    -->
+
+  </model>
+</gazebo>
+

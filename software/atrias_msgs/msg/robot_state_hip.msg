@@ -1,0 +1,19 @@
+Header header
+
+float64 motorAngle
+float64 motorVelocity
+float64 motorCurrent
+float64 motorTorque
+
+# Limit switches
+bool    motorNegLimitSwitch
+bool    motorPosLimitSwitch
+
+# Hip thermistors
+float64 motorThermA
+float64 motorThermB
+float64 motorThermC
+
+# Voltages
+float64 logicVoltage
+float64 motorVoltage

@@ -1,0 +1,15 @@
+import("atrias_controller_manager")
+
+# Load necessary components.
+loadComponent("atrias_cm", "ControllerManager")
+addPeer("atrias_cm", "Deployer")
+loadService("atrias_cm", "scripting")
+
+# Set our CPU to the non-realtime cores
+atrias_cm.setCpuAffinity(5)
+
+# Configure components.
+atrias_cm.configure()
+
+# Start components.
+atrias_cm.start()

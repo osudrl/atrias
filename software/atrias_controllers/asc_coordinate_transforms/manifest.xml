@@ -1,0 +1,11 @@
+<package>
+    <description brief="Orocos asc_coordinate_transforms Component package">
+        This package contains the components of the asc_coordinate_transforms package
+    </description>
+    <!--NOTE: set the license and author before you publish this code-->
+    <license></license>
+    <author>drl</author>
+    <depend package="rtt" />
+    <depend package="atrias_shared" />
+
+</package>

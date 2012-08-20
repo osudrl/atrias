@@ -1,0 +1,10 @@
+import("atrias_rt_ops")
+
+# Load necessary components.
+loadComponent("atrias_rt", "RTOps")
+
+# Configure components.
+atrias_rt.configure()
+
+# Start components.
+atrias_rt.start()

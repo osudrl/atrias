@@ -1,0 +1,1 @@
+description=Given a frequency and amplitude, will generate a sin wave and it's derivative.

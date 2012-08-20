@@ -1,0 +1,10 @@
+<!-- Michael Anderson -->
+
+<launch>
+  <!-- start the ecat kernel interface -->
+  <node name="wireless_kern_interface" pkg="atrias_controllers" launch-prefix="xterm -e gdb -ex run --args" type="wireless_kern_interface" />
+
+  <!-- start the gui -->
+  <node name="atrias_gui" pkg="gui" type="atrias_gui" output="screen" />
+
+</launch>

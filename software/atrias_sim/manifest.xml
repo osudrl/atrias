@@ -1,0 +1,16 @@
+<package>
+  <description brief="atrias_sim">
+
+     atrias_sim
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_sim</url>
+  <depend package="gazebo"/>
+  <depend package="atrias_msgs"/>
+
+</package>
+
+

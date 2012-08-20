@@ -1,0 +1,25 @@
+import("OrocosServiceTest")
+
+# Load necessary components.
+loadComponent("tester", "OrocosServiceTest")
+
+require("myservice")
+loadService("tester", "myservice")
+
+# Set activity properties.
+setActivity("tester", 0, HighestPriority, ORO_SCHED_RT)
+
+# Create connections
+#var ConnPolicy policy
+#policy.pull = false
+#policy.transport = 0
+#policy.init = true
+#policy.lock_policy = 0
+
+#connect("tester.data_out", "worker0.data_in",  policy)
+
+# Configure components.
+tester.configure()
+
+# Start components.
+tester.start()

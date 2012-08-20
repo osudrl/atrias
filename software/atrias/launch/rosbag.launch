@@ -1,0 +1,10 @@
+<launch>
+    <!-- rosbag everything except /gui_input. -->
+    <node name   = "atrias_rosbag"
+          pkg    = "rosbag"
+          type   = "record"
+          args   = "--output-prefix=$(find atrias)/bagfiles/atrias
+                    -a
+                    -x '/rosout|/rosout_agg|/diagnostics|/gui_input|/dummy_topic|/log_rt_ops_out_cm_in|/gui_output|/gui_robot_state_in' " />
+</launch>
+

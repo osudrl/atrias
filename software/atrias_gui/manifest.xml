@@ -1,0 +1,17 @@
+<package>
+  <description brief="atrias_gui">
+
+     atrias_gui
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_gui</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+
+</package>
+
+

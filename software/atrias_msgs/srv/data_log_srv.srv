@@ -1,0 +1,4 @@
+bool isLogging
+string logfilename
+---
+string logfilename

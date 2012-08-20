@@ -1,0 +1,17 @@
+<launch>
+    <!-- Start data publishing node. -->
+
+    <!-- Launch the Orocos script for atrias_ecat_master -->
+    <node name    = "atrias_control_rosnode"
+          pkg     = "ocl"
+          type    = "deployer-gnulinux"
+          args    = "-l info -s $(find atrias_controller_manager)/controller_manager.ops -s $(find atrias_rt_ops)/rt_ops.ops -s $(find atrias)/control_system.ops --"
+          output  = "screen">
+    </node>
+
+    <!-- Start the data logger. -->
+    <!--<node name    = "data_logger"
+          pkg     = "atrias"
+          type    = "data_logger" />-->
+</launch>
+

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- Andrew Peekema -->
+
+<launch>
+	
+	<arg name="use_sim_time" default="true"/>
+	<!-- set use_sim_time flag -->
+	<group if="$(arg use_sim_time)">
+		<param name="/use_sim_time" value="true" />
+	</group>
+
+	<!-- Start the Gazebo simulation server -->
+	<node name="simulation_server" pkg="gazebo" type="gazebo" args="$(find atrias_sim)/worlds/atrias20_leg.world" respawn="false" output="screen" />
+
+	<!-- Start the Gazebo GUI -->
+	<node name="simulation_gui" pkg="gazebo" type="gui" respawn="false" output="screen" />
+
+	<!-- Controller testing -->
+	<!--
+	note: after info, there was a double dash instead of the single dash
+	<node name="rt_ops" pkg="ocl" type="deployer-gnulinux" args="-s $(find atrias_rt_ops)/sim_test.ops -l info -" respawn="false" output="screen" />
+	-->
+
+</launch>
