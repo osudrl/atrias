@@ -1,0 +1,432 @@
+diff --git a/soem_core/CMakeLists.txt b/soem_core/CMakeLists.txt
+index 658c576..8005f1e 100644
+--- a/soem_core/CMakeLists.txt
++++ b/soem_core/CMakeLists.txt
+@@ -23,7 +23,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+ 
+ #common commands for building c++ executables and libraries
+ find_path(RTNET_INCLUDE_DIR NAMES rtnet.h PATH_SUFFIXES rtnet/include)
+-option(ENABLE_RTNET "Enable RTnet over Xenomai." ON)
++option(ENABLE_RTNET "Enable RTnet over Xenomai." OFF)
+ if(RTNET_INCLUDE_DIR AND ENABLE_RTNET)
+   message("Found RTNET: ${RTNET_INCLUDE_DIR}")
+   include_directories(${RTNET_INCLUDE_DIR})
+@@ -36,10 +36,22 @@ if(RTNET_INCLUDE_DIR AND ENABLE_RTNET)
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS} -lnative")
+ endif()
+ 
+-rosbuild_add_library(${PROJECT_NAME} build/soem_core/src/ethercatbase.c build/soem_core/src/ethercatcoe.c build/soem_core/src/ethercatconfig.c build/soem_core/src/ethercatfoe.c build/soem_core/src/ethercatsoe.c build/soem_core/src/ethercatmain.c build/soem_core/src/ethercatprint.c build/soem_core/src/nicdrv.c build/soem_core/src/ethercatdc.c) 
++rosbuild_add_library(${PROJECT_NAME} build/soem_core/soem/ethercatbase.c
++                                     build/soem_core/soem/ethercatcoe.c
++                                     build/soem_core/soem/ethercatconfig.c
++                                     build/soem_core/soem/ethercatfoe.c
++                                     build/soem_core/soem/ethercatsoe.c
++                                     build/soem_core/soem/ethercatmain.c
++                                     build/soem_core/soem/ethercatprint.c
++                                     build/soem_core/soem/ethercatdc.c
++                                     build/soem_core/oshw/linux/nicdrv.c
++                                     build/soem_core/osal/linux/osal.c)
+ 
+-include_directories(${PROJECT_SOURCE_DIR}/build/soem_core/src)
++
++include_directories(${PROJECT_SOURCE_DIR}/build/soem_core/soem
++                    ${PROJECT_SOURCE_DIR}/build/soem_core/oshw/linux
++                    ${PROJECT_SOURCE_DIR}/build/soem_core/osal/linux)
+ #rosbuild_add_boost_directories()
+ #rosbuild_link_boost(${PROJECT_NAME} thread)
+-rosbuild_add_executable(slaveinfo build/soem_core/src/slaveinfo.c)
++rosbuild_add_executable(slaveinfo build/soem_core/test/linux/slaveinfo/slaveinfo.c)
+ target_link_libraries(slaveinfo ${PROJECT_NAME})
+diff --git a/soem_core/Makefile b/soem_core/Makefile
+index 2e2b306..0d53fb2 100644
+--- a/soem_core/Makefile
++++ b/soem_core/Makefile
+@@ -1,9 +1,9 @@
+-TARBALL = SOEM1.2.5.tar.bz2
+-TARBALL_URL = http://download.berlios.de/soem/SOEM1.2.5.tar.bz2
++TARBALL = ../SOEM1.2.8.tar.bz2
++TARBALL_URL = http://download.berlios.de/soem/SOEM1.2.8.tar.bz2
+ SOURCE_DIR = build/soem_core
+-INITIAL_DIR = build/SOEM1.2.5
+-UNPACK_CMD = tar xjf
+-MD5SUM_FILE = SOEM1.2.5.tar.bz2.md5sum
++INITIAL_DIR = build/SOEM1.2.8
++UNPACK_CMD = mkdir SOEM1.2.8 && tar -C SOEM1.2.8 -xjf
++MD5SUM_FILE = SOEM1.2.8.tar.bz2.md5sum
+ TARBALL_PATCH=rtnet.patch
+ 
+ all: $(SOURCE_DIR)/unpacked
+@@ -16,4 +16,4 @@ wipe: clean
+ 	-rm -rf $(SOURCE_DIR)
+ 	-rm -rf ${TARBALL}
+ 
+-include $(shell rospack find mk)/cmake.mk
+\ No newline at end of file
++include $(shell rospack find mk)/cmake.mk
+diff --git a/soem_core/SOEM1.2.5.tar.bz2.md5sum b/soem_core/SOEM1.2.5.tar.bz2.md5sum
+deleted file mode 100644
+index d7cbb69..0000000
+--- a/soem_core/SOEM1.2.5.tar.bz2.md5sum
++++ /dev/null
+@@ -1 +0,0 @@
+-222c3003d047766463e567f7a49981f9  SOEM1.2.5.tar.bz2
+diff --git a/soem_core/manifest.xml b/soem_core/manifest.xml
+index d37de4d..ca9893e 100644
+--- a/soem_core/manifest.xml
++++ b/soem_core/manifest.xml
+@@ -14,7 +14,7 @@
+   <url>http://developer.berlios.de/projects/soem</url>
+ 
+   <export>
+-    <cpp cflags="-I${prefix}/build/soem_core/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsoem_core"/>
++    <cpp cflags="-I${prefix}/build/soem_core/soem -I${prefix}/build/soem_core/oshw/linux -I${prefix}/build/soem_core/osal/linux" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsoem_core"/>
+   </export>
+ </package>
+ 
+diff --git a/soem_core/rtnet.patch b/soem_core/rtnet.patch
+index 7bf133b..34b9f9f 100644
+--- a/soem_core/rtnet.patch
++++ b/soem_core/rtnet.patch
+@@ -1,178 +1,169 @@
+---- src/nicdrv.c	2011-05-09 12:36:45.000000000 +0200
+-+++ src/nicdrv.c	2012-04-23 10:59:50.000000000 +0200
++diff -uar oshw/linux/nicdrv.c oshw/linux/nicdrv.c
++--- oshw/linux/nicdrv.c	2012-06-24 06:46:17.000000000 -0700
+++++ oshw/linux/nicdrv.c	2012-07-06 14:34:39.974899981 -0700
+ @@ -64,16 +64,20 @@
+-  * compensate. If needed the packets from interface A are resend through interface B.
+-  * This layer if fully transparent for the higher layers.
+-  */
+--
++  * compensate. If needed the packets from interface A are resend through interface B.
++  * This layer if fully transparent for the higher layers.
++  */
++-
+ -#include <sys/types.h>
+-+#ifdef HAVE_RTNET
+-+#include <rtnet.h>
+-+#else
+++#ifdef HAVE_RTNET
+++#include <rtnet.h>
+++#else
+  #include <sys/ioctl.h>
+ -#include <net/if.h> 
+- #include <sys/socket.h> 
++ #include <sys/socket.h> 
+ +#include <sys/types.h>
+-+#include <fcntl.h>
+-+#endif
+-+
+-+#include <net/if.h> 
+- #include <unistd.h>
+- #include <sys/time.h> 
+- #include <arpa/inet.h>
+- #include <stdio.h>
+--#include <fcntl.h>
+- #include <string.h>
+- #include <netpacket/packet.h>
+- #include <pthread.h>
+-@@ -81,6 +85,7 @@
+- #include "ethercattype.h"
+- #include "nicdrv.h"
+- 
+-+
+- /** Redundancy modes */
+- enum
+- {
+-@@ -176,9 +181,15 @@
+- /** second MAC word is used for identification */
+- #define RX_SEC secMAC[1]
+- 
+-+#ifdef HAVE_RTNET
+- pthread_mutex_t ec_getindex_mutex = PTHREAD_MUTEX_INITIALIZER;
+- pthread_mutex_t ec_tx_mutex = PTHREAD_MUTEX_INITIALIZER;
+- pthread_mutex_t ec_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
+-+#else
+-+pthread_mutex_t ec_getindex_mutex;
+-+pthread_mutex_t ec_tx_mutex;
+-+pthread_mutex_t ec_rx_mutex;
+-+#endif
+- 
+- /** Basic setup to connect NIC to socket.
+-  * @param[in] ifname	    = Name of NIC device, f.e. "eth0"
+-@@ -194,6 +205,10 @@
+- 	struct sockaddr_ll sll;
+- 	int *psock;
+- 
+-+	pthread_mutex_init( &ec_getindex_mutex, 0 );
+-+	pthread_mutex_init( &ec_tx_mutex, 0 );
+-+	pthread_mutex_init( &ec_rx_mutex, 0 );
+-+
+- 	rval = 0;
+- 	if (secondary)
+- 	{
+-@@ -208,31 +223,73 @@
+- 	}	
+- 	/* we use RAW packet socket, with packet type ETH_P_ECAT */
+- 	*psock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ECAT));
+-+	if(*psock<0){
+-+	  printf("creation of socket failed:%d\n",*psock);
+-+	  return 0;
+-+	}
+-+	/* connect socket to NIC by name */
+-+	strcpy(ifr.ifr_name, ifname);
+-+	r = ioctl(*psock, SIOCGIFINDEX, &ifr);
+-+	if(r<0){
+-+	  printf("getting socket index failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+	  
+-+
+- 	timeout.tv_sec =  0;
+- 	timeout.tv_usec = 1;
+--	 
+-+#ifdef HAVE_RTNET
+-+	r = ioctl(*psock,RTNET_RTIOC_TIMEOUT,&timeout);
+-+	if(r<0){
+-+	  printf("setting socket timeout failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+#else
+-+
+- 	r = setsockopt(*psock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+-+	if(r<0){
+-+	  printf("setting socket options rcvtimeo failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+
+- 	r = setsockopt(*psock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+-+	if(r<0){
+-+	  printf("setting socket options sndtimeo failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+
+- 	i = 1;
+- 	r = setsockopt(*psock, SOL_SOCKET, SO_DONTROUTE, &i, sizeof(i));
+--	/* connect socket to NIC by name */
+--	strcpy(ifr.ifr_name, ifname);
+--	r = ioctl(*psock, SIOCGIFINDEX, &ifr);
+-+	if(r<0){
+-+	  printf("setting socket options dontroute failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+
+-+#endif
+-+
+-+
+- 	ifindex = ifr.ifr_ifindex;
+-+#ifdef HAVE_RTNET
+- 	strcpy(ifr.ifr_name, ifname);
+- 	ifr.ifr_flags = 0;
+- 	/* reset flags of NIC interface */
+- 	r = ioctl(*psock, SIOCGIFFLAGS, &ifr);
+-+	if(r<0){
+-+	  printf("resetting socket flags failed:%d, %s\n",r,strerror(-r));
+-+	}
+- 	/* set flags of NIC interface, here promiscuous and broadcast */
+--	ifr.ifr_flags = ifr.ifr_flags || IFF_PROMISC || IFF_BROADCAST;
+-+	ifr.ifr_flags = ifr.ifr_flags | IFF_PROMISC | IFF_BROADCAST;
+- 	r = ioctl(*psock, SIOCGIFFLAGS, &ifr);
+-+	if(r<0){
+-+	  printf("setting socket flags failed:%d, %s\n",r,strerror(-r));
+-+	}
+-+#endif
+-+
+- 	/* bind socket to protocol, in this case RAW EtherCAT */
+- 	sll.sll_family = AF_PACKET;
+- 	sll.sll_ifindex = ifindex;
+- 	sll.sll_protocol = htons(ETH_P_ECAT);
+- 	r = bind(*psock, (struct sockaddr *)&sll, sizeof(sll));
+-+	if(r<0){
+-+	  printf("binding socket failed:%d, %s\n",r,strerror(-r));
+-+	}
+- 	/* get flags */
+--	fl = fcntl(*psock, F_GETFL, 0);
+-+	//fl = fcntl(*psock, F_GETFL, 0);
+- 	/* set nodelay option, so make socket non-blocking */
+- //	r = fcntl(*psock, F_SETFL, fl | O_NDELAY);
+- 	/* setup ethernet headers in tx buffers so we don't have to repeat it */
+-@@ -244,7 +301,7 @@
+- 	ec_setupheader(&ec_txbuf2);
+- 	ec_errcnt = ec_incnt = 0;
+- 	if (r == 0) rval = 1;
+--	
+-+
+- 	return rval;
+- }
+- 
+-diff -uar src/slaveinfo.c src/slaveinfo.c
+---- src/slaveinfo.c    2010-03-07 15:48:41.000000000 +0100
+-+++ src/slaveinfo.c    2011-05-16 14:28:49.476931001 +0200
+-@@ -22,6 +22,11 @@
+- #include "ethercatdc.h"
+- #include "ethercatprint.h"
+- 
+-+#ifdef HAVE_RTNET
+-+#include <native/task.h>
+-+#include <sys/mman.h>
+-+#endif
+-+
+- char IOmap[4096];
+- ec_ODlistt ODlist;
+- ec_OElistt OElist;
+-@@ -281,6 +286,11 @@
+- 	
+- 	if (argc > 1)
+- 	{		
+-+#ifdef HAVE_RTNET
+-+               RT_TASK mtask;
+-+               mlockall(MCL_CURRENT | MCL_FUTURE);
+-+               rt_task_shadow ( &mtask, "slaveinfo", 1, 0);
+-+#endif
+- 		if ((argc > 2) && (strncmp(argv[2], "-sdo", sizeof("-sdo")) == 0)) printSDO = TRUE;
+- 		/* start slaveinfo */
+- 		slaveinfo(argv[1]);
+++#include <fcntl.h>
+++#endif
+++
+++#include <net/if.h>
++ #include <unistd.h>
++ #include <sys/time.h> 
++ #include <arpa/inet.h>
++ #include <stdio.h>
++-#include <fcntl.h>
++ #include <string.h>
++ #include <netpacket/packet.h>
++ #include <pthread.h>
++@@ -175,9 +179,15 @@
++ /** second MAC word is used for identification */
++ #define RX_SEC secMAC[1]
++ 
+++#ifdef HAVE_RTNET
++ pthread_mutex_t ec_getindex_mutex = PTHREAD_MUTEX_INITIALIZER;
++ pthread_mutex_t ec_tx_mutex = PTHREAD_MUTEX_INITIALIZER;
++ pthread_mutex_t ec_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
+++#else
+++pthread_mutex_t ec_getindex_mutex;
+++pthread_mutex_t ec_tx_mutex;
+++pthread_mutex_t ec_rx_mutex;
+++#endif
++ 
++ /** Basic setup to connect NIC to socket.
++  * @param[in] ifname      = Name of NIC device, f.e. "eth0"
++@@ -193,6 +203,10 @@
++    struct sockaddr_ll sll;
++    int *psock;
++ 
+++   pthread_mutex_init( &ec_getindex_mutex, 0 );
+++   pthread_mutex_init( &ec_tx_mutex, 0 );
+++   pthread_mutex_init( &ec_rx_mutex, 0);
+++
++    rval = 0;
++    if (secondary)
++    {
++@@ -207,31 +221,71 @@
++    }   
++    /* we use RAW packet socket, with packet type ETH_P_ECAT */
++    *psock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ECAT));
+++   if (*psock < 0) {
+++      printf("creation of socket failed:%d\n", *psock);
+++      return 0;
+++   }
+++   /* connect socket to NIC by name */
+++   strcpy(ifr.ifr_name, ifname);
+++   r = ioctl(*psock, SIOCGIFINDEX, &ifr);
+++   if (r < 0) {
+++      printf("getting socket index failed:%d, %s\n", r, strerror(-r));
+++   }
+++
++    timeout.tv_sec =  0;
++    timeout.tv_usec = 1;
++-    
+++
+++#ifdef HAVE_RTNET
+++   r = ioctl(*psock, RTNET_RTIOC_TIMEOUT, &timeout);
+++   if (r < 0) {
+++      printf("setting socket timeout failed:%d, %s\n", r, strerror(-r));
+++   }
+++#else
+++
++    r = setsockopt(*psock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+++   if (r < 0) {
+++      printf("setting socket options rcvtimeo failed:%d, %s\n", r, strerror(-r));
+++   }
+++
++    r = setsockopt(*psock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+++   if (r < 0) {
+++      printf("setting socket options sndtimeo failed:%d, %s\n", r, strerror(-r));
+++   }
+++
++    i = 1;
++    r = setsockopt(*psock, SOL_SOCKET, SO_DONTROUTE, &i, sizeof(i));
++-   /* connect socket to NIC by name */
++-   strcpy(ifr.ifr_name, ifname);
++-   r = ioctl(*psock, SIOCGIFINDEX, &ifr);
+++   if (r < 0) {
+++      printf("setting socket options dontroute failed:%d, %s\n", r, strerror(-r));
+++   }
+++#endif
+++
++    ifindex = ifr.ifr_ifindex;
+++#ifdef HAVE_RTNET
++    strcpy(ifr.ifr_name, ifname);
++    ifr.ifr_flags = 0;
++    /* reset flags of NIC interface */
++    r = ioctl(*psock, SIOCGIFFLAGS, &ifr);
+++   if (r < 0) {
+++      printf("resetting socket flags failed:%d, %s\n", r, strerror(-r));
+++   }
++    /* set flags of NIC interface, here promiscuous and broadcast */
++-   ifr.ifr_flags = ifr.ifr_flags || IFF_PROMISC || IFF_BROADCAST;
+++   ifr.ifr_flags = ifr.ifr_flags | IFF_PROMISC | IFF_BROADCAST;
++    r = ioctl(*psock, SIOCGIFFLAGS, &ifr);
+++   if (r , 0) {
+++      printf("setting socket flags failed:%d, %s\n", r, strerror(-r));
+++   }
+++#endif
+++
++    /* bind socket to protocol, in this case RAW EtherCAT */
++    sll.sll_family = AF_PACKET;
++    sll.sll_ifindex = ifindex;
++    sll.sll_protocol = htons(ETH_P_ECAT);
++    r = bind(*psock, (struct sockaddr *)&sll, sizeof(sll));
+++   if (r < 0) {
+++      printf("binding socket failed:%d, %s\n", r, strerror(-r));
+++   }
++    /* get flags */
++-   fl = fcntl(*psock, F_GETFL, 0);
+++   //fl = fcntl(*psock, F_GETFL, 0);
++    /* set nodelay option, so make socket non-blocking */
++ //   r = fcntl(*psock, F_SETFL, fl | O_NDELAY);
++    /* setup ethernet headers in tx buffers so we don't have to repeat it */
++@@ -243,7 +297,7 @@
++    ec_setupheader(&ec_txbuf2);
++    ec_errcnt = ec_incnt = 0;
++    if (r == 0) rval = 1;
++-   
+++
++    return rval;
++ }
++ 
++diff -uar test/linux/slaveinfo/slaveinfo.c test/linux/slaveinfo/slaveinfo.c
++--- test/linux/slaveinfo/slaveinfo.c	2012-06-24 06:46:16.000000000 -0700
+++++ test/linux/slaveinfo/slaveinfo.c	2012-07-06 14:49:49.547050590 -0700
++@@ -23,6 +23,11 @@
++ #include "ethercatdc.h"
++ #include "ethercatprint.h"
++ 
+++#ifdef HAVE_RTNET
+++#include <native/task.h>
+++#include <sys/mman.h>
+++#endif
+++
++ char IOmap[4096];
++ ec_ODlistt ODlist;
++ ec_OElistt OElist;
++@@ -625,6 +630,11 @@
++    
++    if (argc > 1)
++    {      
+++#ifdef HAVE_RTNET
+++       RT_TASK mtask;
+++       mlockall(MCL_CURRENT | MCL_FUTURE);
+++       rt_task_shadow(&mtask, "slaveinfo", 1, 0);
+++#endif
++       if ((argc > 2) && (strncmp(argv[2], "-sdo", sizeof("-sdo")) == 0)) printSDO = TRUE;
++       if ((argc > 2) && (strncmp(argv[2], "-map", sizeof("-map")) == 0)) printMAP = TRUE;
++       /* start slaveinfo */
