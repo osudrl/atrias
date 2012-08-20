@@ -16,7 +16,7 @@ fi
 # The current directory
 cwd="$(pwd)"
 # The template directory
-templates="${0%/*}/templates"
+templates="${0%/*/*}/templates"
 # cd to the atrias_controllers path
 cd ${0%/*/*/*}/atrias_controllers
 
@@ -31,21 +31,18 @@ while [ 1 ]; do
 
     case "$arg" in
     1) 
-        atc=1
-        ascPlugin=0
-        ascComponent=0
+        echo "What do you want to name it?"
+        read atcName
         break
         ;;
     2)
-        atc=0
-        ascPlugin=1
-        ascComponent=0
+        echo "What do you want to name it?"
+        read ascPluginName
         break
         ;;
     3)
-        atc=0
-        ascPlugin=0
-        ascComponent=1
+        echo "What do you want to name it?"
+        read ascComponentName
         break
         ;;
     *)
@@ -112,4 +109,28 @@ while [ 1 ]; do
     esac
 done
 
-# Generate the files
+# Double-check this is what we want to do
+clear
+echo "This script will create the package ${atcName}${ascPluginName}${ascComponentName} in this directory with these subcontrollers: ${name[@]}"
+echo "If this is what you want to do, press Enter..."
+read
+
+# Generate the files for a top-level controller
+if [[ -n $atcName ]]; then
+    cp -r ${templates}/atc_component ${cwd}/${atcName}
+    cd ${cwd}/${atcName}
+
+elif [[ -n $ascPluginName ]]; then
+    #cp -r ${templates}/asc_service_plugin ${cwd}/${ascPluginName}
+    echo "Dummy command"
+elif [[ -n $ascComponentName ]]; then
+    echo "Dummy command"
+    #cp -r ${templates}/asc_component ${cwd}/${ascComponentName}
+else
+    echo "No controller name specified"
+    exit 1
+fi
+
+
+echo "Controller generated"
+exit 0
