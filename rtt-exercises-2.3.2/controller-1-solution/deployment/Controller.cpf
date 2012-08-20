@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>                                                                                 
-<!DOCTYPE properties SYSTEM "cpf.dtd">                                                                                 
-<properties>
-
-  <simple name="Kp" type="double"><value>10.0</value></simple>
-
-</properties>

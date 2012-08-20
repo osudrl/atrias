@@ -1,1 +1,0 @@
-orocos_component( usecase-joystick Joystick.cpp )

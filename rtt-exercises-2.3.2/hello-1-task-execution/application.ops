@@ -1,4 +1,0 @@
-program App {
-    path("/opt/ros/electric/orocos_toolchain/install/lib/orocos")
-    import("hello-1-task-execution")
-}
