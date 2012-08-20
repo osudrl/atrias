@@ -1,1 +1,0 @@
-description=Performs a number of crowd-pleasing demonstrations with the robot.

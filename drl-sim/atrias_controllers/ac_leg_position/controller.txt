@@ -1,1 +1,0 @@
-description=Applies a PD controller to control the hip angle, leg angle, and leg length.

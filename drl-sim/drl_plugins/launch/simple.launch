@@ -1,9 +1,0 @@
-<launch>
-  <node name="gazebo" pkg="gazebo" type="gazebo" args="$(find atrias)/worlds/simple.world" respawn="false" output="screen"/>
-
-  <!-- send atrias.xml to param server -->
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find drl_plugins)/robots/box.urdf.xacro'" />
-
-  <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="box" pkg="gazebo_tools" type="gazebo_model" args="-z 3 -p robot_description spawn box" respawn="false" output="screen" />
-</launch>

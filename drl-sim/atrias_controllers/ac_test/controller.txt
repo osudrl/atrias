@@ -1,1 +1,0 @@
-description=Passive hopping controller which moves leg prior to touchdown.

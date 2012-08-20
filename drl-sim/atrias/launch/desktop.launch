@@ -1,8 +1,0 @@
-<launch>
-    <!-- Start the GUI. -->
-    <node name   = "atrias_gui"
-          pkg    = "atrias_gui"
-          type   = "atrias_gui"
-          output = "screen" />
-</launch>
-

@@ -1,1 +1,0 @@
-description=Applies torques to change the leg length and angle.

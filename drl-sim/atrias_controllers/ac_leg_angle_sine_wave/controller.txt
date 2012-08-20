@@ -1,1 +1,0 @@
-description=Applies a PD controller to adjust the leg angle in a sine wave.
