@@ -20,15 +20,19 @@ namespace atrias {
 
 namespace controllerManager {
 
+typedef uint8_t UserCommand_t;
+
 /*
  * Represents the command sent to the Controller Manager from the GUI
  */
-enum class UserCommand: uint8_t {
+enum class UserCommand: UserCommand_t {
     STOP = 0,
     RUN,
     E_STOP,
     UNLOAD_CONTROLLER
 };
+
+typedef uint8_t ControllerManagerState_t;
 
 /*
  * Represents the state of the controller manager
@@ -36,7 +40,7 @@ enum class UserCommand: uint8_t {
  * TODO: CONTROLLER_STARTING and CONTROLLER_STOPPING are for controller startup
  * and shutdown sequences, which will need to be implemented later
  */
-enum class ControllerManagerState: uint8_t {
+enum class ControllerManagerState: ControllerManagerState_t {
     NO_CONTROLLER_LOADED = 0,
     CONTROLLER_STOPPED,
     CONTROLLER_RUNNING,
@@ -45,20 +49,24 @@ enum class ControllerManagerState: uint8_t {
     CONTROLLER_ESTOPPED
 };
 
+typedef uint8_t ControllerManagerError_t;
+
 /*
  * Represents the type of an error encountered by the Controller Manager
  */
-enum class ControllerManagerError: uint8_t {
+enum class ControllerManagerError: ControllerManagerError_t {
     NO_ERROR = 0,
     CONTROLLER_PACKAGE_NOT_FOUND,
     CONTROLLER_STATE_MACHINE_NOT_FOUND,
     CONTROLLER_STATE_MACHINE_EXCEPTION
 };
 
+typedef uint8_t RtOpsCommand_t;
+
 /*
  * Represents the command sent to RT Ops from the controller manager
  */
-enum class RtOpsCommand: uint8_t {
+enum class RtOpsCommand: RtOpsCommand_t {
     NO_CONTROLLER_LOADED = 0,
     DISABLE, //Controller is loaded but not enabled
     ENABLE,  //Controller is both loaded and enabled
@@ -66,21 +74,26 @@ enum class RtOpsCommand: uint8_t {
     E_STOP
 };
 
+typedef int8_t RtOpsEvent_t;
+
 /** @brief Represents an RT Ops event.
   */
-enum class RtOpsEvent: uint8_t {
-	INVALID_CM_COMMAND = 0,   // An invalid command was received from the Controller Manager
-	CONTROLLER_ESTOP,         // The controller commanded an estop.
-	INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
-	MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
-	CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.
-	ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM
-	ACK_DISABLE,              // Acknowledges a DISABLE command from the CM
-	ACK_ENABLE,               // Acknowledges an ENABLE command from the CM
-	ACK_RESET,                // Acknowledges a RESET command from the CM
-	ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
-	ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
-	MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
+enum class RtOpsEvent: RtOpsEvent_t {
+    // Events that should throw an e-stop in the controller manager are negative
+    CONTROLLER_ESTOP = -1,    // The controller commanded an estop.
+    MEDULLA_ESTOP    = -2,    // Sent when any Medulla goes into error mode.
+
+
+    INVALID_CM_COMMAND = 0,   // An invalid command was received from the Controller Manager
+    INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
+    MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
+    CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.
+    ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM
+    ACK_DISABLE,              // Acknowledges a DISABLE command from the CM
+    ACK_ENABLE,               // Acknowledges an ENABLE command from the CM
+    ACK_RESET,                // Acknowledges a RESET command from the CM
+    ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
+    ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
 };
 
 }

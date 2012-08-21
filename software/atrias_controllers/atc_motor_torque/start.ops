@@ -1,7 +1,7 @@
 # Set up the component
 import("atc_motor_torque");
 loadComponent("controller", "ATCMotorTorque");
-setActivity("controller", 0, HighestPriority, ORO_SCHED_RT);
+setActivity("controller", 0, 70, ORO_SCHED_RT);
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller");
@@ -16,7 +16,7 @@ stream("controller.gui_data_in", gui_policy)
 controller.configure();
 
 # Set the affinity to real-time
-controller.setCpuAffinity(10)
+#controller.setCpuAffinity(10)
 
 # Start the component
 controller.start();

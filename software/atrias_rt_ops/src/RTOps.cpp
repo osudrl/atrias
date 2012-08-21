@@ -59,7 +59,7 @@ std_msgs::Header RTOps::getROSHeader() {
 
 void RTOps::newStateCallback(atrias_msgs::robot_state state) {
 	opsLogger.beginCycle();
-	state.cmState = (uint8_t) stateMachine->getRtOpsState();
+	state.cmState = (controllerManager::RtOpsCommand_t) stateMachine->getRtOpsState();
 	robotStateHandler->setRobotState(state);
 	
 	controllerLoop->cycleLoop();

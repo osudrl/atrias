@@ -52,7 +52,7 @@ void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
 
 void OpsLogger::sendEvent(controllerManager::RtOpsEvent event) {
 	atrias_msgs::rt_ops_event event_msg;
-	event_msg.event = (uint8_t) event;
+	event_msg.event = (controllerManager::RtOpsEvent_t) event;
 	eventOut->write(event_msg);
 }
 
