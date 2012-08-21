@@ -26,6 +26,8 @@ RTOps::RTOps(std::string name) :
 	    ->addOperation("newStateCallback", &RTOps::newStateCallback, this, RTT::ClientThread);
 	this->requires("connector")
 	    ->addOperationCaller(sendControllerOutput);
+	this->provides("rtOps")
+	    ->addOperation("sendEvent", &RTOps::sendEvent, this, RTT::ClientThread);
 	    
 	addEventPort(cManagerDataIn);
 	addPort(logCyclicOut);
@@ -83,6 +85,10 @@ ControllerLoop* RTOps::getControllerLoop() {
 
 StateMachine* RTOps::getStateMachine() {
 	return stateMachine;
+}
+
+void RTOps::sendEvent(controllerManager::RtOpsEvent event) {
+	opsLogger.sendEvent(event);
 }
 
 bool RTOps::configureHook() {

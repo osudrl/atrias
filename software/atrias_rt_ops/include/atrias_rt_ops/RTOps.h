@@ -25,6 +25,7 @@ class RTOps;
 
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_status.h>
+#include <atrias_shared/globals.h>
 
 #include "atrias_rt_ops/TimestampHandler.h"
 #include "atrias_rt_ops/RobotStateHandler.h"
@@ -130,6 +131,11 @@ class RTOps : public RTT::TaskContext {
 		  * @return A pointer to the StateMachine.
 		  */
 		StateMachine*      getStateMachine();
+		
+		/** @brief Lets Connectors report RT Ops Events.
+		  * @param event The event to be reported.
+		  */
+		void               sendEvent(controllerManager::RtOpsEvent event);
 
 		// Standard Orocos hooks
 		bool               configureHook();
