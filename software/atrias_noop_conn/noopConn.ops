@@ -11,7 +11,7 @@ connectPeers("atrias_connector", "atrias_rt")
 
 # Make the Noop Connector cyclic
 setActivity("atrias_rt", 0, HighestPriority, ORO_SCHED_RT)
-setActivity("atrias_connector", 0.001, HighestPriority, ORO_SCHED_RT)
+setActivity("atrias_connector", 0.001, 0, ORO_SCHED_OTHER)
 
 # Configure components.
 atrias_rt.configure()
