@@ -227,6 +227,9 @@ void save_parameters() {
         execlp("rosparam", "rosparam", "dump", currentMD.guiConfigPath.c_str(), NULL);
         ROS_INFO("GUI: Saved GUI settings in %s", currentMD.guiConfigPath.c_str());
     }
+    else {
+        ROS_INFO("GUI: Not saving anything because there is no controller loaded.");
+    }
 }
 
 //! @brief restarts the robot.
