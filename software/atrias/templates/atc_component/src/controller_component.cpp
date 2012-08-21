@@ -28,12 +28,16 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
     controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
+
     // Output for RTOps
     return controllerOutput;
 }
 
 // Don't put control code below here!
 bool ATCTemplate::configureHook() {
+    // Connect to the subcontrollers
+    // Service plugins
+    // Service components
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }

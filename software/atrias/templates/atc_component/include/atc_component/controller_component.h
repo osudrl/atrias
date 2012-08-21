@@ -20,6 +20,7 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atc_template/controller_input.h>
+#include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
@@ -37,6 +38,9 @@ private:
     controller_input                 guiIn;
 
     InputPort<controller_input>      guiDataIn;
+
+    // Service plugins
+    // Service components 
 
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state);
