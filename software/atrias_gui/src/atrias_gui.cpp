@@ -130,7 +130,7 @@ int main (int argc, char **argv) {
     enable_button->signal_clicked().connect(sigc::ptr_fun((void(*)())enable_motors));
     disable_button->signal_clicked().connect(sigc::ptr_fun((void(*)())disable_motors));
     estop_button->signal_clicked().connect(sigc::ptr_fun((void(*)())estop_button_clicked));
-    //save_parameters_button->signal_clicked().connect(sigc::ptr_fun((void(*)())save_parameters));
+    save_parameters_button->signal_clicked().connect(sigc::ptr_fun((void(*)())save_parameters));
     controller_notebook->signal_switch_page().connect(sigc::ptr_fun((void(*)(GtkNotebookPage*, guint))switch_controllers));
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(callSpinOnce), 20); // 100 is the timeout in milliseconds
 
@@ -225,6 +225,7 @@ void log_chkbox_toggled() {
 void save_parameters() {
     if (controller_loaded) {
         execlp("rosparam", "rosparam", "dump", currentMD.guiConfigPath.c_str(), NULL);
+        ROS_INFO("GUI: Saved GUI settings in %s", currentMD.guiConfigPath.c_str());
     }
 }
 
