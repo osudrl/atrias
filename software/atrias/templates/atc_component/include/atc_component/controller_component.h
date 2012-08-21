@@ -1,6 +1,6 @@
 /*! \file controller_component.h
- *  \author Soo-Hyun Yoo
- *  \brief Orocos Component header for motor torque controller.
+ *  \author Andrew Peekema
+ *  \brief Orocos Component header for atc_template controller.
  */
 
 // Orocos 
@@ -19,17 +19,17 @@
 // Datatypes
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
-#include <atc_motor_torque/controller_input.h>
+#include <atc_template/controller_input.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace atc_motor_torque;
+using namespace atc_template;
 
 namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCMotorTorque : public TaskContext {
+class ATCTemplate : public TaskContext {
 private:
     atrias_msgs::robot_state         robotState;
     atrias_msgs::controller_output   controllerOutput;
@@ -43,7 +43,7 @@ private:
 
 public:
     // Constructor
-    ATCMotorTorque(std::string name);
+    ATCTemplate(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();
