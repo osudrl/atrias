@@ -31,17 +31,17 @@ while [ 1 ]; do
 
     case "$arg" in
     1) 
-        echo "What do you want to name it?"
+        echo "What do you want to name it? (e.g. atc_example_name)"
         read atcName
         break
         ;;
     2)
-        echo "What do you want to name it?"
+        echo "What do you want to name it? (e.g. asc_example_name)"
         read ascPluginName
         break
         ;;
     3)
-        echo "What do you want to name it?"
+        echo "What do you want to name it? (e.g. asc_example_name)"
         read ascComponentName
         break
         ;;
@@ -68,22 +68,22 @@ while [ 1 ]; do
     1) 
         (( count += 1 ))
         echo "Enter subcontroller name"
-        read name[count]
+        read names[count]
 
         clear
         echo "Current subcontroller list:"
-        echo "${name[@]}" | sed "s/ /\n/g"
+        echo "${names[@]}" | sed "s/ /\n/g"
         echo
         ;;
     2)
-        unset name
+        unset names
         count=-1
         clear
         ;;
     3)
         # Make sure the subcontroller names are valid
         validNames=0
-        for var in ${name[@]}; do
+        for var in ${names[@]}; do
             ls | grep "asc" | grep "^${var}$" &> /dev/null
             validNames=$?
             if [ "$validNames" = "1" ]; then
@@ -99,7 +99,7 @@ while [ 1 ]; do
             echo "ERROR: A subcontroller name is invalid."
             echo
             echo "Current subcontroller list:"
-            echo "${name[@]}" | sed "s/ /\n/g"
+            echo "${names[@]}" | sed "s/ /\n/g"
             echo
         fi
         ;;
@@ -111,21 +111,30 @@ done
 
 # Double-check this is what we want to do
 clear
-echo "This script will create the package ${atcName}${ascPluginName}${ascComponentName} in this directory with these subcontrollers: ${name[@]}"
+echo "This script will create the package ${atcName}${ascPluginName}${ascComponentName} in this directory with these subcontrollers: ${names[@]}"
 echo "If this is what you want to do, press Enter..."
 read
 
-# Generate the files for a top-level controller
+# Generate the files
 if [[ -n $atcName ]]; then
-    cp -r ${templates}/atc_component ${cwd}/${atcName}
-    cd ${cwd}/${atcName}
+    # Figure out names
+    lowerScoredName="$atcName"
+    upperCamelName=$(echo $atcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
+    lowerCamelName=$(echo $upperCamelName | sed "s|\(^...\)|\L\1|")
+    # Copy the template and change to the new directory
+    cp -r ${templates}/atc_component ${cwd}/${name}
+    cd ${cwd}/${name}
+    # Rename things
+    sed -i "s|atc_template|${lowerScoredName}|" start.ops
 
 elif [[ -n $ascPluginName ]]; then
-    #cp -r ${templates}/asc_service_plugin ${cwd}/${ascPluginName}
+    name="$ascPluginName"
+    #cp -r ${templates}/asc_service_plugin ${cwd}/${name}
     echo "Dummy command"
 elif [[ -n $ascComponentName ]]; then
+    name="$ascComponentName"
     echo "Dummy command"
-    #cp -r ${templates}/asc_component ${cwd}/${ascComponentName}
+    #cp -r ${templates}/asc_component ${cwd}/${name}
 else
     echo "No controller name specified"
     exit 1
