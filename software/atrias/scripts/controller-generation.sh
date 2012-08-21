@@ -17,9 +17,13 @@ fi
 cwd="$(pwd)"
 # The template path
 templates="${0%/*}/../templates"
+cd $templates
+templates="$(pwd)"
+cd $cwd
 # The atrias_controllers path
 atriasControllers="${0%/*}/../../atrias_controllers"
 cd $atriasControllers
+atriasControllers="$(pwd)"
 
 # Determine what controller the user wants to create
 while [ 1 ]; do
@@ -126,7 +130,7 @@ read
 if [[ -n $atcName ]]; then
     # Figure out names
     lowerScoredName="$atcName"
-    upperCamelName=$(echo $atcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
+    upperCamelName=$(echo $lowerScoredName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
     lowerCamelName=$(echo $upperCamelName | sed "s|\(^...\)|\L\1|")
     # Copy the template and change to the new directory
     cd ${cwd}
@@ -139,13 +143,41 @@ if [[ -n $atcName ]]; then
     for file in ${files[@]}; do
         sed -i "s|atc_template|${lowerScoredName}|g; s|ATCTemplate|${upperCamelName}|g" $file
     done
-    # Specific substitutions
+    # Controller description
     echo "description=${description}" > controller.txt
     # Clean up the existing '.svn' folders
     find . -name '.svn' -exec rm -rf {} +
 
-    # Add plugin code
-    # Add component code
+    # Add subcontroller code
+    for name in ${names[@]}; do
+        cd ${atriasControllers}
+        component=$(grep "^orocos_component(" ${name}/CMakeLists.txt)
+        service=$(grep "^orocos_service(" ${name}/CMakeLists.txt)
+        if [ -n $component ]; then
+            # Add component lines
+        elif [ -n $service ]; then
+            # Find the service files
+            cd src
+            srcFiles=( $(ls src) )
+            serviceNames=""
+            # For each file, find its service
+            for file in srcFiles; do
+                cd ${atriasControllers}
+                serviceName=$(cat src/$file | grep 'Service(' | sed "s|.*(\"||; s|\".*||")
+                operationNames=( $(cat src/$file | grep 'addOperation(' | sed "s|.*addOperation(\"||; s|\".*||") )
+                # Add the service to the start script
+                cd ${cwd}/${lowerScoredName}
+                cat start.ops | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n|; p' > start.ops
+                # Add each operation to the source file
+                for operation in operationNames; do
+                    asdf
+                done
+            done
+            # Note: the sed command reads the whole file into pattern space and then does a find+replace
+        else
+            echo "ERROR: subcontroller ${name} not recognized as a service plugin or component"
+        fi
+    done
 
 elif [[ -n $ascPluginName ]]; then
     name="$ascPluginName"
