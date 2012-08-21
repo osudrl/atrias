@@ -6,6 +6,10 @@ setActivity("controller", 0, HighestPriority, ORO_SCHED_RT);
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller");
 
+# Set up subcontrollers
+# Connect this controller with its subcontrollers
+# Pass the names of the subcontrollers to the controller
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
