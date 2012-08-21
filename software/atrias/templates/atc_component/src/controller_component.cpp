@@ -10,13 +10,15 @@ namespace controller {
 
 ATCTemplate::ATCTemplate(std::string name):
     RTT::TaskContext(name),
-		guiDataIn("gui_data_in")
+    guiDataOut("gui_data_out"),
+    guiDataIn("gui_data_in")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCTemplate::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     addEventPort(guiDataIn);
+    addPort(guiDataOut);
 
     log(Info) << "[ATCMT] atc_template controller constructed!" << endlog();
 }
@@ -28,6 +30,10 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
     controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
+
+    // Send data to the GUI
+    if (pubTimer->readyToSend())
+        guiDataOut.write(guiOut);
 
     // Output for RTOps
     return controllerOutput;

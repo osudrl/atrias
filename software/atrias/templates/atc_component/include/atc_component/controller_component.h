@@ -36,8 +36,10 @@ private:
     atrias_msgs::controller_output   controllerOutput;
 
     controller_input                 guiIn;
+    controller_status                guiOut;
 
     InputPort<controller_input>      guiDataIn;
+    OutputPort<controller_status>    guiDataOut;
 
     // Service plugins
     // Service components 
