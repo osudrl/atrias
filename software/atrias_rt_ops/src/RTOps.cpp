@@ -45,7 +45,7 @@ void RTOps::connectToController() {
 	RTT::TaskContext *peer = this->getPeer("controller");
 	
 	if (peer) {
-		runController     = peer->provides("atc")->getOperation("runController");
+		runController = peer->provides("atc")->getOperation("runController");
 	}
 }
 
@@ -59,7 +59,6 @@ std_msgs::Header RTOps::getROSHeader() {
 
 void RTOps::newStateCallback(atrias_msgs::robot_state state) {
 	opsLogger.beginCycle();
-	state.cmState = (controllerManager::RtOpsCommand_t) stateMachine->getRtOpsState();
 	robotStateHandler->setRobotState(state);
 	
 	controllerLoop->cycleLoop();

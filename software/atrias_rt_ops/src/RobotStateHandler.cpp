@@ -14,6 +14,8 @@ atrias_msgs::robot_state RobotStateHandler::getRobotState() {
 }
 
 void RobotStateHandler::setRobotState(atrias_msgs::robot_state &newState) {
+	newState.cmState =
+		(controllerManager::RtOpsCommand_t) rtOps->getStateMachine()->getRtOpsState();
 	checkForNewErrors(newState);
 	
 	RTT::os::MutexLock lock(robotStateLock);
