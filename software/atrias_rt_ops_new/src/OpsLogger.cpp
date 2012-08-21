@@ -7,7 +7,7 @@ namespace rtOps {
 OpsLogger::OpsLogger(RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  log_cyclic_out,
                      RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  gui_cyclic_out,
                      RTT::OutputPort<atrias_msgs::rt_ops_event>* event_out) :
-                     guiPublishTimer() {
+                     guiPublishTimer(50) {
 	logCyclicOut = log_cyclic_out;
 	guiCyclicOut = gui_cyclic_out;
 	eventOut     = event_out;
