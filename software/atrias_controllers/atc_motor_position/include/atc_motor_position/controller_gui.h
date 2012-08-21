@@ -31,10 +31,13 @@ Gtk::HScale *position_A_hscale,
 Gtk::CheckButton *set_position_checkbutton;
 
 // Parameters
-float a_position_param;
-float b_position_param;
-float p_gain_param;
-float d_gain_param;
+//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
+//     arise when both C and python nodes access the same parameter. See:
+//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
+double a_position_param;
+double b_position_param;
+double p_gain_param;
+double d_gain_param;
 
 void controllerCallback(const atc_motor_position::controller_status &status);
 
