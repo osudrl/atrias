@@ -224,7 +224,11 @@ void log_chkbox_toggled() {
 //! @brief Save GUI parameters to local (GUI machine) atrias directory.
 void save_parameters() {
     if (controller_loaded) {
-        execlp("rosparam", "rosparam", "dump", currentMD.guiConfigPath.c_str(), NULL);
+        int rosparamPID = fork();
+        if (rosparamPID == 0) {   // Child process
+            execlp("rosparam", "rosparam", "dump", currentMD.guiConfigPath.c_str(), NULL);
+            exit(127);   // Exit code 127 if command not found.
+        }
         ROS_INFO("GUI: Saved GUI settings in %s", currentMD.guiConfigPath.c_str());
     }
     else {
