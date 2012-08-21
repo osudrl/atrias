@@ -65,10 +65,8 @@ done
 # Determine what subcontrollers the user wants to link to
 clear
 count=-1
+namesMasterList=( $(ls | grep asc_) )
 while [ 1 ]; do
-    echo "Existing subcontrollers in atrias_controllers:"
-    ls | grep asc_
-    echo
     echo "Do you want to link to existing subcontrollers?"
     echo "1) Add a subcontroller"
     echo "2) Clear the subcontroller list"
@@ -77,9 +75,13 @@ while [ 1 ]; do
     read arg
     case "$arg" in
     1) 
+        echo "Existing subcontrollers in atrias_controllers:"
+        echo "${namesMasterList[@]}" | sed "s/ /\n/g" | cat -n
+        echo
         (( count += 1 ))
-        echo "Enter subcontroller name"
-        read names[count]
+        echo "Enter the number corresponding to the subcontroller"
+        read subcontrollerNumber
+        names[count]=$(echo "${namesMasterList[@]}" | sed 's/ /\n/g' | cat -n | grep ${subcontrollerNumber} | sed "s|^.*\\t||")
 
         clear
         echo "Current subcontroller list:"
@@ -107,7 +109,7 @@ while [ 1 ]; do
             break
         else
             clear
-            echo "ERROR: A subcontroller name is invalid."
+            echo "ERROR: A subcontroller name is invalid. (This only happens if the code is broken)"
             echo
             echo "Current subcontroller list:"
             echo "${names[@]}" | sed "s/ /\n/g"
@@ -150,30 +152,31 @@ if [[ -n $atcName ]]; then
 
     # Add subcontroller code
     for name in ${names[@]}; do
-        cd ${atriasControllers}
-        component=$(grep "^orocos_component(" ${name}/CMakeLists.txt)
-        service=$(grep "^orocos_service(" ${name}/CMakeLists.txt)
-        if [ -n $component ]; then
+        cd ${atriasControllers}/${name}
+        component=$(grep "^orocos_component(" CMakeLists.txt)
+        service=$(grep "^orocos_service(" CMakeLists.txt)
+        if [ "$component" != "" ]; then
             # Add component lines
-        elif [ -n $service ]; then
+            echo "This is a component!"
+        elif [ "$service" != "" ]; then
             # Find the service files
-            cd src
             srcFiles=( $(ls src) )
             serviceNames=""
             # For each file, find its service
-            for file in srcFiles; do
-                cd ${atriasControllers}
+            for file in ${srcFiles[@]}; do
+                cd ${atriasControllers}/${name}
                 serviceName=$(cat src/$file | grep 'Service(' | sed "s|.*(\"||; s|\".*||")
                 operationNames=( $(cat src/$file | grep 'addOperation(' | sed "s|.*addOperation(\"||; s|\".*||") )
                 # Add the service to the start script
                 cd ${cwd}/${lowerScoredName}
-                cat start.ops | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n|; p' > start.ops
+                mv start.ops start.ops.old
+                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n|; p' > start.ops
+                rm start.ops.old
                 # Add each operation to the source file
-                for operation in operationNames; do
-                    asdf
-                done
+                #for operation in operationNames; do
+                #    asdf
+                #done
             done
-            # Note: the sed command reads the whole file into pattern space and then does a find+replace
         else
             echo "ERROR: subcontroller ${name} not recognized as a service plugin or component"
         fi
