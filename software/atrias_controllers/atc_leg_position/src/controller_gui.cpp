@@ -32,13 +32,13 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         hip_position_d->set_range(0., 300.);
 
         // Set parameters.
-        nh.param("leg_length",          leg_length_param, <float>0.6);
-        nh.param("leg_angle",           leg_angle_param,  <float>1.5);
-        nh.param("leg_position_p_gain", leg_p_gain_param, <float>0.);
-        nh.param("leg_position_d_gain", leg_d_gain_param, <float>0.);
-        nh.param("hip_angle",           hip_angle_param,  <float>0.);
-        nh.param("hip_position_p_gain", hip_p_gain_param, <float>0.);
-        nh.param("hip_position_d_gain", hip_d_gain_param, <float>0.);
+        nh.param("leg_length",          leg_length_param, 0.6);
+        nh.param("leg_angle",           leg_angle_param,  1.5);
+        nh.param("leg_position_p_gain", leg_p_gain_param, 0.);
+        nh.param("leg_position_d_gain", leg_d_gain_param, 0.);
+        nh.param("hip_angle",           hip_angle_param,  0.);
+        nh.param("hip_position_p_gain", hip_p_gain_param, 0.);
+        nh.param("hip_position_d_gain", hip_d_gain_param, 0.);
 
         // Set values.
         leg_length_hscale->set_value(leg_length_param);
