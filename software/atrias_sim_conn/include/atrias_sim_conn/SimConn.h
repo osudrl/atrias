@@ -9,9 +9,8 @@
 #include <rtt/TaskContext.hpp>
 #include <rtt/Component.hpp>
 #include <rtt/OperationCaller.hpp>
-
-// ROS
-
+#include <rtt/InputPort.hpp>
+#include <rtt/OutputPort.hpp>
 
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
@@ -28,6 +27,14 @@ class SimConn : public RTT::TaskContext {
 	RTT::OperationCaller<void(atrias_msgs::robot_state)>
 		newStateCallback;
 	
+	/** @brief Lets us receive data from Gazebo.
+	  */
+	RTT::InputPort<atrias_msgs::robot_state>        gazeboDataIn;
+	
+	/** @brief Lets us send new outputs to Gazebo.
+	  */
+	RTT::OutputPort<atrias_msgs::controller_output> gazeboDataOut;
+	
 	public:
 		/** @brief Initializes the Sim Connector
 		  * @param name The name for this component.
@@ -43,6 +50,10 @@ class SimConn : public RTT::TaskContext {
 		  * Run by Orocos.
 		  */
 		bool configureHook();
+		
+		/** @brief Run by Orocos when an Event port receives.
+		  */
+		void updateHook();
 };
 
 }

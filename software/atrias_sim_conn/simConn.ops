@@ -9,8 +9,15 @@ loadComponent("atrias_connector", "SimConn")
 # Let these see each other.
 connectPeers("atrias_connector", "atrias_rt")
 
-# Make the Noop Connector cyclic
+# Make RT Ops realtime.
 setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
+
+var ConnPolicy gazeboConnPolicy
+gazeboConnPolicy.transport = 3
+gazeboConnPolicy.name_id = "/atrias_sim_data"
+stream("atrias_connector.gazebo_data_in",  gazeboConnPolicy)
+gazeboConnPolicy.name_id = "/atrias_controller_requests"
+stream("atrias_connector.gazebo_data_out", gazeboConnPolicy)
 
 # Configure components.
 atrias_rt.configure()
