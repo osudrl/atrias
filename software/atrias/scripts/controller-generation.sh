@@ -16,9 +16,9 @@ fi
 # The current directory
 cwd="$(pwd)"
 # The template directory
-templates="${0%/*/*}/templates"
+templates="${0%/*}/../templates"
 # cd to the atrias_controllers path
-cd ${0%/*/*/*}/atrias_controllers
+cd ${0%/*}/../../atrias_controllers
 
 # Determine what controller the user wants to create
 while [ 1 ]; do
@@ -33,16 +33,22 @@ while [ 1 ]; do
     1) 
         echo "What do you want to name it? (e.g. atc_example_name)"
         read atcName
+        echo "Give a description of this controller"
+        read description
         break
         ;;
     2)
         echo "What do you want to name it? (e.g. asc_example_name)"
         read ascPluginName
+        echo "Give a description of this controller"
+        read description
         break
         ;;
     3)
         echo "What do you want to name it? (e.g. asc_example_name)"
         read ascComponentName
+        echo "Give a description of this controller"
+        read description
         break
         ;;
     *)
@@ -124,8 +130,17 @@ if [[ -n $atcName ]]; then
     # Copy the template and change to the new directory
     cp -r ${templates}/atc_component ${cwd}/${name}
     cd ${cwd}/${name}
+    # Move the include folder to its appropriate location
+    mv include/atc_component include/${lowerScoredName}
     # Rename things
-    sed -i "s|atc_template|${lowerScoredName}|" start.ops
+    files=( start.ops manifest.xml mainpage.dox CMakeLists.txt src/controller_component.cpp src/controller_gui.cpp include/${lowerScoredName}/controller_component.h include/${lowerScoredName}/controller_gui.h )
+    for file in ${files[@]}; do
+        sed -i "s|atc_template|${lowerScoredName}|g; s|ATCTemplate|${upperCamelName}|g" file
+    done
+    # Specific substitutions
+    echo "description=${description}" > controller.txt
+    # Clean up the '.svn' folders in the directories
+    find . -name '.svn' -exec rm -rf {} +
 
 elif [[ -n $ascPluginName ]]; then
     name="$ascPluginName"
