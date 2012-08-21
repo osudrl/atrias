@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(atrias_noop_conn)
+project(atrias_sim_conn)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
@@ -12,9 +12,6 @@ set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
 find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
-#orocos_use_package(orocos-atrias_shared-nsecs_to_header)
-
-include_directories(../../robot_definitions/)
-orocos_component(NoopConn src/NoopConn.cpp)
+orocos_component(SimConn src/SimConn.cpp)
 
 orocos_generate_package()

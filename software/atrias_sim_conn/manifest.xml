@@ -1,6 +1,6 @@
 <package>
-    <description brief="Orocos atrias_noop_conn Component package">
-        This package contains the components of the atrias_noop_conn package
+    <description brief="Orocos atrias_sim_conn Component package">
+        This package contains the components of the atrias_sim_conn package
     </description>
     <!--NOTE: set the license and author before you publish this code-->
     <license></license>

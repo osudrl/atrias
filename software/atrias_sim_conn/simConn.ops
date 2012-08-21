@@ -1,17 +1,16 @@
 import("atrias_shared")
 import("atrias_rt_ops")
-import("atrias_noop_conn")
+import("atrias_sim_conn")
 
 # Load necessary components.
 loadComponent("atrias_rt", "RTOps")
-loadComponent("atrias_connector", "NoopConn")
+loadComponent("atrias_connector", "SimConn")
 
 # Let these see each other.
 connectPeers("atrias_connector", "atrias_rt")
 
 # Make the Noop Connector cyclic
 setActivity("atrias_rt", 0, HighestPriority, ORO_SCHED_RT)
-setActivity("atrias_connector", 0.001, 0, ORO_SCHED_OTHER)
 
 # Configure components.
 atrias_rt.configure()
