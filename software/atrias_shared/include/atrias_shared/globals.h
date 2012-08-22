@@ -79,11 +79,6 @@ typedef int8_t RtOpsEvent_t;
 /** @brief Represents an RT Ops event.
   */
 enum class RtOpsEvent: RtOpsEvent_t {
-    // Events that should throw an e-stop in the controller manager are negative
-    CONTROLLER_ESTOP = -1,    // The controller commanded an estop.
-    MEDULLA_ESTOP    = -2,    // Sent when any Medulla goes into error mode.
-
-
     INVALID_CM_COMMAND = 0,   // An invalid command was received from the Controller Manager
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
@@ -94,6 +89,8 @@ enum class RtOpsEvent: RtOpsEvent_t {
     ACK_RESET,                // Acknowledges a RESET command from the CM
     ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
     ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
+    CONTROLLER_ESTOP,         // The controller commanded an estop.
+    MEDULLA_ESTOP             // Sent when any Medulla goes into error mode.
 };
 
 }

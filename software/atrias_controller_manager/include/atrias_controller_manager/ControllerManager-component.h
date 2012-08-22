@@ -47,12 +47,12 @@ private:
     InputPort<gui_output> guiDataIn; //The data coming in from the GUI
     OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
-    InputPort<rt_ops_status> rtOpsDataIn; //The data coming in from RT Ops
-    OutputPort<uint8_t> rtOpsDataOut; //The data being sent to RT Ops
+    InputPort<RtOpsEvent_t> rtOpsDataIn; //The data coming in from RT Ops
+    OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
 
     gui_output guiOutput;
     gui_input guiInput;
-    rt_ops_status rtOpsOutput;
+    RtOpsEvent_t rtOpsOutput;
 
     os::Mutex nameCacheMutex;
 
@@ -61,6 +61,7 @@ private:
 
     pid_t rosbagPID;   // PID of the child process executing 'roslaunch atrias rosbag.launch'.
     bool controllerLoaded;
+    bool waitingForEvent;
 
     std::map<string, uint16_t> controllerChildCounts;
 
