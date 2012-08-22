@@ -13,6 +13,30 @@ function help
     echo
 }
 
+function sedMultiLine
+{
+    file="$1"
+    find="$2"
+    replace="$3"
+    mv "$file" "${file}.old"
+    sed -n '1!N; s|'$find'|'$replace'|; p' "${file}.old" > "$file"
+    rm "${file}.old"
+}
+
+function grepRemoveLines
+{
+    file="$1"
+    allArgs="$*"
+    lines=( ${allArgs#* } ) # All of the arguments except for the first
+
+    for line in ${lines[@]}
+    do
+        mv "$file" "${file}.old"
+        grep -v "$line" "${file}.old" > "$file"
+        rm "${file}.old"
+    done
+}
+
 # check to see if there is a help flag
 if [[ "$*" = "-h" || "$*" = "--help" ]]
 then
@@ -20,17 +44,20 @@ then
     exit 1
 fi
 
-# The current directory
-cwd="$(pwd)"
-# The template path
-templates="${0%/*}/../templates"
-cd $templates
-templates="$(pwd)"
-cd $cwd
+# The current path
+currentPath="$(pwd)"
+# The templates path
+templatesRelativePath="${0%/*}/../templates"
+cd "$templatesRelativePath"
+templatesPath="$(pwd)"
 # The atrias_controllers path
-atriasControllers="${0%/*}/../../atrias_controllers"
-cd $atriasControllers
-atriasControllers="$(pwd)"
+atriasControllersRelativePath="${0%/*}/../../atrias_controllers"
+cd "$currentPath"
+cd "$atriasControllersRelativePath"
+atriasControllersPath="$(pwd)"
+
+
+################# Get User Input #################
 
 # Determine what controller the user wants to create
 while [ 1 ]; do
@@ -44,7 +71,7 @@ while [ 1 ]; do
     case "$arg" in
     1) 
         echo "What do you want to name it? (e.g. atc_example_name)"
-        read atcName
+        read newAtcName
         echo "Give a description of this controller"
         read description
         echo "Do you want this controller to have an output port to the gui? (y/n)"
@@ -58,14 +85,14 @@ while [ 1 ]; do
         ;;
     2)
         echo "What do you want to name it? (e.g. asc_example_name)"
-        read ascPluginName
+        read newAscPluginName
         echo "Give a description of this controller"
         read description
         break
         ;;
     3)
         echo "What do you want to name it? (e.g. asc_example_name)"
-        read ascComponentName
+        read newAscComponentName
         echo "Give a description of this controller"
         read description
         break
@@ -78,8 +105,8 @@ done
 
 # Determine what subcontrollers the user wants to link to
 clear
-count=-1
-namesMasterList=( $(ls | grep asc_) )
+cd "$atriasControllersPath"
+ascList=( $(ls | grep asc_) )
 while [ 1 ]; do
     echo "Do you want to link to existing subcontrollers?"
     echo "1) Add a subcontroller"
@@ -90,49 +117,23 @@ while [ 1 ]; do
     case "$arg" in
     1) 
         echo "Existing subcontrollers in atrias_controllers:"
-        echo "${namesMasterList[@]}" | sed "s| |\n|g" | cat -n
+        echo "${ascList[@]}" | sed "s| |\n|g" | cat -n
         echo
-        (( count += 1 ))
         echo "Enter the number corresponding to the subcontroller"
-        read subcontrollerNumber
-        names[count]=$(echo "${namesMasterList[@]}" | sed 's| |\n|g' | cat -n | grep ${subcontrollerNumber} | sed "s|^.*\\t||")
+        read ascNumber
+        ascsToLink=( ${ascsToLink[@]} $(echo "${ascList[@]}" | sed 's| |\n|g' | sed -n ${ascNumber}p) )
 
         clear
         echo "Current subcontroller list:"
-        echo "${names[@]}" | sed "s/ /\n/g"
+        echo "${ascsToLink[@]}" | sed "s| |\n|g"
         echo
         ;;
     2)
-        unset names
-        count=-1
+        unset ascsToLink
         clear
         ;;
     3)
-        # Make sure the subcontroller names are valid
-        validNames=0
-        for var in ${names[@]}
-        do
-            ls | grep "asc" | grep "^${var}$" &> /dev/null
-            validNames=$?
-
-            if [ "$validNames" = "1" ]
-            then
-                break
-            fi
-        done
-        
-        # If there there were no invalid names, then break.  Else, warn and loop
-        if [ $validNames = 0 ]
-        then
-            break
-        else
-            clear
-            echo "ERROR: A subcontroller name is invalid. (This only happens if the code is broken)"
-            echo
-            echo "Current subcontroller list:"
-            echo "${names[@]}" | sed "s/ /\n/g"
-            echo
-        fi
+        break
         ;;
     *)
         echo "Invalid input."
@@ -142,195 +143,192 @@ done
 
 # Double-check this is what we want to do
 clear
-echo "This script will create the package ${atcName}${ascPluginName}${ascComponentName} in this directory with these subcontrollers: ${names[@]}"
+echo "This script will create the package ${newAtcName}${newAscPluginName}${newAscComponentName} in this directory with these subcontrollers: ${ascsToLink[@]}"
 echo "If this is what you want to do, press Enter..."
 read
 
 
 
-###### Generate the files ######
+################# Generate the files #################
 
 # For a top-level controller
-if [[ -n $atcName ]]
+if [[ -n "$newAtcName" ]]
 then
     # Figure out names
-    lowerScoredName="$atcName"
-    upperCamelName=$(echo $lowerScoredName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
-    lowerCamelName=$(echo $upperCamelName | sed "s|\(^...\)|\L\1|")
+    newAcName="$newAtcName"
+    newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
+    newAcPath="${currentPath}/${newAcName}"
     # Copy the template and change to the new directory
-    cd ${cwd}
-    cp -r "${templates}/atc_component" "${cwd}/${lowerScoredName}"
-    cd ${lowerScoredName}
+    cp -r "${templatesPath}/atc_component" "$currentPath"
+    echo "cp -r ${templatesPath}/atc_component $currentPath"
+    # Sanity check (This directory must exist)
+    if [ ! -d $newAcPath ]
+    then
+        echo "ERROR: Could not copy from the templates directory"
+        exit 1
+    fi
+    cd "$newAcPath"
     # Move the include folder to its appropriate location
-    mv include/atc_component include/${lowerScoredName}
+    mv "include/atc_component" "include/$newAcName"
     # Rename things
-    files=( start.ops manifest.xml mainpage.dox CMakeLists.txt src/controller_component.cpp src/controller_gui.cpp include/${lowerScoredName}/controller_component.h include/${lowerScoredName}/controller_gui.h )
+    files=( start.ops manifest.xml mainpage.dox CMakeLists.txt src/controller_component.cpp src/controller_gui.cpp include/${newAcName}/controller_component.h include/${newAcName}/controller_gui.h )
     for file in ${files[@]}
     do
-        sed -i "s|atc_template|${lowerScoredName}|g; s|ATCTemplate|${upperCamelName}|g" $file
+        sed -i "s|atc_template|${newAcName}|g; s|ATCTemplate|${newAcCamelName}|g" $file
     done
     # Controller description
-    echo "description=${description}" > controller.txt
+    #echo "description=$description" > controller.txt
     # Clean up the existing '.svn' folders
-    find . -name '.svn' -exec rm -rf {} +
+    #find . -name '.svn' -exec rm -rf {} +
 
     # Add subcontroller code
-    for name in ${names[@]}
+    for ascToLinkName in ${ascsToLink[@]}
     do
-        cd ${atriasControllers}/${name}
-        component=$(grep "^orocos_component(" CMakeLists.txt)
-        service=$(grep "^orocos_service(" CMakeLists.txt)
-        if [ "$component" != "" ]
+        ascToLinkPath=${atriasControllersPath}/${ascToLinkName}
+        cd "$ascToLinkPath"
+        ascIsAComponent=$(grep "^orocos_component(" CMakeLists.txt)
+        ascIsAService=$(grep "^orocos_service(" CMakeLists.txt)
+
+        # If it's a component
+        if [ "$ascIsAComponent" != "" ]
         then
             # Get the component name
             componentName=$(grep "ORO_CREATE_COMPONENT" src/controller_component.cpp | sed 's|ORO_CREATE_COMPONENT(||; s|).*||')
             # Get the unique name suffix
-            uniqueNameSuffix=$(echo ${names} | sed "s|^....||; s|_\(.\)|\U\1|g")
+            uniqueNamePrefix=$(echo ${ascToLinkName} | sed "s|^....||; s|_\(.\)|\U\1|g")
             # Get a unique name
-            cd ${cwd}/${lowerScoredName}
             uniqueNumber=0
-            unique=${uniqueNameSuffix}${uniqueNumber}
-            uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
-            uniqueController=${uniqueNameSuffix}${uniqueNumber}Controller
-            while [ "$(grep "$uniqueName" start.ops)" != "" ]
+            unique=${uniqueNamePrefix}${uniqueNumber}
+            cd "${newAcPath}"
+            while [ "$(grep "${unique}Name" start.ops)" != "" ]
             do
                 (( uniqueNumber += 1 ))
-                unique=${uniqueNameSuffix}${uniqueNumber}
-                uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
-                uniqueController=${uniqueNameSuffix}${uniqueNumber}Controller
+                unique=${uniqueNamePrefix}${uniqueNumber}
             done
 
             # Add the component to the start script
-            mv start.ops start.ops.old
+            file='start.ops'
+            find='# Set up subcontrollers'
             if [ "$uniqueNumber" -eq "0" ]
             then
-                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nimport("'$name'")\nvar string '$uniqueName' = atrias_cm.getUniqueName("controller", "'$uniqueNameSuffix'")\nloadComponent('$uniqueName', "'$componentName'")|; p' > start.ops
+                replace='# Set up subcontrollers\nimport("'$name'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${unique}NamePrefix'")\nloadComponent('${unique}Name', "'$componentName'")'
             else
-                cat start.ops.old | sed -n '1!N; s|import("'$name'")|import("'$name'")\nvar string '$uniqueName' = atrias_cm.getUniqueName("controller", "'$uniqueNameSuffix'")\nloadComponent('$uniqueName', "'$componentName'")|; p' > start.ops
+                replace='import("'$name'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${unique}NamePrefix'")\nloadComponent('${unique}Name', "'$componentName'")'
             fi
-            rm start.ops.old
-            mv start.ops start.ops.old
-            cat start.ops.old | sed -n '1!N; s|# Connect this controller with its subcontrollers|# Connect this controller with its subcontrollers\naddPeer("controller", '$uniqueName')|; p' > start.ops
-            rm start.ops.old
-            mv start.ops start.ops.old
-            cat start.ops.old | sed -n '1!N; s|# Pass the names of the subcontrollers to the controller|# Pass the names of the subcontrollers to the controller\ncontroller.'$uniqueName' = '$uniqueName'|; p' > start.ops
-            rm start.ops.old
+            sedMultiLine "$file" "$find" "$replace"
+
+            find='# Connect this controller with its subcontrollers'
+            replace='# Connect this controller with its subcontrollers\naddPeer("controller", '${unique}Name')'
+            sedMultiLine "$file" "$find" "$replace"
+
+            find='# Pass the names of the subcontrollers to the controller'
+            replace='# Pass the names of the subcontrollers to the controller\ncontroller.'${unique}Name' = '${unique}Name''
+            sedMultiLine "$file" "$find" "$replace"
 
             # Add the component to the .cpp file
-            cd src
-            mv controller_component.cpp controller_component.cpp.old
-            cat controller_component.cpp.old | sed -n '1!N; s|// Add properties|// Add properties\n    this->addProperty("'$uniqueName'", '$uniqueName')\n        .doc("Subcontroller name.");|; p' > controller_component.cpp
-            rm controller_component.cpp.old
-########################################################################################################
-            cd ${atriasControllers}/${name}
+            file='src/controller_component.cpp'
+            find='// Add properties'
+            replace='// Add properties\n    this->addProperty("'${unique}Name'", '${unique}Name')\n        .doc("Subcontroller name.");'
+            sedMultiLine "$file" "$find" "$replace"
+            cd "$ascToLinkPath"
             services=( $(grep 'this->provides(' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
             for service in ${services[@]}
             do
                 operations=( $(grep 'addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
-                cd ${cwd}/${lowerScoredName}
+                cd "$newAcPath"
                 for operation in ${operations[@]}
                 do
-                    cd src
-                    mv controller_component.cpp controller_component.cpp.old
-                    cat controller_component.cpp.old | sed -n '1!N; s|// Connect to the subcontrollers|// Connect to the subcontrollers\n    '$unique' = this->getPeer('$uniqueName');\n    if ('$unique')\n        '${unique}${operation}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n|; p' > controller_component.cpp
-                    rm controller_component.cpp.old
-                    cd ..
+                    find='// Connect to the subcontrollers'
+                    replace='// Connect to the subcontrollers\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${unique}${operation}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
+                    sedMultiLine "$file" "$find" "$replace"
                 done
             done
             # Add references to attributes
             # ...
-########################################################################################################
+#######################################################################################
 
             # Add the component to the .h file
 
-        elif [ "$service" != "" ]
+        # If it's a service
+        elif [ "$ascIsAService" != "" ]
         then
             # Find the service files
-            srcFiles=( $(ls src) )
-            serviceNames=""
+            serviceFiles=( $(ls src) )
             # For each file, find its service and operations
-            for file in ${srcFiles[@]}
+            for serviceFile in ${serviceFiles[@]}
             do
-                cd ${atriasControllers}/${name}
-                serviceName=$(cat src/$file | grep 'Service(' | sed "s|.*(\"||; s|\".*||")
+                serviceName=$(grep 'Service(' src/$serviceFile | sed "s|.*(\"||; s|\".*||")
                 # Add the service to the start script
-                cd ${cwd}/${lowerScoredName}
-                mv start.ops start.ops.old
-                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")|; p' > start.ops
-                rm start.ops.old
+                cd "$newAcPath"
+                file='start.ops'
+                find='# Set up subcontrollers'
+                replace='# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")'
+                sedMultiLine "$file" "$find" "$replace"
 
                 # Find the operations for this file
-                cd ${atriasControllers}/${name}
-                operationNames=( $(cat src/$file | grep 'addOperation(' | sed "s|.*addOperation(\"||; s|\".*||") )
+                cd "$ascToLinkPath"
+                operationNames=( $(grep 'addOperation(' src/$serviceFile | sed "s|.*addOperation(\"||; s|\".*||") )
                 for operation in ${operationNames[@]}
                 do
                     # Find the operation's returnVar and arguments
-                    cd ${atriasControllers}/${name}/src
-                    callbackFunction=$(cat $file | grep "addOperation(\"$operation" | sed 's|.*::||; s|,.*||')
-                    args=$(cat $file | grep "::${callbackFunction}(" | sed "s|.*(||; s|).*||; s|\(.* \).*|\1|; s| .*,|,|g; s| $||")
-                    returnVar=$(cat $file | grep "::${callbackFunction}(" | sed "s| .*||")
-                    
+                    callbackFunction=$(grep "addOperation(\"$operation" src/$serviceFile | sed 's|.*::||; s|,.*||')
+                    args=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s|.*(||; s|).*||; s|\(.* \).*|\1|; s| .*,|,|g; s| $||")
+                    returnVar=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s| .*||")
+
                     # Add the operation to the .ccp file
-                    cd ${cwd}/${lowerScoredName}/src
-                    mv controller_component.cpp controller_component.cpp.old
-                    cat controller_component.cpp.old | sed -n '1!N; s|// Service plugins|// Service plugins\n    '$operation' = this->provides("'$serviceName'")->getOperation("'$operation'");|; p' > controller_component.cpp
-                    rm controller_component.cpp.old
-                    
+                    file='src/controller_component.cpp'
+                    find='// Service plugins'
+                    replace='// Service plugins\n    '$operation' = this->provides("'$serviceName'")->getOperation("'$operation'");'
+                    sedMultiLine "$file" "$find" "$replace"
+
                     # Add the operation to the .h file
-                    cd ../include/${lowerScoredName}
-                    mv controller_component.h controller_component.h.old
-                    cat controller_component.h.old | sed -n '1!N; s|// Service plugins|// Service plugins\n    OperationCaller<'$returnVar'('"$args"')> '$operation';|; p' > controller_component.h
-                    rm controller_component.h.old
-                    cd ../..  # Go back to the package directory
+                    file="include/${newAcName}/controller_component.h"
+                    find='// Service plugins'
+                    replace='// Service plugins\n    OperationCaller<'$returnVar'('"$args"')> '$operation';'
+                    sedMultiLine "$file" "$find" "$replace"
                 done
             done
         else
-            echo "ERROR: subcontroller ${name} not recognized as a service plugin or component"
+            echo "ERROR: subcontroller ${ascToLinkName} not recognized as a service plugin or component"
         fi
 
     done
 
     # Clean up the template
-    cd ${cwd}/${lowerScoredName}
+    cd "$newAcPath"
     sed -i 's|# ============ Needed for template creation ============||' start.ops
 
     # Do we want a gui output port?
     if [ "$guiOutDecision" = "n" ]
     then
-        mv start.ops start.ops.old
-        grep -v "gui_policy.*status" start.ops.old | grep -v "stream.*gui_data_out" > start.ops
-        rm start.ops.old
+        file='start.ops'
+        lines=( "gui_policy.*status" "stream.*gui_data_out" )
+        grepRemoveLines "$file" "${lines[@]}"
 
-        cd src
-        mv controller_component.cpp controller_component.cpp.old
-        grep -v "guiDataOut" controller_component.cpp.old | grep -v "Send data to the GUI" | grep -v "readyToSend" > controller_component.cpp
-        rm controller_component.cpp.old
-        cd ..
+        file='src/controller_component.cpp'
+        lines=( "guiDataOut" "Send data to the GUI" "readyToSend" )
+        grepRemoveLines "$file" "${lines[@]}"
 
-        cd include/${lowerScoredName}
-        mv controller_component.h controller_component.h.old
-        grep -v "guiOut" controller_component.h.old | grep -v "guiDataOut" > controller_component.h
-        rm controller_component.h.old
-        cd ../..
+        file="include/${newAcName}/controller_component.h"
+        lines=( "guiOut" "guiDataOut" )
+        grepRemoveLines "$file" "${lines[@]}"
 
         rm msg/controller_log_data.msg
     fi
 
 
 # For a sub-controller plugin
-elif [[ -n $ascPluginName ]]
+elif [[ -n $newAscPluginName ]]
 then
-    name="$ascPluginName"
-    #cp -r ${templates}/asc_service_plugin ${cwd}/${name}
+    #cp -r ${templatesPath}/asc_service_plugin ${currentPath}/${newAscPluginName}
     echo "Dummy command"
 
 
 # For a sub-controller component
-elif [[ -n $ascComponentName ]]
+elif [[ -n $newAscComponentName ]]
 then
-    name="$ascComponentName"
     echo "Dummy command"
-    #cp -r ${templates}/asc_component ${cwd}/${name}
+    #cp -r ${templatesPath}/asc_component ${currentPath}/${newAscComponentName}
 else
     echo "No controller name specified"
     exit 1
