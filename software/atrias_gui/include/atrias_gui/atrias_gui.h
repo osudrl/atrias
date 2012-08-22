@@ -131,6 +131,7 @@ void switch_controllers(GtkNotebookPage *, guint);
 
 void draw_leg();
 
-}
-}
+} // namespace gui
+} // namespace atrias
 #endif
+

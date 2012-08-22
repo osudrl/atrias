@@ -98,12 +98,12 @@ StatusGui::~StatusGui() {
 }
 
 void StatusGui::update(rt_ops_cycle rtCycle) {
-	update_robot_status(rtCycle);
-	update_medulla_status(rtCycle);
+    update_robot_status(rtCycle);
+    update_medulla_status(rtCycle);
 }
 
 void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
-	char buffer[20];
+    char buffer[20];
 
     // Update the motor torque progress bars and displays.
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.lLeg.motorCurrentA);

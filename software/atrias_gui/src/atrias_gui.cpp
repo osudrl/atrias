@@ -6,7 +6,7 @@
  * Original version by Devin Koepl
  *
  *  Created on: May 7, 2012
- *      Author: Michael Anderson
+ *      Author: Michael Anderson, Soo-Hyun Yoo
  */
 
 #include <atrias_gui/atrias_gui.h>
@@ -186,7 +186,7 @@ void controllerManagerCallback(const gui_input &gInput) {
         changeEstopButtonColor(disableStateColor);
     }
     else if ((ControllerManagerState)gi.status == ControllerManagerState::CONTROLLER_RUNNING) {
-	    changeEstopButtonColor(runStateColor);
+        changeEstopButtonColor(runStateColor);
     }
     else if ((ControllerManagerState)gi.status == ControllerManagerState::CONTROLLER_STOPPED) {
         changeEstopButtonColor(disableStateColor);
@@ -254,14 +254,14 @@ void load_parameters() {
             // First, load parameters from file onto server.
             int rosparamPID = fork();
             if (rosparamPID == 0) {   // Child process
-            	execlp("rosparam", "rosparam", "load", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
-            	exit(127);   // Exit code 127 if command not found.
+                execlp("rosparam", "rosparam", "load", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
+                exit(127);   // Exit code 127 if command not found.
             }
 
-	    // Once parameters are loaded, get them and update GUI. I wanted to
-	    // use nh.hasParam() here, but nh is out of the scope of this
-	    // function.   TODO: This could hang if the exec() call above
-	    // fails.  I need another check in the while().
+            // Once parameters are loaded, get them and update GUI. I wanted to
+            // use nh.hasParam() here, but nh is out of the scope of this
+            // function.   TODO: This could hang if the exec() call above
+            // fails.  I need another check in the while().
             while (!ros::param::has("/atrias_gui")) {}
             controllerGetParameters();
             ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
@@ -271,18 +271,18 @@ void load_parameters() {
 
 //! @brief restarts the robot.
 void restart_robot() {
-	go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
-	atrias_gui_cm_output.publish(go);
-	go.command = (uint8_t)UserCommand::STOP;
-	atrias_gui_cm_output.publish(go);
+    go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
+    atrias_gui_cm_output.publish(go);
+    go.command = (uint8_t)UserCommand::STOP;
+    atrias_gui_cm_output.publish(go);
 }
 
 //! @brief Enables the motors of the robot.
 void enable_motors() {
-	if (controller_loaded) {
-	    go.command = (uint8_t)UserCommand::RUN;
-	    atrias_gui_cm_output.publish(go);
-	}
+    if (controller_loaded) {
+        go.command = (uint8_t)UserCommand::RUN;
+        atrias_gui_cm_output.publish(go);
+    }
 }
 
 //! @brief Disables the motors of the robot.
@@ -303,8 +303,8 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
             // Delete currently loaded GUI parameters.
             int rosparamPID = fork();
             if (rosparamPID == 0) {   // Child process
-            	execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
-            	exit(127);   // Exit code 127 if command not found.
+                execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+                exit(127);   // Exit code 127 if command not found.
             }
         }
         controller_loaded = false;
@@ -314,39 +314,39 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
         go.command = (uint8_t)UserCommand::STOP;
     }
     else {
-    	//Take down the previous controller
-    	if (controller_loaded && controllerTakedown && controllerUpdate) {
-    		controllerTakedown();
+        //Take down the previous controller
+        if (controller_loaded && controllerTakedown && controllerUpdate) {
+            controllerTakedown();
 
             // Delete currently loaded GUI parameters.
             int rosparamPID = fork();
             if (rosparamPID == 0) {   // Child process
-            	execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
-            	exit(127);   // Exit code 127 if command not found.
+                execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+                exit(127);   // Exit code 127 if command not found.
             }
 
             go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
             atrias_gui_cm_output.publish(go);
-    	}
+        }
 
-    	controller_loaded = false;
+        controller_loaded = false;
 
         controllerName = controllerNames[controllerDetectedIDs[page_num - 1]];
 
-    	//Subtract 1 because page 0 doesn't have a controller library
-    	void* handle = controllerHandles[controllerName];
+        //Subtract 1 because page 0 doesn't have a controller library
+        void* handle = controllerHandles[controllerName];
 
         controllerUpdate = (void(*)())dlsym(handle, "guiUpdate");
-    	controllerTakedown = (void(*)())dlsym(handle, "guiTakedown");
+        controllerTakedown = (void(*)())dlsym(handle, "guiTakedown");
         controllerGetParameters = (void(*)()) dlsym(handle, "getParameters");
         controllerSetParameters = (void(*)()) dlsym(handle, "setParameters");
 
-    	if (controllerTakedown && controllerUpdate) {
-		controller_loaded = true;
-    	}
-    	else {
-    		show_error_dialog("Controller failed to load:\nCould not load library functions");
-    	}
+        if (controllerTakedown && controllerUpdate) {
+        controller_loaded = true;
+        }
+        else {
+            show_error_dialog("Controller failed to load:\nCould not load library functions");
+        }
 
         currentControllerID = page_num - 1;
         go.requestedController = controllerName;
@@ -362,74 +362,68 @@ bool load_controller(std::string name, uint16_t controllerID) {
 
         void *handle = dlopen(cm.guiLibPath.c_str(), RTLD_LAZY);
         if (!handle) {
-        	if (cm.loadSuccessful) {
-        		show_error_dialog("Failed to open shared library " + cm.guiLibPath +
-        				" for controller " + name + "! Please verify your metadata.txt file.");
-        	}
-        	else  {
-        		show_error_dialog("Could not load metadata for controller " + name +
-        				" and an attempt to use default values failed!");
+            if (cm.loadSuccessful) {
+                show_error_dialog("Failed to open shared library" + cm.guiLibPath + " for controller " + name + "! Please verify your metadata.txt file.");
+            }
+            else  {
+                show_error_dialog("Could not load metadata for controller" + name + " and an attempt to use default values failed!");
             }
         }
         else {
-        	if (!controllerResourcesLoaded[controllerID]) {
-				if (!cm.loadSuccessful) {
-					show_error_dialog("Could not load metadata for controller " + name + "!\n" +
-							"Attempting to use default values.");
-				}
-				Glib::RefPtr<Gtk::Builder> controllerTab = Gtk::Builder::create();
-				try {
-					controllerTab->add_from_file(cm.guiDescriptionPath);
-				}
-				catch (const Glib::FileError& ex) {
-					show_error_dialog("Could not load GUI for controller " + name + "!\n" +
-							"Please verify your metadata.txt and GUI description files.");
-					return false;
-				}
-				catch (const Gtk::BuilderError& ex) {
-					show_error_dialog("Could not load GUI for controller " + name + "!\n" +
-							"Please verify your metadata.txt and GUI description files.");
-					return false;
-				}
-				Gtk::Label tabLabel;
-				tabLabel.set_label(cm.name);
-				tabLabel.set_size_request(-1, 16);
-				Gtk::Widget *tabContent;
-				controllerTab->get_widget(cm.guiTabWidgetName, tabContent);
+            if (!controllerResourcesLoaded[controllerID]) {
+                if (!cm.loadSuccessful) {
+                    show_error_dialog("Could not load metadata for controller " + name + "!\n" + "Attempting to use default values.");
+                }
+                Glib::RefPtr<Gtk::Builder> controllerTab = Gtk::Builder::create();
+                try {
+                    controllerTab->add_from_file(cm.guiDescriptionPath);
+                }
+                catch (const Glib::FileError& ex) {
+                    show_error_dialog("Could not load GUI for controller " + name + "!\n" + "Please verify your metadata.txt and GUI description files.");
+                    return false;
+                }
+                catch (const Gtk::BuilderError& ex) {
+                    show_error_dialog("Could not load GUI for controller " + name + "!\n" + "Please verify your metadata.txt and GUI description files.");
+                    return false;
+                }
+                Gtk::Label tabLabel;
+                tabLabel.set_label(cm.name);
+                tabLabel.set_size_request(-1, 16);
+                Gtk::Widget *tabContent;
+                controllerTab->get_widget(cm.guiTabWidgetName, tabContent);
 
-				if (tabContent) {
-					bool (*controllerInit)(Glib::RefPtr<Gtk::Builder> gui) = (bool(*)(Glib::RefPtr<Gtk::Builder> gui))dlsym(handle, "guiInit");
-					bool success = controllerInit(controllerTab);
-					if (success) {
-						controller_notebook->append_page(*tabContent, tabLabel);
-						controller_notebook->set_tab_label_packing(tabLabel, false, true, Gtk::PACK_START);
-						controllerHandles.insert(pair<std::string, void*>(name, handle));
-						controllerTabs.insert(pair<std::string, Gtk::Widget*>(name, tabContent));
-						controllerDetectedIDs.push_back(controllerID);
-						controllerResourcesLoaded[controllerID] = true;
-					}
-					else {
-						show_error_dialog("Controller initialization function reported an error!\nController "
-								+ name + " has not been loaded.");
-						return false;
-					}
-				}
-				else {
-					show_error_dialog("Could not load GUI for controller " + name + "!\n" +
-							"Please verify your metadata.txt and GUI description files.");
-					return false;
-				}
-        	}
-        	else { //The controller was already loaded once before in this instance. This means we don't need to do nearly as much.
-        		ControllerMetadata cm = metadata[name];
-				Gtk::Label tabLabel;
-				tabLabel.set_label(cm.name);
-				tabLabel.set_size_request(-1, 16);
-				controller_notebook->append_page(*controllerTabs[name], tabLabel);
-				controller_notebook->set_tab_label_packing(tabLabel, false, true, Gtk::PACK_START);
-				controllerDetectedIDs.push_back(controllerID);
-        	}
-	        return true;
+                if (tabContent) {
+                    bool (*controllerInit)(Glib::RefPtr<Gtk::Builder> gui) = (bool(*)(Glib::RefPtr<Gtk::Builder> gui))dlsym(handle, "guiInit");
+                    bool success = controllerInit(controllerTab);
+                    if (success) {
+                        controller_notebook->append_page(*tabContent, tabLabel);
+                        controller_notebook->set_tab_label_packing(tabLabel, false, true, Gtk::PACK_START);
+                        controllerHandles.insert(pair<std::string, void*>(name, handle));
+                        controllerTabs.insert(pair<std::string, Gtk::Widget*>(name, tabContent));
+                        controllerDetectedIDs.push_back(controllerID);
+                        controllerResourcesLoaded[controllerID] = true;
+                    }
+                    else {
+                        show_error_dialog("Controller initialization function reported an error!\nController " + name + " has not been loaded.");
+                        return false;
+                    }
+                }
+                else {
+                    show_error_dialog("Could not load GUI for controller " + name + "!\n" +
+                            "Please verify your metadata.txt and GUI description files.");
+                    return false;
+                }
+            }
+            else { //The controller was already loaded once before in this instance. This means we don't need to do nearly as much.
+                ControllerMetadata cm = metadata[name];
+                Gtk::Label tabLabel;
+                tabLabel.set_label(cm.name);
+                tabLabel.set_size_request(-1, 16);
+                controller_notebook->append_page(*controllerTabs[name], tabLabel);
+                controller_notebook->set_tab_label_packing(tabLabel, false, true, Gtk::PACK_START);
+                controllerDetectedIDs.push_back(controllerID);
+            }
+            return true;
         }
     }
     return false;
@@ -437,53 +431,53 @@ bool load_controller(std::string name, uint16_t controllerID) {
 
 //! @brief Loads a new controller plugin.
 void unload_controller(std::string name) {
-	if (!controller_loaded) {
-		for (size_t i = 0; i < controllerDetectedIDs.size(); i++) {
-			if (controllerNames[controllerDetectedIDs[i]] == name) {
-				controller_notebook->remove_page(i + 1);
-				controllerDetectedIDs.erase(controllerDetectedIDs.begin() + i);
-				break;
-			}
-		}
-	}
+    if (!controller_loaded) {
+        for (size_t i = 0; i < controllerDetectedIDs.size(); i++) {
+            if (controllerNames[controllerDetectedIDs[i]] == name) {
+                controller_notebook->remove_page(i + 1);
+                controllerDetectedIDs.erase(controllerDetectedIDs.begin() + i);
+                break;
+            }
+        }
+    }
 }
 
 void detect_controllers() {
-	using ros::package::V_string;
-	V_string packages;
-	ros::package::getAll(packages);
+    using ros::package::V_string;
+    V_string packages;
+    ros::package::getAll(packages);
 
-	for (uint16_t i = 0; i < packages.size(); i++) {
-		if (packages[i].find("atc_") == 0) {
-			controllerList.push_back(packages[i]);
-			ControllerMetadata md = loadControllerMetadata(ros::package::getPath(packages[i]), packages[i]);
-			metadata.insert(std::pair<std::string, ControllerMetadata>(packages[i], md));
-			Gtk::TreeModel::Row row = *(controllerListStore->append());
-			row.set_value(0, false);
-			row.set_value(1, md.name + " Controller");
-			row.set_value(2, "Description: " + md.description + "\n\nAuthor: " + md.author);
-			controllerNames.push_back(packages[i]);
-			controllerResourcesLoaded.push_back(false);
-		}
-	}
+    for (uint16_t i = 0; i < packages.size(); i++) {
+        if (packages[i].find("atc_") == 0) {
+            controllerList.push_back(packages[i]);
+            ControllerMetadata md = loadControllerMetadata(ros::package::getPath(packages[i]), packages[i]);
+            metadata.insert(std::pair<std::string, ControllerMetadata>(packages[i], md));
+            Gtk::TreeModel::Row row = *(controllerListStore->append());
+            row.set_value(0, false);
+            row.set_value(1, md.name + " Controller");
+            row.set_value(2, "Description: " + md.description + "\n\nAuthor: " + md.author);
+            controllerNames.push_back(packages[i]);
+            controllerResourcesLoaded.push_back(false);
+        }
+    }
 }
 
 void controller_checkbox_toggled(const Gtk::TreeModel::Path& path, const Gtk::TreeModel::iterator& iter) {
-	Gtk::TreeModel::Row row = *iter;
-	if (row[controllerListActiveColumn]) {
-		uint16_t controllerNum = atoi(path.to_string().c_str());
-		if(!load_controller(controllerNames[controllerNum], controllerNum))
-			row[controllerListActiveColumn] = false;
-	}
-	else {
-		uint16_t controllerNum = atoi(path.to_string().c_str());
-		unload_controller(controllerNames[controllerNum]);
-	}
+    Gtk::TreeModel::Row row = *iter;
+    if (row[controllerListActiveColumn]) {
+        uint16_t controllerNum = atoi(path.to_string().c_str());
+        if(!load_controller(controllerNames[controllerNum], controllerNum))
+            row[controllerListActiveColumn] = false;
+    }
+    else {
+        uint16_t controllerNum = atoi(path.to_string().c_str());
+        unload_controller(controllerNames[controllerNum]);
+    }
 }
 
 void show_error_dialog(std::string message) {
-	Gtk::MessageDialog loadFailedDialog(message, false, Gtk::MESSAGE_ERROR);
-	loadFailedDialog.run();
+    Gtk::MessageDialog loadFailedDialog(message, false, Gtk::MESSAGE_ERROR);
+    loadFailedDialog.run();
 }
 
 //! @brief Draws the four legs of Atrias in the simulation (the carrot).
@@ -502,7 +496,7 @@ void draw_leg () {
 
     cc->set_line_width(12.0);
 
-	// Draw the leg
+    // Draw the leg
     cc->move_to(start_x, start_y);
     // OSU orange 216, 90, 26
     cc->set_source_rgb(0.8471, 0.3529, 0.1020);
@@ -533,5 +527,6 @@ void draw_leg () {
     cc->stroke();
 }
 
-}
-}
+} // namespace gui
+} // namespace atrias
+
