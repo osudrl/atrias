@@ -227,11 +227,14 @@ then
             for service in ${services[@]}
             do
                 operations=( $(grep 'addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+                cd ${cwd}/${lowerScoredName}
                 for operation in ${operations[@]}
                 do
+                    cd src
                     mv controller_component.cpp controller_component.cpp.old
-                    cat controller_component.cpp.old | sed -n '1!N; s|// Connect to the subcontrollers|// Connect to the subcontrollers\n    '$unique' = this->getPeer('$uniqueName');\n    if ('$unique')\n        '$uniqueController' = '$unique'->provides("'$service'")->getOperation("'$operation'");|; p' > controller_component.cpp
+                    cat controller_component.cpp.old | sed -n '1!N; s|// Connect to the subcontrollers|// Connect to the subcontrollers\n    '$unique' = this->getPeer('$uniqueName');\n    if ('$unique')\n        '${unique}${operation}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n|; p' > controller_component.cpp
                     rm controller_component.cpp.old
+                    cd ..
                 done
             done
             # Add references to attributes
