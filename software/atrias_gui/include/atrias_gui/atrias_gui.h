@@ -93,7 +93,7 @@ std::vector<uint16_t> controllerDetectedIDs; //This maps controller page numbers
 std::vector<bool> controllerResourcesLoaded;
 std::map<std::string, void*> controllerHandles; //The pointers needed to access the controller GUI libraries
 std::map<std::string, ControllerMetadata> metadata;
-ControllerMetadata currentMD;   // Current set of metadata. TODO: this is hackish. Soo-Hyun put this here 8/15/12 to make parameter setting work.
+std::string controllerName;   // Name of currently loaded controller. This is declared here so GUI parameter load/delete will work in switch_controllers().
 std::map<std::string, Gtk::Widget*> controllerTabs;
 uint8_t currentControllerID;
 

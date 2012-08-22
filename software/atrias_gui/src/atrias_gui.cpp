@@ -221,15 +221,15 @@ void log_chkbox_toggled() {
     atrias_gui_cm_output.publish(go);
 }
 
-//! @brief Save GUI parameters to local (GUI machine) atrias directory.
+//! @brief Save GUI parameters to local (GUI machine) controller directories.
 void save_parameters() {
     if (controller_loaded) {
         int rosparamPID = fork();
         if (rosparamPID == 0) {   // Child process
-            execlp("rosparam", "rosparam", "dump", currentMD.guiConfigPath.c_str(), NULL);
+            execlp("rosparam", "rosparam", "dump", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
             exit(127);   // Exit code 127 if command not found.
         }
-        ROS_INFO("GUI: Saved GUI settings in %s", currentMD.guiConfigPath.c_str());
+        ROS_INFO("GUI: Saved GUI settings in %s", metadata[controllerName].guiConfigPath.c_str());
     }
     else {
         ROS_INFO("GUI: Not saving anything because there is no controller loaded.");
@@ -266,6 +266,13 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
         //Take down the previous controller
         if (controller_loaded && controllerTakedown && controllerUpdate) {
             controllerTakedown();
+
+            // Delete currently loaded GUI parameters.
+            int rosparamPID = fork();
+            if (rosparamPID == 0) {   // Child process
+            	execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+            	exit(127);   // Exit code 127 if command not found.
+            }
         }
         controller_loaded = false;
         go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
@@ -277,13 +284,21 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
     	//Take down the previous controller
     	if (controller_loaded && controllerTakedown && controllerUpdate) {
     		controllerTakedown();
+
+            // Delete currently loaded GUI parameters.
+            int rosparamPID = fork();
+            if (rosparamPID == 0) {   // Child process
+            	execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+            	exit(127);   // Exit code 127 if command not found.
+            }
+
             go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
             atrias_gui_cm_output.publish(go);
     	}
 
     	controller_loaded = false;
 
-        std::string controllerName = controllerNames[controllerDetectedIDs[page_num - 1]];
+        controllerName = controllerNames[controllerDetectedIDs[page_num - 1]];
 
     	//Subtract 1 because page 0 doesn't have a controller library
     	void* handle = controllerHandles[controllerName];
@@ -292,7 +307,15 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
     	controllerTakedown = (void(*)())dlsym(handle, "guiTakedown");
 
     	if (controllerTakedown && controllerUpdate) {
-			controller_loaded = true;
+		controller_loaded = true;
+
+		// Load parameters.
+		int rosparamPID = fork();
+		if (rosparamPID == 0) {   // Child process
+			execlp("rosparam", "rosparam", "load", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
+			exit(127);   // Exit code 127 if command not found.
+		}
+		ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
     	}
     	else {
     		show_error_dialog("Controller failed to load:\nCould not load library functions");
@@ -309,7 +332,6 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
 bool load_controller(std::string name, uint16_t controllerID) {
     if (!controller_loaded) {
         ControllerMetadata cm = metadata[name];
-        currentMD = metadata[name];
 
         void *handle = dlopen(cm.guiLibPath.c_str(), RTLD_LAZY);
         if (!handle) {
