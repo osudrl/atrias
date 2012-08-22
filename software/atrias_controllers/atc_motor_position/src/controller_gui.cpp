@@ -24,11 +24,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         p_hscale->set_range(0., 50000.);
         d_hscale->set_range(0., 5000.);
 
-        // Set parameters.
-        nh.param("a_position",            a_position_param, 0.);
-        nh.param("b_position",            b_position_param, 0.);
-        nh.param("motor_position_p_gain", p_gain_param,     0.);
-        nh.param("motor_position_d_gain", d_gain_param,     0.);
+        // Set parameters in the atrias_gui namespace.
+        nh.param("/atrias_gui/a_position",            a_position_param, 0.);
+        nh.param("/atrias_gui/b_position",            b_position_param, 0.);
+        nh.param("/atrias_gui/motor_position_p_gain", p_gain_param,     0.);
+        nh.param("/atrias_gui/motor_position_d_gain", d_gain_param,     0.);
 
         // Set values.
         position_A_hscale->set_value(a_position_param);
