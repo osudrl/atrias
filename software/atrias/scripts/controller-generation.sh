@@ -4,6 +4,7 @@
 # 1) top-level controllers are prefixed with atc_
 # 2) sub-level controllers are prefixed with asc_
 # 3) current sub-level controllers are located in atrias_controllers
+# 4) there is only one component in a subcontroller package
 
 function help
 {
@@ -13,7 +14,7 @@ function help
 }
 
 # check to see if there is a help flag
-if [ "$*" = "-h" ] || [ "$*" = "--help" ]
+if [[ "$*" = "-h" || "$*" = "--help" ]]
 then
     help
     exit 1
@@ -46,6 +47,13 @@ while [ 1 ]; do
         read atcName
         echo "Give a description of this controller"
         read description
+        echo "Do you want this controller to have an output port to the gui? (y/n)"
+        read guiOutDecision
+        while [[ "$guiOutDecision" != "y" && "$guiOutDecision" != "n" ]]
+        do
+            echo "Unrecognized answer.  y/n?"
+            read guiOutDecision
+        done
         break
         ;;
     2)
@@ -138,7 +146,11 @@ echo "This script will create the package ${atcName}${ascPluginName}${ascCompone
 echo "If this is what you want to do, press Enter..."
 read
 
-# Generate the files
+
+
+###### Generate the files ######
+
+# For a top-level controller
 if [[ -n $atcName ]]
 then
     # Figure out names
@@ -170,8 +182,36 @@ then
         service=$(grep "^orocos_service(" CMakeLists.txt)
         if [ "$component" != "" ]
         then
-            # Add component lines
-            echo "This is a component!"
+            # Get the component name
+            componentName=$(grep "ORO_CREATE_COMPONENT" src/controller_component.cpp | sed 's|ORO_CREATE_COMPONENT(||; s|).*||')
+            # Get the unique name suffix
+            uniqueNameSuffix=$(echo ${names} | sed "s|^....||; s|_\(.\)|\U\1|g")
+            # Get a unique name
+            cd ${cwd}/${lowerScoredName}
+            uniqueNumber=0
+            uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
+            while [ "$(grep "$uniqueName" start.ops)" != "" ]
+            do
+                (( uniqueNumber += 1 ))
+                uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
+            done
+            # Add the component to the start script
+            mv start.ops start.ops.old
+            if [ "$uniqueNumber" -eq "0" ]
+            then
+                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nimport("'$name'")\nvar string '$uniqueName' = atrias_cm.getUniqueName("controller", "'$uniqueNameSuffix'")\nloadComponent('$uniqueName', "'$componentName'")|; p' > start.ops
+            else
+                cat start.ops.old | sed -n '1!N; s|import("'$name'")|import("'$name'")\nvar string '$uniqueName' = atrias_cm.getUniqueName("controller", "'$uniqueNameSuffix'")\nloadComponent('$uniqueName', "'$componentName'")|; p' > start.ops
+            fi
+            rm start.ops.old
+            mv start.ops start.ops.old
+            cat start.ops.old | sed -n '1!N; s|# Connect this controller with its subcontrollers|# Connect this controller with its subcontrollers\naddPeer("controller", '$uniqueName')|; p' > start.ops
+            rm start.ops.old
+            mv start.ops start.ops.old
+            cat start.ops.old | sed -n '1!N; s|# Pass the names of the subcontrollers to the controller|# Pass the names of the subcontrollers to the controller\ncontroller.'$uniqueName' = '$uniqueName'|; p' > start.ops
+            rm start.ops.old
+            # Add the component to the .cpp file
+            # Add the component to the .h file
         elif [ "$service" != "" ]
         then
             # Find the service files
@@ -185,7 +225,7 @@ then
                 # Add the service to the start script
                 cd ${cwd}/${lowerScoredName}
                 mv start.ops start.ops.old
-                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n|; p' > start.ops
+                cat start.ops.old | sed -n '1!N; s|# Set up subcontrollers|# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")|; p' > start.ops
                 rm start.ops.old
 
                 # Find the operations for this file
@@ -209,7 +249,6 @@ then
                     cd ../include/${lowerScoredName}
                     mv controller_component.h controller_component.h.old
                     cat controller_component.h.old | sed -n '1!N; s|// Service plugins|// Service plugins\n    OperationCaller<'$returnVar'('"$args"')> '$operation';|; p' > controller_component.h
-                    #\n    OperationCaller<'$returnVar'('$args')> '$operation';|; p' > controller_component.h
                     rm controller_component.h.old
                     cd ../..  # Go back to the package directory
                 done
@@ -220,11 +259,42 @@ then
 
     done
 
+    # Clean up the template
+    cd ${cwd}/${lowerScoredName}
+    sed -i 's|# ============ Needed for template creation ============||' start.ops
+
+    # Do we want a gui output port?
+    if [ "$guiOutDecision" = "n" ]
+    then
+        mv start.ops start.ops.old
+        grep -v "gui_policy.*status" start.ops.old | grep -v "stream.*gui_data_out" > start.ops
+        rm start.ops.old
+
+        cd src
+        mv controller_component.cpp controller_component.cpp.old
+        grep -v "guiDataOut" controller_component.cpp.old | grep -v "Send data to the GUI" | grep -v "readyToSend" > controller_component.cpp
+        rm controller_component.cpp.old
+        cd ..
+
+        cd include/${lowerScoredName}
+        mv controller_component.h controller_component.h.old
+        grep -v "guiOut" controller_component.h.old | grep -v "guiDataOut" > controller_component.h
+        rm controller_component.h.old
+        cd ../..
+
+        rm msg/controller_log_data.msg
+    fi
+
+
+# For a sub-controller plugin
 elif [[ -n $ascPluginName ]]
 then
     name="$ascPluginName"
     #cp -r ${templates}/asc_service_plugin ${cwd}/${name}
     echo "Dummy command"
+
+
+# For a sub-controller component
 elif [[ -n $ascComponentName ]]
 then
     name="$ascComponentName"
