@@ -45,7 +45,9 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
 bool ATCTemplate::configureHook() {
     // Connect to the subcontrollers
     // Service plugins
+
     // Service components
+
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }

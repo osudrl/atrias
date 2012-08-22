@@ -6,11 +6,11 @@ setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# ============ Needed for template creation ============
+# Set up service plugins
 # Set up subcontrollers
 # Connect this controller with its subcontrollers
+
 # Pass the names of the subcontrollers to the controller
-# ============ Needed for template creation ============
 
 # Set up the gui connection
 var ConnPolicy gui_policy

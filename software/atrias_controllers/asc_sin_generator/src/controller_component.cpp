@@ -12,7 +12,7 @@ ASCSinGenerator::ASCSinGenerator(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log")
 {
-    this->provides("sinGenerator")
+    this->provides("sg")
         ->addOperation("runController", &ASCSinGenerator::runController, this, OwnThread)
         .doc("Run the controller.");
 

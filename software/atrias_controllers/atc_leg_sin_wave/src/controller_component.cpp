@@ -96,10 +96,10 @@ bool ATCLegSinWave::configureHook() {
     // Sin controllers
     sin0 = this->getPeer(sin0Name);
     if (sin0)
-        sin0Controller = sin0->provides("sinGenerator")->getOperation("runController");
+        sin0Controller = sin0->provides("sg")->getOperation("runController");
     sin1 = this->getPeer(sin1Name);
     if (sin1)
-        sin1Controller = sin1->provides("sinGenerator")->getOperation("runController");
+        sin1Controller = sin1->provides("sg")->getOperation("runController");
 
     // Transforms
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");

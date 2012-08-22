@@ -19,21 +19,22 @@ function sedMultiLine
     find="$2"
     replace="$3"
     mv "$file" "${file}.old"
-    sed -n '1!N; s|'$find'|'$replace'|; p' "${file}.old" > "$file"
+    sed -n "1!N; s|$find|$replace|g; p" "${file}.old" > "$file"
     rm "${file}.old"
 }
 
 function grepRemoveLines
 {
+    # Usage:  grepRemoveLines "file" "line1" "line2" ...
     file="$1"
-    allArgs="$*"
-    lines=( ${allArgs#* } ) # All of the arguments except for the first
+    shift  # This shifts the input variable over one
 
-    for line in ${lines[@]}
+    while (( "$#" ))  # While there are input variables
     do
         mv "$file" "${file}.old"
-        grep -v "$line" "${file}.old" > "$file"
+        grep -v "$1" "${file}.old" > "$file"
         rm "${file}.old"
+        shift
     done
 }
 
@@ -143,7 +144,9 @@ done
 
 # Double-check this is what we want to do
 clear
-echo "This script will create the package ${newAtcName}${newAscPluginName}${newAscComponentName} in this directory with these subcontrollers: ${ascsToLink[@]}"
+echo "This script will create the package ${newAtcName}${newAscPluginName}${newAscComponentName} in this directory with these subcontrollers:"
+echo "${ascsToLink[@]-None}" | sed "s| |\n|g"
+echo
 echo "If this is what you want to do, press Enter..."
 read
 
@@ -159,8 +162,7 @@ then
     newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
     newAcPath="${currentPath}/${newAcName}"
     # Copy the template and change to the new directory
-    cp -r "${templatesPath}/atc_component" "$currentPath"
-    echo "cp -r ${templatesPath}/atc_component $currentPath"
+    cp -r "${templatesPath}/atc_component" "$newAcPath"
     # Sanity check (This directory must exist)
     if [ ! -d $newAcPath ]
     then
@@ -177,9 +179,9 @@ then
         sed -i "s|atc_template|${newAcName}|g; s|ATCTemplate|${newAcCamelName}|g" $file
     done
     # Controller description
-    #echo "description=$description" > controller.txt
+    echo "description=$description" > controller.txt
     # Clean up the existing '.svn' folders
-    #find . -name '.svn' -exec rm -rf {} +
+    find . -name '.svn' -exec rm -rf {} +
 
     # Add subcontroller code
     for ascToLinkName in ${ascsToLink[@]}
@@ -208,12 +210,13 @@ then
 
             # Add the component to the start script
             file='start.ops'
-            find='# Set up subcontrollers'
             if [ "$uniqueNumber" -eq "0" ]
             then
-                replace='# Set up subcontrollers\nimport("'$name'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${unique}NamePrefix'")\nloadComponent('${unique}Name', "'$componentName'")'
+                find='# Set up subcontrollers'
+                replace='# Set up subcontrollers\nimport("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")\n'
             else
-                replace='import("'$name'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${unique}NamePrefix'")\nloadComponent('${unique}Name', "'$componentName'")'
+                find='import("'$ascToLinkName'")'
+                replace='import("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")'
             fi
             sedMultiLine "$file" "$find" "$replace"
 
@@ -239,7 +242,8 @@ then
                 for operation in ${operations[@]}
                 do
                     find='// Connect to the subcontrollers'
-                    replace='// Connect to the subcontrollers\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${unique}${operation}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
+                    operationReference=$(echo "${unique}_${operation}" | sed "s|_\(.\)|\U\1|g")
+                    replace='// Connect to the subcontrollers\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
@@ -253,16 +257,18 @@ then
         elif [ "$ascIsAService" != "" ]
         then
             # Find the service files
+            cd "$ascToLinkPath"
             serviceFiles=( $(ls src) )
             # For each file, find its service and operations
             for serviceFile in ${serviceFiles[@]}
             do
+                cd "$ascToLinkPath"
                 serviceName=$(grep 'Service(' src/$serviceFile | sed "s|.*(\"||; s|\".*||")
                 # Add the service to the start script
                 cd "$newAcPath"
                 file='start.ops'
-                find='# Set up subcontrollers'
-                replace='# Set up subcontrollers\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")'
+                find='# Set up service plugins'
+                replace='# Set up service plugins\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n'
                 sedMultiLine "$file" "$find" "$replace"
 
                 # Find the operations for this file
@@ -271,11 +277,13 @@ then
                 for operation in ${operationNames[@]}
                 do
                     # Find the operation's returnVar and arguments
+                    cd "$ascToLinkPath"
                     callbackFunction=$(grep "addOperation(\"$operation" src/$serviceFile | sed 's|.*::||; s|,.*||')
                     args=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s|.*(||; s|).*||; s|\(.* \).*|\1|; s| .*,|,|g; s| $||")
                     returnVar=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s| .*||")
 
                     # Add the operation to the .ccp file
+                    cd "$newAcPath"
                     file='src/controller_component.cpp'
                     find='// Service plugins'
                     replace='// Service plugins\n    '$operation' = this->provides("'$serviceName'")->getOperation("'$operation'");'
@@ -294,13 +302,10 @@ then
 
     done
 
-    # Clean up the template
-    cd "$newAcPath"
-    sed -i 's|# ============ Needed for template creation ============||' start.ops
-
     # Do we want a gui output port?
     if [ "$guiOutDecision" = "n" ]
     then
+        cd "$newAcPath"
         file='start.ops'
         lines=( "gui_policy.*status" "stream.*gui_data_out" )
         grepRemoveLines "$file" "${lines[@]}"
