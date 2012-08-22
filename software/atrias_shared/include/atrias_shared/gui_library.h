@@ -18,6 +18,8 @@ extern "C" {
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui);
 void guiUpdate();
 void guiTakedown();
+void getParameters();
+void setParameters();
 
 #ifdef __cplusplus
 }
