@@ -10,7 +10,7 @@ namespace controller {
 
 ATCMotorTorque::ATCMotorTorque(std::string name):
     RTT::TaskContext(name),
-		guiDataIn("gui_data_in")
+    guiDataIn("gui_data_in")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCMotorTorque::runController, this, ClientThread)

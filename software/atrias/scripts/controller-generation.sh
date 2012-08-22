@@ -3,8 +3,8 @@
 # This code makes a few assumptions:
 # 1) top-level controllers are prefixed with atc_
 # 2) sub-level controllers are prefixed with asc_
-# 3) current sub-level controllers are located in atrias_controllers
-# 4) there is only one component in a subcontroller package
+# 3) sub-level controllers are located in atrias_controllers
+# 4) there is only one orocos component per subcontroller package
 
 function help
 {
@@ -189,12 +189,17 @@ then
             # Get a unique name
             cd ${cwd}/${lowerScoredName}
             uniqueNumber=0
+            unique=${uniqueNameSuffix}${uniqueNumber}
             uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
+            uniqueController=${uniqueNameSuffix}${uniqueNumber}Controller
             while [ "$(grep "$uniqueName" start.ops)" != "" ]
             do
                 (( uniqueNumber += 1 ))
+                unique=${uniqueNameSuffix}${uniqueNumber}
                 uniqueName=${uniqueNameSuffix}${uniqueNumber}Name
+                uniqueController=${uniqueNameSuffix}${uniqueNumber}Controller
             done
+
             # Add the component to the start script
             mv start.ops start.ops.old
             if [ "$uniqueNumber" -eq "0" ]
@@ -210,8 +215,31 @@ then
             mv start.ops start.ops.old
             cat start.ops.old | sed -n '1!N; s|# Pass the names of the subcontrollers to the controller|# Pass the names of the subcontrollers to the controller\ncontroller.'$uniqueName' = '$uniqueName'|; p' > start.ops
             rm start.ops.old
+
             # Add the component to the .cpp file
+            cd src
+            mv controller_component.cpp controller_component.cpp.old
+            cat controller_component.cpp.old | sed -n '1!N; s|// Add properties|// Add properties\n    this->addProperty("'$uniqueName'", '$uniqueName')\n        .doc("Subcontroller name.");|; p' > controller_component.cpp
+            rm controller_component.cpp.old
+########################################################################################################
+            cd ${atriasControllers}/${name}
+            services=( $(grep 'this->provides(' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+            for service in ${services[@]}
+            do
+                operations=( $(grep 'addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+                for operation in ${operations[@]}
+                do
+                    mv controller_component.cpp controller_component.cpp.old
+                    cat controller_component.cpp.old | sed -n '1!N; s|// Connect to the subcontrollers|// Connect to the subcontrollers\n    '$unique' = this->getPeer('$uniqueName');\n    if ('$unique')\n        '$uniqueController' = '$unique'->provides("'$service'")->getOperation("'$operation'");|; p' > controller_component.cpp
+                    rm controller_component.cpp.old
+                done
+            done
+            # Add references to attributes
+            # ...
+########################################################################################################
+
             # Add the component to the .h file
+
         elif [ "$service" != "" ]
         then
             # Find the service files

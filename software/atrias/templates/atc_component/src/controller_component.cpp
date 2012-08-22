@@ -17,6 +17,9 @@ ATCTemplate::ATCTemplate(std::string name):
         ->addOperation("runController", &ATCTemplate::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
+    // Add properties
+
+    // Add ports
     addEventPort(guiDataIn);
     addPort(guiDataOut);
 
