@@ -24,17 +24,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         p_hscale->set_range(0., 50000.);
         d_hscale->set_range(0., 5000.);
 
-        // Set parameters in the atrias_gui namespace.
-        nh.param("/atrias_gui/a_position",            a_position_param, 0.);
-        nh.param("/atrias_gui/b_position",            b_position_param, 0.);
-        nh.param("/atrias_gui/motor_position_p_gain", p_gain_param,     0.);
-        nh.param("/atrias_gui/motor_position_d_gain", d_gain_param,     0.);
-
-        // Set values.
-        position_A_hscale->set_value(a_position_param);
-        position_B_hscale->set_value(b_position_param);
-        p_hscale->set_value(p_gain_param);
-        d_hscale->set_value(d_gain_param);
+        if (nh.hasParam("/atrias_gui")) {
+            getParameters();
+        }
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
@@ -50,11 +42,35 @@ void controllerCallback(const atc_motor_position::controller_status &status) {
     controllerDataIn = status;
 }
 
+//! \brief Get parameters from the server and configure GUI accordingly.
+void getParameters() {
+    // Get parameters in the atrias_gui namespace.
+    nh.getParam("/atrias_gui/a_position", a_position_param);
+    nh.getParam("/atrias_gui/b_position", b_position_param);
+    nh.getParam("/atrias_gui/motor_position_p_gain", p_gain_param);
+    nh.getParam("/atrias_gui/motor_position_d_gain", d_gain_param);
+
+    // Configure the GUI.
+    position_A_hscale->set_value(a_position_param);
+    position_B_hscale->set_value(b_position_param);
+    p_hscale->set_value(p_gain_param);
+    d_hscale->set_value(d_gain_param);
+}
+
+//! \brief Set parameters on server according to current GUI settings.
+void setParameters() {
+    nh.setParam("/atrias_gui/a_position", a_position_param);
+    nh.setParam("/atrias_gui/b_position", b_position_param);
+    nh.setParam("/atrias_gui/motor_position_p_gain", p_gain_param);
+    nh.setParam("/atrias_gui/motor_position_d_gain", d_gain_param);
+}
+
 void guiUpdate() {
-    controllerDataOut.des_motor_ang_A = position_A_hscale->get_value();
-    controllerDataOut.des_motor_ang_B = position_B_hscale->get_value();
-    controllerDataOut.p_gain = p_hscale->get_value();
-    controllerDataOut.d_gain = d_hscale->get_value();
+    controllerDataOut.des_motor_ang_A = a_position_param = position_A_hscale->get_value();
+    controllerDataOut.des_motor_ang_B = b_position_param = position_B_hscale->get_value();
+    controllerDataOut.p_gain          = p_gain_param     = p_hscale->get_value();
+    controllerDataOut.d_gain          = d_gain_param     = d_hscale->get_value();
+
     pub.publish(controllerDataOut);
 }
 
