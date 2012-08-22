@@ -258,7 +258,9 @@ void load_parameters() {
             	exit(127);   // Exit code 127 if command not found.
             }
 
-            // Then, get parameters and update GUI.
+            // Once parameters are loaded, get them and update GUI.
+            // TODO: This could hang if the exec() call above fails. I need another check in the while().
+            while (!ros::param::has("/atrias_gui")) {}
             controllerGetParameters();
             ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
         }
@@ -441,7 +443,6 @@ void unload_controller(std::string name) {
 				break;
 			}
 		}
-        //currentMD = 0;   // TODO: fix this. -- Soo-Hyun
 	}
 }
 
