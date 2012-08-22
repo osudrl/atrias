@@ -60,7 +60,8 @@ Gtk::Button *restart_button,
             *enable_button,
             *disable_button,
             *estop_button,
-            *save_parameters_button;
+            *save_parameters_button,
+            *load_parameters_button;
 
 Gtk::EventBox *estop_eventbox;
 
@@ -100,6 +101,8 @@ uint8_t currentControllerID;
 bool (*controllerInit)(Glib::RefPtr<Gtk::Builder> guiPtr);
 void (*controllerUpdate)();
 void (*controllerTakedown)();
+void (*controllerGetParameters)();
+void (*controllerSetParameters)();
 
 bool controller_loaded;
 bool robotStateInitialized;
@@ -118,6 +121,7 @@ void changeEstopButtonColor(Gdk::Color newColor);
 void estop_button_clicked();
 void log_chkbox_toggled();
 void save_parameters();
+void load_parameters();
 
 void restart_robot();
 void enable_motors();

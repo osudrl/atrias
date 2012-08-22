@@ -80,6 +80,7 @@ int main (int argc, char **argv) {
     guiPtr->get_widget("disable_button", disable_button);
     guiPtr->get_widget("estop_button", estop_button);
     guiPtr->get_widget("save_parameters_button", save_parameters_button);
+    guiPtr->get_widget("load_parameters_button", load_parameters_button);
 
     estopStateColor.set_rgb(0xffff, 0x0000, 0x0000);
     disableStateColor.set_rgb(0x0000, 0xc8c8, 0x0000);
@@ -131,6 +132,7 @@ int main (int argc, char **argv) {
     disable_button->signal_clicked().connect(sigc::ptr_fun((void(*)())disable_motors));
     estop_button->signal_clicked().connect(sigc::ptr_fun((void(*)())estop_button_clicked));
     save_parameters_button->signal_clicked().connect(sigc::ptr_fun((void(*)())save_parameters));
+    load_parameters_button->signal_clicked().connect(sigc::ptr_fun((void(*)())load_parameters));
     controller_notebook->signal_switch_page().connect(sigc::ptr_fun((void(*)(GtkNotebookPage*, guint))switch_controllers));
     sigc::connection conn = Glib::signal_timeout().connect(sigc::ptr_fun(callSpinOnce), 20); // 100 is the timeout in milliseconds
 
@@ -224,15 +226,42 @@ void log_chkbox_toggled() {
 //! @brief Save GUI parameters to local (GUI machine) controller directories.
 void save_parameters() {
     if (controller_loaded) {
-        int rosparamPID = fork();
-        if (rosparamPID == 0) {   // Child process
-            execlp("rosparam", "rosparam", "dump", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
-            exit(127);   // Exit code 127 if command not found.
+        if (controllerSetParameters) {
+            // First, set parameters on server.
+            controllerSetParameters();
+
+            // Then, dump to file.
+            int rosparamPID = fork();
+            if (rosparamPID == 0) {   // Child process
+                execlp("rosparam", "rosparam", "dump", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
+                exit(127);   // Exit code 127 if command not found.
+            }
+            ROS_INFO("GUI: Saved GUI settings in %s", metadata[controllerName].guiConfigPath.c_str());
         }
-        ROS_INFO("GUI: Saved GUI settings in %s", metadata[controllerName].guiConfigPath.c_str());
+        else {
+            ROS_WARN("GUI: Could not set parameters.");
+        }
     }
     else {
         ROS_INFO("GUI: Not saving anything because there is no controller loaded.");
+    }
+}
+
+//! @brief Load GUI parameters from local (GUI machine) controller directories.
+void load_parameters() {
+    if (controller_loaded) {
+        if (controllerGetParameters) {
+            // First, load parameters from file onto server.
+            int rosparamPID = fork();
+            if (rosparamPID == 0) {   // Child process
+            	execlp("rosparam", "rosparam", "load", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
+            	exit(127);   // Exit code 127 if command not found.
+            }
+
+            // Then, get parameters and update GUI.
+            controllerGetParameters();
+            ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
+        }
     }
 }
 
@@ -305,17 +334,11 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
 
         controllerUpdate = (void(*)())dlsym(handle, "guiUpdate");
     	controllerTakedown = (void(*)())dlsym(handle, "guiTakedown");
+        controllerGetParameters = (void(*)()) dlsym(handle, "getParameters");
+        controllerSetParameters = (void(*)()) dlsym(handle, "setParameters");
 
     	if (controllerTakedown && controllerUpdate) {
 		controller_loaded = true;
-
-		// Load parameters.
-		int rosparamPID = fork();
-		if (rosparamPID == 0) {   // Child process
-			execlp("rosparam", "rosparam", "load", metadata[controllerName].guiConfigPath.c_str(), "/atrias_gui", NULL);
-			exit(127);   // Exit code 127 if command not found.
-		}
-		ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
     	}
     	else {
     		show_error_dialog("Controller failed to load:\nCould not load library functions");
