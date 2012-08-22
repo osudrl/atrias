@@ -42,5 +42,7 @@ stream("controller.gui_data_in", gui_policy)
 
 # Configure components and subcomponents
 controller.configure()
+# Set the affinity to real-time
+controller.setCpuAffinity(10)
 # Start components and subcomponents
 controller.start()

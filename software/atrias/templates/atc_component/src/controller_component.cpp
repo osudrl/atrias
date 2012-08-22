@@ -30,7 +30,6 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
     controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
-
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);

@@ -7,7 +7,7 @@ setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 connectPeers("atrias_rt", "controller")
 
 # Set up subcontrollers.
-import("asc_pd");
+import("asc_pd")
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd0Name, "ASCPD")
