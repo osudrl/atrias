@@ -48,6 +48,8 @@ bool ATCTemplate::configureHook() {
 
     // Service components
 
+    // Get references to subcontroller component properties
+
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }

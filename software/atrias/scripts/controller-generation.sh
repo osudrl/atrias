@@ -228,16 +228,25 @@ then
             replace='# Pass the names of the subcontrollers to the controller\ncontroller.'${unique}Name' = '${unique}Name''
             sedMultiLine "$file" "$find" "$replace"
 
-            # Add the component to the .cpp file
+            # Add the component to the stop script
+            file='stop.ops'
+            find='controller.stop()'
+            replace='controller.stop()\nunloadComponent(controller.'${unique}Name')'
+            sedMultiLine "$file" "$find" "$replace"
+
+            # Add the component to the .cpp and .h file
             file='src/controller_component.cpp'
             find='// Add properties'
             replace='// Add properties\n    this->addProperty("'${unique}Name'", '${unique}Name')\n        .doc("Subcontroller name.");'
             sedMultiLine "$file" "$find" "$replace"
+
             cd "$ascToLinkPath"
             services=( $(grep 'this->provides(' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
             for service in ${services[@]}
             do
-                operations=( $(grep 'addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+                cd "$ascToLinkPath"
+                operations=( $(grep '\->addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+
                 cd "$newAcPath"
                 for operation in ${operations[@]}
                 do
@@ -247,11 +256,22 @@ then
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
-            # Add references to attributes
-            # ...
-#######################################################################################
+            # Add references to properties
+            cd "$ascToLinkPath"
+            properties=( $(grep 'this->addProperty("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
+            for property in ${properties[@]}
+            do
+                # Get the property type
+                cd "$ascToLinkPath"
+                propType=$()
 
-            # Add the component to the .h file
+                find='// Get references to subcontroller component properties'
+                replace='// Get references to subcontroller component properties\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
+                sedMultiLine "$file" "$find" "$replace"
+            done
+
+####################################################################################### 
+#(working on the .h addition) need the property type, taskcontext pointer, subcontroller names, and subcontroller operations
 
         # If it's a service
         elif [ "$ascIsAService" != "" ]

@@ -1,3 +1,6 @@
+# Clean up the controller namespace
+atrias_cm.resetControllerNames()
+
 # Set up the component
 import("atc_template")
 loadComponent("controller", "ATCTemplate")
