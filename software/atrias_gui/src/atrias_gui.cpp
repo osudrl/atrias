@@ -301,10 +301,12 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
             controllerTakedown();
 
             // Delete currently loaded GUI parameters.
-            int rosparamPID = fork();
-            if (rosparamPID == 0) {   // Child process
-                execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
-                exit(127);   // Exit code 127 if command not found.
+            if (ros::param::has("/atrias_gui")) {
+                int rosparamPID = fork();
+                if (rosparamPID == 0) {   // Child process
+                    execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+                    exit(127);   // Exit code 127 if command not found.
+                }
             }
         }
         controller_loaded = false;
