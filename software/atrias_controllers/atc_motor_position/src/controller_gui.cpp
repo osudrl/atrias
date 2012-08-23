@@ -24,10 +24,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         p_hscale->set_range(0., 50000.);
         d_hscale->set_range(0., 5000.);
 
-        if (nh.hasParam("/atrias_gui")) {
-            getParameters();
-        }
-
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
         pub = nh.advertise<atc_motor_position::controller_input>("atc_motor_position_input", 0);
