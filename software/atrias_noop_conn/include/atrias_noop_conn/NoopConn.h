@@ -30,9 +30,18 @@ class NoopConn : public RTT::TaskContext {
 	RTT::OperationCaller<void(atrias_msgs::robot_state)>
 		newStateCallback;
 	
+	/** @brief Lets us report events, such as a missed deadline.
+	  */
+	RTT::OperationCaller<void(controllerManager::RtOpsEvent event)>
+		sendEvent;
+	
 	/** @brief Holds the robot state to be passed to RT Ops.
 	  */
 	atrias_msgs::robot_state robotState;
+	
+	/** @brief Used to detect missed deadlines.
+	  */
+	bool                     waitingForResponse;
 	
 	public:
 		/** @brief Initializes the Noop Connector
