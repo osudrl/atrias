@@ -264,7 +264,7 @@ void load_parameters() {
             // fails.  I need another check in the while().
             while (!ros::param::has("/atrias_gui")) {}
             controllerGetParameters();
-            ROS_INFO("GUI: Loaded GUI settnigs from %s.", metadata[controllerName].guiConfigPath.c_str());
+            ROS_INFO("GUI: Loaded GUI settings from %s.", metadata[controllerName].guiConfigPath.c_str());
         }
     }
 }
