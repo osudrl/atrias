@@ -6,6 +6,8 @@
 # 3) sub-level controllers are located in atrias_controllers
 # 4) there is only one orocos component per subcontroller package
 
+# TODO: replace large string match with \?
+
 function help
 {
     echo
@@ -19,7 +21,7 @@ function sedMultiLine
     find="$2"
     replace="$3"
     mv "$file" "${file}.old"
-    sed -n "1!N; s|$find|$replace|g; p" "${file}.old" > "$file"
+    sed -n '1h;1!H;${;g;s|'"$find"'|'"$replace"'|g;p;}' "${file}.old" > "$file"
     rm "${file}.old"
 }
 
@@ -194,6 +196,7 @@ then
         # If it's a component
         if [ "$ascIsAComponent" != "" ]
         then
+            foundAComponent=1
             # Get the component name
             componentName=$(grep "ORO_CREATE_COMPONENT" src/controller_component.cpp | sed 's|ORO_CREATE_COMPONENT(||; s|).*||')
             # Get the unique name suffix
@@ -248,6 +251,7 @@ then
             find='// Subcontroller components'
             replace='// Subcontroller components\n    TaskContext *'$unique';'
             sedMultiLine "$file" "$find" "$replace"
+            echo "sedMultiLine \"$file\" \"$find\" \"$replace\""
 
             # Operations
             cd "$ascToLinkPath"
@@ -300,6 +304,7 @@ then
         # If it's a service
         elif [ "$ascIsAService" != "" ]
         then
+            foundAService=1
             # Find the service files
             cd "$ascToLinkPath"
             serviceFiles=( $(ls src) )
@@ -364,6 +369,21 @@ then
         grepRemoveLines "$file" "${lines[@]}"
 
         rm msg/controller_log_data.msg
+    fi
+
+    # Clean up the flags that are unused
+    if [[ -z "$foundAService" ]] # No service plugin
+    then
+        cd "$newAcPath"
+        file='src/controller_component.cpp'
+        lines=( "// Service plugins" "// Service components" )
+        grepRemoveLines "$file" "${lines[@]}"
+        file='start.ops'
+        lines=( "# Set up service plugins" )
+        grepRemoveLines "$file" "${lines[@]}"
+    elif [[ -z "$foundAComponent" ]] # No component
+    then
+        cd "$newAcPath"
     fi
 
 

@@ -33,6 +33,9 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
     controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
+    // Command a run state
+    controllerOutput.command = medulla_state_run;
+
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
@@ -45,8 +48,6 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
 bool ATCTemplate::configureHook() {
     // Connect to the subcontrollers
     // Service plugins
-
-    // Service components
 
     // Get references to subcontroller component properties
 
