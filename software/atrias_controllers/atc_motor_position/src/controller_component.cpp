@@ -56,6 +56,8 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     currentVel = rs.lLeg.halfB.motorVelocity;
     controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
+    controllerOutput.command = medulla_state_run;
+
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);

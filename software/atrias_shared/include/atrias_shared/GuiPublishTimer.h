@@ -25,6 +25,7 @@ private:
 public:
     GuiPublishTimer(uint32_t msecPerCall) {
         timeOut = ((RTT::os::TimeService::nsecs)(msecPerCall - 1)) * MILLISECOND_IN_NANOSECONDS;
+        lastTime = 0;
     }
     virtual ~GuiPublishTimer() { }
 

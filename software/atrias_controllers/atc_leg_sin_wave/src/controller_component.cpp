@@ -87,6 +87,8 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     currentVel = rs.lLeg.halfB.motorVelocity;
     controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
+    controllerOutput.command = medulla_state_run;
+
     return controllerOutput;
 }
 

@@ -60,105 +60,61 @@ bool ControllerManager::startHook() {
 void ControllerManager::updateHook() {
     // Have we been contacted by RT Ops?
     if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-        eManager->eventCallback((RtOpsEvent)rtOpsOutput);
+        std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
+        eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
     }
+
+    //Any errors are ancient history
+    lastError = ControllerManagerError::NO_ERROR;
 
     // Have we received a command from the GUI?
     if (NewData == guiDataIn.read(guiOutput)) {
-        if (!commandPending) {
-            // Spawn rosbag logging node when requested.
-            if (guiOutput.enableLogging == true && rosbagPID == 0) {
-                // Spawn a child to run the program.
-                rosbagPID = fork();
-                if (rosbagPID == 0) { // Child process
-                    int corePID = fork();
-                    int execResult;
-                    if (corePID == 0) {
-                        execResult = execlp("rosrun", "rosrun", "atrias", "rosbag_move_cores.sh", NULL);
-                        if (execResult < 0) {
-                            log(Warning) << "[ControllerManager] Failed to run rosbag_move_cores.sh script!" << endlog();
-                        }
-                        else {
-                            log(Info) << "[ControllerManager] Moved rosbag processes to non-realtime core." << endlog();
-                        }
-                        exit(127);
+        // Spawn rosbag logging node when requested.
+        if (guiOutput.enableLogging == true && rosbagPID == 0) {
+            // Spawn a child to run the program.
+            rosbagPID = fork();
+            if (rosbagPID == 0) { // Child process
+                int corePID = fork();
+                int execResult;
+                if (corePID == 0) {
+                    execResult = execlp("rosrun", "rosrun", "atrias", "rosbag_move_cores.sh", NULL);
+                    if (execResult < 0) {
+                        log(Warning) << "[ControllerManager] Failed to run rosbag_move_cores.sh script!" << endlog();
                     }
                     else {
-                        execResult = execlp("roslaunch", "roslaunch", "atrias", "rosbag.launch", NULL);
-                        if (execResult < 0) {
-                            log(Warning) << "[ControllerManager] Failed to exec rosbag logger!" << endlog();
-                        }
-                        else {
-                            log(Info) << "[ControllerManager] Launched rosbag." << endlog();
-                        }
-                        exit(127);
+                        log(Info) << "[ControllerManager] Moved rosbag processes to non-realtime core." << endlog();
                     }
+                    exit(127);
                 }
-                //else {
-                //    printf("Parent here! My child is %d.\n", (int) rosbagPID);
-                //}
-            }
-            // Kill rosbag node when requested.
-            else if (guiOutput.enableLogging == false && rosbagPID != 0) {
-                kill(rosbagPID, SIGINT);
-                rosbagPID = 0;
-            }
-
-            //Any errors are ancient history
-            lastError = ControllerManagerError::NO_ERROR;
-
-            switch (state) {
-                //We're ready to load a controller
-                case ControllerManagerState::NO_CONTROLLER_LOADED: {
-                    //We're only going to try if the GUI is set to stopped
-                    if (guiOutput.command == (UserCommand_t) UserCommand::STOP) {
-                        loadController(guiOutput.requestedController);
+                else {
+                    execResult = execlp("roslaunch", "roslaunch", "atrias", "rosbag.launch", NULL);
+                    if (execResult < 0) {
+                        log(Warning) << "[ControllerManager] Failed to exec rosbag logger!" << endlog();
                     }
-                    break;
-                }
-                //We've got a controller loaded
-                case ControllerManagerState::CONTROLLER_STOPPED: {
-                    //Does the controller say that we should start it?
-                    if (guiOutput.command == (UserCommand_t) UserCommand::RUN) {
-                        state = ControllerManagerState::CONTROLLER_RUNNING;
-                        //Tell RT Ops to start the controller
-                        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::ENABLE);
+                    else {
+                        log(Info) << "[ControllerManager] Launched rosbag." << endlog();
                     }
-                    //Should we restart?
-                    else if (guiOutput.command == (UserCommand_t) UserCommand::UNLOAD_CONTROLLER) {
-                        unloadController();
-                    }
-                    break;
-                }
-                case ControllerManagerState::CONTROLLER_RUNNING: {
-                    //Should we stop the controller?
-                    if (guiOutput.command == (UserCommand_t) UserCommand::STOP) {
-                        state = ControllerManagerState::CONTROLLER_STOPPED;
-                        //Tell RT Ops to start the controller
-                        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
-                    }
-                    //Should we restart?
-                    else if (guiOutput.command == (UserCommand_t) UserCommand::UNLOAD_CONTROLLER) {
-                        unloadController();
-                    }
-                    else if (guiOutput.command == (UserCommand_t) UserCommand::E_STOP) {
-                        throwEstop();
-                    }
-                    break;
-                }
-                case ControllerManagerState::CONTROLLER_ESTOPPED: {
-                    //We'll only respond to a restart command
-                    //Once we're back to stopped state the GUI should send a new
-                    //command to load the controller
-                    if (guiOutput.command == (UserCommand_t) UserCommand::UNLOAD_CONTROLLER) {
-                        //Unload the controller (if present) and reset rt ops
-                        unloadController();
-                    }
-                    break;
+                    exit(127);
                 }
             }
+            //else {
+            //    printf("Parent here! My child is %d.\n", (int) rosbagPID);
+            //}
         }
+        // Kill rosbag node when requested.
+        else if (guiOutput.enableLogging == false && rosbagPID != 0) {
+            kill(rosbagPID, SIGINT);
+            rosbagPID = 0;
+        }
+
+        commandBuffer.push_back((UserCommand)guiOutput.command);
     }
+
+    if (!commandPending && !commandBuffer.empty()) {
+        handleUserCommand(commandBuffer.front());
+        commandBuffer.pop_front();
+    }
+
     //Update the GUI with all of our new information
     updateGui();
     //std::cout << "AtriasControllerManager executes updateHook !" << std::endl;
@@ -176,6 +132,59 @@ void ControllerManager::updateGui() {
     guiInput.status = (ControllerManagerState_t) state;
     guiInput.errorType = (ControllerManagerError_t) lastError;
     guiDataOut.write(guiInput);
+}
+
+void ControllerManager::handleUserCommand(UserCommand command) {
+    switch (state) {
+        //We're ready to load a controller
+        case ControllerManagerState::NO_CONTROLLER_LOADED: {
+            //We're only going to try if the GUI is set to stopped
+            if (command == UserCommand::STOP) {
+                loadController(guiOutput.requestedController);
+            }
+            break;
+        }
+        //We've got a controller loaded
+        case ControllerManagerState::CONTROLLER_STOPPED: {
+            //Does the controller say that we should start it?
+            if (command == UserCommand::RUN) {
+                state = ControllerManagerState::CONTROLLER_RUNNING;
+                //Tell RT Ops to start the controller
+                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::ENABLE);
+            }
+            //Should we restart?
+            else if (command == UserCommand::UNLOAD_CONTROLLER) {
+                unloadController();
+            }
+            break;
+        }
+        case ControllerManagerState::CONTROLLER_RUNNING: {
+            //Should we stop the controller?
+            if (command == UserCommand::STOP) {
+                state = ControllerManagerState::CONTROLLER_STOPPED;
+                //Tell RT Ops to start the controller
+                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
+            }
+            //Should we restart?
+            else if (command == UserCommand::UNLOAD_CONTROLLER) {
+                unloadController();
+            }
+            else if (command == UserCommand::E_STOP) {
+                throwEstop();
+            }
+            break;
+        }
+        case ControllerManagerState::CONTROLLER_ESTOPPED: {
+            //We'll only respond to a restart command
+            //Once we're back to stopped state the GUI should send a new
+            //command to load the controller
+            if (command == UserCommand::UNLOAD_CONTROLLER) {
+                //Unload the controller (if present) and reset rt ops
+                unloadController();
+            }
+            break;
+        }
+    }
 }
 
 void ControllerManager::throwEstop(bool alertRtOps) {
@@ -251,8 +260,16 @@ void ControllerManager::setState(ControllerManagerState newState, bool isAck) {
         }
     }
     state = newState;
-    if (isAck)
+    updateGui();
+
+    if (isAck) {
         commandPending = false;
+
+        if (!commandBuffer.empty()) {
+            handleUserCommand(commandBuffer.front());
+            commandBuffer.pop_front();
+        }
+    }
 }
 
 ControllerManagerState ControllerManager::getState() {

@@ -33,7 +33,7 @@
 #include <atrias_shared/globals.h>
 #include <atrias_msgs/gui_output.h>
 #include <atrias_msgs/gui_input.h>
-#include <atrias_msgs/rt_ops_status.h>
+#include <atrias_msgs/rt_ops_event.h>
 
 #define RT_OPS_WAIT_TIMEOUT_SECS 2.0
 #define CONTROLLER_LEVEL_DELIMITER "__"
@@ -50,12 +50,12 @@ class ControllerManager: public TaskContext {
 private:
     InputPort<gui_output> guiDataIn; //The data coming in from the GUI
 
-    InputPort<RtOpsEvent_t> rtOpsDataIn; //The data coming in from RT Ops
+    InputPort<rt_ops_event> rtOpsDataIn; //The data coming in from RT Ops
     OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
 
     gui_output guiOutput;
     gui_input guiInput;
-    RtOpsEvent_t rtOpsOutput;
+    rt_ops_event rtOpsOutput;
 
     EventManager *eManager;
 
@@ -66,6 +66,8 @@ private:
 
     pid_t rosbagPID;   // PID of the child process executing 'roslaunch atrias rosbag.launch'.
     bool controllerLoaded;
+
+    list<UserCommand> commandBuffer;
 
     std::map<string, uint16_t> controllerChildCounts;
 
@@ -78,6 +80,7 @@ private:
     void unloadController();
     bool runController(string path);
     bool loadStateMachine(string path);
+    void handleUserCommand(UserCommand command);
     void updateGui(); //Send updated information to the GUI
     bool eStopFlagged(boost::array<uint8_t, NUM_MEDULLAS_ON_ROBOT> statuses);
 

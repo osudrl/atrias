@@ -1,6 +1,6 @@
 var ConnPolicy policy
 
-connect("atrias_rt.controller_manager_data_out", "atrias_cm.rt_ops_data_in", policy) 
+connect("atrias_rt.rt_ops_event_out", "atrias_cm.rt_ops_data_in", policy) 
 connect("atrias_cm.rt_ops_data_out", "atrias_rt.controller_manager_data_in", policy) 
 
 var ConnPolicy ros_policy
@@ -9,7 +9,7 @@ ros_policy.transport = 3
 # This should not be buffered because the GUI is only interested
 # in the latest data and sending extra causes lag
 ros_policy.name_id = "/gui_robot_state_in"
-stream("atrias_rt.rt_cycle_gui_out", ros_policy)
+stream("atrias_rt.rt_ops_gui_out", ros_policy)
 
 ros_policy.type = BUFFER
 ros_policy.size = 5
@@ -28,10 +28,10 @@ stream("atrias_cm.gui_data_in", ros_policy)
 
 # For logging
 ros_policy.name_id = "/log_robot_state"
-stream("atrias_rt.rt_cycle_log_out", ros_policy)
+stream("atrias_rt.rt_ops_log_out", ros_policy)
 
-#ros_policy.name_id = "/log_rt_ops_out_cm_in"
-#stream("atrias_rt.controller_manager_data_out", ros_policy)
+ros_policy.name_id = "/log_rt_ops_out_cm_in"
+stream("atrias_rt.rt_ops_event_out", ros_policy)
 
 # This one is of type uint8_t, not sure how
 # to make it work with RTT-ROS integration

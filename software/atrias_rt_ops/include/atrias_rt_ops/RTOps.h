@@ -24,7 +24,7 @@ class RTOps;
 #include <std_msgs/Header.h>
 
 #include <atrias_msgs/robot_state.h>
-#include <atrias_msgs/rt_ops_status.h>
+#include <atrias_msgs/rt_ops_event.h>
 #include <atrias_shared/globals.h>
 
 #include "atrias_rt_ops/TimestampHandler.h"

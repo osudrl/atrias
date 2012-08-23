@@ -17,6 +17,7 @@ void ControllerLoop::setControllerLoaded() {
 		return;
 	}
 	rtOps->connectToController();
+	controllerLoaded = true;
 }
 
 void ControllerLoop::setControllerUnloaded() {

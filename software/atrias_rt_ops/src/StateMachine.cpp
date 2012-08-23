@@ -7,6 +7,7 @@ namespace rtOps {
 StateMachine::StateMachine(RTOps* rt_ops) {
 	rtOps        = rt_ops;
 	resetCounter = 0;
+	setState(controllerManager::RtOpsCommand::NO_CONTROLLER_LOADED);
 }
 
 void StateMachine::eStop(controllerManager::RtOpsEvent event) {
