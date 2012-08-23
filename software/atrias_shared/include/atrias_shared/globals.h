@@ -79,7 +79,8 @@ typedef int8_t RtOpsEvent_t;
 /** @brief Represents an RT Ops event.
   */
 enum class RtOpsEvent: RtOpsEvent_t {
-    INVALID_CM_COMMAND = 0,   // An invalid command was received from the Controller Manager
+    NO_EVENT = 0,             // Only used internally in the controller manager, should never be sent
+    INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
     CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.

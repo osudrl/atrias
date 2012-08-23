@@ -3,7 +3,7 @@
  *
  * This is the Orocos component for the Atrias Controller Manager. It handles
  * the loading, unloading, starting, and stopping of controllers. It also acts
- * as the intermediary between the GUI and the Realtime Operations control.
+ * as the intermediary between the GUI and RT Ops.
  *
  *  Created on: Jul 26, 2012
  *      Author: Michael Anderson
@@ -35,12 +35,18 @@ ControllerManager::ControllerManager(std::string const& name) :
     lastError = ControllerManagerError::NO_ERROR;
     currentControllerName = "";
     controllerLoaded = false;
-    waitingForEvent = false;
+    commandPending = false;
+
+    eManager = new EventManager(this);
+    eManager->start();
+
     rosbagPID = 0;
     //std::cout << "AtriasControllerManager constructed !" << std::endl;
 }
 
 bool ControllerManager::configureHook() {
+    // We need to get the Deployer's instance of the ScriptingService because
+    // only it has access to the deployer's operations (like loadComponent)
     scriptingProvider = boost::dynamic_pointer_cast<scripting::ScriptingService>(getPeer("Deployer")->provides()->getService("scripting"));
     std::cout << "AtriasControllerManager configured !" << std::endl;
     return true;
@@ -54,13 +60,12 @@ bool ControllerManager::startHook() {
 void ControllerManager::updateHook() {
     // Have we been contacted by RT Ops?
     if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-        // An event has occurred
-        //switch
+        eManager->eventCallback((RtOpsEvent)rtOpsOutput);
     }
 
     // Have we received a command from the GUI?
     if (NewData == guiDataIn.read(guiOutput)) {
-        if (!waitingForEvent) {
+        if (!commandPending) {
             // Spawn rosbag logging node when requested.
             if (guiOutput.enableLogging == true && rosbagPID == 0) {
                 // Spawn a child to run the program.
@@ -147,10 +152,7 @@ void ControllerManager::updateHook() {
                     //command to load the controller
                     if (guiOutput.command == (UserCommand_t) UserCommand::UNLOAD_CONTROLLER) {
                         //Unload the controller (if present) and reset rt ops
-                        if (controllerLoaded)
-                            unloadController();
-                        else
-                            resetRtOps();
+                        unloadController();
                     }
                     break;
                 }
@@ -176,10 +178,12 @@ void ControllerManager::updateGui() {
     guiDataOut.write(guiInput);
 }
 
-void ControllerManager::throwEstop() {
+void ControllerManager::throwEstop(bool alertRtOps) {
     state = ControllerManagerState::CONTROLLER_ESTOPPED;
-    rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
-    waitForRtOpsState(RtOpsCommand::E_STOP);
+    if (alertRtOps) {
+        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
+        eManager->setEventWait(RtOpsEvent::ACK_E_STOP);
+    }
 }
 
 bool ControllerManager::loadController(string controllerName) {
@@ -191,18 +195,9 @@ bool ControllerManager::loadController(string controllerName) {
             if (scriptingProvider->runScript(metadata.startScriptPath)) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
                 rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
-                if (waitForRtOpsState(RtOpsCommand::DISABLE)) {
-                    state = ControllerManagerState::CONTROLLER_STOPPED;
-                    currentControllerName = controllerName;
-                    //Tell RT Ops that the controller is now loaded
-                    rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
-                    controllerLoaded = true;
-                    return true;
-                }
-                else {
-                    log(Error) << "[ControllerManager] RT Ops did not respond! Unloading Controller!" << endlog();
-                    unloadController();
-                }
+                eManager->setEventWait(RtOpsEvent::ACK_DISABLE);
+                currentControllerName = controllerName;
+                return true;
             }
             //Something is wrong with the load script
             //loadStateMachine will have already set the error flag
@@ -225,35 +220,11 @@ bool ControllerManager::loadController(string controllerName) {
  * not just unloaded.
  */
 void ControllerManager::unloadController() {
-    //We have to make sure that RT Ops has turned off controller
-    //communication before we unload the controller
-    resetRtOps();
-
-    assert(scriptingProvider->runScript(metadata.stopScriptPath));
-    state = ControllerManagerState::NO_CONTROLLER_LOADED;
-    currentControllerName = "";
-    controllerLoaded = false;
-}
-
-void ControllerManager::resetRtOps() {
     rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
-
-    //Now we have to wait for the reply
-    //If it times out we're out of luck
-    assert(waitForRtOpsState(RtOpsCommand::NO_CONTROLLER_LOADED));
-    state = ControllerManagerState::NO_CONTROLLER_LOADED;
+    eManager->setEventWait(RtOpsEvent::ACK_RESET);
 }
 
-bool ControllerManager::eStopFlagged(boost::array<uint8_t, NUM_MEDULLAS_ON_ROBOT> statuses) {
-    for (size_t t = 0; t < statuses.size(); t++) {
-        if (statuses[t] == medulla_state_error) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool ControllerManager::waitForRtOpsState(RtOpsCommand rtoState) {
+/*bool ControllerManager::waitForRtOpsState(RtOpsCommand rtoState) {
     os::TimeService::ticks startTicks = os::TimeService::Instance()->getTicks();
     while (true) {
         if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
@@ -265,6 +236,27 @@ bool ControllerManager::waitForRtOpsState(RtOpsCommand rtoState) {
             return false;
     }
     return false;
+}*/
+
+void ControllerManager::setState(ControllerManagerState newState, bool isAck) {
+    if (newState == ControllerManagerState::CONTROLLER_STOPPED) {
+        //Tell RT Ops that the controller is now loaded
+        controllerLoaded = true;
+    }
+    else if (newState == ControllerManagerState::NO_CONTROLLER_LOADED) {
+        if (controllerLoaded) {
+            assert(scriptingProvider->runScript(metadata.stopScriptPath));
+            currentControllerName = "";
+            controllerLoaded = false;
+        }
+    }
+    state = newState;
+    if (isAck)
+        commandPending = false;
+}
+
+ControllerManagerState ControllerManager::getState() {
+    return state;
 }
 
 string ControllerManager::getUniqueName(string parentName, string childType) {

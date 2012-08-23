@@ -43,7 +43,7 @@ include_directories(../../robot_definitions/)
 # Creates a component library libOrocosProcessSpam-<target>.so
 # and installs in the directory lib/orocos/OrocosProcessSpam/
 #
-orocos_component(AtriasControllerManager src/ControllerManager-component.cpp) # ...you may add multiple source files
+orocos_component(AtriasControllerManager src/ControllerManager-component.cpp src/EventManager-activity.cpp) # ...you may add multiple source files
 #
 # You may add multiple orocos_component statements.
 

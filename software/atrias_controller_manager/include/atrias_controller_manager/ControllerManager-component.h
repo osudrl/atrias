@@ -27,6 +27,8 @@
 #include <robot_variant_defs.h>
 #include <robot_invariant_defs.h>
 
+#include <atrias_controller_manager/EventManager-activity.h>
+
 #include <atrias_shared/controller_metadata.h>
 #include <atrias_shared/globals.h>
 #include <atrias_msgs/gui_output.h>
@@ -42,10 +44,11 @@ using namespace atrias_msgs;
 
 namespace atrias {
 namespace controllerManager {
+class EventManager;
+
 class ControllerManager: public TaskContext {
 private:
     InputPort<gui_output> guiDataIn; //The data coming in from the GUI
-    OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
     InputPort<RtOpsEvent_t> rtOpsDataIn; //The data coming in from RT Ops
     OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
@@ -54,6 +57,8 @@ private:
     gui_input guiInput;
     RtOpsEvent_t rtOpsOutput;
 
+    EventManager *eManager;
+
     os::Mutex nameCacheMutex;
 
     ControllerManagerError lastError;
@@ -61,7 +66,6 @@ private:
 
     pid_t rosbagPID;   // PID of the child process executing 'roslaunch atrias rosbag.launch'.
     bool controllerLoaded;
-    bool waitingForEvent;
 
     std::map<string, uint16_t> controllerChildCounts;
 
@@ -75,10 +79,7 @@ private:
     bool runController(string path);
     bool loadStateMachine(string path);
     void updateGui(); //Send updated information to the GUI
-    void throwEstop();
-    void resetRtOps();
     bool eStopFlagged(boost::array<uint8_t, NUM_MEDULLAS_ON_ROBOT> statuses);
-    bool waitForRtOpsState(RtOpsCommand state);
 
     // These functions are provided as operations to sub-controller start
     // scripts to help them assign unique-names to their child controllers
@@ -86,12 +87,20 @@ private:
     void resetControllerNames();
 
 public:
+    OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
+
+    bool commandPending;
+
     ControllerManager(string const& name);
     bool configureHook();
     bool startHook();
     void updateHook();
     void stopHook();
     void cleanupHook();
+
+    void throwEstop(bool alertRtOps = true);
+    void setState(ControllerManagerState newState, bool isAck = false);
+    ControllerManagerState getState();
 };
 
 }
