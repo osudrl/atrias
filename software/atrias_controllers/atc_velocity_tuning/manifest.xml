@@ -1,0 +1,16 @@
+<package>
+  <description brief="atc_velocity_tuning">
+
+     atc_velocity_tuning
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_velocity_tuning</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+
+</package>
