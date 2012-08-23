@@ -41,7 +41,7 @@ private:
     InputPort<controller_input>      guiDataIn;
     OutputPort<controller_status>    guiDataOut;
 
-    // Service names
+    // Subcontroller names
 
     // Subcontroller components 
 

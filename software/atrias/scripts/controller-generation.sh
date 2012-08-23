@@ -6,8 +6,6 @@
 # 3) sub-level controllers are located in atrias_controllers
 # 4) there is only one orocos component per subcontroller package
 
-# TODO: replace large string match with \?
-
 function help
 {
     echo
@@ -75,8 +73,6 @@ while [ 1 ]; do
     1) 
         echo "What do you want to name it? (e.g. atc_example_name)"
         read newAtcName
-        echo "Give a description of this controller"
-        read description
         echo "Do you want this controller to have an output port to the gui? (y/n)"
         read guiOutDecision
         while [[ "$guiOutDecision" != "y" && "$guiOutDecision" != "n" ]]
@@ -89,15 +85,11 @@ while [ 1 ]; do
     2)
         echo "What do you want to name it? (e.g. asc_example_name)"
         read newAscPluginName
-        echo "Give a description of this controller"
-        read description
         break
         ;;
     3)
         echo "What do you want to name it? (e.g. asc_example_name)"
         read newAscComponentName
-        echo "Give a description of this controller"
-        read description
         break
         ;;
     *)
@@ -105,6 +97,16 @@ while [ 1 ]; do
         ;;
     esac
 done
+
+echo "Give a description of this controller"
+read description
+
+# Sanity check (Does this controller already exist in this directory?)
+if [ -d "${newAscPluginName}${newAscComponentName}${newAtcName}" ]
+then
+    echo "ERROR: This controller already exists.  Manually remove the existing one to continue."
+    exit 1
+fi
 
 # Determine what subcontrollers the user wants to link to
 clear
@@ -216,42 +218,41 @@ then
             if [ "$uniqueNumber" -eq "0" ]
             then
                 find='# Set up subcontrollers'
-                replace='# Set up subcontrollers\nimport("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")\n'
+                replace='&\nimport("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")\n'
             else
                 find='import("'$ascToLinkName'")'
-                replace='import("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")'
+                replace='&\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")'
             fi
             sedMultiLine "$file" "$find" "$replace"
 
             find='# Connect this controller with its subcontrollers'
-            replace='# Connect this controller with its subcontrollers\naddPeer("controller", '${unique}Name')'
+            replace='&\naddPeer("controller", '${unique}Name')'
             sedMultiLine "$file" "$find" "$replace"
 
             find='# Pass the names of the subcontrollers to the controller'
-            replace='# Pass the names of the subcontrollers to the controller\ncontroller.'${unique}Name' = '${unique}Name''
+            replace='&\ncontroller.'${unique}Name' = '${unique}Name''
             sedMultiLine "$file" "$find" "$replace"
 
             # Add the component to the stop script
             file='stop.ops'
             find='controller.stop()'
-            replace='controller.stop()\nunloadComponent(controller.'${unique}Name')'
+            replace='&\nunloadComponent(controller.'${unique}Name')'
             sedMultiLine "$file" "$find" "$replace"
 
             # Add the component to the .cpp and .h file
             file='src/controller_component.cpp'
             find='// Add properties'
-            replace='// Add properties\n    this->addProperty("'${unique}Name'", '${unique}Name')\n        .doc("Subcontroller name.");'
+            replace='&\n    this->addProperty("'${unique}Name'", '${unique}Name');'
             sedMultiLine "$file" "$find" "$replace"
 
             file="include/${newAcName}/controller_component.h"
-            find='// Service names'
-            replace='// Service names\n    std::string '${unique}Name';'
+            find='// Subcontroller names'
+            replace='&\n    std::string '${unique}Name';'
             sedMultiLine "$file" "$find" "$replace"
 
             find='// Subcontroller components'
-            replace='// Subcontroller components\n    TaskContext *'$unique';'
+            replace='&\n    TaskContext *'$unique';'
             sedMultiLine "$file" "$find" "$replace"
-            echo "sedMultiLine \"$file\" \"$find\" \"$replace\""
 
             # Operations
             cd "$ascToLinkPath"
@@ -271,12 +272,12 @@ then
                     cd "$newAcPath"
                     file="include/${newAcName}/controller_component.h"
                     find='// Subcontroller operations'
-                    replace='// Subcontroller operations\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
+                    replace='&\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
                     sedMultiLine "$file" "$find" "$replace"
 
                     file='src/controller_component.cpp'
                     find='// Connect to the subcontrollers'
-                    replace='// Connect to the subcontrollers\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
+                    replace='&\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
@@ -291,12 +292,12 @@ then
                 cd "$newAcPath"
                 file="include/${newAcName}/controller_component.h"
                 find='// Service properties'
-                replace='// Service properties\n    Property<'$propType'> '${property}${uniqueNumber}';'
+                replace='&\n    Property<'$propType'> '${property}${uniqueNumber}';'
                 sedMultiLine "$file" "$find" "$replace"
 
                 file='src/controller_component.cpp'
                 find='// Get references to subcontroller component properties'
-                replace='// Get references to subcontroller component properties\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
+                replace='&\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
                 sedMultiLine "$file" "$find" "$replace"
             done
 
@@ -318,7 +319,7 @@ then
                 cd "$newAcPath"
                 file='start.ops'
                 find='# Set up service plugins'
-                replace='# Set up service plugins\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n'
+                replace='&\nrequire("'$serviceName'")\nloadService("controller", "'$serviceName'")\n'
                 sedMultiLine "$file" "$find" "$replace"
 
                 # Find the operations for this file
@@ -336,13 +337,13 @@ then
                     cd "$newAcPath"
                     file='src/controller_component.cpp'
                     find='// Service plugins'
-                    replace='// Service plugins\n    '$operation' = this->provides("'$serviceName'")->getOperation("'$operation'");'
+                    replace='&\n    '$operation' = this->provides("'$serviceName'")->getOperation("'$operation'");'
                     sedMultiLine "$file" "$find" "$replace"
 
                     # Add the operation to the .h file
                     file="include/${newAcName}/controller_component.h"
                     find='// Subcontroller operations'
-                    replace='// Subcontroller operations\n    OperationCaller<'$returnVar'('"$args"')> '$operation';'
+                    replace='&\n    OperationCaller<'$returnVar'('"$args"')> '$operation';'
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
@@ -375,16 +376,42 @@ then
     if [[ -z "$foundAService" ]] # No service plugin
     then
         cd "$newAcPath"
-        file='src/controller_component.cpp'
-        lines=( "// Service plugins" "// Service components" )
-        grepRemoveLines "$file" "${lines[@]}"
         file='start.ops'
         lines=( "# Set up service plugins" )
         grepRemoveLines "$file" "${lines[@]}"
-    elif [[ -z "$foundAComponent" ]] # No component
+        file='src/controller_component.cpp'
+        lines=( "// Service plugins" )
+        grepRemoveLines "$file" "${lines[@]}"
+    fi
+    if [[ -z "$foundAComponent" ]] # No component
     then
         cd "$newAcPath"
+        file='start.ops'
+        lines=( "# Set up subcontrollers" "# Connect this controller with its subcontrollers" "# Pass the names of the subcontrollers to the controller" )
+        grepRemoveLines "$file" "${lines[@]}"
+        file='src/controller_component.cpp'
+        lines=( "// Add properties" "// Connect to the subcontrollers" "// Get references to subcontroller component properties" )
+        grepRemoveLines "$file" "${lines[@]}"
+        file="include/${newAcName}/controller_component.h"
+        lines=( "// Subcontroller names" "// Subcontroller components" "// Service properties" )
+        grepRemoveLines "$file" "${lines[@]}"
     fi
+    if [[ -z "$foundAService" && -z "$foundAComponent" ]]
+    then
+        cd "$newAcPath"
+        file="include/${newAcName}/controller_component.h"
+        lines=( "// Subcontroller operations" )
+        grepRemoveLines "$file" "${lines[@]}"
+    fi
+
+    # Clean up excessive newlines
+    for i in "start.ops" "src/controller_component.cpp" "include/${newAcName}/controller_component.h"
+    do
+        file="$i"
+        find='\n\{3,\}' # Match at least three newlines
+        replace='\n\n'
+        sedMultiLine "$file" "$find" "$replace"
+    done
 
 
 # For a sub-controller plugin
