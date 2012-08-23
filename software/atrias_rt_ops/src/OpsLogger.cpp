@@ -16,12 +16,6 @@ OpsLogger::OpsLogger(RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  log_cyclic_out
 void OpsLogger::beginCycle() {
 	RTT::os::TimeService::nsecs startTime = RTT::os::TimeService::Instance()->getNSecs();
 	
-	// Check for a controller overshoot. If the controllers' finish time is earlier
-	// than the start time, then it must be from a previous iteration (and there must
-	// therefore have been an overshoot.
-	if (rtOpsCycle.startTime > rtOpsCycle.endTime)
-		sendEvent(controllerManager::RtOpsEvent::MISSED_DEADLINE);
-	
 	// Send our 1 kHz log stream.
 	logCyclicOut->write(rtOpsCycle);
 	if (guiPublishTimer.readyToSend()) {
