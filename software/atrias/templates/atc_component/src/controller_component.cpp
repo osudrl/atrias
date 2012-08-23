@@ -23,6 +23,8 @@ ATCComponent::ATCComponent(std::string name):
     addEventPort(guiDataIn);
     addPort(guiDataOut);
 
+    pubTimer = new GuiPublishTimer(20);
+
     log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
 }
 

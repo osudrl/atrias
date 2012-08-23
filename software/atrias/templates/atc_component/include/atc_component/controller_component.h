@@ -23,6 +23,7 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atc_component/controller_input.h>
+#include <atc_component/controller_status.h>
 #include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
@@ -35,14 +36,16 @@ namespace controller {
 
 class ATCComponent : public TaskContext {
 private:
+    shared::GuiPublishTimer         *pubTimer;
+
     atrias_msgs::robot_state         robotState;
     atrias_msgs::controller_output   controllerOutput;
 
     controller_input                 guiIn;
     controller_status                guiOut;
 
-    InputPort<controller_input>      guiDataIn;
     OutputPort<controller_status>    guiDataOut;
+    InputPort<controller_input>      guiDataIn;
 
     // Subcontroller names
 
