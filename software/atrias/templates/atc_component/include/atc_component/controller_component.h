@@ -41,8 +41,13 @@ private:
     InputPort<controller_input>      guiDataIn;
     OutputPort<controller_status>    guiDataOut;
 
-    // Service plugins
-    // Service components 
+    // Service names
+
+    // Subcontroller components 
+
+    // Service properties
+
+    // Subcontroller operations
 
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state);

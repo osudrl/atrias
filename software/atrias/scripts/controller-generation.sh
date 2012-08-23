@@ -240,38 +240,62 @@ then
             replace='// Add properties\n    this->addProperty("'${unique}Name'", '${unique}Name')\n        .doc("Subcontroller name.");'
             sedMultiLine "$file" "$find" "$replace"
 
+            file="include/${newAcName}/controller_component.h"
+            find='// Service names'
+            replace='// Service names\n    std::string '${unique}Name';'
+            sedMultiLine "$file" "$find" "$replace"
+
+            find='// Subcontroller components'
+            replace='// Subcontroller components\n    TaskContext *'$unique';'
+            sedMultiLine "$file" "$find" "$replace"
+
+            # Operations
             cd "$ascToLinkPath"
             services=( $(grep 'this->provides(' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
             for service in ${services[@]}
             do
                 cd "$ascToLinkPath"
                 operations=( $(grep '\->addOperation("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
-
-                cd "$newAcPath"
                 for operation in ${operations[@]}
                 do
-                    find='// Connect to the subcontrollers'
+                    cd "$ascToLinkPath"
+                    callbackFunction=$(grep "addOperation(\"$operation" src/controller_component.cpp | sed 's|.*::||; s|,.*||')
+                    args=$(grep "::${callbackFunction}(" src/controller_component.cpp | sed "s|.*(||; s|).*||; s| [[:alnum:]]*$||; s| [[:alnum:]]*,|,|g")
+                    returnVar=$(grep "::${callbackFunction}(" src/controller_component.cpp | sed "s| .*||")
                     operationReference=$(echo "${unique}_${operation}" | sed "s|_\(.\)|\U\1|g")
+
+                    cd "$newAcPath"
+                    file="include/${newAcName}/controller_component.h"
+                    find='// Subcontroller operations'
+                    replace='// Subcontroller operations\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
+                    sedMultiLine "$file" "$find" "$replace"
+
+                    file='src/controller_component.cpp'
+                    find='// Connect to the subcontrollers'
                     replace='// Connect to the subcontrollers\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
-            # Add references to properties
+            # Properties
             cd "$ascToLinkPath"
             properties=( $(grep 'this->addProperty("' src/controller_component.cpp | sed "s|.*(\"||; s|\".*||") )
             for property in ${properties[@]}
             do
-                # Get the property type
                 cd "$ascToLinkPath"
-                propType=$()
+                propType=$(grep " ${property},\| ${property};" include/${ascToLinkName}/controller_component.h | sed "s|^\s*||; s| .*||")
 
+                cd "$newAcPath"
+                file="include/${newAcName}/controller_component.h"
+                find='// Service properties'
+                replace='// Service properties\n    Property<'$propType'> '${property}${uniqueNumber}';'
+                sedMultiLine "$file" "$find" "$replace"
+
+                file='src/controller_component.cpp'
                 find='// Get references to subcontroller component properties'
                 replace='// Get references to subcontroller component properties\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
                 sedMultiLine "$file" "$find" "$replace"
             done
 
-####################################################################################### 
-#(working on the .h addition) need the property type, taskcontext pointer, subcontroller names, and subcontroller operations
 
         # If it's a service
         elif [ "$ascIsAService" != "" ]
@@ -284,6 +308,7 @@ then
             do
                 cd "$ascToLinkPath"
                 serviceName=$(grep 'Service(' src/$serviceFile | sed "s|.*(\"||; s|\".*||")
+
                 # Add the service to the start script
                 cd "$newAcPath"
                 file='start.ops'
@@ -299,7 +324,7 @@ then
                     # Find the operation's returnVar and arguments
                     cd "$ascToLinkPath"
                     callbackFunction=$(grep "addOperation(\"$operation" src/$serviceFile | sed 's|.*::||; s|,.*||')
-                    args=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s|.*(||; s|).*||; s|\(.* \).*|\1|; s| .*,|,|g; s| $||")
+                    args=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s|.*(||; s|).*||; s| [[:alnum:]]*$||; s| [[:alnum:]]*,|,|g")
                     returnVar=$(grep "::${callbackFunction}(" src/$serviceFile | sed "s| .*||")
 
                     # Add the operation to the .ccp file
@@ -311,8 +336,8 @@ then
 
                     # Add the operation to the .h file
                     file="include/${newAcName}/controller_component.h"
-                    find='// Service plugins'
-                    replace='// Service plugins\n    OperationCaller<'$returnVar'('"$args"')> '$operation';'
+                    find='// Subcontroller operations'
+                    replace='// Subcontroller operations\n    OperationCaller<'$returnVar'('"$args"')> '$operation';'
                     sedMultiLine "$file" "$find" "$replace"
                 done
             done
