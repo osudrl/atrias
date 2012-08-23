@@ -1,13 +1,13 @@
 /*
  * controller_gui.cpp
  *
- * atc_template controller
+ * atc_component controller
  *
  *  Created on: May 5, 2012
  *      Author: Michael Anderson
  */
 
-#include <atc_template/controller_gui.h>
+#include <atc_component/controller_gui.h>
 
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("torque_A_hscale", torque_A_hscale);
@@ -19,7 +19,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torque_B_hscale->set_range(-10., 10.);
         torque_hip_hscale->set_range(-10., 10.);
 
-        pub = nh.advertise<atc_template::controller_input>("atc_template_input", 0);
+        pub = nh.advertise<atc_component::controller_input>("atc_component_input", 0);
         return true;
     }
     return false;

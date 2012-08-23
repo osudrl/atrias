@@ -122,7 +122,7 @@ while [ 1 ]; do
     case "$arg" in
     1) 
         echo "Existing subcontrollers in atrias_controllers:"
-        echo "${ascList[@]}" | sed "s| |\n|g" | cat -n
+        echo "${ascList[@]}" | sed "s| |\n|g" | nl -w1 -s") "
         echo
         echo "Enter the number corresponding to the subcontroller"
         read ascNumber
@@ -164,6 +164,7 @@ then
     # Figure out names
     newAcName="$newAtcName"
     newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
+    newAcIncludeGuard=$(echo $newAcName | sed 's|\(.*\)|__\U\1__|')
     newAcPath="${currentPath}/${newAcName}"
     # Copy the template and change to the new directory
     cp -r "${templatesPath}/atc_component" "$newAcPath"
@@ -176,11 +177,14 @@ then
     cd "$newAcPath"
     # Move the include folder to its appropriate location
     mv "include/atc_component" "include/$newAcName"
+    # Replace the include guard
+    sed -i "s|__ATC_COMPONENT__|${newAcIncludeGuard}|" "include/${newAcName}/controller_component.h"
+
     # Rename things
     files=( start.ops manifest.xml mainpage.dox CMakeLists.txt src/controller_component.cpp src/controller_gui.cpp include/${newAcName}/controller_component.h include/${newAcName}/controller_gui.h )
     for file in ${files[@]}
     do
-        sed -i "s|atc_template|${newAcName}|g; s|ATCTemplate|${newAcCamelName}|g" $file
+        sed -i "s|atc_component|${newAcName}|g; s|ATCComponent|${newAcCamelName}|g" $file
     done
     # Controller description
     echo "description=$description" > controller.txt
@@ -195,25 +199,39 @@ then
         ascIsAComponent=$(grep "^orocos_component(" CMakeLists.txt)
         ascIsAService=$(grep "^orocos_service(" CMakeLists.txt)
 
+        # Get the unique name suffix
+        uniqueNamePrefix=$(echo ${ascToLinkName} | sed "s|^....||; s|_\(.\)|\U\1|g")
+        # Get a unique name
+        uniqueNumber=0
+        unique=${uniqueNamePrefix}${uniqueNumber}
+        cd "${newAcPath}"
+        while [ "$(grep "${unique}Name" start.ops)" != "" ]
+        do
+            (( uniqueNumber += 1 ))
+            unique=${uniqueNamePrefix}${uniqueNumber}
+        done
+
+        # Add the subcontroller as a dependency
+        if [ "$uniqueNumber" -eq "0" ]
+        then
+            cd "${newAcPath}"
+            file='manifest.xml'
+            find='\n</package>'
+            replace='  <depend package="'$ascToLinkName'" />\n&'
+            sedMultiLine "$file" "$find" "$replace"
+            echo "Linked a dependency!"
+        fi
+
         # If it's a component
         if [ "$ascIsAComponent" != "" ]
         then
             foundAComponent=1
             # Get the component name
+            cd "$ascToLinkPath"
             componentName=$(grep "ORO_CREATE_COMPONENT" src/controller_component.cpp | sed 's|ORO_CREATE_COMPONENT(||; s|).*||')
-            # Get the unique name suffix
-            uniqueNamePrefix=$(echo ${ascToLinkName} | sed "s|^....||; s|_\(.\)|\U\1|g")
-            # Get a unique name
-            uniqueNumber=0
-            unique=${uniqueNamePrefix}${uniqueNumber}
-            cd "${newAcPath}"
-            while [ "$(grep "${unique}Name" start.ops)" != "" ]
-            do
-                (( uniqueNumber += 1 ))
-                unique=${uniqueNamePrefix}${uniqueNumber}
-            done
 
             # Add the component to the start script
+            cd "${newAcPath}"
             file='start.ops'
             if [ "$uniqueNumber" -eq "0" ]
             then
@@ -417,15 +435,14 @@ then
 # For a sub-controller plugin
 elif [[ -n $newAscPluginName ]]
 then
-    #cp -r ${templatesPath}/asc_service_plugin ${currentPath}/${newAscPluginName}
-    echo "Dummy command"
+    cp -r ${templatesPath}/asc_service_plugin ${currentPath}/${newAscPluginName}
 
 
 # For a sub-controller component
 elif [[ -n $newAscComponentName ]]
 then
-    echo "Dummy command"
-    #cp -r ${templatesPath}/asc_component ${currentPath}/${newAscComponentName}
+    cp -r ${templatesPath}/asc_component ${currentPath}/${newAscComponentName}
+
 else
     echo "No controller name specified"
     exit 1

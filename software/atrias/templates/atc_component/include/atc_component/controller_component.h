@@ -1,6 +1,9 @@
+#ifndef __ATC_COMPONENT__
+#define __ATC_COMPONENT__
+
 /*! \file controller_component.h
  *  \author Andrew Peekema
- *  \brief Orocos Component header for atc_template controller.
+ *  \brief Orocos Component header for atc_component controller.
  */
 
 // Orocos 
@@ -19,18 +22,18 @@
 // Datatypes
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
-#include <atc_template/controller_input.h>
+#include <atc_component/controller_input.h>
 #include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace atc_template;
+using namespace atc_component;
 
 namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCTemplate : public TaskContext {
+class ATCComponent : public TaskContext {
 private:
     atrias_msgs::robot_state         robotState;
     atrias_msgs::controller_output   controllerOutput;
@@ -54,7 +57,7 @@ private:
 
 public:
     // Constructor
-    ATCTemplate(std::string name);
+    ATCComponent(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();
@@ -65,3 +68,5 @@ public:
 };
 }
 }
+
+#endif

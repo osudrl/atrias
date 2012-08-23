@@ -1,20 +1,20 @@
 /*! \file controller_component.cpp
  *  \author Andrew Peekema
- *  \brief Orocos Component code for the atc_template controller.
+ *  \brief Orocos Component code for the atc_component controller.
  */
 
-#include <atc_template/controller_component.h>
+#include <atc_component/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ATCTemplate::ATCTemplate(std::string name):
+ATCComponent::ATCComponent(std::string name):
     RTT::TaskContext(name),
     guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCTemplate::runController, this, ClientThread)
+        ->addOperation("runController", &ATCComponent::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties
@@ -23,11 +23,11 @@ ATCTemplate::ATCTemplate(std::string name):
     addEventPort(guiDataIn);
     addPort(guiDataOut);
 
-    log(Info) << "[ATCMT] atc_template controller constructed!" << endlog();
+    log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
 }
 
 // Put control code here.
-atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
     // Stuff the msg
     controllerOutput.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
@@ -45,7 +45,7 @@ atrias_msgs::controller_output ATCTemplate::runController(atrias_msgs::robot_sta
 }
 
 // Don't put control code below here!
-bool ATCTemplate::configureHook() {
+bool ATCComponent::configureHook() {
     // Connect to the subcontrollers
     // Service plugins
 
@@ -55,24 +55,24 @@ bool ATCTemplate::configureHook() {
     return true;
 }
 
-bool ATCTemplate::startHook() {
+bool ATCComponent::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCTemplate::updateHook() {
+void ATCComponent::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCTemplate::stopHook() {
+void ATCComponent::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCTemplate::cleanupHook() {
+void ATCComponent::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCTemplate)
+ORO_CREATE_COMPONENT(ATCComponent)
 
 }
 }

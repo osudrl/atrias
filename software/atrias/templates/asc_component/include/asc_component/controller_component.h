@@ -1,9 +1,9 @@
-#ifndef __ASC_PD_H__
-#define __ASC_PD_H__
+#ifndef __ASC_COMPONENT_H__
+#define __ASC_COMPONENT_H__
 
 /*! \file controller_component.h
- *  \author Soo-Hyun Yoo
- *  \brief Orocos Component header for the PD subcontroller.
+ *  \author Andrew Peekema
+ *  \brief Orocos Component header for the asc_component subcontroller.
  */
 
 // Orocos 
@@ -11,15 +11,13 @@
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
-//#include <rtt/OperationCaller.hpp>
 #include <rtt/Component.hpp>
-//#include <rtt/Property.hpp>
 
 // C
 #include <stdlib.h>
 
 // Datatypes
-#include <asc_pd/controller_log_data.h>
+#include <asc_component/controller_log_data.h>
 
 using namespace RTT;
 using namespace Orocos;
@@ -27,19 +25,19 @@ using namespace Orocos;
 namespace atrias {
 namespace controller {
 
-class ASCPD : public TaskContext {
+class ASCComponent : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
-    double runController(double, double, double, double);
+    double runController(double);
 
-    double P, D, out;
+    double out, exampleInput;
 
-    asc_pd::controller_log_data logData;
-    OutputPort<asc_pd::controller_log_data> logPort;
+    asc_component::controller_log_data logData;
+    OutputPort<asc_component::controller_log_data> logPort;
 
 public:
     // Constructor
-    ASCPD(std::string name);
+    ASCComponent(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();
