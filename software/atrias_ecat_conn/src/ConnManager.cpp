@@ -120,7 +120,9 @@ void ConnManager::loop() {
 }
 
 void ConnManager::sendControllerOutput(atrias_msgs::controller_output controller_output) {
-	
+	RTT::os::MutexLock lock(eCatLock);
+	eCatConn->getMedullaManager()->processTransmitData(controller_output);
+	cycleECat();		
 }
 
 bool ConnManager::breakLoop() {
