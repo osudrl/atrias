@@ -11,9 +11,7 @@
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
-//#include <rtt/OperationCaller.hpp>
 #include <rtt/Component.hpp>
-//#include <rtt/Property.hpp>
 
 // C
 #include <stdlib.h>
@@ -30,10 +28,11 @@ namespace controller {
 class ASCPD : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
-    double runController(double, double, double, double);
+    double runController(double targetPos, double currentPos, double targetVel, double currentVel);
 
     double P, D, out;
 
+    // For logging
     asc_pd::controller_log_data logData;
     OutputPort<asc_pd::controller_log_data> logPort;
 

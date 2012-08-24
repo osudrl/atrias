@@ -39,10 +39,16 @@ ASCPD::ASCPD(std::string name):
 }
 
 double ASCPD::runController(double targetPos, double currentPos, double targetVel, double currentVel) {
-    // The magic control code
+    // The control code
     out = P * (targetPos - currentPos) + D * (targetVel - currentVel);
 
     // Stuff the msg and push to ROS for logging
+    logData.P = P;
+    logData.D = D;
+    logData.targetPos = targetPos;
+    logData.currentPos = currentPos;
+    logData.targetVel = targetVel;
+    logData.currentVel = currentVel;
     logData.output = out;
     logPort.write(logData);
 
