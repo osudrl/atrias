@@ -100,6 +100,10 @@ void ConnManager::loop() {
 			eCatTime = ec_DCtime;
 			eCatConn->getMedullaManager()->processReceiveData();
 		}
+		eCatConn->getMedullaManager()->setTime(
+			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
+			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_OFFSET_NS);
+		
 		eCatConn->newStateCallback(eCatConn->getMedullaManager()->getRobotState());
 	
 		// The division here functions as an IIR filter on the DC time.
