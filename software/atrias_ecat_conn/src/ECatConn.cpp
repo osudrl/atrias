@@ -1,52 +1,37 @@
-#include "atrias_noop_conn/NoopConn.h"
+#include "atrias_ecat_conn/ECatConn.h"
 
 namespace atrias {
 
-namespace noopConn {
+namespace ecatConn {
 
-NoopConn::NoopConn(std::string name) :
+ECatConn::ECatConn(std::string name) :
           RTT::TaskContext(name),
           newStateCallback("newStateCallback") {
 	this->provides("connector")
-	    ->addOperation("sendControllerOutput", &NoopConn::sendControllerOutput, this, RTT::ClientThread);
+	    ->addOperation("sendControllerOutput", &ECatConn::sendControllerOutput, this, RTT::ClientThread);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(newStateCallback);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(sendEvent);
-	
-	waitingForResponse = false;
 }
 
-bool NoopConn::configureHook() {
+bool ECatConn::configureHook() {
 	RTT::TaskContext *peer = this->getPeer("atrias_rt");
 	if (!peer) {
-		log(RTT::Error) << "[NoopConn] Failed to connect to RTOps!" << RTT::endlog();
+		log(RTT::Error) << "[ECatConn] Failed to connect to RTOps!" << RTT::endlog();
 		return false;
 	}
 	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
 	sendEvent        = peer->provides("rtOps")->getOperation("sendEvent");
-	log(RTT::Info) << "[NoopConn] configured!" << RTT::endlog();
+	log(RTT::Info) << "[ECatConn] configured!" << RTT::endlog();
 	return true;
 }
 
-void NoopConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
-	waitingForResponse = false;
+void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
 	return;
 }
 
-void NoopConn::updateHook() {
-	// Check for missed deadlines.
-	if (waitingForResponse)
-		sendEvent(controllerManager::RtOpsEvent::MISSED_DEADLINE);
-	waitingForResponse = true;
-	
-	RTT::os::TimeService::nsecs timestamp = RTT::os::TimeService::Instance()->getNSecs();
-	robotState.header.stamp.sec  = timestamp / SECOND_IN_NANOSECONDS;
-	robotState.header.stamp.nsec = timestamp % SECOND_IN_NANOSECONDS;
-	newStateCallback(robotState);
-}
-
-ORO_CREATE_COMPONENT(NoopConn)
+ORO_CREATE_COMPONENT(ECatConn)
 
 }
 
