@@ -1,9 +1,8 @@
 <package>
-    <description brief="Orocos asc_coordinate_transforms Component package">
-        This package contains the components of the asc_coordinate_transforms package
+    <description brief="Orocos asc_service_plugin Component package">
+        This package contains the components of the asc_service_plugin package
     </description>
-    <!--NOTE: set the license and author before you publish this code-->
-    <license></license>
+    <license>BSD</license>
     <author>drl</author>
     <depend package="rtt" />
     <depend package="atrias_shared" />

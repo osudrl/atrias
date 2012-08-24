@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.6.3)
 # This creates a standard cmake project. You may extend this file with
 # any cmake macro you see fit.
 #
-project(asc_coordinate_transforms)
+project(asc_service_plugin)
 
 #
 # Do setup in case of ros package, If ROS_ROOT is set, it is
@@ -41,10 +41,10 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 #
 # Building a Service:
 #
-# Creates a plugin library libasc_coordinate_transforms-service-<target>.so
-# and installs in the directory lib/orocos/asc_coordinate_transforms/plugins/
+# Creates a plugin library libasc_service_plugin-service-<target>.so
+# and installs in the directory lib/orocos/asc_service_plugin/plugins/
 #
-orocos_service(leg_to_motor_transforms-service src/leg_to_motor_transforms-service.cpp) # ...only one service per library !
+orocos_service(asc_service_plugin-service src/asc_service_plugin-service.cpp) # ...only one service per library !
 #
 # You may add multiple orocos_service statements.
 

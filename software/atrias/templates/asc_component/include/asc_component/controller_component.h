@@ -27,11 +27,20 @@ namespace controller {
 
 class ASCComponent : public TaskContext {
 private:
-    // This Operation is called by the RT Operations Manager.
-    double runController(double);
+    // Operations
+    double runController(double exampleInput);
 
-    double out, exampleInput;
+    double out;
 
+    // Subcontroller names
+
+    // Subcontroller components
+
+    // Service properties
+
+    // Subcontroller operations
+
+    // Logging
     asc_component::controller_log_data logData;
     OutputPort<asc_component::controller_log_data> logPort;
 

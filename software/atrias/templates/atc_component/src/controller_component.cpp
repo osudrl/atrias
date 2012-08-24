@@ -10,6 +10,7 @@ namespace controller {
 
 ATCComponent::ATCComponent(std::string name):
     RTT::TaskContext(name),
+    logPort(name + "_log"),
     guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
@@ -19,11 +20,22 @@ ATCComponent::ATCComponent(std::string name):
 
     // Add properties
 
-    // Add ports
+    // For the GUI
     addEventPort(guiDataIn);
     addPort(guiDataOut);
-
     pubTimer = new GuiPublishTimer(20);
+
+    // Logging
+    // Create a port
+    addPort(logPort);
+    // Unbuffered
+    ConnPolicy policy = RTT::ConnPolicy::data();
+    // Transport type = ROS
+    policy.transport = 3;
+    // ROS topic name
+    policy.name_id = "/" + name + "_log";
+    // Construct the stream between the port and ROS topic
+    logPort.createStream(policy);
 
     log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
 }
@@ -31,19 +43,23 @@ ATCComponent::ATCComponent(std::string name):
 // Put control code here.
 atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
     // Stuff the msg
-    controllerOutput.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
+    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
+    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
     // Command a run state
-    controllerOutput.command = medulla_state_run;
+    co.command = medulla_state_run;
 
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
 
+    // Stuff the msg and push to ROS for logging
+    logData.desiredState = 0.0;
+    logPort.write(logData);
+
     // Output for RTOps
-    return controllerOutput;
+    return co;
 }
 
 // Don't put control code below here!

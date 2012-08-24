@@ -1,5 +1,5 @@
-#ifndef __ATC_COMPONENT__
-#define __ATC_COMPONENT__
+#ifndef __ATC_COMPONENT_H__
+#define __ATC_COMPONENT_H__
 
 /*! \file controller_component.h
  *  \author Andrew Peekema
@@ -20,10 +20,11 @@
 #include <atrias_shared/GuiPublishTimer.h>
 
 // Datatypes
-#include <atrias_msgs/robot_state.h>
-#include <atrias_msgs/controller_output.h>
 #include <atc_component/controller_input.h>
 #include <atc_component/controller_status.h>
+#include <atc_component/controller_log_data.h>
+#include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
@@ -36,16 +37,10 @@ namespace controller {
 
 class ATCComponent : public TaskContext {
 private:
-    shared::GuiPublishTimer         *pubTimer;
+    // This Operation is called by the RT Operations Manager.
+    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
-    atrias_msgs::robot_state         robotState;
-    atrias_msgs::controller_output   controllerOutput;
-
-    controller_input                 guiIn;
-    controller_status                guiOut;
-
-    OutputPort<controller_status>    guiDataOut;
-    InputPort<controller_input>      guiDataIn;
+    atrias_msgs::controller_output co;
 
     // Subcontroller names
 
@@ -55,8 +50,16 @@ private:
 
     // Subcontroller operations
 
-    // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state);
+    // For the GUI
+    shared::GuiPublishTimer                         *pubTimer;
+    controller_input                                guiIn;
+    controller_status                               guiOut;
+    OutputPort<controller_status>                   guiDataOut;
+    InputPort<controller_input>                     guiDataIn;
+
+    // Logging
+    asc_component::controller_log_data              logData;
+    OutputPort<asc_component::controller_log_data>  logPort;
 
 public:
     // Constructor

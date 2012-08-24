@@ -9,7 +9,8 @@
 function help
 {
     echo
-    echo "Creates and links top-level and sub-level controllers for use with atrias."
+    echo "Usage: rosrun atrias controller-generation.sh"
+    echo "This script creates controllers for use with atrias in the current directory."
     echo
 }
 
@@ -73,6 +74,8 @@ while [ 1 ]; do
     1) 
         echo "What do you want to name it? (e.g. atc_example_name)"
         read newAtcName
+        templateAcName='atc_component'
+        templateAcIncludeGuard='__ATC_COMPONENT_H__'
         echo "Do you want this controller to have an output port to the gui? (y/n)"
         read guiOutDecision
         while [[ "$guiOutDecision" != "y" && "$guiOutDecision" != "n" ]]
@@ -98,11 +101,14 @@ while [ 1 ]; do
     esac
 done
 
+# Save the name
+newAcName="${newAscPluginName}${newAscComponentName}${newAtcName}"
+
 echo "Give a description of this controller"
 read description
 
 # Sanity check (Does this controller already exist in this directory?)
-if [ -d "${newAscPluginName}${newAscComponentName}${newAtcName}" ]
+if [ -d "${newAcName}" ]
 then
     echo "ERROR: This controller already exists.  Manually remove the existing one to continue."
     exit 1
@@ -148,7 +154,7 @@ done
 
 # Double-check this is what we want to do
 clear
-echo "This script will create the package ${newAtcName}${newAscPluginName}${newAscComponentName} in this directory with these subcontrollers:"
+echo "This script will create the package $newAcName in this directory with these subcontrollers:"
 echo "${ascsToLink[@]-None}" | sed "s| |\n|g"
 echo
 echo "If this is what you want to do, press Enter..."
@@ -157,17 +163,18 @@ read
 
 
 ################# Generate the files #################
+# Names
+newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
+newAcIncludeGuard=$(echo $newAcName | sed 's|\(.*\)|__\U\1_H__|')
+# Paths
+newAcPath="${currentPath}/${newAcName}"
+templateAcPath="${templatesPath}/${templateAcName}"
 
 # For a top-level controller
 if [[ -n "$newAtcName" ]]
 then
-    # Figure out names
-    newAcName="$newAtcName"
-    newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
-    newAcIncludeGuard=$(echo $newAcName | sed 's|\(.*\)|__\U\1__|')
-    newAcPath="${currentPath}/${newAcName}"
     # Copy the template and change to the new directory
-    cp -r "${templatesPath}/atc_component" "$newAcPath"
+    cp -r "$templateAcPath" "$newAcPath"
     # Sanity check (This directory must exist)
     if [ ! -d $newAcPath ]
     then
@@ -176,9 +183,9 @@ then
     fi
     cd "$newAcPath"
     # Move the include folder to its appropriate location
-    mv "include/atc_component" "include/$newAcName"
+    mv "include/$templateAcName" "include/$newAcName"
     # Replace the include guard
-    sed -i "s|__ATC_COMPONENT__|${newAcIncludeGuard}|" "include/${newAcName}/controller_component.h"
+    sed -i "s|${templateAcIncludeGuard}|${newAcIncludeGuard}|" "include/${newAcName}/controller_component.h"
 
     # Rename things
     files=( start.ops manifest.xml mainpage.dox CMakeLists.txt src/controller_component.cpp src/controller_gui.cpp include/${newAcName}/controller_component.h include/${newAcName}/controller_gui.h )

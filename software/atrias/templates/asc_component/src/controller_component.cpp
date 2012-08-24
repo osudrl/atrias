@@ -12,11 +12,13 @@ ASCComponent::ASCComponent(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log")
 {
-    this->provides("pd")
+    this->provides("exampleService")
         ->addOperation("runController", &ASCComponent::runController, this, OwnThread)
         .doc("Run the controller.");
 
-    // For logging
+    // Add properties
+
+    // Logging
     // Create a port
     addPort(logPort); 
     // Unbuffered
@@ -28,21 +30,28 @@ ASCComponent::ASCComponent(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ASCComponent] Motor position controller constructed!" << endlog();
+    log(Info) << "[ASCComponent] asc_component controller constructed!" << endlog();
 }
 
+// Put control code here.
 double ASCComponent::runController(double exampleInput) {
-    // The magic control code
     out = exampleInput;
 
     // Stuff the msg and push to ROS for logging
+    logData.input = exampleInput;
     logData.output = out;
     logPort.write(logData);
 
+    // Output for the parent controller
     return out;
 }
 
 bool ASCComponent::configureHook() {
+    // Connect to the subcontrollers
+    // Service plugins
+    
+    // Get references to subcontroller component properties
+
     log(Info) << "[ASCComponent] configured!" << endlog();
     return true;
 }

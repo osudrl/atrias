@@ -1,13 +1,13 @@
 <package>
-  <description brief="asc_pd">
+  <description brief="asc_component">
 
-     asc_pd
+     asc_component
 
   </description>
   <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/asc_pd</url>
+  <url>http://ros.org/wiki/asc_component</url>
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
