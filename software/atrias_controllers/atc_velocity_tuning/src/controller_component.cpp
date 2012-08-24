@@ -1,5 +1,5 @@
 /*! \file controller_component.cpp
- *  \author Andrew Peekema
+ *  \author Ryan Van Why
  *  \brief Orocos Component code for the atc_velocity_tuning controller.
  */
 
