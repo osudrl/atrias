@@ -21,6 +21,7 @@
 
 using namespace RTT;
 using namespace Orocos;
+using namespace asc_component;
 
 namespace atrias {
 namespace controller {
@@ -41,8 +42,8 @@ private:
     // Subcontroller operations
 
     // Logging
-    asc_component::controller_log_data logData;
-    OutputPort<asc_component::controller_log_data> logPort;
+    controller_log_data logData;
+    OutputPort<controller_log_data> logPort;
 
 public:
     // Constructor

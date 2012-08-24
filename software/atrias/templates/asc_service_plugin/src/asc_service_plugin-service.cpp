@@ -17,7 +17,7 @@ double ASCServicePlugin::exampleOperation(double arg1, double arg2)
     return out;
 }
 
-ORO_SERVICE_NAMED_PLUGIN(ExampleService, "exampleService")
+ORO_SERVICE_NAMED_PLUGIN(ASCServicePlugin, "exampleService")
 
 }
 }

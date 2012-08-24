@@ -50,16 +50,16 @@ private:
 
     // Subcontroller operations
 
+    // Logging
+    controller_log_data              logData;
+    OutputPort<controller_log_data>  logPort;
+
     // For the GUI
     shared::GuiPublishTimer                         *pubTimer;
     controller_input                                guiIn;
     controller_status                               guiOut;
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
-
-    // Logging
-    asc_component::controller_log_data              logData;
-    OutputPort<asc_component::controller_log_data>  logPort;
 
 public:
     // Constructor

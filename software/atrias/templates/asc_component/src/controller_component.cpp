@@ -49,7 +49,7 @@ double ASCComponent::runController(double exampleInput) {
 bool ASCComponent::configureHook() {
     // Connect to the subcontrollers
     // Service plugins
-    
+
     // Get references to subcontroller component properties
 
     log(Info) << "[ASCComponent] configured!" << endlog();
