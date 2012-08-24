@@ -6,6 +6,8 @@
   * ECat Connector.
   */
 
+class ConnManager;
+
 // Orocos
 #include <rtt/Activity.hpp>
 #include <rtt/os/Mutex.hpp>
@@ -23,6 +25,7 @@ extern "C" {
 
 #include <time.h>
 
+#include "atrias_ecat_conn/ECatConn.h"
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
 
@@ -34,6 +37,10 @@ namespace atrias {
 namespace ecatConn {
 
 class ConnManager : public RTT::Activity {
+	/** @brief Lets us access what we need to in ECatConn.
+	  */
+	ECatConn*      eCatConn;
+	
 	/** @brief This is where SOEM stores its data.
 	  */
 	char           IOmap[4096];
@@ -58,8 +65,9 @@ class ConnManager : public RTT::Activity {
 	
 	public:
 		/** @brief The constructor.
+		  * @param ecat_conn A pointer to the ECatConn instance.
 		  */
-		ConnManager();
+		ConnManager(ECatConn* ecat_conn);
 		
 		/** @brief Shuts down EtherCAT.
 		  */

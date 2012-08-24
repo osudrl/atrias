@@ -13,6 +13,8 @@ ECatConn::ECatConn(std::string name) :
 	    ->addOperationCaller(newStateCallback);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(sendEvent);
+	
+	connManager = new ConnManager(this);
 }
 
 bool ECatConn::configureHook() {
@@ -28,7 +30,7 @@ bool ECatConn::configureHook() {
 }
 
 bool ECatConn::startHook() {
-	if (!connManager.start()) {
+	if (!connManager->start()) {
 		log(RTT::Error) << "[ECatConn] ConnManager failed to start!" << RTT::endlog();
 		return false;
 	}
@@ -36,7 +38,12 @@ bool ECatConn::startHook() {
 }
 
 void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
+	connManager->sendControllerOutput(controller_output);
 	return;
+}
+
+MedullaManager* ECatConn::getMedullaManager() {
+	return &medullaManager;
 }
 
 ORO_CREATE_COMPONENT(ECatConn)

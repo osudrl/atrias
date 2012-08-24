@@ -4,8 +4,9 @@ namespace atrias {
 
 namespace ecatConn {
 
-ConnManager::ConnManager() :
+ConnManager::ConnManager(ECatConn* ecat_conn) :
              RTT::Activity(80) {
+	eCatConn = ecat_conn;
 	return;
 }
 
@@ -97,7 +98,9 @@ void ConnManager::loop() {
 			RTT::os::MutexLock lock(eCatLock);
 			cycleECat();
 			eCatTime = ec_DCtime;
+			eCatConn->getMedullaManager()->processReceiveData();
 		}
+		eCatConn->newStateCallback(eCatConn->getMedullaManager()->getRobotState());
 	
 		// The division here functions as an IIR filter on the DC time.
 		RTT::os::TimeService::nsecs dcCorrection =

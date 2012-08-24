@@ -7,6 +7,11 @@
   * over EtherCAT.
   */
 
+namespace atrias {
+namespace ecatConn{
+class ECatConn;
+}}
+
 // Orocos
 #include <rtt/TaskContext.hpp>
 #include <rtt/Component.hpp>
@@ -22,6 +27,7 @@
 #include <atrias_shared/globals.h>
 
 #include "atrias_ecat_conn/ConnManager.h"
+#include "atrias_ecat_conn/MedullaManager.h"
 
 namespace atrias {
 
@@ -30,7 +36,11 @@ namespace ecatConn {
 class ECatConn : public RTT::TaskContext {
 	/** @brief Handles the main operation of this component.
 	  */
-	ConnManager connManager;
+	ConnManager*   connManager;
+	
+	/** @brief Handles all our medulla objects.
+	  */
+	MedullaManager medullaManager;
 	
 	public:
 		/** @brief Initializes this Connector
@@ -64,6 +74,11 @@ class ECatConn : public RTT::TaskContext {
 		  * @return Success.
 		  */
 		bool startHook();
+		
+		/** @brief Lets ConnManager access our \a MedullaManager
+		  * @return A pointer to the MedullaManager.
+		  */
+		MedullaManager* getMedullaManager();
 };
 
 }
