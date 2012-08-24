@@ -1,0 +1,23 @@
+# Set up the component
+import("asc_component")
+
+# TODO: Implement subcontroller naming
+# TODO: Figure out where/when to call this
+var string controllerName
+loadComponent(controllerName, "ATCComponent")
+setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
+
+# Set up service plugins
+# Set up subcontrollers
+# Connect this controller with its subcontrollers
+
+# Pass the names of the subcontrollers to the controller
+
+# Configure the component
+controllerName.configure()
+
+# Set the affinity to real-time
+controllerName.setCpuAffinity(10)
+
+# Start the component
+controllerName.start()
