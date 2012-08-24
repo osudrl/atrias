@@ -6,6 +6,7 @@
     <license></license>
     <author>Unknown Author</author>
 	<depend package="rtt" />
+	<depend package="soem_core" />
     <depend package="atrias_msgs" />
 	<depend package="atrias_shared" />
 </package>

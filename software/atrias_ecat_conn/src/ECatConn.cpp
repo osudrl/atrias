@@ -27,6 +27,14 @@ bool ECatConn::configureHook() {
 	return true;
 }
 
+bool ECatConn::startHook() {
+	if (!connManager.start()) {
+		log(RTT::Error) << "[ECatConn] ConnManager failed to start!" << RTT::endlog();
+		return false;
+	}
+	return true;
+}
+
 void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
 	return;
 }

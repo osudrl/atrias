@@ -12,6 +12,7 @@
 #include <rtt/Component.hpp>
 #include <rtt/OperationCaller.hpp>
 #include <rtt/os/TimeService.hpp>
+#include <rtt/Logger.hpp>
 
 // ROS
 #include <std_msgs/Header.h>
@@ -20,11 +21,17 @@
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/globals.h>
 
+#include "atrias_ecat_conn/ConnManager.h"
+
 namespace atrias {
 
 namespace ecatConn {
 
 class ECatConn : public RTT::TaskContext {
+	/** @brief Handles the main operation of this component.
+	  */
+	ConnManager connManager;
+	
 	public:
 		/** @brief Initializes this Connector
 		  * @param name The name for this component.
@@ -48,8 +55,15 @@ class ECatConn : public RTT::TaskContext {
 		
 		/** @brief Configures this component.
 		  * Run by Orocos.
+		  * @return Success.
 		  */
 		bool configureHook();
+		
+		/** @brief Starts execution of this component.
+		  * Run by Orocos.
+		  * @return Success.
+		  */
+		bool startHook();
 };
 
 }
