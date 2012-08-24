@@ -11,11 +11,11 @@ float64 rotorAngle
 float64 rotorVelocity
 
 # The total current for both amps combined.
-#float64 motorCurrent
+float64 motorCurrent
 
 # These sum to the value in motorCurrent
-#float64 amp1Current
-#float64 amp2Current
+float64 amp1Current
+float64 amp2Current
 
 # Limit switches
 #bool    overDeflectSwitch
@@ -24,13 +24,8 @@ float64 rotorVelocity
 #bool    motorPosLimitSwitch
 
 # Thermistors
-#float64 motorThermA1
-#float64 motorThermA2
-#float64 motorThermB1
-#float64 motorThermB2
-#float64 motorThermC1
-#float64 motorThermC2
+float64[6] motorTherms
 
 # Voltages
-#float64 logicVoltage
-#float64 motorVoltage
+float64 logicVoltage
+float64 motorVoltage

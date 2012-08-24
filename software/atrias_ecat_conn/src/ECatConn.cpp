@@ -25,7 +25,8 @@ bool ECatConn::configureHook() {
 	}
 	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
 	sendEvent        = peer->provides("rtOps")->getOperation("sendEvent");
-	log(RTT::Info) << "[ECatConn] configured!" << RTT::endlog();
+	
+	log(RTT::Info) << "[ECatConn] configured." << RTT::endlog();
 	return true;
 }
 
@@ -34,6 +35,9 @@ bool ECatConn::startHook() {
 		log(RTT::Error) << "[ECatConn] ConnManager failed to start!" << RTT::endlog();
 		return false;
 	}
+	
+	log(RTT::Info) << "[ECatConn] started." << RTT::endlog();
+	
 	return true;
 }
 

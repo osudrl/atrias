@@ -81,6 +81,9 @@ bool ConnManager::initialize() {
 	
 	// We now have data.
 	
+	// Configure our medullas
+	eCatConn->getMedullaManager()->start(ec_slave, ec_slavecount);
+	
 	done = false;
 	return !done;
 }

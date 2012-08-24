@@ -13,7 +13,7 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
-orocos_component(ECatConn src/ECatConn.cpp src/ConnManager.cpp src/MedullaManager.cpp)
+orocos_component(ECatConn src/ECatConn.cpp src/ConnManager.cpp src/MedullaManager.cpp src/Medulla.cpp src/LegMedulla.cpp)
 target_link_libraries(ECatConn rt)
 
 orocos_generate_package()

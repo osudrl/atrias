@@ -18,8 +18,16 @@ typedef enum {
 #define MEDULLA_HIP_PRODUCT_CODE                                      0x00000002
 #define MEDULLA_BOOM_PRODUCT_CODE                                     0x00000003
 #define MEDULLA_TEST_PRODUCT_CODE                                     0x00000004
+#define KPA_SLAVE_CARD_PRODUCT_CODE                                   0x00000005
 #define MEDULLA_ASSIGN_ACTIVATE_WORD                                      0x0300
 
+// Total size of process data in each direction for each Medulla type
+#define MEDULLA_LEG_INPUTS_SIZE                                               43
+#define MEDULLA_LEG_OUTPUTS_SIZE                                               6
+#define MEDULLA_HIP_INPUTS_SIZE                                  NOT_DEFINED_YET
+#define MEDULLA_HIP_OUTPUTS_SIZE                                 NOT_DEFINED_YET
+#define MEDULLA_BOOM_INPUTS_SIZE                                 NOT_DEFINED_YET
+#define MEDULLA_BOOM_OUTPUTS_SIZE                                NOT_DEFINED_YET
 
 // Medulla IDs
 #define MEDULLA_ID_PREFIX_MASK                                              0x30
@@ -103,7 +111,7 @@ typedef enum {
 /** @brief The voltage at which the xMega's ADCs max out.
   * This is used for scaling the ADC values.
   */
-#define MEDULLA_ADC_MAX_VOLTS                                               2.72
+#define MEDULLA_ADC_MAX_VOLTS                                               2.70
 
 /** @brief The amount of time RT Ops should wait for the Medullas to enter idle after a reset.
   */
