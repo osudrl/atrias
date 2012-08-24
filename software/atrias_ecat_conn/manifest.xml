@@ -1,0 +1,12 @@
+<package>
+    <description brief="Orocos atrias_noop_conn Component package">
+        This package contains the components of the atrias_noop_conn package
+    </description>
+    <!--NOTE: set the license and author before you publish this code-->
+    <license></license>
+    <author>Unknown Author</author>
+	<depend package="rtt" />
+    <depend package="atrias_msgs" />
+	<depend package="atrias_shared" />
+</package>
+
