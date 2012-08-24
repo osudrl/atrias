@@ -48,6 +48,10 @@ class MedullaManager {
 	void medullasInit(ec_slavet slaves[], int slavecount);
 	
 	public:
+		/** @brief Initializes the MedullaManager.
+		  */
+		MedullaManager();
+		
 		/** @brief Inits the medullas
 		  */
 		void start(ec_slavet slaves[], int slavecount);

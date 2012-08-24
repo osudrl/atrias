@@ -15,6 +15,8 @@ ECatConn::ECatConn(std::string name) :
 	    ->addOperationCaller(sendEvent);
 	
 	connManager = new ConnManager(this);
+	
+	log(RTT::Info) << "[ECatConn] constructed." << RTT::endlog();
 }
 
 bool ECatConn::configureHook() {
@@ -25,6 +27,11 @@ bool ECatConn::configureHook() {
 	}
 	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
 	sendEvent        = peer->provides("rtOps")->getOperation("sendEvent");
+	
+	if (!connManager->configure()) {
+		log(RTT::Error) << "[ECatConn] ConnManager failed to configure!" << RTT::endlog();
+		return false;
+	}
 	
 	log(RTT::Info) << "[ECatConn] configured." << RTT::endlog();
 	return true;
@@ -39,6 +46,14 @@ bool ECatConn::startHook() {
 	log(RTT::Info) << "[ECatConn] started." << RTT::endlog();
 	
 	return true;
+}
+
+void ECatConn::stopHook() {
+	if (!connManager->stop()) {
+		log(RTT::Error) << "[ECatConn] ConnManager failed to stop!" << RTT::endlog();
+	}
+	
+	log(RTT::Info) << "[ECatConn] stopped." << RTT::endlog();
 }
 
 void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {

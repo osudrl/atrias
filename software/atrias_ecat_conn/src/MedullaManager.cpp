@@ -4,6 +4,13 @@ namespace atrias {
 
 namespace ecatConn {
 
+MedullaManager::MedullaManager() {
+	lLegA = NULL;
+	lLegB = NULL;
+	rLegA = NULL;
+	rLegB = NULL;
+}
+
 void MedullaManager::slaveCardInit(ec_slavet slave) {
 	uint8_t* inputs  = slave.inputs;
 	uint8_t* outputs = slave.outputs;

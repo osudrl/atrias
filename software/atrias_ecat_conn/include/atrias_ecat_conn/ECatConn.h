@@ -75,6 +75,12 @@ class ECatConn : public RTT::TaskContext {
 		  */
 		bool startHook();
 		
+		/** @brief Stops execution of this component.
+		  * Run by Orocos.
+		  * @return Success.
+		  */
+		void stopHook();
+		
 		/** @brief Lets ConnManager access our \a MedullaManager
 		  * @return A pointer to the MedullaManager.
 		  */

@@ -90,7 +90,7 @@ class ConnManager : public RTT::Activity {
 		/** @brief Sends new outputs over ECat.
 		  * @param controller_output The new outputs.
 		  */
-		void sendControllerOutput(atrias_msgs::controller_output controller_output);
+		void sendControllerOutput(atrias_msgs::controller_output& controller_output);
 		
 		/** @brief Stops the main loop.
 		  * @return Success

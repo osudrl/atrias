@@ -7,7 +7,6 @@ namespace ecatConn {
 ConnManager::ConnManager(ECatConn* ecat_conn) :
              RTT::Activity(80) {
 	eCatConn = ecat_conn;
-	return;
 }
 
 ConnManager::~ConnManager() {
@@ -96,6 +95,8 @@ void ConnManager::loop() {
 		// This is used to compensate for timing overshoots when adjusting to match the DC clock.
 		overshoot = RTT::os::TimeService::Instance()->getNSecs() - targetTime;
 		
+		//log(RTT::Info) << overshoot << RTT::endlog();
+		
 		int64_t eCatTime;
 		{
 			RTT::os::MutexLock lock(eCatLock);
@@ -114,10 +115,15 @@ void ConnManager::loop() {
 			-((eCatTime-overshoot+CONTROLLER_LOOP_PERIOD_NS/2) % CONTROLLER_LOOP_PERIOD_NS
 			- CONTROLLER_LOOP_PERIOD_NS/2) / TIMING_FILTER_GAIN;
 		
+		//log(RTT::Info) << dcCorrection << RTT::endlog();
+		
 		RTT::os::TimeService::nsecs cur_time     = RTT::os::TimeService::Instance()->getNSecs();
 		// Note: % is not actually modulo... hence the additional CONTROLLER_LOOP_PERIOD_NS
-		sleepTime                                =
-			(targetTime + dcCorrection - cur_time) % CONTROLLER_LOOP_PERIOD_NS + CONTROLLER_LOOP_PERIOD_NS;
+		sleepTime =
+			(targetTime/* + dcCorrection*/ - cur_time) % CONTROLLER_LOOP_PERIOD_NS + CONTROLLER_LOOP_PERIOD_NS;
+		
+		log(RTT::Info) << sleepTime << RTT::endlog();
+		
 		targetTime = sleepTime + cur_time;
 		nanosleep(sleepTime);
 	}
@@ -126,10 +132,10 @@ void ConnManager::loop() {
 	nanosleep(2*CONTROLLER_LOOP_PERIOD_NS);
 }
 
-void ConnManager::sendControllerOutput(atrias_msgs::controller_output controller_output) {
+void ConnManager::sendControllerOutput(atrias_msgs::controller_output& controller_output) {
 	RTT::os::MutexLock lock(eCatLock);
 	eCatConn->getMedullaManager()->processTransmitData(controller_output);
-	cycleECat();		
+	cycleECat();
 }
 
 bool ConnManager::breakLoop() {
