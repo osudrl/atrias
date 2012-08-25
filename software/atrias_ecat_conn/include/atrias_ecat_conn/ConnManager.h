@@ -9,7 +9,7 @@
 class ConnManager;
 
 // Orocos
-#include <rtt/Activity.hpp>
+#include <rtt/os/Timer.hpp>
 #include <rtt/os/Mutex.hpp>
 #include <rtt/os/MutexLock.hpp>
 #include <rtt/Logger.hpp>
@@ -36,7 +36,7 @@ namespace atrias {
 
 namespace ecatConn {
 
-class ConnManager : public RTT::Activity {
+class ConnManager : public RTT::os::Timer {
 	/** @brief Lets us access what we need to in ECatConn.
 	  */
 	ECatConn*      eCatConn;
@@ -53,15 +53,19 @@ class ConnManager : public RTT::Activity {
 	  */
 	RTT::os::Mutex eCatLock;
 	
+	/** @brief Prevents a race condition on loop shutdown.
+	  */
+	RTT::os::Mutex timerLock;
+	
 	/** @brief Sends and receives an EtherCAT frame.
 	  * Does not grab eCatLock -- must already have it.
 	  */
 	void           cycleECat();
 	
-	/** @brief Sleeps for a specified time.
-	  * @param sleeptime The time to sleep, in nanoseconds
-	  */
-	void           nanosleep(RTT::os::TimeService::nsecs sleeptime);
+	
+	// These store times for the cyclic loop.
+	RTT::os::TimeService::nsecs targetTime;
+	RTT::os::TimeService::nsecs filtered_overshoot;
 	
 	public:
 		/** @brief The constructor.
@@ -83,9 +87,9 @@ class ConnManager : public RTT::Activity {
 		  */
 		bool initialize();
 		
-		/** @brief The main ECat receive loop.
+		/** @brief The main ECat receive loop. Called cyclicly.
 		  */
-		void loop();
+		void timeout(TimerId timer_id);
 		
 		/** @brief Sends new outputs over ECat.
 		  * @param controller_output The new outputs.
@@ -95,7 +99,7 @@ class ConnManager : public RTT::Activity {
 		/** @brief Stops the main loop.
 		  * @return Success
 		  */
-		bool breakLoop();
+		void stop();
 };
 
 }

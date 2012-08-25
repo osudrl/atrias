@@ -5,7 +5,7 @@ namespace atrias {
 namespace ecatConn {
 
 ConnManager::ConnManager(ECatConn* ecat_conn) :
-             RTT::Activity(80) {
+             RTT::os::Timer(1, ORO_SCHED_RT, 80) {
 	eCatConn = ecat_conn;
 }
 
@@ -18,14 +18,6 @@ ConnManager::~ConnManager() {
 inline void ConnManager::cycleECat() {
 	ec_send_processdata();
 	ec_receive_processdata(EC_TIMEOUT_US);
-}
-
-inline void ConnManager::nanosleep(RTT::os::TimeService::nsecs sleeptime) {
-	timespec delay = {
-		0,
-		(long) sleeptime
-	};
-	clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
 }
 
 bool ConnManager::configure() {
@@ -83,53 +75,69 @@ bool ConnManager::initialize() {
 	// Configure our medullas
 	eCatConn->getMedullaManager()->start(ec_slave, ec_slavecount);
 	
-	done = false;
+	targetTime         = RTT::os::TimeService::Instance()->getNSecs();
+	filtered_overshoot = 0;
+	done               = false;
+	arm(0, 0.0);
+	
 	return !done;
 }
 
-void ConnManager::loop() {
-	RTT::os::TimeService::nsecs overshoot  = 0;
-	RTT::os::TimeService::nsecs targetTime = RTT::os::TimeService::Instance()->getNSecs();
-	RTT::os::TimeService::nsecs sleepTime  = 0;
-	while (!done) {
-		// This is used to compensate for timing overshoots when adjusting to match the DC clock.
-		overshoot = RTT::os::TimeService::Instance()->getNSecs() - targetTime;
-		
-		//log(RTT::Info) << overshoot << RTT::endlog();
-		
-		int64_t eCatTime;
-		{
-			RTT::os::MutexLock lock(eCatLock);
-			cycleECat();
-			eCatTime = ec_DCtime;
-			eCatConn->getMedullaManager()->processReceiveData();
-		}
-		eCatConn->getMedullaManager()->setTime(
-			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
-			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_OFFSET_NS);
-		
-		eCatConn->newStateCallback(eCatConn->getMedullaManager()->getRobotState());
+void ConnManager::timeout(TimerId timer_id) {
+	log(RTT::Info) << "> 4" << RTT::endlog();
+	filtered_overshoot += (RTT::os::TimeService::Instance()->getNSecs() - 
+	                       targetTime - filtered_overshoot) / TIMING_FILTER_GAIN;
 	
-		// The division here functions as an IIR filter on the DC time.
-		RTT::os::TimeService::nsecs dcCorrection =
-			-((eCatTime-overshoot+CONTROLLER_LOOP_PERIOD_NS/2) % CONTROLLER_LOOP_PERIOD_NS
-			- CONTROLLER_LOOP_PERIOD_NS/2) / TIMING_FILTER_GAIN;
-		
-		//log(RTT::Info) << dcCorrection << RTT::endlog();
-		
-		RTT::os::TimeService::nsecs cur_time     = RTT::os::TimeService::Instance()->getNSecs();
-		// Note: % is not actually modulo... hence the additional CONTROLLER_LOOP_PERIOD_NS
-		sleepTime =
-			(targetTime/* + dcCorrection*/ - cur_time) % CONTROLLER_LOOP_PERIOD_NS + CONTROLLER_LOOP_PERIOD_NS;
-		
-		log(RTT::Info) << sleepTime << RTT::endlog();
-		
-		targetTime = sleepTime + cur_time;
-		nanosleep(sleepTime);
+	log(RTT::Info) << "< 1" << RTT::endlog();
+	// Prevent undershooting.
+	while (RTT::os::TimeService::Instance()->getNSecs() < targetTime);
+	log(RTT::Info) << "> 1" << RTT::endlog();
+	
+	// This is used to compensate for timing overshoots when adjusting to match the DC clock.
+	RTT::os::TimeService::nsecs overshoot = RTT::os::TimeService::Instance()->getNSecs() - targetTime;
+
+	//log(RTT::Info) << overshoot << RTT::endlog();
+
+	int64_t eCatTime;
+	{
+		log(RTT::Info) << "< 2" << RTT::endlog();
+		RTT::os::MutexLock lock(eCatLock);
+		log(RTT::Info) << "> 2" << RTT::endlog();
+		cycleECat();
+		eCatTime = ec_DCtime;
+		eCatConn->getMedullaManager()->processReceiveData();
 	}
-	
-	// Sleep to make sure medullas make it to idle before stopping the DC.
-	nanosleep(2*CONTROLLER_LOOP_PERIOD_NS);
+	eCatConn->getMedullaManager()->setTime(
+		(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
+		(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_OFFSET_NS);
+
+	eCatConn->newStateCallback(eCatConn->getMedullaManager()->getRobotState());
+
+	// The division here functions as an IIR filter on the DC time.
+	RTT::os::TimeService::nsecs dcCorrection =
+		-((eCatTime-overshoot+CONTROLLER_LOOP_PERIOD_NS/2) % CONTROLLER_LOOP_PERIOD_NS
+		- CONTROLLER_LOOP_PERIOD_NS/2) / TIMING_FILTER_GAIN;
+
+	//log(RTT::Info) << dcCorrection << RTT::endlog();
+
+	RTT::os::TimeService::nsecs cur_time     = RTT::os::TimeService::Instance()->getNSecs();
+	// Note: % is not actually modulo... hence the additional CONTROLLER_LOOP_PERIOD_NS
+	RTT::os::TimeService::nsecs sleepTime    =
+		(targetTime + dcCorrection - filtered_overshoot - cur_time) % CONTROLLER_LOOP_PERIOD_NS + CONTROLLER_LOOP_PERIOD_NS;
+
+	//log(RTT::Info) << sleepTime << RTT::endlog();
+
+	targetTime = sleepTime + cur_time;
+	{
+		log(RTT::Info) << "< 3" << RTT::endlog();
+		RTT::os::MutexLock lock(timerLock);
+		log(RTT::Info) << "> 3" << RTT::endlog();
+		if (!done) {
+			log(RTT::Info) << sleepTime << RTT::endlog();
+			arm(timer_id, ((double) sleepTime) / ((double) SECOND_IN_NANOSECONDS));
+		}
+	}
+	log(RTT::Info) << "< 4" << RTT::endlog();
 }
 
 void ConnManager::sendControllerOutput(atrias_msgs::controller_output& controller_output) {
@@ -138,9 +146,15 @@ void ConnManager::sendControllerOutput(atrias_msgs::controller_output& controlle
 	cycleECat();
 }
 
-bool ConnManager::breakLoop() {
+void ConnManager::stop() {
 	done = true;
-	return done;
+	RTT::os::MutexLock lock(timerLock);
+	log(RTT::Info) << "################" << RTT::endlog();
+	if (isArmed(0))
+		killTimer(0);
+	
+	// Sleep to make sure medullas make it to idle before stopping the DC.
+	usleep(2*CONTROLLER_LOOP_PERIOD_NS/1000);
 }
 
 }
