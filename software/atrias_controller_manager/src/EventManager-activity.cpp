@@ -19,29 +19,31 @@ EventManager::EventManager(ControllerManager *manager) :
 
 void EventManager::loop() {
     while (!done) {
+printf("START LOOP!\n");
         if (!incomingEvents.empty()) {
             RtOpsEvent event = incomingEvents.front();
-            incomingEvents.pop_back();
+            incomingEvents.pop_front();
             if (event == eventBeingWaitedOn) {
+                cManager->commandPending = false;
                 switch (event) {
                     case RtOpsEvent::ACK_DISABLE: {
-                        cManager->setState(ControllerManagerState::CONTROLLER_STOPPED, true);
+                        cManager->setState(ControllerManagerState::CONTROLLER_STOPPED);
                         break;
                     }
                     case RtOpsEvent::ACK_ENABLE: {
-                        cManager->setState(ControllerManagerState::CONTROLLER_RUNNING, true);
+                        cManager->setState(ControllerManagerState::CONTROLLER_RUNNING);
                         break;
                     }
                     case RtOpsEvent::ACK_E_STOP: {
-                        cManager->setState(ControllerManagerState::CONTROLLER_ESTOPPED, true);
+                        cManager->setState(ControllerManagerState::CONTROLLER_ESTOPPED);
                         break;
                     }
                     case RtOpsEvent::ACK_NO_CONTROLLER_LOADED: {
-                        cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED, true);
+                        cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED);
                         break;
                     }
                     case RtOpsEvent::ACK_RESET: {
-                        cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED, true);
+                        cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED);
                         break;
                     }
                 }
@@ -63,30 +65,37 @@ void EventManager::loop() {
                 }
             }
         }
-        eventSignal.wait();
+printf("Event signal value before: %i\n", eventSignal.value());
+        if (cManager->commandPending) {
+printf("STARTING TO WAIT FOR COMMAND!\n");
+            ASSERT(eventSignal.waitUntil(os::TimeService::Instance()->secondsSince(0) + ((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS)),
+                "ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
+        }
+        else {
+            while (true) {
+                if 
+        }
+
+printf("Event signal value after: %i\n", eventSignal.value());
     }
 }
 
-void EventManager::cycleLoop() {
-    RTT::os::MutexLock lock(signalLock);
-    if (!eventSignal.value())
-        eventSignal.signal();
-}
-
 void EventManager::eventCallback(RtOpsEvent event) {
-    RTT::os::MutexLock lock(signalLock);
     incomingEvents.push_back(event);
+printf("Signalling event! Signal current count: %i!\n", eventSignal.value());
     eventSignal.signal();
+printf("Once signalled, eventSignal value is: %i\n", eventSignal.value());
 }
 
 void EventManager::setEventWait(RtOpsEvent event) {
     eventBeingWaitedOn = event;
     cManager->commandPending = true;
+    os::MutexLock lock(incomingEventsLock);
 }
 
 bool EventManager::breakLoop() {
     done = true;
-    cycleLoop();
+    eventSignal.signal();
     return done;
 }
 

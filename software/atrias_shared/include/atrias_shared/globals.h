@@ -13,6 +13,10 @@
 
 #include <stdint.h>
 
+#define ASSERT(condition, message) do { \
+if (!(condition)) { printf((message)); } \
+assert ((condition)); } while(false)
+
 #define SECOND_IN_NANOSECONDS 1000000000LL
 
 //Use namespaces for bonus points (you can't win the game without bonus points)

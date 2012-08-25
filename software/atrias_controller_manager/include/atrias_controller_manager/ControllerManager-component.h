@@ -44,6 +44,7 @@ using namespace atrias_msgs;
 
 namespace atrias {
 namespace controllerManager {
+
 class EventManager;
 
 class ControllerManager: public TaskContext {
@@ -60,6 +61,7 @@ private:
     EventManager *eManager;
 
     os::Mutex nameCacheMutex;
+    os::Mutex commandRunMutex;
 
     ControllerManagerError lastError;
     ControllerManagerState state;
@@ -102,7 +104,7 @@ public:
     void cleanupHook();
 
     void throwEstop(bool alertRtOps = true);
-    void setState(ControllerManagerState newState, bool isAck = false);
+    void setState(ControllerManagerState newState);
     ControllerManagerState getState();
 };
 

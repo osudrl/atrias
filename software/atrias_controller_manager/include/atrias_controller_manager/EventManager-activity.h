@@ -38,13 +38,9 @@ private:
       */
     volatile bool done;
 
-    /** @brief Protects access to \a loopSignal
+    /** @brief Protects access to incomingEvents
      */
-    RTT::os::Mutex signalLock;
-
-    /** @brief Used to signal the loop that new events have occurred
-     */
-    os::Semaphore eventSignal;
+    os::Mutex incomingEventsLock;
 
     list<RtOpsEvent> incomingEvents;
     RtOpsEvent       eventBeingWaitedOn;
@@ -57,10 +53,6 @@ private:
         /** @brief Run by Orocos. Is the main loop for the controllers..
          */
         void loop();
-
-        /** @brief Instructs the loop to run once.
-         */
-        void cycleLoop();
 
         /**
          * @brief Informs the loop about an incoming event message from RT Ops.

@@ -48,6 +48,7 @@ bool ControllerManager::configureHook() {
     // We need to get the Deployer's instance of the ScriptingService because
     // only it has access to the deployer's operations (like loadComponent)
     scriptingProvider = boost::dynamic_pointer_cast<scripting::ScriptingService>(getPeer("Deployer")->provides()->getService("scripting"));
+    assert(scriptingProvider);
     std::cout << "AtriasControllerManager configured !" << std::endl;
     return true;
 }
@@ -110,9 +111,13 @@ void ControllerManager::updateHook() {
         commandBuffer.push_back((UserCommand)guiOutput.command);
     }
 
-    if (!commandPending && !commandBuffer.empty()) {
-        handleUserCommand(commandBuffer.front());
-        commandBuffer.pop_front();
+    if (!commandPending && !(commandBuffer.empty())) {
+        os::MutexTryLock tryLock(commandRunMutex);
+        if (tryLock.isSuccessful()) {
+            handleUserCommand(commandBuffer.front());
+            commandBuffer.pop_front();
+            commandRunMutex.unlock();
+        }
     }
 
     //Update the GUI with all of our new information
@@ -190,8 +195,8 @@ void ControllerManager::handleUserCommand(UserCommand command) {
 void ControllerManager::throwEstop(bool alertRtOps) {
     state = ControllerManagerState::CONTROLLER_ESTOPPED;
     if (alertRtOps) {
-        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
         eManager->setEventWait(RtOpsEvent::ACK_E_STOP);
+        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
     }
 }
 
@@ -203,8 +208,8 @@ bool ControllerManager::loadController(string controllerName) {
             metadata = controllerMetadata::loadControllerMetadata(path, controllerName);
             if (scriptingProvider->runScript(metadata.startScriptPath)) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
-                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
                 eManager->setEventWait(RtOpsEvent::ACK_DISABLE);
+                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
                 currentControllerName = controllerName;
                 return true;
             }
@@ -229,8 +234,8 @@ bool ControllerManager::loadController(string controllerName) {
  * not just unloaded.
  */
 void ControllerManager::unloadController() {
-    rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
     eManager->setEventWait(RtOpsEvent::ACK_RESET);
+    rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
 }
 
 /*bool ControllerManager::waitForRtOpsState(RtOpsCommand rtoState) {
@@ -247,9 +252,8 @@ void ControllerManager::unloadController() {
     return false;
 }*/
 
-void ControllerManager::setState(ControllerManagerState newState, bool isAck) {
+void ControllerManager::setState(ControllerManagerState newState) {
     if (newState == ControllerManagerState::CONTROLLER_STOPPED) {
-        //Tell RT Ops that the controller is now loaded
         controllerLoaded = true;
     }
     else if (newState == ControllerManagerState::NO_CONTROLLER_LOADED) {
@@ -262,12 +266,12 @@ void ControllerManager::setState(ControllerManagerState newState, bool isAck) {
     state = newState;
     updateGui();
 
-    if (isAck) {
-        commandPending = false;
-
-        if (!commandBuffer.empty()) {
+    if (!commandPending && !(commandBuffer.empty())) {
+        os::MutexTryLock tryLock(commandRunMutex);
+        if (tryLock.isSuccessful()) {
             handleUserCommand(commandBuffer.front());
             commandBuffer.pop_front();
+            commandRunMutex.unlock();
         }
     }
 }
