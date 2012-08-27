@@ -21,8 +21,5 @@ stream("controller.gui_data_in", gui_policy)
 # Configure the component
 controller.configure()
 
-# Set the affinity to real-time
-controller.setCpuAffinity(10)
-
 # Start the component
 controller.start()
