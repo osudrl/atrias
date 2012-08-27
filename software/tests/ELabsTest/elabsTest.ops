@@ -1,4 +1,4 @@
-import("atrias_elabs_test")
+import("ELabsTest")
 
 # Load necessary components.
 loadComponent("atrias_test", "ELabsTest")
