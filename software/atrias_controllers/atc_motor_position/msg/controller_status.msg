@@ -1,0 +1,4 @@
+bool isEnabled
+
+float64 motorPositionA
+float64 motorPositionB

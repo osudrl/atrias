@@ -19,10 +19,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     if (position_A_hscale && position_B_hscale && p_hscale && d_hscale &&
             set_position_checkbutton) {
         // Set ranges.
-        position_A_hscale->set_range(-5, 5);
-        position_B_hscale->set_range(-5, 5);
-        p_hscale->set_range(0., 50000.);
-        d_hscale->set_range(0., 5000.);
+        position_A_hscale->set_range(-1 * (M_PI / 4.), M_PI);
+        position_B_hscale->set_range(0, (5. * M_PI) / 4.);
+        p_hscale->set_range(0., 10000.);
+        d_hscale->set_range(0., 500.);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
@@ -62,6 +62,12 @@ void setParameters() {
 }
 
 void guiUpdate() {
+    if ((!controllerDataIn.isEnabled) && set_position_checkbutton->get_active()) {
+    	//We want to update the sliders with the current position
+    	position_A_hscale->set_value(controllerDataIn.motorPositionA);
+    	position_B_hscale->set_value(controllerDataIn.motorPositionB);
+    }
+
     controllerDataOut.des_motor_ang_A = a_position_param = position_A_hscale->get_value();
     controllerDataOut.des_motor_ang_B = b_position_param = position_B_hscale->get_value();
     controllerDataOut.p_gain          = p_gain_param     = p_hscale->get_value();

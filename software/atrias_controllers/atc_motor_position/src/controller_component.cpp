@@ -36,11 +36,11 @@ ATCMotorPosition::ATCMotorPosition(std::string name):
 atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robot_state rs) {
     // Set the PD gains
     // MotorA
-    P0.set(10.0);
-    D0.set(1.0);
+    P0.set(guiIn.p_gain);
+    D0.set(guiIn.d_gain);
     // MotorB
-    P1.set(10.0);
-    D1.set(1.0);
+    P1.set(guiIn.p_gain);
+    D1.set(guiIn.d_gain);
 
     // Calculate motorA output
     targetPos = guiIn.des_motor_ang_A;
@@ -57,6 +57,9 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
     controllerOutput.command = medulla_state_run;
+
+    //If we're enabled, inform the GUI
+    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
 
     // Send data to the GUI
     if (pubTimer->readyToSend())
