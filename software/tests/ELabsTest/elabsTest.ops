@@ -1,0 +1,13 @@
+import("atrias_elabs_test")
+
+# Load necessary components.
+loadComponent("atrias_test", "ELabsTest")
+
+# Make the Noop Connector cyclic
+setActivity("atrias_test", 0.001, 0, ORO_SCHED_OTHER)
+
+# Configure components.
+atrias_test.configure()
+
+# Start components.
+atrias_test.start();
