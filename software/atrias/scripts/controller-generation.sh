@@ -24,6 +24,23 @@ function sedMultiLine
     rm "${file}.old"
 }
 
+function sedOrdered
+{
+    # This function is to keep the generated code readable by ordering lines from 0..1..2..etc instead of ..2..1..0.
+    # This function relies on these variables being passed implicitly:
+    # unique, prevUnique, uniqueNumber, prevUniqueNumber
+    file="$1"
+    find="$2"
+    replace="$3"
+    if [ "$uniqueNumber" -gt "0" ]
+    then
+        echo "find before = $find"
+        find=$(echo "$replace" | sed "s|^...||; s|${unique}|${prevUnique}|g; s|${uniqueNumber}|${prevUniqueNumber}|g")
+        echo "find after = $find"
+    fi
+    sedMultiLine "$file" "$find" "$replace"
+}
+
 function grepRemoveLines
 {
     # Usage:  grepRemoveLines "file" "line1" "line2" ...
@@ -288,76 +305,44 @@ do
             replace='&\nimport("'$ascToLinkName'")\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")\n'
             sedMultiLine "$file" "$find" "$replace"
 
-            # Connect to subcontrollers
-            find='# Connect this controller with its subcontrollers'
-            replace='&\naddPeer("controller", '${unique}Name')'
-            sedMultiLine "$file" "$find" "$replace"
-
-            # Subcontroller names
-            find='# Pass the names of the subcontrollers to the controller'
-            replace='&\ncontroller.'${unique}Name' = '${unique}Name''
-            sedMultiLine "$file" "$find" "$replace"
         else
             # Set up subcontrollers
             find='loadComponent('${prevUnique}Name', "'$componentName'")'
             replace='&\nvar string '${unique}Name' = atrias_cm.getUniqueName("controller", "'${uniqueNamePrefix}'")\nloadComponent('${unique}Name', "'$componentName'")'
             sedMultiLine "$file" "$find" "$replace"
 
-            # Connect to subcontrollers
-            find='addPeer("controller", '${prevUnique}Name')'
-            replace='&\naddPeer("controller", '${unique}Name')'
-            sedMultiLine "$file" "$find" "$replace"
-
-            # Subcontroller names
-            find='controller.'${prevUnique}Name' = '${prevUnique}Name''
-            replace='&\ncontroller.'${unique}Name' = '${unique}Name''
-            sedMultiLine "$file" "$find" "$replace"
         fi
 
+        # Subcontroller names
+        find='# Pass the names of the subcontrollers to the controller'
+        replace='&\ncontroller.'${unique}Name' = '${unique}Name''
+        sedOrdered "$file" "$find" "$replace"
+
+        # Connect to subcontrollers
+        find='# Connect this controller with its subcontrollers'
+        replace='&\naddPeer("controller", '${unique}Name')'
+        sedOrdered "$file" "$find" "$replace"
 
         # Add the component to the stop script
         file='stop.ops'
-        if [ "$uniqueNumber" -eq "0" ]
-        then
-            find='controller.stop()'
-            replace='&\nunloadComponent(controller.'${unique}Name')'
-            sedMultiLine "$file" "$find" "$replace"
-        else
-            find='unloadComponent(controller.'${prevUnique}Name')'
-            replace='&\nunloadComponent(controller.'${unique}Name')'
-            sedMultiLine "$file" "$find" "$replace"
-        fi
+        find='controller.stop()'
+        replace='&\nunloadComponent(controller.'${unique}Name')'
+        sedOrdered "$file" "$find" "$replace"
 
         # Add the component to the .cpp and .h file
         file="src/${newCppFile}"
-        if [ "$uniqueNumber" -eq "0" ]
-        then
-            find='// Add properties'
-            replace='&\n    this->addProperty("'${unique}Name'", '${unique}Name');'
-            sedMultiLine "$file" "$find" "$replace"
+        find='// Add properties'
+        replace='&\n    this->addProperty("'${unique}Name'", '${unique}Name');'
+        sedOrdered "$file" "$find" "$replace"
 
-            file="include/${newAcName}/${newHFile}"
-            find='// Subcontroller names'
-            replace='&\n    std::string '${unique}Name';'
-            sedMultiLine "$file" "$find" "$replace"
+        file="include/${newAcName}/${newHFile}"
+        find='// Subcontroller names'
+        replace='&\n    std::string '${unique}Name';'
+        sedOrdered "$file" "$find" "$replace"
 
-            find='// Subcontroller components'
-            replace='&\n    TaskContext *'$unique';'
-            sedMultiLine "$file" "$find" "$replace"
-        else
-            find='this->addProperty("'${prevUnique}Name'", '${prevUnique}Name');'
-            replace='&\n    this->addProperty("'${unique}Name'", '${unique}Name');'
-            sedMultiLine "$file" "$find" "$replace"
-
-            file="include/${newAcName}/${newHFile}"
-            find='std::string '${prevUnique}Name';'
-            replace='&\n    std::string '${unique}Name';'
-            sedMultiLine "$file" "$find" "$replace"
-
-            find='TaskContext \*'$prevUnique';'
-            replace='&\n    TaskContext *'$unique';'
-            sedMultiLine "$file" "$find" "$replace"
-        fi
+        find='// Subcontroller components'
+        replace='&\n    TaskContext \*'$unique';'
+        sedOrdered "$file" "$find" "$replace"
 
 
         # Operations
@@ -377,29 +362,15 @@ do
                 prevOperationReference=$(echo "${prevUnique}_${operation}" | sed "s|_\(.\)|\U\1|g")
 
                 cd "$newAcPath"
+                file="include/${newAcName}/${newHFile}"
+                find='// Subcontroller operations'
+                replace='&\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
+                sedOrdered "$file" "$find" "$replace"
 
-                if [ "$uniqueNumber" -eq "0" ]
-                then
-                    file="include/${newAcName}/${newHFile}"
-                    find='// Subcontroller operations'
-                    replace='&\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
-                    sedMultiLine "$file" "$find" "$replace"
-
-                    file="src/${newCppFile}"
-                    find='// Connect to the subcontrollers'
-                    replace='&\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
-                    sedMultiLine "$file" "$find" "$replace"
-                else
-                    file="include/${newAcName}/${newHFile}"
-                    find='OperationCaller<'$returnVar'('"$args"')> '${prevOperationReference}';'
-                    replace='&\n    OperationCaller<'$returnVar'('"$args"')> '${operationReference}';'
-                    sedMultiLine "$file" "$find" "$replace"
-
-                    file="src/${newCppFile}"
-                    find=''${prevOperationReference}' = '$prevUnique'->provides("'$service'")->getOperation("'$operation'");\n'
-                    replace='&\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
-                    sedMultiLine "$file" "$find" "$replace"
-                fi
+                file="src/${newCppFile}"
+                find='// Connect to the subcontrollers'
+                replace='&\n    '$unique' = this->getPeer('${unique}Name');\n    if ('$unique')\n        '${operationReference}' = '$unique'->provides("'$service'")->getOperation("'$operation'");\n'
+                sedOrdered "$file" "$find" "$replace"
 
             done
         done
@@ -413,28 +384,15 @@ do
             propType=$(grep " ${property},\| ${property};" include/${ascToLinkName}/${newHFile} | sed "s|^\s*||; s| .*||")
 
             cd "$newAcPath"
-            if [ "$uniqueNumber" -eq "0" ]
-            then
-                file="include/${newAcName}/${newHFile}"
-                find='// Service properties'
-                replace='&\n    Property<'$propType'> '${property}${uniqueNumber}';'
-                sedMultiLine "$file" "$find" "$replace"
+            file="include/${newAcName}/${newHFile}"
+            find='// Service properties'
+            replace='&\n    Property<'$propType'> '${property}${uniqueNumber}';'
+            sedOrdered "$file" "$find" "$replace"
 
-                file="src/${newCppFile}"
-                find='// Get references to subcontroller component properties'
-                replace='&\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
-                sedMultiLine "$file" "$find" "$replace"
-            else
-                file="include/${newAcName}/${newHFile}"
-                find='Property<'$propType'> '${property}${prevUniqueNumber}';'
-                replace='&\n    Property<'$propType'> '${property}${uniqueNumber}';'
-                sedMultiLine "$file" "$find" "$replace"
-
-                file="src/${newCppFile}"
-                find=''${property}${prevUniqueNumber}' = '${prevUnique}'->properties()->getProperty("'${property}'");'
-                replace='&\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
-                sedMultiLine "$file" "$find" "$replace"
-            fi
+            file="src/${newCppFile}"
+            find='// Get references to subcontroller component properties'
+            replace='&\n    '${property}${uniqueNumber}' = '${unique}'->properties()->getProperty("'${property}'");'
+            sedOrdered "$file" "$find" "$replace"
         done
 
 
