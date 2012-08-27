@@ -38,8 +38,13 @@ private:
       */
     volatile bool done;
 
+    /** @brief When unlocked, signals the event handler that one or more
+      * events are waiting to be processed.
+      */
+    os::Mutex eventsWaitingSignaller;
+
     /** @brief Protects access to incomingEvents
-     */
+      */
     os::Mutex incomingEventsLock;
 
     list<RtOpsEvent> incomingEvents;

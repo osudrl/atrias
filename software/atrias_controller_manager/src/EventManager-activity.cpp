@@ -12,17 +12,25 @@ namespace atrias {
 namespace controllerManager {
 
 EventManager::EventManager(ControllerManager *manager) :
-                Activity(),
-                eventSignal(0) {
+                Activity() {
     cManager = manager;
 }
 
 void EventManager::loop() {
     while (!done) {
-printf("START LOOP!\n");
-        if (!incomingEvents.empty()) {
-            RtOpsEvent event = incomingEvents.front();
-            incomingEvents.pop_front();
+    	bool process = false;
+    	RtOpsEvent event;
+    	{
+    		//Make sure that eventCallback is not running
+    		os::MutexLock lock(incomingEventsLock);
+
+			if (!incomingEvents.empty()) {
+				event = incomingEvents.front();
+				incomingEvents.pop_front();
+				process = true;
+			}
+    	}
+    	if (process) {
             if (event == eventBeingWaitedOn) {
                 cManager->commandPending = false;
                 switch (event) {
@@ -64,27 +72,39 @@ printf("START LOOP!\n");
                     }
                 }
             }
+            {
+            	//Make sure eventCallback isn't running before we continue
+            	os::MutexLock lock(incomingEventsLock);
+
+				if (incomingEvents.empty()) {
+					//We're out of events to process, so re-lock the signaller
+					eventsWaitingSignaller.lock();
+				}
+            }
         }
-printf("Event signal value before: %i\n", eventSignal.value());
         if (cManager->commandPending) {
-printf("STARTING TO WAIT FOR COMMAND!\n");
-            ASSERT(eventSignal.waitUntil(os::TimeService::Instance()->secondsSince(0) + ((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS)),
-                "ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
+        	//Wait for a limited time for an event to come in
+        	os::MutexTimedLock timedLock(eventsWaitingSignaller,
+        			os::TimeService::Instance()->secondsSince(0) +
+        			((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS));
+
+        	//If no event has come in shut down with a message
+            ASSERT(timedLock.isSuccessful(),
+            		"ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
+
+            //If we made it this far we've got a message and it's time to process it
         }
         else {
-            while (true) {
-                if 
+        	//Block until an event comes in
+        	os::MutexLock lock(eventsWaitingSignaller);
         }
-
-printf("Event signal value after: %i\n", eventSignal.value());
     }
 }
 
 void EventManager::eventCallback(RtOpsEvent event) {
+	os::MutexLock lock(incomingEventsLock);
     incomingEvents.push_back(event);
-printf("Signalling event! Signal current count: %i!\n", eventSignal.value());
-    eventSignal.signal();
-printf("Once signalled, eventSignal value is: %i\n", eventSignal.value());
+    eventsWaitingSignaller.unlock();
 }
 
 void EventManager::setEventWait(RtOpsEvent event) {
@@ -95,7 +115,7 @@ void EventManager::setEventWait(RtOpsEvent event) {
 
 bool EventManager::breakLoop() {
     done = true;
-    eventSignal.signal();
+    eventsWaitingSignaller.unlock();
     return done;
 }
 

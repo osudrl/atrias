@@ -61,7 +61,7 @@ bool ControllerManager::startHook() {
 void ControllerManager::updateHook() {
     // Have we been contacted by RT Ops?
     if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-        std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
+        //std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
         eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
     }
 
