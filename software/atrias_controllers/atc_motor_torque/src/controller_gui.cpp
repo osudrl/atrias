@@ -23,14 +23,14 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torque_hip_hscale->set_range(-10., 10.);
 
         // Set up subscriber and publisher.
-        sub = nh.subscribe("atc_component_status", 0, controllerCallback);
+        sub = nh.subscribe("atc_motor_torque_status", 0, controllerCallback);
         pub = nh.advertise<atc_motor_torque::controller_input>("atc_motor_torque_input", 0);
         return true;
     }
     return false;
 }
 
-void controllerCallback(const atc_component::controller_status &status) {
+void controllerCallback(const atc_motor_torque::controller_status &status) {
     controllerDataIn = status;
 }
 
