@@ -1,0 +1,13 @@
+# Directories to ignore
+bin/
+lib/
+build/
+srv_gen/
+msg_gen/
+software/atrias_controllers/*/src/*/
+software/atrias_controllers/*/include/*/
+software/atrias_msgs/src
+software/atrias_msgs/include
+
+# Files to ignore
+*.pc
