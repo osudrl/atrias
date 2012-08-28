@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         leg_length_amplitude_hscale->set_range(0., 0.2);
         leg_length_frequency_hscale->set_range(0., 20.);
         p_sine_wave_hscale->set_range(0., 10000.);
-        d_sine_wave_hscale->set_range(0., 100.);
+        d_sine_wave_hscale->set_range(0., 500.);
         pub = nh.advertise<atc_motor_sin_wave::controller_input>("atc_motor_sin_wave_input", 0);
         return true;
     }

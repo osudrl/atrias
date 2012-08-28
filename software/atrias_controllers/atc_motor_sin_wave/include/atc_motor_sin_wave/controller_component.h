@@ -46,19 +46,25 @@ private:
 
     // Variables for subcontrollers
     std::string pd0Name;
+    std::string pd1Name;
     std::string sin0Name;
 
     TaskContext *pd0;
+    TaskContext *pd1;
     TaskContext *sin0;
 
     Property<double> P0;
     Property<double> D0;
+    Property<double> P1;
+    Property<double> D1;
 
     OperationCaller<SinOut(double, double)> sin0Controller;
     OperationCaller<double(double, double, double, double)> pd0Controller;
+    OperationCaller<double(double, double, double, double)> pd1Controller;
 
     // Math variables
     double centerBAngle;
+    double centerAAngle;
     double targetPos, currentPos, targetVel, currentVel;
     SinOut motorBSin;
 

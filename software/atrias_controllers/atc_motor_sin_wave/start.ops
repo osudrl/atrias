@@ -12,15 +12,19 @@ connectPeers("atrias_rt", "controller")
 import("asc_pd")
 import("asc_sin_generator")
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
 var string sin0Name = atrias_cm.getUniqueName("controller", "sin")
 loadComponent(pd0Name, "ASCPD")
+loadComponent(pd1Name, "ASCPD")
 loadComponent(sin0Name, "ASCSinGenerator")
 
 # Connect this controller with its subcontrollers.
 addPeer("controller", pd0Name)
+addPeer("controller", pd1Name)
 addPeer("controller", sin0Name)
 # Pass the names of the subcontrollers to the controller
 controller.pd0Name = pd0Name
+controller.pd1Name = pd1Name
 controller.sin0Name = sin0Name
 
 # Set up the gui connection

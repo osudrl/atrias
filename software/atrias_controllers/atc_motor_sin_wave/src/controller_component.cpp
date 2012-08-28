@@ -19,6 +19,8 @@ ATCMotorSinWave::ATCMotorSinWave(std::string name):
     // Add properties.
     this->addProperty("pd0Name", pd0Name)
         .doc("Name of 0th PD subcontroller.");
+    this->addProperty("pd1Name", pd1Name)
+        .doc("Name of 1th PD subcontroller.");
     this->addProperty("sin0Name", sin0Name)
         .doc("Name of 0th sin generator subcontroller.");
 
@@ -40,6 +42,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
     {
         // Do nothing
+        controllerOutput.lLeg.motorCurrentA = 0.0;
         controllerOutput.lLeg.motorCurrentB = 0.0;
         return controllerOutput;
     }
@@ -49,6 +52,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     // motorBSin.pos / .vel
 
     // Set resonable center positions
+    centerAAngle = M_PI/4;
     centerBAngle = 3*M_PI/4;
     motorBSin.pos = motorBSin.pos + centerBAngle;
 
@@ -56,13 +60,22 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     // motorB
     P0.set(guiIn.p_gain);
     D0.set(guiIn.d_gain);
+    P1.set(guiIn.p_gain);
+    D1.set(guiIn.d_gain);
 
+    // Calculate motorA current
+    targetPos = centerAAngle;
+    currentPos = rs.lLeg.halfA.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfA.motorVelocity;
+    controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+    
     // Calculate motorB current
     targetPos = motorBSin.pos;
     currentPos = rs.lLeg.halfB.motorAngle;
     targetVel = motorBSin.vel;
     currentVel = rs.lLeg.halfB.motorVelocity;
-    controllerOutput.lLeg.motorCurrentB = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+    controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
     controllerOutput.command = medulla_state_run;
 
@@ -75,14 +88,20 @@ bool ATCMotorSinWave::configureHook() {
     // Sin controllers
     sin0 = this->getPeer(sin0Name);
     if (sin0)
-        sin0Controller = sin0->provides("sinGenerator")->getOperation("runController");
+        sin0Controller = sin0->provides("sg")->getOperation("runController");
 
     // PD controllers
     pd0 = this->getPeer(pd0Name);
     if (pd0)
         pd0Controller = pd0->provides("pd")->getOperation("runController");
 
+    pd1 = this->getPeer(pd1Name);
+    if (pd1)
+        pd1Controller = pd1->provides("pd")->getOperation("runController");
+
     // Get references to the attributes
+    P1 = pd1->properties()->getProperty("P");
+    D1 = pd1->properties()->getProperty("D");
     P0 = pd0->properties()->getProperty("P");
     D0 = pd0->properties()->getProperty("D");
 
