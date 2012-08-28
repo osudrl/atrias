@@ -9,6 +9,7 @@
 
 #include <atc_component/controller_gui.h>
 
+//! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("torque_A_hscale", torque_A_hscale);
     gui->get_widget("torque_B_hscale", torque_B_hscale);
@@ -27,13 +28,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     return false;
 }
 
+//! \brief Update our local copy of the controller status.
 void controllerCallback(const atc_component::controller_status &status) {
     controllerDataIn = status;
 }
 
 //! \brief Get parameters from the server and configure GUI accordingly.
-// TODO: Soo-Hyun will make this a lot easier to implement/modify by
-// mid-September.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
     nh.getParam("/atrias_gui/torque_A", torque_A_param);
@@ -53,6 +53,7 @@ void setParameters() {
     nh.setParam("/atrias_gui/torque_hip", torque_hip_param);
 }
 
+//! \brief Update the GUI.
 void guiUpdate() {
     controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
     controllerDataOut.des_motor_torque_B   = torque_B_param   = torque_B_hscale->get_value();
@@ -60,5 +61,7 @@ void guiUpdate() {
     pub.publish(controllerDataOut);
 }
 
+//! \brief Take down the GUI.
 void guiTakedown() {
 }
+
