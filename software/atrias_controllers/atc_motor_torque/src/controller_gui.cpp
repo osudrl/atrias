@@ -54,6 +54,7 @@ void setParameters() {
     nh.setParam("/atrias_gui/torque_hip", torque_hip_param);
 }
 
+//! \brief Update the GUI.
 void guiUpdate() {
     controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
     controllerDataOut.des_motor_torque_B   = torque_B_param   = torque_B_hscale->get_value();
