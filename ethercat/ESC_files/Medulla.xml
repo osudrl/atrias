@@ -3,6 +3,7 @@
 	<Vendor>
 		<Id>1551</Id>
 		<Name>OSU Dynamic Robotics Laboratory</Name>
+		<ImageData16x14>424de6000000000000007600000028000000100000000e000000010004000000000070000000130b0000130b000010000000100000002962f300386cf3004273f400517df5005f87f6006b91f6007495f8007b9ef7008aa5f90093aff900a2bbf900b8cafa00cfdbfc00e9f0ff00f5f7fd00fcfffe00ffffffffffffffffffc9effbbffe9cfffc215d9119e412cff54b091a9291c47ff56e192cb272e56ff55d1aee44a1e56ff55d1af70cb1e56ff55d1bb0afa1e56ff55d1a37fda1e56ff57e181cb281e56ff63b0a297291e45ffc317ea22bb4e79fffecfffcdfffffffffffffffffffffff0a</ImageData16x14>
 	</Vendor>
 	<Descriptions>
 		<Groups>
@@ -70,6 +71,71 @@
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
 					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+				</Eeprom>
+			</Device>
+			<Device Physics="YY">
+				<Type ProductCode="#x00000005" RevisionNo="#x00000001">ATRIAS 2.1 Slave Card (KPA PCI Slave Card)</Type>
+				<Name LcId="1033"><![CDATA[ATRIAS 2.1 Slave Card (KPA PCI Slave Card)]]></Name>
+				<GroupType>Medulla</GroupType>
+				<Fmmu>MboxState</Fmmu>
+				<Fmmu Sm="2">Outputs</Fmmu>
+				<Fmmu Sm="3">Inputs</Fmmu>
+				<Sm Enable="1" StartAddress="#x1000" ControlByte="#x26" DefaultSize="512" MinSize="24" MaxSize="512">MBoxOut</Sm>
+				<Sm Enable="1" StartAddress="#x1200" ControlByte="#x22" DefaultSize="512" MinSize="24" MaxSize="512">MBoxIn</Sm>
+				<Sm StartAddress="#x1400" ControlByte="#x64" Enable="1" DefaultSize="3" MinSize="0"  MaxSize="3">Outputs</Sm>
+				<Sm StartAddress="#x2000" ControlByte="#x20" Enable="1" DefaultSize="6" MinSize="0"  MaxSize="6">Inputs</Sm>
+				<RxPdo Fixed="0" Sm="2">
+					<Index>#x1600</Index>
+					<Name>uControllerInput</Name>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Command</Name>
+						<DataType>USINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0003</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Motor Current</Name>
+						<DataType>INT</DataType>
+					</Entry>
+				</RxPdo>
+				<TxPdo Fixed="0" Sm="3">
+					<Index>#x1A00</Index>
+					<Name>uControllerOutput</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>1</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Timestep</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0007</Index>
+						<SubIndex>2</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>Encoder 0</Name>
+						<DataType>UDINT</DataType>
+					</Entry>
+				</TxPdo>
+				<Mailbox>
+					<CoE SdoInfo="1"></CoE>
+					<FoE/>
+				</Mailbox>
+				<Dc UnknownFRMW="0" Unknown64Bit="0">
+					<OpMode>
+						<Name>DcSync</Name>
+						<Desc>DC for synchronization</Desc>
+						<AssignActivate>#x0000</AssignActivate>
+						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
+						<ShiftTimeSync0>0</ShiftTimeSync0>
+					</OpMode>
+				</Dc>
+				<Eeprom>
+					<ByteSize>2048</ByteSize>
+					<ConfigData>0808000000000000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
