@@ -15,10 +15,4 @@
 	<!-- Start the Gazebo GUI -->
 	<node name="simulation_gui" pkg="gazebo" type="gui" respawn="false" output="screen" />
 
-	<!-- Controller testing -->
-	<!--
-	note: after info, there was a double dash instead of the single dash
-	<node name="rt_ops" pkg="ocl" type="deployer-gnulinux" args="-s $(find atrias_rt_ops)/sim_test.ops -l info -" respawn="false" output="screen" />
-	-->
-
 </launch>
