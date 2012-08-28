@@ -40,12 +40,25 @@ ATCComponent::ATCComponent(std::string name):
     log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
 }
 
-// Put control code here.
 atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
+    // Only run the controller when we're enabled
+    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    {
+        // Do nothing
+        co.lLeg.motorCurrentA = 0.0;
+        co.lLeg.motorCurrentB = 0.0;
+        co.lLeg.motorCurrentHip = 0.0;
+        return controllerOutput;
+    }
+
+    // begin control code //
+
     // Stuff the msg
     co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+
+    // end control code //
 
     // Command a run state
     co.command = medulla_state_run;

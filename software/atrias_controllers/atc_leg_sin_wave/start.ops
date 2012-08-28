@@ -1,5 +1,3 @@
-require("print")
-
 # Set up the top controller
 import("atc_leg_sin_wave")
 loadComponent("controller", "ATCLegSinWave")
@@ -37,7 +35,7 @@ controller.sin1Name = sin1Name
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
-gui_policy.name_id = "/atc_motor_sin_wave_input"
+gui_policy.name_id = "/atc_leg_sin_wave_input"
 stream("controller.gui_data_in", gui_policy)
 
 # Configure components and subcomponents
