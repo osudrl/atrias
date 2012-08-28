@@ -20,7 +20,7 @@ ATCMotorSinWave::ATCMotorSinWave(std::string name):
     this->addProperty("pd0Name", pd0Name)
         .doc("Name of 0th PD subcontroller.");
     this->addProperty("pd1Name", pd1Name)
-        .doc("Name of 1th PD subcontroller.");
+        .doc("Name of 1st PD subcontroller.");
     this->addProperty("sin0Name", sin0Name)
         .doc("Name of 0th sin generator subcontroller.");
 
@@ -57,9 +57,10 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     motorBSin.pos = motorBSin.pos + centerBAngle;
 
     // Set the PD gains
-    // motorB
+    // motorA
     P0.set(guiIn.p_gain);
     D0.set(guiIn.d_gain);
+    // motorB
     P1.set(guiIn.p_gain);
     D1.set(guiIn.d_gain);
 
@@ -100,10 +101,10 @@ bool ATCMotorSinWave::configureHook() {
         pd1Controller = pd1->provides("pd")->getOperation("runController");
 
     // Get references to the attributes
-    P1 = pd1->properties()->getProperty("P");
-    D1 = pd1->properties()->getProperty("D");
     P0 = pd0->properties()->getProperty("P");
     D0 = pd0->properties()->getProperty("D");
+    P1 = pd1->properties()->getProperty("P");
+    D1 = pd1->properties()->getProperty("D");
 
     log(Info) << "[ATCMSW] configured!" << endlog();
     return true;
