@@ -50,6 +50,8 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
     // Command a run state
     co.command = medulla_state_run;
 
+    // Let the GUI know the controller run state
+    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);

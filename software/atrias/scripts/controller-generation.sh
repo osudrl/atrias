@@ -34,9 +34,7 @@ function sedOrdered
     replace="$3"
     if [ "$uniqueNumber" -gt "0" ]
     then
-        echo "find before = $find"
         find=$(echo "$replace" | sed "s|^...||; s|${unique}|${prevUnique}|g; s|${uniqueNumber}|${prevUniqueNumber}|g")
-        echo "find after = $find"
     fi
     sedMultiLine "$file" "$find" "$replace"
 }
@@ -458,7 +456,7 @@ then
     grepRemoveLines "$file" "${lines[@]}"
 
     file="src/${newCppFile}"
-    lines=( "guiDataOut" "Send data to the GUI" "readyToSend" )
+    lines=( "Let the GUI know the controller run state" "guiOut" "Send data to the GUI" "readyToSend" )
     grepRemoveLines "$file" "${lines[@]}"
 
     file="include/${newAcName}/${newHFile}"
