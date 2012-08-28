@@ -19,30 +19,23 @@ EventManager::EventManager(ControllerManager *manager) :
 }
 
 void EventManager::loop() {
-    printf("Entered new thread!\n");
     while (!done) {
-        printf("Starting the loop!\n");
     	bool process = false;
     	RtOpsEvent event;
     	{
     		//Make sure that eventCallback is not running
-            printf("Locking incomingEventsLock!\n");
     		os::MutexLock lock(incomingEventsLock);
-    		printf("Locked incomingEventsLock!\n");
 
 			if (!incomingEvents.empty()) {
 				event = incomingEvents.front();
 				incomingEvents.pop_front();
 				process = true;
-	            printf("Process is true!\n");
 			}
     	}
     	if (process) {
             if (event == eventBeingWaitedOn) {
-                cManager->commandPending = false;
                 switch (event) {
                     case RtOpsEvent::ACK_DISABLE: {
-                        printf("Ack disable!\n");
                         cManager->setState(ControllerManagerState::CONTROLLER_STOPPED);
                         break;
                     }
@@ -63,6 +56,10 @@ void EventManager::loop() {
                         break;
                     }
                 }
+                cManager->commandPending = false;
+
+                // Attempt to process all commands in queue
+                while (cManager->tryProcessCommand());
             }
             else {
                 switch (event) {
@@ -93,7 +90,6 @@ void EventManager::loop() {
             }
             else {
                 //Block until an event comes in
-                printf("Waiting for eventsWaitingSignaller lock!\n");
                 eventsWaitingSignal.wait();
             }
     	}

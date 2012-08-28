@@ -71,7 +71,7 @@ void ControllerManager::updateHook() {
     lastError = ControllerManagerError::NO_ERROR;
 
     // Have we received a command from the GUI?
-    if (NewData == guiDataIn.read(guiOutput)) {
+    while (NewData == guiDataIn.read(guiOutput)) {
         // Spawn rosbag logging node when requested.
         if (guiOutput.enableLogging == true && rosbagPID == 0) {
             // Spawn a child to run the program.
@@ -109,17 +109,15 @@ void ControllerManager::updateHook() {
             kill(rosbagPID, SIGINT);
             rosbagPID = 0;
         }
-        commandBuffer.push_back((UserCommand)guiOutput.command);
-    }
 
-    if (!commandPending && !(commandBuffer.empty())) {
-        os::MutexTryLock tryLock(commandRunMutex);
-        if (tryLock.isSuccessful()) {
-            printf("Starting command #%i!\n", (int)(UserCommand_t)(commandBuffer.front()));
-            handleUserCommand(commandBuffer.front());
-            commandBuffer.pop_front();
+        {
+            os::MutexLock lock(commandRunMutex);
+            commandBuffer.push_back((UserCommand)guiOutput.command);
         }
     }
+
+    // Attempt to process all commands in queue
+    while (tryProcessCommand());
 
     //Update the GUI with all of our new information
     updateGui();
@@ -168,7 +166,7 @@ void ControllerManager::handleUserCommand(UserCommand command) {
             //Should we stop the controller?
             if (command == UserCommand::STOP) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
-                //Tell RT Ops to start the controller
+                //Tell RT Ops to stop the controller
                 rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
             }
             //Should we restart?
@@ -209,7 +207,6 @@ bool ControllerManager::loadController(string controllerName) {
             metadata = controllerMetadata::loadControllerMetadata(path, controllerName);
             if (scriptingProvider->runScript(metadata.startScriptPath)) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
-                printf("Waiting for event ACK_DISABLE!\n");
                 eManager->setEventWait(RtOpsEvent::ACK_DISABLE);
                 rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
                 currentControllerName = controllerName;
@@ -241,7 +238,6 @@ void ControllerManager::unloadController() {
 }
 
 void ControllerManager::setState(ControllerManagerState newState) {
-    printf("In setstate!\n");
     if (newState == ControllerManagerState::CONTROLLER_STOPPED) {
         controllerLoaded = true;
     }
@@ -254,16 +250,18 @@ void ControllerManager::setState(ControllerManagerState newState) {
     }
     state = newState;
     updateGui();
+}
 
-    if (!commandPending && !(commandBuffer.empty())) {
-        os::MutexTryLock tryLock(commandRunMutex);
-        if (tryLock.isSuccessful()) {
-            printf("Starting command (2) #%i!\n", (int)(UserCommand_t)(commandBuffer.front()));
+bool ControllerManager::tryProcessCommand() {
+    os::MutexTryLock tryLock(commandRunMutex);
+    if (tryLock.isSuccessful()) {
+        if (!commandPending && !(commandBuffer.empty())) {
             handleUserCommand(commandBuffer.front());
             commandBuffer.pop_front();
-            commandRunMutex.unlock();
+            return true;
         }
     }
+    return false;
 }
 
 ControllerManagerState ControllerManager::getState() {

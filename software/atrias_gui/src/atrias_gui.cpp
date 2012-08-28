@@ -328,7 +328,7 @@ void switch_controllers(GtkNotebookPage* page, guint page_num) {
                     exit(127);   // Exit code 127 if command not found.
                 }
             }
-
+            go.requestedController = "none";
             go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
             atrias_gui_cm_output.publish(go);
         }

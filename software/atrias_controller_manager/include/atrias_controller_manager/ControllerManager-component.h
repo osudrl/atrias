@@ -103,6 +103,7 @@ public:
     void stopHook();
     void cleanupHook();
 
+    bool tryProcessCommand();
     void throwEstop(bool alertRtOps = true);
     void setState(ControllerManagerState newState);
     ControllerManagerState getState();
