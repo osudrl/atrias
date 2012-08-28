@@ -8,6 +8,9 @@ loadComponent("atrias_connector", "SimConn")
 # Let these see each other.
 connectPeers("atrias_connector", "atrias_rt")
 
+# Make sure the sim connector is NOT real-time
+setActivity("atrias_connector", 0, 50, ORO_SCHED_OTHER)
+
 # Make RT Ops realtime.
 setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
 

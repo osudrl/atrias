@@ -6,13 +6,14 @@ import("atrias_controller_manager")
 loadComponent("atrias_cm", "ControllerManager")
 addPeer("atrias_cm", "Deployer")
 loadService("atrias_cm", "scripting")
-setActivity("atrias_cm", 0, LowestPriority, ORO_SCHED_OTHER)
 
 # Set our CPU to the non-realtime cores
 #atrias_cm.setCpuAffinity(5)
 
 # Configure components.
 atrias_cm.configure()
+
+setActivity("atrias_cm", 0, LowestPriority, ORO_SCHED_OTHER)
 
 # Start components.
 atrias_cm.start()

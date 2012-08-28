@@ -12,22 +12,29 @@ namespace atrias {
 namespace controllerManager {
 
 EventManager::EventManager(ControllerManager *manager) :
-                Activity() {
+                Activity(),
+                eventsWaitingSignal(0) {
     cManager = manager;
+    done = false;
 }
 
 void EventManager::loop() {
+    printf("Entered new thread!\n");
     while (!done) {
+        printf("Starting the loop!\n");
     	bool process = false;
     	RtOpsEvent event;
     	{
     		//Make sure that eventCallback is not running
+            printf("Locking incomingEventsLock!\n");
     		os::MutexLock lock(incomingEventsLock);
+    		printf("Locked incomingEventsLock!\n");
 
 			if (!incomingEvents.empty()) {
 				event = incomingEvents.front();
 				incomingEvents.pop_front();
 				process = true;
+	            printf("Process is true!\n");
 			}
     	}
     	if (process) {
@@ -35,6 +42,7 @@ void EventManager::loop() {
                 cManager->commandPending = false;
                 switch (event) {
                     case RtOpsEvent::ACK_DISABLE: {
+                        printf("Ack disable!\n");
                         cManager->setState(ControllerManagerState::CONTROLLER_STOPPED);
                         break;
                     }
@@ -72,50 +80,42 @@ void EventManager::loop() {
                     }
                 }
             }
-            {
-            	//Make sure eventCallback isn't running before we continue
-            	os::MutexLock lock(incomingEventsLock);
+    	}
 
-				if (incomingEvents.empty()) {
-					//We're out of events to process, so re-lock the signaller
-					eventsWaitingSignaller.lock();
-				}
+        if (eventsWaitingSignal.value() == 0 || incomingEvents.empty()) {
+            if (cManager->commandPending) {
+                //Wait for a limited time for an event to come in
+                ASSERT(eventsWaitingSignal.waitUntil(
+                        os::TimeService::Instance()->secondsSince(0) +
+                        ((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS)),
+                        "ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
+                //If we made it this far we've got a message and it's time to process it
             }
-        }
-        if (cManager->commandPending) {
-        	//Wait for a limited time for an event to come in
-        	os::MutexTimedLock timedLock(eventsWaitingSignaller,
-        			os::TimeService::Instance()->secondsSince(0) +
-        			((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS));
-
-        	//If no event has come in shut down with a message
-            ASSERT(timedLock.isSuccessful(),
-            		"ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
-
-            //If we made it this far we've got a message and it's time to process it
-        }
-        else {
-        	//Block until an event comes in
-        	os::MutexLock lock(eventsWaitingSignaller);
-        }
+            else {
+                //Block until an event comes in
+                printf("Waiting for eventsWaitingSignaller lock!\n");
+                eventsWaitingSignal.wait();
+            }
+    	}
     }
 }
 
 void EventManager::eventCallback(RtOpsEvent event) {
 	os::MutexLock lock(incomingEventsLock);
     incomingEvents.push_back(event);
-    eventsWaitingSignaller.unlock();
+    if (eventsWaitingSignal.value() == 0)
+        eventsWaitingSignal.signal();
 }
 
 void EventManager::setEventWait(RtOpsEvent event) {
+    os::MutexLock lock(incomingEventsLock);
     eventBeingWaitedOn = event;
     cManager->commandPending = true;
-    os::MutexLock lock(incomingEventsLock);
 }
 
 bool EventManager::breakLoop() {
     done = true;
-    eventsWaitingSignaller.unlock();
+    eventsWaitingSignal.signal();
     return done;
 }
 

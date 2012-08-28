@@ -38,6 +38,8 @@ ControllerManager::ControllerManager(std::string const& name) :
     commandPending = false;
 
     eManager = new EventManager(this);
+    //eManager->setScheduler(ORO_SCHED_OTHER);
+    //eManager->setPriority(os::LowestPriority);
     eManager->start();
 
     rosbagPID = 0;
@@ -107,16 +109,15 @@ void ControllerManager::updateHook() {
             kill(rosbagPID, SIGINT);
             rosbagPID = 0;
         }
-
         commandBuffer.push_back((UserCommand)guiOutput.command);
     }
 
     if (!commandPending && !(commandBuffer.empty())) {
         os::MutexTryLock tryLock(commandRunMutex);
         if (tryLock.isSuccessful()) {
+            printf("Starting command #%i!\n", (int)(UserCommand_t)(commandBuffer.front()));
             handleUserCommand(commandBuffer.front());
             commandBuffer.pop_front();
-            commandRunMutex.unlock();
         }
     }
 
@@ -208,6 +209,7 @@ bool ControllerManager::loadController(string controllerName) {
             metadata = controllerMetadata::loadControllerMetadata(path, controllerName);
             if (scriptingProvider->runScript(metadata.startScriptPath)) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
+                printf("Waiting for event ACK_DISABLE!\n");
                 eManager->setEventWait(RtOpsEvent::ACK_DISABLE);
                 rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
                 currentControllerName = controllerName;
@@ -238,21 +240,8 @@ void ControllerManager::unloadController() {
     rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
 }
 
-/*bool ControllerManager::waitForRtOpsState(RtOpsCommand rtoState) {
-    os::TimeService::ticks startTicks = os::TimeService::Instance()->getTicks();
-    while (true) {
-        if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-            //if (rtOpsOutput.rtOpsStatus == (uint8_t)rtoState)
-            if ((RtOpsCommand) rtOpsOutput.rtOpsStatus == rtoState)
-                return true;
-        }
-        if (os::TimeService::Instance()->secondsSince(startTicks) > RT_OPS_WAIT_TIMEOUT_SECS)
-            return false;
-    }
-    return false;
-}*/
-
 void ControllerManager::setState(ControllerManagerState newState) {
+    printf("In setstate!\n");
     if (newState == ControllerManagerState::CONTROLLER_STOPPED) {
         controllerLoaded = true;
     }
@@ -269,6 +258,7 @@ void ControllerManager::setState(ControllerManagerState newState) {
     if (!commandPending && !(commandBuffer.empty())) {
         os::MutexTryLock tryLock(commandRunMutex);
         if (tryLock.isSuccessful()) {
+            printf("Starting command (2) #%i!\n", (int)(UserCommand_t)(commandBuffer.front()));
             handleUserCommand(commandBuffer.front());
             commandBuffer.pop_front();
             commandRunMutex.unlock();

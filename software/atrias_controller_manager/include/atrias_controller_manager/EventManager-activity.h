@@ -35,16 +35,16 @@ private:
     ControllerManager *cManager;
 
     /** @brief Used by \a breakLoop() to signal \a loop() to exit.
-      */
+     */
     volatile bool done;
 
-    /** @brief When unlocked, signals the event handler that one or more
-      * events are waiting to be processed.
-      */
-    os::Mutex eventsWaitingSignaller;
+    /** @brief When value is more than 0, signals the event
+     * handler that one or more events are waiting to be processed.
+     */
+    os::Semaphore eventsWaitingSignal;
 
     /** @brief Protects access to incomingEvents
-      */
+     */
     os::Mutex incomingEventsLock;
 
     list<RtOpsEvent> incomingEvents;
