@@ -11,3 +11,5 @@ software/atrias_msgs/include
 
 # Files to ignore
 *.pc
+.tb_history
+orocos.log
