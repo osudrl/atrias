@@ -28,11 +28,11 @@ controller.pd1Name = pd1Name
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
-gui_policy.name_id = "/atc_motor_position_status"
+gui_policy.name_id = "/atc_leg_position_status"
 
 stream("controller.gui_data_out", gui_policy)
 
-gui_policy.name_id = "/atc_motor_position_input"
+gui_policy.name_id = "/atc_leg_position_input"
 stream("controller.gui_data_in", gui_policy)
 
 # Configure components and subcomponents

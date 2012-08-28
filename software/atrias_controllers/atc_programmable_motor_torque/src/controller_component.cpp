@@ -41,6 +41,8 @@ atrias_msgs::controller_output ATCProgrammableMotorTorque::runController(atrias_
 
     controllerOutput.lLeg.motorCurrentB = 0.;
 
+    controllerOutput.command = medulla_state_run;
+
     // Output for RTOps
     return controllerOutput;
 }

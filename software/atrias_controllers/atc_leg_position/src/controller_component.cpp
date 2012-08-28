@@ -65,6 +65,11 @@ atrias_msgs::controller_output ATCLegPosition::runController(atrias_msgs::robot_
     currentVel = rs.lLeg.halfB.motorVelocity;
     controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
+    controllerOutput.command = medulla_state_run;
+
+    // If we're enabled, inform the GUI
+    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
+
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
