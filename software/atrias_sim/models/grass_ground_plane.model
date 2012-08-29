@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <gazebo version="1.0">
 <!-- Ground Plane -->
-<model name="plane_model" static="true">
-  <link name="body">
-    <collision name="geom">
-      <geometry>
-	<plane normal="0 0 1"/>
-      </geometry>
-      <surface>
-	<friction>
-	  <ode mu="100000.0" mu2="100000.0"/>
-	</friction>
-      </surface>
-    </collision>
+<model name="ground_plane" static="true">
+    <link name="body">
+        <collision name="geom">
+            <geometry>
+                <plane normal="0 0 1"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode mu="100000.0" mu2="100000.0"/>
+                </friction>
+            </surface>
+        </collision>
 
-    <visual name="visual" cast_shadows="false">
-      <geometry>
-	<plane normal="0 0 1"/>
-      </geometry>
-      <material script="Kitchen/Grass"/>
-    </visual>
-  </link>
+        <visual name="visual" cast_shadows="false">
+            <geometry>
+                <plane normal="0 0 1"/>
+            </geometry>
+            <material script="Kitchen/Grass"/>
+        </visual>
+    </link>
 </model>
 </gazebo>
