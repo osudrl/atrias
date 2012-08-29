@@ -21,7 +21,7 @@ inline void ConnManager::cycleECat() {
 }
 
 bool ConnManager::configure() {
-	if (!ec_init("eth0")) {
+	if (!ec_init("rteth0")) {
 		log(RTT::Error) << "[ECatConn] ConnManager: ec_init() failed!" << RTT::endlog();
 		return false;
 	}

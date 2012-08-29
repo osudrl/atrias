@@ -1,11 +1,17 @@
 #include "atrias_elabs_test/ELabsTest.h"
 
 ELabsTest::ELabsTest(std::string name) : TaskContext(name) {
-	return;
+	rt_fd = -1;
 }
 
 bool ELabsTest::configureHook() {
-	ec_master = ecrt_request_master(0);
+	if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
+		log(RTT::Error) << "[RTOps] Failed to lock memory!" << RTT::endlog();
+		return false;
+	}
+	
+	MstrAttach.masterindex = 0;
+	ec_master = ecrt_request_master(MstrAttach.masterindex);
 	if (!ec_master) {
 		log(Error) << "ecrt_request_master() returned NULL!" << endlog();
 		return false;
@@ -53,24 +59,49 @@ bool ELabsTest::configureHook() {
 }
 
 bool ELabsTest::startHook() {
+	char rt_dev_file[64];
+	sprintf(&rt_dev_file[0],"%s",EC_RTDM_DEV_FILE_NAME);
+	rt_fd = rt_dev_open("ec_rtdm0", 0);
+	if (rt_fd < 0) {
+		log(Error) << "rt_dev_open failed! Error: " << errno << endlog();
+		return false;
+	}
+	
+	MstrAttach.domainindex = ecrt_domain_index(domain);
+	if (ecrt_rtdm_master_attach(rt_fd, &MstrAttach) < 0) {
+		log(Error) << "ecrt_rtdm_master_attach failed!" << endlog();
+		return false;
+	}
+	
 	if (ecrt_master_activate(ec_master)) {
 		log(Error) << "ecrt_master_activate() failed!" << endlog();
 		return false;
 	}
 	
+	//rtos_enable_rt_warning();
+	
 	return true;
 }
 
 void ELabsTest::updateHook() {
-	ecrt_domain_queue(domain);
-	ecrt_master_send(ec_master);
+	//rtos_enable_rt_warning();
+	ecrt_rtdm_domain_queque(rt_fd);
+	ecrt_rtdm_master_send(rt_fd);
 	timespec delay = {
 		0,
 		300000
 	};
-	nanosleep(&delay, NULL);
-	ecrt_master_receive(ec_master);
-	ecrt_domain_process(domain);
+	//rtos_disable_rt_warning();
+	clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
+	//rtos_enable_rt_warning();
+	//rtos_enable_rt_warning();
+	ecrt_rtdm_master_recieve(rt_fd);
+	ecrt_rtdm_domain_process(rt_fd);
+	//rtos_disable_rt_warning();
+}
+
+void ELabsTest::stopHook() {
+	rtos_disable_rt_warning();
 }
 
 void ELabsTest::cleanupHook() {

@@ -2,15 +2,19 @@
 #define ELABSTEST_H
 
 #include <ecrt.h>
+#include <ec_rtdm.h>
+#include <rtdm/rtdm.h>
 #include <rtt/TaskContext.hpp>
 #include <rtt/Component.hpp>
 #include <rtt/Logger.hpp>
 #include <time.h>
+#include <errno.h>
 
 #include <robot_invariant_defs.h>
 
 #define VENDOR_ID MEDULLA_VENDOR_ID
 #define PRODUCT_CODE MEDULLA_TEST_PRODUCT_CODE
+#define RT_DEV_FILE "ec_rtdm0"
 
 /* Master 0, Slave 0, "ATRIAS 2.1 EtherCAT Test (Medulla 1.5)"
  * Vendor ID:       0x0000060f
@@ -43,11 +47,14 @@ using namespace RTT;
 class ELabsTest : public TaskContext {
 	ec_master_t* ec_master;
 	ec_domain_t* domain;
+	int rt_fd;
+	CstructMstrAttach MstrAttach;
 	public:
 		ELabsTest(std::string name);
 		bool configureHook();
 		bool startHook();
 		void updateHook();
+		void stopHook();
 		void cleanupHook();
 };
 
