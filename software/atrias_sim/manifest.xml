@@ -1,15 +1,18 @@
 <package>
-  <description brief="atrias_sim">
+    <description brief="atrias_sim">
 
      atrias_sim
 
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atrias_sim</url>
-  <depend package="gazebo"/>
-  <depend package="atrias_msgs"/>
+    </description>
+    <author>drl</author>
+    <license>BSD</license>
+    <review status="unreviewed" notes=""/>
+    <url>http://ros.org/wiki/atrias_sim</url>
+    <export>
+        <gazebo gazebo_media_path="${prefix}" plugin_path="${prefix}/lib" />
+    </export>
+    <depend package="gazebo"/>
+    <depend package="atrias_msgs"/>
 
 </package>
 
