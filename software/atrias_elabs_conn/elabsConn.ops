@@ -1,0 +1,31 @@
+import("atrias_rt_ops")
+import("atrias_elabs_conn")
+
+# Load necessary components.
+loadComponent("atrias_rt", "RTOps")
+loadComponent("atrias_connector", "ELabsConn")
+
+# Let these see each other.
+connectPeers("atrias_connector", "atrias_rt")
+
+# Make it cyclic
+setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
+setActivity("atrias_connector", 0, 0, ORO_SCHED_OTHER)
+
+var ConnPolicy rtConnPolicy
+rtConnPolicy.transport = 3
+rtConnPolicy.name_id = "/log_data"
+stream("atrias_rt.rt_ops_log_out",  rtConnPolicy)
+rtConnPolicy.name_id = "/gui_data"
+stream("atrias_rt.rt_ops_gui_out", rtConnPolicy)
+rtConnPolicy.name_id = "/rt_events"
+stream("atrias_rt.rt_ops_event_out", rtConnPolicy)
+
+
+# Configure components.
+atrias_rt.configure()
+atrias_connector.configure()
+
+# Start components.
+atrias_rt.start();
+atrias_connector.start();
