@@ -9,69 +9,48 @@
 class ConnManager;
 
 // Orocos
-#include <rtt/os/Timer.hpp>
+#include <rtt/Activity.hpp>
 #include <rtt/os/Mutex.hpp>
 #include <rtt/os/MutexLock.hpp>
 #include <rtt/Logger.hpp>
 #include <rtt/os/TimeService.hpp>
 
-// SOEM
-extern "C" {
-#include <ethercattype.h>
-#include <ethercatmain.h>
-#include <ethercatconfig.h>
-#include <ethercatdc.h>
-}
-
 #include <time.h>
 
-#include "atrias_ecat_conn/ECatConn.h"
+#include <atrias_shared/globals.h>
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
+#include "atrias_elabs_conn/ELabsConn.h"
+#include "atrias_elabs_conn/cstructs.h"
 
-#define EC_TIMEOUT_US      500
-#define TIMING_FILTER_GAIN 100
+#define RECEIVE_WAIT_TIME_NS 300000
 
 namespace atrias {
 
-namespace ecatConn {
+namespace elabsConn {
 
-class ConnManager : public RTT::os::Timer {
-	/** @brief Lets us access what we need to in ECatConn.
+class ConnManager : RTT::Activity {
+	/** @brief Lets us access what we need to in ELabsConn.
 	  */
-	ECatConn*      eCatConn;
+	ELabsConn*     eLabsConn;
 	
-	/** @brief This is where SOEM stores its data.
-	  */
-	char           IOmap[4096];
-	
-	/** @brief Used by \a breakLoop() to stop the main loop.
-	  */
-	bool           done;
-	
-	/** @brief Protects access to SOEM's data.
+	/** @brief Protects access to EtherLabs's functions and data.
 	  */
 	RTT::os::Mutex eCatLock;
 	
-	/** @brief Prevents a race condition on loop shutdown.
+	/** @brief Handles all our medulla objects.
 	  */
-	RTT::os::Mutex timerLock;
+	MedullaManager* medullaManager;
 	
-	/** @brief Sends and receives an EtherCAT frame.
-	  * Does not grab eCatLock -- must already have it.
+	/** @brief Does the cyclic EtherCAT stuff. Called by loop and init (while waiting for OP).
 	  */
-	void           cycleECat();
-	
-	
-	// These store times for the cyclic loop.
-	RTT::os::TimeService::nsecs targetTime;
-	RTT::os::TimeService::nsecs filtered_overshoot;
+	void cyclic();
 	
 	public:
 		/** @brief The constructor.
-		  * @param ecat_conn A pointer to the ECatConn instance.
+		  * @param elabs_conn A pointer to the ELabsConn instance.
 		  */
-		ConnManager(ECatConn* ecat_conn);
+		ConnManager(ELabsConn* elabs_conn);
 		
 		/** @brief Shuts down EtherCAT.
 		  */
@@ -87,19 +66,14 @@ class ConnManager : public RTT::os::Timer {
 		  */
 		bool initialize();
 		
-		/** @brief The main ECat receive loop. Called cyclicly.
+		/** @brief Receives and processes data. Called cyclicly.
 		  */
-		void timeout(TimerId timer_id);
+		void loop();
 		
 		/** @brief Sends new outputs over ECat.
 		  * @param controller_output The new outputs.
 		  */
 		void sendControllerOutput(atrias_msgs::controller_output& controller_output);
-		
-		/** @brief Stops the main loop.
-		  * @return Success
-		  */
-		void stop();
 };
 
 }

@@ -4,11 +4,13 @@ namespace atrias {
 
 namespace ecatConn {
 
-MedullaManager::MedullaManager() {
+MedullaManager::MedullaManager(CstructMstrAttach MstrAttach, ec_master_t* master, ec_domain_t* domain) {
 	lLegA = NULL;
 	lLegB = NULL;
 	rLegA = NULL;
 	rLegB = NULL;
+	
+	lLegA = new LegMedulla(master, domain, 1);
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {

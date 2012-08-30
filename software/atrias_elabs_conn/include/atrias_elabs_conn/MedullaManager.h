@@ -9,12 +9,6 @@
 #include <rtt/os/TimeService.hpp>
 #include <rtt/Logger.hpp>
 
-// SOEM
-extern "C" {
-#include <ethercattype.h>
-#include <ethercatmain.h>
-}
-
 #include <stdint.h>
 
 #include <atrias_msgs/robot_state.h>
@@ -50,7 +44,7 @@ class MedullaManager {
 	public:
 		/** @brief Initializes the MedullaManager.
 		  */
-		MedullaManager();
+		MedullaManager(CstructMstrAttach MstrAttach, ec_master_t* master, ec_domain_t* domain);
 		
 		/** @brief Inits the medullas
 		  */

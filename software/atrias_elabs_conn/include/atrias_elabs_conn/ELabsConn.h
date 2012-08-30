@@ -36,11 +36,7 @@ namespace elabsConn {
 class ELabsConn : public RTT::TaskContext {
 	/** @brief Handles the main operation of this component.
 	  */
-	ConnManager*   connManager;
-	
-	/** @brief Handles all our medulla objects.
-	  */
-	MedullaManager medullaManager;
+	ConnManager* connManager;
 	
 	public:
 		/** @brief Initializes this Connector
@@ -80,11 +76,6 @@ class ELabsConn : public RTT::TaskContext {
 		  * @return Success.
 		  */
 		void stopHook();
-		
-		/** @brief Lets ConnManager access our \a MedullaManager
-		  * @return A pointer to the MedullaManager.
-		  */
-		MedullaManager* getMedullaManager();
 };
 
 }

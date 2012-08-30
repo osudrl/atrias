@@ -59,10 +59,6 @@ void ELabsConn::sendControllerOutput(atrias_msgs::controller_output controller_o
 	return;
 }
 
-MedullaManager* ELabsConn::getMedullaManager() {
-	return &medullaManager;
-}
-
 ORO_CREATE_COMPONENT(ELabsConn)
 
 }
