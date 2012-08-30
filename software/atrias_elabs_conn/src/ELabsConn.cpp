@@ -1,14 +1,14 @@
-#include "atrias_ecat_conn/ECatConn.h"
+#include "atrias_elabs_conn/ELabsConn.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace elabsConn {
 
-ECatConn::ECatConn(std::string name) :
+ELabsConn::ELabsConn(std::string name) :
           RTT::TaskContext(name),
           newStateCallback("newStateCallback") {
 	this->provides("connector")
-	    ->addOperation("sendControllerOutput", &ECatConn::sendControllerOutput, this, RTT::ClientThread);
+	    ->addOperation("sendControllerOutput", &ELabsConn::sendControllerOutput, this, RTT::ClientThread);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(newStateCallback);
 	this->requires("atrias_rt")
@@ -16,54 +16,54 @@ ECatConn::ECatConn(std::string name) :
 	
 	connManager = new ConnManager(this);
 	
-	log(RTT::Info) << "[ECatConn] constructed." << RTT::endlog();
+	log(RTT::Info) << "[ELabsConn] constructed." << RTT::endlog();
 }
 
-bool ECatConn::configureHook() {
+bool ELabsConn::configureHook() {
 	RTT::TaskContext *peer = this->getPeer("atrias_rt");
 	if (!peer) {
-		log(RTT::Error) << "[ECatConn] Failed to connect to RTOps!" << RTT::endlog();
+		log(RTT::Error) << "[ELabsConn] Failed to connect to RTOps!" << RTT::endlog();
 		return false;
 	}
 	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
 	sendEvent        = peer->provides("rtOps")->getOperation("sendEvent");
 	
 	if (!connManager->configure()) {
-		log(RTT::Error) << "[ECatConn] ConnManager failed to configure!" << RTT::endlog();
+		log(RTT::Error) << "[ELabsConn] ConnManager failed to configure!" << RTT::endlog();
 		return false;
 	}
 	
-	log(RTT::Info) << "[ECatConn] configured." << RTT::endlog();
+	log(RTT::Info) << "[ELabsConn] configured." << RTT::endlog();
 	return true;
 }
 
-bool ECatConn::startHook() {
+bool ELabsConn::startHook() {
 	if (!connManager->initialize()) {
-		log(RTT::Error) << "[ECatConn] ConnManager failed to start!" << RTT::endlog();
+		log(RTT::Error) << "[ELabsConn] ConnManager failed to start!" << RTT::endlog();
 		return false;
 	}
 	
-	log(RTT::Info) << "[ECatConn] started." << RTT::endlog();
+	log(RTT::Info) << "[ELabsConn] started." << RTT::endlog();
 	
 	return true;
 }
 
-void ECatConn::stopHook() {
+void ELabsConn::stopHook() {
 	connManager->stop();
 	
-	log(RTT::Info) << "[ECatConn] stopped." << RTT::endlog();
+	log(RTT::Info) << "[ELabsConn] stopped." << RTT::endlog();
 }
 
-void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
+void ELabsConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
 	connManager->sendControllerOutput(controller_output);
 	return;
 }
 
-MedullaManager* ECatConn::getMedullaManager() {
+MedullaManager* ELabsConn::getMedullaManager() {
 	return &medullaManager;
 }
 
-ORO_CREATE_COMPONENT(ECatConn)
+ORO_CREATE_COMPONENT(ELabsConn)
 
 }
 

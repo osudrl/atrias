@@ -1,10 +1,10 @@
-#ifndef ECATCONN_H
-#define ECATCONN_H
+#ifndef ELABSCONN_H
+#define ELABSCONN_H
 
 /** @file
-  * @brief This is the main class for the EtherCAT connector.
+  * @brief This is the main class for the EtherLabs connector.
   * This connector handles communicating with the robot and with the simulation
-  * over EtherCAT.
+  * over EtherCAT w/ EtherLabs.
   */
 
 namespace atrias {
@@ -26,14 +26,14 @@ class ECatConn;
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/globals.h>
 
-#include "atrias_ecat_conn/ConnManager.h"
-#include "atrias_ecat_conn/MedullaManager.h"
+#include "atrias_elabs_conn/ConnManager.h"
+#include "atrias_elabs_conn/MedullaManager.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace elabsConn {
 
-class ECatConn : public RTT::TaskContext {
+class ELabsConn : public RTT::TaskContext {
 	/** @brief Handles the main operation of this component.
 	  */
 	ConnManager*   connManager;
@@ -46,7 +46,7 @@ class ECatConn : public RTT::TaskContext {
 		/** @brief Initializes this Connector
 		  * @param name The name for this component.
 		  */
-		ECatConn(std::string name);
+		ELabsConn(std::string name);
 		
 		/** @brief By calling this, we cycle RT Ops.
 		  */
@@ -91,4 +91,4 @@ class ECatConn : public RTT::TaskContext {
 
 }
 
-#endif // ECATCONN_H
+#endif // ELABSCONN_H
