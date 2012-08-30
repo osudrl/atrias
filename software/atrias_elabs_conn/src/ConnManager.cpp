@@ -1,50 +1,63 @@
-#include "atrias_ecat_conn/ConnManager.h"
-
-void sig_handler(int signum) {
-	return;
-}
+#include "atrias_elabs_conn/ConnManager.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace elabsConn {
 
-ConnManager::ConnManager(ECatConn* ecat_conn) :
-             RTT::os::Timer(1, ORO_SCHED_RT, 80) {
-	eCatConn = ecat_conn;
-	signal(SIGXCPU, sig_handler);
+ConnManager::ConnManager(ELabsConn* elabs_conn) :
+             RTT::Activity(ETHERCAT_PRIO,
+             ((double) CONTROLLER_LOOP_PERIOD_NS) / ((double) SECOND_IN_NANOSECONDS)) {
+	eLabsConn = elabs_conn;
 }
 
 ConnManager::~ConnManager() {
-	ec_slave[0].state = EC_STATE_INIT;
-	ec_writestate(0);
-	ec_close();
+	
 }
 
-inline void ConnManager::cycleECat() {
-	ec_send_processdata();
-	ec_receive_processdata(EC_TIMEOUT_US);
+void ConnManager::cyclic() {
+	ecrt_master_application_time(master, RTT::os::TimeService::Instance()->getNSecs());
+	ecrt_master_sync_reference_clock(master);
+	ecrt_master_sync_slave_clocks(master);
+	ecrt_domain_queue(domain);
+	ecrt_master_send(master);
+	timespec delay = {
+		0,
+		RECEIVE_WAIT_TIME_NS
+	};
+	clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
+	ecrt_master_receive(master);
+	ecrt_domain_process(domain);
 }
 
 bool ConnManager::configure() {
-	if (!ec_init("rteth0")) {
-		log(RTT::Error) << "[ECatConn] ConnManager: ec_init() failed!" << RTT::endlog();
+	log(RTT::Info) << "Beginning EtherCAT init" << endlog();
+	CstructMstrAttach MstrAttach;
+	MstrAttach.masterindex = 0;
+	master = ecrt_request_master(MstrAttach.masterindex);
+	if (!master) {
+		log(RTT::Error) << __FILE__ << ": ecrt_request_master() FAILED!" << endlog();
 		return false;
 	}
 	
-	ec_config_init(FALSE);
-	
-	log(RTT::Info) << "[ECatConn] " << ec_slavecount << " EtherCAT slaves identified." << RTT::endlog();
-	if (ec_slavecount < 1) {
-		log(RTT::Error) << "[ECatConn] Failed to identify any slaves! Failing to init." << RTT::endlog();
+	domain = ecrt_master_create_domain(master);
+	if (!domain) {
+		log(RTT::Error) << __FILE__ << ": ecrt_master_create_domain() FAILED!" << endlog();
 		return false;
 	}
 	
-	ec_configdc();
+	medullaManager = new MedullaManager(rtOps, master, domain);
 	
-	ec_config_map(IOmap);
+	slavesManager->processTransmitData();
 	
-	// Wait for SAFE-OP
-	ec_statecheck(0, EC_STATE_SAFE_OP,  EC_TIMEOUTSTATE * 4);
+	log(RTT::Info) << "Slaves configuration complete, waiting for OP" << endlog();
+	ec_master_state_t master_state;
+	do {
+		cyclic();
+		ecrt_master_state(master, &master_state);
+	} while (master_state.al_states != ELABS_OP_STATE);
+	log(RTT::Info) << "All slaves are now in OP." << endlog();
+	
+	slavesManager->processReceiveData();
 	
 	return true;
 }
