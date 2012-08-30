@@ -12,10 +12,17 @@ set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
 find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
+execute_process(COMMAND xeno-config --skin=posix --cflags OUTPUT_VARIABLE XENO_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${XENO_CFLAGS}")
+
+execute_process(COMMAND xeno-config --skin=posix --ldflags OUTPUT_VARIABLE XENO_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS}")
+
 include_directories(../../../robot_definitions/)
 include_directories(/opt/etherlab/include)
 find_library(ECAT_LIBRARY ethercat PATH /opt/etherlab/lib)
 orocos_component(ELabsTest src/ELabsTest.cpp)
-target_link_libraries(ELabsTest ${ECAT_LIBRARY})
+target_link_libraries(ELabsTest ${ECAT_LIBRARY} rtdm)
 
 orocos_generate_package()

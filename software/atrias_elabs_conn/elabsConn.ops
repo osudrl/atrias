@@ -1,16 +1,16 @@
 import("atrias_rt_ops")
-import("atrias_ecat_conn")
+import("atrias_elabs_conn")
 
 # Load necessary components.
 loadComponent("atrias_rt", "RTOps")
-loadComponent("atrias_connector", "ECatConn")
+loadComponent("atrias_connector", "ELabsConn")
 
 # Let these see each other.
 connectPeers("atrias_connector", "atrias_rt")
 
-# Make the Noop Connector cyclic
-#setActivity("atrias_rt", 0, 82, ORO_SCHED_RT)
-#setActivity("atrias_connector", 0, 81, ORO_SCHED_RT)
+# Make it cyclic
+setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
+setActivity("atrias_connector", 0, 0, ORO_SCHED_OTHER)
 
 var ConnPolicy rtConnPolicy
 rtConnPolicy.transport = 3

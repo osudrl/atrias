@@ -32,6 +32,7 @@ class RTOps;
 #include "atrias_rt_ops/ControllerLoop.h"
 #include "atrias_rt_ops/OpsLogger.h"
 #include "atrias_rt_ops/StateMachine.h"
+#include "atrias_rt_ops/RTHandler.h"
 
 namespace atrias {
 
@@ -73,6 +74,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief Calculates our states for us.
 		  */
 		StateMachine*                               stateMachine;
+		
+		/** @brief Handles anything needed to remain realtime safe for us.
+		  */
+		RTHandler                                   rtHandler;
 
 	public:
 		// Constructor

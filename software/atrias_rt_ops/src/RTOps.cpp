@@ -12,6 +12,7 @@ RTOps::RTOps(std::string name) :
        eventOut("rt_ops_event_out"),
        timestampHandler(),
        opsLogger(&logCyclicOut, &guiCyclicOut, &eventOut),
+       rtHandler(),
        runController(),
        sendControllerOutput()
 {
@@ -91,11 +92,7 @@ void RTOps::sendEvent(controllerManager::RtOpsEvent event) {
 }
 
 bool RTOps::configureHook() {
-	// This locks our memory, preventing page faults. This is necessary for realtime.
-	if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
-		log(RTT::Error) << "[RTOps] Failed to lock memory!" << RTT::endlog();
-		return false;
-	}
+	rtHandler.beginRT();
 	
 	// Connect with the connector.
 	RTT::TaskContext *peer = this->getPeer("atrias_connector");
@@ -130,10 +127,7 @@ void RTOps::stopHook() {
 	if (!controllerLoop->stop())
 		log(RTT::Error) << "[RTOps] Controller loop failed to stop! Continuing shutdown" << RTT::endlog();
 	
-	// Unlock memory.
-	if (munlockall() == -1) {
-		log(RTT::Error) << "[RTOps] Failed to unlock memory!" << RTT::endlog();
-	}
+	rtHandler.endRT();
 
 	log(RTT::Info) << "[RTOps] stopped!" << RTT::endlog();
 }
