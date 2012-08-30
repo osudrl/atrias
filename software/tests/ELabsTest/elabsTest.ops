@@ -4,7 +4,7 @@ import("ELabsTest")
 loadComponent("atrias_test", "ELabsTest")
 
 # Make the Noop Connector cyclic
-setActivity("atrias_test", 0.001, 0, ORO_SCHED_OTHER)
+setActivity("atrias_test", 0.001, 80, ORO_SCHED_RT)
 
 # Configure components.
 atrias_test.configure()

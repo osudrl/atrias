@@ -9,8 +9,8 @@ loadComponent("atrias_connector", "ECatConn")
 connectPeers("atrias_connector", "atrias_rt")
 
 # Make the Noop Connector cyclic
-setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
-setActivity("atrias_connector", 0, 80, ORO_SCHED_RT)
+#setActivity("atrias_rt", 0, 82, ORO_SCHED_RT)
+#setActivity("atrias_connector", 0, 81, ORO_SCHED_RT)
 
 var ConnPolicy rtConnPolicy
 rtConnPolicy.transport = 3
