@@ -1,0 +1,35 @@
+<?xml version="1.0"?> 
+<gazebo version="1.0">
+<!-- Test Link -->
+<model name="Test_Model" static="false">
+    <origin pose="0 0 0 0 0 0"/>
+
+    <link name="Test_Link" gravity="1" self_collide="0">
+    <origin pose="0 0 0 0 0 0"/>
+
+    <inertial mass="1">
+        <origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+
+    <collision name="collision">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <box size="0.1 0.1 0.1"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="visual">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <box size="0.1 0.1 0.1"/>
+        </geometry>
+        <material script="Gazebo/Grey"/>
+    </visual>
+
+    </link>

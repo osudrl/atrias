@@ -1,0 +1,211 @@
+<?xml version="1.0"?> 
+<gazebo version="1.0">
+<model name="atrias21_hip" static="false">
+    <!-- Body -->
+    <link name="body_link" gravity="1" self_collide="0">
+    <origin pose="0 0 0.60 0 0 0"/>
+
+    <inertial mass="28.67">
+        <origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="1.0478" ixy="0.0201" ixz="-0.0142" iyy="0.9946" iyz="0.0050" izz="1.6340"/>
+    </inertial>
+
+    <collision name="box_collision">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <box size="0.64 0.32 0.32"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+    <collision name="vert_collision">
+        <origin pose="0 0 -0.30 0 0 0"/>
+        <geometry>
+            <cylinder length="0.60" radius="0.021"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="box_visual">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <box size="0.50 0.32 0.25"/>
+        </geometry>
+        <material script="Gazebo/Grey"/>
+    </visual>
+    <visual name="vert_visual">
+        <origin pose="0 0 -0.30 0 0 0"/>
+        <geometry>
+            <cylinder length="0.60" radius="0.021"/>
+        </geometry>
+        <material script="Gazebo/Grey"/>
+    </visual>
+
+    </link>
+
+    <!-- Left Motors -->
+    <link name="left_motor" gravity="1" self_collide="0">
+    <origin pose="0 0 0.44 0 0 0"/>
+
+    <inertial mass="1.42">
+        <origin pose="-0.10 0 0 0 0 0"/>
+        <inertia ixx="0.021" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+
+    <collision name="collision">
+        <origin pose="0 0.079 0 1.57 0 0"/>
+        <geometry>
+            <cylinder length="0.158" radius="0.021"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="visual">
+        <origin pose="0 0.079 0 1.57 0 0"/>
+        <geometry>
+            <cylinder length="0.158" radius="0.021"/>
+        </geometry>
+        <material script="Gazebo/Green"/>
+    </visual>
+
+    </link>
+
+    <link name="left_motor_attachment" gravity="1" self_collide="0">
+    <origin pose="0 0.079 0.22 0 0 0"/>
+
+    <inertial mass="0.001">
+        <origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+
+    <collision name="collision">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <cylinder length="0.44" radius="0.015"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="visual">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <cylinder length="0.44" radius="0.015"/>
+        </geometry>
+        <material script="Gazebo/Grey"/>
+    </visual>
+
+    </link>
+
+    <!-- Right Motors -->
+    <link name="right_motor" gravity="1" self_collide="0">
+    <origin pose="0 0 0.44 0 0 0"/>
+
+    <inertial mass="1.42">
+        <origin pose="0.10 0 0 0 0 0"/>
+        <inertia ixx="0.021" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+
+    <collision name="collision">
+        <origin pose="0 -0.079 0 1.57 0 0"/>
+        <geometry>
+            <cylinder length="0.158" radius="0.021"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="visual">
+        <origin pose="0 -0.079 0 1.57 0 0"/>
+        <geometry>
+            <cylinder length="0.158" radius="0.021"/>
+        </geometry>
+        <material script="Gazebo/Green"/>
+    </visual>
+
+    </link>
+
+    <link name="right_motor_attachment" gravity="1" self_collide="0">
+    <origin pose="0 -0.079 0.22 0 0 0"/>
+
+    <inertial mass="0.001">
+        <origin pose="0 0 0 0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+
+    <collision name="collision">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <cylinder length="0.44" radius="0.015"/>
+        </geometry>
+        <surface>
+            <contact>
+                <ode soft_erp="1" max_vel="0"/>
+            </contact>
+        </surface>
+    </collision>
+
+    <visual name="visual">
+        <origin pose="0 0 0 0 0 0"/>
+        <geometry>
+            <cylinder length="0.44" radius="0.015"/>
+        </geometry>
+        <material script="Gazebo/Grey"/>
+    </visual>
+
+    </link>
+
+    <!-- Joints -->
+    <joint name="body_to_left_motor_joint" type="revolute">
+        <parent link="body_link"/>
+        <child link="left_motor"/>
+        <origin pose="0 0 0 0 0 0"/>
+        <axis xyz="1 0 0">
+            <dynamics damping="0.1" friction="0.1"/>
+        </axis>
+    </joint>
+    <joint name="left_motor_to_left_motor_attachment" type="revolute">
+        <parent link="left_motor"/>
+        <child link="left_motor_attachment"/>
+        <origin pose="0 0 0.22 0 0 0"/>
+        <axis xyz="1 0 0">
+            <dynamics damping="0.1" friction="0.1"/>
+        </axis>
+    </joint>
+    <joint name="body_to_right_motor_joint" type="revolute">
+        <parent link="body_link"/>
+        <child link="right_motor"/>
+        <origin pose="0 0 0 0 0 0"/>
+        <axis xyz="1 0 0">
+            <dynamics damping="0.1" friction="0.1"/>
+        </axis>
+    </joint>
+    <joint name="right_motor_to_right_motor_attachment" type="revolute">
+        <parent link="right_motor"/>
+        <child link="right_motor_attachment"/>
+        <origin pose="0 0 0.22 0 0 0"/>
+        <axis xyz="1 0 0">
+            <dynamics damping="0.1" friction="0.1"/>
+        </axis>
+    </joint>
+
+
+</model>
+</gazebo>
