@@ -109,7 +109,9 @@ void ControllerWrapper::OnUpdate()
     angle = angle*axis.y + M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfA.motorAngle = angle;
+    ciso.lLeg.halfA.rotorAngle = angle;
     ciso.lLeg.halfA.motorVelocity = this->motorA->GetRelativeAngularVel().y;
+    ciso.lLeg.halfA.rotorVelocity = this->motorA->GetRelativeAngularVel().y;
 
     this->legA->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + M_PI/4.0;
@@ -122,7 +124,9 @@ void ControllerWrapper::OnUpdate()
     angle = angle*axis.y + 3.0*M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfB.motorAngle = angle;
+    ciso.lLeg.halfB.rotorAngle = angle;
     ciso.lLeg.halfB.motorVelocity = this->motorB->GetRelativeAngularVel().y;
+    ciso.lLeg.halfB.rotorVelocity = this->motorB->GetRelativeAngularVel().y;
 
     this->legB->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + 3.0*M_PI/4.0;

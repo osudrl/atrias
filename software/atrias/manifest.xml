@@ -1,14 +1,24 @@
 <package>
-	<description brief="atrias">
+    <description brief="atrias">
 
-		Contains launch files and other project-wide utilities.
-		No code used for robot control should be placed in this package.
+        Contains launch files and other project-wide utilities.
+        No code used for robot control should be placed in this package.
 
-	</description>
-	<author>Devin Koepl</author>
-	<license>BSD</license>
-	<review status="unreviewed" notes="" />
-	<url>http://ros.org/wiki/atrias</url>
+    </description>
+    <author>Devin Koepl</author>
+    <license>BSD</license>
+    <review status="unreviewed" notes="" />
+    <url>http://ros.org/wiki/atrias</url>
+
+    <depend package="atrias_controller_manager"/>
+    <depend package="atrias_ecat_conn"/>
+    <depend package="atrias_gui"/>
+    <depend package="atrias_msgs"/>
+    <depend package="atrias_noop_conn"/>
+    <depend package="atrias_rt_ops"/>
+    <depend package="atrias_shared"/>
+    <depend package="atrias_sim"/>
+    <depend package="atrias_sim_conn"/>
 
 </package>
 

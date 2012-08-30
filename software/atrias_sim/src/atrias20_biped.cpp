@@ -3,45 +3,49 @@
 using namespace gazebo;
 
 // Register this plugin with the simulator
-GZ_REGISTER_WORLD_PLUGIN(ControllerWrapper)
+GZ_REGISTER_WORLD_PLUGIN(GazeboControllerConnector)
 
 // Constructor
-ControllerWrapper::ControllerWrapper()
+GazeboControllerConnector::GazeboControllerConnector()
 {
     legMotorGearRatio = 50;
-    hipMotorGearRatio = 30;  // TODO: Change this to the actual value
+    hipGearRatio = 30;         // TODO: Change this to the actual value
     legTorqueConstant = 0.121; // N*m/Amp
     hipTorqueConstant = 0.184; // N*m/Amp
 }
 
 // Destructor
-ControllerWrapper::~ControllerWrapper()
+GazeboControllerConnector::~GazeboControllerConnector()
 {
 }
 
-void ControllerWrapper::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
+void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
+    // Pointer to the SDF
+    this->sdf = _sdf;
+
     // Pointer to the world
     this->world = _parent;
 
     // Pointer to the model
-    this->model = ControllerWrapper::getModel("modelName");
+    this->model = GazeboControllerConnector::getModel("modelName");
 
     // Model names
-    this->leftLegName = ControllerWrapper::getName("leftLegName");
-    this->rightLegName = ControllerWrapper::getName("rightLegName");
-    this->hipName = ControllerWrapper::getName("hipName");
+    this->leftLegName = GazeboControllerConnector::getName("leftLegName");
+    this->rightLegName = GazeboControllerConnector::getName("rightLegName");
+    this->hipName = GazeboControllerConnector::getName("hipName");
 
     // Link names
-    this->bodyName = ControllerWrapper::getName("bodyName");
-    this->motorAName = ControllerWrapper::getName("motorAName");
-    this->motorBName = ControllerWrapper::getName("motorBName");
-    this->legAName = ControllerWrapper::getName("legAName");
-    this->legBName = ControllerWrapper::getName("legBName");
-    this->toeName = ControllerWrapper::getName("toeName");
-    this->hipBodyName = ControllerWrapper::getName("hipBodyName");
-    this->hipLeftMotorName = ControllerWrapper::getName("hipLeftMotorName");
-    this->hipRightMotorName = ControllerWrapper::getName("hipRightMotorName");
+    this->bodyName = GazeboControllerConnector::getName("bodyName");
+    this->motorAName = GazeboControllerConnector::getName("motorAName");
+    this->motorBName = GazeboControllerConnector::getName("motorBName");
+    this->legAName = GazeboControllerConnector::getName("legAName");
+    this->legBName = GazeboControllerConnector::getName("legBName");
+    this->toeName = GazeboControllerConnector::getName("toeName");
+
+    this->hipBodyName = GazeboControllerConnector::getName("hipBodyName");
+    this->hipLeftMotorName = GazeboControllerConnector::getName("hipLeftMotorName");
+    this->hipRightMotorName = GazeboControllerConnector::getName("hipRightMotorName");
 
     // Left leg link pointers
     leftLegLinks.body = this->model->GetLink(this->leftLegName + "::" + this->bodyName);
@@ -67,7 +71,7 @@ void ControllerWrapper::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
     // Listen to the update event. This event is broadcast every
     // simulation iteration.
     this->updateConnection = event::Events::ConnectWorldUpdateStart(
-        boost::bind(&ControllerWrapper::OnUpdate, this));
+        boost::bind(&GazeboControllerConnector::OnUpdate, this));
 
     // Setup ROS
     int argc = 0;
@@ -75,13 +79,13 @@ void ControllerWrapper::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
     ros::init(argc, argv, "gazebo_controller_plugin");
     ros::NodeHandle nh;
 
-    atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &ControllerWrapper::atrias_controller_callback, this);
+    atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &GazeboControllerConnector::atrias_controller_callback, this);
     atrias_sim_pub = nh.advertise<atrias_msgs::robot_state>("atrias_sim_data", 10);
 }
 
 
 // Called by the world update start event
-void ControllerWrapper::OnUpdate()
+void GazeboControllerConnector::OnUpdate()
 {
     this->lock.lock();
     // Stuff the outgoing message
@@ -89,44 +93,104 @@ void ControllerWrapper::OnUpdate()
     ciso.header.stamp.sec = (uint32_t) simTime.sec;
     ciso.header.stamp.nsec = (uint32_t) simTime.nsec;
 
+    // Left Leg
     // A-side (shin)
-    this->motorA->GetRelativePose().rot.GetAsAxis(axis, angle);
+    this->leftLegLinks.motorA->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfA.motorAngle = angle;
-    ciso.lLeg.halfA.motorVelocity = this->motorA->GetRelativeAngularVel().y;
+    ciso.lLeg.halfA.rotorAngle = angle;
+    ciso.lLeg.halfA.motorVelocity = this->leftLegLinks.motorA->GetRelativeAngularVel().y;
+    ciso.lLeg.halfA.rotorVelocity = this->leftLegLinks.motorA->GetRelativeAngularVel().y;
 
-    this->legA->GetRelativePose().rot.GetAsAxis(axis, angle);
+    this->leftLegLinks.legA->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfA.legAngle = angle;
-    ciso.lLeg.halfA.legVelocity = this->legA->GetRelativeAngularVel().y;
+    ciso.lLeg.halfA.legVelocity = this->leftLegLinks.legA->GetRelativeAngularVel().y;
 
     // B-side (thigh)
-    this->motorB->GetRelativePose().rot.GetAsAxis(axis, angle);
+    this->leftLegLinks.motorB->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + 3.0*M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfB.motorAngle = angle;
-    ciso.lLeg.halfB.motorVelocity = this->motorB->GetRelativeAngularVel().y;
+    ciso.lLeg.halfB.rotorAngle = angle;
+    ciso.lLeg.halfB.motorVelocity = this->leftLegLinks.motorB->GetRelativeAngularVel().y;
+    ciso.lLeg.halfB.rotorVelocity = this->leftLegLinks.motorB->GetRelativeAngularVel().y;
 
-    this->legB->GetRelativePose().rot.GetAsAxis(axis, angle);
+    this->leftLegLinks.legB->GetRelativePose().rot.GetAsAxis(axis, angle);
     angle = angle*axis.y + 3.0*M_PI/4.0;
     angle = wrap_angle(angle);
     ciso.lLeg.halfB.legAngle = angle;
-    ciso.lLeg.halfB.legVelocity = this->legB->GetRelativeAngularVel().y;
+    ciso.lLeg.halfB.legVelocity = this->leftLegLinks.legB->GetRelativeAngularVel().y;
 
-    ciso.position.xPosition = this->body->GetWorldPose().pos.x;
-    ciso.position.yPosition = this->body->GetWorldPose().pos.y;
-    ciso.position.zPosition = this->body->GetWorldPose().pos.z;
-    ciso.position.xVelocity = this->body->GetWorldLinearVel().x;
-    ciso.position.yVelocity = this->body->GetWorldLinearVel().y;
-    ciso.position.zVelocity = this->body->GetWorldLinearVel().z;
-
-    toePosZ = this->toe->GetWorldPose().pos.z;
+    // Toe
+    toePosZ = this->leftLegLinks.toe->GetWorldPose().pos.z;
     if (toePosZ <= 0.021)
         ciso.lLeg.toeSwitch = 1.0;
     else
         ciso.lLeg.toeSwitch = 0;
+
+    // Right Leg
+    // A-side (shin)
+    this->rightLegLinks.motorA->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.y + M_PI/4.0;
+    angle = wrap_angle(angle);
+    ciso.rLeg.halfA.motorAngle = angle;
+    ciso.rLeg.halfA.rotorAngle = angle;
+    ciso.rLeg.halfA.motorVelocity = this->rightLegLinks.motorA->GetRelativeAngularVel().y;
+    ciso.rLeg.halfA.rotorVelocity = this->rightLegLinks.motorA->GetRelativeAngularVel().y;
+
+    this->rightLegLinks.legA->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.y + M_PI/4.0;
+    angle = wrap_angle(angle);
+    ciso.rLeg.halfA.legAngle = angle;
+    ciso.rLeg.halfA.legVelocity = this->rightLegLinks.legA->GetRelativeAngularVel().y;
+
+    // B-side (thigh)
+    this->rightLegLinks.motorB->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.y + 3.0*M_PI/4.0;
+    angle = wrap_angle(angle);
+    ciso.rLeg.halfB.motorAngle = angle;
+    ciso.rLeg.halfB.rotorAngle = angle;
+    ciso.rLeg.halfB.motorVelocity = this->rightLegLinks.motorB->GetRelativeAngularVel().y;
+    ciso.rLeg.halfB.rotorVelocity = this->rightLegLinks.motorB->GetRelativeAngularVel().y;
+
+    this->rightLegLinks.legB->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.y + 3.0*M_PI/4.0;
+    angle = wrap_angle(angle);
+    ciso.rLeg.halfB.legAngle = angle;
+    ciso.rLeg.halfB.legVelocity = this->rightLegLinks.legB->GetRelativeAngularVel().y;
+
+    // Toe
+    toePosZ = this->rightLegLinks.toe->GetWorldPose().pos.z;
+    if (toePosZ <= 0.021)
+        ciso.rLeg.toeSwitch = 1.0;
+    else
+        ciso.rLeg.toeSwitch = 0;
+
+    // Hip
+    // Body
+    // Note: GetWorldPose returns the pose of the link's center of mass
+    ciso.position.xPosition = this->hipLinks.body->GetWorldPose().pos.x;
+    ciso.position.yPosition = this->hipLinks.body->GetWorldPose().pos.y;
+    ciso.position.zPosition = this->hipLinks.body->GetWorldPose().pos.z;
+    ciso.position.xVelocity = this->hipLinks.body->GetWorldLinearVel().x;
+    ciso.position.yVelocity = this->hipLinks.body->GetWorldLinearVel().y;
+    ciso.position.zVelocity = this->hipLinks.body->GetWorldLinearVel().z;
+
+    // Leg position/velocity with respect to the hip
+    this->hipLinks.leftMotor->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.x;
+    angle = wrap_angle(angle);
+    ciso.lLeg.hip.legBodyAngle = angle;
+    ciso.lLeg.hip.legBodyVelocity = this->hipLinks.leftMotor->GetRelativeAngularVel().x;
+
+    this->hipLinks.rightMotor->GetRelativePose().rot.GetAsAxis(axis, angle);
+    angle = angle*axis.x + M_PI;
+    angle = wrap_angle(angle);
+    ciso.rLeg.hip.legBodyAngle = angle;
+    ciso.rLeg.hip.legBodyVelocity = this->hipLinks.rightMotor->GetRelativeAngularVel().x;
 
     this->lock.unlock();
 
@@ -138,23 +202,36 @@ void ControllerWrapper::OnUpdate()
 
     this->lock.lock();
     // Add the torques to the simulation
-    this->motorA->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentA * legTorqueConstant * legGearRatio, 0.));
-    this->body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentA * legTorqueConstant * legGearRatio, 0.));
-    this->motorB->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentB * legTorqueConstant * legGearRatio, 0.));
-    this->body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentB * legTorqueConstant * legGearRatio, 0.));
+    // Left Leg
+    this->leftLegLinks.motorA->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentA * legTorqueConstant * legMotorGearRatio, 0.));
+    this->leftLegLinks.body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentA * legTorqueConstant * legMotorGearRatio, 0.));
+    this->leftLegLinks.motorB->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentB * legTorqueConstant * legMotorGearRatio, 0.));
+    this->leftLegLinks.body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentB * legTorqueConstant * legMotorGearRatio, 0.));
+
+    // Right Leg
+    this->rightLegLinks.motorA->AddRelativeTorque(math::Vector3(0., cosi.rLeg.motorCurrentA * legTorqueConstant * legMotorGearRatio, 0.));
+    this->rightLegLinks.body->AddRelativeTorque(math::Vector3(0., -1. * cosi.rLeg.motorCurrentA * legTorqueConstant * legMotorGearRatio, 0.));
+    this->rightLegLinks.motorB->AddRelativeTorque(math::Vector3(0., cosi.rLeg.motorCurrentB * legTorqueConstant * legMotorGearRatio, 0.));
+    this->rightLegLinks.body->AddRelativeTorque(math::Vector3(0., -1. * cosi.rLeg.motorCurrentB * legTorqueConstant * legMotorGearRatio, 0.));
+
+    // Hip
+    this->hipLinks.rightMotor->AddRelativeTorque(math::Vector3(cosi.rLeg.motorCurrentHip * hipTorqueConstant * hipGearRatio, 0., 0.));
+    this->hipLinks.body->AddRelativeTorque(math::Vector3(-1. * cosi.rLeg.motorCurrentHip * hipTorqueConstant * hipGearRatio, 0., 0.));
+    this->hipLinks.leftMotor->AddRelativeTorque(math::Vector3(cosi.lLeg.motorCurrentHip * hipTorqueConstant * hipGearRatio, 0., 0.));
+    this->hipLinks.body->AddRelativeTorque(math::Vector3(-1. * cosi.lLeg.motorCurrentHip * hipTorqueConstant * hipGearRatio, 0., 0.));
 
     this->lock.unlock();
 }
 
 
-void ControllerWrapper::atrias_controller_callback(const atrias_msgs::controller_output &temp_cosi)
+void GazeboControllerConnector::atrias_controller_callback(const atrias_msgs::controller_output &temp_cosi)
 {
     // Save the torque requests (Controller out, simulation in)
     cosi = temp_cosi;
 }
 
 
-double ControllerWrapper::wrap_angle(double newTheta)
+double GazeboControllerConnector::wrap_angle(double newTheta)
 {
     // Keep the angle between 2*M_PI and -2*M_PI
     if (newTheta < 0)
@@ -167,29 +244,24 @@ double ControllerWrapper::wrap_angle(double newTheta)
     return theta;
 }
 
-physics::ModelPtr ControllerWrapper::getModel(std::string requestedModelName);
+physics::ModelPtr GazeboControllerConnector::getModel(std::string requestedModelName)
 {
-    // Get the model, and throw an error if we can't find it
-    if (_sdf->HasElement(requestedModelName))
-    {
-        this->tempModelName = _sdf->GetElement(requestedModelName)->GetValueString();
-        this->tempModel = this->world->GetModel(this->tempModelName);
-    }
+    // Get the model name, and throw an error if we can't find it
+    if (sdf->HasElement(requestedModelName))
+        this->tempModelName = sdf->GetElement(requestedModelName)->GetValueString();
     else
         gzerr << "Gazebo controller wrapper plugin missing valid model name: " << requestedModelName << "\n";
 
-    return this->tempModel;
+    // Return the model pointer
+    return this->world->GetModel(this->tempModelName);
 }
 
-std::string ControllerWrapper::getName(std::string requestedLinkName);
+std::string GazeboControllerConnector::getName(std::string requestedLinkName)
 {
-    // Get the link, and throw an error if we can't find it
-    if (_sdf->HasElement(requestedLinkName))
-    {
-        this->tempLinkName = _sdf->GetElement(requestedLinkName)->GetValueString();
-    }
-    else
+    // Throw an error if we can't find the link
+    if ( !(sdf->HasElement(requestedLinkName)) )
         gzerr << "Gazebo controller wrapper plugin missing valid link name: " << requestedLinkName << "\n";
 
-    return this->tempLinkName;
+    // Return the link string name
+    return sdf->GetElement(requestedLinkName)->GetValueString();
 }
