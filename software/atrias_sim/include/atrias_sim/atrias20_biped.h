@@ -18,12 +18,12 @@
 
 namespace gazebo
 {
-class ControllerWrapper : public WorldPlugin
+class GazeboControllerConnector : public WorldPlugin
 {
     public:
         // Constructor/Destructor
-        ControllerWrapper();
-        ~ControllerWrapper();
+        GazeboControllerConnector();
+        ~GazeboControllerConnector();
 
         // Functions
         virtual void Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf);
@@ -35,7 +35,7 @@ class ControllerWrapper : public WorldPlugin
 
     private:
         // Function variables
-        physics::ModelPtr tempModel;
+        std::string tempModelName;
         double theta;
 
         // Pointer to the update event connection
@@ -56,6 +56,9 @@ class ControllerWrapper : public WorldPlugin
         std::string hipBodyName;
         std::string hipLeftMotorName;
         std::string hipRightMotorName;
+
+        // SDF pointer
+        sdf::ElementPtr sdf;
 
         // World pointer
         physics::WorldPtr world;
@@ -80,7 +83,7 @@ class ControllerWrapper : public WorldPlugin
         } hipLinks;
 
         double angle, toePosZ;
-        double legMotorGearRatio, hipMotorGearRatio, legTorqueConstant, hipTorqueConstant;
+        double legMotorGearRatio, hipGearRatio, legTorqueConstant, hipTorqueConstant;
         math::Vector3 axis, bodyForce;
         common::Time simTime;
 

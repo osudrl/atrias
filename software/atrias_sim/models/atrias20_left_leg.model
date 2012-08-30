@@ -318,7 +318,7 @@
         <child link="thigh_motor_link"/>
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="0 1 0">
-            <dynamics damping="0" friction="0"/>
+            <dynamics damping="0.1" friction="0.1"/>
         </axis>
     </joint>
 
@@ -327,7 +327,7 @@
         <child link="shin_motor_link"/>
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="0 1 0">
-            <dynamics damping="0" friction="0"/>
+            <dynamics damping="0.1" friction="0.1"/>
         </axis>
     </joint>
 
@@ -337,6 +337,7 @@
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="0 1 0">
             <dynamics damping="0.1" friction="0.1"/>
+            <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
         </axis>
     </joint>
 
@@ -346,6 +347,7 @@
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="0 1 0">
             <dynamics damping="0.1" friction="0.1"/>
+            <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
         </axis>
     </joint>
 
@@ -371,13 +373,13 @@
     <plugin name="shin_spring" filename="libspring.so">
         <link1Name>shin_motor_link</link1Name>
         <link2Name>shin_link</link2Name>
-        <rotationalStiffness>1200</rotationalStiffness> <!-- N*m/rad -->
+        <rotationalStiffness>1200</rotationalStiffness>
     </plugin>
 
     <plugin name="thigh_spring" filename="libspring.so">
         <link1Name>thigh_motor_link</link1Name>
         <link2Name>thigh_link</link2Name>
-        <rotationalStiffness>1200</rotationalStiffness> <!-- N*m/rad -->
+        <rotationalStiffness>1200</rotationalStiffness>
     </plugin>
 
 </model>

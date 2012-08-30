@@ -37,20 +37,22 @@
             <include filename="atrias21_hip.model" model_pose="0 0 1.2 0 0 0"/>
 
             <!-- Central Joints -->
-            <joint name="leg_to_leg_joint" type="revolute">
-                <parent link="atrias20_left_leg::body_link"/>
-                <child link="atrias20_right_leg::body_link"/>
-                <origin pose="0 0.158 0 0 0 0"/>
+            <joint name="hip_to_left_leg_joint" type="revolute">
+                <parent link="atrias21_hip::body_link"/>
+                <child link="atrias20_left_leg::body_link"/>
+                <origin pose="0 -0.158 0 0 0 0"/>
                 <axis xyz="1 0 0">
                     <dynamics damping="0.1" friction="0.1"/>
+                    <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
                 </axis>
             </joint>
-            <joint name="hip_to_leg_joint" type="revolute">
+            <joint name="hip_to_right_leg_joint" type="revolute">
                 <parent link="atrias21_hip::body_link"/>
                 <child link="atrias20_right_leg::body_link"/>
                 <origin pose="0 0.158 0 0 0 0"/>
                 <axis xyz="1 0 0">
                     <dynamics damping="0.1" friction="0.1"/>
+                    <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
                 </axis>
             </joint>
 
@@ -64,7 +66,7 @@
                 </axis>
             </joint>
             <joint name="right_attachment_to_body_joint" type="revolute">
-                <parent link="atrias20_left_leg::body_link"/>
+                <parent link="atrias20_right_leg::body_link"/>
                 <child link="atrias21_hip::right_motor_attachment"/>
                 <origin pose="0 0 -0.22 0 0 0"/>
                 <axis xyz="1 0 0">

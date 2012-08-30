@@ -13,29 +13,29 @@
 
 namespace gazebo
 {
-	class Spring : public ModelPlugin
-	{
-		// Constructor
-		public: Spring();
+    class Spring : public ModelPlugin
+    {
+        // Constructor
+        public: Spring();
 
-		// Functions
-		public: virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-		public: void OnUpdate();
+        // Functions
+        public: virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+        public: void OnUpdate();
 
-		// Pointer to the update event connection
-		private: event::ConnectionPtr updateConnection;
+        // Pointer to the update event connection
+        private: event::ConnectionPtr updateConnection;
 
-		private: physics::ModelPtr model;
-		private: physics::LinkPtr link1;
-		private: std::string link1Name;
-		private: physics::LinkPtr link2;
-		private: std::string link2Name;
+        private: physics::ModelPtr model;
+        private: physics::LinkPtr link1;
+        private: std::string link1Name;
+        private: physics::LinkPtr link2;
+        private: std::string link2Name;
 
-		private: math::Vector3 axis, torque_vec;
+        private: math::Vector3 axis, torque_vec;
 
-		private: double rotationalStiffness, angle, angle1, angle2, diff, torque;
+        private: double rotationalStiffness, angle, angle1, angle2, diff, torque;
 
-	};
+    };
 }
 
 #endif

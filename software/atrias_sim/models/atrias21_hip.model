@@ -84,7 +84,7 @@
     <link name="left_motor_attachment" gravity="1" self_collide="0">
     <origin pose="0 0.079 0.22 0 0 0"/>
 
-    <inertial mass="0.001">
+    <inertial mass="0.01">
         <origin pose="0 0 0 0 0 0"/>
         <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
@@ -145,7 +145,7 @@
     <link name="right_motor_attachment" gravity="1" self_collide="0">
     <origin pose="0 -0.079 0.22 0 0 0"/>
 
-    <inertial mass="0.001">
+    <inertial mass="0.01">
         <origin pose="0 0 0 0 0 0"/>
         <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
