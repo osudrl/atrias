@@ -93,6 +93,7 @@ typedef enum {
 #define LEG_B_MOTOR_MIN_LOC                                          0.785398163
 #define LEG_B_MOTOR_MAX_LOC                                           3.44702527
 
+#define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
 
 /** @brief The maximum commanded amplifier value.
   * This is the maximum value sent to the
