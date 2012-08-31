@@ -86,7 +86,7 @@ typedef enum {
 #define GUI_LOOP_PERIOD_NS                                            20000000LL
 
 #define LEG_A_CALIB_LOC                                       1.3089969389957472
-#define LEG_A_MOTOR_MIN_LOC                                          0.305432619
+#define LEG_A_MOTOR_MIN_LOC                                         -0.305432619
 #define LEG_A_MOTOR_MAX_LOC                                           2.35619449
 
 #define LEG_B_CALIB_LOC                                       1.8325957145940461
