@@ -100,6 +100,10 @@ typedef enum {
 
 #define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
 
+// The maximum acceptable change in encoder value in a single cycle, for detecting
+// erroneous encoder readings.
+#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    5000000
+
 /** @brief The maximum commanded amplifier value.
   * This is the maximum value sent to the
   * Medullas for the amplifier command.

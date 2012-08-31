@@ -60,6 +60,18 @@ intptr_t LegMedulla::getOutputsSize() {
 	return MEDULLA_LEG_OUTPUTS_SIZE;
 }
 
+void LegMedulla::checkErroneousEncoderValues() {
+	skipMotorEncoder      = false;
+	int32_t deltaMotorPos = *motorEncoder - motorEncoderValue;
+	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
+		skipMotorEncoder = true;
+	
+	skipLegEncoder      = false;
+	int32_t deltaLegPos = *legEncoder - legEncoderValue;
+	if (abs(deltaLegPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
+		skipLegEncoder = true;
+}
+
 void LegMedulla::processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState) {
 	// This compensates for wraparound.
 	int16_t deltaPos = ((int32_t) *incrementalEncoder + (1 << 15) - incrementalEncoderValue) % (1 << 16) - (1 << 15);
@@ -110,6 +122,8 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 		((((int16_t) *timingCounter) + 256 - ((int16_t) timingCounterValue)) % 256)
 		* CONTROLLER_LOOP_PERIOD_NS;
 	timingCounterValue = *timingCounter;
+	
+	checkErroneousEncoderValues();
 	
 	processPositions(robot_state);
 	processVelocities(deltaTime, robot_state);
@@ -168,28 +182,44 @@ inline double LegMedulla::encTicksToRad(uint32_t ticks, uint32_t calib_val, doub
 void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			robotState.lLeg.halfA.motorAngle =
-				encTicksToRad(*motorEncoder, LEFT_TRAN_A_CALIB_VAL,  LEFT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
-			robotState.lLeg.halfA.legAngle   =
-				encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+			if (!skipMotorEncoder) {
+				robotState.lLeg.halfA.motorAngle =
+					encTicksToRad(*motorEncoder, LEFT_TRAN_A_CALIB_VAL,  LEFT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
+			}
+			if (!skipLegEncoder) {
+				robotState.lLeg.halfA.legAngle   =
+					encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+			}
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
-			robotState.lLeg.halfB.motorAngle =
-				encTicksToRad(*motorEncoder, LEFT_TRAN_B_CALIB_VAL,  LEFT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
-			robotState.lLeg.halfB.legAngle   =
-				encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+			if (!skipMotorEncoder) {
+				robotState.lLeg.halfB.motorAngle =
+					encTicksToRad(*motorEncoder, LEFT_TRAN_B_CALIB_VAL,  LEFT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
+			}
+			if (!skipLegEncoder) {
+				robotState.lLeg.halfB.legAngle   =
+					encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+			}
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
-			robotState.rLeg.halfA.motorAngle =
-				encTicksToRad(*motorEncoder, RIGHT_TRAN_A_CALIB_VAL, RIGHT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
-			robotState.rLeg.halfA.legAngle   =
-				encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+			if (!skipMotorEncoder) {
+				robotState.rLeg.halfA.motorAngle =
+					encTicksToRad(*motorEncoder, RIGHT_TRAN_A_CALIB_VAL, RIGHT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
+			}
+			if (!skipLegEncoder) {
+				robotState.rLeg.halfA.legAngle   =
+					encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+			}
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
-			robotState.rLeg.halfB.motorAngle =
-				encTicksToRad(*motorEncoder, RIGHT_TRAN_B_CALIB_VAL, RIGHT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
-			robotState.rLeg.halfB.legAngle   =
-				encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+			if (!skipMotorEncoder) {
+				robotState.rLeg.halfB.motorAngle =
+					encTicksToRad(*motorEncoder, RIGHT_TRAN_B_CALIB_VAL, RIGHT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
+			}
+			if (!skipLegEncoder) {
+				robotState.rLeg.halfB.legAngle   =
+					encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+			}
 			break;
 	}
 }
@@ -197,44 +227,68 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 void LegMedulla::processVelocities(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState) {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			// The division by 32 million translates timer ticks from the microcontroller into seconds
-			robotState.lLeg.halfA.motorVelocity =
-				((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_A_RAD_PER_CNT  /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
-			robotState.lLeg.halfA.legVelocity   =
-				((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_A_RAD_PER_CNT   /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+			if (!skipMotorEncoder) {
+				// The division by 32 million translates timer ticks from the microcontroller into seconds
+				robotState.lLeg.halfA.motorVelocity =
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_A_RAD_PER_CNT  /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
+			if (!skipLegEncoder) {
+				robotState.lLeg.halfA.legVelocity   =
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_A_RAD_PER_CNT   /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+			}
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
-			robotState.lLeg.halfB.motorVelocity =
-				((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_B_RAD_PER_CNT  /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
-			robotState.lLeg.halfB.legVelocity   =
-				((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_B_RAD_PER_CNT   /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			if (!skipMotorEncoder) {
+				robotState.lLeg.halfB.motorVelocity =
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_B_RAD_PER_CNT  /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
+			if (!skipLegEncoder) {
+				robotState.lLeg.halfB.legVelocity   =
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_B_RAD_PER_CNT   /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
-			robotState.rLeg.halfA.motorVelocity =
-				((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_A_RAD_PER_CNT /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
-			robotState.rLeg.halfA.legVelocity   =
-				((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+			if (!skipMotorEncoder) {
+				robotState.rLeg.halfA.motorVelocity =
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_A_RAD_PER_CNT /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
+			if (!skipLegEncoder) {
+				robotState.rLeg.halfA.legVelocity   =
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+			}
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
-			robotState.rLeg.halfB.motorVelocity =
-				((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_B_RAD_PER_CNT /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
-			robotState.rLeg.halfB.legVelocity   =
-				((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
-				(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			if (!skipMotorEncoder) {
+				robotState.rLeg.halfB.motorVelocity =
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_B_RAD_PER_CNT /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
+			if (!skipLegEncoder) {
+				robotState.rLeg.halfB.legVelocity   =
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
+					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+			}
 			break;
 	}
 
-	motorEncoderValue          = (int64_t) *motorEncoder;
-	motorEncoderTimestampValue = *motorEncoderTimestamp;
-	legEncoderValue            = (int64_t) *legEncoder;
-	legEncoderTimestampValue   = *legEncoderTimestamp;
+	if (!skipMotorEncoder) {
+		motorEncoderValue          = (int64_t) *motorEncoder;
+		motorEncoderTimestampValue = *motorEncoderTimestamp;
+	} else {
+		motorEncoderTimestampValue -= deltaTime * 32000; // Number of timer ticks in a millisecond.
+	}
+	if (!skipLegEncoder) {
+		legEncoderValue          = (int64_t) *legEncoder;
+		legEncoderTimestampValue = *legEncoderTimestamp;
+	} else {
+		legEncoderTimestampValue -= deltaTime * 32000;
+	}
 }
 
 void LegMedulla::processThermistors(atrias_msgs::robot_state& robotState) {
