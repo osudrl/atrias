@@ -38,6 +38,7 @@ RTOps::RTOps(std::string name) :
 	controllerLoop    = new ControllerLoop(this);
 	stateMachine      = new StateMachine(this);
 	robotStateHandler = new RobotStateHandler(this);
+	safety            = new Safety(this);
 
 	log(RTT::Info) << "[RTOps] constructed!" << RTT::endlog();
 }
@@ -85,6 +86,10 @@ ControllerLoop* RTOps::getControllerLoop() {
 
 StateMachine* RTOps::getStateMachine() {
 	return stateMachine;
+}
+
+Safety* RTOps::getSafety() {
+	return safety;
 }
 
 void RTOps::sendEvent(controllerManager::RtOpsEvent event) {

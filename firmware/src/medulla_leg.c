@@ -91,13 +91,13 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, 3, leg_tx_pdos, 18); 
 
-	/*#ifdef DEUBG_HIGH
+	#ifdef DEUBG_HIGH
 	printf("[Medulla Leg] Initilizing limit switches\n");
 	#endif
-	*switch (id) {
+	switch (id) {
 		case MEDULLA_LEFT_LEG_A_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_LLEG_ASIDE_LSW_MASK,&TCF0,leg_estop); break;
 		case MEDULLA_LEFT_LEG_B_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_LLEG_BSIDE_LSW_MASK,&TCF0,leg_estop); break;
-	}*/
+	}
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing ADC ports\n");

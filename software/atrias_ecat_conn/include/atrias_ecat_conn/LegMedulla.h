@@ -63,11 +63,19 @@ class LegMedulla : public Medulla {
 	// Used for processing
 	int64_t         motorEncoderValue;
 	int64_t         legEncoderValue;
-	int16_t         motorEncoderTimestampValue;
-	int16_t         legEncoderTimestampValue;
+	int32_t         motorEncoderTimestampValue;
+	int32_t         legEncoderTimestampValue;
 	uint16_t        incrementalEncoderValue;
 	uint16_t        incrementalEncoderTimestampValue;
 	uint8_t         timingCounterValue;
+	
+	// Whether or not the encoder value for this cycle was erroneous
+	bool            skipMotorEncoder;
+	bool            skipLegEncoder;
+	
+	/** @brief Check for spikes in the encoder data.
+	  */
+	void         checkErroneousEncoderValues();
 	
 	/** @brief Calculates the current command to send to the Medulla.
 	  * @return The value that should be sent to this Medulla.

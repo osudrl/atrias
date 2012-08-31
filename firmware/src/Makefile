@@ -14,8 +14,8 @@ SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
 
 # Medulla_lib stuff
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
-#DEBUG_LEVEL = DEBUG_LOW
-DEBUG_LEVEL = DEBUG_HIGH
+#DEBUG_LEVEL = -DDEBUG_LOW
+DEBUG_LEVEL = -DDEBUG_HIGH
 
 # Build Options
 OBJDIR = .
@@ -28,7 +28,7 @@ PORT = usb
 
 # Create the compiler flags
 CFLAGS  = -DF_CPU=$(F_CPU)UL
-CFLAGS += -D$(DEBUG_LEVEL)
+CFLAGS += $(DEBUG_LEVEL)
 CFLAGS += -O$(OPT)
 CFLAGS += -fshort-enums
 CFLAGS += -Wall

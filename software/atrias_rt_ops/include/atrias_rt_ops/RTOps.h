@@ -33,6 +33,7 @@ class RTOps;
 #include "atrias_rt_ops/OpsLogger.h"
 #include "atrias_rt_ops/StateMachine.h"
 #include "atrias_rt_ops/RTHandler.h"
+#include "atrias_rt_ops/Safety.h"
 
 namespace atrias {
 
@@ -78,6 +79,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief Handles anything needed to remain realtime safe for us.
 		  */
 		RTHandler                                   rtHandler;
+		
+		/** @brief Implements our safety features.
+		  */
+		Safety*                                     safety;
 
 	public:
 		// Constructor
@@ -136,6 +141,11 @@ class RTOps : public RTT::TaskContext {
 		  * @return A pointer to the StateMachine.
 		  */
 		StateMachine*      getStateMachine();
+		
+		/** @brief Allows other classes to access the Safety.
+		  * @return A pointer to the Safety
+		  */
+		Safety*            getSafety();
 		
 		/** @brief Lets Connectors report RT Ops Events.
 		  * @param event The event to be reported.

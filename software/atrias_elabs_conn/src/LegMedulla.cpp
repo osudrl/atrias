@@ -1,48 +1,41 @@
-#include "atrias_ecat_conn/LegMedulla.h"
+#include "atrias_elabs_conn/LegMedulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullas {
 
-LegMedulla::LegMedulla(uint8_t* inputs, uint8_t* outputs) :
+LegMedulla::LegMedulla(intptr_t outputs[], intptr_t inputs[]) :
             Medulla() {
-	/* These are in the order of the PDO entries in the ESI XML file.
-	 * I'd love cur_index to be a void * here, but C doesn't like doing pointer
-	 * arithmetic w/ void pointers due to an unhelpful "feature" of the language
-	 * (specifically, cur_index + 1 is equivalent to &(cur_index[1]) regardless
-	 * of type...)
-	 */
-	uint8_t * cur_index = outputs;
 	
-	setPdoPointer(cur_index, command);
-	setPdoPointer(cur_index, counter);
-	setPdoPointer(cur_index, motorCurrent);
-	
-	cur_index           = inputs;
-	
-	setPdoPointer(cur_index, id);
-	setPdoPointer(cur_index, state);
-	setPdoPointer(cur_index, timingCounter);
-	setPdoPointer(cur_index, errorFlags);
-	setPdoPointer(cur_index, limitSwitch);
-	setPdoPointer(cur_index, toeSensor);
-	setPdoPointer(cur_index, motorEncoder);
-	setPdoPointer(cur_index, motorEncoderTimestamp);
-	setPdoPointer(cur_index, legEncoder);
-	setPdoPointer(cur_index, legEncoderTimestamp);
-	setPdoPointer(cur_index, incrementalEncoder);
-	setPdoPointer(cur_index, incrementalEncoderTimestamp);
-	setPdoPointer(cur_index, motorVoltage);
-	setPdoPointer(cur_index, logicVoltage);
-	setPdoPointer(cur_index, thermistor0);
-	setPdoPointer(cur_index, thermistor1);
-	setPdoPointer(cur_index, thermistor2);
-	setPdoPointer(cur_index, thermistor3);
-	setPdoPointer(cur_index, thermistor4);
-	setPdoPointer(cur_index, thermistor5);
-	setPdoPointer(cur_index, amp1MeasuredCurrent);
-	setPdoPointer(cur_index, amp2MeasuredCurrent);
-	
+	command      = (uint8_t*)  (outputs[0]);
+	counter      = (uint16_t*) (outputs[1]);
+	motorCurrent = (int32_t*)  (outputs[2]);
+
+	id                          = (uint8_t*)  (inputs[0]);
+	state                       = (uint8_t*)  (inputs[1]);
+	timingCounter               = (uint8_t*)  (inputs[2]);
+	errorFlags                  = (uint8_t*)  (inputs[3]);
+	limitSwitch                 = (uint8_t*)  (inputs[4]);
+	toeSensor                   = (uint16_t*) (inputs[5]);
+	motorEncoder                = (uint32_t*) (inputs[6]);
+	motorEncoderTimestamp       = (int16_t*)  (inputs[7]);
+	incrementalEncoder          = (uint16_t*) (inputs[8]);
+	incrementalEncoderTimestamp = (uint16_t*) (inputs[9]);
+	legEncoder                  = (uint32_t*) (inputs[10]);
+	legEncoderTimestamp         = (int16_t*)  (inputs[11]);
+	motorVoltage                = (uint16_t*) (inputs[12]);
+	logicVoltage                = (uint16_t*) (inputs[13]);
+	thermistor0                 = (uint16_t*) (inputs[14]);
+	thermistor1                 = (uint16_t*) (inputs[15]);
+	thermistor2                 = (uint16_t*) (inputs[16]);
+	thermistor3                 = (uint16_t*) (inputs[17]);
+	thermistor4                 = (uint16_t*) (inputs[18]);
+	thermistor5                 = (uint16_t*) (inputs[19]);
+	amp1MeasuredCurrent         = (int16_t*)  (inputs[20]);
+	amp2MeasuredCurrent         = (int16_t*)  (inputs[21]);
+}
+
+void LegMedulla::postOpInit() {
 	motorEncoderValue                = (int64_t) *motorEncoder;
 	motorEncoderTimestampValue       =           *motorEncoderTimestamp;
 	legEncoderValue                  = (int64_t) *legEncoder;

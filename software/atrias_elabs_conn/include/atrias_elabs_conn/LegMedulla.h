@@ -7,6 +7,7 @@
 
 // Orocos
 #include <rtt/os/TimeService.hpp>
+#include <rtt/Logger.hpp>
 
 #include <stdint.h>
 
@@ -15,11 +16,11 @@
 #include <atrias_shared/globals.h>
 #include "robot_invariant_defs.h"
 #include "robot_variant_defs.h"
-#include "atrias_ecat_conn/Medulla.h"
+#include "atrias_elabs_conn/Medulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullas {
 
 /** @brief Contains pointers to the data received from and transmitted to this
   * type of Medulla.
@@ -117,7 +118,11 @@ class LegMedulla : public Medulla {
 		  * @param inputs  A pointer to this slave's inputs
 		  * @param outputs A pointer to this slave's outputs;
 		  */
-		LegMedulla(uint8_t* inputs, uint8_t* outputs);
+		LegMedulla(intptr_t outputs[], intptr_t inputs[]);
+		
+		/** @brief Does all post-OP configuration.
+		  */
+		void postOpInit();
 		
 		/** @brief Returns the total inputs size for this medulla type.
 		  * @return The total inputs size for this medulla type.

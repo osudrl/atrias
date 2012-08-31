@@ -109,6 +109,8 @@ class ELabsTest : public TaskContext {
 	int rt_fd;
 	int counter;
 	CstructMstrAttach MstrAttach;
+	ec_slave_config_t* sc0;
+	ec_slave_config_t* sc1;
 	public:
 		ELabsTest(std::string name);
 		bool configureHook();

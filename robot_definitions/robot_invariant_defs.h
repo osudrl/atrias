@@ -86,7 +86,23 @@ typedef enum {
 #define GUI_LOOP_PERIOD_NS                                            20000000LL
 
 #define LEG_A_CALIB_LOC                                       1.3089969389957472
+#define LEG_A_MOTOR_MIN_LOC                                         -0.305432619
+#define LEG_A_MOTOR_MAX_LOC                                           2.35619449
+
 #define LEG_B_CALIB_LOC                                       1.8325957145940461
+#define LEG_B_MOTOR_MIN_LOC                                          0.785398163
+#define LEG_B_MOTOR_MAX_LOC                                           3.44702527
+
+// The minimum and maximum distance in positions between the motors. For leg length
+// protection.
+#define LEG_LOC_DIFF_MIN                                             0.430715562
+#define LEG_LOC_DIFF_MAX                                              2.47639612
+
+#define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
+
+// The maximum acceptable change in encoder value in a single cycle, for detecting
+// erroneous encoder readings.
+#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    5000000
 
 /** @brief The maximum commanded amplifier value.
   * This is the maximum value sent to the
@@ -125,5 +141,6 @@ typedef enum {
 /** @brief This is the rate at which the Medulla's timers run. Used for timestamp usage for velocity calculation.
   */
 #define MEDULLA_TIMER_FREQ                                            32000000.0
+
 
 #endif // ROBOT_INVARIANT_DEFS_H
