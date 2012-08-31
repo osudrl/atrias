@@ -167,12 +167,12 @@ int main(void) {
 	printf("[Medulla] Calling init for specific medulla\n");
 	#endif
 	initilize(medulla_id, &ecat_port, ecat_tx_sm_buffer, ecat_rx_sm_buffer, &commanded_state, &current_state, &TIMESTAMP_COUNTER, &master_watchdog_counter);
-
+	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Switching printf to low level interrupt\n");
 	#endif
 	USARTE0.CTRLA = USART_RXCINTLVL_LO_gc | USART_TXCINTLVL_LO_gc;
-
+	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Starting watchdog timer\n");
 	#endif

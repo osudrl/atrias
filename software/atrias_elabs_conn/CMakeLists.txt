@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(atrias_rt_ops_new)
+project(atrias_elabs_conn)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
@@ -13,6 +13,7 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
-orocos_component(RTOps src/RTOps.cpp src/TimestampHandler.cpp src/OpsLogger.cpp src/RobotStateHandler.cpp src/StateMachine.cpp src/ControllerLoop.cpp src/RTHandler.cpp)
+orocos_component(ELabsConn src/ELabsConn.cpp)
+target_link_libraries(ELabsConn rt)
 
 orocos_generate_package()

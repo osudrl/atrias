@@ -1,5 +1,9 @@
 #include "atrias_ecat_conn/ConnManager.h"
 
+void sig_handler(int signum) {
+	return;
+}
+
 namespace atrias {
 
 namespace ecatConn {
@@ -7,6 +11,7 @@ namespace ecatConn {
 ConnManager::ConnManager(ECatConn* ecat_conn) :
              RTT::os::Timer(1, ORO_SCHED_RT, 80) {
 	eCatConn = ecat_conn;
+	signal(SIGXCPU, sig_handler);
 }
 
 ConnManager::~ConnManager() {
@@ -21,7 +26,7 @@ inline void ConnManager::cycleECat() {
 }
 
 bool ConnManager::configure() {
-	if (!ec_init("eth0")) {
+	if (!ec_init("rteth0")) {
 		log(RTT::Error) << "[ECatConn] ConnManager: ec_init() failed!" << RTT::endlog();
 		return false;
 	}
@@ -84,14 +89,14 @@ bool ConnManager::initialize() {
 }
 
 void ConnManager::timeout(TimerId timer_id) {
-	log(RTT::Info) << "> 4" << RTT::endlog();
+	//log(RTT::Info) << "> 4" << RTT::endlog();
 	filtered_overshoot += (RTT::os::TimeService::Instance()->getNSecs() - 
 	                       targetTime - filtered_overshoot) / TIMING_FILTER_GAIN;
 	
-	log(RTT::Info) << "< 1" << RTT::endlog();
+	//log(RTT::Info) << "< 1" << RTT::endlog();
 	// Prevent undershooting.
 	while (RTT::os::TimeService::Instance()->getNSecs() < targetTime);
-	log(RTT::Info) << "> 1" << RTT::endlog();
+	//log(RTT::Info) << "> 1" << RTT::endlog();
 	
 	// This is used to compensate for timing overshoots when adjusting to match the DC clock.
 	RTT::os::TimeService::nsecs overshoot = RTT::os::TimeService::Instance()->getNSecs() - targetTime;
@@ -100,9 +105,9 @@ void ConnManager::timeout(TimerId timer_id) {
 
 	int64_t eCatTime;
 	{
-		log(RTT::Info) << "< 2" << RTT::endlog();
+		//log(RTT::Info) << "< 2" << RTT::endlog();
 		RTT::os::MutexLock lock(eCatLock);
-		log(RTT::Info) << "> 2" << RTT::endlog();
+		//log(RTT::Info) << "> 2" << RTT::endlog();
 		cycleECat();
 		eCatTime = ec_DCtime;
 		eCatConn->getMedullaManager()->processReceiveData();
@@ -129,15 +134,15 @@ void ConnManager::timeout(TimerId timer_id) {
 
 	targetTime = sleepTime + cur_time;
 	{
-		log(RTT::Info) << "< 3" << RTT::endlog();
+		//log(RTT::Info) << "< 3" << RTT::endlog();
 		RTT::os::MutexLock lock(timerLock);
-		log(RTT::Info) << "> 3" << RTT::endlog();
+		//log(RTT::Info) << "> 3" << RTT::endlog();
 		if (!done) {
-			log(RTT::Info) << sleepTime << RTT::endlog();
+			//log(RTT::Info) << sleepTime << RTT::endlog();
 			arm(timer_id, ((double) sleepTime) / ((double) SECOND_IN_NANOSECONDS));
 		}
 	}
-	log(RTT::Info) << "< 4" << RTT::endlog();
+	//log(RTT::Info) << "< 4" << RTT::endlog();
 }
 
 void ConnManager::sendControllerOutput(atrias_msgs::controller_output& controller_output) {
