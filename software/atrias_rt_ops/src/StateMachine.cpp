@@ -82,6 +82,9 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 			if (controllerOutput.command == medulla_state_error)
 				eStop(controllerManager::RtOpsEvent::CONTROLLER_ESTOP);
 			
+			if (rtOps->getSafety()->shouldHalt())
+				return medulla_state_halt;
+			
 			return (medulla_state_t) controllerOutput.command;
 			
 		default:
