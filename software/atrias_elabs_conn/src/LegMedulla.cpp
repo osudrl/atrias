@@ -1,39 +1,41 @@
-#include "atrias_ecat_conn/LegMedulla.h"
+#include "atrias_elabs_conn/LegMedulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullas {
 
 LegMedulla::LegMedulla(intptr_t outputs[], intptr_t inputs[]) :
             Medulla() {
 	
-	command      = (uint8_t*)  outputs[0];
-	counter      = (uint16_t*) outputs[1];
-	motorCurrent = (uint32_t*) outputs[2];
+	command      = (uint8_t*)  (outputs[0]);
+	counter      = (uint16_t*) (outputs[1]);
+	motorCurrent = (int32_t*)  (outputs[2]);
 
-	id                          = (uint8_t*)  inputs[0];
-	state                       = (uint8_t*)  inputs[1];
-	timingCounter               = (uint8_t*)  inputs[2];
-	errorFlags                  = (uint8_t*)  inputs[3];
-	limitSwitch                 = (uint8_t*)  inputs[4];
-	toeSensor                   = (uint16_t*) inputs[5];
-	motorEncoder                = (uint32_t*) inputs[6];
-	motorEncoderTimestamp       = (int16_t*)  inputs[7];
-	incrementalEncoder          = (uint16_t*) inputs[8];
-	incrementalEncoderTimestamp = (uint16_t*) inputs[9];
-	legEncoder                  = (uint32_t*) inputs[10];
-	legEncoderTimestamp         = (int16_t*)  inputs[11];
-	motorVoltage                = (uint16_t*) inputs[12];
-	logicVoltage                = (uint16_t*) inputs[13];
-	thermistor0                 = (uint16_t*) inputs[14];
-	thermistor1                 = (uint16_t*) inputs[15];
-	thermistor2                 = (uint16_t*) inputs[16];
-	thermistor3                 = (uint16_t*) inputs[17];
-	thermistor4                 = (uint16_t*) inputs[18];
-	thermistor5                 = (uint16_t*) inputs[19];
-	amp1MeasuredCurrent         = (int16_t*)  inputs[20];
-	amp2MeasuredCurrent         = (int16_t*)  inputs[21];
-	
+	id                          = (uint8_t*)  (inputs[0]);
+	state                       = (uint8_t*)  (inputs[1]);
+	timingCounter               = (uint8_t*)  (inputs[2]);
+	errorFlags                  = (uint8_t*)  (inputs[3]);
+	limitSwitch                 = (uint8_t*)  (inputs[4]);
+	toeSensor                   = (uint16_t*) (inputs[5]);
+	motorEncoder                = (uint32_t*) (inputs[6]);
+	motorEncoderTimestamp       = (int16_t*)  (inputs[7]);
+	incrementalEncoder          = (uint16_t*) (inputs[8]);
+	incrementalEncoderTimestamp = (uint16_t*) (inputs[9]);
+	legEncoder                  = (uint32_t*) (inputs[10]);
+	legEncoderTimestamp         = (int16_t*)  (inputs[11]);
+	motorVoltage                = (uint16_t*) (inputs[12]);
+	logicVoltage                = (uint16_t*) (inputs[13]);
+	thermistor0                 = (uint16_t*) (inputs[14]);
+	thermistor1                 = (uint16_t*) (inputs[15]);
+	thermistor2                 = (uint16_t*) (inputs[16]);
+	thermistor3                 = (uint16_t*) (inputs[17]);
+	thermistor4                 = (uint16_t*) (inputs[18]);
+	thermistor5                 = (uint16_t*) (inputs[19]);
+	amp1MeasuredCurrent         = (int16_t*)  (inputs[20]);
+	amp2MeasuredCurrent         = (int16_t*)  (inputs[21]);
+}
+
+void LegMedulla::postOpInit() {
 	motorEncoderValue                = (int64_t) *motorEncoder;
 	motorEncoderTimestampValue       =           *motorEncoderTimestamp;
 	legEncoderValue                  = (int64_t) *legEncoder;

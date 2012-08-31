@@ -1,22 +1,18 @@
 #include "atrias_elabs_conn/ELabsConn.h"
-
-void sig_handler(int signum) {
-	return;
-}
-
+namespace atrias {
+namespace eLabsConn {
 ELabsConn::ELabsConn(std::string name) : TaskContext(name),
 	newStateCallback("newStateCallback") {
 	
 	this->provides("connector")
-	    ->addOperation("sendControllerOutput", &NoopConn::sendControllerOutput, this, RTT::ClientThread);
+	    ->addOperation("sendControllerOutput", &ELabsConn::sendControllerOutput, this, RTT::ClientThread);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(newStateCallback);
-	this->requires("atrias_rt")
-	    ->addOperationCaller(sendEvent);
 	
 	rt_fd   = -1;
 	counter = 0;
-	signal(SIGXCPU, sig_handler);
+	lLegA   = NULL;
+	lLegB   = NULL;
 }
 
 bool ELabsConn::configureHook() {
@@ -26,7 +22,6 @@ bool ELabsConn::configureHook() {
 		return false;
 	}
 	newStateCallback = peer->provides("rtOps")->getOperation("newStateCallback");
-	sendEvent        = peer->provides("rtOps")->getOperation("sendEvent");
 	
 	MstrAttach.masterindex = 0;
 	ec_master = ecrt_request_master(MstrAttach.masterindex);
@@ -61,11 +56,11 @@ bool ELabsConn::configureHook() {
 	LEG_MEDULLA_REG_PDOS(0);
 	LEG_MEDULLA_REG_PDOS(1);
 	
-	timespec cur_time;
-	clock_gettime(CLOCK_REALTIME, &cur_time);
-	ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
-	ecrt_slave_config_dc(sc0, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
-	ecrt_slave_config_dc(sc1, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
+	RTT::os::TimeService::nsecs cur_time;
+	cur_time = RTT::os::TimeService::Instance()->getNSecs();
+	ecrt_master_application_time(ec_master, EC_NSECS_TO_NANO(cur_time));
+	ecrt_slave_config_dc(sc0, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
+	ecrt_slave_config_dc(sc1, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
 	
 	return true;
 }
@@ -90,6 +85,7 @@ bool ELabsConn::startHook() {
 	
 	uint8_t* domain_pd = ecrt_domain_data(domain);
 	
+	printf("Creating leg medulla objects\n");
 	LEG_MEDULLA_CREATE(lLegA, 0);
 	LEG_MEDULLA_CREATE(lLegB, 1);
 	
@@ -100,11 +96,10 @@ bool ELabsConn::startHook() {
 }
 
 void ELabsConn::updateHook() {
-	rtos_enable_rt_warning();
-	timespec cur_time;
 	RTT::os::MutexLock lock(eCatLock);
-	clock_gettime(CLOCK_REALTIME, &cur_time);
-	ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
+	RTT::os::TimeService::nsecs cur_time;
+	cur_time = RTT::os::TimeService::Instance()->getNSecs();
+	ecrt_rtdm_master_application_time(rt_fd, EC_NSECS_TO_NANO(cur_time));
 	if (++counter >= 10) {
 		counter = 0;
 		ecrt_rtdm_master_sync_reference_clock(rt_fd);
@@ -112,11 +107,7 @@ void ELabsConn::updateHook() {
 	ecrt_rtdm_master_sync_slave_clocks(rt_fd);
 	ecrt_rtdm_domain_queque(rt_fd);
 	ecrt_rtdm_master_send(rt_fd);
-	timespec delay = {
-		0,
-		300000
-	};
-	clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
+	rt_task_sleep(300000);
 	ecrt_rtdm_master_recieve(rt_fd);
 	ecrt_rtdm_domain_process(rt_fd);
 	if (!inOp) {
@@ -124,19 +115,22 @@ void ELabsConn::updateHook() {
 		ecrt_rtdm_master_state(rt_fd, &master_state);
 		if (master_state.al_states == ELABS_OP_STATE) {
 			inOp = true;
-			lLegA->postOpConfig();
-			lLegB->postOpConfig();
+			lLegA->postOpInit();
+			lLegB->postOpInit();
 		}
 	} else {
 		lLegA->processReceiveData(robotState);
 		lLegB->processReceiveData(robotState);
 	}
+	newStateCallback(robotState);
 }
 
 void ELabsConn::sendControllerOutput(atrias_msgs::controller_output controller_output) {
+	if (!lLegA || !lLegB)
+		return;
 	RTT::os::MutexLock lock(eCatLock);
-	lLegA->processSendData(controller_output);
-	lLegB->processSendData(controller_output);
+	lLegA->processTransmitData(controller_output);
+	lLegB->processTransmitData(controller_output);
 	ecrt_rtdm_domain_queque(rt_fd);
 	ecrt_rtdm_master_send(rt_fd);
 }
@@ -150,3 +144,5 @@ void ELabsConn::cleanupHook() {
 }
 
 ORO_CREATE_COMPONENT(ELabsConn)
+}
+}

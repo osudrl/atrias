@@ -30,8 +30,8 @@ bool ELabsTest::configureHook() {
 		return false;
 	}
 	
-	ec_slave_config_t* sc0 = ecrt_master_slave_config(ec_master, 0, 0, VENDOR_ID, PRODUCT_CODE0);
-	ec_slave_config_t* sc1 = ecrt_master_slave_config(ec_master, 0, 1, VENDOR_ID, PRODUCT_CODE1);
+	sc0 = ecrt_master_slave_config(ec_master, 0, 0, VENDOR_ID, PRODUCT_CODE0);
+	sc1 = ecrt_master_slave_config(ec_master, 0, 1, VENDOR_ID, PRODUCT_CODE1);
 	if (!sc0 || !sc1) {
 		log(Error) << "ecrt_master_slave_config returned NULL!" << endlog();
 		ecrt_release_master(ec_master);
@@ -62,12 +62,6 @@ bool ELabsTest::configureHook() {
 		return false;
 	}
 	
-	timespec cur_time;
-	clock_gettime(CLOCK_REALTIME, &cur_time);
-	ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
-	ecrt_slave_config_dc(sc0, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
-	ecrt_slave_config_dc(sc1, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
-	
 	return true;
 }
 
@@ -77,6 +71,12 @@ bool ELabsTest::startHook() {
 		log(Error) << "rt_dev_open failed! Error: " << errno << endlog();
 		return false;
 	}
+	
+	timespec cur_time;
+	clock_gettime(CLOCK_REALTIME, &cur_time);
+	ecrt_rtdm_master_application_time(rt_fd, EC_NEWTIMEVAL2NANO(cur_time));
+	ecrt_slave_config_dc(sc0, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
+	ecrt_slave_config_dc(sc1, 0x0300, LOOP_PERIOD_NS, LOOP_PERIOD_NS - ((cur_time.tv_nsec + LOOP_OFFSET_NS) % LOOP_PERIOD_NS), 0, 0);
 	
 	MstrAttach.domainindex = ecrt_domain_index(domain);
 	if (ecrt_rtdm_master_attach(rt_fd, &MstrAttach) < 0) {
@@ -98,7 +98,7 @@ void ELabsTest::updateHook() {
 	rtos_enable_rt_warning();
 	timespec cur_time;
 	clock_gettime(CLOCK_REALTIME, &cur_time);
-	ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
+	ecrt_rtdm_master_application_time(rt_fd, EC_NEWTIMEVAL2NANO(cur_time));
 	if (++counter >= 10) {
 		counter = 0;
 		ecrt_rtdm_master_sync_reference_clock(rt_fd);

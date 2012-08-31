@@ -4,61 +4,61 @@
 #include <robot_invariant_defs.h>
 
 #define LEG_MEDULLA_OFFSETS(NUM) \
-unsigned int                     CommandOffset##NUM##;\
-unsigned int                     CounterOffset##NUM##;\
-unsigned int                MotorCurrentOffset##NUM##;\
-unsigned int                          IDOffset##NUM##;\
-unsigned int                       StateOffset##NUM##;\
-unsigned int                     CounterOffset##NUM##;\
-unsigned int                  ErrorFlagsOffset##NUM##;\
-unsigned int                 LimitSwitchOffset##NUM##;\
-unsigned int                   ToeSensorOffset##NUM##;\
-unsigned int                MotorEncoderOffset##NUM##;\
-unsigned int       MotorEncoderTimestampOffset##NUM##;\
-unsigned int                  LegEncoderOffset##NUM##;\
-unsigned int         LegEncoderTimestampOffset##NUM##;\
-unsigned int          IncrementalEncoderOffset##NUM##;\
-unsigned int IncrementalEncoderTimestampOffset##NUM##;\
-unsigned int                MotorVoltageOffset##NUM##;\
-unsigned int                LogicVoltageOffset##NUM##;\
-unsigned int                 Thermistor0Offset##NUM##;\
-unsigned int                 Thermistor1Offset##NUM##;\
-unsigned int                 Thermistor2Offset##NUM##;\
-unsigned int                 Thermistor3Offset##NUM##;\
-unsigned int                 Thermistor4Offset##NUM##;\
-unsigned int                 Thermistor5Offset##NUM##;\
-unsigned int         Amp1MeasuredCurrentOffset##NUM##;\
-unsigned int         Amp2MeasuredCurrentOffset##NUM##;
+unsigned int                     CommandOffset##NUM;\
+unsigned int                  OutCounterOffset##NUM;\
+unsigned int                MotorCurrentOffset##NUM;\
+unsigned int                          IDOffset##NUM;\
+unsigned int                       StateOffset##NUM;\
+unsigned int                   InCounterOffset##NUM;\
+unsigned int                  ErrorFlagsOffset##NUM;\
+unsigned int                 LimitSwitchOffset##NUM;\
+unsigned int                   ToeSensorOffset##NUM;\
+unsigned int                MotorEncoderOffset##NUM;\
+unsigned int       MotorEncoderTimestampOffset##NUM;\
+unsigned int                  LegEncoderOffset##NUM;\
+unsigned int         LegEncoderTimestampOffset##NUM;\
+unsigned int          IncrementalEncoderOffset##NUM;\
+unsigned int IncrementalEncoderTimestampOffset##NUM;\
+unsigned int                MotorVoltageOffset##NUM;\
+unsigned int                LogicVoltageOffset##NUM;\
+unsigned int                 Thermistor0Offset##NUM;\
+unsigned int                 Thermistor1Offset##NUM;\
+unsigned int                 Thermistor2Offset##NUM;\
+unsigned int                 Thermistor3Offset##NUM;\
+unsigned int                 Thermistor4Offset##NUM;\
+unsigned int                 Thermistor5Offset##NUM;\
+unsigned int         Amp1MeasuredCurrentOffset##NUM;\
+unsigned int         Amp2MeasuredCurrentOffset##NUM;
 
 #define LEG_MEDULLA_REG_PDOS(NUM) \
 {\
 	ec_pdo_entry_reg_t entry_regs[] = {\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x1,                     &CommandOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x1,                     &CounterOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                &MotorCurrentOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x2,                          &IDOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x2,                       &StateOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                     &CounterOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                  &ErrorFlagsOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &LimitSwitchOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                   &ToeSensorOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                &MotorEncoderOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,       &MotorEncoderTimestampOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                  &LegEncoderOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,         &LegEncoderTimestampOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,          &IncrementalEncoderOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1, &IncrementalEncoderTimestampOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                &MotorVoltageOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                &LogicVoltageOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor0Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor1Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor2Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor3Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor4Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,                 &Thermistor5Offset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,         &Amp1MeasuredCurrentOffset##NUM##, NULL},\
-		{0, ##NUM##, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x1,         &Amp2MeasuredCurrentOffset##NUM##, NULL},\
-		{0, 0,      0x00,          0x00, 0x0, 0x0,          NULL, NULL}\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x01,                     &CommandOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x01,                  &OutCounterOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x4, 0x01,                &MotorCurrentOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x02,                          &IDOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x03,                       &StateOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x04,                   &InCounterOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x05,                  &ErrorFlagsOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x5, 0x06,                 &LimitSwitchOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x02,                   &ToeSensorOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x7, 0x01,                &MotorEncoderOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x03,       &MotorEncoderTimestampOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x7, 0x02,                  &LegEncoderOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x04,         &LegEncoderTimestampOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x05,          &IncrementalEncoderOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x06, &IncrementalEncoderTimestampOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x07,                &MotorVoltageOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x08,                &LogicVoltageOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x09,                 &Thermistor0Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x0a,                 &Thermistor1Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x0b,                 &Thermistor2Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x0c,                 &Thermistor3Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x0d,                 &Thermistor4Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x6, 0x11,                 &Thermistor5Offset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x3, 0x01,         &Amp1MeasuredCurrentOffset##NUM, NULL},\
+		{0, NUM, MEDULLA_VENDOR_ID, MEDULLA_LEG_PRODUCT_CODE, 0x3, 0x02,         &Amp2MeasuredCurrentOffset##NUM, NULL},\
+		{0,   0,              0x00,                     0x00, 0x0, 0x00,                                    NULL, NULL},\
 	};\
 	if (ecrt_domain_reg_pdo_entry_list(domain, entry_regs)) {\
 		log(Error) << "ecrt_domain_reg_pdo_entry_list failed for Leg Medulla at pos: " << NUM << endlog();\
@@ -116,35 +116,35 @@ ec_sync_info_t slave_##NUM##_syncs[] = {\
 #define LEG_MEDULLA_CREATE(VARIABLE, NUM) \
 {\
 	intptr_t outputs[3] = {\
-		domain_pd +                     CommandOffset##NUM##,\
-		domain_pd +                     CounterOffset##NUM##,\
-		domain_pd +                MotorCurrentOffset##NUM##,\
+		(intptr_t) (domain_pd +                     CommandOffset##NUM),\
+		(intptr_t) (domain_pd +                  OutCounterOffset##NUM),\
+		(intptr_t) (domain_pd +                MotorCurrentOffset##NUM),\
 	};\
 	intptr_t inputs[22] = {\
-		domain_pd +                          IDOffset##NUM##,\
-		domain_pd +                       StateOffset##NUM##,\
-		domain_pd +                     CounterOffset##NUM##,\
-		domain_pd +                  ErrorFlagsOffset##NUM##,\
-		domain_pd +                 LimitSwitchOffset##NUM##,\
-		domain_pd +                   ToeSensorOffset##NUM##,\
-		domain_pd +                MotorEncoderOffset##NUM##,\
-		domain_pd +       MotorEncoderTimestampOffset##NUM##,\
-		domain_pd +                  LegEncoderOffset##NUM##,\
-		domain_pd +         LegEncoderTimestampOffset##NUM##,\
-		domain_pd +          IncrementalEncoderOffset##NUM##,\
-		domain_pd + IncrementalEncoderTimestampOffset##NUM##,\
-		domain_pd +                MotorVoltageOffset##NUM##,\
-		domain_pd +                LogicVoltageOffset##NUM##,\
-		domain_pd +                 Thermistor0Offset##NUM##,\
-		domain_pd +                 Thermistor1Offset##NUM##,\
-		domain_pd +                 Thermistor2Offset##NUM##,\
-		domain_pd +                 Thermistor3Offset##NUM##,\
-		domain_pd +                 Thermistor4Offset##NUM##,\
-		domain_pd +                 Thermistor5Offset##NUM##,\
-		domain_pd +         Amp1MeasuredCurrentOffset##NUM##,\
-		domain_pd +         Amp2MeasuredCurrentOffset##NUM##,\
+		(intptr_t) (domain_pd +                          IDOffset##NUM),\
+		(intptr_t) (domain_pd +                       StateOffset##NUM),\
+		(intptr_t) (domain_pd +                   InCounterOffset##NUM),\
+		(intptr_t) (domain_pd +                  ErrorFlagsOffset##NUM),\
+		(intptr_t) (domain_pd +                 LimitSwitchOffset##NUM),\
+		(intptr_t) (domain_pd +                   ToeSensorOffset##NUM),\
+		(intptr_t) (domain_pd +                MotorEncoderOffset##NUM),\
+		(intptr_t) (domain_pd +       MotorEncoderTimestampOffset##NUM),\
+		(intptr_t) (domain_pd +                  LegEncoderOffset##NUM),\
+		(intptr_t) (domain_pd +         LegEncoderTimestampOffset##NUM),\
+		(intptr_t) (domain_pd +          IncrementalEncoderOffset##NUM),\
+		(intptr_t) (domain_pd + IncrementalEncoderTimestampOffset##NUM),\
+		(intptr_t) (domain_pd +                MotorVoltageOffset##NUM),\
+		(intptr_t) (domain_pd +                LogicVoltageOffset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor0Offset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor1Offset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor2Offset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor3Offset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor4Offset##NUM),\
+		(intptr_t) (domain_pd +                 Thermistor5Offset##NUM),\
+		(intptr_t) (domain_pd +         Amp1MeasuredCurrentOffset##NUM),\
+		(intptr_t) (domain_pd +         Amp2MeasuredCurrentOffset##NUM),\
 	};\
-	VARIABLE = new LegMedulla( NUM );
+	VARIABLE = new LegMedulla(outputs, inputs);\
 }
 
 #endif // LEGMEDULLADEFS_H
