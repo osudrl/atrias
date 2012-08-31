@@ -76,7 +76,8 @@ enum class RtOpsCommand: RtOpsCommand_t {
     DISABLE, //Controller is loaded but not enabled
     ENABLE,  //Controller is both loaded and enabled
     RESET,
-    E_STOP
+    E_STOP,
+    HALT
 };
 
 typedef int8_t RtOpsEvent_t;
@@ -94,9 +95,34 @@ enum class RtOpsEvent: RtOpsEvent_t {
     ACK_ENABLE,               // Acknowledges an ENABLE command from the CM
     ACK_RESET,                // Acknowledges a RESET command from the CM
     ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
+    ACK_HALT,                 // Acknowledges an E_STOP command from the CM
     ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
     CONTROLLER_ESTOP,         // The controller commanded an estop.
-    MEDULLA_ESTOP             // Sent when any Medulla goes into error mode.
+    MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
+    SAFETY                    // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
+};
+
+}
+
+namespace rtOps {
+
+/** @brief The type for RT Ops event metadata.
+  */
+typedef int8_t RtOpsEventMetadata_t;
+
+/** @brief The metadata for the SAFETY event.
+  * This reflects the _first_ detected reason for a halt.
+  * 
+  * This needs to be completed and actually implemented.
+  */
+enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
+	BOOM_MEDULLA_HALT = 0,    // The boom medulla entered halt state
+	LEFT_HIP_MEDULLA_HALT,    // Likewise for left hip. The next few are similar.
+	LEFT_LEG_A_MEDULLA_HALT,
+	LEFT_LEG_B_MEDULLA_HALT,
+	RIGHT_HIP_MEDULLA_HALT,
+	RIGHT_LEG_A_MEDULLA_HALT,
+	RIGHT_LEG_B_MEDULLA_HALT
 };
 
 }

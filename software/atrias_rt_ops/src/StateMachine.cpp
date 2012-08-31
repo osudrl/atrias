@@ -43,11 +43,15 @@ void StateMachine::ackCMState(controllerManager::RtOpsCommand state) {
 			break;
 			
 		case controllerManager::RtOpsCommand::RESET:
-			// Don't send an akc here... it happens after the reset is complete.
+			// Don't send an ack here... it happens after the reset is complete.
 			break;
 			
 		case controllerManager::RtOpsCommand::E_STOP:
 			rtOps->getOpsLogger()->sendEvent(controllerManager::RtOpsEvent::ACK_E_STOP);
+			break;
+		
+		case controllerManager::RtOpsCommand::HALT:
+			rtOps->getOpsLogger()->sendEvent(controllerManager::RtOpsEvent::ACK_HALT);
 			break;
 			
 		default:
@@ -82,10 +86,15 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 			if (controllerOutput.command == medulla_state_error)
 				eStop(controllerManager::RtOpsEvent::CONTROLLER_ESTOP);
 			
-			if (rtOps->getSafety()->shouldHalt())
+			if (rtOps->getSafety()->shouldHalt()) {
+				setState(controllerManager::RtOpsCommand::HALT);
 				return medulla_state_halt;
+			}
 			
 			return (medulla_state_t) controllerOutput.command;
+		
+		case controllerManager::RtOpsCommand::HALT:
+			return medulla_state_halt;
 			
 		default:
 			eStop(controllerManager::RtOpsEvent::INVALID_RT_OPS_STATE);
@@ -104,6 +113,9 @@ void StateMachine::newCMState(controllerManager::RtOpsCommand new_state) {
 			break;
 			
 		case controllerManager::RtOpsCommand::ENABLE:
+			if (rtOps->getSafety()->shouldHalt())
+				new_state = controllerManager::RtOpsCommand::DISABLE;
+			
 			break;
 			
 		case controllerManager::RtOpsCommand::RESET:
@@ -112,6 +124,10 @@ void StateMachine::newCMState(controllerManager::RtOpsCommand new_state) {
 			
 		case controllerManager::RtOpsCommand::E_STOP:
 			eStop(controllerManager::RtOpsEvent::CM_COMMAND_ESTOP);
+			break;
+		
+		case controllerManager::RtOpsCommand::HALT:
+			// Nothing special needs to be done here.
 			break;
 			
 		default:

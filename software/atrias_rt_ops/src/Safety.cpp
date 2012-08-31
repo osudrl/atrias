@@ -11,6 +11,9 @@ Safety::Safety(RTOps* rt_ops) {
 bool Safety::shouldHalt() {
 	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
 	
+	// Each of the following checks should send an event (w/ metadata) to the controller
+	// manager if satisfied. See issue 98
+	
 	// Check for medullas in halt state.
 	if (robotState.boomMedullaState        == medulla_state_halt)
 		return true;
