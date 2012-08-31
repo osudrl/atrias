@@ -43,7 +43,7 @@ void StateMachine::ackCMState(controllerManager::RtOpsCommand state) {
 			break;
 			
 		case controllerManager::RtOpsCommand::RESET:
-			rtOps->getOpsLogger()->sendEvent(controllerManager::RtOpsEvent::ACK_RESET);
+			// Don't send an akc here... it happens after the reset is complete.
 			break;
 			
 		case controllerManager::RtOpsCommand::E_STOP:
@@ -74,6 +74,7 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 			if (resetCounter > MEDULLA_RESET_TIME_MS) {
 				resetCounter = 0;
 				setState(controllerManager::RtOpsCommand::NO_CONTROLLER_LOADED);
+				rtOps->getOpsLogger()->sendEvent(controllerManager::RtOpsEvent::ACK_RESET);
 			}
 			return medulla_state_reset;
 			
