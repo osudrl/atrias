@@ -31,6 +31,9 @@
 //#define ERROR_CHECK_ENCODER
 //#define ERROR_CHECK_AMP
 
+#define LOC_TO_COUNTS(POS, CALIB_LOC, CALIB_VAL, RAD_PER_TICK) \
+	((uint32_t)((((POS)-(CALIB_LOC))/(RAD_PER_TICK)) + CALIB_VAL))
+
 void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, TC0_t *timestamp_timer, uint16_t **master_watchdog);
 
 void leg_enable_outputs(void);

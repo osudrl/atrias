@@ -199,9 +199,11 @@ void leg_update_inputs(uint8_t id) {
 }
 
 bool leg_run_halt(uint8_t id) {
+	/*
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Run Halt\n");
 	#endif
+	*/
 	return false;
 }
 
@@ -315,11 +317,36 @@ bool leg_check_error(uint8_t id) {
 
 }
 
-bool leg_check_halt(uint8_t id) {
-//	if (0) {
-//		*error_flags_pdo |= halt_error;
-//		return true;
-//	}	
+bool leg_check_halt(uint8_t id) {	
+	uint32_t maxCounts = 0;
+	uint32_t minCounts = 0;
+
+	int8_t countDirection = 1;
+
+	switch (id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			maxCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
+			minCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
+			countDirection = (LEFT_TRAN_A_RAD_PER_CNT > 0) ? 1 : -1;
+			break;
+		case MEDULLA_LEFT_LEG_B_ID:
+			maxCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
+			minCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
+			countDirection = (LEFT_TRAN_B_RAD_PER_CNT > 0) ? 1 : -1;
+			break;
+	}
+
+	if ((countDirection > 0) && 
+	    ((*motor_encoder_pdo > maxCounts) || (*motor_encoder_pdo < minCounts))) {
+		return true;
+	}
+	
+	if ((countDirection < 0) && 
+	    ((*motor_encoder_pdo < maxCounts) || (*motor_encoder_pdo > minCounts))) {
+		return true;
+	}
+
+
 	return false;
 }
 
