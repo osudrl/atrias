@@ -158,16 +158,16 @@ int32_t LegMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
 	
 	switch(*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			torqueCmd = controllerOutput.lLeg.motorCurrentA;
+			torqueCmd = controllerOutput.lLeg.motorCurrentA * LEFT_MOTOR_A_DIRECTION;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
-			torqueCmd = controllerOutput.lLeg.motorCurrentB;
+			torqueCmd = controllerOutput.lLeg.motorCurrentB * LEFT_MOTOR_B_DIRECTION;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
-			torqueCmd = controllerOutput.rLeg.motorCurrentA;
+			torqueCmd = controllerOutput.rLeg.motorCurrentA * RIGHT_MOTOR_A_DIRECTION;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
-			torqueCmd = controllerOutput.rLeg.motorCurrentB;
+			torqueCmd = controllerOutput.rLeg.motorCurrentB * RIGHT_MOTOR_B_DIRECTION;
 			break;
 	}
 	

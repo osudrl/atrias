@@ -55,7 +55,7 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     // legLen.pos / .vel
 
     // Set resonable center positions
-    centerLength = 0.85;
+    centerLength = 0.8;
     centerAngle = M_PI/2;
     legLen.pos = legLen.pos + centerLength;
     legAng.pos = legAng.pos + centerAngle;
