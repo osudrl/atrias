@@ -69,6 +69,8 @@ uint8_t motor_encoder_error_counter;
 uint8_t leg_encoder_error_counter;
 bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
+uint32_t prev_motor_position;
+
 
 void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
@@ -160,7 +162,7 @@ void leg_update_inputs(uint8_t id) {
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
-
+	
 	// Start reading from the encoders
 	biss_encoder_start_reading(&motor_encoder);
 	biss_encoder_start_reading(&leg_encoder);
@@ -180,6 +182,7 @@ void leg_update_inputs(uint8_t id) {
 	sei();
 
 	// make sure our encoder data is accurate, if it is, then update, if it's not, then increment the error coutner.
+	prev_motor_position = *motor_encoder_pdo;
 	if (biss_encoder_data_valid(&motor_encoder)) {
 		biss_encoder_process_data(&motor_encoder);
 	}
@@ -322,6 +325,13 @@ bool leg_check_halt(uint8_t id) {
 	uint32_t minCounts = 0;
 
 	int8_t countDirection = 1;
+
+	// First check if the encoder value is even reasonable
+	if (((*motor_encoder_pdo - prev_motor_position) > MAX_ACCEPTABLE_ENCODER_CHANGE) ||
+	    ((*motor_encoder_pdo - prev_motor_position) < (MAX_ACCEPTABLE_ENCODER_CHANGE*-1))) {
+		// We have a bad encoder value, just ignore it and go on.
+		return false;
+	}
 
 	switch (id) {
 		case MEDULLA_LEFT_LEG_A_ID:
