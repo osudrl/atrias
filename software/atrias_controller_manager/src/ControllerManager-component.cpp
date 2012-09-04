@@ -132,7 +132,7 @@ void ControllerManager::cleanupHook() {
 
 bool ControllerManager::processRtOpsEvent() {
     if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-        std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
+        //std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
         eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
         return true;
     }

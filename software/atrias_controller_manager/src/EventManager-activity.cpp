@@ -33,7 +33,6 @@ void EventManager::loop() {
             }
     	}
     	if (process) {
-            printf("[CManager] Processing event %i! Is reset: %i\n", (int)(RtOpsEvent_t)event, (event == RtOpsEvent::ACK_RESET));
             if (event == eventBeingWaitedOn) {
                 switch (event) {
                     case RtOpsEvent::ACK_DISABLE: {
@@ -108,19 +107,15 @@ void EventManager::loop() {
 }
 
 void EventManager::eventCallback(RtOpsEvent event) {
-    printf("[CManager] Got event %i!\n", (int)(RtOpsEvent_t)event);
     os::MutexLock lock(incomingEventsLock);
     incomingEvents.push_back(event);
-    printf("[CManager] Signal value: %i\n", eventsWaitingSignal.value());
     if (eventsWaitingSignal.value() == 0)
         eventsWaitingSignal.signal();
-    printf("[CManager] Signal is set! Value: %i\n", eventsWaitingSignal.value());
 }
 
 void EventManager::setEventWait(RtOpsEvent event) {
     {
         os::MutexLock lock(incomingEventsLock);
-        printf("[CManager] Setting a wait for event %i!\n", (int)(RtOpsEvent_t)event);
         eventBeingWaitedOn = event;
     }
     if (eventsWaitingSignal.value() == 0)
