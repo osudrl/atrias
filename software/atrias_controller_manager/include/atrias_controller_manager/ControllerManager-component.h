@@ -78,6 +78,7 @@ private:
     //boost::shared_ptr<scripting::ScriptingService> scriptingProvider;
     scripting::ScriptingService::shared_ptr scriptingProvider;
 
+    bool processRtOpsEvent();
     bool loadController(string controllerName);
     void unloadController();
     bool runController(string path);
@@ -94,6 +95,10 @@ private:
 public:
     OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
+    /** @brief Protects access to commandPending
+     */
+    os::Mutex commandPendingLock;
+
     bool commandPending;
 
     ControllerManager(string const& name);
@@ -105,7 +110,7 @@ public:
 
     bool tryProcessCommand();
     void throwEstop(bool alertRtOps = true);
-    void setState(ControllerManagerState newState);
+    void setState(ControllerManagerState newState, bool shouldReset = false);
     ControllerManagerState getState();
 };
 

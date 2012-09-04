@@ -61,11 +61,9 @@ bool ControllerManager::startHook() {
 }
 
 void ControllerManager::updateHook() {
-    // Have we been contacted by RT Ops?
-    if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
-        //std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
-        eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
-    }
+    std::cout << "[CManager] updateHook called!" << std::endl;
+    // Process all RT Ops events
+    while (processRtOpsEvent());
 
     //Any errors are ancient history
     lastError = ControllerManagerError::NO_ERROR;
@@ -130,6 +128,15 @@ void ControllerManager::stopHook() {
 
 void ControllerManager::cleanupHook() {
     std::cout << "AtriasControllerManager cleaning up !" << std::endl;
+}
+
+bool ControllerManager::processRtOpsEvent() {
+    if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
+        std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
+        eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
+        return true;
+    }
+    return false;
 }
 
 void ControllerManager::updateGui() {
@@ -197,6 +204,7 @@ void ControllerManager::throwEstop(bool alertRtOps) {
         eManager->setEventWait(RtOpsEvent::ACK_E_STOP);
         rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
     }
+    updateGui();
 }
 
 bool ControllerManager::loadController(string controllerName) {
@@ -237,7 +245,7 @@ void ControllerManager::unloadController() {
     rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
 }
 
-void ControllerManager::setState(ControllerManagerState newState) {
+void ControllerManager::setState(ControllerManagerState newState, bool shouldReset) {
     if (newState == ControllerManagerState::CONTROLLER_STOPPED) {
         controllerLoaded = true;
     }
@@ -248,14 +256,20 @@ void ControllerManager::setState(ControllerManagerState newState) {
             controllerLoaded = false;
         }
     }
-    state = newState;
+    if (state != ControllerManagerState::CONTROLLER_ESTOPPED || shouldReset)
+        state = newState;
     updateGui();
 }
 
 bool ControllerManager::tryProcessCommand() {
     os::MutexTryLock tryLock(commandRunMutex);
     if (tryLock.isSuccessful()) {
-        if (!commandPending && !(commandBuffer.empty())) {
+        bool pending;
+        {
+            os::MutexLock lock(commandPendingLock);
+            pending = commandPending;
+        }
+        if (!pending && !(commandBuffer.empty())) {
             handleUserCommand(commandBuffer.front());
             commandBuffer.pop_front();
             return true;
