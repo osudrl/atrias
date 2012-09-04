@@ -70,7 +70,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -128,14 +128,14 @@
 					<OpMode>
 						<Name>DcSync</Name>
 						<Desc>DC for synchronization</Desc>
-						<AssignActivate>#x0000</AssignActivate>
+						<AssignActivate>#x0300</AssignActivate>
 						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
 						<ShiftTimeSync0>0</ShiftTimeSync0>
 					</OpMode>
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>0808000000000000000000000000</ConfigData>
+					<ConfigData>08080008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -366,7 +366,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -519,7 +519,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -651,7 +651,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 		</Devices>
