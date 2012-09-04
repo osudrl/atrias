@@ -355,6 +355,24 @@
 						<DataType>INT</DataType>
 					</Entry>
 				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A07</Index>
+					<Name>Knee Force</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>18</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Knee Force 1</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>19</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Knee Force 2</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
 						<Name>DcSync</Name>
