@@ -443,12 +443,19 @@
 						<Index>#x0005</Index>
 						<SubIndex>4</SubIndex>
 						<BitLen>8</BitLen>
-						<Name>Error Flags</Name>
+						<Name>Counter</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>6</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Limit Switch</Name>
 						<DataType>USINT</DataType>
@@ -573,21 +580,28 @@
 					<Name>uController Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>2</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>ID</Name>
 						<DataType>USINT</DataType>
-					</Entry>					
+					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>3</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>State</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Counter</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Error Flags</Name>
 						<DataType>USINT</DataType>

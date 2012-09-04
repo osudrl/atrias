@@ -166,7 +166,7 @@ int main(void) {
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Calling init for specific medulla\n");
 	#endif
-	initilize(medulla_id, &ecat_port, ecat_tx_sm_buffer, ecat_rx_sm_buffer, &commanded_state, &current_state, &TIMESTAMP_COUNTER, &master_watchdog_counter);
+	initilize(medulla_id, &ecat_port, ecat_tx_sm_buffer, ecat_rx_sm_buffer, &commanded_state, &current_state, &packet_counter, &TIMESTAMP_COUNTER, &master_watchdog_counter);
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Switching printf to low level interrupt\n");
@@ -202,6 +202,9 @@ int main(void) {
 
 			// Update the inputs
 			update_inputs(medulla_id);
+
+			// Increment the packet counter
+			*packet_counter += 1;
 
 			// Send the new sensor data to the ethercat slave
 			ecat_write_tx_sm(&ecat_port);
