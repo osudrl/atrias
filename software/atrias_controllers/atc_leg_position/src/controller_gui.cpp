@@ -48,44 +48,44 @@ void controllerCallback(const atc_leg_position::controller_status &status) {
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/leg_length",          leg_length_param);
-    nh.getParam("/atrias_gui/leg_angle",           leg_angle_param);
-    nh.getParam("/atrias_gui/leg_position_p_gain", leg_p_gain_param);
-    nh.getParam("/atrias_gui/leg_position_d_gain", leg_d_gain_param);
-    nh.getParam("/atrias_gui/hip_angle",           hip_angle_param);
-    nh.getParam("/atrias_gui/hip_position_p_gain", hip_p_gain_param);
-    nh.getParam("/atrias_gui/hip_position_d_gain", hip_d_gain_param);
+    nh.getParam("/atrias_gui/leg_length",          controllerDataOut.leg_len);
+    nh.getParam("/atrias_gui/leg_angle",           controllerDataOut.leg_ang);
+    nh.getParam("/atrias_gui/leg_position_p_gain", controllerDataOut.p_gain);
+    nh.getParam("/atrias_gui/leg_position_d_gain", controllerDataOut.d_gain);
+    nh.getParam("/atrias_gui/hip_angle",           controllerDataOut.hip_ang);
+    nh.getParam("/atrias_gui/hip_position_p_gain", controllerDataOut.hip_p_gain);
+    nh.getParam("/atrias_gui/hip_position_d_gain", controllerDataOut.hip_d_gain);
 
     // Configure the GUI.
-    leg_length_hscale->set_value(leg_length_param);
-    leg_angle_hscale->set_value(leg_angle_param);
-    p_leg_position_hscale->set_value(leg_p_gain_param);
-    d_leg_position_hscale->set_value(leg_d_gain_param);
-    hip_position_ang->set_value(hip_angle_param);
-    hip_position_p->set_value(hip_p_gain_param);
-    hip_position_d->set_value(hip_d_gain_param);
+    leg_length_hscale->set_value(controllerDataOut.leg_len);
+    leg_angle_hscale->set_value(controllerDataOut.leg_ang);
+    p_leg_position_hscale->set_value(controllerDataOut.p_gain);
+    d_leg_position_hscale->set_value(controllerDataOut.d_gain);
+    hip_position_ang->set_value(controllerDataOut.hip_ang);
+    hip_position_p->set_value(controllerDataOut.hip_p_gain);
+    hip_position_d->set_value(controllerDataOut.hip_d_gain);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/leg_length",          leg_length_param);
-    nh.setParam("/atrias_gui/leg_angle",           leg_angle_param);
-    nh.setParam("/atrias_gui/leg_position_p_gain", leg_p_gain_param);
-    nh.setParam("/atrias_gui/leg_position_d_gain", leg_d_gain_param);
-    nh.setParam("/atrias_gui/hip_angle",           hip_angle_param);
-    nh.setParam("/atrias_gui/hip_position_p_gain", hip_p_gain_param);
-    nh.setParam("/atrias_gui/hip_position_d_gain", hip_d_gain_param);
+    nh.setParam("/atrias_gui/leg_length",          controllerDataOut.leg_len);
+    nh.setParam("/atrias_gui/leg_angle",           controllerDataOut.leg_ang);
+    nh.setParam("/atrias_gui/leg_position_p_gain", controllerDataOut.p_gain);
+    nh.setParam("/atrias_gui/leg_position_d_gain", controllerDataOut.d_gain);
+    nh.setParam("/atrias_gui/hip_angle",           controllerDataOut.hip_ang);
+    nh.setParam("/atrias_gui/hip_position_p_gain", controllerDataOut.hip_p_gain);
+    nh.setParam("/atrias_gui/hip_position_d_gain", controllerDataOut.hip_d_gain);
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.leg_ang    = leg_length_param = leg_angle_hscale->get_value();
-    controllerDataOut.leg_len    = leg_angle_param  = leg_length_hscale->get_value();
-    controllerDataOut.p_gain     = leg_p_gain_param = p_leg_position_hscale->get_value();
-    controllerDataOut.d_gain     = leg_d_gain_param = d_leg_position_hscale->get_value();
-    controllerDataOut.hip_ang    = hip_angle_param  = hip_position_ang->get_value();
-    controllerDataOut.hip_p_gain = hip_p_gain_param = hip_position_p->get_value();
-    controllerDataOut.hip_d_gain = hip_d_gain_param = hip_position_d->get_value();
+    controllerDataOut.leg_len    = leg_length_hscale->get_value();
+    controllerDataOut.leg_ang    = leg_angle_hscale->get_value();
+    controllerDataOut.p_gain     = p_leg_position_hscale->get_value();
+    controllerDataOut.d_gain     = d_leg_position_hscale->get_value();
+    controllerDataOut.hip_ang    = hip_position_ang->get_value();
+    controllerDataOut.hip_p_gain = hip_position_p->get_value();
+    controllerDataOut.hip_d_gain = hip_position_d->get_value();
     pub.publish(controllerDataOut);
 }
 
