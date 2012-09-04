@@ -51,11 +51,41 @@ uint8_t debug_uart_rx_buffer[DEBUG_UART_RX_BUFFER_SIZE];
 uart_port_t debug_port;
 
 // Defitions for ethercat communications
+// Find the largest tx and rx sync manager sizes. This is used for allocating buffers.
+#if (MEDULLA_LEG_INPUTS_SIZE < MEDULLA_HIP_INPUTS_SIZE)
+	#if (MEDULLA_HIP_INPUTS_SIZE < MEDULLA_BOOM_INPUTS_SIZE)
+		#define MAX_TX_SM_SIZE MEDULLA_BOOM_INPUTS_SIZE
+	#else
+		#define MAX_TX_SM_SIZE MEDULLA_HIP_INPUTS_SIZE
+	#endif
+#else 
+	#if (MEDULLA_LEG_INPUTS_SIZE < MEDULLA_BOOM_INPUTS_SIZE)
+		#define MAX_TX_SM_SIZE MEDULLA_BOOM_INPUTS_SIZE
+	#else
+		#define MAX_TX_SM_SIZE MEDULLA_LEG_INPUTS_SIZE
+	#endif
+#endif
+
+#if (MEDULLA_LEG_OUTPUTS_SIZE < MEDULLA_HIP_OUTPUTS_SIZE)
+	#if (MEDULLA_HIP_OUTPUTS_SIZE < MEDULLA_BOOM_OUTPUTS_SIZE)
+		#define MAX_RX_SM_SIZE MEDULLA_BOOM_OUTPUTS_SIZE
+	#else
+		#define MAX_RX_SM_SIZE MEDULLA_HIP_OUTPUTS_SIZE
+	#endif
+#else 
+	#if (MEDULLA_LEG_OUTPUTS_SIZE < MEDULLA_BOOM_OUTPUTS_SIZE)
+		#define MAX_RX_SM_SIZE MEDULLA_BOOM_OUTPUTS_SIZE
+	#else
+		#define MAX_RX_SM_SIZE MEDULLA_LEG_OUTPUTS_SIZE
+	#endif
+#endif
+
 ecat_slave_t ecat_port;
-uint8_t ecat_tx_sm_buffer[42]; ///< Buffer used for the tx sync manager 
-uint8_t ecat_rx_sm_buffer[8]; ///< Buffer used for the rx sync manager
+uint8_t ecat_tx_sm_buffer[MAX_TX_SM_SIZE]; ///< Buffer used for the tx sync manager 
+uint8_t ecat_rx_sm_buffer[MAX_RX_SM_SIZE]; ///< Buffer used for the rx sync manager
 medulla_state_t *commanded_state;
 medulla_state_t *current_state;
+uint8_t *packet_counter;
 
 // Definitions for the medulla ID dip switches
 #define MEDULLA_ID_PORT PORTJ
@@ -94,7 +124,7 @@ void amplifier_debug();
  *  @param id The 6 bit id of the medulla
  *  @param timestamp_timer Timer to use for generating timestamps
  */
-void (*initilize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, TC0_t *timestamp_timer, uint16_t **master_watchdg); 
+void (*initilize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdg); 
 
 void (*enable_outputs)(void);
 void (*disable_outputs)();

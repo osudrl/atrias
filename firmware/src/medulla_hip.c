@@ -10,6 +10,7 @@ int32_t *hip_motor_current_pdo;
 // TxPDO entries
 uint8_t *hip_medulla_id_pdo;
 medulla_state_t *hip_current_state_pdo;
+uint8_t *hip_medulla_counter_pdo;
 uint8_t *hip_error_flags_pdo;
 uint8_t *hip_limit_switch_pdo;
 
@@ -29,6 +30,7 @@ ecat_pdo_entry_t hip_rx_pdos[] = {{((void**)(&hip_command_state_pdo)),1},
 
 ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_current_state_pdo)),1},
+                              {((void**)(&hip_medulla_counter_pdo)),1},
                               {((void**)(&hip_error_flags_pdo)),1},
                               {((void**)(&hip_limit_switch_pdo)),1},
                               {((void**)(&hip_encoder_pdo)),4},
@@ -50,7 +52,7 @@ uint16_t hip_motor_voltage_counter;
 uint16_t hip_logic_voltage_counter;
 bool hip_send_current_read;
 
-void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	hip_thermistor_counter = 0;
 	hip_motor_voltage_counter = 0;
@@ -63,12 +65,12 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing sync managers\n");
 	#endif
-	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, 7, 0x1000, tx_sm_buffer, 17, 0x2000);
+	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_HIP_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_HIP_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, 3, hip_tx_pdos, 10); 
+	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, MEDULLA_HIP_TX_PDO_COUNT); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Hip] Initilizing limit switches\n");
@@ -105,6 +107,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	initilize_amp(false, hip_measured_current_pdo, 0);
 	
 	*master_watchdog = hip_counter_pdo;
+	*packet_counter = hip_medulla_counter_pdo;
 	*hip_medulla_id_pdo = id;
 	*commanded_state = hip_command_state_pdo;
 	*current_state = hip_current_state_pdo;
