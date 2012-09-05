@@ -98,6 +98,8 @@ void MedullaManager::processReceiveData() {
 		rLegA->processReceiveData(robotState);
 	if (rLegB)
 		rLegB->processReceiveData(robotState);
+	if (boom)
+		boom->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {
