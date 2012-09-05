@@ -71,7 +71,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			case MEDULLA_BOOM_PRODUCT_CODE: {
 				log(RTT::Info) << "Boom medulla identified." << RTT::endlog();
 				delete(boom);
-				//boom = new BoomMedulla(slaves[i].inputs, slaves[i].outputs);
+				boom = new BoomMedulla(slaves[i].inputs, slaves[i].outputs);
 				
 				break;
 			}
