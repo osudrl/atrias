@@ -180,13 +180,17 @@ void GazeboControllerConnector::OnUpdate()
     ciso.position.zVelocity = this->hipLinks.body->GetWorldLinearVel().z;
 
     // Leg position/velocity with respect to the hip
-    this->hipLinks.leftMotor->GetRelativePose().rot.GetAsAxis(axis, angle);
+    hipRot = this->hipLinks.body->GetWorldPose().rot;
+
+    motorRot = this->hipLinks.leftMotor->GetWorldPose().CoordRotationSub(hipRot);
+    motorRot.GetAsAxis(axis, angle);
     angle = angle*axis.x;
     angle = wrap_angle(angle);
     ciso.lLeg.hip.legBodyAngle = angle;
     ciso.lLeg.hip.legBodyVelocity = this->hipLinks.leftMotor->GetRelativeAngularVel().x;
 
-    this->hipLinks.rightMotor->GetRelativePose().rot.GetAsAxis(axis, angle);
+    motorRot = this->hipLinks.rightMotor->GetWorldPose().CoordRotationSub(hipRot);
+    motorRot.GetAsAxis(axis, angle);
     angle = angle*axis.x + M_PI;
     angle = wrap_angle(angle);
     ciso.rLeg.hip.legBodyAngle = angle;

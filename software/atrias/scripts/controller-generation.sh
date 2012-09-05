@@ -456,14 +456,12 @@ then
     grepRemoveLines "$file" "${lines[@]}"
 
     file="src/${newCppFile}"
-    lines=( "Let the GUI know the controller run state" "guiOut" "Send data to the GUI" "readyToSend" )
+    lines=( "Let the GUI know the controller run state" "guiDataOut" "guiOut" "Send data to the GUI" "readyToSend" )
     grepRemoveLines "$file" "${lines[@]}"
 
     file="include/${newAcName}/${newHFile}"
     lines=( "guiOut" "guiDataOut" "#include <atc_test/controller_status.h>" )
     grepRemoveLines "$file" "${lines[@]}"
-
-    rm msg/controller_status.msg
 fi
 
 # Clean up unused flags
