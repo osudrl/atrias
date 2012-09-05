@@ -85,6 +85,7 @@ class GazeboControllerConnector : public WorldPlugin
         double angle, toePosZ;
         double legMotorGearRatio, hipGearRatio, legTorqueConstant, hipTorqueConstant;
         math::Vector3 axis, bodyForce;
+        math::Quaternion hipRot, motorRot;
         common::Time simTime;
 
         boost::mutex lock;

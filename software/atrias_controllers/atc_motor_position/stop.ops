@@ -2,6 +2,8 @@
 controller.stop()
 unloadComponent(controller.pd0Name)
 unloadComponent(controller.pd1Name)
+unloadComponent(controller.pd2Name)
+unloadComponent(controller.pd3Name)
 controller.cleanup()
 unloadComponent("controller")
 atrias_cm.resetControllerNames()

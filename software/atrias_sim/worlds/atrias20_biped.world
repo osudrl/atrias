@@ -77,10 +77,12 @@
 
         <plugin name="pause_world" filename="libpause_world.so"/>
 
+        <!--
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
             <linkName>atrias20_left_leg::body_link</linkName>
         </plugin>
+        -->
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
             <linkName>atrias20_right_leg::body_link</linkName>
