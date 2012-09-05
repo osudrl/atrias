@@ -28,11 +28,15 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	
 	setPdoPointer(cur_index, logicVoltage);
 	
-	pitchEncoderPos = ((*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE) +
-	                  (1 << (BOOM_ENCODER_BITS - 1))) %
-	                  (1 << (BOOM_ENCODER_BITS - 1)) - (1 << (BOOM_ENCODER_BITS - 1));
+	pitchEncoderPos = (*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE)
+	                  % (1 << BOOM_ENCODER_BITS);
+	
 	// Compensate for the difference between % and modulo
-	pitchEncoderPos = (pitchEncoderPos + (1 << BOOM_ENCODER_BITS)) % (1 << BOOM_ENCODER_BITS);
+	pitchEncoderPos += 1 << BOOM_ENCODER_BITS;
+	
+	// Compensate for wraparound.
+	pitchEncoderPos = (pitchEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) %
+	                  (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	pitchEncoderValue = *pitchEncoder;
 }
@@ -42,17 +46,17 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	// Botain the delta
 	int deltaPos = ((int32_t) *pitchEncoder) - ((int32_t) pitchEncoderValue);
 	
+	// Compensate for the difference between the % operator and the modulo operation.
+	deltaPos    += 1 << BOOM_ENCODER_BITS;
+	
 	// Compensate for rollover
 	deltaPos     = (deltaPos + (1 << (BOOM_ENCODER_BITS - 1))) %
-	               (1 << (BOOM_ENCODER_BITS - 1)) - (1 << (BOOM_ENCODER_BITS - 1));
-	
-	// Compensate for the difference between the % operator and the modulo operation.
-	deltaPos     = (deltaPos + (1 << BOOM_ENCODER_BITS)) % (1 << BOOM_ENCODER_BITS);
+	               (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	pitchEncoderPos += deltaPos;
 	
 	robotState.position.bodyPitch = pitchEncoderPos * PITCH_ENCODER_RAD_PER_TICK -
-	                                M_PI / 2;
+	                                M_PI / 2.0;
 	
 	pitchEncoderValue = *pitchEncoder;
 }
