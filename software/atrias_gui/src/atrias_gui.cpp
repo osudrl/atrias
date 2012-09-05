@@ -486,22 +486,22 @@ void show_error_dialog(std::string message) {
 
 //! @brief Draws the four legs of Atrias in the simulation (the carrot).
 void draw_leg () {
-    float segment_length = 125.;
-    float short_segment_length = 100.;
-    float motor_radius = 70.;
+    float segment_length = 115.;
+    float short_segment_length = 90.;
+    float motor_radius = 60.;
 
-    float start_x = 125.;
-    float start_y = 125.;
+    float lLeg_start_x = 130.;
+    float rLeg_start_x = 275.;
+    float start_y = 80.;
 
     drawing_area->get_window()->clear();
 
     cc = drawing_area->get_window()->create_cairo_context();
 
-
     cc->set_line_width(12.0);
 
-    // Draw the leg
-    cc->move_to(start_x, start_y);
+    // Draw the left leg
+    cc->move_to(lLeg_start_x, start_y);
     // OSU orange 216, 90, 26
     cc->set_source_rgb(0.8471, 0.3529, 0.1020);
     //cc->set_source_rgb(0.8, 0.0, 0.0);
@@ -510,7 +510,7 @@ void draw_leg () {
     // C
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
     // B
-    cc->move_to(start_x, start_y);
+    cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
     // D
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
@@ -519,15 +519,45 @@ void draw_leg () {
     // Draw the motors
     cc->set_source_rgb(0.0, 0.8, 0.0);
     // A
-    cc->move_to(start_x, start_y);
+    cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
-    cc->move_to(start_x, start_y);
+    cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
     // B
-    cc->move_to(start_x, start_y);
+    cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
-    cc->move_to(start_x, start_y);
+    cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
+    cc->stroke();
+
+    // Draw the right leg
+    cc->move_to(rLeg_start_x, start_y);
+    // OSU orange 216, 90, 26
+    cc->set_source_rgb(0.8471, 0.3529, 0.1020);
+    //cc->set_source_rgb(0.8, 0.0, 0.0);
+    // A
+    cc->rel_line_to(short_segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), short_segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
+    // C
+    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
+    // B
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
+    // D
+    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
+    cc->stroke();
+
+    // Draw the motors
+    cc->set_source_rgb(0.0, 0.8, 0.0);
+    // A
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
+    // B
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
     cc->stroke();
 }
 

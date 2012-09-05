@@ -1,28 +1,24 @@
 /*! \file controller_component.cpp
  *  \author Andrew Peekema
- *  \brief Orocos Component code for the atc_component controller.
+ *  \brief Orocos Component code for the atc_matlab_testing controller.
  */
 
-#include <atc_component/controller_component.h>
+#include <atc_matlab_testing/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ATCComponent::ATCComponent(std::string name):
+ATCMatlabTesting::ATCMatlabTesting(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
-    guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCComponent::runController, this, ClientThread)
+        ->addOperation("runController", &ATCMatlabTesting::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
-
-    // Add properties
 
     // For the GUI
     addEventPort(guiDataIn);
-    addPort(guiDataOut);
     pubTimer = new GuiPublishTimer(20);
 
     // Logging
@@ -37,10 +33,10 @@ ATCComponent::ATCComponent(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
+    log(Info) << "[ATCMT] atc_matlab_testing controller constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robot_state rs) {
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
     {
@@ -52,6 +48,10 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
     }
 
     // begin control code //
+    MdlUpdate(0);
+    MdlOutputs(0);
+    printf("Out1 = %d\n", open_loop_sin_cos_v2012a_Y.Out1);
+    printf("Out2 = %d\n", open_loop_sin_cos_v2012a_Y.Out2);
 
     // Stuff the msg
     co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
@@ -63,12 +63,6 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
     // Command a run state
     co.command = medulla_state_run;
 
-    // Let the GUI know the controller run state
-    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
-    // Send data to the GUI
-    if (pubTimer->readyToSend())
-        guiDataOut.write(guiOut);
-
     // Stuff the msg and push to ROS for logging
     logData.desiredState = 0.0;
     logPort.write(logData);
@@ -78,34 +72,33 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
 }
 
 // Don't put control code below here!
-bool ATCComponent::configureHook() {
-    // Connect to the subcontrollers
-    // Service plugins
-
-    // Get references to subcontroller component properties
-
+bool ATCMatlabTesting::configureHook() {
+    MdlInitializeSizes();
+    MdlInitializeSampleTimes();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
-bool ATCComponent::startHook() {
+bool ATCMatlabTesting::startHook() {
+    MdlStart();
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCComponent::updateHook() {
+void ATCMatlabTesting::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCComponent::stopHook() {
+void ATCMatlabTesting::stopHook() {
+    MdlTerminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCComponent::cleanupHook() {
+void ATCMatlabTesting::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCComponent)
+ORO_CREATE_COMPONENT(ATCMatlabTesting)
 
 }
 }
