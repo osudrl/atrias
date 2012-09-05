@@ -36,4 +36,9 @@
 #define RIGHT_MOTOR_A_DIRECTION   -1.0
 #define RIGHT_MOTOR_B_DIRECTION    1.0
 
+/** @brief The pitch encoder's reading when the robot is vertical.
+  * In encoder ticks.
+  */
+#define BOOM_PITCH_VERTICAL_VALUE  1
+
 #endif // ROBOT_VARIANT_DEFS_H
