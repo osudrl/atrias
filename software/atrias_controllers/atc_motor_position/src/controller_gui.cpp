@@ -38,27 +38,32 @@ void controllerCallback(const atc_motor_position::controller_status &status) {
     controllerDataIn = status;
 }
 
+//void getParam(std::string name, double param, Gtk::Object* gtkObj) {
+//    nh.getParam(name, param);
+//    gtkObj->set_value(param);
+//}
+
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/a_position", a_position_param);
-    nh.getParam("/atrias_gui/b_position", b_position_param);
-    nh.getParam("/atrias_gui/motor_position_p_gain", p_gain_param);
-    nh.getParam("/atrias_gui/motor_position_d_gain", d_gain_param);
+    nh.getParam("/atrias_gui/des_motor_ang_A", controllerDataOut.des_motor_ang_A);
+    nh.getParam("/atrias_gui/des_motor_ang_B", controllerDataOut.des_motor_ang_B);
+    nh.getParam("/atrias_gui/p_gain", controllerDataOut.p_gain);
+    nh.getParam("/atrias_gui/d_gain", controllerDataOut.d_gain);
 
     // Configure the GUI.
-    position_A_hscale->set_value(a_position_param);
-    position_B_hscale->set_value(b_position_param);
-    p_hscale->set_value(p_gain_param);
-    d_hscale->set_value(d_gain_param);
+    position_A_hscale->set_value(controllerDataOut.des_motor_ang_A);
+    position_B_hscale->set_value(controllerDataOut.des_motor_ang_B);
+    p_hscale->set_value(controllerDataOut.p_gain);
+    d_hscale->set_value(controllerDataOut.d_gain);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/a_position", a_position_param);
-    nh.setParam("/atrias_gui/b_position", b_position_param);
-    nh.setParam("/atrias_gui/motor_position_p_gain", p_gain_param);
-    nh.setParam("/atrias_gui/motor_position_d_gain", d_gain_param);
+    nh.setParam("/atrias_gui/des_motor_ang_A", controllerDataOut.des_motor_ang_A);
+    nh.setParam("/atrias_gui/des_motor_ang_B", controllerDataOut.des_motor_ang_B);
+    nh.setParam("/atrias_gui/p_gain", controllerDataOut.p_gain);
+    nh.setParam("/atrias_gui/d_gain", controllerDataOut.d_gain);
 }
 
 void guiUpdate() {
@@ -68,10 +73,10 @@ void guiUpdate() {
     	position_B_hscale->set_value(controllerDataIn.motorPositionB);
     }
 
-    controllerDataOut.des_motor_ang_A = a_position_param = position_A_hscale->get_value();
-    controllerDataOut.des_motor_ang_B = b_position_param = position_B_hscale->get_value();
-    controllerDataOut.p_gain          = p_gain_param     = p_hscale->get_value();
-    controllerDataOut.d_gain          = d_gain_param     = d_hscale->get_value();
+    controllerDataOut.des_motor_ang_A = position_A_hscale->get_value();
+    controllerDataOut.des_motor_ang_B = position_B_hscale->get_value();
+    controllerDataOut.p_gain          = p_hscale->get_value();
+    controllerDataOut.d_gain          = d_hscale->get_value();
 
     pub.publish(controllerDataOut);
 }

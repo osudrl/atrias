@@ -2,6 +2,7 @@ Header header
 
 float64 legBodyAngle
 float64 legBodyVelocity
+float64 motorVelocity
 float64 motorCurrent
 float64 motorTorque
 

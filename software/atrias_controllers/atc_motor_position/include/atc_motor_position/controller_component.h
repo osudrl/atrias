@@ -51,18 +51,28 @@ private:
     // Variables for subcontrollers
     std::string pd0Name;
     std::string pd1Name;
+    std::string pd2Name;
+    std::string pd3Name;
 
     TaskContext *pd0;
     TaskContext *pd1;
+    TaskContext *pd2;
+    TaskContext *pd3;
 
     Property<double> P0;
     Property<double> D0;
     Property<double> P1;
     Property<double> D1;
+    Property<double> P2;
+    Property<double> D2;
+    Property<double> P3;
+    Property<double> D3;
 
     // Subcontroller operations
     OperationCaller<double(double, double, double, double)> pd0Controller;
     OperationCaller<double(double, double, double, double)> pd1Controller;
+    OperationCaller<double(double, double, double, double)> pd2Controller;
+    OperationCaller<double(double, double, double, double)> pd3Controller;
 
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;

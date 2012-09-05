@@ -36,5 +36,4 @@
 #define RIGHT_MOTOR_A_DIRECTION   -1.0
 #define RIGHT_MOTOR_B_DIRECTION    1.0
 
-
 #endif // ROBOT_VARIANT_DEFS_H

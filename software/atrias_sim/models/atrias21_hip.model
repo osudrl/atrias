@@ -179,6 +179,7 @@
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="1 0 0">
             <dynamics damping="0.1" friction="0.1"/>
+            <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
         </axis>
     </joint>
     <joint name="left_motor_to_left_motor_attachment" type="revolute">
@@ -195,6 +196,7 @@
         <origin pose="0 0 0 0 0 0"/>
         <axis xyz="1 0 0">
             <dynamics damping="0.1" friction="0.1"/>
+            <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
         </axis>
     </joint>
     <joint name="right_motor_to_right_motor_attachment" type="revolute">

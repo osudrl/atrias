@@ -70,7 +70,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -128,14 +128,14 @@
 					<OpMode>
 						<Name>DcSync</Name>
 						<Desc>DC for synchronization</Desc>
-						<AssignActivate>#x0000</AssignActivate>
+						<AssignActivate>#x0300</AssignActivate>
 						<CycleTimeSync0 Factor="1">1000000</CycleTimeSync0>
 						<ShiftTimeSync0>0</ShiftTimeSync0>
 					</OpMode>
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>0808000000000000000000000000</ConfigData>
+					<ConfigData>08080008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -355,6 +355,24 @@
 						<DataType>INT</DataType>
 					</Entry>
 				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A07</Index>
+					<Name>Knee Force</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>18</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Knee Force 1</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>19</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Knee Force 2</Name>
+						<DataType>UINT</DataType>
+					</Entry>
+				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
 						<Name>DcSync</Name>
@@ -366,7 +384,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -425,12 +443,19 @@
 						<Index>#x0005</Index>
 						<SubIndex>4</SubIndex>
 						<BitLen>8</BitLen>
-						<Name>Error Flags</Name>
+						<Name>Counter</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>5</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Error Flags</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>6</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Limit Switch</Name>
 						<DataType>USINT</DataType>
@@ -519,7 +544,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 			<Device Physics="YY">
@@ -555,21 +580,28 @@
 					<Name>uController Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>2</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>ID</Name>
 						<DataType>USINT</DataType>
-					</Entry>					
+					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>3</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>State</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>4</SubIndex>
+						<BitLen>8</BitLen>
+						<Name>Counter</Name>
+						<DataType>USINT</DataType>
+					</Entry>
+					<Entry>
+						<Index>#x0005</Index>
+						<SubIndex>5</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Error Flags</Name>
 						<DataType>USINT</DataType>
@@ -651,7 +683,7 @@
 				</Dc>
 				<Eeprom>
 					<ByteSize>2048</ByteSize>
-					<ConfigData>05050008FFFF0000000000000000</ConfigData>
+					<ConfigData>05050008A8610000000000000000</ConfigData>
 				</Eeprom>
 			</Device>
 		</Devices>

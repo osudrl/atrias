@@ -13,6 +13,7 @@ software/atrias_msgs/include
 *.pc
 *.swp
 *.un~
+*.swp
 .tb_history
 orocos.log
 gui_config.yaml

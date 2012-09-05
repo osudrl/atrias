@@ -34,18 +34,6 @@ Gtk::HScale *leg_length_hscale,
 
 Gtk::CheckButton *update_checkbutton;
 
-// Parameters
-//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
-//     arise when both C and python nodes access the same parameter. See:
-//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double leg_length_param;
-double leg_angle_param;
-double leg_p_gain_param;
-double leg_d_gain_param;
-double hip_angle_param;
-double hip_p_gain_param;
-double hip_d_gain_param;
-
 void controllerCallback(const atc_leg_position::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */

@@ -32,6 +32,9 @@ uint16_t *thermistor_pdo; // Pointer to all the thermistors, you can access them
 int16_t *measured_current_amp1_pdo;
 int16_t *measured_current_amp2_pdo;
 
+uint16_t *knee_force1_pdo;
+uint16_t *knee_force2_pdo;
+
 ecat_pdo_entry_t leg_rx_pdos[] = {{((void**)(&leg_command_state_pdo)),1},
                               {((void**)(&leg_counter_pdo)),2},
                               {((void**)(&leg_motor_current_pdo)),4}};
@@ -52,7 +55,9 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
                               {((void**)(&logic_voltage_pdo)),2},
                               {((void**)(&thermistor_pdo)),12},
                               {((void**)(&measured_current_amp1_pdo)),2},
-                              {((void**)(&measured_current_amp2_pdo)),2}};
+                              {((void**)(&measured_current_amp2_pdo)),2}},
+                              {((void**)(&knee_force1_pdo)),2}},
+                              {((void**)(&knee_force2_pdo)),2}};
 
 
 // Structs for the medulla library
@@ -69,8 +74,10 @@ uint8_t motor_encoder_error_counter;
 uint8_t leg_encoder_error_counter;
 bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
+uint32_t prev_motor_position;
 
-void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+
+void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	thermistor_counter = 0;
 	motor_voltage_counter = 0;
@@ -84,12 +91,12 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing sync managers\n");
 	#endif
-	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, 7, 0x1000, tx_sm_buffer, 43, 0x2000);
+	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_LEG_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_LEG_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, 3, leg_tx_pdos, 18); 
+	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Leg] Initilizing limit switches\n");
@@ -142,6 +149,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	initilize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
 	*master_watchdog = leg_counter_pdo;
+	*packet_counter = leg_medulla_counter_pdo;
 	*leg_medulla_id_pdo = id;
 	*commanded_state = leg_command_state_pdo;
 	*current_state = leg_current_state_pdo;
@@ -156,11 +164,10 @@ inline void leg_disable_outputs(void) {
 }
 
 void leg_update_inputs(uint8_t id) {
-	(*leg_medulla_counter_pdo) += 1;
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
-
+	
 	// Start reading from the encoders
 	biss_encoder_start_reading(&motor_encoder);
 	biss_encoder_start_reading(&leg_encoder);
@@ -180,6 +187,7 @@ void leg_update_inputs(uint8_t id) {
 	sei();
 
 	// make sure our encoder data is accurate, if it is, then update, if it's not, then increment the error coutner.
+	prev_motor_position = *motor_encoder_pdo;
 	if (biss_encoder_data_valid(&motor_encoder)) {
 		biss_encoder_process_data(&motor_encoder);
 	}
@@ -322,6 +330,13 @@ bool leg_check_halt(uint8_t id) {
 	uint32_t minCounts = 0;
 
 	int8_t countDirection = 1;
+
+	// First check if the encoder value is even reasonable
+	if (((*motor_encoder_pdo - prev_motor_position) > MAX_ACCEPTABLE_ENCODER_CHANGE) ||
+	    ((*motor_encoder_pdo - prev_motor_position) < (MAX_ACCEPTABLE_ENCODER_CHANGE*-1))) {
+		// We have a bad encoder value, just ignore it and go on.
+		return false;
+	}
 
 	switch (id) {
 		case MEDULLA_LEFT_LEG_A_ID:
