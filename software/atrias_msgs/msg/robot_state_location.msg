@@ -13,3 +13,6 @@ float64 boomAngle
 
 # The robot's body's pitch. -pi/2 is vertical.
 float64 bodyPitch
+
+# How fast we are pitching
+float64 bodyPitchVelocity

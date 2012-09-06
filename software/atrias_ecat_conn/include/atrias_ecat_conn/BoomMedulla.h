@@ -9,6 +9,7 @@
 #include <atrias_msgs/robot_state.h>
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>
+#include <atrias_shared/globals.h>
 #include "atrias_ecat_conn/Medulla.h"
 
 namespace atrias {
@@ -48,6 +49,11 @@ class BoomMedulla : public Medulla {
 	  * After initialization, 0 should corrospond to vertical.
 	  */
 	int32_t   pitchEncoderPos;
+	
+	/** @brief Stores the last value of *pitchTimestamp
+	  * Used for timestamp delta calculation.
+	  */
+	int16_t   pitchTimestampValue;
 	
 	/** @brief Decodes and stores the new value from the pitch encoder.
 	  * @param deltaTime The time between this DC cycle and the last DC cycle.
