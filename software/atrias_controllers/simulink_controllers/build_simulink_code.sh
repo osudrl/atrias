@@ -1,5 +1,6 @@
 #!/bin/bash
 # Pick which controller
+echo "THIS IS NOT CURRENTLY WORKING!"
 echo "Available controllers:"
 ls
 echo "Which controller do you want to make?"

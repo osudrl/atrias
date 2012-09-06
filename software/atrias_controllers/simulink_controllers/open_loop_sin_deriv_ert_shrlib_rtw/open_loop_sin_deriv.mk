@@ -84,13 +84,13 @@ COMPILER_TOOL_CHAIN = unix
 #  STANDALONE_SUPPRESS_EXE - Build the standalone target but only create object code modules 
 #                            and do not build an executable
 
-MODEL                   = open_loop_sin_cos
-MODULES                 = open_loop_sin_cos_data.c 
-MAKEFILE                = open_loop_sin_cos.mk
+MODEL                   = open_loop_sin_deriv
+MODULES                 = open_loop_sin_deriv_data.c 
+MAKEFILE                = open_loop_sin_deriv.mk
 MATLAB_ROOT             = /usr/local/MATLAB/R2012a
 ALT_MATLAB_ROOT         = /usr/local/MATLAB/R2012a
 MASTER_ANCHOR_DIR       = 
-START_DIR               = /home/drl/ROS/atrias/software/atrias_controllers/atc_matlab_testing/matlab
+START_DIR               = /home/drl/ROS/atrias/software/atrias_controllers/simulink_controllers
 S_FUNCTIONS             = 
 S_FUNCTIONS_LIB         = 
 NUMST                   = 2
@@ -130,7 +130,7 @@ ADDITIONAL_LDFLAGS      =
 DEBUG_BUILD             = 0
 
 #--------------------------- Model and reference models -----------------------
-MODELLIB                  = open_loop_sin_coslib.a
+MODELLIB                  = open_loop_sin_derivlib.a
 MODELREF_LINK_LIBS        = 
 MODELREF_INC_PATH         = 
 RELATIVE_PATH_TO_ANCHOR   = ..
@@ -210,7 +210,7 @@ MATLAB_INCLUDES = \
 
 # Additional includes 
 ADD_INCLUDES = \
-	-I$(START_DIR)/open_loop_sin_cos_ert_shrlib_rtw \
+	-I$(START_DIR)/open_loop_sin_deriv_ert_shrlib_rtw \
 	-I$(START_DIR) \
 
 

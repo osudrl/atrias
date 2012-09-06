@@ -38,9 +38,9 @@ rosbuild_genmsg()
 
 include_directories(../../../robot_definitions)
 include_directories(/usr/local/MATLAB/R2012a/simulink/include /usr/local/MATLAB/R2012a/extern/include /usr/local/MATLAB/R2012a/rtw/c/src /usr/local/MATLAB/R2012a/rtw/c/src/ext_mode/common)
-#include_directories(${PROJECT_SOURCE_DIR}/matlab/open_loop_sin_cos_ert_shrlib_rtw)
-#include_directories(${PROJECT_SOURCE_DIR}/matlab/open_loop_sin_deriv_ert_shrlib_rtw)
-include_directories(${PROJECT_SOURCE_DIR}/../matlab_controllers/open_loop_sin_cos_6A_ert_shrlib_rtw)
+#include_directories(${PROJECT_SOURCE_DIR}/../simulink_controllers/open_loop_sin_cos_ert_shrlib_rtw)
+#include_directories(${PROJECT_SOURCE_DIR}//open_loop_sin_deriv_ert_shrlib_rtw)
+include_directories(${PROJECT_SOURCE_DIR}/../simulink_controllers/open_loop_sin_cos_6A_ert_shrlib_rtw)
 
 # Find GTK libraries and build GUI library.
 find_package(GTK2 2.4 COMPONENTS gtk gtkmm REQUIRED)
@@ -62,7 +62,7 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 # documentation.
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
-link_directories(${PROJECT_SOURCE_DIR}/../matlab_controllers)
+link_directories(${PROJECT_SOURCE_DIR}/../simulink_controllers)
 orocos_component(atc_matlab_testing src/controller_component.cpp)
 #target_link_libraries(atc_matlab_testing open_loop_sin_cos)
 #target_link_libraries(atc_matlab_testing open_loop_sin_deriv)
