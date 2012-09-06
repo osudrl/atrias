@@ -48,10 +48,9 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
     }
 
     // begin control code //
-    MdlUpdate(0);
-    MdlOutputs(0);
-    printf("Out1 = %d\n", open_loop_sin_cos_v2012a_Y.Out1);
-    printf("Out2 = %d\n", open_loop_sin_cos_v2012a_Y.Out2);
+    open_loop_sin_cos_step();
+    printf("Out1 = %f\n", open_loop_sin_cos_Y.Out1);
+    printf("Out2 = %f\n", open_loop_sin_cos_Y.Out2);
 
     // Stuff the msg
     co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
@@ -73,14 +72,12 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
-    MdlInitializeSizes();
-    MdlInitializeSampleTimes();
+    open_loop_sin_cos_initialize();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
 bool ATCMatlabTesting::startHook() {
-    MdlStart();
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
@@ -90,7 +87,7 @@ void ATCMatlabTesting::updateHook() {
 }
 
 void ATCMatlabTesting::stopHook() {
-    MdlTerminate();
+    open_loop_sin_cos_terminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 

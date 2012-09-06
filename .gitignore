@@ -6,6 +6,7 @@ srv_gen/
 msg_gen/
 software/atrias_controllers/*/src/*/
 software/atrias_controllers/*/include/*/
+software/atrias_controllers/*/matlab/slprj/
 software/atrias_msgs/src
 software/atrias_msgs/include
 
