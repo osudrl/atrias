@@ -38,7 +38,7 @@ bool ECatConn::configureHook() {
 }
 
 bool ECatConn::startHook() {
-	if (!connManager->initialize()) {
+	if (!connManager->start()) {
 		log(RTT::Error) << "[ECatConn] ConnManager failed to start!" << RTT::endlog();
 		return false;
 	}
