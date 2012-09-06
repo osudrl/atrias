@@ -132,7 +132,8 @@ void ConnManager::timeout(TimerId timer_id) {
 
 	//log(RTT::Info) << sleepTime << RTT::endlog();
 
-	targetTime = sleepTime + cur_time;
+	targetTime = sleepTime + cur_time + filtered_overshoot;
+
 	{
 		//log(RTT::Info) << "< 3" << RTT::endlog();
 		RTT::os::MutexLock lock(timerLock);
@@ -154,7 +155,7 @@ void ConnManager::sendControllerOutput(atrias_msgs::controller_output& controlle
 void ConnManager::stop() {
 	done = true;
 	RTT::os::MutexLock lock(timerLock);
-	log(RTT::Info) << "################" << RTT::endlog();
+	//log(RTT::Info) << "################" << RTT::endlog();
 	if (isArmed(0))
 		killTimer(0);
 	

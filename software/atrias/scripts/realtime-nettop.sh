@@ -18,7 +18,7 @@ cset set -c 0,2 system
 cset proc -k on --force -m -t system -f root
 
 #cset shield -e roslaunch -- atrias orocos-nogui.launch 
-cset proc -e user roslaunch -- atrias orocos-nogui.launch
+cset proc -e user roslaunch -- atrias orocos_preempt.launch
 #cset proc -e user rosrun -- ocl deployer-gnulinux -s `rospack find atrias_controller_manager`/controller_manager.ops -l info
 
 cset proc -k on --force -m -t root -f system

@@ -150,5 +150,13 @@ typedef enum {
   */
 #define MEDULLA_TIMER_FREQ                                            32000000.0
 
+/** @brief The number of bits reported by the boom encoders.
+  * For rollover compensation
+  */
+#define BOOM_ENCODER_BITS                                                     17
+
+/** @brief The number of radians rotated when the pitch encoder moves 1 tick.
+  */
+#define PITCH_ENCODER_RAD_PER_TICK                                 0.00002396844
 
 #endif // ROBOT_INVARIANT_DEFS_H
