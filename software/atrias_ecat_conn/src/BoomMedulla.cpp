@@ -38,7 +38,8 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	pitchEncoderPos = (pitchEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) %
 	                  (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
-	pitchEncoderValue = *pitchEncoder;
+	pitchEncoderValue   = *pitchEncoder;
+	pitchTimestampValue = *pitchTimestamp;
 }
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
@@ -58,7 +59,14 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	robotState.position.bodyPitch = pitchEncoderPos * PITCH_ENCODER_RAD_PER_TICK -
 	                                M_PI / 2.0;
 	
-	pitchEncoderValue = *pitchEncoder;
+	robotState.position.bodyPitchVelocity =
+		deltaPos * PITCH_ENCODER_RAD_PER_TICK /
+		(((double) deltaTime) / SECOND_IN_NANOSECONDS + ((double)
+		(((int16_t) *pitchTimestamp) - pitchTimestampValue)
+		) / MEDULLA_TIMER_FREQ);
+	
+	pitchEncoderValue   = *pitchEncoder;
+	pitchTimestampValue = *pitchTimestamp;
 }
 
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
