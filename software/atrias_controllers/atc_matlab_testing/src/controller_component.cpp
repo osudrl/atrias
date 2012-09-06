@@ -44,18 +44,24 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
         co.lLeg.motorCurrentA = 0.0;
         co.lLeg.motorCurrentB = 0.0;
         co.lLeg.motorCurrentHip = 0.0;
+        co.rLeg.motorCurrentA = 0.0;
+        co.rLeg.motorCurrentB = 0.0;
+        co.rLeg.motorCurrentHip = 0.0;
         return co;
     }
 
     // begin control code //
-    open_loop_sin_cos_step();
-    printf("Out1 = %f\n", open_loop_sin_cos_Y.Out1);
-    printf("Out2 = %f\n", open_loop_sin_cos_Y.Out2);
+    open_loop_sin_cos_6A_step();
+    printf("Out1 = %f\n", open_loop_sin_cos_6A_Y.Out1);
+    printf("Out2 = %f\n", open_loop_sin_cos_6A_Y.Out2);
 
     // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+    co.lLeg.motorCurrentA = open_loop_sin_cos_6A_Y.Out1;
+    co.lLeg.motorCurrentB = open_loop_sin_cos_6A_Y.Out2;
+
+    //co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
+    //co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
+    //co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
     // end control code //
 
@@ -72,7 +78,7 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
-    open_loop_sin_cos_initialize();
+    open_loop_sin_cos_6A_initialize();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
@@ -87,7 +93,7 @@ void ATCMatlabTesting::updateHook() {
 }
 
 void ATCMatlabTesting::stopHook() {
-    open_loop_sin_cos_terminate();
+    open_loop_sin_cos_6A_terminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
