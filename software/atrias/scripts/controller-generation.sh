@@ -243,8 +243,6 @@ do
 done
 # Controller description
 echo "description=$description" > controller.txt
-# Clean up the existing '.svn' folders
-find . -name '.svn' -exec rm -rf {} +
 
 # If this is a plugin, exit here
 if [ "$newAscPluginName" != "" ]
