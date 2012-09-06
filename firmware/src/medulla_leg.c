@@ -55,8 +55,8 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
                               {((void**)(&logic_voltage_pdo)),2},
                               {((void**)(&thermistor_pdo)),12},
                               {((void**)(&measured_current_amp1_pdo)),2},
-                              {((void**)(&measured_current_amp2_pdo)),2}},
-                              {((void**)(&knee_force1_pdo)),2}},
+                              {((void**)(&measured_current_amp2_pdo)),2},
+                              {((void**)(&knee_force1_pdo)),2},
                               {((void**)(&knee_force2_pdo)),2}};
 
 
