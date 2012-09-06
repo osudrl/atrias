@@ -8,6 +8,10 @@ Medulla::Medulla() {
 	local_counter = 0;
 }
 
+double Medulla::decodeLogicVoltage(uint16_t adc_value) {
+	return processADCValue(adc_value) * 6.0;
+}
+
 double Medulla::processADCValue(uint16_t adc_value) {
 	return ((double) adc_value) * (MEDULLA_ADC_MAX_VOLTS/(4095.0));
 }

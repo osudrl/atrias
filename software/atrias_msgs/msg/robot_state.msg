@@ -13,3 +13,4 @@ robot_state_location position
 
 uint8   boomMedullaState
 float64 boomLogicVoltage
+float64 boomMedullaErrorFlags

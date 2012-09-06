@@ -42,6 +42,10 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	pitchTimestampValue = *pitchTimestamp;
 }
 
+uint8_t BoomMedulla::getID() {
+	return *id;
+}
+
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
                                       atrias_msgs::robot_state& robotState) {
 	// Obtain the delta
@@ -89,7 +93,9 @@ void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processPitchEncoder(deltaTime, robot_state);
 	processZEncoder(    deltaTime, robot_state);
 	
-	robot_state.boomMedullaState = *state;
+	robot_state.boomMedullaState      = *state;
+	robot_state.boomMedullaErrorFlags = *errorFlags;
+	robot_state.boomLogicVoltage      = decodeLogicVoltage(*logicVoltage);
 }
 
 }

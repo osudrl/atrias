@@ -76,6 +76,11 @@ class BoomMedulla : public Medulla {
 		  */
 		BoomMedulla(uint8_t* inputs, uint8_t* outputs);
 		
+		/** @brief Gets this medulla's ID.
+		  * @return This medulla's ID.
+		  */
+		uint8_t getID();
+		
 		/** @brief Tells this Medulla to update the robot state.
 		  */
 		void processReceiveData(atrias_msgs::robot_state& robot_state);
