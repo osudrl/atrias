@@ -43,7 +43,7 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
                                       atrias_msgs::robot_state& robotState) {
-	// Botain the delta
+	// Obtain the delta
 	int deltaPos = ((int32_t) *pitchEncoder) - ((int32_t) pitchEncoderValue);
 	
 	// Compensate for the difference between the % operator and the modulo operation.
@@ -61,6 +61,11 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	pitchEncoderValue = *pitchEncoder;
 }
 
+void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
+                                  atrias_msgs::robot_state&   robotState) {
+	
+}
+
 void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	// If we don't have new data, don't run. It's pointless, and results in
 	// NaN velocities.
@@ -74,6 +79,7 @@ void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	timingCounterValue = *timingCounter;
 	
 	processPitchEncoder(deltaTime, robot_state);
+	processZEncoder(    deltaTime, robot_state);
 	
 	robot_state.boomMedullaState = *state;
 }

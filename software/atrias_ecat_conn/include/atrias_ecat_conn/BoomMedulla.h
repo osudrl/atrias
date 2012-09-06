@@ -54,7 +54,14 @@ class BoomMedulla : public Medulla {
 	  * @param robotState The robot state in which to store the new values.
 	  */
 	void      processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
-	                              atrias_msgs::robot_state& robotState);
+	                              atrias_msgs::robot_state&   robotState);
+	
+	/** @brief Decodes and stores the new value from the height encoder.
+	  * @param deltaTime The time between this DC cycle and the last DC cycle.
+	  * @param robotState The robot state in which to store the new values.
+	  */
+	void      processZEncoder(RTT::os::TimeService::nsecs deltaTime,
+	                          atrias_msgs::robot_state&   robotState);
 	
 	public:
 		/** @brief Does SOEM's slave-specific init.
