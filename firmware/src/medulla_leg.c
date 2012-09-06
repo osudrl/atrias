@@ -32,6 +32,9 @@ uint16_t *thermistor_pdo; // Pointer to all the thermistors, you can access them
 int16_t *measured_current_amp1_pdo;
 int16_t *measured_current_amp2_pdo;
 
+uint16_t *knee_force1_pdo;
+uint16_t *knee_force2_pdo;
+
 ecat_pdo_entry_t leg_rx_pdos[] = {{((void**)(&leg_command_state_pdo)),1},
                               {((void**)(&leg_counter_pdo)),2},
                               {((void**)(&leg_motor_current_pdo)),4}};
@@ -52,7 +55,9 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
                               {((void**)(&logic_voltage_pdo)),2},
                               {((void**)(&thermistor_pdo)),12},
                               {((void**)(&measured_current_amp1_pdo)),2},
-                              {((void**)(&measured_current_amp2_pdo)),2}};
+                              {((void**)(&measured_current_amp2_pdo)),2},
+                              {((void**)(&knee_force1_pdo)),2},
+                              {((void**)(&knee_force2_pdo)),2}};
 
 
 // Structs for the medulla library

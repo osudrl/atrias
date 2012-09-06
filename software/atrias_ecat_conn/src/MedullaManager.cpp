@@ -9,6 +9,7 @@ MedullaManager::MedullaManager() {
 	lLegB = NULL;
 	rLegA = NULL;
 	rLegB = NULL;
+	boom  = NULL;
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {
@@ -39,7 +40,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			continue;
 		
 		switch(slaves[i].eep_id) {
-			case MEDULLA_LEG_PRODUCT_CODE:
+			case MEDULLA_LEG_PRODUCT_CODE: {
 				LegMedulla* medulla = new LegMedulla(slaves[i].inputs, slaves[i].outputs);
 				log(RTT::Info) << "Leg medulla detected, ID: " << (int) medulla->getID() << RTT::endlog();
 				
@@ -65,6 +66,15 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 				}
 				
 				break;
+			}
+			
+			case MEDULLA_BOOM_PRODUCT_CODE: {
+				log(RTT::Info) << "Boom medulla identified." << RTT::endlog();
+				delete(boom);
+				boom = new BoomMedulla(slaves[i].inputs, slaves[i].outputs);
+				
+				break;
+			}
 		}
 	}
 }
@@ -88,6 +98,8 @@ void MedullaManager::processReceiveData() {
 		rLegA->processReceiveData(robotState);
 	if (rLegB)
 		rLegB->processReceiveData(robotState);
+	if (boom)
+		boom->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include <atrias_shared/GuiPublishTimer.h>
+#include <atrias_shared/globals.h>
 
 // Datatypes
 #include <atc_component/controller_input.h>

@@ -663,7 +663,7 @@
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A04</Index>
-					<Name>Power</Name>					
+					<Name>Power</Name>
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>2</SubIndex>

@@ -9,7 +9,7 @@
 class ConnManager;
 
 // Orocos
-#include <rtt/os/Timer.hpp>
+#include <rtt/Activity.hpp>
 #include <rtt/os/Mutex.hpp>
 #include <rtt/os/MutexLock.hpp>
 #include <rtt/Logger.hpp>
@@ -23,8 +23,6 @@ extern "C" {
 #include <ethercatdc.h>
 }
 
-#include <time.h>
-
 #include "atrias_ecat_conn/ECatConn.h"
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
@@ -36,7 +34,7 @@ namespace atrias {
 
 namespace ecatConn {
 
-class ConnManager : public RTT::os::Timer {
+class ConnManager : public RTT::Activity {
 	/** @brief Lets us access what we need to in ECatConn.
 	  */
 	ECatConn*      eCatConn;
@@ -53,19 +51,15 @@ class ConnManager : public RTT::os::Timer {
 	  */
 	RTT::os::Mutex eCatLock;
 	
-	/** @brief Prevents a race condition on loop shutdown.
-	  */
-	RTT::os::Mutex timerLock;
-	
 	/** @brief Sends and receives an EtherCAT frame.
 	  * Does not grab eCatLock -- must already have it.
 	  */
 	void           cycleECat();
 	
-	
-	// These store times for the cyclic loop.
+	/** @brief Used to keep the loop's phase offset constant from cycle
+	  * to cycle and to compensate for overshoots.
+	  */
 	RTT::os::TimeService::nsecs targetTime;
-	RTT::os::TimeService::nsecs filtered_overshoot;
 	
 	public:
 		/** @brief The constructor.
@@ -87,9 +81,9 @@ class ConnManager : public RTT::os::Timer {
 		  */
 		bool initialize();
 		
-		/** @brief The main ECat receive loop. Called cyclicly.
+		/** @brief The main ECat receive loop.
 		  */
-		void timeout(TimerId timer_id);
+		void loop();
 		
 		/** @brief Sends new outputs over ECat.
 		  * @param controller_output The new outputs.
@@ -99,7 +93,7 @@ class ConnManager : public RTT::os::Timer {
 		/** @brief Stops the main loop.
 		  * @return Success
 		  */
-		void stop();
+		bool breakLoop();
 };
 
 }

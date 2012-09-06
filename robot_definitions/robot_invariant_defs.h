@@ -88,7 +88,7 @@ typedef enum {
 #define CONTROLLER_LOOP_PERIOD_NS                                      1000000LL
 /** @brief The offset between the DC and our code loop.
   */
-#define CONTROLLER_LOOP_OFFSET_NS                                       100000LL
+#define CONTROLLER_LOOP_OFFSET_NS                                       250000LL
 
 //Loop period for the GUI
 #define GUI_LOOP_PERIOD_NS                                            20000000LL
@@ -150,5 +150,13 @@ typedef enum {
   */
 #define MEDULLA_TIMER_FREQ                                            32000000.0
 
+/** @brief The number of bits reported by the boom encoders.
+  * For rollover compensation
+  */
+#define BOOM_ENCODER_BITS                                                     17
+
+/** @brief The number of radians rotated when the pitch encoder moves 1 tick.
+  */
+#define PITCH_ENCODER_RAD_PER_TICK                                 0.00002396844
 
 #endif // ROBOT_INVARIANT_DEFS_H

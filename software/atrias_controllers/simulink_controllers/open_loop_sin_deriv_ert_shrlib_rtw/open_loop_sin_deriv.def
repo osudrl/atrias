@@ -1,0 +1,14 @@
+{
+global:
+open_loop_sin_deriv_M_;
+open_loop_sin_deriv_M;
+open_loop_sin_deriv_Y;
+open_loop_sin_deriv_initialize;
+open_loop_sin_deriv_step;
+open_loop_sin_deriv_terminate;
+
+
+open_loop_sin_deriv_P;
+local:
+		*;
+};
