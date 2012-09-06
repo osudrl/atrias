@@ -52,8 +52,8 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
     // begin control code //
     open_loop_sin_cos_6A_step();
-    printf("Out1 = %f\n", open_loop_sin_cos_6A_Y.Out1);
-    printf("Out2 = %f\n", open_loop_sin_cos_6A_Y.Out2);
+    //printf("Out1 = %f\n", open_loop_sin_cos_6A_Y.Out1);
+    //printf("Out2 = %f\n", open_loop_sin_cos_6A_Y.Out2);
 
     // Stuff the msg
     co.lLeg.motorCurrentA = open_loop_sin_cos_6A_Y.Out1;
