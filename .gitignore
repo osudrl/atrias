@@ -11,9 +11,14 @@ software/atrias_msgs/src
 software/atrias_msgs/include
 
 # Files to ignore
+*.o
+*.so
 *.pc
 *~
 *.swp
 .tb_history
 orocos.log
 gui_config.yaml
+open_loop_sin_cos_6A
+open_loop_sin_cos
+open_loop_sin_deriv

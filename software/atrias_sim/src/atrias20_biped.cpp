@@ -9,9 +9,9 @@ GZ_REGISTER_WORLD_PLUGIN(GazeboControllerConnector)
 GazeboControllerConnector::GazeboControllerConnector()
 {
     legMotorGearRatio = 50;
-    hipGearRatio = 30;         // TODO: Change this to the actual value
+    hipGearRatio = 64;
     legTorqueConstant = 0.121; // N*m/Amp
-    hipTorqueConstant = 0.184; // N*m/Amp
+    hipTorqueConstant = 0.126; // N*m/Amp
 }
 
 // Destructor
