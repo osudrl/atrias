@@ -56,7 +56,7 @@ class BoomMedulla : public Medulla {
 	uint32_t  pitchEncoderValue;
 	
 	/** @brief The absolute pitch encoder position, in encoder ticks.
-	  * After initialization, 0 should corrospond to vertical.
+	  * After initialization, 0 should correspond to vertical.
 	  */
 	int32_t   pitchEncoderPos;
 	
@@ -64,6 +64,19 @@ class BoomMedulla : public Medulla {
 	  * Used for timestamp delta calculation.
 	  */
 	int16_t   pitchTimestampValue;
+	
+	/** @brief The last value of the Z encoder, for position delta calculation.
+	  */
+	uint32_t  zEncoderValue;
+	
+	/** @brief The absolute z encoder position, in encoder ticks.
+	  * After initialization, 0 should correspond to BOOM_Z_CALIB_LOC.
+	  */
+	int32_t   zEncoderPos;
+	
+	/** @brief Stores the last value of *zTimestamp
+	  */
+	int16_t   zTimestampValue;
 	
 	/** @brief Decodes and stores the new values from the X encoder.
 	  * @param deltaTime The time between this DC cycle and the last DC cycle.
