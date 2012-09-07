@@ -159,4 +159,8 @@ typedef enum {
   */
 #define PITCH_ENCODER_RAD_PER_TICK                                 0.00002396844
 
+/** @brief The number of radians rotated when the Z encoder moves 1 tick.
+  */
+#define BOOM_Z_ENCODER_RAD_PER_TICK                -0.00000684812851734661263267
+
 #endif // ROBOT_INVARIANT_DEFS_H
