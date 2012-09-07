@@ -72,7 +72,7 @@ typedef enum {
 // Safety cut off values
 
 // Danger region for motor power
-#define MOTOR_VOTLAGE_DANGER_MAX                                            3000
+#define MOTOR_VOLTAGE_DANGER_MAX                                            3000
 #define MOTOR_VOLTAGE_DANGER_MIN                                            1500
 
 // Low voltage cut off for logic power

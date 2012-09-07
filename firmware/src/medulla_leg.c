@@ -267,7 +267,7 @@ bool leg_check_error(uint8_t id) {
 
 	#ifdef ERROR_CHECK_MOTOR_VOLTAGE
 	// Do filter on motor voltage
-	if ((*motor_voltage_pdo < MOTOR_VOTLAGE_DANGER_MAX) && (*motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
+	if ((*motor_voltage_pdo < MOTOR_VOLTAGE_DANGER_MAX) && (*motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
 		motor_voltage_counter++;
 	else if (motor_voltage_counter > 0)
 		motor_voltage_counter--;

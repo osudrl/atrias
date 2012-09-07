@@ -197,7 +197,7 @@ bool hip_check_error(uint8_t id) {
 
 	#ifdef ERROR_CHECK_MOTOR_VOLTAGE
 	// Do filter on motor voltage
-	if ((*hip_motor_voltage_pdo < MOTOR_VOTLAGE_DANGER_MAX) && (*hip_motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
+	if ((*hip_motor_voltage_pdo < MOTOR_VOLTAGE_DANGER_MAX) && (*hip_motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
 		hip_motor_voltage_counter++;
 	else if (hip_motor_voltage_counter > 0)
 		hip_motor_voltage_counter--;
