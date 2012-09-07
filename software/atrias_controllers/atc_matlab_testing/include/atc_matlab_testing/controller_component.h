@@ -31,6 +31,7 @@
 // MATLAB
 //#define MODEL open_loop_sin_cos
 //#define MODEL open_loop_sin_deriv
+/*
 #define MODEL open_loop_sin_cos_6A
 #define NUMST 2
 #define NCSTATES 0
@@ -43,10 +44,12 @@
 #define INTEGER_CODE 0
 #define MT 0
 #define TID01EQ 1
+*/
 extern "C" {
 //#include <open_loop_sin_cos.h>
-#include <open_loop_sin_deriv.h>
+//#include <open_loop_sin_deriv.h>
 //#include <open_loop_sin_cos_6A.h>
+#include <leg_position_pd_test.h>
 }
 
 using namespace RTT;

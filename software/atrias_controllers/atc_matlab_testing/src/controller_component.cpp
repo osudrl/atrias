@@ -51,13 +51,21 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
     }
 
     // begin control code //
-    open_loop_sin_deriv_step();
-    //printf("Out1 = %f\n", open_loop_sin_deriv_Y.Out1);
-    //printf("Out2 = %f\n", open_loop_sin_deriv_Y.Out2);
+    // Inputs
+    // TODO: Fill these out
+    leg_position_pd_test_U.motorAnglesAB[0] = ;
+    leg_position_pd_test_U.motorAnglesAB[1] = ;
+    leg_position_pd_test_U.desiredAnglesLA_KA[0] = ;
+    leg_position_pd_test_U.desiredAnglesLA_KA[1] = ;
+
+    // Setp the controller
+    leg_position_pd_test_step();
+    //printf("Out1 = %f\n", leg_position_pd_test_Y.Out1);
+    //printf("Out2 = %f\n", leg_position_pd_test_Y.Out2);
 
     // Stuff the msg
-    co.lLeg.motorCurrentA = open_loop_sin_deriv_Y.Out1[0];
-    co.lLeg.motorCurrentB = open_loop_sin_deriv_Y.Out1[1];
+    co.lLeg.motorCurrentA = leg_position_pd_test_Y.uA_uB[0];
+    co.lLeg.motorCurrentB = leg_position_pd_test_Y.uA_uB[1];
 
     //co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     //co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
@@ -78,7 +86,7 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
-    open_loop_sin_deriv_initialize();
+    leg_position_pd_test_initialize();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
@@ -93,7 +101,7 @@ void ATCMatlabTesting::updateHook() {
 }
 
 void ATCMatlabTesting::stopHook() {
-    open_loop_sin_deriv_terminate();
+    leg_position_pd_test_terminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
