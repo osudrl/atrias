@@ -1,5 +1,8 @@
 Header header
 
+uint8   medullaState
+uint8   errorFlags
+
 float64 legBodyAngle
 float64 legBodyVelocity
 float64 motorVelocity

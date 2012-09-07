@@ -1,7 +1,5 @@
 Header header
 
-uint8 hipMedullaState
-
 robot_state_hip hip
 robot_state_legHalf halfA
 robot_state_legHalf halfB

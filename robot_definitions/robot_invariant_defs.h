@@ -163,4 +163,12 @@ typedef enum {
   */
 #define BOOM_Z_ENCODER_RAD_PER_TICK                -0.00000684812851734661263267
 
+/** @brief The direction for the left hip motor.
+  */
+#define LEFT_MOTOR_HIP_DIRECTION                                             1.0
+
+/** @brief The direction for the right hip motor.
+  */
+#define RIGHT_MOTOR_HIP_DIRECTION                                           -1.0
+
 #endif // ROBOT_INVARIANT_DEFS_H

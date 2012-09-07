@@ -5,11 +5,23 @@ namespace atrias {
 namespace ecatConn {
 
 MedullaManager::MedullaManager() {
-	lLegA = NULL;
-	lLegB = NULL;
-	rLegA = NULL;
-	rLegB = NULL;
-	boom  = NULL;
+	lLegA   = NULL;
+	lLegB   = NULL;
+	rLegA   = NULL;
+	rLegB   = NULL;
+	boom    = NULL;
+	lLegHip = NULL;
+	rLegHip = NULL;
+}
+
+MedullaManager::~MedullaManager() {
+	delete(lLegA);
+	delete(lLegB);
+	delete(rLegA);
+	delete(rLegB);
+	delete(boom);
+	delete(lLegHip);
+	delete(rLegHip);
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {
@@ -36,8 +48,12 @@ void MedullaManager::slaveCardInit(ec_slavet slave) {
 void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 	// SOEM is 1-indexed.
 	for (int i = 1; i <= slavecount; i++) {
-		if (slaves[i].eep_man != MEDULLA_VENDOR_ID)
+		if (slaves[i].eep_man != MEDULLA_VENDOR_ID) {
+			log(RTT::Warning) <<
+				"Unrecognized product ID at 1-indexed position: "
+				<< i << RTT::endlog();
 			continue;
+		}
 		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
@@ -61,7 +77,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 					delete(rLegB);
 					rLegB = medulla;
 				} else {
-					log(RTT::Info) << "Leg medulla not identified." << RTT::endlog();
+					log(RTT::Warning) << "Leg medulla not identified." << RTT::endlog();
 					delete(medulla);
 				}
 				
@@ -75,6 +91,36 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 					(int) boom->getID() << RTT::endlog();
 				
 				break;
+			}
+			
+			case MEDULLA_HIP_PRODUCT_CODE: {
+				HipMedulla* medulla =
+					new HipMedulla(slaves[i].inputs, slaves[i].outputs);
+				log(RTT::Info) << "Hip medulla detected, ID: " <<
+					(int) medulla->getID() << RTT::endlog();
+				
+				if (medulla->getID() == MEDULLA_LEFT_HIP_ID) {
+					log(RTT::Info) << "Left hip medulla identified" <<
+						RTT::endlog();
+					delete(lLegHip);
+					lLegHip = medulla;
+				} else if (medulla->getID() == MEDULLA_RIGHT_HIP_ID) {
+					log(RTT::Info) << "Left hip medulla identified" <<
+						RTT::endlog();
+					delete(lLegHip);
+					lLegHip = medulla;
+				} else {
+					log(RTT::Warning) << "Hip medulla not identified."
+						<< RTT::endlog();
+				}
+				
+				break;
+			}
+			
+			default: {
+				log(RTT::Warning) <<
+					"Unrecognized product code at 1-indexed position: "
+					<< i << RTT::endlog();
 			}
 		}
 	}
@@ -101,6 +147,10 @@ void MedullaManager::processReceiveData() {
 		rLegB->processReceiveData(robotState);
 	if (boom)
 		boom->processReceiveData(robotState);
+	if (lLegHip)
+		lLegHip->processReceiveData(robotState);
+	if (rLegHip)
+		rLegHip->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {
@@ -114,6 +164,10 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegB->processTransmitData(controller_output);
 	if (boom)
 		boom->processTransmitData(controller_output);
+	if (lLegHip)
+		lLegHip->processTransmitData(controller_output);
+	if (rLegHip)
+		rLegHip->processTransmitData(controller_output);
 }
 
 void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
