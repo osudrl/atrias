@@ -159,8 +159,15 @@ void hip_update_inputs(uint8_t id) {
 		IMURequestOrientation(&hip_imu);
 	}
 	else{
-		hip_imu_pace_flag = 1;
 		IMUReceiveOrientation(&hip_imu);
+		for(hip_imu_pace_flag=0;
+			hip_imu_pace_flag < 64; 
+			hip_imu_pace_flag ++){
+
+			hip_imu_data_pdo[hip_imu_pace_flag] = 
+				hip_imu->current_data[1+hip_imu_pace_flag];
+		}
+		hip_imu_pace_flag = 1;
 	}
 }
 
