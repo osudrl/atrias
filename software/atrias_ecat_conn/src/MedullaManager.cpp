@@ -14,6 +14,16 @@ MedullaManager::MedullaManager() {
 	rLegHip = NULL;
 }
 
+MedullaManager::~MedullaManager() {
+	delete(lLegA);
+	delete(lLegB);
+	delete(rLegA);
+	delete(rLegB);
+	delete(boom);
+	delete(lLegHip);
+	delete(rLegHip);
+}
+
 void MedullaManager::slaveCardInit(ec_slavet slave) {
 	uint8_t* inputs  = slave.inputs;
 	uint8_t* outputs = slave.outputs;
@@ -137,6 +147,10 @@ void MedullaManager::processReceiveData() {
 		rLegB->processReceiveData(robotState);
 	if (boom)
 		boom->processReceiveData(robotState);
+	if (lLegHip)
+		lLegHip->processReceiveData(robotState);
+	if (rLegHip)
+		rLegHip->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {
@@ -150,6 +164,10 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegB->processTransmitData(controller_output);
 	if (boom)
 		boom->processTransmitData(controller_output);
+	if (lLegHip)
+		lLegHip->processTransmitData(controller_output);
+	if (rLegHip)
+		rLegHip->processTransmitData(controller_output);
 }
 
 void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {

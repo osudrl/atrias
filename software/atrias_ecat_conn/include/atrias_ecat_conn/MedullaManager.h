@@ -57,6 +57,10 @@ class MedullaManager {
 		  */
 		MedullaManager();
 		
+		/** @brief Cleans up the MedullaManager.
+		  */
+		~MedullaManager();
+		
 		/** @brief Inits the medullas
 		  */
 		void start(ec_slavet slaves[], int slavecount);
