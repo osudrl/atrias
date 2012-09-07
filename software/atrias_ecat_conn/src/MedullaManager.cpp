@@ -112,6 +112,8 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegA->processTransmitData(controller_output);
 	if (rLegB)
 		rLegB->processTransmitData(controller_output);
+	if (boom)
+		boom->processTransmitData(controller_output);
 }
 
 void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {

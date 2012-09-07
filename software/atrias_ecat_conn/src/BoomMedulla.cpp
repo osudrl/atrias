@@ -28,6 +28,9 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	
 	setPdoPointer(cur_index, logicVoltage);
 	
+	xEncoderValue   = *xEncoder;
+	xTimestampValue = *xTimestamp;
+	
 	pitchEncoderPos = (*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE)
 	                  % (1 << BOOM_ENCODER_BITS);
 	
@@ -44,6 +47,20 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 
 uint8_t BoomMedulla::getID() {
 	return *id;
+}
+
+void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
+                                  atrias_msgs::robot_state& robotState) {
+	// Obtain the deltas
+	int deltaPos = ((int32_t) *xEncoder) - ((int32_t) xEncoderValue);
+	double actualDeltaTime =
+		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
+		((double) (((int16_t) *xTimestamp) - xTimestampValue))
+		/ ((double) MEDULLA_TIMER_FREQ);
+	
+	robotState.position.xPosition += deltaPos * BOOM_X_METERS_PER_TICK;
+	robotState.position.xVelocity  =
+		deltaPos * BOOM_X_METERS_PER_TICK / actualDeltaTime;
 }
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
@@ -65,7 +82,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	
 	robotState.position.bodyPitchVelocity =
 		deltaPos * PITCH_ENCODER_RAD_PER_TICK /
-		(((double) deltaTime) / SECOND_IN_NANOSECONDS + ((double)
+		(((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) + ((double)
 		(((int16_t) *pitchTimestamp) - pitchTimestampValue)
 		) / MEDULLA_TIMER_FREQ);
 	
@@ -76,6 +93,11 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state&   robotState) {
 	
+}
+
+void BoomMedulla::processTransmitData(atrias_msgs::controller_output& controller_output) {
+	*counter      = ++local_counter;
+	*command      = controller_output.command;
 }
 
 void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {

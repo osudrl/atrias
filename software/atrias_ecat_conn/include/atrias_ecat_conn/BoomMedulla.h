@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>
 #include <atrias_shared/globals.h>
@@ -38,8 +39,17 @@ class BoomMedulla : public Medulla {
 	
 	uint16_t* logicVoltage;
 	
+	
 	// The following variables are used for processing
 	uint8_t   timingCounterValue;
+	
+	/** @brief The last value of the X encoder. Used to find position deltas.
+	  */
+	uint32_t  xEncoderValue;
+	
+	/** @brief The last value of *xTimestamp.
+	  */
+	int16_t   xTimestampValue;
 	
 	/** @brief The last value of the pitch encoder. Used to find position deltas.
 	  */
@@ -54,6 +64,13 @@ class BoomMedulla : public Medulla {
 	  * Used for timestamp delta calculation.
 	  */
 	int16_t   pitchTimestampValue;
+	
+	/** @brief Decodes and stores the new values from the X encoder.
+	  * @param deltaTime The time between this DC cycle and the last DC cycle.
+	  * @param robotState The robot state in which to store the new values.
+	  */
+	void      processXEncoder(RTT::os::TimeService::nsecs deltaTime,
+	                          atrias_msgs::robot_state&   robotState);
 	
 	/** @brief Decodes and stores the new value from the pitch encoder.
 	  * @param deltaTime The time between this DC cycle and the last DC cycle.
@@ -80,6 +97,10 @@ class BoomMedulla : public Medulla {
 		  * @return This medulla's ID.
 		  */
 		uint8_t getID();
+		
+		/** @brief Tells this medulla to read in data for transmission.
+		  */
+		void processTransmitData(atrias_msgs::controller_output& controller_output);
 		
 		/** @brief Tells this Medulla to update the robot state.
 		  */

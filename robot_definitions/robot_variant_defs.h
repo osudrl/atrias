@@ -20,4 +20,10 @@
   */
 #define BOOM_PITCH_VERTICAL_VALUE  128115
 
+/** @brief The meters of boom motion per encoder tick.
+  * This is calculated from the boom's length, the number of encoder ticks per
+  * encoder revolution, and the gear ratio between the boom and the encoder.
+  */
+#define BOOM_X_METERS_PER_TICK     -0.00000937522094511213193198
+
 #endif // ROBOT_VARIANT_DEFS_H
