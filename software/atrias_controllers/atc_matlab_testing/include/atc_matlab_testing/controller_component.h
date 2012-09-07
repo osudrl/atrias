@@ -45,8 +45,8 @@
 #define TID01EQ 1
 extern "C" {
 //#include <open_loop_sin_cos.h>
-//#include <open_loop_sin_deriv.h>
-#include <open_loop_sin_cos_6A.h>
+#include <open_loop_sin_deriv.h>
+//#include <open_loop_sin_cos_6A.h>
 }
 
 using namespace RTT;
