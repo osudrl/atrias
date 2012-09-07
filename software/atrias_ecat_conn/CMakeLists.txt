@@ -20,6 +20,6 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${XENO_LDFLAGS}")
 
 include_directories(../../robot_definitions/)
-orocos_component(ECatConn src/ECatConn.cpp src/ConnManager.cpp src/MedullaManager.cpp src/Medulla.cpp src/LegMedulla.cpp src/BoomMedulla.cpp)
+orocos_component(ECatConn src/ECatConn.cpp src/ConnManager.cpp src/MedullaManager.cpp src/Medulla.cpp src/LegMedulla.cpp src/BoomMedulla.cpp src/HipMedulla.cpp)
 
 orocos_generate_package()
