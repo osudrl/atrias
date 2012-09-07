@@ -12,6 +12,9 @@ GazeboControllerConnector::GazeboControllerConnector()
     hipGearRatio = 64;
     legTorqueConstant = 0.121; // N*m/Amp
     hipTorqueConstant = 0.126; // N*m/Amp
+    prevLeftLegAngle = 0.0;
+    prevRightLegAngle = 0.0;
+    prevTime = 0.0;
 }
 
 // Destructor
@@ -44,8 +47,11 @@ void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr 
     this->toeName = GazeboControllerConnector::getName("toeName");
 
     this->hipBodyName = GazeboControllerConnector::getName("hipBodyName");
+    this->hipCenterName = GazeboControllerConnector::getName("hipCenterName");
     this->hipLeftMotorName = GazeboControllerConnector::getName("hipLeftMotorName");
+    this->hipLeftMotorAttachmentName = GazeboControllerConnector::getName("hipLeftMotorAttachmentName");
     this->hipRightMotorName = GazeboControllerConnector::getName("hipRightMotorName");
+    this->hipRightMotorAttachmentName = GazeboControllerConnector::getName("hipRightMotorAttachmentName");
 
     // Left leg link pointers
     leftLegLinks.body = this->model->GetLink(this->leftLegName + "::" + this->bodyName);
@@ -66,7 +72,10 @@ void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr 
     // Hip link pointers
     hipLinks.body = this->model->GetLink(this->hipName + "::" + this->hipBodyName);
     hipLinks.leftMotor = this->model->GetLink(this->hipName + "::" + this->hipLeftMotorName);
+    hipLinks.leftMotorAttachment = this->model->GetLink(this->hipName + "::" + this->hipLeftMotorAttachmentName);
     hipLinks.rightMotor = this->model->GetLink(this->hipName + "::" + this->hipRightMotorName);
+    hipLinks.rightMotorAttachment = this->model->GetLink(this->hipName + "::" + this->hipRightMotorAttachmentName);
+    hipLinks.center = this->model->GetLink(this->hipName + "::" + this->hipCenterName);
 
     // Listen to the update event. This event is broadcast every
     // simulation iteration.
@@ -88,8 +97,12 @@ void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr 
 void GazeboControllerConnector::OnUpdate()
 {
     this->lock.lock();
-    // Stuff the outgoing message
+    // Calculate the timestep
     simTime = this->world->GetSimTime();
+    simTimeTotal = simTime.sec + simTime.nsec * pow(10.0,-9);
+    timestep = simTimeTotal - prevTime;
+    prevTime = simTimeTotal;
+    // Stuff the outgoing message
     ciso.header.stamp.sec = (uint32_t) simTime.sec;
     ciso.header.stamp.nsec = (uint32_t) simTime.nsec;
 
@@ -172,12 +185,12 @@ void GazeboControllerConnector::OnUpdate()
     // Hip
     // Body
     // Note: GetWorldPose returns the pose of the link's center of mass
-    ciso.position.xPosition = this->hipLinks.body->GetWorldPose().pos.x;
-    ciso.position.yPosition = this->hipLinks.body->GetWorldPose().pos.y;
-    ciso.position.zPosition = this->hipLinks.body->GetWorldPose().pos.z;
-    ciso.position.xVelocity = this->hipLinks.body->GetWorldLinearVel().x;
-    ciso.position.yVelocity = this->hipLinks.body->GetWorldLinearVel().y;
-    ciso.position.zVelocity = this->hipLinks.body->GetWorldLinearVel().z;
+    ciso.position.xPosition = this->hipLinks.center->GetWorldPose().pos.x;
+    ciso.position.yPosition = this->hipLinks.center->GetWorldPose().pos.y;
+    ciso.position.zPosition = this->hipLinks.center->GetWorldPose().pos.z;
+    ciso.position.xVelocity = this->hipLinks.center->GetWorldLinearVel().x;
+    ciso.position.yVelocity = this->hipLinks.center->GetWorldLinearVel().y;
+    ciso.position.zVelocity = this->hipLinks.center->GetWorldLinearVel().z;
 
     // Leg position/velocity with respect to the hip
     hipRot = this->hipLinks.body->GetWorldPose().rot;
@@ -187,14 +200,16 @@ void GazeboControllerConnector::OnUpdate()
     angle = angle*axis.x;
     angle = wrap_angle(angle);
     ciso.lLeg.hip.legBodyAngle = angle;
-    ciso.lLeg.hip.legBodyVelocity = this->hipLinks.leftMotor->GetRelativeAngularVel().x;
+    ciso.lLeg.hip.legBodyVelocity = (angle - prevLeftLegAngle) / timestep; 
+    prevLeftLegAngle = angle;
 
     motorRot = this->hipLinks.rightMotor->GetWorldPose().CoordRotationSub(hipRot);
     motorRot.GetAsAxis(axis, angle);
     angle = angle*axis.x + M_PI;
     angle = wrap_angle(angle);
     ciso.rLeg.hip.legBodyAngle = angle;
-    ciso.rLeg.hip.legBodyVelocity = this->hipLinks.rightMotor->GetRelativeAngularVel().x;
+    ciso.rLeg.hip.legBodyVelocity = (angle - prevRightLegAngle) / timestep; 
+    prevRightLegAngle = angle;
 
     this->lock.unlock();
 
