@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/robot_state_hip.h>
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>

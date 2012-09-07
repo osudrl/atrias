@@ -61,6 +61,20 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 		((((int16_t) *timingCounter) + 256 - ((int16_t) timingCounterValue)) % 256)
 		* CONTROLLER_LOOP_PERIOD_NS;
 	timingCounterValue = *timingCounter;
+	
+	atrias_msgs::robot_state_hip hip;
+	switch(*id) {
+		case MEDULLA_LEFT_HIP_ID:
+			hip = robot_state.lLeg.hip;
+			break;
+		case MEDULLA_RIGHT_HIP_ID:
+			hip = robot_state.rLeg.hip;
+			break;
+		default:
+			return;
+	}
+	hip.medullaState = *state;
+	hip.errorFlags   = *errorFlags;
 }
 
 }
