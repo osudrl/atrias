@@ -503,21 +503,21 @@
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>5</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 0</Name>
 						<DataType>UINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>6</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 1</Name>
 						<DataType>UINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
 						<SubIndex>7</SubIndex>
-						<BitLen>8</BitLen>
+						<BitLen>16</BitLen>
 						<Name>Thermistor 2</Name>
 						<DataType>UINT</DataType>
 					</Entry>	
@@ -532,6 +532,140 @@
 						<Name>Amp Measured Current</Name>
 						<DataType>INT</DataType>
 					</Entry>					
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A05</Index>
+					<Name>IMU Data</Name>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>1</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelX</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>2</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelY</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>3</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AccelZ</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>4</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateX</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>5</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateY</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>6</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>AngRateZ</Name>
+					</Entry>					
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>7</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M11</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>8</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M12</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>9</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M13</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>10</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M21</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>11</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M22</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>12</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M23</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>13</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M31</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>14</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M32</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0008</Index>
+						<SubIndex>15</SubIndex>
+						<DataType>REAL</DataType>
+						<BitLen>32</BitLen>
+						<Name>M33</Name>
+					</Entry>
+					<Entry>
+						<Index>#x0004</Index>
+						<SubIndex>2</SubIndex>
+						<DataType>DINT</DataType>
+						<BitLen>32</BitLen>
+						<Name>Timer</Name>
+					</Entry>
+				</TxPdo>
+				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A06</Index>
+					<Name>Incremental Encoder</Name>
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>8</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder</Name>
+						<DataType>UINT</DataType>
+					</Entry>					
+					<Entry>
+						<Index>#x0006</Index>
+						<SubIndex>9</SubIndex>
+						<BitLen>16</BitLen>
+						<Name>Incremental Encoder Timestamp</Name>
+						<DataType>UINT</DataType>
+					</Entry>
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
