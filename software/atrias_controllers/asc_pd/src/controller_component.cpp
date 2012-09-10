@@ -43,6 +43,7 @@ double ASCPD::runController(double targetPos, double currentPos, double targetVe
     out = P * (targetPos - currentPos) + D * (targetVel - currentVel);
 
     // Stuff the msg and push to ROS for logging
+    logData.header = getROSHeader();
     logData.P = P;
     logData.D = D;
     logData.targetPos = targetPos;

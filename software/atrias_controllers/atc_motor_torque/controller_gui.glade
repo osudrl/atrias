@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18" />
+  <requires lib="gtk+" version="2.18"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkVBox" id="controller_tab">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkLabel" id="torque_A_label">
+      <object class="GtkLabel" id="torque_left_A_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Motor Torque A:
-        </property>
+        <property name="label" translatable="yes">LeftA</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -18,7 +18,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_A_hscale">
+      <object class="GtkHScale" id="torque_left_A_hscale">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="digits">3</property>
@@ -30,11 +30,11 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="torque_B_label">
+      <object class="GtkLabel" id="torque_left_B_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Motor Torque B:
-        </property>
+        <property name="label" translatable="yes">
+Left B</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -43,7 +43,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_B_hscale">
+      <object class="GtkHScale" id="torque_left_B_hscale">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="digits">3</property>
@@ -55,12 +55,11 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="torque_hip_label1">
+      <object class="GtkLabel" id="torque_left_hip_label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="xalign">0.44999998807907104</property>
-        <property name="label" translatable="yes"> Motor Torque Hip:
-        </property>
+        <property name="label" translatable="yes">
+Left hip</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -69,7 +68,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_hip_hscale">
+      <object class="GtkHScale" id="torque_left_hip_hscale">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="digits">3</property>
@@ -78,6 +77,84 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="position">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="torque_right_A_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">
+Right A</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">6</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="torque_right_hip_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">7</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="torque_right_B_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">
+Right B</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">8</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="torque_right_B_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">9</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="torque_right_hip_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">
+Right hip</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">10</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="torque_right_hip_hscal">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">11</property>
       </packing>
     </child>
   </object>
