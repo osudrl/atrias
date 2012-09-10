@@ -132,7 +132,6 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processLimitSwitches();
 	processVoltages(robot_state);
 	processCurrents(robot_state);
-	
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robot_state.lLeg.halfA.medullaState = *state;
@@ -190,7 +189,6 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 				robotState.lLeg.halfA.legAngle   =
 					encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
 			}
-			printf("AML %u,%u\n", *motorEncoder, *legEncoder);
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			if (!skipMotorEncoder) {
@@ -201,7 +199,6 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 				robotState.lLeg.halfB.legAngle   =
 					encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
 			}
-			printf("BML %u,%u\n", *motorEncoder, *legEncoder);
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			if (!skipMotorEncoder) {
@@ -212,7 +209,6 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 				robotState.rLeg.halfA.legAngle   =
 					encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
 			}
-			printf("AML %u, %u\n", *motorEncoder, *legEncoder);
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			if (!skipMotorEncoder) {
@@ -223,7 +219,6 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 				robotState.rLeg.halfB.legAngle   =
 					encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
 			}
-			printf("BML %u,%u\n", *motorEncoder, *legEncoder);
 			break;
 	}
 }
