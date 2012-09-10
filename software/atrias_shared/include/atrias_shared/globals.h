@@ -133,12 +133,13 @@ typedef uint8_t RobotConfiguration_t;
   * Reported by the connector.
   */
 enum class RobotConfiguration: RobotConfiguration_t {
-	BIPED_FULL = 0, // The full biped, with hips and location data. Intentionally
-	                //     zero so if unimplemented, all safeties are enabled.
+	DISABLE = 0,    // All safeties should be disabled. Zero so this is the
+	                // default if a Connector doesn't implement this.
+	UNKNOWN,        // Not a known configuration. All safeties enabled.
+	BIPED_FULL,     // The full biped, with hips and location data.
 	LEFT_LEG_NOHIP, // A single leg with no hip
 	LEFT_LEG_HIP,   // A single leg with a hip
 	BIPED_NOHIP,    // Two legs no hips
-	UNKNOWN         // Not a known configuration. No safeties.
 };
 
 }

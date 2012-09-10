@@ -88,6 +88,11 @@ class MedullaManager {
 		  * @return The robot state.
 		  */
 		atrias_msgs::robot_state getRobotState();
+		
+		/** @brief Lets other classes control the robotConfiguration.
+		  * @param new_robot_configuration The new robot configuration.
+		  */
+		void setRobotConfiguration(rtOps::RobotConfiguration new_robot_configuration);
 };
 
 }

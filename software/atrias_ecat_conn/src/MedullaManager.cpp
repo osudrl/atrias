@@ -46,8 +46,9 @@ void MedullaManager::slaveCardInit(ec_slavet slave) {
 }
 
 rtOps::RobotConfiguration MedullaManager::calcRobotConfiguration() {
-	if (!lLegA || !lLegB)
+	if (!lLegA || !lLegB) {
 		return rtOps::RobotConfiguration::UNKNOWN;
+	}
 	
 	// We have at least a left leg.
 	
@@ -146,7 +147,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 		}
 	}
-	robotState.robotConfiguration = (rtOps::RobotConfiguration_t) calcRobotConfiguration();
+	setRobotConfiguration(calcRobotConfiguration());
 }
 
 void MedullaManager::start(ec_slavet slaves[], int slavecount) {
@@ -200,6 +201,10 @@ void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
 
 atrias_msgs::robot_state MedullaManager::getRobotState() {
 	return robotState;
+}
+
+void MedullaManager::setRobotConfiguration(rtOps::RobotConfiguration new_robot_configuration) {
+	robotState.robotConfiguration = (rtOps::RobotConfiguration_t) new_robot_configuration;
 }
 
 }
