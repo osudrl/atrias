@@ -93,7 +93,7 @@ Right A</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_right_hip_hscale">
+      <object class="GtkHScale" id="torque_right_A_hscale">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="round_digits">3</property>
@@ -145,7 +145,7 @@ Right hip</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_right_hip_hscal">
+      <object class="GtkHScale" id="torque_right_hip_hscale">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="round_digits">3</property>
