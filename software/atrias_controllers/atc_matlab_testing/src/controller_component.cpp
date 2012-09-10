@@ -10,8 +10,8 @@ namespace controller {
 
 ATCMatlabTesting::ATCMatlabTesting(std::string name):
     RTT::TaskContext(name),
-    logPort(name + "_log"),
-    guiDataIn("gui_data_in")
+    guiDataIn("gui_data_in"),
+    logPort(name + "_log")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCMatlabTesting::runController, this, ClientThread)
@@ -52,24 +52,17 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
     // begin control code //
     // Inputs
-    // TODO: Fill these out
-    leg_position_pd_test_U.motorAnglesAB[0] = ;
-    leg_position_pd_test_U.motorAnglesAB[1] = ;
-    leg_position_pd_test_U.desiredAnglesLA_KA[0] = ;
-    leg_position_pd_test_U.desiredAnglesLA_KA[1] = ;
+    leg_position_pd_test_U.motorAnglesAB[0] = rs.lLeg.halfA.motorAngle;
+    leg_position_pd_test_U.motorAnglesAB[1] = rs.lLeg.halfB.motorAngle;
+    leg_position_pd_test_U.desiredAnglesLA_KA[0] = guiIn.leg_ang;
+    leg_position_pd_test_U.desiredAnglesLA_KA[1] = guiIn.leg_len;
 
     // Setp the controller
     leg_position_pd_test_step();
-    //printf("Out1 = %f\n", leg_position_pd_test_Y.Out1);
-    //printf("Out2 = %f\n", leg_position_pd_test_Y.Out2);
 
     // Stuff the msg
     co.lLeg.motorCurrentA = leg_position_pd_test_Y.uA_uB[0];
     co.lLeg.motorCurrentB = leg_position_pd_test_Y.uA_uB[1];
-
-    //co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    //co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    //co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
     // end control code //
 
@@ -77,8 +70,8 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
     co.command = medulla_state_run;
 
     // Stuff the msg and push to ROS for logging
-    logData.desiredState = 0.0;
-    logPort.write(logData);
+    //logData.desiredState = 0.0;
+    //logPort.write(logData);
 
     // Output for RTOps
     return co;

@@ -20,6 +20,3 @@ typekit/
 .tb_history
 orocos.log
 gui_config.yaml
-open_loop_sin_cos_6A
-open_loop_sin_cos
-open_loop_sin_deriv

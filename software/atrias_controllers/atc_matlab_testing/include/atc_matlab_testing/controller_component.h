@@ -1,5 +1,5 @@
-#ifndef __ATC_COMPONENT_H__
-#define __ATC_COMPONENT_H__
+#ifndef __ATC_MATLAB_TESTING_H__
+#define __ATC_MATLAB_TESTING_H__
 
 /*! \file controller_component.h
  *  \author Andrew Peekema
@@ -67,14 +67,16 @@ private:
 
     atrias_msgs::controller_output co;
 
+    // For the GUI
+    controller_input                                guiIn;
+
+    InputPort<controller_input>                     guiDataIn;
+
+    shared::GuiPublishTimer                         *pubTimer;
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
-
-    // For the GUI
-    shared::GuiPublishTimer                         *pubTimer;
-    controller_input                                guiIn;
-    InputPort<controller_input>                     guiDataIn;
 
 public:
     // Constructor
