@@ -9,6 +9,8 @@ ECatConn::ECatConn(std::string name) :
           newStateCallback("newStateCallback") {
 	this->provides("connector")
 	    ->addOperation("sendControllerOutput", &ECatConn::sendControllerOutput, this, RTT::ClientThread);
+	this->provides("disableSafeties")
+	    ->addOperation("disableSafeties", &ECatConn::disableSafeties, this, RTT::ClientThread);
 	this->requires("atrias_rt")
 	    ->addOperationCaller(newStateCallback);
 	this->requires("atrias_rt")
@@ -61,6 +63,10 @@ void ECatConn::sendControllerOutput(atrias_msgs::controller_output controller_ou
 
 MedullaManager* ECatConn::getMedullaManager() {
 	return &medullaManager;
+}
+
+void ECatConn::disableSafeties() {
+	medullaManager.setRobotConfiguration(rtOps::RobotConfiguration::DISABLE);
 }
 
 ORO_CREATE_COMPONENT(ECatConn)
