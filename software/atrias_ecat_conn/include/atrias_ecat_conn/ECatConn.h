@@ -85,6 +85,10 @@ class ECatConn : public RTT::TaskContext {
 		  * @return A pointer to the MedullaManager.
 		  */
 		MedullaManager* getMedullaManager();
+		
+		/** @brief Lets the user disable RT Ops's safeties.
+		  */
+		void disableSafeties();
 };
 
 }

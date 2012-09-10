@@ -84,19 +84,19 @@ COMPILER_TOOL_CHAIN = unix
 #  STANDALONE_SUPPRESS_EXE - Build the standalone target but only create object code modules 
 #                            and do not build an executable
 
-MODEL                   = open_loop_sin_cos
-MODULES                 = open_loop_sin_cos_data.c 
-MAKEFILE                = open_loop_sin_cos.mk
+MODEL                   = leg_position_pd_test
+MODULES                 = leg_position_pd_test_data.c 
+MAKEFILE                = leg_position_pd_test.mk
 MATLAB_ROOT             = /usr/local/MATLAB/R2012a
 ALT_MATLAB_ROOT         = /usr/local/MATLAB/R2012a
 MASTER_ANCHOR_DIR       = 
 START_DIR               = /home/drl/ROS/atrias/software/atrias_controllers/simulink_controllers
 S_FUNCTIONS             = 
 S_FUNCTIONS_LIB         = 
-NUMST                   = 2
+NUMST                   = 1
 NCSTATES                = 0
 COMPUTER                = GLNXA64
-BUILDARGS               =  GENERATE_REPORT=0 GENERATE_ASAP2=0 OPTS="-DTID01EQ=1"
+BUILDARGS               =  GENERATE_REPORT=0 GENERATE_ASAP2=0
 MULTITASKING            = 0
 INTEGER_CODE            = 0
 MAT_FILE                = 0
@@ -130,7 +130,7 @@ ADDITIONAL_LDFLAGS      =
 DEBUG_BUILD             = 0
 
 #--------------------------- Model and reference models -----------------------
-MODELLIB                  = open_loop_sin_coslib.a
+MODELLIB                  = leg_position_pd_testlib.a
 MODELREF_LINK_LIBS        = 
 MODELREF_INC_PATH         = 
 RELATIVE_PATH_TO_ANCHOR   = ..
@@ -210,7 +210,7 @@ MATLAB_INCLUDES = \
 
 # Additional includes 
 ADD_INCLUDES = \
-	-I$(START_DIR)/open_loop_sin_cos_ert_shrlib_rtw \
+	-I$(START_DIR)/leg_position_pd_test_ert_shrlib_rtw \
 	-I$(START_DIR) \
 
 

@@ -24,6 +24,9 @@ uint16_t *hip_thermistor_pdo; // Pointer to all the thermistors, you can access 
 
 int16_t *hip_measured_current_pdo;
 
+//pointer to desired IMU data pdo
+uint8_t *hip_imu_data_pdo;
+
 ecat_pdo_entry_t hip_rx_pdos[] = {{((void**)(&hip_command_state_pdo)),1},
                               {((void**)(&hip_counter_pdo)),2},
                               {((void**)(&hip_motor_current_pdo)),4}};
@@ -38,13 +41,18 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_motor_voltage_pdo)),2},
                               {((void**)(&hip_logic_voltage_pdo)),2},
                               {((void**)(&hip_thermistor_pdo)),6},
-                              {((void**)(&hip_measured_current_pdo)),2}};
+                              {((void**)(&hip_measured_current_pdo)),2},
+			      {((void**)(&hip_imu_data_pdo)),64}};
 
 
 // Structs for the medulla library
 limit_sw_port_t hip_limit_sw_port;
 adc_port_t adc_port_a, adc_port_b;
 renishaw_ssi_encoder_t hip_encoder;
+IMU_data_t hip_imu;
+
+//IMU read pacing Flag
+uint8_t hip_imu_pace_flag;
 
 // variables for filtering thermistor and voltage values
 uint8_t hip_thermistor_counter;
@@ -105,6 +113,13 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	printf("[Medulla Hip] Initilizing amplifiers\n");
 	#endif
 	initilize_amp(false, hip_measured_current_pdo, 0);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Hip] Initializin IMU\n");
+	#endif
+	//IMU at RS232 interface (USARTE0)
+	initIMU(&PORTE, &USARTE0, &hip_imu);
+	hip_imu_pace_flag = 0;
 	
 	*master_watchdog = hip_counter_pdo;
 	*packet_counter = hip_medulla_counter_pdo;
@@ -138,6 +153,22 @@ void hip_update_inputs(uint8_t id) {
 	while (!renishaw_ssi_encoder_read_complete(&hip_encoder));
 
 	hip_send_current_read = true;
+
+	if(hip_imu_pace_flag){
+		hip_imu_pace_flag = 0;
+		IMURequestOrientation(&hip_imu);
+	}
+	else{
+		IMUReceiveOrientation(&hip_imu);
+		for(hip_imu_pace_flag=0;
+			hip_imu_pace_flag < 64; 
+			hip_imu_pace_flag ++){
+
+			hip_imu_data_pdo[hip_imu_pace_flag] = 
+				hip_imu->current_data[1+hip_imu_pace_flag];
+		}
+		hip_imu_pace_flag = 1;
+	}
 }
 
 bool hip_run_halt(uint8_t id) {
@@ -197,7 +228,7 @@ bool hip_check_error(uint8_t id) {
 
 	#ifdef ERROR_CHECK_MOTOR_VOLTAGE
 	// Do filter on motor voltage
-	if ((*hip_motor_voltage_pdo < MOTOR_VOTLAGE_DANGER_MAX) && (*hip_motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
+	if ((*hip_motor_voltage_pdo < MOTOR_VOLTAGE_DANGER_MAX) && (*hip_motor_voltage_pdo > MOTOR_VOLTAGE_DANGER_MIN))
 		hip_motor_voltage_counter++;
 	else if (hip_motor_voltage_counter > 0)
 		hip_motor_voltage_counter--;

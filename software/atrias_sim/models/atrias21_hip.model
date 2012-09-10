@@ -50,7 +50,7 @@
 
     </link>
 
-    <!-- Left Motors -->
+    <!-- Left Motor -->
     <link name="left_motor" gravity="1" self_collide="0">
     <origin pose="0 0 0.44 0 0 0"/>
 
@@ -111,7 +111,7 @@
 
     </link>
 
-    <!-- Right Motors -->
+    <!-- Right Motor -->
     <link name="right_motor" gravity="1" self_collide="0">
     <origin pose="0 0 0.44 0 0 0"/>
 
@@ -171,6 +171,37 @@
     </visual>
 
     </link>
+    
+    <!-- Location of the center of the hip -->
+    <link name="hip_center" gravity="1" self_collide="0" kinematic="0">
+        <origin pose="0 0 0 0 0 0"/>
+
+        <inertial mass="0.001">
+            <origin pose="0 0 0 0 0 0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+            
+        <collision name="collision">
+            <origin pose="0 0 0 0 0 0"/>
+            <geometry>
+                <sphere radius="0.01"/>
+            </geometry>
+            <surface>
+                <contact>
+                    <ode soft_erp="1" max_vel="0"/>
+                </contact>
+            </surface>
+        </collision>
+
+        <visual name="visual">
+            <origin pose="0 0 0 0 0 0"/>
+            <geometry>
+                <sphere radius="0.01"/>
+            </geometry>
+            <material script="Gazebo/Blue"/>
+        </visual>
+
+    </link>
 
     <!-- Joints -->
     <joint name="body_to_left_motor_joint" type="revolute">
@@ -203,6 +234,14 @@
         <parent link="right_motor"/>
         <child link="right_motor_attachment"/>
         <origin pose="0 0 0.22 0 0 0"/>
+        <axis xyz="1 0 0">
+            <dynamics damping="0.1" friction="0.1"/>
+        </axis>
+    </joint>
+    <joint name="body_to_hip_center_joint" type="revolute">
+        <parent link="body_link"/>
+        <child link="hip_center"/>
+        <origin pose="0 0 0 0 0 0"/>
         <axis xyz="1 0 0">
             <dynamics damping="0.1" friction="0.1"/>
         </axis>

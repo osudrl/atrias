@@ -1,5 +1,6 @@
 Header header
 
+# Here to make stuff compile... this has been moved to the hip message.
 uint8 hipMedullaState
 
 robot_state_hip hip

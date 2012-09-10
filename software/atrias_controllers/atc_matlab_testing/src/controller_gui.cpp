@@ -9,27 +9,38 @@
 
 #include <atc_matlab_testing/controller_gui.h>
 
-//! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("torque_A_hscale", torque_A_hscale);
-    gui->get_widget("torque_B_hscale", torque_B_hscale);
-    gui->get_widget("torque_hip_hscale", torque_hip_hscale);
+    gui->get_widget("length_hscale", leg_length_hscale);
+    gui->get_widget("angle_hscale", leg_angle_hscale);
+    gui->get_widget("p_hscale", p_leg_position_hscale);
+    gui->get_widget("d_hscale", d_leg_position_hscale);
+    gui->get_widget("hip_position_ang", hip_position_ang);
+    gui->get_widget("hip_position_p", hip_position_p);
+    gui->get_widget("hip_position_d", hip_position_d);
+    gui->get_widget("update_checkbutton", update_checkbutton);
 
-    if (torque_A_hscale && torque_B_hscale && torque_hip_hscale) {
+    if (p_leg_position_hscale && d_leg_position_hscale && hip_position_ang &&
+            hip_position_p && hip_position_d && leg_length_hscale &&
+            leg_angle_hscale && update_checkbutton) {
         // Set ranges.
-        torque_A_hscale->set_range(-10., 10.);
-        torque_B_hscale->set_range(-10., 10.);
-        torque_hip_hscale->set_range(-10., 10.);
+        leg_length_hscale->set_range(1.0, 3.0);
+        leg_angle_hscale->set_range(0.29, 2.85);
+        p_leg_position_hscale->set_range(0., 10000.);
+        d_leg_position_hscale->set_range(0., 300.);
+        hip_position_ang->set_range(-0.209, 0.209);
+        hip_position_p->set_range(0., 10000.);
+        hip_position_d->set_range(0., 300.);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_matlab_testing_status", 0, controllerCallback);
         pub = nh.advertise<atc_matlab_testing::controller_input>("atc_matlab_testing_input", 0);
+
         return true;
     }
+
     return false;
 }
 
-//! \brief Update our local copy of the controller status.
 void controllerCallback(const atc_matlab_testing::controller_status &status) {
     controllerDataIn = status;
 }
@@ -37,32 +48,46 @@ void controllerCallback(const atc_matlab_testing::controller_status &status) {
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/torque_A", torque_A_param);
-    nh.getParam("/atrias_gui/torque_B", torque_B_param);
-    nh.getParam("/atrias_gui/torque_hip", torque_hip_param);
+    nh.getParam("/atrias_gui/leg_length",          controllerDataOut.leg_len);
+    nh.getParam("/atrias_gui/leg_angle",           controllerDataOut.leg_ang);
+    nh.getParam("/atrias_gui/leg_position_p_gain", controllerDataOut.p_gain);
+    nh.getParam("/atrias_gui/leg_position_d_gain", controllerDataOut.d_gain);
+    nh.getParam("/atrias_gui/hip_angle",           controllerDataOut.hip_ang);
+    nh.getParam("/atrias_gui/hip_position_p_gain", controllerDataOut.hip_p_gain);
+    nh.getParam("/atrias_gui/hip_position_d_gain", controllerDataOut.hip_d_gain);
 
     // Configure the GUI.
-    torque_A_hscale->set_value(torque_A_param);
-    torque_B_hscale->set_value(torque_B_param);
-    torque_hip_hscale->set_value(torque_hip_param);
+    leg_length_hscale->set_value(controllerDataOut.leg_len);
+    leg_angle_hscale->set_value(controllerDataOut.leg_ang);
+    p_leg_position_hscale->set_value(controllerDataOut.p_gain);
+    d_leg_position_hscale->set_value(controllerDataOut.d_gain);
+    hip_position_ang->set_value(controllerDataOut.hip_ang);
+    hip_position_p->set_value(controllerDataOut.hip_p_gain);
+    hip_position_d->set_value(controllerDataOut.hip_d_gain);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/torque_A", torque_A_param);
-    nh.setParam("/atrias_gui/torque_B", torque_B_param);
-    nh.setParam("/atrias_gui/torque_hip", torque_hip_param);
+    nh.setParam("/atrias_gui/leg_length",          controllerDataOut.leg_len);
+    nh.setParam("/atrias_gui/leg_angle",           controllerDataOut.leg_ang);
+    nh.setParam("/atrias_gui/leg_position_p_gain", controllerDataOut.p_gain);
+    nh.setParam("/atrias_gui/leg_position_d_gain", controllerDataOut.d_gain);
+    nh.setParam("/atrias_gui/hip_angle",           controllerDataOut.hip_ang);
+    nh.setParam("/atrias_gui/hip_position_p_gain", controllerDataOut.hip_p_gain);
+    nh.setParam("/atrias_gui/hip_position_d_gain", controllerDataOut.hip_d_gain);
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
-    controllerDataOut.des_motor_torque_B   = torque_B_param   = torque_B_hscale->get_value();
-    controllerDataOut.des_motor_torque_hip = torque_hip_param = torque_hip_hscale->get_value();
+    controllerDataOut.leg_len    = leg_length_hscale->get_value();
+    controllerDataOut.leg_ang    = leg_angle_hscale->get_value();
+    controllerDataOut.p_gain     = p_leg_position_hscale->get_value();
+    controllerDataOut.d_gain     = d_leg_position_hscale->get_value();
+    controllerDataOut.hip_ang    = hip_position_ang->get_value();
+    controllerDataOut.hip_p_gain = hip_position_p->get_value();
+    controllerDataOut.hip_d_gain = hip_position_d->get_value();
     pub.publish(controllerDataOut);
 }
 
-//! \brief Take down the GUI.
 void guiTakedown() {
 }
-

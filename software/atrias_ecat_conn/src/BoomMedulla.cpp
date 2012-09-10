@@ -28,6 +28,9 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	
 	setPdoPointer(cur_index, logicVoltage);
 	
+	xEncoderValue   = *xEncoder;
+	xTimestampValue = *xTimestamp;
+	
 	pitchEncoderPos = (*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE)
 	                  % (1 << BOOM_ENCODER_BITS);
 	
@@ -40,15 +43,42 @@ BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	
 	pitchEncoderValue   = *pitchEncoder;
 	pitchTimestampValue = *pitchTimestamp;
+	
+	zEncoderPos = (*zEncoder - BOOM_Z_CALIB_VAL)
+	              % (1 << BOOM_ENCODER_BITS);
+	
+	// Compensate for the difference between % and modulo.
+	zEncoderPos += 1 << BOOM_ENCODER_BITS;
+	
+	// Compensate for wraparound.
+	zEncoderPos = (zEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) %
+	              (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
+	
+	zEncoderValue   = *zEncoder;
+	zTimestampValue = *zTimestamp;
 }
 
 uint8_t BoomMedulla::getID() {
 	return *id;
 }
 
+void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
+                                  atrias_msgs::robot_state& robotState) {
+	// Obtain the deltas
+	int deltaPos = ((int32_t) *xEncoder) - ((int32_t) xEncoderValue);
+	double actualDeltaTime =
+		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
+		((double) (((int16_t) *xTimestamp) - xTimestampValue))
+		/ ((double) MEDULLA_TIMER_FREQ);
+	
+	robotState.position.xPosition += deltaPos * BOOM_X_METERS_PER_TICK;
+	robotState.position.xVelocity  =
+		deltaPos * BOOM_X_METERS_PER_TICK / actualDeltaTime;
+}
+
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
                                       atrias_msgs::robot_state& robotState) {
-	// Obtain the delta
+	// Obtain the deltas
 	int deltaPos = ((int32_t) *pitchEncoder) - ((int32_t) pitchEncoderValue);
 	
 	// Compensate for the difference between the % operator and the modulo operation.
@@ -65,7 +95,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	
 	robotState.position.bodyPitchVelocity =
 		deltaPos * PITCH_ENCODER_RAD_PER_TICK /
-		(((double) deltaTime) / SECOND_IN_NANOSECONDS + ((double)
+		(((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) + ((double)
 		(((int16_t) *pitchTimestamp) - pitchTimestampValue)
 		) / MEDULLA_TIMER_FREQ);
 	
@@ -75,7 +105,51 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state&   robotState) {
+	// Obtain the deltas.
+	int deltaPos = ((int32_t) *zEncoder) - ((int32_t) zEncoderValue);
+	double actualDeltaTime =
+		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
+		((double) (((int16_t) *zTimestamp) - zTimestampValue))
+		/ ((double) MEDULLA_TIMER_FREQ);
 	
+	// Compensate for the difference between the % operator and the modulo operation.
+	deltaPos    += 1 << BOOM_ENCODER_BITS;
+	
+	// Compensate for rollover
+	deltaPos     = (deltaPos + (1 << (BOOM_ENCODER_BITS - 1))) %
+	               (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
+	
+	zEncoderPos += deltaPos;
+	
+	robotState.position.boomAngle = zEncoderPos * BOOM_Z_ENCODER_RAD_PER_TICK
+	                                + BOOM_Z_CALIB_LOC;
+	
+	// The angle of the line between the boom's pivot and the robot's origin
+	double virtualBoomAngle = robotState.position.boomAngle +
+	                          atan2(BOOM_ROBOT_VERTICAL_OFFSET, BOOM_LENGTH);
+	
+	robotState.position.zPosition = BOOM_HEIGHT +
+	                                BOOM_LENGTH * sin(virtualBoomAngle);
+	
+	robotState.position.yPosition = -cos(virtualBoomAngle) * BOOM_LENGTH;
+	
+	// The rate of the boom's vertical rotation. Rad/s
+	double boomRotRate =
+		((double) deltaPos) * BOOM_Z_ENCODER_RAD_PER_TICK / actualDeltaTime;
+	
+	robotState.position.zVelocity =
+		BOOM_LENGTH * boomRotRate * cos(virtualBoomAngle);
+	
+	robotState.position.yVelocity =
+		BOOM_LENGTH * boomRotRate * sin(virtualBoomAngle);
+	
+	zEncoderValue   = *zEncoder;
+	zTimestampValue = *zTimestamp;
+}
+
+void BoomMedulla::processTransmitData(atrias_msgs::controller_output& controller_output) {
+	*counter      = ++local_counter;
+	*command      = controller_output.command;
 }
 
 void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
@@ -91,6 +165,7 @@ void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	timingCounterValue = *timingCounter;
 	
 	processPitchEncoder(deltaTime, robot_state);
+	processXEncoder(    deltaTime, robot_state);
 	processZEncoder(    deltaTime, robot_state);
 	
 	robot_state.boomMedullaState      = *state;

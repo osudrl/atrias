@@ -107,8 +107,11 @@
             <toeName>toe_link</toeName>
 
             <hipBodyName>body_link</hipBodyName>
+            <hipCenterName>hip_center</hipCenterName>
             <hipLeftMotorName>left_motor</hipLeftMotorName>
+            <hipLeftMotorAttachmentName>left_motor_attachment</hipLeftMotorAttachmentName>
             <hipRightMotorName>right_motor</hipRightMotorName>
+            <hipRightMotorAttachmentName>right_motor_attachment</hipRightMotorAttachmentName>
         </plugin>
 
     </world>
