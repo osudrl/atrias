@@ -125,6 +125,22 @@ enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
 	RIGHT_LEG_B_MEDULLA_HALT
 };
 
+/** @brief The type for robot configuration data
+  */
+typedef uint8_t RobotConfiguration_t;
+
+/** @brief Describes the "standard" robot configurations.
+  * Reported by the connector.
+  */
+enum class RobotConfiguration: RobotConfiguration_t {
+	BIPED_FULL = 0, // The full biped, with hips and location data. Intentionally
+	                //     zero so if unimplemented, all safeties are enabled.
+	LEFT_LEG_NOHIP, // A single leg with no hip
+	LEFT_LEG_HIP,   // A single leg with a hip
+	BIPED_NOHIP,    // Two legs no hips
+	UNKNOWN         // Not a known configuration. No safeties.
+};
+
 }
 
 }

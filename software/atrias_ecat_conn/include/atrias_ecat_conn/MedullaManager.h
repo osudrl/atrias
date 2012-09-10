@@ -52,6 +52,11 @@ class MedullaManager {
 	  */
 	void medullasInit(ec_slavet slaves[], int slavecount);
 	
+	/** @brief Identifies the robot's configuration from the created Medullas.
+	  * @return The robot's configuration.
+	  */
+	rtOps::RobotConfiguration calcRobotConfiguration();
+	
 	public:
 		/** @brief Initializes the MedullaManager.
 		  */
