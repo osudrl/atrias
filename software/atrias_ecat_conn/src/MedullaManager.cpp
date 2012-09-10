@@ -45,6 +45,29 @@ void MedullaManager::slaveCardInit(ec_slavet slave) {
 	outputs += rLegB->getOutputsSize();
 }
 
+rtOps::RobotConfiguration MedullaManager::calcRobotConfiguration() {
+	if (!lLegA || !lLegB) {
+		return rtOps::RobotConfiguration::UNKNOWN;
+	}
+	
+	// We have at least a left leg.
+	
+	if (!rLegA || !rLegB) {
+		// We are a monopod
+		if (lLegHip)
+			return rtOps::RobotConfiguration::LEFT_LEG_HIP;
+		else
+			return rtOps::RobotConfiguration::LEFT_LEG_NOHIP;
+	}
+	
+	// We are a biped
+	
+	if (!lLegHip || !rLegHip)
+		return rtOps::RobotConfiguration::BIPED_NOHIP;
+	else
+		return rtOps::RobotConfiguration::BIPED_FULL;
+}
+
 void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 	// SOEM is 1-indexed.
 	for (int i = 1; i <= slavecount; i++) {
@@ -124,6 +147,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 		}
 	}
+	setRobotConfiguration(calcRobotConfiguration());
 }
 
 void MedullaManager::start(ec_slavet slaves[], int slavecount) {
@@ -177,6 +201,10 @@ void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
 
 atrias_msgs::robot_state MedullaManager::getRobotState() {
 	return robotState;
+}
+
+void MedullaManager::setRobotConfiguration(rtOps::RobotConfiguration new_robot_configuration) {
+	robotState.robotConfiguration = (rtOps::RobotConfiguration_t) new_robot_configuration;
 }
 
 }

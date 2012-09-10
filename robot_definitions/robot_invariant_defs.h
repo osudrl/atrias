@@ -88,7 +88,7 @@ typedef enum {
 #define CONTROLLER_LOOP_PERIOD_NS                                      1000000LL
 /** @brief The offset between the DC and our code loop.
   */
-#define CONTROLLER_LOOP_OFFSET_NS                                       250000LL
+#define CONTROLLER_LOOP_OFFSET_NS                                       300000LL
 
 //Loop period for the GUI
 #define GUI_LOOP_PERIOD_NS                                            20000000LL

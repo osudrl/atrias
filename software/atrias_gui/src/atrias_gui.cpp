@@ -504,6 +504,7 @@ void draw_leg () {
     double legBKneeX;
     double legBKneeY;
 
+    drawing_area->get_window()->clear();
     cc = drawing_area->get_window()->create_cairo_context();
 
     cc->set_line_width(12.0);
@@ -549,6 +550,51 @@ void draw_leg () {
     cc->get_text_extents(leftLegLabel, extents);
     cc->move_to(lLeg_start_x - (extents.width / 2), start_y - extents.height);
     cc->show_text(leftLegLabel);
+
+    cc->move_to(legAKneeX, legAKneeY);
+    cc->show_text("A");
+    cc->move_to(legBKneeX, legBKneeY);
+    cc->show_text("B");
+
+    // Draw the right leg
+    cc->move_to(rLeg_start_x, start_y);
+    // OSU orange 216, 90, 26
+    cc->set_source_rgb(0.8471, 0.3529, 0.1020);
+    //cc->set_source_rgb(0.8, 0.0, 0.0);
+    // A
+    cc->rel_line_to(-short_segment_length * cos(rtCycle.robotState.rLeg.halfA.legAngle), short_segment_length * sin(rtCycle.robotState.rLeg.halfA.legAngle));
+    cc->get_current_point(legAKneeX, legAKneeY);
+    // C
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfB.legAngle));
+    // B
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfB.legAngle));
+    cc->get_current_point(legBKneeX, legBKneeY);
+    // D
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfA.legAngle));
+    cc->stroke();
+
+    // Draw the motors
+    cc->set_source_rgb(0.0, 0.8, 0.0);
+    // A
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.rLeg.halfA.motorAngle), motor_radius * sin(rtCycle.robotState.rLeg.halfA.motorAngle));
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.rLeg.halfA.motorAngle), -motor_radius * sin(rtCycle.robotState.rLeg.halfA.motorAngle));
+    // B
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.rLeg.halfB.motorAngle), motor_radius * sin(rtCycle.robotState.rLeg.halfB.motorAngle));
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.rLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.rLeg.halfB.motorAngle));
+    cc->stroke();
+
+    // Draw labels
+    cc->set_source_rgb(0.0, 0.0, 0.0);
+
+    string rightLegLabel("Right Leg");
+    cc->get_text_extents(rightLegLabel, extents);
+    cc->move_to(rLeg_start_x - (extents.width / 2), start_y - extents.height);
+    cc->show_text(rightLegLabel);
 
     cc->move_to(legAKneeX, legAKneeY);
     cc->show_text("A");
