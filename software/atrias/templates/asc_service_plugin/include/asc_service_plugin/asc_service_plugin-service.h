@@ -1,5 +1,5 @@
-#ifndef __ASC_SERVICE_PLUGIN_SERVICE_H__
-#define __ASC_SERVICE_PLUGIN_SERVICE_H__
+#ifndef __ASC_SERVICE_PLUGIN_H__
+#define __ASC_SERVICE_PLUGIN_H__
 
 #include <rtt/RTT.hpp>
 #include <rtt/plugin/ServicePlugin.hpp>
