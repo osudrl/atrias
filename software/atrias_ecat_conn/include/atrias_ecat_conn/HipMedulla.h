@@ -30,7 +30,38 @@ class HipMedulla : public Medulla {
 	uint8_t*  timingCounter;
 	uint8_t*  errorFlags;
 	uint8_t*  limitSwitches;
-	// The rest aren't implemented yet due to impending changes.
+	
+	uint32_t* hipEncoder;
+	uint16_t* hipEncoderTimestamp;
+	
+	uint16_t* motorVoltage;
+	uint16_t* logicVoltage;
+	
+	uint16_t* thermistor0;
+	uint16_t* thermistor1;
+	uint16_t* thermistor2;
+	
+	int16_t*  ampMeasuredCurrent;
+	
+	float*    accelX;
+	float*    accelY;
+	float*    accelZ;
+	float*    angRateX;
+	float*    angRateY;
+	float*    angRateZ;
+	float*    m11;
+	float*    m12;
+	float*    m13;
+	float*    m21;
+	float*    m22;
+	float*    m23;
+	float*    m31;
+	float*    m32;
+	float*    m33;
+	int32_t*  timer;
+	
+	uint16_t* incrementalEncoder;
+	uint16_t* incrementalEncoderTimestamp;
 	
 	
 	uint8_t   timingCounterValue;
@@ -41,6 +72,12 @@ class HipMedulla : public Medulla {
 	  * @return The motor current command value.
 	  */
 	int32_t calcMotorCurrentOut(atrias_msgs::controller_output& controllerOutput);
+	
+	/** @brief Updates the limit switch values in robotState w/ the
+	  * new values from the Medulla.
+	  * @param hip The robot_state_hip in which to store the new values.
+	  */
+	void    updateLimitSwitches(atrias_msgs::robot_state_hip& hip);
 	
 	public:
 		/** @brief Does SOEM's slave-specific init.
