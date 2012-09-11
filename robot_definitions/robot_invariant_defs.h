@@ -171,4 +171,12 @@ typedef enum {
   */
 #define RIGHT_MOTOR_HIP_DIRECTION                                           -1.0
 
+/** @brief The radians per tick for the hip's incremental encoder.
+  */
+#define HIP_INC_ENCODER_RAD_PER_TICK                  0.000009889017906384604997
+
+/** @brief The radians per tick for the hip's absolute encoder.
+  */
+#define HIP_ABS_ENCODER_RAD_PER_TICK                  0.000766990393942820614859
+
 #endif // ROBOT_INVARIANT_DEFS_H

@@ -51,7 +51,10 @@ HipMedulla::HipMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	setPdoPointer(cur_index, incrementalEncoder);
 	setPdoPointer(cur_index, incrementalEncoderTimestamp);
 	
-	timingCounterValue = *timingCounter;
+	timingCounterValue               = *timingCounter;
+	incrementalEncoderValue          = *incrementalEncoder;
+	incrementalEncoderTimestampValue = *incrementalEncoderTimestamp;
+	incrementalEncoderInitialized    = false;
 }
 
 int32_t HipMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controllerOutput) {
@@ -75,6 +78,38 @@ int32_t HipMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
 void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip) {
 	hip.InsideLimitSwitch  = *limitSwitches & (1 << 0);
 	hip.OutsideLimitSwitch = *limitSwitches & (1 << 1);
+}
+
+void HipMedulla::updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
+                                     atrias_msgs::robot_state_hip& hip) {
+	double actualDeltaTime =
+		((double) delta_time) / ((double) SECOND_IN_NANOSECONDS) +
+		((double) (((int16_t) *incrementalEncoderTimestamp) -
+		incrementalEncoderTimestampValue)) / MEDULLA_TIMER_FREQ;
+	
+	int16_t deltaPos = ((int32_t) *incrementalEncoder + (1 << 15) -
+	                   incrementalEncoderValue) % (1 << 16) - (1 << 15);
+	
+	incrementalEncoderValue         += deltaPos;
+	incrementalEncoderTimestampValue = *incrementalEncoderTimestamp;
+	
+	int dir = (*id == MEDULLA_LEFT_HIP_ID) ? LEFT_MOTOR_HIP_DIRECTION
+	          : RIGHT_MOTOR_HIP_DIRECTION;
+	int32_t calib_val = (*id == MEDULLA_LEFT_HIP_ID) ? LEFT_HIP_CALIB_VAL
+	                    : RIGHT_HIP_CALIB_VAL;
+	double  calib_pos = (*id == MEDULLA_LEFT_HIP_ID) ? LEFT_HIP_CALIB_POS
+	                    : RIGHT_HIP_CALIB_POS;
+	
+	hip.legBodyVelocity   = dir * HIP_INC_ENCODER_RAD_PER_TICK * deltaPos /
+	                        actualDeltaTime;
+	hip.legBodyAngle     += dir * HIP_INC_ENCODER_RAD_PER_TICK * deltaPos;
+	hip.absoluteBodyAngle = (((int32_t) *hipEncoder) - calib_val) *
+	                        HIP_ABS_ENCODER_RAD_PER_TICK + calib_pos;
+	hip.legBodyAngle     += (hip.absoluteBodyAngle - hip.legBodyAngle) / 100000.0;
+	if (!incrementalEncoderInitialized) {
+		hip.legBodyAngle = hip.absoluteBodyAngle;
+		incrementalEncoderInitialized = true;
+	}
 }
 
 uint8_t HipMedulla::getID() {
@@ -114,6 +149,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	atrias_msgs::robot_state_hip& hip = *hip_ptr;
 	
 	updateLimitSwitches(hip);
+	updateEncoderValues(deltaTime, hip);
 	
 	hip.medullaState = *state;
 	hip.errorFlags   = *errorFlags;

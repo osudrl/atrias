@@ -53,4 +53,20 @@
   */
 #define BOOM_Z_CALIB_VAL            1
 
+/** @brief The encoder value of the hip's absolute encoder at the calibration position.
+  */
+#define LEFT_HIP_CALIB_VAL          1
+
+/** @brief The encoder value of the right hip at calibration.
+  */
+#define RIGHT_HIP_CALIB_VAL         1
+
+/** @brief The left hip's calibration position.
+  */
+#define LEFT_HIP_CALIB_POS           4.0
+
+/** @brief The right hip's calibration position.
+  */
+#define RIGHT_HIP_CALIB_POS          4.0
+
 #endif // ROBOT_VARIANT_DEFS_H
