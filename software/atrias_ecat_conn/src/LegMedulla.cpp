@@ -63,8 +63,13 @@ intptr_t LegMedulla::getOutputsSize() {
 void LegMedulla::checkErroneousEncoderValues() {
 	skipMotorEncoder      = false;
 	int32_t deltaMotorPos = *motorEncoder - motorEncoderValue;
-	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
+	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE) {
+		// Uncomment this if you want to debug issue 83
+		/*log(RTT::Warning) << "Large motor encoder jump! Old value: "
+		                  << motorEncoderValue << " New value: "
+		                  << *motorEncoder << RTT::endlog();*/
 		skipMotorEncoder = true;
+	}
 	
 	skipLegEncoder      = false;
 	int32_t deltaLegPos = *legEncoder - legEncoderValue;
