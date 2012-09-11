@@ -40,6 +40,10 @@ public:
     // Constructor
     ASCPD(std::string name);
 
+    /** @brief Get ROS header from RTOps.
+     */
+    RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
+
     // Standard Orocos hooks
     bool configureHook();
     bool startHook();

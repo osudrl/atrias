@@ -86,20 +86,25 @@ bool ConnManager::initialize() {
 	
 	targetTime         = RTT::os::TimeService::Instance()->getNSecs();
 	done               = false;
+	midCycle = false;
 	
 	return !done;
 }
 
 void ConnManager::loop() {
 	while (!done) {
+		if (midCycle) {
+			// Missed deadline!
+			eCatConn->sendEvent(controllerManager::RtOpsEvent::MISSED_DEADLINE);
+		}
 		// This is used to compensate for timing overshoots when adjusting
 		// to match the DC clock.
-		RTT::os::TimeService::nsecs overshoot =
-			RTT::os::TimeService::Instance()->getNSecs() - targetTime;
-	
+		RTT::os::TimeService::nsecs overshoot;
+		
 		int64_t eCatTime;
 		{
 			RTT::os::MutexLock lock(eCatLock);
+			overshoot = RTT::os::TimeService::Instance()->getNSecs() - targetTime;
 			cycleECat();
 			eCatTime = ec_DCtime;
 			eCatConn->getMedullaManager()->processReceiveData();
@@ -107,7 +112,9 @@ void ConnManager::loop() {
 		eCatConn->getMedullaManager()->setTime(
 			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
 			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_PERIOD_NS);
-
+		
+		midCycle = true;
+		
 		eCatConn->newStateCallback(eCatConn->getMedullaManager()->getRobotState());
 
 		// The division here functions as an IIR filter on the DC time.
@@ -147,6 +154,7 @@ void ConnManager::sendControllerOutput(
 	RTT::os::MutexLock lock(eCatLock);
 	eCatConn->getMedullaManager()->processTransmitData(controller_output);
 	cycleECat();
+	midCycle = false;
 }
 
 bool ConnManager::breakLoop() {

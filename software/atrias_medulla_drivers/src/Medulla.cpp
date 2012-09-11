@@ -1,4 +1,4 @@
-#include "atrias_ecat_conn/Medulla.h"
+#include "atrias_medulla_drivers/Medulla.h"
 
 namespace atrias {
 

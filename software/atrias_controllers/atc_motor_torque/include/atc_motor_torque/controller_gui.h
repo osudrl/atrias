@@ -24,9 +24,12 @@ atc_motor_torque::controller_input controllerDataOut;
 atc_motor_torque::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *torque_A_hscale,
-        *torque_B_hscale,
-        *torque_hip_hscale;
+Gtk::HScale *torque_left_A_hscale,
+        *torque_left_B_hscale,
+        *torque_left_hip_hscale,
+        *torque_right_A_hscale,
+        *torque_right_B_hscale,
+        *torque_right_hip_hscale;
 
 Gtk::CheckButton *set_position_checkbutton;
 
@@ -34,9 +37,12 @@ Gtk::CheckButton *set_position_checkbutton;
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
 //     arise when both C and python nodes access the same parameter. See:
 //     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double torque_A_param;
-double torque_B_param;
-double torque_hip_param;
+double torque_left_A_param;
+double torque_left_B_param;
+double torque_left_hip_param;
+double torque_right_A_param;
+double torque_right_B_param;
+double torque_right_hip_param;
 
 void controllerCallback(const atc_motor_torque::controller_status &status);
 

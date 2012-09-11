@@ -28,6 +28,7 @@ extern "C" {
 #include "atrias_ecat_conn/ECatConn.h"
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
+#include <atrias_shared/globals.h>
 
 #define EC_TIMEOUT_US      500
 #define TIMING_FILTER_GAIN 100
@@ -62,6 +63,10 @@ class ConnManager : public RTT::Activity {
 	  * to cycle and to compensate for overshoots.
 	  */
 	RTT::os::TimeService::nsecs targetTime;
+	
+	/** @brief Used to detect missed deadlines.
+	  */
+	bool           midCycle;
 	
 	public:
 		/** @brief The constructor.

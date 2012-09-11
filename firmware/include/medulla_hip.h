@@ -2,6 +2,7 @@
 #define MEDULLA_HIP_H
 
 #include <stdio.h>
+#include <string.h>
 
 // Include the robot definitions
 #include "robot_invariant_defs.h"
@@ -13,6 +14,7 @@
 #include "adc.h"
 #include "renishaw_ssi_encoder.h"
 #include "quadrature_encoder.h"
+#include "imu.h"
 
 #include "amplifier.h"
 

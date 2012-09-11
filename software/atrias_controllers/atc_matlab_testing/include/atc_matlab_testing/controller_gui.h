@@ -24,19 +24,15 @@ atc_matlab_testing::controller_input controllerDataOut;
 atc_matlab_testing::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *torque_A_hscale,
-        *torque_B_hscale,
-        *torque_hip_hscale;
+Gtk::HScale *leg_length_hscale,
+        *leg_angle_hscale,
+        *p_leg_position_hscale,
+        *d_leg_position_hscale,
+        *hip_position_ang,
+        *hip_position_p,
+        *hip_position_d;
 
-Gtk::CheckButton *set_position_checkbutton;
-
-// Parameters
-//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
-//     arise when both C and python nodes access the same parameter. See:
-//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double torque_A_param;
-double torque_B_param;
-double torque_hip_param;
+Gtk::CheckButton *update_checkbutton;
 
 void controllerCallback(const atc_matlab_testing::controller_status &status);
 

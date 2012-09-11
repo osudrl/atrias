@@ -65,7 +65,10 @@ int main(void) {
 
 	// Initilize the debug uart
 	debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, debug_uart_tx_buffer, DEBUG_UART_TX_BUFFER_SIZE, debug_uart_rx_buffer, DEBUG_UART_RX_BUFFER_SIZE);
-	uart_connect_port(&debug_port, true);
+
+	// Don't enable this port if this is a right hip medulla, because that will interfere with the IMU communication
+	if (medulla_id != MEDULLA_RIGHT_HIP_ID)
+		uart_connect_port(&debug_port, true);
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla] Initilizing Medulla\n");
