@@ -1,4 +1,4 @@
-#include "atrias_ecat_conn/BoomMedulla.h"
+#include "atrias_medulla_drivers/BoomMedulla.h"
 
 namespace atrias {
 

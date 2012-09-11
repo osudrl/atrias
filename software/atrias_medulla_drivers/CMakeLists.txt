@@ -15,5 +15,6 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
+orocos_library(MedullaDrivers src/Medulla.cpp src/LegMedulla.cpp src/HipMedulla.cpp src/BoomMedulla.cpp)
 
 orocos_generate_package()

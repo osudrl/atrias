@@ -11,7 +11,7 @@
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>
 #include <atrias_shared/globals.h>
-#include "atrias_ecat_conn/Medulla.h"
+#include "atrias_medulla_drivers/Medulla.h"
 
 namespace atrias {
 
