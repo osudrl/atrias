@@ -5,11 +5,23 @@ namespace atrias {
 namespace ecatConn {
 
 MedullaManager::MedullaManager() {
-	lLegA = NULL;
-	lLegB = NULL;
-	rLegA = NULL;
-	rLegB = NULL;
-	boom  = NULL;
+	lLegA   = NULL;
+	lLegB   = NULL;
+	rLegA   = NULL;
+	rLegB   = NULL;
+	boom    = NULL;
+	lLegHip = NULL;
+	rLegHip = NULL;
+}
+
+MedullaManager::~MedullaManager() {
+	delete(lLegA);
+	delete(lLegB);
+	delete(rLegA);
+	delete(rLegB);
+	delete(boom);
+	delete(lLegHip);
+	delete(rLegHip);
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {
@@ -33,11 +45,38 @@ void MedullaManager::slaveCardInit(ec_slavet slave) {
 	outputs += rLegB->getOutputsSize();
 }
 
+rtOps::RobotConfiguration MedullaManager::calcRobotConfiguration() {
+	if (!lLegA || !lLegB) {
+		return rtOps::RobotConfiguration::UNKNOWN;
+	}
+	
+	// We have at least a left leg.
+	
+	if (!rLegA || !rLegB) {
+		// We are a monopod
+		if (lLegHip)
+			return rtOps::RobotConfiguration::LEFT_LEG_HIP;
+		else
+			return rtOps::RobotConfiguration::LEFT_LEG_NOHIP;
+	}
+	
+	// We are a biped
+	
+	if (!lLegHip || !rLegHip)
+		return rtOps::RobotConfiguration::BIPED_NOHIP;
+	else
+		return rtOps::RobotConfiguration::BIPED_FULL;
+}
+
 void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 	// SOEM is 1-indexed.
 	for (int i = 1; i <= slavecount; i++) {
-		if (slaves[i].eep_man != MEDULLA_VENDOR_ID)
+		if (slaves[i].eep_man != MEDULLA_VENDOR_ID) {
+			log(RTT::Warning) <<
+				"Unrecognized product ID at 1-indexed position: "
+				<< i << RTT::endlog();
 			continue;
+		}
 		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
@@ -61,7 +100,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 					delete(rLegB);
 					rLegB = medulla;
 				} else {
-					log(RTT::Info) << "Leg medulla not identified." << RTT::endlog();
+					log(RTT::Warning) << "Leg medulla not identified." << RTT::endlog();
 					delete(medulla);
 				}
 				
@@ -69,14 +108,46 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 			
 			case MEDULLA_BOOM_PRODUCT_CODE: {
-				log(RTT::Info) << "Boom medulla identified." << RTT::endlog();
 				delete(boom);
 				boom = new BoomMedulla(slaves[i].inputs, slaves[i].outputs);
+				log(RTT::Info) << "Boom medulla identified. ID: " <<
+					(int) boom->getID() << RTT::endlog();
 				
 				break;
 			}
+			
+			case MEDULLA_HIP_PRODUCT_CODE: {
+				HipMedulla* medulla =
+					new HipMedulla(slaves[i].inputs, slaves[i].outputs);
+				log(RTT::Info) << "Hip medulla detected, ID: " <<
+					(int) medulla->getID() << RTT::endlog();
+				
+				if (medulla->getID() == MEDULLA_LEFT_HIP_ID) {
+					log(RTT::Info) << "Left hip medulla identified" <<
+						RTT::endlog();
+					delete(lLegHip);
+					lLegHip = medulla;
+				} else if (medulla->getID() == MEDULLA_RIGHT_HIP_ID) {
+					log(RTT::Info) << "Left hip medulla identified" <<
+						RTT::endlog();
+					delete(lLegHip);
+					lLegHip = medulla;
+				} else {
+					log(RTT::Warning) << "Hip medulla not identified."
+						<< RTT::endlog();
+				}
+				
+				break;
+			}
+			
+			default: {
+				log(RTT::Warning) <<
+					"Unrecognized product code at 1-indexed position: "
+					<< i << RTT::endlog();
+			}
 		}
 	}
+	setRobotConfiguration(calcRobotConfiguration());
 }
 
 void MedullaManager::start(ec_slavet slaves[], int slavecount) {
@@ -100,6 +171,10 @@ void MedullaManager::processReceiveData() {
 		rLegB->processReceiveData(robotState);
 	if (boom)
 		boom->processReceiveData(robotState);
+	if (lLegHip)
+		lLegHip->processReceiveData(robotState);
+	if (rLegHip)
+		rLegHip->processReceiveData(robotState);
 }
 
 void MedullaManager::processTransmitData(atrias_msgs::controller_output& controller_output) {
@@ -111,6 +186,12 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegA->processTransmitData(controller_output);
 	if (rLegB)
 		rLegB->processTransmitData(controller_output);
+	if (boom)
+		boom->processTransmitData(controller_output);
+	if (lLegHip)
+		lLegHip->processTransmitData(controller_output);
+	if (rLegHip)
+		rLegHip->processTransmitData(controller_output);
 }
 
 void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
@@ -120,6 +201,10 @@ void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
 
 atrias_msgs::robot_state MedullaManager::getRobotState() {
 	return robotState;
+}
+
+void MedullaManager::setRobotConfiguration(rtOps::RobotConfiguration new_robot_configuration) {
+	robotState.robotConfiguration = (rtOps::RobotConfiguration_t) new_robot_configuration;
 }
 
 }

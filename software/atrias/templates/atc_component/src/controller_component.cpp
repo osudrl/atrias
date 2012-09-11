@@ -48,6 +48,9 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
         co.lLeg.motorCurrentA = 0.0;
         co.lLeg.motorCurrentB = 0.0;
         co.lLeg.motorCurrentHip = 0.0;
+        co.rLeg.motorCurrentA = 0.0;
+        co.rLeg.motorCurrentB = 0.0;
+        co.rLeg.motorCurrentHip = 0.0;
         return co;
     }
 

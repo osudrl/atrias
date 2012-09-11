@@ -494,11 +494,22 @@ void draw_leg () {
     float rLeg_start_x = 275.;
     float start_y = 80.;
 
-    drawing_area->get_window()->clear();
+    double textAngle;
+    char buf[64];
 
+    Cairo::TextExtents extents;
+    Cairo::Matrix rotationMatrix;
+    double legAKneeX;
+    double legAKneeY;
+    double legBKneeX;
+    double legBKneeY;
+
+    drawing_area->get_window()->clear();
     cc = drawing_area->get_window()->create_cairo_context();
 
     cc->set_line_width(12.0);
+    cc->select_font_face("Ubuntu", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+    cc->set_font_size(14.);
 
     // Draw the left leg
     cc->move_to(lLeg_start_x, start_y);
@@ -507,11 +518,13 @@ void draw_leg () {
     //cc->set_source_rgb(0.8, 0.0, 0.0);
     // A
     cc->rel_line_to(-short_segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), short_segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
+    cc->get_current_point(legAKneeX, legAKneeY);
     // C
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
     // B
     cc->move_to(lLeg_start_x, start_y);
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
+    cc->get_current_point(legBKneeX, legBKneeY);
     // D
     cc->rel_line_to(-segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
     cc->stroke();
@@ -530,37 +543,88 @@ void draw_leg () {
     cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
     cc->stroke();
 
+    // Draw labels
+    cc->set_source_rgb(0.0, 0.0, 0.0);
+
+    string leftLegLabel("Left Leg");
+    cc->get_text_extents(leftLegLabel, extents);
+    cc->move_to(lLeg_start_x - (extents.width / 2), start_y - extents.height);
+    cc->show_text(leftLegLabel);
+
+    cc->move_to(legAKneeX, legAKneeY);
+    cc->show_text("A");
+    cc->move_to(legBKneeX, legBKneeY);
+    cc->show_text("B");
+
     // Draw the right leg
     cc->move_to(rLeg_start_x, start_y);
     // OSU orange 216, 90, 26
     cc->set_source_rgb(0.8471, 0.3529, 0.1020);
     //cc->set_source_rgb(0.8, 0.0, 0.0);
     // A
-    cc->rel_line_to(short_segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), short_segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
+    cc->rel_line_to(-short_segment_length * cos(rtCycle.robotState.rLeg.halfA.legAngle), short_segment_length * sin(rtCycle.robotState.rLeg.halfA.legAngle));
+    cc->get_current_point(legAKneeX, legAKneeY);
     // C
-    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfB.legAngle));
     // B
     cc->move_to(rLeg_start_x, start_y);
-    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfB.legAngle));
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfB.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfB.legAngle));
+    cc->get_current_point(legBKneeX, legBKneeY);
     // D
-    cc->rel_line_to(segment_length * cos(rtCycle.robotState.lLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.lLeg.halfA.legAngle));
+    cc->rel_line_to(-segment_length * cos(rtCycle.robotState.rLeg.halfA.legAngle), segment_length * sin(rtCycle.robotState.rLeg.halfA.legAngle));
     cc->stroke();
 
     // Draw the motors
     cc->set_source_rgb(0.0, 0.8, 0.0);
     // A
     cc->move_to(rLeg_start_x, start_y);
-    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.rLeg.halfA.motorAngle), motor_radius * sin(rtCycle.robotState.rLeg.halfA.motorAngle));
     cc->move_to(rLeg_start_x, start_y);
-    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfA.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfA.motorAngle));
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.rLeg.halfA.motorAngle), -motor_radius * sin(rtCycle.robotState.rLeg.halfA.motorAngle));
     // B
     cc->move_to(rLeg_start_x, start_y);
-    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
+    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.rLeg.halfB.motorAngle), motor_radius * sin(rtCycle.robotState.rLeg.halfB.motorAngle));
     cc->move_to(rLeg_start_x, start_y);
-    cc->rel_line_to(-motor_radius * cos(rtCycle.robotState.lLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.lLeg.halfB.motorAngle));
+    cc->rel_line_to(motor_radius * cos(rtCycle.robotState.rLeg.halfB.motorAngle), -motor_radius * sin(rtCycle.robotState.rLeg.halfB.motorAngle));
+    cc->stroke();
+
+    // Draw labels
+    cc->set_source_rgb(0.0, 0.0, 0.0);
+
+    string rightLegLabel("Right Leg");
+    cc->get_text_extents(rightLegLabel, extents);
+    cc->move_to(rLeg_start_x - (extents.width / 2), start_y - extents.height);
+    cc->show_text(rightLegLabel);
+
+    cc->move_to(legAKneeX, legAKneeY);
+    cc->show_text("A");
+    cc->move_to(legBKneeX, legBKneeY);
+    cc->show_text("B");
+
+    // Display deflection value for motor A
+    // First, average the leg and motor angles and convert to normal angles by inverting
+    textAngle = -1. * ((rtCycle.robotState.lLeg.halfA.legAngle + rtCycle.robotState.lLeg.halfA.motorAngle) / 2.);
+    sprintf(buf, "%fA", rtCycle.robotState.lLeg.halfA.motorAngle - rtCycle.robotState.lLeg.halfA.legAngle);
+    cc->get_text_extents(buf, extents);
+    cc->move_to(lLeg_start_x, start_y);
+    cc->rel_move_to((-short_segment_length + (extents.width / 2.)) * cos(textAngle), (short_segment_length + (extents.width / 2.)) * sin(textAngle));
+    rotationMatrix = Cairo::Matrix(1., 0., 0., 1., 0., 0.);
+    rotationMatrix.rotate(textAngle);
+    cc->set_matrix(rotationMatrix);
+    cc->show_text(buf);
+
+    // Display deflection value for motor B
+    textAngle = -1. * ((rtCycle.robotState.lLeg.halfB.legAngle + rtCycle.robotState.lLeg.halfB.motorAngle) / 2.);
+    sprintf(buf, "%fB", rtCycle.robotState.lLeg.halfB.motorAngle - rtCycle.robotState.lLeg.halfB.legAngle);
+    cc->get_text_extents(buf, extents);
+    cc->move_to(rLeg_start_x, start_y);
+    cc->rel_move_to((-short_segment_length - (extents.width / 2.)) * cos(textAngle), (short_segment_length - (extents.width / 2.)) * sin(textAngle));
+    rotationMatrix = Cairo::Matrix(1., 0., 0., 1., 0., 0.);
+    rotationMatrix.rotate(textAngle);
+    cc->set_matrix(rotationMatrix);
+    cc->show_text(buf);
     cc->stroke();
 }
 
 } // namespace gui
 } // namespace atrias
-

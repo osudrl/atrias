@@ -215,8 +215,8 @@ read
 # Names
 newAcCamelName=$(echo $newAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
 templateAcCamelName=$(echo $templateAcName | sed "s|\(^...\)|\U\1|; s|_\(.\)|\U\1|g")
-newAcIncludeGuard=$(echo ${newHFile%.*} | sed 's|\(.*\)|__\U\1_H__|; s|-|_|g')
-templateAcIncludeGuard=$(echo ${templateHFile%.*} | sed 's|\(.*\)|__\U\1_H__|; s|-|_|g')
+newAcIncludeGuard=$(echo ${newAcName} | sed 's|\(.*\)|__\U\1_H__|; s|-|_|g')
+templateAcIncludeGuard=$(echo ${templateAcName} | sed 's|\(.*\)|__\U\1_H__|; s|-|_|g')
 # Paths
 newAcPath="${currentPath}/${newAcName}"
 templateAcPath="${templatesPath}/${templateAcName}"
@@ -243,8 +243,6 @@ do
 done
 # Controller description
 echo "description=$description" > controller.txt
-# Clean up the existing '.svn' folders
-find . -name '.svn' -exec rm -rf {} +
 
 # If this is a plugin, exit here
 if [ "$newAscPluginName" != "" ]

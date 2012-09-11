@@ -8,7 +8,7 @@ GZ_REGISTER_WORLD_PLUGIN(ControllerWrapper)
 ControllerWrapper::ControllerWrapper()
 {
     gearRatio = 50;
-    legTorqueConstant = 0.121; // N*m/Amp
+    legTorqueConstant = 0.060; // N*m/Amp
     hipTorqueConstant = 0.184; // N*m/Amp
 }
 

@@ -22,6 +22,7 @@ extern "C" {
 #include <atrias_shared/globals.h>
 #include "atrias_ecat_conn/BoomMedulla.h"
 #include "atrias_ecat_conn/LegMedulla.h"
+#include "atrias_ecat_conn/HipMedulla.h"
 
 namespace atrias {
 
@@ -34,6 +35,8 @@ class MedullaManager {
 	LegMedulla*              rLegA;
 	LegMedulla*              rLegB;
 	BoomMedulla*             boom;
+	HipMedulla*              lLegHip;
+	HipMedulla*              rLegHip;
 	
 	/** @brief Holds our robot state for us.
 	  * Note: Functions using this are NOT thread-safe and should only be called
@@ -49,10 +52,19 @@ class MedullaManager {
 	  */
 	void medullasInit(ec_slavet slaves[], int slavecount);
 	
+	/** @brief Identifies the robot's configuration from the created Medullas.
+	  * @return The robot's configuration.
+	  */
+	rtOps::RobotConfiguration calcRobotConfiguration();
+	
 	public:
 		/** @brief Initializes the MedullaManager.
 		  */
 		MedullaManager();
+		
+		/** @brief Cleans up the MedullaManager.
+		  */
+		~MedullaManager();
 		
 		/** @brief Inits the medullas
 		  */
@@ -76,6 +88,11 @@ class MedullaManager {
 		  * @return The robot state.
 		  */
 		atrias_msgs::robot_state getRobotState();
+		
+		/** @brief Lets other classes control the robotConfiguration.
+		  * @param new_robot_configuration The new robot configuration.
+		  */
+		void setRobotConfiguration(rtOps::RobotConfiguration new_robot_configuration);
 };
 
 }

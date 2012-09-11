@@ -12,7 +12,7 @@ ASCPD::ASCPD(std::string name):
     RTT::TaskContext(name),
     P(0.0),
     D(0.0),
-    logPort(name + "_log")
+    logPort("logOutput")
 {
     this->provides("pd")
         ->addOperation("runController", &ASCPD::runController, this, OwnThread)
@@ -43,6 +43,7 @@ double ASCPD::runController(double targetPos, double currentPos, double targetVe
     out = P * (targetPos - currentPos) + D * (targetVel - currentVel);
 
     // Stuff the msg and push to ROS for logging
+    logData.header = getROSHeader();
     logData.P = P;
     logData.D = D;
     logData.targetPos = targetPos;
@@ -56,6 +57,11 @@ double ASCPD::runController(double targetPos, double currentPos, double targetVe
 }
 
 bool ASCPD::configureHook() {
+    RTT::TaskContext* rtOpsPeer = this->getPeer("atrias_rt");
+    if (rtOpsPeer) {
+        getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
+    }
+
     log(Info) << "[ASCPD] configured!" << endlog();
     return true;
 }

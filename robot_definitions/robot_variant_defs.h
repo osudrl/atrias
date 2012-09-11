@@ -5,41 +5,52 @@
 
 #define NUM_MEDULLAS_ON_ROBOT    7
 
-// These have been set
-#define LEFT_LEG_A_CALIB_VAL     263651250LL
-#define LEFT_LEG_B_CALIB_VAL     262942179LL
-// These have not been set yet.
-#define RIGHT_LEG_A_CALIB_VAL    352351997LL
-#define RIGHT_LEG_B_CALIB_VAL    348884314LL
+// Include the calibration values for each leg
+#define INCLUDE_LEFT_LEG
+#include "leg2_definitions.h"
+#undef INCLUDE_LEFT_LEG
 
-// These have not been set yet
-#define LEFT_LEG_A_RAD_PER_CNT    9.8039216e-09
-#define LEFT_LEG_B_RAD_PER_CNT    -9.8039216e-09
-#define RIGHT_LEG_A_RAD_PER_CNT   9.8039216e-09
-#define RIGHT_LEG_B_RAD_PER_CNT   9.8039216e-09
-
-// These have been set.
-#define LEFT_TRAN_A_CALIB_VAL    199387520LL
-#define LEFT_TRAN_B_CALIB_VAL    197437370LL
-// These have not been set yet.
-#define RIGHT_TRAN_A_CALIB_VAL   284287500
-#define RIGHT_TRAN_B_CALIB_VAL   285247647
-
-// These have not been set yet
-#define LEFT_TRAN_A_RAD_PER_CNT   9.8039216e-09
-#define LEFT_TRAN_B_RAD_PER_CNT   -9.8039216e-09
-#define RIGHT_TRAN_A_RAD_PER_CNT  9.8039216e-09
-#define RIGHT_TRAN_B_RAD_PER_CNT  9.8039216e-09
-
-#define LEFT_MOTOR_A_DIRECTION    -1.0
-#define LEFT_MOTOR_B_DIRECTION     1.0
-#define RIGHT_MOTOR_A_DIRECTION   -1.0
-#define RIGHT_MOTOR_B_DIRECTION    1.0
+#define INCLUDE_RIGHT_LEG
+#include "leg1_definitions.h"
+#undef INCLUDE_RIGHT_LEG
 
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
   * Not set yet.
   */
 #define BOOM_PITCH_VERTICAL_VALUE  128115
+
+/** @brief The length of the boom. For Z calculations.
+  * This is measured from the center of rotation to the center of the hip's
+  * rotation on the body.
+  * Measured via measuring tape.
+  */
+#define BOOM_LENGTH                2.006
+
+/** @brief The vertical distance between the boom arm's centerline and the robot
+  * coordinate system's center (Z = 0) when the boom is level.
+  * Measured off the SolidWorks model.
+  */
+#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434
+
+/** @brief The height of the center of rotation for the boom arm, relative to
+  * robot's "ground".
+  * Measured with a measuring tape.
+  */
+#define BOOM_HEIGHT                0.915
+
+/** @brief The meters of boom motion per encoder tick.
+  * This is calculated from the boom's length, the number of encoder ticks per
+  * encoder revolution, and the gear ratio between the boom and the encoder.
+  */
+#define BOOM_X_METERS_PER_TICK     -0.00000937522094511213193198
+
+/** @brief The angle of the boom at the calibration location.
+  */
+#define BOOM_Z_CALIB_LOC            3.141592653589793238462643383279502884197169
+
+/** @brief The value of the boom encoder at the calibration location.
+  */
+#define BOOM_Z_CALIB_VAL            1
 
 #endif // ROBOT_VARIANT_DEFS_H

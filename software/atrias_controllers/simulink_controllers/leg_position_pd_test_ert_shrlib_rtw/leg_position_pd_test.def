@@ -1,0 +1,15 @@
+{
+global:
+leg_position_pd_test_M_;
+leg_position_pd_test_M;
+leg_position_pd_test_U;
+leg_position_pd_test_Y;
+leg_position_pd_test_initialize;
+leg_position_pd_test_step;
+leg_position_pd_test_terminate;
+
+
+leg_position_pd_test_P;
+local:
+		*;
+};

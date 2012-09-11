@@ -10,8 +10,8 @@ namespace controller {
 
 ATCMatlabTesting::ATCMatlabTesting(std::string name):
     RTT::TaskContext(name),
-    logPort(name + "_log"),
-    guiDataIn("gui_data_in")
+    guiDataIn("gui_data_in"),
+    logPort(name + "_log")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCMatlabTesting::runController, this, ClientThread)
@@ -44,18 +44,26 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
         co.lLeg.motorCurrentA = 0.0;
         co.lLeg.motorCurrentB = 0.0;
         co.lLeg.motorCurrentHip = 0.0;
+        co.rLeg.motorCurrentA = 0.0;
+        co.rLeg.motorCurrentB = 0.0;
+        co.rLeg.motorCurrentHip = 0.0;
         return co;
     }
 
     // begin control code //
-    open_loop_sin_cos_step();
-    printf("Out1 = %f\n", open_loop_sin_cos_Y.Out1);
-    printf("Out2 = %f\n", open_loop_sin_cos_Y.Out2);
+
+    // Inputs
+    leg_position_pd_test_U.motorAnglesAB[0] = rs.lLeg.halfA.motorAngle;
+    leg_position_pd_test_U.motorAnglesAB[1] = rs.lLeg.halfB.motorAngle;
+    leg_position_pd_test_U.desiredAnglesLA_KA[0] = guiIn.leg_ang;
+    leg_position_pd_test_U.desiredAnglesLA_KA[1] = guiIn.leg_len;
+
+    // Setp the controller
+    leg_position_pd_test_step();
 
     // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+    co.lLeg.motorCurrentA = leg_position_pd_test_Y.uA_uB[0];
+    co.lLeg.motorCurrentB = leg_position_pd_test_Y.uA_uB[1];
 
     // end control code //
 
@@ -63,8 +71,8 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
     co.command = medulla_state_run;
 
     // Stuff the msg and push to ROS for logging
-    logData.desiredState = 0.0;
-    logPort.write(logData);
+    //logData.desiredState = 0.0;
+    //logPort.write(logData);
 
     // Output for RTOps
     return co;
@@ -72,7 +80,16 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
-    open_loop_sin_cos_initialize();
+    // Controller parameters
+    leg_position_pd_test_P.Saturation_UpperSat = 40;
+    leg_position_pd_test_P.Saturation_LowerSat = -40;
+    leg_position_pd_test_P.LegAngleP_Gain = 600;
+    leg_position_pd_test_P.LegAngleD_Gain = 20;
+    leg_position_pd_test_P.KneeAngleP_Gain = 600;
+    leg_position_pd_test_P.KneeAngleD_Gain = 20;
+
+    // Initialize the controller
+    leg_position_pd_test_initialize();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
@@ -87,7 +104,7 @@ void ATCMatlabTesting::updateHook() {
 }
 
 void ATCMatlabTesting::stopHook() {
-    open_loop_sin_cos_terminate();
+    leg_position_pd_test_terminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 

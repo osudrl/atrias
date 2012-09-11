@@ -24,15 +24,13 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 // Put control code here.
 atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_state rs) {
     // Stuff the msg
-    controllerOutput.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
-    controllerOutput.rLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    controllerOutput.rLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    controllerOutput.rLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+    controllerOutput.lLeg.motorCurrentA = guiIn.des_motor_torque_left_A;
+    controllerOutput.lLeg.motorCurrentB = guiIn.des_motor_torque_left_B;
+    controllerOutput.lLeg.motorCurrentHip = guiIn.des_motor_torque_left_hip;
+    controllerOutput.rLeg.motorCurrentA = guiIn.des_motor_torque_right_A;
+    controllerOutput.rLeg.motorCurrentB = guiIn.des_motor_torque_right_B;
+    controllerOutput.rLeg.motorCurrentHip = guiIn.des_motor_torque_right_hip;
     controllerOutput.command = medulla_state_run;
-
-    //printf("TORQUE A: %f     TORQUE B: %f     TORQUE HIP: %f\n", guiIn.des_motor_torque_A, guiIn.des_motor_torque_B, guiIn.des_motor_torque_hip);
 
     // Output for RTOps
     return controllerOutput;

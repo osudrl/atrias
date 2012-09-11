@@ -23,6 +23,8 @@ extern "C" {
 #include <ethercatdc.h>
 }
 
+#include <signal.h>
+
 #include "atrias_ecat_conn/ECatConn.h"
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>

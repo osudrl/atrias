@@ -8,6 +8,14 @@ Medulla::Medulla() {
 	local_counter = 0;
 }
 
+double Medulla::decodeLogicVoltage(uint16_t adc_value) {
+	return processADCValue(adc_value) * 6.0;
+}
+
+double Medulla::decodeMotorVoltage(uint16_t adc_value) {
+	return processADCValue(adc_value) * 30.0;
+}
+
 double Medulla::processADCValue(uint16_t adc_value) {
 	return ((double) adc_value) * (MEDULLA_ADC_MAX_VOLTS/(4095.0));
 }
@@ -34,6 +42,7 @@ template void Medulla::setPdoPointer<uint16_t> (uint8_t* &cur_index, uint16_t* &
 template void Medulla::setPdoPointer<int32_t>  (uint8_t* &cur_index, int32_t*  &pdo_pointer);
 template void Medulla::setPdoPointer<uint32_t> (uint8_t* &cur_index, uint32_t* &pdo_pointer);
 template void Medulla::setPdoPointer<int16_t>  (uint8_t* &cur_index, int16_t*  &pdo_pointer);
+template void Medulla::setPdoPointer<float>    (uint8_t* &cur_index, float*    &pdo_pointer);
 
 }
 

@@ -54,8 +54,11 @@ class GazeboControllerConnector : public WorldPlugin
         std::string legBName;
         std::string toeName;
         std::string hipBodyName;
+        std::string hipCenterName;
         std::string hipLeftMotorName;
+        std::string hipLeftMotorAttachmentName;
         std::string hipRightMotorName;
+        std::string hipRightMotorAttachmentName;
 
         // SDF pointer
         sdf::ElementPtr sdf;
@@ -78,15 +81,20 @@ class GazeboControllerConnector : public WorldPlugin
 
         struct HipLinks {
             physics::LinkPtr body;
+            physics::LinkPtr center;
             physics::LinkPtr leftMotor;
+            physics::LinkPtr leftMotorAttachment;
             physics::LinkPtr rightMotor;
+            physics::LinkPtr rightMotorAttachment;
         } hipLinks;
 
         double angle, toePosZ;
         double legMotorGearRatio, hipGearRatio, legTorqueConstant, hipTorqueConstant;
+        double prevLeftLegAngle, prevRightLegAngle;
         math::Vector3 axis, bodyForce;
         math::Quaternion hipRot, motorRot;
         common::Time simTime;
+        double simTimeTotal, prevTime, timestep;
 
         boost::mutex lock;
 

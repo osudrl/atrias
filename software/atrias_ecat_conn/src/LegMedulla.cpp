@@ -132,7 +132,6 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processLimitSwitches();
 	processVoltages(robot_state);
 	processCurrents(robot_state);
-	
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robot_state.lLeg.halfA.medullaState = *state;
