@@ -15,7 +15,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 class BoomMedulla : public Medulla {
 	// Stuff sent to the medulla

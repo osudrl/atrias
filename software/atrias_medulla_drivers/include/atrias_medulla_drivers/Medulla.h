@@ -12,7 +12,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 class Medulla {
 	protected:

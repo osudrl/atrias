@@ -19,7 +19,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 /** @brief Contains pointers to the data received from and transmitted to this
   * type of Medulla.

@@ -2,7 +2,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 Medulla::Medulla() {
 	local_counter = 0;

@@ -2,7 +2,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 LegMedulla::LegMedulla(uint8_t* inputs, uint8_t* outputs) :
             Medulla() {

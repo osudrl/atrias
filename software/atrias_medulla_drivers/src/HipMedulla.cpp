@@ -2,7 +2,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 HipMedulla::HipMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
 	uint8_t* cur_index = outputs;
