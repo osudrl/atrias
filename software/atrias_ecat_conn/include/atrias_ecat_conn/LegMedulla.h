@@ -105,7 +105,7 @@ class LegMedulla : public Medulla {
 	
 	/** @brief Reads in all the limit switches and updates robotState.
 	  */
-	void         processLimitSwitches();
+	void         processLimitSwitches(atrias_msgs::robot_state& robotState);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */

@@ -129,21 +129,27 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processVelocities(deltaTime, robot_state);
 	processIncrementalEncoders(deltaTime, robot_state);
 	processThermistors(robot_state);
-	processLimitSwitches();
+	processLimitSwitches(robot_state);
 	processVoltages(robot_state);
 	processCurrents(robot_state);
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robot_state.lLeg.halfA.medullaState = *state;
+			robot_state.lLeg.halfA.errorFlags   = *errorFlags;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			robot_state.lLeg.halfB.medullaState = *state;
+			robot_state.lLeg.halfB.errorFlags   = *errorFlags;
+			robot_state.lLeg.toeSwitch          = *toeSensor;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			robot_state.rLeg.halfA.medullaState = *state;
+			robot_state.rLeg.halfA.errorFlags   = *errorFlags;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			robot_state.rLeg.halfB.medullaState = *state;
+			robot_state.rLeg.halfB.errorFlags   = *errorFlags;
+			robot_state.rLeg.toeSwitch          = *toeSensor;
 			break;
 	}
 }
@@ -355,8 +361,47 @@ void LegMedulla::processCurrents(atrias_msgs::robot_state& robotState) {
 	}
 }
 
-void LegMedulla::processLimitSwitches() {
-	// TODO: figure out which limit switches are which and implement this.
+void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState) {
+	atrias_msgs::robot_state_leg* leg;
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_LEFT_LEG_B_ID:
+			leg = &(robotState.lLeg);
+			break;
+			
+		case MEDULLA_RIGHT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_B_ID:
+			leg = &(robotState.rLeg);
+			break;
+			
+		default:
+			return;
+	}
+	
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_A_ID:
+			leg->halfA.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
+			leg->halfA.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
+			leg->halfA.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
+			leg->halfA.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
+			leg->legExtendSwitch           = (*limitSwitch) & (1 << 4);
+			leg->legRetractSwitch          = (*limitSwitch) & (1 << 5);
+			break;
+			
+		case MEDULLA_LEFT_LEG_B_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_B_ID:
+			leg->halfB.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
+			leg->halfB.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
+			leg->halfB.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
+			leg->halfB.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
+			leg->motorRetractSwitch        = (*limitSwitch) & (1 << 4);
+			break;
+	}
 }
 
 void LegMedulla::processVoltages(atrias_msgs::robot_state& robotState) {
