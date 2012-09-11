@@ -20,9 +20,9 @@ extern "C" {
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/globals.h>
-#include "atrias_ecat_conn/BoomMedulla.h"
-#include "atrias_ecat_conn/LegMedulla.h"
-#include "atrias_ecat_conn/HipMedulla.h"
+#include <atrias_medulla_drivers/BoomMedulla.h>
+#include <atrias_medulla_drivers/LegMedulla.h>
+#include <atrias_medulla_drivers/HipMedulla.h>
 
 namespace atrias {
 
@@ -30,13 +30,13 @@ namespace ecatConn {
 
 class MedullaManager {
 	// All of our Medullas:
-	LegMedulla*              lLegA;
-	LegMedulla*              lLegB;
-	LegMedulla*              rLegA;
-	LegMedulla*              rLegB;
-	BoomMedulla*             boom;
-	HipMedulla*              lLegHip;
-	HipMedulla*              rLegHip;
+	medullaDrivers::LegMedulla*  lLegA;
+	medullaDrivers::LegMedulla*  lLegB;
+	medullaDrivers::LegMedulla*  rLegA;
+	medullaDrivers::LegMedulla*  rLegB;
+	medullaDrivers::BoomMedulla* boom;
+	medullaDrivers::HipMedulla*  lLegHip;
+	medullaDrivers::HipMedulla*  rLegHip;
 	
 	/** @brief Holds our robot state for us.
 	  * Note: Functions using this are NOT thread-safe and should only be called
