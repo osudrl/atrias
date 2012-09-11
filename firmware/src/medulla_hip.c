@@ -1,5 +1,4 @@
-#include "medulla_hip.h"
-
+#include "medulla_hip.h" 
 //--- Define ethercat PDO entries ---//
 
 // RxPDO entries
@@ -42,7 +41,7 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_logic_voltage_pdo)),2},
                               {((void**)(&hip_thermistor_pdo)),6},
                               {((void**)(&hip_measured_current_pdo)),2},
-			      {((void**)(&hip_imu_data_pdo)),64}};
+							  {((void**)(&hip_imu_data_pdo)),64}};
 
 
 // Structs for the medulla library
@@ -114,12 +113,14 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	initilize_amp(false, hip_measured_current_pdo, 0);
 
-	#ifdef DEBUG_HIGH
-	printf("[Medulla Hip] Initializin IMU\n");
-	#endif
-	//IMU at RS232 interface (USARTE0)
-	initIMU(&PORTE, &USARTE0, &hip_imu);
-	hip_imu_pace_flag = 0;
+	if (id == MEDULLA_RIGHT_HIP_ID) {
+		#ifdef DEBUG_HIGH
+		printf("[Medulla Hip] Initializin IMU\n");
+		#endif
+		//IMU at RS232 interface (USARTE0)
+		init_IMU(&PORTE, &USARTE0, &hip_imu, hip_imu_data_pdo);
+		hip_imu_pace_flag = 0;
+	}
 	
 	*master_watchdog = hip_counter_pdo;
 	*packet_counter = hip_medulla_counter_pdo;
@@ -154,20 +155,16 @@ void hip_update_inputs(uint8_t id) {
 
 	hip_send_current_read = true;
 
-	if(hip_imu_pace_flag){
-		hip_imu_pace_flag = 0;
-		IMURequestOrientation(&hip_imu);
-	}
-	else{
-		IMUReceiveOrientation(&hip_imu);
-		for(hip_imu_pace_flag=0;
-			hip_imu_pace_flag < 64; 
-			hip_imu_pace_flag ++){
-
-			hip_imu_data_pdo[hip_imu_pace_flag] = 
-				hip_imu->current_data[1+hip_imu_pace_flag];
+	if (id == MEDULLA_RIGHT_HIP_ID) {
+		if(hip_imu_pace_flag){
+			hip_imu_pace_flag = 0;
+			IMU_request_orientation(&hip_imu);
 		}
-		hip_imu_pace_flag = 1;
+		else {
+			while(IMU_received_orientation(&hip_imu) == false);
+			IMU_process_orientation(&hip_imu);
+			hip_imu_pace_flag = 1;
+		}
 	}
 }
 
