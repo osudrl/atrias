@@ -1,0 +1,14 @@
+<package>
+  <description brief="atrias_medulla_drivers">
+
+     Contains our Medulla drivers.
+
+  </description>
+  <author>Dynamic Robotics Laboratory</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atrias_medulla_drivers</url>
+
+</package>
+
+
