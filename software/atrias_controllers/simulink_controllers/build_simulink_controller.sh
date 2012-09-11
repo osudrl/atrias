@@ -61,3 +61,6 @@ make -f ${controllerMakefile}
 # Move the shared library to where ROS expects it
 cd ..
 mv "${controllerName}.so" "lib${controllerName}.so"
+
+# Remove the example main program
+rm -f $controllerName

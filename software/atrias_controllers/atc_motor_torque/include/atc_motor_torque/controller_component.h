@@ -31,15 +31,14 @@ namespace controller {
 
 class ATCMotorTorque : public TaskContext {
 private:
-    atrias_msgs::robot_state         robotState;
-    atrias_msgs::controller_output   controllerOutput;
+    atrias_msgs::controller_output   co;
 
     controller_input                 guiIn;
 
     InputPort<controller_input>      guiDataIn;
 
     // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state);
+    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
 public:
     // Constructor
