@@ -4,52 +4,42 @@ namespace atrias {
 
 namespace medullaDrivers {
 
-HipMedulla::HipMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
-	uint8_t* cur_index = outputs;
+HipMedulla::HipMedulla(intptr_t outputs[], intptr_t inputs[]) : Medulla() {
+	command      = (uint8_t*)  (outputs[0]);
+	counter      = (uint16_t*) (outputs[1]);
+	motorCurrent = (int32_t*)  (outputs[2]);
 	
-	setPdoPointer(cur_index, command);
-	setPdoPointer(cur_index, counter);
-	setPdoPointer(cur_index, motorCurrent);
-	
-	cur_index = inputs;
-	
-	setPdoPointer(cur_index, id);
-	setPdoPointer(cur_index, state);
-	setPdoPointer(cur_index, timingCounter);
-	setPdoPointer(cur_index, errorFlags);
-	setPdoPointer(cur_index, limitSwitches);
-	
-	setPdoPointer(cur_index, hipEncoder);
-	setPdoPointer(cur_index, hipEncoderTimestamp);
-	
-	setPdoPointer(cur_index, motorVoltage);
-	setPdoPointer(cur_index, logicVoltage);
-	
-	setPdoPointer(cur_index, thermistor0);
-	setPdoPointer(cur_index, thermistor1);
-	setPdoPointer(cur_index, thermistor2);
-	
-	setPdoPointer(cur_index, ampMeasuredCurrent);
-	
-	setPdoPointer(cur_index, accelX);
-	setPdoPointer(cur_index, accelY);
-	setPdoPointer(cur_index, accelZ);
-	setPdoPointer(cur_index, angRateX);
-	setPdoPointer(cur_index, angRateY);
-	setPdoPointer(cur_index, angRateZ);
-	setPdoPointer(cur_index, m11);
-	setPdoPointer(cur_index, m12);
-	setPdoPointer(cur_index, m13);
-	setPdoPointer(cur_index, m21);
-	setPdoPointer(cur_index, m22);
-	setPdoPointer(cur_index, m23);
-	setPdoPointer(cur_index, m31);
-	setPdoPointer(cur_index, m32);
-	setPdoPointer(cur_index, m33);
-	setPdoPointer(cur_index, timer);
-	
-	setPdoPointer(cur_index, incrementalEncoder);
-	setPdoPointer(cur_index, incrementalEncoderTimestamp);
+	id                          = (uint8_t*)  (inputs[0]);
+	state                       = (uint8_t*)  (inputs[1]);
+	timingCounter               = (uint8_t*)  (inputs[2]);
+	errorFlags                  = (uint8_t*)  (inputs[3]);
+	limitSwitches               = (uint8_t*)  (inputs[4]);
+	hipEncoder                  = (uint32_t*) (inputs[5]);
+	hipEncoderTimestamp         = (uint16_t*) (inputs[6]);
+	motorVoltage                = (uint16_t*) (inputs[7]);
+	logicVoltage                = (uint16_t*) (inputs[8]);
+	thermistor0                 = (uint16_t*) (inputs[9]);
+	thermistor1                 = (uint16_t*) (inputs[10]);
+	thermistor2                 = (uint16_t*) (inputs[11]);
+	ampMeasuredCurrent          = (int16_t*)  (inputs[12]);
+	accelX                      = (float*)    (inputs[13]);
+	accelY                      = (float*)    (inputs[14]);
+	accelZ                      = (float*)    (inputs[15]);
+	angRateX                    = (float*)    (inputs[16]);
+	angRateY                    = (float*)    (inputs[17]);
+	angRateZ                    = (float*)    (inputs[18]);
+	m11                         = (float*)    (inputs[19]);
+	m12                         = (float*)    (inputs[20]);
+	m13                         = (float*)    (inputs[21]);
+	m21                         = (float*)    (inputs[22]);
+	m22                         = (float*)    (inputs[23]);
+	m23                         = (float*)    (inputs[24]);
+	m31                         = (float*)    (inputs[25]);
+	m32                         = (float*)    (inputs[26]);
+	m33                         = (float*)    (inputs[27]);
+	timer                       = (int32_t*)  (inputs[28]);
+	incrementalEncoder          = (uint16_t*) (inputs[29]);
+	incrementalEncoderTimestamp = (uint16_t*) (inputs[30]);
 	
 	timingCounterValue               = *timingCounter;
 	incrementalEncoderValue          = *incrementalEncoder;

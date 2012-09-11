@@ -57,6 +57,20 @@ class MedullaManager {
 	  */
 	rtOps::RobotConfiguration calcRobotConfiguration();
 	
+	/** @brief Configures the array of pointers for a medulla's inputs[] parameter.
+	  * @param slave_inputs The address to this slave's inputs.
+	  * @param inputs_array The array in which to store the values.
+	  * @param num_entries  The number of elements in the inputs_array param.
+	  */
+	void InputsConfig(uint8_t* slave_inputs, intptr_t* inputs_array, int num_entries);
+	
+	/** @brief Configures the array of pointers for a medulla's outputs[] parameter.
+	  * @param slave_outputs The address to this slave's outputs.
+	  * @param outputs_array The array in which to store the values.
+	  * @param num_entries  The number of elements in the inputs_array param.
+	  */
+	void OutputsConfig(uint8_t* slave_outputs, intptr_t* outputs_array, int num_entries);
+	
 	public:
 		/** @brief Initializes the MedullaManager.
 		  */

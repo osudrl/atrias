@@ -4,29 +4,22 @@ namespace atrias {
 
 namespace medullaDrivers {
 
-BoomMedulla::BoomMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
-	uint8_t* cur_index = outputs;
+BoomMedulla::BoomMedulla(intptr_t outputs[], intptr_t inputs[]) : Medulla() {
+	command        = (uint8_t*)  (outputs[0]);
+	counter        = (uint16_t*) (outputs[1]);
 	
-	setPdoPointer(cur_index, command);
-	setPdoPointer(cur_index, counter);
+	id             = (uint8_t*)  (inputs[0]);
+	state          = (uint8_t*)  (inputs[1]);
+	timingCounter  = (uint8_t*)  (inputs[2]);
+	errorFlags     = (uint8_t*)  (inputs[3]);
+	xEncoder       = (uint32_t*) (inputs[4]);
+	xTimestamp     = (uint16_t*) (inputs[5]);
+	pitchEncoder   = (uint32_t*) (inputs[6]);
+	pitchTimestamp = (uint16_t*) (inputs[7]);
+	zEncoder       = (uint32_t*) (inputs[8]);
+	zTimestamp     = (uint16_t*) (inputs[9]);
+	logicVoltage   = (uint16_t*) (inputs[10]);
 	
-	cur_index = inputs;
-	
-	setPdoPointer(cur_index, id);
-	setPdoPointer(cur_index, state);
-	setPdoPointer(cur_index, timingCounter);
-	setPdoPointer(cur_index, errorFlags);
-	
-	setPdoPointer(cur_index, xEncoder);
-	setPdoPointer(cur_index, xTimestamp);
-	
-	setPdoPointer(cur_index, pitchEncoder);
-	setPdoPointer(cur_index, pitchTimestamp);
-	
-	setPdoPointer(cur_index, zEncoder);
-	setPdoPointer(cur_index, zTimestamp);
-	
-	setPdoPointer(cur_index, logicVoltage);
 	
 	xEncoderValue   = *xEncoder;
 	xTimestampValue = *xTimestamp;

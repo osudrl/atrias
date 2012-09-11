@@ -100,11 +100,11 @@ class BoomMedulla : public Medulla {
 	                          atrias_msgs::robot_state&   robotState);
 	
 	public:
-		/** @brief Does SOEM's slave-specific init.
+		/** @brief Does the slave-specific init.
 		  * @param inputs A pointer to this slave's inputs.
 		  * @param outputs A pointer to this slave's outputs.
 		  */
-		BoomMedulla(uint8_t* inputs, uint8_t* outputs);
+		BoomMedulla(intptr_t outputs[], intptr_t inputs[]);
 		
 		/** @brief Gets this medulla's ID.
 		  * @return This medulla's ID.

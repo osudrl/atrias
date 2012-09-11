@@ -121,11 +121,11 @@ class LegMedulla : public Medulla {
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
 	
 	public:
-		/** @brief Does SOEM's slave-specific init.
-		  * @param inputs  A pointer to this slave's inputs
-		  * @param outputs A pointer to this slave's outputs;
+		/** @brief Does the slave-specific init.
+		  * @param inputs An array of intptr_t's w/ pointers to this slave's inputs.
+		  * @param outputs An array of intptr_t's w/ pointers to this slave's outputs.
 		  */
-		LegMedulla(uint8_t* inputs, uint8_t* outputs);
+		LegMedulla(intptr_t outputs[], intptr_t inputs[]);
 		
 		/** @brief Returns the total inputs size for this medulla type.
 		  * @return The total inputs size for this medulla type.

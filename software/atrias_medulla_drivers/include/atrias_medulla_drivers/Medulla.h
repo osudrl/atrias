@@ -19,14 +19,6 @@ class Medulla {
 		/** @brief Holds the counter value for feeding the master watchdog.
 		  */
 		uint16_t        local_counter;
-		
-		/** @brief Sets a pointer to point to that pdo entry's location in
-		  * RAM.
-		  * @param pdo_pointer The pointer to be set to the PDO's location.
-		  * @param cur_index A pointer holding the current reference address.
-		  */
-		template <class T>
-			void setPdoPointer(uint8_t* &cur_index, T* &pdo_pointer);
 			
 		/** @brief Decodes a logic voltage.
 		  * @param adc_value The voltage value from the ADC.

@@ -91,11 +91,11 @@ class HipMedulla : public Medulla {
 	                            atrias_msgs::robot_state_hip& hip);
 	
 	public:
-		/** @brief Does SOEM's slave-specific init.
-		  * @param inputs A pointer to this slave's inputs.
-		  * @param outputs A pointer to this slave's outputs.
+		/** @brief Does the slave-specific init.
+		  * @param inputs An array of intptr_t's w/ pointers to this slave's inputs.
+		  * @param outputs An array of intptr_t's w/ pointers to this slave's outputs.
 		  */
-		HipMedulla(uint8_t* inputs, uint8_t* outputs);
+		HipMedulla(intptr_t outputs[], intptr_t inputs[]);
 		
 		/** @brief Gets this medulla's ID.
 		  * @return This medulla's ID.

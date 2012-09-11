@@ -30,20 +30,6 @@ double Medulla::processAmplifierCurrent(int16_t value) {
 	return ((double) value) * 60.0 / 8192;
 }
 
-template <class T>
-void Medulla::setPdoPointer (uint8_t* &cur_index, T* &pdo_pointer) {
-	pdo_pointer = (T*) cur_index;
-	cur_index  += sizeof(T);
-}
-
-// Let's force creation of the different template instance types we need.
-template void Medulla::setPdoPointer<uint8_t>  (uint8_t* &cur_index, uint8_t*  &pdo_pointer);
-template void Medulla::setPdoPointer<uint16_t> (uint8_t* &cur_index, uint16_t* &pdo_pointer);
-template void Medulla::setPdoPointer<int32_t>  (uint8_t* &cur_index, int32_t*  &pdo_pointer);
-template void Medulla::setPdoPointer<uint32_t> (uint8_t* &cur_index, uint32_t* &pdo_pointer);
-template void Medulla::setPdoPointer<int16_t>  (uint8_t* &cur_index, int16_t*  &pdo_pointer);
-template void Medulla::setPdoPointer<float>    (uint8_t* &cur_index, float*    &pdo_pointer);
-
 }
 
 }

@@ -4,6 +4,18 @@ namespace atrias {
 
 namespace ecatConn {
 
+void MedullaManager::InputsConfig(uint8_t* slave_inputs, intptr_t* inputs_array, int num_entries) {
+	for (int i = 0; i < num_entries; i++) {
+		inputs_array[i] = (intptr_t) slave_inputs + i;
+	}
+}
+
+void MedullaManager::OutputsConfig(uint8_t* slave_outputs, intptr_t* outputs_array, int num_entries) {
+	for (int i = 0; i < num_entries; i++) {
+		outputs_array[i] = (intptr_t) slave_outputs + i;
+	}
+}
+
 MedullaManager::MedullaManager() {
 	lLegA   = NULL;
 	lLegB   = NULL;
@@ -28,19 +40,19 @@ void MedullaManager::slaveCardInit(ec_slavet slave) {
 	uint8_t* inputs  = slave.inputs;
 	uint8_t* outputs = slave.outputs;
 	
-	lLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
+	//lLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
 	inputs  += lLegA->getInputsSize();
 	outputs += lLegA->getOutputsSize();
 	
-	lLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
+	//lLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
 	inputs  += lLegB->getInputsSize();
 	outputs += lLegB->getOutputsSize();
 	
-	rLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
+	//rLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
 	inputs  += rLegA->getInputsSize();
 	outputs += rLegA->getOutputsSize();
 	
-	rLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
+	//rLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
 	inputs  += rLegB->getInputsSize();
 	outputs += rLegB->getOutputsSize();
 }
@@ -80,7 +92,11 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
-				medullaDrivers::LegMedulla* medulla = new medullaDrivers::LegMedulla(slaves[i].inputs, slaves[i].outputs);
+				intptr_t inputs[MEDULLA_LEG_TX_PDO_COUNT];
+				intptr_t outputs[MEDULLA_LEG_RX_PDO_COUNT];
+				InputsConfig(slaves[i].inputs, inputs, MEDULLA_LEG_TX_PDO_COUNT);
+				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_LEG_RX_PDO_COUNT);
+				medullaDrivers::LegMedulla* medulla = new medullaDrivers::LegMedulla(outputs, inputs);
 				log(RTT::Info) << "Leg medulla detected, ID: " << (int) medulla->getID() << RTT::endlog();
 				
 				if (medulla->getID() == MEDULLA_LEFT_LEG_A_ID) {
@@ -109,7 +125,11 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			
 			case MEDULLA_BOOM_PRODUCT_CODE: {
 				delete(boom);
-				boom = new medullaDrivers::BoomMedulla(slaves[i].inputs, slaves[i].outputs);
+				intptr_t inputs[MEDULLA_BOOM_TX_PDO_COUNT];
+				intptr_t outputs[MEDULLA_BOOM_RX_PDO_COUNT];
+				InputsConfig(slaves[i].inputs, inputs, MEDULLA_BOOM_TX_PDO_COUNT);
+				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_BOOM_RX_PDO_COUNT);
+				boom = new medullaDrivers::BoomMedulla(outputs, inputs);
 				log(RTT::Info) << "Boom medulla identified. ID: " <<
 					(int) boom->getID() << RTT::endlog();
 				
@@ -117,8 +137,12 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 			
 			case MEDULLA_HIP_PRODUCT_CODE: {
+				intptr_t inputs[MEDULLA_HIP_TX_PDO_COUNT];
+				intptr_t outputs[MEDULLA_HIP_RX_PDO_COUNT];
+				InputsConfig(slaves[i].inputs, inputs, MEDULLA_HIP_TX_PDO_COUNT);
+				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_HIP_RX_PDO_COUNT);
 				medullaDrivers::HipMedulla* medulla =
-					new medullaDrivers::HipMedulla(slaves[i].inputs, slaves[i].outputs);
+					new medullaDrivers::HipMedulla(outputs, inputs);
 				log(RTT::Info) << "Hip medulla detected, ID: " <<
 					(int) medulla->getID() << RTT::endlog();
 				
