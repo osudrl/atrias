@@ -34,6 +34,12 @@ class Medulla {
 		  */
 		double decodeLogicVoltage(uint16_t adc_value);
 		
+		/** @brief Decodes a motor voltage.
+		  * @param adc_value The voltage value from the ADC.
+		  * @return The motor voltage for this Medulla
+		  */
+		double decodeMotorVoltage(uint16_t adc_value);
+		
 		/** @brief  Processes an ADC value into a voltage.
 		  * @param  adc_value The ADC value from the Medulla.
 		  * @return The voltage this ADC is reading.
