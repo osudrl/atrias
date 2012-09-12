@@ -112,6 +112,7 @@ atrias_msgs::controller_output ATCLegPosition::runController(atrias_msgs::robot_
     controllerOutput.rLeg.motorCurrentB = pd4Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate hip current
+    // TODO: Get correct values from the gui
     //targetPos = guiIn.hip_ang;
     currentPos = rs.rLeg.hip.legBodyAngle;
     targetVel = 0.0;

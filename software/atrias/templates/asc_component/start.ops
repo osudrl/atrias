@@ -4,7 +4,7 @@ import("asc_component")
 # TODO: Implement subcontroller naming
 # TODO: Figure out where/when to call this
 var string controllerName
-loadComponent(controllerName, "ATCComponent")
+loadComponent(controllerName, "ASCComponent")
 setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
 
 # Set up service plugins
@@ -15,9 +15,6 @@ setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
 
 # Configure the component
 controllerName.configure()
-
-# Set the affinity to real-time
-controllerName.setCpuAffinity(10)
 
 # Start the component
 controllerName.start()

@@ -1,0 +1,17 @@
+<package>
+  <description brief="asc_biped_boom_init">
+
+     asc_biped_boom_init
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_biped_boom_init</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="asc_pd" />
+
+</package>
