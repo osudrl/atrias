@@ -4,6 +4,8 @@
 // Orocos
 #include <rtt/os/TimeService.hpp>
 
+#include <rtt/Logger.hpp>
+
 #include <stdint.h>
 
 #include <atrias_msgs/robot_state.h>
@@ -78,6 +80,10 @@ class BoomMedulla : public Medulla {
 	  */
 	int16_t   zTimestampValue;
 	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_BOOM_TX_PDO_COUNT+MEDULLA_BOOM_RX_PDO_COUNT];
+	
 	/** @brief Decodes and stores the new values from the X encoder.
 	  * @param deltaTime The time between this DC cycle and the last DC cycle.
 	  * @param robotState The robot state in which to store the new values.
@@ -101,10 +107,18 @@ class BoomMedulla : public Medulla {
 	
 	public:
 		/** @brief Does the slave-specific init.
-		  * @param inputs A pointer to this slave's inputs.
-		  * @param outputs A pointer to this slave's outputs.
 		  */
-		BoomMedulla(intptr_t outputs[], intptr_t inputs[]);
+		BoomMedulla();
+		
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
+		  */
+		PDORegData getPDORegData();
+		
+		/** @brief Does all post-Ops init.
+		  * @param pdo_reg_data The filled-out PDORegData struct.
+		  */
+		void postOpInit();
 		
 		/** @brief Gets this medulla's ID.
 		  * @return This medulla's ID.

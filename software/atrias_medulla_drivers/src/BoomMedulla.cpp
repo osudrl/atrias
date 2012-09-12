@@ -4,23 +4,29 @@ namespace atrias {
 
 namespace medullaDrivers {
 
-BoomMedulla::BoomMedulla(intptr_t outputs[], intptr_t inputs[]) : Medulla() {
-	command        = (uint8_t*)  (outputs[0]);
-	counter        = (uint16_t*) (outputs[1]);
-	
-	id             = (uint8_t*)  (inputs[0]);
-	state          = (uint8_t*)  (inputs[1]);
-	timingCounter  = (uint8_t*)  (inputs[2]);
-	errorFlags     = (uint8_t*)  (inputs[3]);
-	xEncoder       = (uint32_t*) (inputs[4]);
-	xTimestamp     = (uint16_t*) (inputs[5]);
-	pitchEncoder   = (uint32_t*) (inputs[6]);
-	pitchTimestamp = (uint16_t*) (inputs[7]);
-	zEncoder       = (uint32_t*) (inputs[8]);
-	zTimestamp     = (uint16_t*) (inputs[9]);
-	logicVoltage   = (uint16_t*) (inputs[10]);
-	
-	
+BoomMedulla::BoomMedulla() : Medulla() {
+	pdoEntryDatas[0]  = {1, (void**) &command};
+	pdoEntryDatas[1]  = {2, (void**) &counter};
+	pdoEntryDatas[2]  = {1, (void**) &id};
+	pdoEntryDatas[3]  = {1, (void**) &state};
+	pdoEntryDatas[4]  = {1, (void**) &timingCounter};
+	pdoEntryDatas[5]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[6]  = {4, (void**) &xEncoder};
+	pdoEntryDatas[7]  = {2, (void**) &xTimestamp};
+	pdoEntryDatas[8]  = {4, (void**) &pitchEncoder};
+	pdoEntryDatas[9]  = {2, (void**) &pitchTimestamp};
+	pdoEntryDatas[10] = {4, (void**) &zEncoder};
+	pdoEntryDatas[11] = {2, (void**) &zTimestamp};
+	pdoEntryDatas[12] = {2, (void**) &logicVoltage};
+	return;
+}
+
+PDORegData BoomMedulla::getPDORegData() {
+	return {MEDULLA_BOOM_RX_PDO_COUNT, MEDULLA_BOOM_TX_PDO_COUNT,
+	        pdoEntryDatas};
+};
+
+void BoomMedulla::postOpInit() {
 	xEncoderValue   = *xEncoder;
 	xTimestampValue = *xTimestamp;
 	
@@ -48,6 +54,7 @@ BoomMedulla::BoomMedulla(intptr_t outputs[], intptr_t inputs[]) : Medulla() {
 	              (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	zEncoderValue   = *zEncoder;
+		log(RTT::Info) << "aoeuhtsnaoeuhtns" << RTT::endlog();
 	zTimestampValue = *zTimestamp;
 }
 

@@ -80,6 +80,30 @@ rtOps::RobotConfiguration MedullaManager::calcRobotConfiguration() {
 		return rtOps::RobotConfiguration::BIPED_FULL;
 }
 
+void MedullaManager::initBoomMedulla(ec_slavet slave) {
+	delete(boom);
+	boom = new medullaDrivers::BoomMedulla();
+	fillInPDORegData(boom->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	boom->postOpInit();
+	log(RTT::Info) << "Boom medulla identified. ID: " <<
+		(int) boom->getID() << RTT::endlog();
+}
+
+void MedullaManager::fillInPDORegData(medullaDrivers::PDORegData pdo_reg_data,
+                                      uint8_t* outputs, uint8_t* inputs) {
+	uint8_t* cur_ptr = outputs;
+	for (int i = 0; i < pdo_reg_data.outputs; i++) {
+		*(pdo_reg_data.pdoEntryDatas[i].data) = cur_ptr;
+		cur_ptr += pdo_reg_data.pdoEntryDatas[i].size;
+	}
+	
+	cur_ptr = inputs;
+	for (int i = pdo_reg_data.outputs; i < pdo_reg_data.outputs + pdo_reg_data.inputs; i++) {
+		*(pdo_reg_data.pdoEntryDatas[i].data) = cur_ptr;
+		cur_ptr += pdo_reg_data.pdoEntryDatas[i].size;
+	}
+}
+
 void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 	// SOEM is 1-indexed.
 	for (int i = 1; i <= slavecount; i++) {
@@ -124,15 +148,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 			
 			case MEDULLA_BOOM_PRODUCT_CODE: {
-				delete(boom);
-				intptr_t inputs[MEDULLA_BOOM_TX_PDO_COUNT];
-				intptr_t outputs[MEDULLA_BOOM_RX_PDO_COUNT];
-				InputsConfig(slaves[i].inputs, inputs, MEDULLA_BOOM_TX_PDO_COUNT);
-				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_BOOM_RX_PDO_COUNT);
-				boom = new medullaDrivers::BoomMedulla(outputs, inputs);
-				log(RTT::Info) << "Boom medulla identified. ID: " <<
-					(int) boom->getID() << RTT::endlog();
-				
+				initBoomMedulla(slaves[i]);
 				break;
 			}
 			
