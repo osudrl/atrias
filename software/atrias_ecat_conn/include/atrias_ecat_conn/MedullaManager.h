@@ -57,6 +57,11 @@ class MedullaManager {
 	  * @param slave The ECat slave for this Medulla.
 	  */
 	void initBoomMedulla(ec_slavet slave);
+	
+	/** @brief Initializes a hip medulla.
+	  * @param slave The ECat slave for this hip.
+	  */
+	void initHipMedulla(ec_slavet slave);
 		
 	/** @brief Fills in a PDORegData struct.
 	  * @param pdo_reg_data The PDORegData struct to be filled in.

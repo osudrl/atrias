@@ -4,43 +4,84 @@ namespace atrias {
 
 namespace medullaDrivers {
 
-HipMedulla::HipMedulla(intptr_t outputs[], intptr_t inputs[]) : Medulla() {
-	command      = (uint8_t*)  (outputs[0]);
-	counter      = (uint16_t*) (outputs[1]);
-	motorCurrent = (int32_t*)  (outputs[2]);
-	
-	id                          = (uint8_t*)  (inputs[0]);
-	state                       = (uint8_t*)  (inputs[1]);
-	timingCounter               = (uint8_t*)  (inputs[2]);
-	errorFlags                  = (uint8_t*)  (inputs[3]);
-	limitSwitches               = (uint8_t*)  (inputs[4]);
-	hipEncoder                  = (uint32_t*) (inputs[5]);
-	hipEncoderTimestamp         = (uint16_t*) (inputs[6]);
-	motorVoltage                = (uint16_t*) (inputs[7]);
-	logicVoltage                = (uint16_t*) (inputs[8]);
-	thermistor0                 = (uint16_t*) (inputs[9]);
-	thermistor1                 = (uint16_t*) (inputs[10]);
-	thermistor2                 = (uint16_t*) (inputs[11]);
-	ampMeasuredCurrent          = (int16_t*)  (inputs[12]);
-	accelX                      = (float*)    (inputs[13]);
-	accelY                      = (float*)    (inputs[14]);
-	accelZ                      = (float*)    (inputs[15]);
-	angRateX                    = (float*)    (inputs[16]);
-	angRateY                    = (float*)    (inputs[17]);
-	angRateZ                    = (float*)    (inputs[18]);
-	m11                         = (float*)    (inputs[19]);
-	m12                         = (float*)    (inputs[20]);
-	m13                         = (float*)    (inputs[21]);
-	m21                         = (float*)    (inputs[22]);
-	m22                         = (float*)    (inputs[23]);
-	m23                         = (float*)    (inputs[24]);
-	m31                         = (float*)    (inputs[25]);
-	m32                         = (float*)    (inputs[26]);
-	m33                         = (float*)    (inputs[27]);
-	timer                       = (int32_t*)  (inputs[28]);
-	incrementalEncoder          = (uint16_t*) (inputs[29]);
-	incrementalEncoderTimestamp = (uint16_t*) (inputs[30]);
-	
+HipMedulla::HipMedulla() : Medulla() {
+	pdoEntryDatas[0]  = {1, (void**) &command};
+	pdoEntryDatas[1]  = {2, (void**) &counter};
+	pdoEntryDatas[2]  = {4, (void**) &motorCurrent};
+	pdoEntryDatas[3]  = {1, (void**) &id};
+	pdoEntryDatas[4]  = {1, (void**) &state};
+	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
+	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[7]  = {1, (void**) &limitSwitches};
+	pdoEntryDatas[8]  = {4, (void**) &hipEncoder};
+	pdoEntryDatas[9]  = {2, (void**) &hipEncoderTimestamp};
+	pdoEntryDatas[10] = {2, (void**) &motorVoltage};
+	pdoEntryDatas[11] = {2, (void**) &logicVoltage};
+	pdoEntryDatas[12] = {2, (void**) &thermistor0};
+	pdoEntryDatas[13] = {2, (void**) &thermistor1};
+	pdoEntryDatas[14] = {2, (void**) &thermistor2};
+	pdoEntryDatas[15] = {2, (void**) &ampMeasuredCurrent};
+	pdoEntryDatas[16] = {4, (void**) &accelX};
+	pdoEntryDatas[17] = {4, (void**) &accelY};
+	pdoEntryDatas[18] = {4, (void**) &accelZ};
+	pdoEntryDatas[19] = {4, (void**) &angRateX};
+	pdoEntryDatas[20] = {4, (void**) &angRateY};
+	pdoEntryDatas[21] = {4, (void**) &angRateZ};
+	pdoEntryDatas[22] = {4, (void**) &m11};
+	pdoEntryDatas[23] = {4, (void**) &m12};
+	pdoEntryDatas[24] = {4, (void**) &m13};
+	pdoEntryDatas[25] = {4, (void**) &m21};
+	pdoEntryDatas[26] = {4, (void**) &m22};
+	pdoEntryDatas[27] = {4, (void**) &m23};
+	pdoEntryDatas[28] = {4, (void**) &m31};
+	pdoEntryDatas[29] = {4, (void**) &m32};
+	pdoEntryDatas[30] = {4, (void**) &m33};
+	pdoEntryDatas[31] = {4, (void**) &timer};
+	pdoEntryDatas[32] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[33] = {2, (void**) &incrementalEncoderTimestamp};
+}
+
+PDORegData HipMedulla::getPDORegData() {
+	return {MEDULLA_HIP_RX_PDO_COUNT, MEDULLA_HIP_TX_PDO_COUNT,
+	        pdoEntryDatas};
+}
+
+void HipMedulla::postOpInit() {
+printf("%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n",
+command,
+counter,
+motorCurrent,
+id,
+state,
+timingCounter,
+errorFlags,
+limitSwitches,
+hipEncoder,
+hipEncoderTimestamp,
+motorVoltage,
+logicVoltage,
+thermistor0,
+thermistor1,
+thermistor2,
+ampMeasuredCurrent,
+accelX,
+accelY,
+accelZ,
+angRateX,
+angRateY,
+angRateZ,
+m11,
+m12,
+m13,
+m21,
+m22,
+m23,
+m31,
+m32,
+m33,
+timer,
+incrementalEncoder,
+incrementalEncoderTimestamp);
 	timingCounterValue               = *timingCounter;
 	incrementalEncoderValue          = *incrementalEncoder;
 	incrementalEncoderTimestampValue = *incrementalEncoderTimestamp;

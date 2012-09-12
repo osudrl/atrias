@@ -116,7 +116,6 @@ class BoomMedulla : public Medulla {
 		PDORegData getPDORegData();
 		
 		/** @brief Does all post-Ops init.
-		  * @param pdo_reg_data The filled-out PDORegData struct.
 		  */
 		void postOpInit();
 		

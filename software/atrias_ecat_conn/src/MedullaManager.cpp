@@ -89,6 +89,35 @@ void MedullaManager::initBoomMedulla(ec_slavet slave) {
 		(int) boom->getID() << RTT::endlog();
 }
 
+void MedullaManager::initHipMedulla(ec_slavet slave) {
+	medullaDrivers::HipMedulla* medulla =
+		new medullaDrivers::HipMedulla();
+	fillInPDORegData(medulla->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	medulla->postOpInit();
+	log(RTT::Info) << "Hip medulla detected, ID: " <<
+		(int) medulla->getID() << RTT::endlog();
+	
+	switch (medulla->getID()) {
+		case MEDULLA_LEFT_HIP_ID:
+			log(RTT::Info) << "Left hip medulla identified" <<
+				RTT::endlog();
+			delete(lLegHip);
+			lLegHip = medulla;
+			break;
+		case MEDULLA_RIGHT_HIP_ID:
+			log(RTT::Info) << "Left hip medulla identified" <<
+				RTT::endlog();
+			delete(lLegHip);
+			lLegHip = medulla;
+			break;
+		default:
+			log(RTT::Warning) << "Hip medulla not identified."
+				<< RTT::endlog();
+			delete(medulla);
+			break;
+	}
+}
+
 void MedullaManager::fillInPDORegData(medullaDrivers::PDORegData pdo_reg_data,
                                       uint8_t* outputs, uint8_t* inputs) {
 	uint8_t* cur_ptr = outputs;
@@ -113,6 +142,9 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 				<< i << RTT::endlog();
 			continue;
 		}
+		
+		initHipMedulla(slaves[i]);
+		return;
 		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
@@ -153,30 +185,7 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			}
 			
 			case MEDULLA_HIP_PRODUCT_CODE: {
-				intptr_t inputs[MEDULLA_HIP_TX_PDO_COUNT];
-				intptr_t outputs[MEDULLA_HIP_RX_PDO_COUNT];
-				InputsConfig(slaves[i].inputs, inputs, MEDULLA_HIP_TX_PDO_COUNT);
-				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_HIP_RX_PDO_COUNT);
-				medullaDrivers::HipMedulla* medulla =
-					new medullaDrivers::HipMedulla(outputs, inputs);
-				log(RTT::Info) << "Hip medulla detected, ID: " <<
-					(int) medulla->getID() << RTT::endlog();
-				
-				if (medulla->getID() == MEDULLA_LEFT_HIP_ID) {
-					log(RTT::Info) << "Left hip medulla identified" <<
-						RTT::endlog();
-					delete(lLegHip);
-					lLegHip = medulla;
-				} else if (medulla->getID() == MEDULLA_RIGHT_HIP_ID) {
-					log(RTT::Info) << "Left hip medulla identified" <<
-						RTT::endlog();
-					delete(lLegHip);
-					lLegHip = medulla;
-				} else {
-					log(RTT::Warning) << "Hip medulla not identified."
-						<< RTT::endlog();
-				}
-				
+				initHipMedulla(slaves[i]);
 				break;
 			}
 			

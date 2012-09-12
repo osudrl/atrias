@@ -18,7 +18,6 @@ BoomMedulla::BoomMedulla() : Medulla() {
 	pdoEntryDatas[10] = {4, (void**) &zEncoder};
 	pdoEntryDatas[11] = {2, (void**) &zTimestamp};
 	pdoEntryDatas[12] = {2, (void**) &logicVoltage};
-	return;
 }
 
 PDORegData BoomMedulla::getPDORegData() {
@@ -54,7 +53,6 @@ void BoomMedulla::postOpInit() {
 	              (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	zEncoderValue   = *zEncoder;
-		log(RTT::Info) << "aoeuhtsnaoeuhtns" << RTT::endlog();
 	zTimestampValue = *zTimestamp;
 }
 
