@@ -67,7 +67,7 @@ private:
     ControllerManagerError lastError;
     ControllerManagerState state;
 
-    pid_t rosbagPID;   // PID of the child process executing 'roslaunch atrias rosbag.launch'.
+    //pid_t rosbagPID;   // PID of the child process executing 'roslaunch atrias rosbag.launch'.
     bool controllerLoaded;
 
     list<UserCommand> commandBuffer;
