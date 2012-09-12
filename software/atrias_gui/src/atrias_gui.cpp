@@ -28,6 +28,7 @@ int main (int argc, char **argv) {
     atrias_gui_cm_input = nh.subscribe("gui_input", 0, controllerManagerCallback/*, ros::TransportHints().udp()*/);
     atrias_gui_rt_input = nh.subscribe("gui_robot_state_in", 0, rtOpsCallback);
     atrias_gui_cm_output = nh.advertise<atrias_msgs::gui_output>("gui_output", 0);
+    atrias_gui_logger_output = nh.advertise<atrias_msgs::log_request("atrias_log_request", 0);
 
     go.command = (uint8_t)UserCommand::STOP;
     go.requestedController = "none";
@@ -212,15 +213,15 @@ void estop_button_clicked() {
 void log_chkbox_toggled() {
     if (log_file_chkbox->get_active()) {
         ROS_INFO("GUI: Sending log enable request.");
-        go.enableLogging = true;
+        logRequest.enableLogging = true;
     }
     else {
         ROS_INFO("GUI: Sending log disable request.");
-        go.enableLogging = false;
+        logRequest.enableLogging = false;
     }
 
     // Publish logging request to controller manager.
-    atrias_gui_cm_output.publish(go);
+    atrias_gui_logger_output.publish(logRequest);
 }
 
 //! @brief Save GUI parameters to local (GUI machine) controller directories.
