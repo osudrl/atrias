@@ -20,3 +20,6 @@ if __name__ == "__main__":
     rospy.init_node("atrias_logger", anonymous=False)
     sub = rospy.Subscriber("atrias_log_request", log_request, logRequestCallback, queue_size=10)
 
+    while not rospy.is_shutdown():
+        rospy.spin()
+
