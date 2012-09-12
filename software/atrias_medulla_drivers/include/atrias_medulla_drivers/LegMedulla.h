@@ -73,6 +73,10 @@ class LegMedulla : public Medulla {
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
 	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_LEG_TX_PDO_COUNT+MEDULLA_LEG_RX_PDO_COUNT];
+	
 	/** @brief Check for spikes in the encoder data.
 	  */
 	void         checkErroneousEncoderValues();
@@ -122,20 +126,17 @@ class LegMedulla : public Medulla {
 	
 	public:
 		/** @brief Does the slave-specific init.
-		  * @param inputs An array of intptr_t's w/ pointers to this slave's inputs.
-		  * @param outputs An array of intptr_t's w/ pointers to this slave's outputs.
 		  */
-		LegMedulla(intptr_t outputs[], intptr_t inputs[]);
+		LegMedulla();
 		
-		/** @brief Returns the total inputs size for this medulla type.
-		  * @return The total inputs size for this medulla type.
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
 		  */
-		intptr_t getInputsSize();
+		PDORegData getPDORegData();
 		
-		/** @brief Returns the total outputs size for this medulla type.
-		  * @return The total outputs size for this medulla type.
+		/** @brief Does all post-Op init.
 		  */
-		intptr_t getOutputsSize();
+		void postOpInit();
 		
 		/** @brief Tells this medulla to read in data for transmission.
 		  */

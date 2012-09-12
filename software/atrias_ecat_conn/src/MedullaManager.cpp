@@ -37,24 +37,7 @@ MedullaManager::~MedullaManager() {
 }
 
 void MedullaManager::slaveCardInit(ec_slavet slave) {
-	uint8_t* inputs  = slave.inputs;
-	uint8_t* outputs = slave.outputs;
-	
-	//lLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
-	inputs  += lLegA->getInputsSize();
-	outputs += lLegA->getOutputsSize();
-	
-	//lLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
-	inputs  += lLegB->getInputsSize();
-	outputs += lLegB->getOutputsSize();
-	
-	//rLegA    = new medullaDrivers::LegMedulla(inputs, outputs);
-	inputs  += rLegA->getInputsSize();
-	outputs += rLegA->getOutputsSize();
-	
-	//rLegB    = new medullaDrivers::LegMedulla(inputs, outputs);
-	inputs  += rLegB->getInputsSize();
-	outputs += rLegB->getOutputsSize();
+	// Not implemented yet.
 }
 
 rtOps::RobotConfiguration MedullaManager::calcRobotConfiguration() {
@@ -118,6 +101,42 @@ void MedullaManager::initHipMedulla(ec_slavet slave) {
 	}
 }
 
+void MedullaManager::initLegMedulla(ec_slavet slave) {
+	medullaDrivers::LegMedulla* medulla =
+		new medullaDrivers::LegMedulla();
+	fillInPDORegData(medulla->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	medulla->postOpInit();
+	log(RTT::Info) << "Leg medulla detected, ID: " <<
+		(int) medulla->getID() << RTT::endlog();
+	
+	switch (medulla->getID()) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			log(RTT::Info) << "Left leg medulla A identified." << RTT::endlog();
+			delete(lLegA);
+			lLegA = medulla;
+			break;
+		case MEDULLA_LEFT_LEG_B_ID:
+			log(RTT::Info) << "Left leg medulla B identified." << RTT::endlog();
+			delete(lLegB);
+			lLegB = medulla;
+			break;
+		case MEDULLA_RIGHT_LEG_A_ID:
+			log(RTT::Info) << "Right leg medulla A identified." << RTT::endlog();
+			delete(rLegA);
+			rLegA = medulla;
+			break;
+		case MEDULLA_RIGHT_LEG_B_ID:
+			log(RTT::Info) << "Right leg medulla B identified." << RTT::endlog();
+			delete(rLegB);
+			rLegB = medulla;
+			break;
+		default:
+			log(RTT::Warning) << "Leg medulla not identified." << RTT::endlog();
+			delete(medulla);
+			break;
+	}
+}
+
 void MedullaManager::fillInPDORegData(medullaDrivers::PDORegData pdo_reg_data,
                                       uint8_t* outputs, uint8_t* inputs) {
 	uint8_t* cur_ptr = outputs;
@@ -143,39 +162,12 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			continue;
 		}
 		
-		initHipMedulla(slaves[i]);
+		initLegMedulla(slaves[i]);
 		return;
 		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
-				intptr_t inputs[MEDULLA_LEG_TX_PDO_COUNT];
-				intptr_t outputs[MEDULLA_LEG_RX_PDO_COUNT];
-				InputsConfig(slaves[i].inputs, inputs, MEDULLA_LEG_TX_PDO_COUNT);
-				OutputsConfig(slaves[i].outputs, outputs, MEDULLA_LEG_RX_PDO_COUNT);
-				medullaDrivers::LegMedulla* medulla = new medullaDrivers::LegMedulla(outputs, inputs);
-				log(RTT::Info) << "Leg medulla detected, ID: " << (int) medulla->getID() << RTT::endlog();
-				
-				if (medulla->getID() == MEDULLA_LEFT_LEG_A_ID) {
-					log(RTT::Info) << "Left leg medulla A identified." << RTT::endlog();
-					delete(lLegA);
-					lLegA = medulla;
-				} else if (medulla->getID() == MEDULLA_LEFT_LEG_B_ID) {
-					log(RTT::Info) << "Left leg medulla B identified." << RTT::endlog();
-					delete(lLegB);
-					lLegB = medulla;
-				} else if (medulla->getID() == MEDULLA_RIGHT_LEG_A_ID) {
-					log(RTT::Info) << "Right leg medulla A identified." << RTT::endlog();
-					delete(rLegA);
-					rLegA = medulla;
-				} else if (medulla->getID() == MEDULLA_RIGHT_LEG_B_ID) {
-					log(RTT::Info) << "Right leg medulla B identified." << RTT::endlog();
-					delete(rLegB);
-					rLegB = medulla;
-				} else {
-					log(RTT::Warning) << "Leg medulla not identified." << RTT::endlog();
-					delete(medulla);
-				}
-				
+				initLegMedulla(slaves[i]);
 				break;
 			}
 			

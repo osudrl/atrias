@@ -4,36 +4,40 @@ namespace atrias {
 
 namespace medullaDrivers {
 
-LegMedulla::LegMedulla(intptr_t outputs[], intptr_t inputs[]) :
-            Medulla() {
-	
-	command      = (uint8_t*)  (outputs[0]);
-	counter      = (uint16_t*) (outputs[1]);
-	motorCurrent = (int32_t*)  (outputs[2]);
+LegMedulla::LegMedulla() : Medulla() {
+	pdoEntryDatas[0]  = {1, (void**) &command};
+	pdoEntryDatas[1]  = {2, (void**) &counter};
+	pdoEntryDatas[2]  = {4, (void**) &motorCurrent};
+	pdoEntryDatas[3]  = {1, (void**) &id};
+	pdoEntryDatas[4]  = {1, (void**) &state};
+	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
+	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[7]  = {1, (void**) &limitSwitch};
+	pdoEntryDatas[8]  = {2, (void**) &toeSensor};
+	pdoEntryDatas[9]  = {4, (void**) &motorEncoder};
+	pdoEntryDatas[10] = {2, (void**) &motorEncoderTimestamp};
+	pdoEntryDatas[11] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[12] = {2, (void**) &incrementalEncoderTimestamp};
+	pdoEntryDatas[13] = {4, (void**) &legEncoder};
+	pdoEntryDatas[14] = {2, (void**) &legEncoderTimestamp};
+	pdoEntryDatas[15] = {2, (void**) &motorVoltage};
+	pdoEntryDatas[16] = {2, (void**) &logicVoltage};
+	pdoEntryDatas[17] = {2, (void**) &thermistor0};
+	pdoEntryDatas[18] = {2, (void**) &thermistor1};
+	pdoEntryDatas[19] = {2, (void**) &thermistor2};
+	pdoEntryDatas[20] = {2, (void**) &thermistor3};
+	pdoEntryDatas[21] = {2, (void**) &thermistor4};
+	pdoEntryDatas[22] = {2, (void**) &thermistor5};
+	pdoEntryDatas[23] = {2, (void**) &amp1MeasuredCurrent};
+	pdoEntryDatas[24] = {2, (void**) &amp2MeasuredCurrent};
+}
 
-	id                          = (uint8_t*)  (inputs[0]);
-	state                       = (uint8_t*)  (inputs[1]);
-	timingCounter               = (uint8_t*)  (inputs[2]);
-	errorFlags                  = (uint8_t*)  (inputs[3]);
-	limitSwitch                 = (uint8_t*)  (inputs[4]);
-	toeSensor                   = (uint16_t*) (inputs[5]);
-	motorEncoder                = (uint32_t*) (inputs[6]);
-	motorEncoderTimestamp       = (int16_t*)  (inputs[7]);
-	incrementalEncoder          = (uint16_t*) (inputs[8]);
-	incrementalEncoderTimestamp = (uint16_t*) (inputs[9]);
-	legEncoder                  = (uint32_t*) (inputs[10]);
-	legEncoderTimestamp         = (int16_t*)  (inputs[11]);
-	motorVoltage                = (uint16_t*) (inputs[12]);
-	logicVoltage                = (uint16_t*) (inputs[13]);
-	thermistor0                 = (uint16_t*) (inputs[14]);
-	thermistor1                 = (uint16_t*) (inputs[15]);
-	thermistor2                 = (uint16_t*) (inputs[16]);
-	thermistor3                 = (uint16_t*) (inputs[17]);
-	thermistor4                 = (uint16_t*) (inputs[18]);
-	thermistor5                 = (uint16_t*) (inputs[19]);
-	amp1MeasuredCurrent         = (int16_t*)  (inputs[20]);
-	amp2MeasuredCurrent         = (int16_t*)  (inputs[21]);
-	
+PDORegData LegMedulla::getPDORegData() {
+	return {MEDULLA_LEG_RX_PDO_COUNT, MEDULLA_LEG_TX_PDO_COUNT,
+	        pdoEntryDatas};
+};
+
+void LegMedulla::postOpInit() {
 	motorEncoderValue                = (int64_t) *motorEncoder;
 	motorEncoderTimestampValue       =           *motorEncoderTimestamp;
 	legEncoderValue                  = (int64_t) *legEncoder;
@@ -41,14 +45,6 @@ LegMedulla::LegMedulla(intptr_t outputs[], intptr_t inputs[]) :
 	incrementalEncoderValue          =           *incrementalEncoder;
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
-}
-
-intptr_t LegMedulla::getInputsSize() {
-	return MEDULLA_LEG_INPUTS_SIZE;
-}
-
-intptr_t LegMedulla::getOutputsSize() {
-	return MEDULLA_LEG_OUTPUTS_SIZE;
 }
 
 void LegMedulla::checkErroneousEncoderValues() {
