@@ -27,6 +27,7 @@
 #include <atrias_msgs/rt_ops_cycle.h>
 #include <atrias_msgs/gui_input.h>
 #include <atrias_msgs/gui_output.h>
+#include <atrias_msgs/log_request.h>
 
 #include <atrias_gui/StatusGui.h>
 
@@ -71,10 +72,12 @@ Gtk::Allocation drawing_allocation;
 ros::Subscriber atrias_gui_rt_input;
 ros::Subscriber atrias_gui_cm_input;
 ros::Publisher atrias_gui_cm_output;
+ros::Publisher atrias_gui_logger_output;
 
 gui_input gi;
 gui_output go;
 rt_ops_cycle rtCycle;
+log_request logRequest;
 
 StatusGui *statusGui;
 

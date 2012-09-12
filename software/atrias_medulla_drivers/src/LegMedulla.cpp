@@ -1,48 +1,43 @@
-#include "atrias_ecat_conn/LegMedulla.h"
+#include "atrias_medulla_drivers/LegMedulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
-LegMedulla::LegMedulla(uint8_t* inputs, uint8_t* outputs) :
-            Medulla() {
-	/* These are in the order of the PDO entries in the ESI XML file.
-	 * I'd love cur_index to be a void * here, but C doesn't like doing pointer
-	 * arithmetic w/ void pointers due to an unhelpful "feature" of the language
-	 * (specifically, cur_index + 1 is equivalent to &(cur_index[1]) regardless
-	 * of type...)
-	 */
-	uint8_t * cur_index = outputs;
-	
-	setPdoPointer(cur_index, command);
-	setPdoPointer(cur_index, counter);
-	setPdoPointer(cur_index, motorCurrent);
-	
-	cur_index           = inputs;
-	
-	setPdoPointer(cur_index, id);
-	setPdoPointer(cur_index, state);
-	setPdoPointer(cur_index, timingCounter);
-	setPdoPointer(cur_index, errorFlags);
-	setPdoPointer(cur_index, limitSwitch);
-	setPdoPointer(cur_index, toeSensor);
-	setPdoPointer(cur_index, motorEncoder);
-	setPdoPointer(cur_index, motorEncoderTimestamp);
-	setPdoPointer(cur_index, legEncoder);
-	setPdoPointer(cur_index, legEncoderTimestamp);
-	setPdoPointer(cur_index, incrementalEncoder);
-	setPdoPointer(cur_index, incrementalEncoderTimestamp);
-	setPdoPointer(cur_index, motorVoltage);
-	setPdoPointer(cur_index, logicVoltage);
-	setPdoPointer(cur_index, thermistor0);
-	setPdoPointer(cur_index, thermistor1);
-	setPdoPointer(cur_index, thermistor2);
-	setPdoPointer(cur_index, thermistor3);
-	setPdoPointer(cur_index, thermistor4);
-	setPdoPointer(cur_index, thermistor5);
-	setPdoPointer(cur_index, amp1MeasuredCurrent);
-	setPdoPointer(cur_index, amp2MeasuredCurrent);
-	
+LegMedulla::LegMedulla() : Medulla() {
+	pdoEntryDatas[0]  = {1, (void**) &command};
+	pdoEntryDatas[1]  = {2, (void**) &counter};
+	pdoEntryDatas[2]  = {4, (void**) &motorCurrent};
+	pdoEntryDatas[3]  = {1, (void**) &id};
+	pdoEntryDatas[4]  = {1, (void**) &state};
+	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
+	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[7]  = {1, (void**) &limitSwitch};
+	pdoEntryDatas[8]  = {2, (void**) &toeSensor};
+	pdoEntryDatas[9]  = {4, (void**) &motorEncoder};
+	pdoEntryDatas[10] = {2, (void**) &motorEncoderTimestamp};
+	pdoEntryDatas[11] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[12] = {2, (void**) &incrementalEncoderTimestamp};
+	pdoEntryDatas[13] = {4, (void**) &legEncoder};
+	pdoEntryDatas[14] = {2, (void**) &legEncoderTimestamp};
+	pdoEntryDatas[15] = {2, (void**) &motorVoltage};
+	pdoEntryDatas[16] = {2, (void**) &logicVoltage};
+	pdoEntryDatas[17] = {2, (void**) &thermistor0};
+	pdoEntryDatas[18] = {2, (void**) &thermistor1};
+	pdoEntryDatas[19] = {2, (void**) &thermistor2};
+	pdoEntryDatas[20] = {2, (void**) &thermistor3};
+	pdoEntryDatas[21] = {2, (void**) &thermistor4};
+	pdoEntryDatas[22] = {2, (void**) &thermistor5};
+	pdoEntryDatas[23] = {2, (void**) &amp1MeasuredCurrent};
+	pdoEntryDatas[24] = {2, (void**) &amp2MeasuredCurrent};
+}
+
+PDORegData LegMedulla::getPDORegData() {
+	return {MEDULLA_LEG_RX_PDO_COUNT, MEDULLA_LEG_TX_PDO_COUNT,
+	        pdoEntryDatas};
+};
+
+void LegMedulla::postOpInit() {
 	motorEncoderValue                = (int64_t) *motorEncoder;
 	motorEncoderTimestampValue       =           *motorEncoderTimestamp;
 	legEncoderValue                  = (int64_t) *legEncoder;
@@ -52,19 +47,16 @@ LegMedulla::LegMedulla(uint8_t* inputs, uint8_t* outputs) :
 	timingCounterValue               =           *timingCounter;
 }
 
-intptr_t LegMedulla::getInputsSize() {
-	return MEDULLA_LEG_INPUTS_SIZE;
-}
-
-intptr_t LegMedulla::getOutputsSize() {
-	return MEDULLA_LEG_OUTPUTS_SIZE;
-}
-
 void LegMedulla::checkErroneousEncoderValues() {
 	skipMotorEncoder      = false;
 	int32_t deltaMotorPos = *motorEncoder - motorEncoderValue;
-	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
+	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE) {
+		// Uncomment this if you want to debug issue 83
+		/*log(RTT::Warning) << "Large motor encoder jump! Old value: "
+		                  << motorEncoderValue << " New value: "
+		                  << *motorEncoder << RTT::endlog();*/
 		skipMotorEncoder = true;
+	}
 	
 	skipLegEncoder      = false;
 	int32_t deltaLegPos = *legEncoder - legEncoderValue;
@@ -129,21 +121,27 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processVelocities(deltaTime, robot_state);
 	processIncrementalEncoders(deltaTime, robot_state);
 	processThermistors(robot_state);
-	processLimitSwitches();
+	processLimitSwitches(robot_state);
 	processVoltages(robot_state);
 	processCurrents(robot_state);
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robot_state.lLeg.halfA.medullaState = *state;
+			robot_state.lLeg.halfA.errorFlags   = *errorFlags;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			robot_state.lLeg.halfB.medullaState = *state;
+			robot_state.lLeg.halfB.errorFlags   = *errorFlags;
+			robot_state.lLeg.toeSwitch          = *toeSensor;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			robot_state.rLeg.halfA.medullaState = *state;
+			robot_state.rLeg.halfA.errorFlags   = *errorFlags;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			robot_state.rLeg.halfB.medullaState = *state;
+			robot_state.rLeg.halfB.errorFlags   = *errorFlags;
+			robot_state.rLeg.toeSwitch          = *toeSensor;
 			break;
 	}
 }
@@ -355,8 +353,47 @@ void LegMedulla::processCurrents(atrias_msgs::robot_state& robotState) {
 	}
 }
 
-void LegMedulla::processLimitSwitches() {
-	// TODO: figure out which limit switches are which and implement this.
+void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState) {
+	atrias_msgs::robot_state_leg* leg;
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_LEFT_LEG_B_ID:
+			leg = &(robotState.lLeg);
+			break;
+			
+		case MEDULLA_RIGHT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_B_ID:
+			leg = &(robotState.rLeg);
+			break;
+			
+		default:
+			return;
+	}
+	
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_A_ID:
+			leg->halfA.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
+			leg->halfA.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
+			leg->halfA.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
+			leg->halfA.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
+			leg->legExtendSwitch           = (*limitSwitch) & (1 << 4);
+			leg->legRetractSwitch          = (*limitSwitch) & (1 << 5);
+			break;
+			
+		case MEDULLA_LEFT_LEG_B_ID:
+			// Fallthrough
+		case MEDULLA_RIGHT_LEG_B_ID:
+			leg->halfB.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
+			leg->halfB.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
+			leg->halfB.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
+			leg->halfB.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
+			leg->motorRetractSwitch        = (*limitSwitch) & (1 << 4);
+			break;
+	}
 }
 
 void LegMedulla::processVoltages(atrias_msgs::robot_state& robotState) {

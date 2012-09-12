@@ -1177,7 +1177,7 @@
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Torque A</property>
+                        <property name="label" translatable="yes">Left A Current</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1186,7 +1186,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="torqueADisplay">
+                      <object class="GtkEntry" id="torqueLeftADisplay">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -1211,7 +1211,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_torqueA_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueLeftA_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1225,7 +1225,7 @@
                   <object class="GtkLabel" id="label16">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Velocity A</property>
+                    <property name="label" translatable="yes">Right A Current</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1234,7 +1234,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="velocityADisplay">
+                  <object class="GtkEntry" id="torqueRightADisplay">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1251,7 +1251,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_velocityA_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueRightA_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1291,7 +1291,7 @@
                       <object class="GtkLabel" id="label9">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Torque B</property>
+                        <property name="label" translatable="yes">Left B Current</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1300,7 +1300,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="torqueBDisplay">
+                      <object class="GtkEntry" id="torqueLeftBDisplay">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -1325,7 +1325,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_torqueB_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueLeftB_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1339,7 +1339,7 @@
                   <object class="GtkLabel" id="label17">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Velocity B</property>
+                    <property name="label" translatable="yes">Right B Current</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1348,7 +1348,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="velocityBDisplay">
+                  <object class="GtkEntry" id="torqueRightBDisplay">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1365,7 +1365,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_velocityB_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueRightB_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1405,7 +1405,7 @@
                       <object class="GtkLabel" id="label45">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Torque Hip</property>
+                        <property name="label" translatable="yes">Left Hip Current</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1414,7 +1414,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="torqueHipDisplay">
+                      <object class="GtkEntry" id="torqueLeftHipDisplay">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -1439,7 +1439,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_torqueHip_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueLeftHip_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1453,7 +1453,7 @@
                   <object class="GtkLabel" id="label46">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Velocity Hip</property>
+                    <property name="label" translatable="yes">Right Hip Current</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1462,7 +1462,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="velocityHipDisplay">
+                  <object class="GtkEntry" id="torqueRightHipDisplay">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1479,7 +1479,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="motor_velocityHip_progress_bar">
+                  <object class="GtkProgressBar" id="motor_torqueRightHip_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1519,7 +1519,7 @@
                       <object class="GtkLabel" id="label39">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Spring Deflection A</property>
+                        <property name="label" translatable="yes">Spring Deflection Left A</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1528,7 +1528,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="spring_deflection_A_entry">
+                      <object class="GtkEntry" id="spring_deflection_left_A_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
@@ -1552,7 +1552,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="spring_deflectionA_progress_bar">
+                  <object class="GtkProgressBar" id="spring_deflectionLeftA_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1566,7 +1566,7 @@
                   <object class="GtkLabel" id="label40">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Spring Deflection B</property>
+                    <property name="label" translatable="yes">Spring Deflection Right A</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1575,7 +1575,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="spring_deflection_B_entry">
+                  <object class="GtkEntry" id="spring_deflection_right_A_entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
@@ -1592,7 +1592,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="spring_deflectionB_progress_bar">
+                  <object class="GtkProgressBar" id="spring_deflectionRightA_progress_bar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1607,6 +1607,108 @@
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">12</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vboxTorqVel_B2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkVBox" id="vbox_robotstatus1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="label14">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Spring Deflection Left B</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="spring_deflection_left_B_entry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">•</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="spring_deflectionLeftB_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label15">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Spring Deflection Right B</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="spring_deflection_right_B_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">•</property>
+                    <property name="invisible_char_set">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="spring_deflectionRightB_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">13</property>
               </packing>
             </child>
           </object>

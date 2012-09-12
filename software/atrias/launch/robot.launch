@@ -1,0 +1,12 @@
+<launch>
+    <!-- Run the GUI on the local machine. -->
+    <include file="$(find atrias)/launch/gui.launch" />
+
+    <!-- Set up remote (robot) machine information. -->
+    <machine name       = "i1000a"
+             address    = "i1000a"
+             user       = "root"
+             env-loader = "/opt/ros/fuerte/env.sh"
+             default    = "true" />
+</launch>
+

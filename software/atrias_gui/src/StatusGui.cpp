@@ -34,9 +34,9 @@ StatusGui::StatusGui(char *path) {
         ROS_ERROR("No Status Window");
     }
 
-    gui->get_widget("motor_torqueA_progress_bar", motor_torqueA_progress_bar);
-    gui->get_widget("motor_torqueB_progress_bar", motor_torqueB_progress_bar);
-    gui->get_widget("motor_torqueHip_progress_bar", motor_torqueHip_progress_bar);
+    gui->get_widget("motor_torqueLeftA_progress_bar", motor_torqueLeftA_progress_bar);
+    gui->get_widget("motor_torqueLeftB_progress_bar", motor_torqueLeftB_progress_bar);
+    gui->get_widget("motor_torqueLeftHip_progress_bar", motor_torqueLeftHip_progress_bar);
 
     gui->get_widget("xPosDisplay", xPosDisplay);
     gui->get_widget("yPosDisplay", yPosDisplay);
@@ -45,25 +45,29 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("yVelDisplay", yVelDisplay);
     gui->get_widget("zVelDisplay", zVelDisplay);
 
-    gui->get_widget("torqueADisplay", torqueADisplay);
-    gui->get_widget("torqueBDisplay", torqueBDisplay);
-    gui->get_widget("torqueHipDisplay", torqueHipDisplay);
+    gui->get_widget("torqueLeftADisplay", torqueLeftADisplay);
+    gui->get_widget("torqueLeftBDisplay", torqueLeftBDisplay);
+    gui->get_widget("torqueLeftHipDisplay", torqueLeftHipDisplay);
 
     gui->get_widget("legLengthDisplay", legLengthDisplay);
     gui->get_widget("legAngleDisplay", legAngleDisplay);
 
-    gui->get_widget("spring_deflection_A_entry", spring_deflection_A_entry);
-    gui->get_widget("spring_deflection_B_entry", spring_deflection_B_entry);
-    gui->get_widget("spring_deflectionA_progress_bar", spring_deflectionA_progress_bar);
-    gui->get_widget("spring_deflectionB_progress_bar", spring_deflectionB_progress_bar);
+    gui->get_widget("spring_deflection_left_A_entry", spring_deflection_left_A_entry);
+    gui->get_widget("spring_deflection_left_B_entry", spring_deflection_left_B_entry);
+    gui->get_widget("spring_deflectionLeftA_progress_bar", spring_deflectionLeftA_progress_bar);
+    gui->get_widget("spring_deflectionLeftB_progress_bar", spring_deflectionLeftB_progress_bar);
+    gui->get_widget("spring_deflection_right_A_entry", spring_deflection_right_A_entry);
+    gui->get_widget("spring_deflection_right_B_entry", spring_deflection_right_B_entry);
+    gui->get_widget("spring_deflectionRightA_progress_bar", spring_deflectionRightA_progress_bar);
+    gui->get_widget("spring_deflectionRightB_progress_bar", spring_deflectionRightB_progress_bar);
 
-    gui->get_widget("velocityADisplay", velocityADisplay);
-    gui->get_widget("velocityBDisplay", velocityBDisplay);
-    gui->get_widget("velocityHipDisplay", velocityHipDisplay);
+    gui->get_widget("torqueRightADisplay", torqueRightADisplay);
+    gui->get_widget("torqueRightBDisplay", torqueRightBDisplay);
+    gui->get_widget("torqueRightHipDisplay", torqueRightHipDisplay);
 
-    gui->get_widget("motor_velocityA_progress_bar", motor_velocityA_progress_bar);
-    gui->get_widget("motor_velocityB_progress_bar", motor_velocityB_progress_bar);
-    gui->get_widget("motor_velocityHip_progress_bar", motor_velocityHip_progress_bar);
+    gui->get_widget("motor_torqueRightA_progress_bar", motor_torqueRightA_progress_bar);
+    gui->get_widget("motor_torqueRightB_progress_bar", motor_torqueRightB_progress_bar);
+    gui->get_widget("motor_torqueRightHip_progress_bar", motor_torqueRightHip_progress_bar);
 
     /*
      * This block is for the Medulla Status section.
@@ -107,39 +111,52 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
 
     // Update the motor torque progress bars and displays.
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.lLeg.motorCurrentA);
-    torqueADisplay->set_text(buffer);
+    torqueLeftADisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.lLeg.motorCurrentB);
-    torqueBDisplay->set_text(buffer);
+    torqueLeftBDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.lLeg.motorCurrentHip);
-    torqueHipDisplay->set_text(buffer);
+    torqueLeftHipDisplay->set_text(buffer);
 
-    motor_torqueA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentA), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentB), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentHip), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueLeftA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentA), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueLeftB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentB), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueLeftHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentHip), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
 
-    motor_velocityA_progress_bar->set_fraction(MIN(ABS(rtCycle.robotState.lLeg.halfA.motorVelocity * 477.45), 1327) / 1327);
-    motor_velocityB_progress_bar->set_fraction(MIN(ABS(rtCycle.robotState.lLeg.halfB.motorVelocity * 477.45), 1327) / 1327);
-    motor_velocityHip_progress_bar->set_fraction(MIN(ABS(rtCycle.robotState.lLeg.hip.motorVelocity), 10) / 10);
-    sprintf(buffer, "%0.2f", rtCycle.robotState.lLeg.halfA.motorVelocity * 477.45);
-    velocityADisplay->set_text(buffer);
-    sprintf(buffer, "%0.2f", rtCycle.robotState.lLeg.halfB.motorVelocity * 477.45);
-    velocityBDisplay->set_text(buffer);
-    sprintf(buffer, "%0.2f", rtCycle.robotState.lLeg.hip.motorVelocity);
-    velocityHipDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", rtCycle.commandedOutput.rLeg.motorCurrentA);
+    torqueRightADisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", rtCycle.commandedOutput.rLeg.motorCurrentB);
+    torqueRightBDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", rtCycle.commandedOutput.rLeg.motorCurrentHip);
+    torqueRightHipDisplay->set_text(buffer);
+
+    motor_torqueRightA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentA), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueRightB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentB), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueRightHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentHip), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
 
     // Update spring deflection displays.
     sprintf(buffer, "%0.8f", rtCycle.robotState.lLeg.halfA.motorAngle - rtCycle.robotState.lLeg.halfA.legAngle);
-    spring_deflection_A_entry->set_text(buffer);
+    spring_deflection_left_A_entry->set_text(buffer);
     sprintf(buffer, "%0.8f", rtCycle.robotState.lLeg.halfB.motorAngle - rtCycle.robotState.lLeg.halfB.legAngle);
-    spring_deflection_B_entry->set_text(buffer);
+    spring_deflection_left_B_entry->set_text(buffer);
+    sprintf(buffer, "%0.8f", rtCycle.robotState.rLeg.halfA.motorAngle - rtCycle.robotState.rLeg.halfA.legAngle);
+    spring_deflection_right_A_entry->set_text(buffer);
+    sprintf(buffer, "%0.8f", rtCycle.robotState.rLeg.halfB.motorAngle - rtCycle.robotState.rLeg.halfB.legAngle);
+    spring_deflection_right_B_entry->set_text(buffer);
 
     //replace with a macro?
-    spring_deflectionA_progress_bar->set_fraction(
+    spring_deflectionLeftA_progress_bar->set_fraction(
             log10(abs(rtCycle.robotState.lLeg.halfA.motorAngle - rtCycle.robotState.lLeg.halfA.legAngle) + 1)
             / log10(21));
 
-    spring_deflectionB_progress_bar->set_fraction(
+    spring_deflectionLeftB_progress_bar->set_fraction(
             log10(abs(rtCycle.robotState.lLeg.halfB.motorAngle - rtCycle.robotState.lLeg.halfB.legAngle) + 1)
+            / log10(21));
+
+    spring_deflectionRightA_progress_bar->set_fraction(
+            log10(abs(rtCycle.robotState.rLeg.halfA.motorAngle - rtCycle.robotState.rLeg.halfA.legAngle) + 1)
+            / log10(21));
+
+    spring_deflectionRightB_progress_bar->set_fraction(
+            log10(abs(rtCycle.robotState.rLeg.halfB.motorAngle - rtCycle.robotState.rLeg.halfB.legAngle) + 1)
             / log10(21));
 
     // Update the boom stuff indicators.

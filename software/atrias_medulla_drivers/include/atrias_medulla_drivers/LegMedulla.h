@@ -15,11 +15,11 @@
 #include <atrias_shared/globals.h>
 #include "robot_invariant_defs.h"
 #include "robot_variant_defs.h"
-#include "atrias_ecat_conn/Medulla.h"
+#include "atrias_medulla_drivers/Medulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 /** @brief Contains pointers to the data received from and transmitted to this
   * type of Medulla.
@@ -73,6 +73,10 @@ class LegMedulla : public Medulla {
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
 	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_LEG_TX_PDO_COUNT+MEDULLA_LEG_RX_PDO_COUNT];
+	
 	/** @brief Check for spikes in the encoder data.
 	  */
 	void         checkErroneousEncoderValues();
@@ -105,7 +109,7 @@ class LegMedulla : public Medulla {
 	
 	/** @brief Reads in all the limit switches and updates robotState.
 	  */
-	void         processLimitSwitches();
+	void         processLimitSwitches(atrias_msgs::robot_state& robotState);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */
@@ -121,21 +125,18 @@ class LegMedulla : public Medulla {
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
 	
 	public:
-		/** @brief Does SOEM's slave-specific init.
-		  * @param inputs  A pointer to this slave's inputs
-		  * @param outputs A pointer to this slave's outputs;
+		/** @brief Does the slave-specific init.
 		  */
-		LegMedulla(uint8_t* inputs, uint8_t* outputs);
+		LegMedulla();
 		
-		/** @brief Returns the total inputs size for this medulla type.
-		  * @return The total inputs size for this medulla type.
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
 		  */
-		intptr_t getInputsSize();
+		PDORegData getPDORegData();
 		
-		/** @brief Returns the total outputs size for this medulla type.
-		  * @return The total outputs size for this medulla type.
+		/** @brief Does all post-Op init.
 		  */
-		intptr_t getOutputsSize();
+		void postOpInit();
 		
 		/** @brief Tells this medulla to read in data for transmission.
 		  */

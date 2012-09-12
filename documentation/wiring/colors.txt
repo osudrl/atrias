@@ -1,0 +1,17 @@
+		Motor	Wire Extension	Pin	Length
+Hall Effect	
+		Blue	Red		1
+		Brown	Black		2	14
+		Orange	Orange		3
+		Yellow	White		4
+		Green	Green		5
+
+Encoder	
+	5V	Red	-		1	32
+	A+	White	-		2
+	A-	Green	-		3
+	B+	Yellow	-		4
+	B-	Brown	-		5
+	I+	Orange	-		6
+	I-	Blue	-		7
+	GND	Black	-		8

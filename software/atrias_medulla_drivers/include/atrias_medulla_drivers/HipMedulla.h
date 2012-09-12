@@ -12,11 +12,11 @@
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>
 #include <atrias_shared/globals.h>
-#include "atrias_ecat_conn/Medulla.h"
+#include "atrias_medulla_drivers/Medulla.h"
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 class HipMedulla : public Medulla {
 	// Stuff sent to the medulla
@@ -65,6 +65,9 @@ class HipMedulla : public Medulla {
 	
 	
 	uint8_t   timingCounterValue;
+	uint16_t  incrementalEncoderValue;
+	int16_t   incrementalEncoderTimestampValue;
+	bool      incrementalEncoderInitialized;
 	
 	/** @brief Calculate the current command to send to this Medulla.
 	  * @param controllerOutput The controller output from which to pull
@@ -79,12 +82,31 @@ class HipMedulla : public Medulla {
 	  */
 	void    updateLimitSwitches(atrias_msgs::robot_state_hip& hip);
 	
+	/** @brief Updates the position and velocities from the encoders.
+	  * @param delta_time The delta time, in nsecs, between the relevant DC
+	  *        clock cycles.
+	  * @param hip The robot_state_hip in which to store the new values.
+	  */
+	void    updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
+	                            atrias_msgs::robot_state_hip& hip);
+	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_HIP_TX_PDO_COUNT+MEDULLA_HIP_RX_PDO_COUNT];
+	
 	public:
-		/** @brief Does SOEM's slave-specific init.
-		  * @param inputs A pointer to this slave's inputs.
-		  * @param outputs A pointer to this slave's outputs.
+		/** @brief Does the slave-specific init.
 		  */
-		HipMedulla(uint8_t* inputs, uint8_t* outputs);
+		HipMedulla();
+		
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
+		  */
+		PDORegData getPDORegData();
+		
+		/** @brief Does all post-Ops init.
+		  */
+		void postOpInit();
 		
 		/** @brief Gets this medulla's ID.
 		  * @return This medulla's ID.

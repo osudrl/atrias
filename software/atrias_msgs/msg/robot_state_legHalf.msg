@@ -1,6 +1,7 @@
 Header header
 
 uint8   medullaState
+uint8   errorFlags
 
 float64 legAngle
 float64 legVelocity
@@ -18,10 +19,10 @@ float64 amp1Current
 float64 amp2Current
 
 # Limit switches
-#bool    overDeflectSwitch
-#bool    underDeflectSwitch
-#bool    motorNegLimitSwitch
-#bool    motorPosLimitSwitch
+bool    negDeflectSwitch
+bool    posDeflectSwitch
+bool    motorNegLimitSwitch
+bool    motorPosLimitSwitch
 
 # Thermistors
 float64[6] motorTherms

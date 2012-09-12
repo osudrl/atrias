@@ -30,9 +30,9 @@ typedef enum {
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
 
 // Number of PDO entries in each direction for each Medulla type
-#define MEDULLA_LEG_TX_PDO_COUNT                                              20
+#define MEDULLA_LEG_TX_PDO_COUNT                                              22
 #define MEDULLA_LEG_RX_PDO_COUNT                                               3
-#define MEDULLA_HIP_TX_PDO_COUNT                                              11
+#define MEDULLA_HIP_TX_PDO_COUNT                                              31
 #define MEDULLA_HIP_RX_PDO_COUNT                                               3
 #define MEDULLA_BOOM_TX_PDO_COUNT                                             11
 #define MEDULLA_BOOM_RX_PDO_COUNT                                              2
@@ -170,5 +170,13 @@ typedef enum {
 /** @brief The direction for the right hip motor.
   */
 #define RIGHT_MOTOR_HIP_DIRECTION                                           -1.0
+
+/** @brief The radians per tick for the hip's incremental encoder.
+  */
+#define HIP_INC_ENCODER_RAD_PER_TICK                  0.000009889017906384604997
+
+/** @brief The radians per tick for the hip's absolute encoder.
+  */
+#define HIP_ABS_ENCODER_RAD_PER_TICK                  0.000766990393942820614859
 
 #endif // ROBOT_INVARIANT_DEFS_H

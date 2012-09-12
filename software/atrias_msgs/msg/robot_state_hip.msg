@@ -5,9 +5,11 @@ uint8   errorFlags
 
 float64 legBodyAngle
 float64 legBodyVelocity
+# motorVelocity is not used -- here so the GUI compiles.
 float64 motorVelocity
+# This is the position according to the absolute encoder.
+float64 absoluteBodyAngle
 float64 motorCurrent
-float64 motorTorque
 
 # Limit switches
 bool    InsideLimitSwitch
