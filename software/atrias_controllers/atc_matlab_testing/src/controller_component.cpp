@@ -81,12 +81,12 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
     // Controller parameters
-    leg_position_pd_test_P.Saturation_UpperSat = 40;
-    leg_position_pd_test_P.Saturation_LowerSat = -40;
-    leg_position_pd_test_P.LegAngleP_Gain = 600;
-    leg_position_pd_test_P.LegAngleD_Gain = 20;
-    leg_position_pd_test_P.KneeAngleP_Gain = 600;
-    leg_position_pd_test_P.KneeAngleD_Gain = 20;
+    //leg_position_pd_test_P.Saturation_UpperSat = 40;
+    //leg_position_pd_test_P.Saturation_LowerSat = -40;
+    //leg_position_pd_test_P.LegAngleP_Gain = 600;
+    //leg_position_pd_test_P.LegAngleD_Gain = 20;
+    //leg_position_pd_test_P.KneeAngleP_Gain = 600;
+    //leg_position_pd_test_P.KneeAngleD_Gain = 20;
 
     // Initialize the controller
     leg_position_pd_test_initialize();
