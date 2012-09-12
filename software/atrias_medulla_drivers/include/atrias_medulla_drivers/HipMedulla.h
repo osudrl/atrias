@@ -90,12 +90,23 @@ class HipMedulla : public Medulla {
 	void    updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
 	                            atrias_msgs::robot_state_hip& hip);
 	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_HIP_TX_PDO_COUNT+MEDULLA_HIP_RX_PDO_COUNT];
+	
 	public:
 		/** @brief Does the slave-specific init.
-		  * @param inputs An array of intptr_t's w/ pointers to this slave's inputs.
-		  * @param outputs An array of intptr_t's w/ pointers to this slave's outputs.
 		  */
-		HipMedulla(intptr_t outputs[], intptr_t inputs[]);
+		HipMedulla();
+		
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
+		  */
+		PDORegData getPDORegData();
+		
+		/** @brief Does all post-Ops init.
+		  */
+		void postOpInit();
 		
 		/** @brief Gets this medulla's ID.
 		  * @return This medulla's ID.
