@@ -162,9 +162,6 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 			continue;
 		}
 		
-		initLegMedulla(slaves[i]);
-		return;
-		
 		switch(slaves[i].eep_id) {
 			case MEDULLA_LEG_PRODUCT_CODE: {
 				initLegMedulla(slaves[i]);
