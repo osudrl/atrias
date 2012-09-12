@@ -28,7 +28,7 @@ int main (int argc, char **argv) {
     atrias_gui_cm_input = nh.subscribe("gui_input", 0, controllerManagerCallback/*, ros::TransportHints().udp()*/);
     atrias_gui_rt_input = nh.subscribe("gui_robot_state_in", 0, rtOpsCallback);
     atrias_gui_cm_output = nh.advertise<atrias_msgs::gui_output>("gui_output", 0);
-    atrias_gui_logger_output = nh.advertise<atrias_msgs::log_request("atrias_log_request", 0);
+    atrias_gui_logger_output = nh.advertise<atrias_msgs::log_request>("atrias_log_request", 0);
 
     go.command = (uint8_t)UserCommand::STOP;
     go.requestedController = "none";
