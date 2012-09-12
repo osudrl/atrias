@@ -3,8 +3,8 @@
     <include file="$(find atrias)/launch/gui.launch" />
 
     <!-- Set up remote (robot) machine information. -->
-    <machine name       = "i1000a"
-             address    = "i1000a"
+    <machine name       = "i1000a-1"
+             address    = "i1000a-1"
              user       = "root"
              env-loader = "/opt/ros/fuerte/env.sh"
              default    = "true" />
