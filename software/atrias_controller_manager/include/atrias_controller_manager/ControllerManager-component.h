@@ -50,6 +50,7 @@ class EventManager;
 class ControllerManager: public TaskContext {
 private:
     InputPort<gui_output> guiDataIn; //The data coming in from the GUI
+    OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
     InputPort<rt_ops_event> rtOpsDataIn; //The data coming in from RT Ops
     OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
@@ -93,8 +94,6 @@ private:
     void resetControllerNames();
 
 public:
-    OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
-
     /** @brief Protects access to commandPending
      */
     os::Mutex commandPendingLock;
