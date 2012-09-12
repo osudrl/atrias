@@ -23,6 +23,7 @@ extern "C" {
 #include <atrias_medulla_drivers/BoomMedulla.h>
 #include <atrias_medulla_drivers/LegMedulla.h>
 #include <atrias_medulla_drivers/HipMedulla.h>
+#include <atrias_medulla_drivers/Medulla.h>
 
 namespace atrias {
 
@@ -51,6 +52,18 @@ class MedullaManager {
 	/** @brief Does init specific to operation w/ actual medullas.
 	  */
 	void medullasInit(ec_slavet slaves[], int slavecount);
+	
+	/** @brief Initialize the boom medulla.
+	  * @param slave The ECat slave for this Medulla.
+	  */
+	void initBoomMedulla(ec_slavet slave);
+		
+	/** @brief Fills in a PDORegData struct.
+	  * @param pdo_reg_data The PDORegData struct to be filled in.
+	  * @param inputs A pointer to the slave's inputs.
+	  * @param outputs A pointer to the slave's outputs.
+	  */
+	void fillInPDORegData(medullaDrivers::PDORegData pdo_reg_data, uint8_t* outputs, uint8_t* inputs);
 	
 	/** @brief Identifies the robot's configuration from the created Medullas.
 	  * @return The robot's configuration.
