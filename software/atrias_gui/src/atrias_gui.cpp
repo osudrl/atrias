@@ -215,7 +215,7 @@ void log_chkbox_toggled() {
         logRequest.enableLogging = false;
     }
 
-    // Publish logging request to controller manager.
+    // Publish logging request to logger.
     atrias_gui_logger_output.publish(logRequest);
 }
 
