@@ -45,6 +45,38 @@ void LegMedulla::postOpInit() {
 	incrementalEncoderValue          =           *incrementalEncoder;
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
+	updateLegPositionOffset();
+}
+
+void LegMedulla::updateLegPositionOffset() {
+	skipMotorEncoder  = false;
+	skipLegEncoder    = false;
+	legPositionOffset = 0.0;
+	atrias_msgs::robot_state robotState;
+	processPositions(robotState);
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			legPositionOffset = robotState.lLeg.halfA.motorAngle -
+			                   robotState.lLeg.halfA.legAngle;
+			break;
+		case MEDULLA_LEFT_LEG_B_ID:
+			legPositionOffset = robotState.lLeg.halfB.motorAngle -
+			                   robotState.lLeg.halfB.legAngle;
+			break;
+		case MEDULLA_RIGHT_LEG_A_ID:
+			legPositionOffset = robotState.rLeg.halfA.motorAngle -
+			                   robotState.rLeg.halfA.legAngle;
+			break;
+		case MEDULLA_RIGHT_LEG_B_ID:
+			legPositionOffset = robotState.rLeg.halfB.motorAngle -
+			                   robotState.rLeg.halfB.legAngle;
+			break;
+	}
+	if (fabs(legPositionOffset) > MAX_LEG_POS_ADJUSTMENT) {
+		log(RTT::Warning) << "Leg position adjustment limit exceeded! ID: "
+		                  << getID() << RTT::endlog();
+		legPositionOffset *= MAX_LEG_POS_ADJUSTMENT / fabs(legPositionOffset);
+	}
 }
 
 void LegMedulla::checkErroneousEncoderValues() {

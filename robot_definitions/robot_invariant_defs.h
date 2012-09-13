@@ -130,7 +130,7 @@ typedef enum {
 
 // Limits the maximum adjustment that may be applied to the leg position when the spring deflections
 // are zeroed during initialization (in radians).
-#define MAX_LEG_POS_ADJUSTMENT                                               0.2
+#define MAX_LEG_POS_ADJUSTMENT                                               0.1
 
 /** @brief The voltage at which the xMega's ADCs max out.
   * This is used for scaling the ADC values.
