@@ -6,6 +6,9 @@ uint8 cmState
 
 uint8 robotConfiguration
 
+# Whether or not safeties should be disabled. This will, in the future, be replaced w/ a GUI-controlled overrides system.
+bool disableSafeties
+
 robot_state_leg lLeg
 robot_state_leg rLeg
 

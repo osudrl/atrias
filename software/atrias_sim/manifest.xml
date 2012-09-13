@@ -13,7 +13,7 @@
     </export>
     <depend package="gazebo"/>
     <depend package="atrias_msgs"/>
-
+	<depend package="atrias_shared"/>
 </package>
 
 

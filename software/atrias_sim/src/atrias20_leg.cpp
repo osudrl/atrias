@@ -90,6 +90,10 @@ void ControllerWrapper::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
     ros::init(argc, argv, "gazebo_controller_plugin");
     ros::NodeHandle nh;
 
+	// Tell RT Ops and the controllers that we're a no-hip monopod.
+	ciso.robotConfiguration = (atrias::rtOps::RobotConfiguration_t) atrias::rtOps::RobotConfiguration::LEFT_LEG_NOHIP;
+	ciso.disableSafeties = true;
+
     atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &ControllerWrapper::atrias_controller_callback, this);
     atrias_sim_pub = nh.advertise<atrias_msgs::robot_state>("atrias_sim_data", 10);
 }
