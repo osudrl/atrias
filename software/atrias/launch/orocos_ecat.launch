@@ -11,6 +11,6 @@
 
 	<node name    = "atrias_logger"
           pkg     = "atrias"
-          type    = "log_data.py"
+          type    = "log_data.py">
     </node>
 </launch>
