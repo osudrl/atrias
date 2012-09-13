@@ -30,7 +30,10 @@ stream("atrias_cm.gui_data_in", ros_policy)
 ros_policy.name_id = "/log_robot_state"
 stream("atrias_rt.rt_ops_log_out", ros_policy)
 
-ros_policy.name_id = "/log_rt_ops_out_cm_in"
+ros_policy.name_id = "/gui_data"
+stream("atrias_rt.rt_ops_gui_out", ros_policy)
+
+ros_policy.name_id = "/rt_events"
 stream("atrias_rt.rt_ops_event_out", ros_policy)
 
 # This one is of type uint8_t, not sure how

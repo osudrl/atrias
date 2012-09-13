@@ -1,0 +1,1 @@
+description=Tests whether the simulation and control system run in lock step.

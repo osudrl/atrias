@@ -1,0 +1,18 @@
+# Shut stuff down
+require("scripting")
+require("print")
+
+export void dummyFunction( ) {
+    return
+}
+
+export void ascBipedBoomInitStop( string controllerName ) {
+    print.ln("Beginning of the stop function. Controller name: " + controllerName)
+    # This dummyFunction call is a hack to make function calling work
+    dummyFunction()
+    print.ln("Dummy function returned")
+    scripting.eval(controllerName + ".stop()")
+    scripting.eval(controllerName + ".cleanup()")
+    unloadComponent(controllerName)
+    print.ln(controllerName + "cleaned up")
+}

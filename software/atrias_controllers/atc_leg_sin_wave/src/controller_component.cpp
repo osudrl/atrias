@@ -21,10 +21,18 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
         .doc("Name of 0th PD subcontroller.");
     this->addProperty("pd1Name", pd1Name)
         .doc("Name of 1st PD subcontroller.");
+    this->addProperty("pd2Name", pd2Name)
+        .doc("Name of 2th PD subcontroller.");
+    this->addProperty("pd3Name", pd3Name)
+        .doc("Name of 3th PD subcontroller.");
     this->addProperty("sin0Name", sin0Name)
         .doc("Name of 0th sin generator subcontroller.");
     this->addProperty("sin1Name", sin1Name)
         .doc("Name of 1st sin generator subcontroller.");
+    this->addProperty("sin2Name", sin2Name)
+        .doc("Name of 2th sin generator subcontroller.");
+    this->addProperty("sin3Name", sin3Name)
+        .doc("Name of 3th sin generator subcontroller.");
 
     // Add ports.
     addEventPort(guiDataIn);
@@ -44,52 +52,88 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
     {
         // Do nothing
-        controllerOutput.lLeg.motorCurrentA = 0.0;
-        controllerOutput.lLeg.motorCurrentB = 0.0;
-        return controllerOutput;
+        co.lLeg.motorCurrentA = 0.0;
+        co.lLeg.motorCurrentB = 0.0;
+        co.lLeg.motorCurrentHip = 0.0;
+        co.rLeg.motorCurrentA = 0.0;
+        co.rLeg.motorCurrentB = 0.0;
+        co.rLeg.motorCurrentHip = 0.0;
+        return co;
     }
 
     // Get a sinusoidal input
-    legLen = sin0Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
-    legAng = sin1Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
-    // legLen.pos / .vel
+    lLegLen = sin0Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
+    lLegAng = sin1Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
+    rLegLen = sin2Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
+    rLegAng = sin3Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
+    // lLegLen.pos / .vel
 
     // Set resonable center positions
     centerLength = 0.8;
     centerAngle = M_PI/2;
-    legLen.pos = legLen.pos + centerLength;
-    legAng.pos = legAng.pos + centerAngle;
+    lLegLen.pos = lLegLen.pos + centerLength;
+    lLegAng.pos = lLegAng.pos + centerAngle;
+    rLegLen.pos = -rLegLen.pos + centerLength;
+    rLegLen.vel = -rLegLen.vel;
+    rLegAng.pos = -rLegAng.pos + centerAngle;
+    rLegAng.vel = -rLegAng.vel;
 
     // Transform to motor positions and velocities
-    motorAngle = legToMotorPos(legAng.pos, legLen.pos);
-    motorVelocity = legToMotorVel(legAng, legLen);
-    // motorAngle.A / .B
+    lMotorAngle = legToMotorPos(lLegAng.pos, lLegLen.pos);
+    lMotorVelocity = legToMotorVel(lLegAng, lLegLen);
+    rMotorAngle = legToMotorPos(rLegAng.pos, rLegLen.pos);
+    rMotorVelocity = legToMotorVel(rLegAng, rLegLen);
+    // lMotorAngle.A / .B
 
     // Set the PD gains
+    // lLeg
     // motorA
     P0.set(guiIn.p_gain);
     D0.set(guiIn.d_gain);
     // motorB
     P1.set(guiIn.p_gain);
     D1.set(guiIn.d_gain);
+    // rLeg
+    // motorA
+    P2.set(guiIn.p_gain);
+    D2.set(guiIn.d_gain);
+    // motorB
+    P3.set(guiIn.p_gain);
+    D3.set(guiIn.d_gain);
 
-    // Calculate motorA current
-    targetPos = motorAngle.A;
+    // lLeg
+    // MotorA
+    targetPos = lMotorAngle.A;
     currentPos = rs.lLeg.halfA.motorAngle;
-    targetVel = motorVelocity.A;
+    targetVel = lMotorVelocity.A;
     currentVel = rs.lLeg.halfA.motorVelocity;
-    controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
-    // Calculate motorB current
-    targetPos = motorAngle.B;
+    // MotorB
+    targetPos = lMotorAngle.B;
     currentPos = rs.lLeg.halfB.motorAngle;
-    targetVel = motorVelocity.B;
+    targetVel = lMotorVelocity.B;
     currentVel = rs.lLeg.halfB.motorVelocity;
-    controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
-    controllerOutput.command = medulla_state_run;
+    // rLeg
+    // MotorA
+    targetPos = rMotorAngle.A;
+    currentPos = rs.rLeg.halfA.motorAngle;
+    targetVel = rMotorVelocity.A;
+    currentVel = rs.rLeg.halfA.motorVelocity;
+    co.rLeg.motorCurrentA = pd2Controller(targetPos, currentPos, targetVel, currentVel);
 
-    return controllerOutput;
+    // MotorB
+    targetPos = rMotorAngle.B;
+    currentPos = rs.rLeg.halfB.motorAngle;
+    targetVel = rMotorVelocity.B;
+    currentVel = rs.rLeg.halfB.motorVelocity;
+    co.rLeg.motorCurrentB = pd3Controller(targetPos, currentPos, targetVel, currentVel);
+
+    co.command = medulla_state_run;
+
+    return co;
 }
 
 // Don't put control code below here!
@@ -104,6 +148,14 @@ bool ATCLegSinWave::configureHook() {
     if (sin1)
         sin1Controller = sin1->provides("sg")->getOperation("runController");
 
+    sin2 = this->getPeer(sin2Name);
+    if (sin2)
+        sin2Controller = sin2->provides("sg")->getOperation("runController");
+
+    sin3 = this->getPeer(sin3Name);
+    if (sin3)
+        sin3Controller = sin3->provides("sg")->getOperation("runController");
+
     // Transforms
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
     legToMotorVel = this->provides("legToMotorTransforms")->getOperation("velTransform");
@@ -117,11 +169,23 @@ bool ATCLegSinWave::configureHook() {
     if (pd1)
         pd1Controller = pd1->provides("pd")->getOperation("runController");
 
+    pd2 = this->getPeer(pd2Name);
+    if (pd2)
+        pd2Controller = pd2->provides("pd")->getOperation("runController");
+
+    pd3 = this->getPeer(pd3Name);
+    if (pd3)
+        pd3Controller = pd3->provides("pd")->getOperation("runController");
+
     // Get references to the attributes
     P0 = pd0->properties()->getProperty("P");
     D0 = pd0->properties()->getProperty("D");
     P1 = pd1->properties()->getProperty("P");
     D1 = pd1->properties()->getProperty("D");
+    P2 = pd2->properties()->getProperty("P");
+    D2 = pd2->properties()->getProperty("D");
+    P3 = pd3->properties()->getProperty("P");
+    D3 = pd3->properties()->getProperty("D");
 
     log(Info) << "[ATCLSW] configured!" << endlog();
     return true;

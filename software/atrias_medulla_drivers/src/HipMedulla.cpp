@@ -2,55 +2,86 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
-HipMedulla::HipMedulla(uint8_t* inputs, uint8_t* outputs) : Medulla() {
-	uint8_t* cur_index = outputs;
-	
-	setPdoPointer(cur_index, command);
-	setPdoPointer(cur_index, counter);
-	setPdoPointer(cur_index, motorCurrent);
-	
-	cur_index = inputs;
-	
-	setPdoPointer(cur_index, id);
-	setPdoPointer(cur_index, state);
-	setPdoPointer(cur_index, timingCounter);
-	setPdoPointer(cur_index, errorFlags);
-	setPdoPointer(cur_index, limitSwitches);
-	
-	setPdoPointer(cur_index, hipEncoder);
-	setPdoPointer(cur_index, hipEncoderTimestamp);
-	
-	setPdoPointer(cur_index, motorVoltage);
-	setPdoPointer(cur_index, logicVoltage);
-	
-	setPdoPointer(cur_index, thermistor0);
-	setPdoPointer(cur_index, thermistor1);
-	setPdoPointer(cur_index, thermistor2);
-	
-	setPdoPointer(cur_index, ampMeasuredCurrent);
-	
-	setPdoPointer(cur_index, accelX);
-	setPdoPointer(cur_index, accelY);
-	setPdoPointer(cur_index, accelZ);
-	setPdoPointer(cur_index, angRateX);
-	setPdoPointer(cur_index, angRateY);
-	setPdoPointer(cur_index, angRateZ);
-	setPdoPointer(cur_index, m11);
-	setPdoPointer(cur_index, m12);
-	setPdoPointer(cur_index, m13);
-	setPdoPointer(cur_index, m21);
-	setPdoPointer(cur_index, m22);
-	setPdoPointer(cur_index, m23);
-	setPdoPointer(cur_index, m31);
-	setPdoPointer(cur_index, m32);
-	setPdoPointer(cur_index, m33);
-	setPdoPointer(cur_index, timer);
-	
-	setPdoPointer(cur_index, incrementalEncoder);
-	setPdoPointer(cur_index, incrementalEncoderTimestamp);
-	
+HipMedulla::HipMedulla() : Medulla() {
+	pdoEntryDatas[0]  = {1, (void**) &command};
+	pdoEntryDatas[1]  = {2, (void**) &counter};
+	pdoEntryDatas[2]  = {4, (void**) &motorCurrent};
+	pdoEntryDatas[3]  = {1, (void**) &id};
+	pdoEntryDatas[4]  = {1, (void**) &state};
+	pdoEntryDatas[5]  = {1, (void**) &timingCounter};
+	pdoEntryDatas[6]  = {1, (void**) &errorFlags};
+	pdoEntryDatas[7]  = {1, (void**) &limitSwitches};
+	pdoEntryDatas[8]  = {4, (void**) &hipEncoder};
+	pdoEntryDatas[9]  = {2, (void**) &hipEncoderTimestamp};
+	pdoEntryDatas[10] = {2, (void**) &motorVoltage};
+	pdoEntryDatas[11] = {2, (void**) &logicVoltage};
+	pdoEntryDatas[12] = {2, (void**) &thermistor0};
+	pdoEntryDatas[13] = {2, (void**) &thermistor1};
+	pdoEntryDatas[14] = {2, (void**) &thermistor2};
+	pdoEntryDatas[15] = {2, (void**) &ampMeasuredCurrent};
+	pdoEntryDatas[16] = {4, (void**) &accelX};
+	pdoEntryDatas[17] = {4, (void**) &accelY};
+	pdoEntryDatas[18] = {4, (void**) &accelZ};
+	pdoEntryDatas[19] = {4, (void**) &angRateX};
+	pdoEntryDatas[20] = {4, (void**) &angRateY};
+	pdoEntryDatas[21] = {4, (void**) &angRateZ};
+	pdoEntryDatas[22] = {4, (void**) &m11};
+	pdoEntryDatas[23] = {4, (void**) &m12};
+	pdoEntryDatas[24] = {4, (void**) &m13};
+	pdoEntryDatas[25] = {4, (void**) &m21};
+	pdoEntryDatas[26] = {4, (void**) &m22};
+	pdoEntryDatas[27] = {4, (void**) &m23};
+	pdoEntryDatas[28] = {4, (void**) &m31};
+	pdoEntryDatas[29] = {4, (void**) &m32};
+	pdoEntryDatas[30] = {4, (void**) &m33};
+	pdoEntryDatas[31] = {4, (void**) &timer};
+	pdoEntryDatas[32] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[33] = {2, (void**) &incrementalEncoderTimestamp};
+}
+
+PDORegData HipMedulla::getPDORegData() {
+	return {MEDULLA_HIP_RX_PDO_COUNT, MEDULLA_HIP_TX_PDO_COUNT,
+	        pdoEntryDatas};
+}
+
+void HipMedulla::postOpInit() {
+printf("%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n",
+command,
+counter,
+motorCurrent,
+id,
+state,
+timingCounter,
+errorFlags,
+limitSwitches,
+hipEncoder,
+hipEncoderTimestamp,
+motorVoltage,
+logicVoltage,
+thermistor0,
+thermistor1,
+thermistor2,
+ampMeasuredCurrent,
+accelX,
+accelY,
+accelZ,
+angRateX,
+angRateY,
+angRateZ,
+m11,
+m12,
+m13,
+m21,
+m22,
+m23,
+m31,
+m32,
+m33,
+timer,
+incrementalEncoder,
+incrementalEncoderTimestamp);
 	timingCounterValue               = *timingCounter;
 	incrementalEncoderValue          = *incrementalEncoder;
 	incrementalEncoderTimestampValue = *incrementalEncoderTimestamp;
@@ -75,9 +106,12 @@ int32_t HipMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
         return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_HIP_MAX_TORQUE);
 }
 
-void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip) {
-	hip.InsideLimitSwitch  = *limitSwitches & (1 << 0);
-	hip.OutsideLimitSwitch = *limitSwitches & (1 << 1);
+void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip, bool reset) {
+	if (reset)
+		hip.limitSwitches = 0;
+	hip.limitSwitches     |= *limitSwitches;
+	hip.InsideLimitSwitch  = hip.limitSwitches & (1 << 0);
+	hip.OutsideLimitSwitch = hip.limitSwitches & (1 << 1);
 }
 
 void HipMedulla::updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
@@ -148,7 +182,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	
 	atrias_msgs::robot_state_hip& hip = *hip_ptr;
 	
-	updateLimitSwitches(hip);
+	updateLimitSwitches(hip, *state == medulla_state_idle);
 	updateEncoderValues(deltaTime, hip);
 	
 	hip.medullaState = *state;

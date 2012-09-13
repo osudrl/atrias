@@ -18,6 +18,11 @@ struct MotorVelocity {
     double B;
 };
 
+struct MotorCurrent {
+    double A;
+    double B;
+};
+
 struct SinOut {
     double pos;
     double vel;

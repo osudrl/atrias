@@ -9,5 +9,6 @@
 	<depend package="soem_core" />
     <depend package="atrias_msgs" />
 	<depend package="atrias_shared" />
+	<depend package="atrias_medulla_drivers" />
 </package>
 

@@ -12,15 +12,7 @@ connectPeers("atrias_connector", "atrias_rt")
 setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
 setActivity("atrias_connector", 0.001, 0, ORO_SCHED_RT)
 
-var ConnPolicy rtConnPolicy
-rtConnPolicy.transport = 3
-rtConnPolicy.name_id = "/log_data"
-stream("atrias_rt.rt_ops_log_out",  rtConnPolicy)
-rtConnPolicy.name_id = "/gui_data"
-stream("atrias_rt.rt_ops_gui_out", rtConnPolicy)
-rtConnPolicy.name_id = "/rt_events"
-stream("atrias_rt.rt_ops_event_out", rtConnPolicy)
-
+# atrias_rt ports are connected in atrias/control_system.ops.
 
 # Configure components.
 atrias_rt.configure()

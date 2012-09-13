@@ -88,6 +88,10 @@ void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr 
     ros::init(argc, argv, "gazebo_controller_plugin");
     ros::NodeHandle nh;
 
+	// Tell rtOps and the controllers that we're a full biped.
+	ciso.robotConfiguration = (atrias::rtOps::RobotConfiguration_t) atrias::rtOps::RobotConfiguration::BIPED_FULL;
+	ciso.disableSafeties = true;
+
     atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &GazeboControllerConnector::atrias_controller_callback, this);
     atrias_sim_pub = nh.advertise<atrias_msgs::robot_state>("atrias_sim_data", 10);
 }

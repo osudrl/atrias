@@ -12,21 +12,45 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
+
+/** @brief Contains data for a single PDO entry.
+  * Used to point a Medulla driver to where a given PDO entry is.
+  */
+struct PDOEntryData {
+	/** @brief The size of this PDO entry.
+	  */
+	int    size;
+	
+	/** @brief A pointer to the PDO entry pointer,
+	  * so the Connector's code can set it to point at the right place.
+	  */
+	void** data;
+};
+
+/** @brief Contains all the data needed for the Connector to tell a Medulla
+  * where its PDOs are.
+  */
+struct PDORegData {
+	/** @brief The number of outputs for this Medulla
+	  */
+	int outputs;
+	
+	/** @brief The number of inputs for this Medulla.
+	  */
+	int inputs;
+	
+	/** @brief An array of PDOEntryData structs, for reading in PDO entry locations.
+	  */
+	PDOEntryData* pdoEntryDatas;
+};
+
 
 class Medulla {
 	protected:
 		/** @brief Holds the counter value for feeding the master watchdog.
 		  */
 		uint16_t        local_counter;
-		
-		/** @brief Sets a pointer to point to that pdo entry's location in
-		  * RAM.
-		  * @param pdo_pointer The pointer to be set to the PDO's location.
-		  * @param cur_index A pointer holding the current reference address.
-		  */
-		template <class T>
-			void setPdoPointer(uint8_t* &cur_index, T* &pdo_pointer);
 			
 		/** @brief Decodes a logic voltage.
 		  * @param adc_value The voltage value from the ADC.

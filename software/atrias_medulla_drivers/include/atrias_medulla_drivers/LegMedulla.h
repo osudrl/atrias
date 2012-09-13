@@ -7,6 +7,7 @@
 
 // Orocos
 #include <rtt/os/TimeService.hpp>
+#include <rtt/Logger.hpp>
 
 #include <stdint.h>
 
@@ -19,7 +20,7 @@
 
 namespace atrias {
 
-namespace ecatConn {
+namespace medullaDrivers {
 
 /** @brief Contains pointers to the data received from and transmitted to this
   * type of Medulla.
@@ -41,12 +42,12 @@ class LegMedulla : public Medulla {
 	uint32_t*       motorEncoder;
 	int16_t*        motorEncoderTimestamp;
 	
-	uint16_t*       incrementalEncoder;
-	uint16_t*       incrementalEncoderTimestamp;
-	
 	uint32_t*       legEncoder;
 	int16_t*        legEncoderTimestamp;
 	
+	uint16_t*       incrementalEncoder;
+	uint16_t*       incrementalEncoderTimestamp;
+
 	uint16_t*       motorVoltage;
 	uint16_t*       logicVoltage;
 	
@@ -68,10 +69,15 @@ class LegMedulla : public Medulla {
 	uint16_t        incrementalEncoderValue;
 	uint16_t        incrementalEncoderTimestampValue;
 	uint8_t         timingCounterValue;
+	double          legPositionOffset;
 	
 	// Whether or not the encoder value for this cycle was erroneous
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
+	
+	/** @brief The PDOEntryDatas array.
+	  */
+	PDOEntryData pdoEntryDatas[MEDULLA_LEG_TX_PDO_COUNT+MEDULLA_LEG_RX_PDO_COUNT];
 	
 	/** @brief Check for spikes in the encoder data.
 	  */
@@ -104,8 +110,10 @@ class LegMedulla : public Medulla {
 	void         processThermistors(atrias_msgs::robot_state& robotState);
 	
 	/** @brief Reads in all the limit switches and updates robotState.
+	  * @param robotState The robot_state in which to store the new values.
+	  * @param reset Whether or not to reset the limit switch values.
 	  */
-	void         processLimitSwitches(atrias_msgs::robot_state& robotState);
+	void         processLimitSwitches(atrias_msgs::robot_state& robotState, bool reset);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */
@@ -120,22 +128,23 @@ class LegMedulla : public Medulla {
 	  */
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
 	
+	/** @brief Updates the value of legPositionOffset.
+	  */
+	void         updateLegPositionOffset();
+	
 	public:
-		/** @brief Does SOEM's slave-specific init.
-		  * @param inputs  A pointer to this slave's inputs
-		  * @param outputs A pointer to this slave's outputs;
+		/** @brief Does the slave-specific init.
 		  */
-		LegMedulla(uint8_t* inputs, uint8_t* outputs);
+		LegMedulla();
 		
-		/** @brief Returns the total inputs size for this medulla type.
-		  * @return The total inputs size for this medulla type.
+		/** @brief Returns a \a PDORegData struct for PDO entry location.
+		  * @return A PDORegData struct w/ sizes filled out.
 		  */
-		intptr_t getInputsSize();
+		PDORegData getPDORegData();
 		
-		/** @brief Returns the total outputs size for this medulla type.
-		  * @return The total outputs size for this medulla type.
+		/** @brief Does all post-Op init.
 		  */
-		intptr_t getOutputsSize();
+		void postOpInit();
 		
 		/** @brief Tells this medulla to read in data for transmission.
 		  */

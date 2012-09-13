@@ -42,7 +42,7 @@ ControllerManager::ControllerManager(std::string const& name) :
     //eManager->setPriority(os::LowestPriority);
     eManager->start();
 
-    rosbagPID = 0;
+    //rosbagPID = 0;
     //std::cout << "AtriasControllerManager constructed !" << std::endl;
 }
 
@@ -70,43 +70,43 @@ void ControllerManager::updateHook() {
 
     // Have we received a command from the GUI?
     while (NewData == guiDataIn.read(guiOutput)) {
-        // Spawn rosbag logging node when requested.
-        if (guiOutput.enableLogging == true && rosbagPID == 0) {
-            // Spawn a child to run the program.
-            rosbagPID = fork();
-            if (rosbagPID == 0) { // Child process
-                int corePID = fork();
-                int execResult;
-                if (corePID == 0) {
-                    execResult = execlp("rosrun", "rosrun", "atrias", "rosbag_move_cores.sh", NULL);
-                    if (execResult < 0) {
-                        log(Warning) << "[ControllerManager] Failed to run rosbag_move_cores.sh script!" << endlog();
-                    }
-                    else {
-                        log(Info) << "[ControllerManager] Moved rosbag processes to non-realtime core." << endlog();
-                    }
-                    exit(127);
-                }
-                else {
-                    execResult = execlp("roslaunch", "roslaunch", "atrias", "rosbag.launch", NULL);
-                    if (execResult < 0) {
-                        log(Warning) << "[ControllerManager] Failed to exec rosbag logger!" << endlog();
-                    }
-                    else {
-                        log(Info) << "[ControllerManager] Launched rosbag." << endlog();
-                    }
-                    exit(127);
-                }
-            }
-            //else {
-            //    printf("Parent here! My child is %d.\n", (int) rosbagPID);
-            //}
-        }
-        // Kill rosbag node when requested.
-        else if (guiOutput.enableLogging == false && rosbagPID != 0) {
-            kill(rosbagPID, SIGINT);
-            rosbagPID = 0;
-        }
+        //// Spawn rosbag logging node when requested.
+        //if (guiOutput.enableLogging == true && rosbagPID == 0) {
+        //    // Spawn a child to run the program.
+        //    rosbagPID = fork();
+        //    if (rosbagPID == 0) { // Child process
+        //        int corePID = fork();
+        //        int execResult;
+        //        if (corePID == 0) {
+        //            execResult = execlp("rosrun", "rosrun", "atrias", "rosbag_move_cores.sh", NULL);
+        //            if (execResult < 0) {
+        //                log(Warning) << "[ControllerManager] Failed to run rosbag_move_cores.sh script!" << endlog();
+        //            }
+        //            else {
+        //                log(Info) << "[ControllerManager] Moved rosbag processes to non-realtime core." << endlog();
+        //            }
+        //            exit(127);
+        //        }
+        //        else {
+        //            execResult = execlp("roslaunch", "roslaunch", "atrias", "rosbag.launch", NULL);
+        //            if (execResult < 0) {
+        //                log(Warning) << "[ControllerManager] Failed to exec rosbag logger!" << endlog();
+        //            }
+        //            else {
+        //                log(Info) << "[ControllerManager] Launched rosbag." << endlog();
+        //            }
+        //            exit(127);
+        //        }
+        //    }
+        //    //else {
+        //    //    printf("Parent here! My child is %d.\n", (int) rosbagPID);
+        //    //}
+        //}
+        //// Kill rosbag node when requested.
+        //else if (guiOutput.enableLogging == false && rosbagPID != 0) {
+        //    kill(rosbagPID, SIGINT);
+        //    rosbagPID = 0;
+        //}
 
         {
             os::MutexLock lock(commandRunMutex);

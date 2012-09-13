@@ -1,3 +1,8 @@
+# For loading subcontroller scripts
+require("scripting")
+require("print")
+import("rtt_rospack")
+
 # Set up the top controller
 import("atc_motor_position")
 loadComponent("controller", "ATCMotorPosition")
@@ -12,6 +17,7 @@ var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd3Name = atrias_cm.getUniqueName("controller", "pd")
+var string init0Name = atrias_cm.getUniqueName("controller", "init")
 loadComponent(pd0Name, "ASCPD")
 loadComponent(pd1Name, "ASCPD")
 loadComponent(pd2Name, "ASCPD")

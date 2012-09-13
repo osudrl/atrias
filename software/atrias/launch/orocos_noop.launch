@@ -8,4 +8,9 @@
           args    = "-l info -s $(find atrias_noop_conn)/noopConn.ops -s $(find atrias_controller_manager)/controller_manager.ops -s $(find atrias)/control_system.ops --"
           output  = "screen">
     </node>
+
+	<node name    = "atrias_logger"
+          pkg     = "atrias"
+          type    = "log_data.py">
+    </node>
 </launch>
