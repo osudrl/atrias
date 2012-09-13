@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 
+#include <atrias_shared/globals.h>
 #include <atrias_msgs/robot_state.h>  // controller input
 #include <atrias_msgs/controller_output.h>
 
