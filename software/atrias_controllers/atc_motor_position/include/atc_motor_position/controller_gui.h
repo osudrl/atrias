@@ -23,12 +23,19 @@ atc_motor_position::controller_input controllerDataOut;
 atc_motor_position::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *position_A_hscale,
-        *position_B_hscale,
-        *p_hscale,
-        *d_hscale;
+Gtk::HScale *position_left_A_hscale,
+        *position_left_B_hscale,
+	*position_left_hip_hscale,
+	*position_right_A_hscale,
+	*position_right_B_hscale,
+	*position_right_hip_hscale,
+        *leg_motor_p_spinbutton,
+        *leg_motor_d_spinbutton,
+        *hip_motor_p_spinbutton,
+        *hip_motor_d_spinbutton;
 
-Gtk::CheckButton *set_position_checkbutton;
+Gtk::CheckButton *set_leg_motor_position_checkbutton;
+Gtk::CheckButton *set_hip_motor_position_checkbutton;
 
 void controllerCallback(const atc_motor_position::controller_status &status);
 
