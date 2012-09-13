@@ -53,14 +53,10 @@ atrias_msgs::controller_output ATCBipedBoomInitTest::runController(atrias_msgs::
         return co;
     }
 
-    // begin control code //
-
-    // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
-
-    // end control code //
+    bipedBoomInit0PassRobotState(rs);
+    lMotorCurrent = bipedBoomInit0LeftLeg(M_PI/4.0, 3.0*M_PI/4.0);
+    co.lLeg.motorCurrentA = lMotorCurrent.A;
+    co.lLeg.motorCurrentB = lMotorCurrent.B;
 
     // Command a run state
     co.command = medulla_state_run;

@@ -50,9 +50,12 @@ private:
     TaskContext *bipedBoomInit0; 
 
     // Subcontroller operations
-    OperationCaller<MotorTorque(double, double)> bipedBoomInit0LeftLeg;
+    OperationCaller<MotorCurrent(double, double)> bipedBoomInit0LeftLeg;
     OperationCaller<int(void)> bipedBoomInit0IsInitialized;
     OperationCaller<void(atrias_msgs::robot_state _rs)> bipedBoomInit0PassRobotState;
+
+    // Math variables
+    MotorCurrent lMotorCurrent;
 
     // Logging
     controller_log_data              logData;

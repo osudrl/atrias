@@ -18,7 +18,7 @@ struct MotorVelocity {
     double B;
 };
 
-struct MotorTorque {
+struct MotorCurrent {
     double A;
     double B;
 };

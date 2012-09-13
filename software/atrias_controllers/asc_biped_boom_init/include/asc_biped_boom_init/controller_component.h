@@ -33,12 +33,13 @@ private:
     // Operations
     void passRobotState(atrias_msgs::robot_state _rs);
     int isInitialized(void);
-    MotorTorque leftLeg(double aTargetPos, double bTargetPos);
+    MotorCurrent leftLeg(double aTargetPos, double bTargetPos);
+    double capCurrent(double current);
 
     // Operation variables
     atrias_msgs::robot_state rs;
     int stateCheck;
-    MotorTorque motorTorque;
+    MotorCurrent motorCurrent;
 
     // Subcontroller names
     std::string pd0Name;
@@ -52,6 +53,10 @@ private:
 
     // Subcontroller operations
     OperationCaller<double(double, double, double, double)> pd0RunController;
+
+    // Math variables
+    double targetPos, currentPos, targetVel, currentVel;
+    double cap;
 
     // Logging
     controller_log_data logData;
