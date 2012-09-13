@@ -23,24 +23,16 @@ loadComponent(pd1Name, "ASCPD")
 loadComponent(pd2Name, "ASCPD")
 loadComponent(pd3Name, "ASCPD")
 
-var string init0Script = rospack.find("asc_biped_boom_init") + "/start.ops"
-import("asc_biped_boom_init")
-#scripting.loadPrograms(init0Script)
-scripting.eval(init0Script)
-asc_biped_boom_init_start( init0Name )
-
 # Connect this controller with its subcontrollers.
 addPeer("controller", pd0Name)
 addPeer("controller", pd1Name)
 addPeer("controller", pd2Name)
 addPeer("controller", pd3Name)
-addPeer("controller", init0Name)
 # Pass the names of the subcontrollers to the controller
 controller.pd0Name = pd0Name
 controller.pd1Name = pd1Name
 controller.pd2Name = pd2Name
 controller.pd3Name = pd3Name
-controller.init0Name = init0Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy
