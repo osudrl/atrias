@@ -47,41 +47,6 @@ PDORegData HipMedulla::getPDORegData() {
 }
 
 void HipMedulla::postOpInit() {
-printf("%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n%p\n",
-command,
-counter,
-motorCurrent,
-id,
-state,
-timingCounter,
-errorFlags,
-limitSwitches,
-hipEncoder,
-hipEncoderTimestamp,
-motorVoltage,
-logicVoltage,
-thermistor0,
-thermistor1,
-thermistor2,
-ampMeasuredCurrent,
-accelX,
-accelY,
-accelZ,
-angRateX,
-angRateY,
-angRateZ,
-m11,
-m12,
-m13,
-m21,
-m22,
-m23,
-m31,
-m32,
-m33,
-timer,
-incrementalEncoder,
-incrementalEncoderTimestamp);
 	timingCounterValue               = *timingCounter;
 	incrementalEncoderValue          = *incrementalEncoder;
 	incrementalEncoderTimestampValue = *incrementalEncoderTimestamp;
