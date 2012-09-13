@@ -26,6 +26,10 @@ ATCMotorPosition::ATCMotorPosition(std::string name):
         .doc("Name of 2th PD subcontroller.");
     this->addProperty("pd3Name", pd3Name)
         .doc("Name of 3st PD subcontroller.");
+    this->addProperty("pd4Name", pd4Name)
+        .doc("Name of 4st PD subcontroller.");
+    this->addProperty("pd5Name", pd5Name)
+        .doc("Name of 5st PD subcontroller.");
 
     // Add ports.
     addEventPort(guiDataIn);
@@ -41,50 +45,71 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     // Set the PD gains
     // lLeg
     // MotorA
-    P0.set(guiIn.p_gain);
-    D0.set(guiIn.d_gain);
+    P0.set(guiIn.leg_p_gain);
+    D0.set(guiIn.leg_d_gain);
     // MotorB
-    P1.set(guiIn.p_gain);
-    D1.set(guiIn.d_gain);
+    P1.set(guiIn.leg_p_gain);
+    D1.set(guiIn.leg_d_gain);
+    // lHip
+    P2.set(guiIn.hip_p_gain);
+    D2.set(guiIn.hip_d_gain);
+
     // rLeg
     // MotorA
-    P2.set(guiIn.p_gain);
-    D2.set(guiIn.d_gain);
+    P3.set(guiIn.leg_p_gain);
+    D3.set(guiIn.leg_d_gain);
     // MotorB
-    P3.set(guiIn.p_gain);
-    D3.set(guiIn.d_gain);
+    P4.set(guiIn.leg_p_gain);
+    D4.set(guiIn.leg_d_gain);
+    // rHip
+    P5.set(guiIn.hip_p_gain);
+    D5.set(guiIn.hip_d_gain);
 
     // lLeg
-    // Calculate motorA output
-    targetPos = guiIn.des_motor_ang_A;
+    // motorA
+    targetPos = guiIn.des_motor_ang_left_A;
     currentPos = rs.lLeg.halfA.motorAngle;
     targetVel = 0.0;
     currentVel = rs.lLeg.halfA.motorVelocity;
-    controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
-    // Calculate motorB output
-    targetPos = guiIn.des_motor_ang_B;
+    // motorB
+    targetPos = guiIn.des_motor_ang_left_B;
     currentPos = rs.lLeg.halfB.motorAngle;
     targetVel = 0.0;
     currentVel = rs.lLeg.halfB.motorVelocity;
-    controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
+
+    // Hip
+    targetPos = guiIn.des_motor_ang_left_hip;
+    currentPos = rs.lLeg.halfB.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfB.motorVelocity;
+    co.lLeg.motorCurrentHip = pd2Controller(targetPos, currentPos, targetVel, currentVel);
 
     // rLeg
-    // Calculate motorA output
-    targetPos = guiIn.des_motor_ang_A;
+    // motorA
+    targetPos = guiIn.des_motor_ang_right_A;
     currentPos = rs.rLeg.halfA.motorAngle;
     targetVel = 0.0;
     currentVel = rs.rLeg.halfA.motorVelocity;
-    controllerOutput.rLeg.motorCurrentA = pd2Controller(targetPos, currentPos, targetVel, currentVel);
+    co.rLeg.motorCurrentA = pd3Controller(targetPos, currentPos, targetVel, currentVel);
 
-    // Calculate motorB output
-    targetPos = guiIn.des_motor_ang_B;
+    // motorB
+    targetPos = guiIn.des_motor_ang_right_B;
     currentPos = rs.rLeg.halfB.motorAngle;
     targetVel = 0.0;
     currentVel = rs.rLeg.halfB.motorVelocity;
-    controllerOutput.rLeg.motorCurrentB = pd3Controller(targetPos, currentPos, targetVel, currentVel);
+    co.rLeg.motorCurrentB = pd4Controller(targetPos, currentPos, targetVel, currentVel);
 
-    controllerOutput.command = medulla_state_run;
+    // Hip
+    targetPos = guiIn.des_motor_ang_right_hip;
+    currentPos = rs.lLeg.halfB.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfB.motorVelocity;
+    co.rLeg.motorCurrentHip = pd5Controller(targetPos, currentPos, targetVel, currentVel);
+
+    co.command = medulla_state_run;
 
     // If we're enabled, inform the GUI
     guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
@@ -93,7 +118,7 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
 
-    return controllerOutput;
+    return co;
 }
 
 // Don't put control code below here!
@@ -115,6 +140,14 @@ bool ATCMotorPosition::configureHook() {
     if (pd3)
         pd3Controller = pd3->provides("pd")->getOperation("runController");
 
+    pd4 = this->getPeer(pd4Name);
+    if (pd4)
+        pd4Controller = pd4->provides("pd")->getOperation("runController");
+
+    pd5 = this->getPeer(pd5Name);
+    if (pd5)
+        pd5Controller = pd5->provides("pd")->getOperation("runController");
+
     // Get references to the attributes
     P0 = pd0->properties()->getProperty("P");
     D0 = pd0->properties()->getProperty("D");
@@ -124,6 +157,10 @@ bool ATCMotorPosition::configureHook() {
     D2 = pd2->properties()->getProperty("D");
     P3 = pd3->properties()->getProperty("P");
     D3 = pd3->properties()->getProperty("D");
+    P4 = pd4->properties()->getProperty("P");
+    D4 = pd4->properties()->getProperty("D");
+    P5 = pd5->properties()->getProperty("P");
+    D5 = pd5->properties()->getProperty("D");
 
     log(Info) << "[ATCMP] configured!" << endlog();
     return true;
