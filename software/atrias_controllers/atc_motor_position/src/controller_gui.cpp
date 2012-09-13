@@ -16,10 +16,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("position_right_A_hscale",   position_right_A_hscale);
     gui->get_widget("position_right_B_hscale",   position_right_B_hscale);
     gui->get_widget("position_right_hip_hscale", position_right_hip_hscale);
-    gui->get_widget("position_leg_motor_p_hscale", position_leg_motor_p_spinbutton);
-    gui->get_widget("position_leg_motor_d_hscale", position_leg_motor_d_spinbutton);
-    gui->get_widget("position_hip_motor_p_hscale", position_hip_motor_p_spinbutton);
-    gui->get_widget("position_hip_motor_d_hscale", position_hip_motor_d_spinbutton);
+    gui->get_widget("position_leg_motor_p_spinbutton", position_leg_motor_p_spinbutton);
+    gui->get_widget("position_leg_motor_d_spinbutton", position_leg_motor_d_spinbutton);
+    gui->get_widget("position_hip_motor_p_spinbutton", position_hip_motor_p_spinbutton);
+    gui->get_widget("position_hip_motor_d_spinbutton", position_hip_motor_d_spinbutton);
     gui->get_widget("set_leg_motor_position_checkbutton", set_leg_motor_position_checkbutton);
     gui->get_widget("set_hip_motor_position_checkbutton", set_hip_motor_position_checkbutton);
 
