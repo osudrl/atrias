@@ -16,9 +16,13 @@
 // C
 #include <stdlib.h>
 
+#include <robot_invariant_defs.h>
+
 // Datatypes
 #include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
+#include <atrias_shared/globals.h>
 #include <asc_biped_boom_init/controller_log_data.h>
 
 using namespace RTT;
@@ -31,15 +35,12 @@ namespace controller {
 class ASCBipedBoomInit : public TaskContext {
 private:
     // Operations
-    void passRobotState(atrias_msgs::robot_state _rs);
-    int isInitialized(void);
-    MotorCurrent leftLeg(double aTargetPos, double bTargetPos);
-    double capCurrent(double current);
+    bool done(void);
+    atrias_msgs::controller_output run(atrias_msgs::robot_state rs, RobotPos pos);
 
     // Operation variables
-    atrias_msgs::robot_state rs;
-    int stateCheck;
-    MotorCurrent motorCurrent;
+    atrias_msgs::controller_output co;
+    uint8_t robotConfig;
 
     // Subcontroller names
     std::string pd0Name;

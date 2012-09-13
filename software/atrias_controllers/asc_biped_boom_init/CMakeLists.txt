@@ -36,7 +36,7 @@ rosbuild_genmsg()
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-#include_directories(../../../robot_definitions)
+include_directories(../../../robot_definitions)
 
 
 # Find RTT libraries and build Orocos Component.

@@ -30,6 +30,8 @@ find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 # documentation.
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
+include_directories(../../../robot_definitions)
+
 #
 # Components, types and plugins.
 #

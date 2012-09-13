@@ -18,18 +18,28 @@ struct MotorVelocity {
     double B;
 };
 
-struct MotorCurrent {
-    double A;
-    double B;
-};
-
 struct SinOut {
     double pos;
     double vel;
 };
 
-}
-}
+struct RobotPosLegHalf {
+    double A;
+    double B;
+};
 
+struct RobotPosLeg {
+    double hip;
+    RobotPosLegHalf halfA;
+    RobotPosLegHalf halfB;
+};
+
+struct RobotPos {
+    RobotPosLeg lLeg;
+    RobotPosLeg rLeg;
+};
+
+}
+}
 
 #endif

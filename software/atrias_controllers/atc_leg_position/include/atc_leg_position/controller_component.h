@@ -17,6 +17,7 @@
 
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
+#include <robot_invariant_defs.h>
 
 // Datatypes
 #include <atrias_msgs/robot_state.h>

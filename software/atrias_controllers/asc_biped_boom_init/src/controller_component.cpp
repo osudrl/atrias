@@ -13,23 +13,13 @@ ASCBipedBoomInit::ASCBipedBoomInit(std::string name):
     logPort(name + "_log")
 {
     this->provides("bipedBoomInit")
-        ->addOperation("passRobotState", &ASCBipedBoomInit::passRobotState, this)
-        .doc("Pass the current robot state for use in the other operations");
-    this->provides("bipedBoomInit")
-        ->addOperation("isInitialized", &ASCBipedBoomInit::isInitialized, this)
+        ->addOperation("done", &ASCBipedBoomInit::done, this)
         .doc("Returns true if at the requested point");
     this->provides("bipedBoomInit")
-        ->addOperation("leftLeg", &ASCBipedBoomInit::leftLeg, this);
-//    this->provides("bipedBoomInit")
-//      ->addOperation("rightLeg", &ASCBipedBoomInit::rightLeg, this);
-//    this->provides("bipedBoomInit")
-//      ->addOperation("leftHip", &ASCBipedBoomInit::leftHip, this);
-//    this->provides("bipedBoomInit")
-//      ->addOperation("rightHip", &ASCBipedBoomInit::rightHip, this);
+        ->addOperation("run", &ASCBipedBoomInit::run, this);
 
     // Add properties
     this->addProperty("pd0Name", pd0Name);
-
     // Logging
     // Create a port
     addPort(logPort); 
@@ -45,57 +35,70 @@ ASCBipedBoomInit::ASCBipedBoomInit(std::string name):
     log(Info) << "[ASCBipedBoomInit] asc_biped_boom_init controller constructed!" << endlog();
 }
 
-void ASCBipedBoomInit::passRobotState(atrias_msgs::robot_state _rs)
+bool ASCBipedBoomInit::done(void)
 {
-    // Set the gains
-    P0.set(500.0);
-    D0.set(20.0);
-
-    rs = _rs;
-    // Stuff the msg and push to ROS for logging
-    //logData.input = exampleInput;
-    //logData.output = out;
-    //logPort.write(logData);
-    return;
+    // Are we done?
+    return false;
 }
 
-int ASCBipedBoomInit::isInitialized(void)
+atrias_msgs::controller_output ASCBipedBoomInit::run(atrias_msgs::robot_state rs, RobotPos pos)
 {
-    stateCheck=0;
-    return stateCheck;
-}
+    // Determine the robot config
+    robotConfig = (uint8_t)rs.robotConfiguration;
+    co.lLeg.motorCurrentA = 0.0;
+    co.lLeg.motorCurrentB = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA = 0.0;
+    co.rLeg.motorCurrentB = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+    co.command = medulla_state_idle;
 
-MotorCurrent ASCBipedBoomInit::leftLeg(double aTargetPos, double bTargetPos)
-{
-    targetPos = aTargetPos;
-    currentPos = rs.lLeg.halfA.motorAngle;
-    targetVel = 0.0;
-    currentVel = rs.lLeg.halfA.motorVelocity;
-    motorCurrent.A = pd0RunController(targetPos, currentPos, targetVel, currentVel);
+    // If nothing is going on
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::DISABLE)
+    {
+        return co;
+    }
+    else if (robotConfig == (uint8_t)rtOps::RobotConfiguration::UNKNOWN)
+    {
+        return co;
+    }
 
-    targetPos = bTargetPos;
-    currentPos = rs.lLeg.halfB.motorAngle;
-    targetVel = 0.0;
-    currentVel = rs.lLeg.halfB.motorVelocity;
-    motorCurrent.B = pd0RunController(targetPos, currentPos, targetVel, currentVel);
+    // We have a robot.  What is it?
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_NOHIP)
+    {
+        // Set up the sin wave controllers
+        // Set up the pd controllers
 
-    // Current cap
-    cap = 5.0;
-    motorCurrent.A = ASCBipedBoomInit::capCurrent(motorCurrent.A);
-    motorCurrent.B = ASCBipedBoomInit::capCurrent(motorCurrent.B);
+        P0.set(500.0);
+        D0.set(20.0);
 
-    return motorCurrent;
-}
+        targetPos = 1.0;
+        currentPos = rs.lLeg.halfA.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfA.motorVelocity;
+        co.lLeg.motorCurrentA = pd0RunController(targetPos, currentPos, targetVel, currentVel);
 
-double ASCBipedBoomInit::capCurrent(double current)
-{
-    // Cap the current
-    if ( current > cap )
-        current = cap;
-    else if ( current < -cap )
-        current = -cap;
+        targetPos = 2.0;
+        currentPos = rs.lLeg.halfB.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfB.motorVelocity;
+        co.lLeg.motorCurrentB = pd0RunController(targetPos, currentPos, targetVel, currentVel);
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_HIP)
+    {
+        // Nothing yet
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_NOHIP)
+    {
+        // Nothing yet
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_FULL)
+    {
+        // Nothing yet
+    }
+    co.command = medulla_state_run;
+    return co;
 
-    return current;
 }
 
 bool ASCBipedBoomInit::configureHook() {

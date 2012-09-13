@@ -16,6 +16,8 @@
 // C
 #include <stdlib.h>
 
+#include <robot_invariant_defs.h>
+
 // Datatypes
 #include <asc_component/controller_log_data.h>
 
