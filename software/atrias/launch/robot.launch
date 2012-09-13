@@ -8,5 +8,8 @@
              user       = "root"
              env-loader = "/opt/ros/fuerte/env.sh"
              default    = "true" />
+    <env name="ROS_MASTER_URI" value="http://cov020-hp0:11311" />
+
+    <include file="$(find atrias)/launch/orocos_ecat.launch" />
 </launch>
 

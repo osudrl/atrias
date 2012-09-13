@@ -48,7 +48,8 @@ bool Safety::shouldHalt() {
 	}
 	
 	// Disable these safeties if robot configuration is DISABLE.
-	if (robotState.robotConfiguration == (RobotConfiguration_t) RobotConfiguration::DISABLE)
+	if (robotState.robotConfiguration == (RobotConfiguration_t) RobotConfiguration::DISABLE ||
+	    robotState.disableSafeties)
 		return false;
 	
 	// Check if a single motor has exceeded its limits.

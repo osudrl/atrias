@@ -2,6 +2,8 @@ Header header
 
 uint8   medullaState
 uint8   errorFlags
+# The raw limit switch values. Clamped on until a reset is commanded.
+uint8   limitSwitches
 
 float64 legAngle
 float64 legVelocity

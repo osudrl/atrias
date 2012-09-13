@@ -6,6 +6,9 @@ uint8 cmState
 
 uint8 robotConfiguration
 
+# Whether or not safeties should be disabled. This will, in the future, be replaced w/ a GUI-controlled overrides system.
+bool disableSafeties
+
 robot_state_leg lLeg
 robot_state_leg rLeg
 
@@ -13,4 +16,4 @@ robot_state_location position
 
 uint8   boomMedullaState
 float64 boomLogicVoltage
-float64 boomMedullaErrorFlags
+uint8   boomMedullaErrorFlags

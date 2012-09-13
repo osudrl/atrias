@@ -15,3 +15,18 @@ Encoder
 	I+	Orange	-		6
 	I-	Blue	-		7
 	GND	Black	-		8
+
+IMU
+	6/9/12V	Green	-		6
+	RS232Rx	Orange	-		4
+	RS232Tx	Yellow	-		5
+	GND	Purple	-		8    
+
+HIP Encoder
+Magnetic
+	5v	Yellow
+	GND	Green
+	Clk+	Purple
+	CLk-	Brown
+	Data+	Pink
+	Data-	Gray

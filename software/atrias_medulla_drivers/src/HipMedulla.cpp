@@ -106,9 +106,12 @@ int32_t HipMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
         return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_HIP_MAX_TORQUE);
 }
 
-void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip) {
-	hip.InsideLimitSwitch  = *limitSwitches & (1 << 0);
-	hip.OutsideLimitSwitch = *limitSwitches & (1 << 1);
+void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip, bool reset) {
+	if (reset)
+		hip.limitSwitches = 0;
+	hip.limitSwitches     |= *limitSwitches;
+	hip.InsideLimitSwitch  = hip.limitSwitches & (1 << 0);
+	hip.OutsideLimitSwitch = hip.limitSwitches & (1 << 1);
 }
 
 void HipMedulla::updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
@@ -179,7 +182,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	
 	atrias_msgs::robot_state_hip& hip = *hip_ptr;
 	
-	updateLimitSwitches(hip);
+	updateLimitSwitches(hip, *state == medulla_state_idle);
 	updateEncoderValues(deltaTime, hip);
 	
 	hip.medullaState = *state;

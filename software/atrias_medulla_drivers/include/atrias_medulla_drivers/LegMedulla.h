@@ -7,6 +7,7 @@
 
 // Orocos
 #include <rtt/os/TimeService.hpp>
+#include <rtt/Logger.hpp>
 
 #include <stdint.h>
 
@@ -68,6 +69,7 @@ class LegMedulla : public Medulla {
 	uint16_t        incrementalEncoderValue;
 	uint16_t        incrementalEncoderTimestampValue;
 	uint8_t         timingCounterValue;
+	double          legPositionOffset;
 	
 	// Whether or not the encoder value for this cycle was erroneous
 	bool            skipMotorEncoder;
@@ -108,8 +110,10 @@ class LegMedulla : public Medulla {
 	void         processThermistors(atrias_msgs::robot_state& robotState);
 	
 	/** @brief Reads in all the limit switches and updates robotState.
+	  * @param robotState The robot_state in which to store the new values.
+	  * @param reset Whether or not to reset the limit switch values.
 	  */
-	void         processLimitSwitches(atrias_msgs::robot_state& robotState);
+	void         processLimitSwitches(atrias_msgs::robot_state& robotState, bool reset);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */
@@ -123,6 +127,10 @@ class LegMedulla : public Medulla {
 	  * @param deltaTime The time between the DC clock signals for the last and this cycle.
 	  */
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
+	
+	/** @brief Updates the value of legPositionOffset.
+	  */
+	void         updateLegPositionOffset();
 	
 	public:
 		/** @brief Does the slave-specific init.
