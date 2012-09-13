@@ -73,7 +73,6 @@ int main (int argc, char **argv) {
     guiPtr->get_widget("drawing_area", drawing_area);
 
     guiPtr->get_widget("log_file_chkbox", log_file_chkbox);
-    guiPtr->get_widget("log_frequency_spin", log_frequency_spin);
     guiPtr->get_widget("log_file_chooser", log_file_chooser);
 
     guiPtr->get_widget("restart_button", restart_button);
@@ -93,10 +92,6 @@ int main (int argc, char **argv) {
      */
 
     changeEstopButtonColor(disableStateColor);
-
-    log_frequency_spin->set_range(100, 10000);
-    log_frequency_spin->set_increments(100, 500);
-    log_frequency_spin->set_value(100);
 
     /*
      * #end Initialize GUI region
