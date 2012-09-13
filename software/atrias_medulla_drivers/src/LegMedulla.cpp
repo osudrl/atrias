@@ -121,7 +121,7 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processVelocities(deltaTime, robot_state);
 	processIncrementalEncoders(deltaTime, robot_state);
 	processThermistors(robot_state);
-	processLimitSwitches(robot_state);
+	processLimitSwitches(robot_state, *state == medulla_state_idle);
 	processVoltages(robot_state);
 	processCurrents(robot_state);
 	switch (*id) {
@@ -353,7 +353,7 @@ void LegMedulla::processCurrents(atrias_msgs::robot_state& robotState) {
 	}
 }
 
-void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState) {
+void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState, bool reset) {
 	atrias_msgs::robot_state_leg* leg;
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
@@ -371,27 +371,33 @@ void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState) {
 		default:
 			return;
 	}
-	
+
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			// Fallthrough
 		case MEDULLA_RIGHT_LEG_A_ID:
-			leg->halfA.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
-			leg->halfA.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
-			leg->halfA.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
-			leg->halfA.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
-			leg->legExtendSwitch           = (*limitSwitch) & (1 << 4);
-			leg->legRetractSwitch          = (*limitSwitch) & (1 << 5);
+			if (reset)
+				leg->halfA.limitSwitches = 0;
+			leg->halfA.limitSwitches |= *limitSwitch;
+			leg->halfA.motorNegLimitSwitch = (leg->halfA.limitSwitches) & (1 << 0);
+			leg->halfA.motorPosLimitSwitch = (leg->halfA.limitSwitches) & (1 << 1);
+			leg->halfA.negDeflectSwitch    = (leg->halfA.limitSwitches) & (1 << 2);
+			leg->halfA.posDeflectSwitch    = (leg->halfA.limitSwitches) & (1 << 3);
+			leg->legExtendSwitch           = (leg->halfA.limitSwitches) & (1 << 4);
+			leg->legRetractSwitch          = (leg->halfA.limitSwitches) & (1 << 5);
 			break;
 			
 		case MEDULLA_LEFT_LEG_B_ID:
 			// Fallthrough
 		case MEDULLA_RIGHT_LEG_B_ID:
-			leg->halfB.motorNegLimitSwitch = (*limitSwitch) & (1 << 0);
-			leg->halfB.motorPosLimitSwitch = (*limitSwitch) & (1 << 1);
-			leg->halfB.negDeflectSwitch    = (*limitSwitch) & (1 << 2);
-			leg->halfB.posDeflectSwitch    = (*limitSwitch) & (1 << 3);
-			leg->motorRetractSwitch        = (*limitSwitch) & (1 << 4);
+			if (reset)
+				leg->halfB.limitSwitches = 0;
+			leg->halfB.limitSwitches |= *limitSwitch;
+			leg->halfB.motorNegLimitSwitch = (leg->halfB.limitSwitches) & (1 << 0);
+			leg->halfB.motorPosLimitSwitch = (leg->halfB.limitSwitches) & (1 << 1);
+			leg->halfB.negDeflectSwitch    = (leg->halfB.limitSwitches) & (1 << 2);
+			leg->halfB.posDeflectSwitch    = (leg->halfB.limitSwitches) & (1 << 3);
+			leg->motorRetractSwitch        = (leg->halfB.limitSwitches) & (1 << 4);
 			break;
 	}
 }

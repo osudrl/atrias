@@ -79,8 +79,9 @@ class HipMedulla : public Medulla {
 	/** @brief Updates the limit switch values in robotState w/ the
 	  * new values from the Medulla.
 	  * @param hip The robot_state_hip in which to store the new values.
+	  * @param reset Whether or not to reset the limit switch values.
 	  */
-	void    updateLimitSwitches(atrias_msgs::robot_state_hip& hip);
+	void    updateLimitSwitches(atrias_msgs::robot_state_hip& hip, bool reset);
 	
 	/** @brief Updates the position and velocities from the encoders.
 	  * @param delta_time The delta time, in nsecs, between the relevant DC

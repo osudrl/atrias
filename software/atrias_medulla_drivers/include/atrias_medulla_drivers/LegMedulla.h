@@ -108,8 +108,10 @@ class LegMedulla : public Medulla {
 	void         processThermistors(atrias_msgs::robot_state& robotState);
 	
 	/** @brief Reads in all the limit switches and updates robotState.
+	  * @param robotState The robot_state in which to store the new values.
+	  * @param reset Whether or not to reset the limit switch values.
 	  */
-	void         processLimitSwitches(atrias_msgs::robot_state& robotState);
+	void         processLimitSwitches(atrias_msgs::robot_state& robotState, bool reset);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */
