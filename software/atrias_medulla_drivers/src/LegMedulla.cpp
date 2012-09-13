@@ -16,10 +16,10 @@ LegMedulla::LegMedulla() : Medulla() {
 	pdoEntryDatas[8]  = {2, (void**) &toeSensor};
 	pdoEntryDatas[9]  = {4, (void**) &motorEncoder};
 	pdoEntryDatas[10] = {2, (void**) &motorEncoderTimestamp};
-	pdoEntryDatas[11] = {2, (void**) &incrementalEncoder};
-	pdoEntryDatas[12] = {2, (void**) &incrementalEncoderTimestamp};
-	pdoEntryDatas[13] = {4, (void**) &legEncoder};
-	pdoEntryDatas[14] = {2, (void**) &legEncoderTimestamp};
+	pdoEntryDatas[11] = {4, (void**) &legEncoder};
+	pdoEntryDatas[12] = {2, (void**) &legEncoderTimestamp};
+	pdoEntryDatas[13] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[14] = {2, (void**) &incrementalEncoderTimestamp};
 	pdoEntryDatas[15] = {2, (void**) &motorVoltage};
 	pdoEntryDatas[16] = {2, (void**) &logicVoltage};
 	pdoEntryDatas[17] = {2, (void**) &thermistor0};

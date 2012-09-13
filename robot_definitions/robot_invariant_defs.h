@@ -24,7 +24,7 @@ typedef enum {
 // Total size of process data in each direction for each Medulla type
 #define MEDULLA_LEG_INPUTS_SIZE                                               47
 #define MEDULLA_LEG_OUTPUTS_SIZE                                               7
-#define MEDULLA_HIP_INPUTS_SIZE                                               23
+#define MEDULLA_HIP_INPUTS_SIZE                                               91
 #define MEDULLA_HIP_OUTPUTS_SIZE                                               7
 #define MEDULLA_BOOM_INPUTS_SIZE                                              24
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
@@ -119,12 +119,12 @@ typedef enum {
 #define MTR_MAX_COUNT                                                      19900
 
 // ... and the maximum torque (for scaling)
-#define MTR_MAX_TORQUE                                                     120.0
+#define MTR_MAX_TORQUE                                                      60.0
 #define MTR_HIP_MAX_TORQUE                                                  60.0
 
 // Here are the main motor torque limits. These are not used for scaling, just as limits.
-#define MAX_MTR_TRQ_CMD                                                    120.0
-#define MIN_MTR_TRQ_CMD                                                   -120.0
+#define MAX_MTR_TRQ_CMD                                                     60.0
+#define MIN_MTR_TRQ_CMD                                                    -60.0
 #define MAX_HIP_MTR_TRQ_CMD                                                 60.0
 #define MIN_HIP_MTR_TRQ_CMD                                                -60.0
 

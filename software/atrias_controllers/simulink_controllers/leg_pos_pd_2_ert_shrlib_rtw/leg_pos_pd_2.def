@@ -1,0 +1,15 @@
+{
+global:
+leg_pos_pd_2_M_;
+leg_pos_pd_2_M;
+leg_pos_pd_2_U;
+leg_pos_pd_2_Y;
+leg_pos_pd_2_initialize;
+leg_pos_pd_2_step;
+leg_pos_pd_2_terminate;
+
+
+leg_pos_pd_2_P;
+local:
+		*;
+};

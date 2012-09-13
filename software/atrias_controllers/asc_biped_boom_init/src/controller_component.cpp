@@ -47,6 +47,10 @@ ASCBipedBoomInit::ASCBipedBoomInit(std::string name):
 
 void ASCBipedBoomInit::passRobotState(atrias_msgs::robot_state _rs)
 {
+    // Set the gains
+    P0.set(500.0);
+    D0.set(20.0);
+
     rs = _rs;
     // Stuff the msg and push to ROS for logging
     //logData.input = exampleInput;
@@ -61,11 +65,37 @@ int ASCBipedBoomInit::isInitialized(void)
     return stateCheck;
 }
 
-MotorTorque ASCBipedBoomInit::leftLeg(double aTargetPos, double bTargetPos)
+MotorCurrent ASCBipedBoomInit::leftLeg(double aTargetPos, double bTargetPos)
 {
-    motorTorque.A = 0.0;
-    motorTorque.B = 0.0;
-    return motorTorque;
+    targetPos = aTargetPos;
+    currentPos = rs.lLeg.halfA.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfA.motorVelocity;
+    motorCurrent.A = pd0RunController(targetPos, currentPos, targetVel, currentVel);
+
+    targetPos = bTargetPos;
+    currentPos = rs.lLeg.halfB.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfB.motorVelocity;
+    motorCurrent.B = pd0RunController(targetPos, currentPos, targetVel, currentVel);
+
+    // Current cap
+    cap = 5.0;
+    motorCurrent.A = ASCBipedBoomInit::capCurrent(motorCurrent.A);
+    motorCurrent.B = ASCBipedBoomInit::capCurrent(motorCurrent.B);
+
+    return motorCurrent;
+}
+
+double ASCBipedBoomInit::capCurrent(double current)
+{
+    // Cap the current
+    if ( current > cap )
+        current = cap;
+    else if ( current < -cap )
+        current = -cap;
+
+    return current;
 }
 
 bool ASCBipedBoomInit::configureHook() {

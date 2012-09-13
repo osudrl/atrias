@@ -53,17 +53,17 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
     // begin control code //
 
     // Inputs
-    leg_position_pd_test_U.motorAnglesAB[0] = rs.lLeg.halfA.motorAngle;
-    leg_position_pd_test_U.motorAnglesAB[1] = rs.lLeg.halfB.motorAngle;
-    leg_position_pd_test_U.desiredAnglesLA_KA[0] = guiIn.leg_ang;
-    leg_position_pd_test_U.desiredAnglesLA_KA[1] = guiIn.leg_len;
+    leg_pos_pd_2_U.motorAngleA_morotAngleB[0] = rs.lLeg.halfA.motorAngle;
+    leg_pos_pd_2_U.motorAngleA_morotAngleB[1] = rs.lLeg.halfB.motorAngle;
+    leg_pos_pd_2_U.desiredLegAngle_desiredKneeAngl[0] = guiIn.leg_ang;
+    leg_pos_pd_2_U.desiredLegAngle_desiredKneeAngl[1] = guiIn.leg_len;
 
     // Setp the controller
-    leg_position_pd_test_step();
+    leg_pos_pd_2_step();
 
     // Stuff the msg
-    co.lLeg.motorCurrentA = leg_position_pd_test_Y.uA_uB[0];
-    co.lLeg.motorCurrentB = leg_position_pd_test_Y.uA_uB[1];
+    co.lLeg.motorCurrentA = leg_pos_pd_2_Y.uA_uB[0];
+    co.lLeg.motorCurrentB = leg_pos_pd_2_Y.uA_uB[1];
 
     // end control code //
 
@@ -81,15 +81,15 @@ atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robo
 // Don't put control code below here!
 bool ATCMatlabTesting::configureHook() {
     // Controller parameters
-    //leg_position_pd_test_P.Saturation_UpperSat = 40;
-    //leg_position_pd_test_P.Saturation_LowerSat = -40;
-    //leg_position_pd_test_P.LegAngleP_Gain = 600;
-    //leg_position_pd_test_P.LegAngleD_Gain = 20;
-    //leg_position_pd_test_P.KneeAngleP_Gain = 600;
-    //leg_position_pd_test_P.KneeAngleD_Gain = 20;
+    //leg_pos_pd_2_P.Saturation_UpperSat = 40;
+    //leg_pos_pd_2_P.Saturation_LowerSat = -40;
+    //leg_pos_pd_2_P.LegAngleP_Gain = 600;
+    //leg_pos_pd_2_P.LegAngleD_Gain = 20;
+    //leg_pos_pd_2_P.KneeAngleP_Gain = 600;
+    //leg_pos_pd_2_P.KneeAngleD_Gain = 20;
 
     // Initialize the controller
-    leg_position_pd_test_initialize();
+    leg_pos_pd_2_initialize();
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
@@ -104,7 +104,7 @@ void ATCMatlabTesting::updateHook() {
 }
 
 void ATCMatlabTesting::stopHook() {
-    leg_position_pd_test_terminate();
+    leg_pos_pd_2_terminate();
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 

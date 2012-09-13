@@ -41,12 +41,12 @@ class LegMedulla : public Medulla {
 	uint32_t*       motorEncoder;
 	int16_t*        motorEncoderTimestamp;
 	
-	uint16_t*       incrementalEncoder;
-	uint16_t*       incrementalEncoderTimestamp;
-	
 	uint32_t*       legEncoder;
 	int16_t*        legEncoderTimestamp;
 	
+	uint16_t*       incrementalEncoder;
+	uint16_t*       incrementalEncoderTimestamp;
+
 	uint16_t*       motorVoltage;
 	uint16_t*       logicVoltage;
 	
