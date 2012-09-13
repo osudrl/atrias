@@ -37,8 +37,7 @@ class ATCMotorPosition : public TaskContext {
 private:
     shared::GuiPublishTimer         *pubTimer;
 
-    atrias_msgs::robot_state        robotState;
-    atrias_msgs::controller_output  controllerOutput;
+    atrias_msgs::controller_output  co;
 
     controller_input                guiIn;
     controller_status               guiOut;
