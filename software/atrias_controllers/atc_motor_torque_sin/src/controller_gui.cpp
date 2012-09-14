@@ -27,7 +27,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 }
 
 void guiUpdate() {
-    controllerDataOut.motor  = motor_selection_combobox->get_active();
+    controllerDataOut.motor  = motor_selection_combobox->get_active_row_number();
     controllerDataOut.offset = motor_offset_spinbutton->get_value();
     controllerDataOut.frq    = frequency_hscale->get_value();
     controllerDataOut.amp    = amplitude_hscale->get_value();
