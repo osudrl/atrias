@@ -23,46 +23,56 @@ ATCMotorTorqueSin::ATCMotorTorqueSin(std::string name):
     // Add ports.
     addEventPort(guiDataIn);
 
+    // Set default values
+    prevMotor = 6;
+
     log(Info) << "[ATCMTS] Motor sin wave controller constructed!" << endlog();
 }
 
 // Put control code here.
 atrias_msgs::controller_output ATCMotorTorqueSin::runController(atrias_msgs::robot_state rs) {
+    // Do nothing unless told otherwise
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
-    {
-        // Do nothing
-        co.lLeg.motorCurrentA   = 0.0;
-        co.lLeg.motorCurrentB   = 0.0;
-        co.lLeg.motorCurrentHip = 0.0;
-        co.rLeg.motorCurrentA   = 0.0;
-        co.rLeg.motorCurrentB   = 0.0;
-        co.rLeg.motorCurrentHip = 0.0;
         return co;
-    }
+
+    // Check to see if this is a new motor
+    // If so, reset the sin wave so it starts at zero amps
+    if (prevMotor != guiIn.motor)
+        sin0Reset();
+
+    prevMotor = guiIn.motor;
 
     // Get a sinusoidal input
     sinOut = sin0Controller(guiIn.frq, guiIn.amp);
 
+    // Compensate for motor construction and assembly variations 
     current = sinOut.pos + guiIn.offset;
 
     // lLeg A
-    if      (guiIn.motor == 1)
+    if      (guiIn.motor == 0)
         co.lLeg.motorCurrentA   = current;
     // lLeg B
-    else if (guiIn.motor == 2)
+    else if (guiIn.motor == 1)
         co.lLeg.motorCurrentB   = current;
     // lLeg Hip
-    else if (guiIn.motor == 3)
+    else if (guiIn.motor == 2)
         co.lLeg.motorCurrentHip = current;
     // rLeg A
-    else if (guiIn.motor == 4)
+    else if (guiIn.motor == 3)
         co.rLeg.motorCurrentA   = current;
     // rLeg B
-    else if (guiIn.motor == 5)
+    else if (guiIn.motor == 4)
         co.rLeg.motorCurrentB   = current;
     // rLeg Hip
-    else if (guiIn.motor == 6)
+    else if (guiIn.motor == 5)
         co.rLeg.motorCurrentHip = current;
 
     co.command = medulla_state_run;
@@ -72,11 +82,13 @@ atrias_msgs::controller_output ATCMotorTorqueSin::runController(atrias_msgs::rob
 
 // Don't put control code below here!
 bool ATCMotorTorqueSin::configureHook() {
-    // Connect to the subcontrollers
-    // Sin controllers
+    // Connect to the sin controller operations
     sin0 = this->getPeer(sin0Name);
     if (sin0)
+    {
         sin0Controller = sin0->provides("sg")->getOperation("runController");
+        sin0Reset      = sin0->provides("sg")->getOperation("reset");
+    }
 
     log(Info) << "[ATCMTS] configured!" << endlog();
     return true;

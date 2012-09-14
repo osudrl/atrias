@@ -15,6 +15,8 @@ ASCSinGenerator::ASCSinGenerator(std::string name):
     this->provides("sg")
         ->addOperation("runController", &ASCSinGenerator::runController, this, OwnThread)
         .doc("Run the controller.");
+    this->provides("sg")
+        ->addOperation("reset", &ASCSinGenerator::reset, this, OwnThread);
 
     // For logging
     // Create a port
@@ -32,6 +34,12 @@ ASCSinGenerator::ASCSinGenerator(std::string name):
     accumulator = 0.0;
 
     log(Info) << "[ASCSG] Motor position controller constructed!" << endlog();
+}
+
+void ASCSinGenerator::reset(void)
+{
+    // Reset the accumulator
+    accumulator = 0.0;
 }
 
 SinOut ASCSinGenerator::runController(double frequency, double amplitude)
