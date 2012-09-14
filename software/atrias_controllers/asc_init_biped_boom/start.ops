@@ -6,14 +6,14 @@ export void dummyFunction( ) {
     return
 }
 
-export void ascBipedBoomInitStart( string controllerName ) {
+export void ascInitBipedBoomStart( string controllerName ) {
     print.ln("Beginning of the subcontroller start function. Controller name: " + controllerName)
     # This dummyFunction call is a hack to make function calling work
     dummyFunction()
     print.ln("Dummy function returned")
 
     # Set up the component
-    loadComponent(controllerName, "ASCBipedBoomInit")
+    loadComponent(controllerName, "ASCInitBipedBoom")
     setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
     
     # Set up subcontrollers

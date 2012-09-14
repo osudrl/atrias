@@ -8,8 +8,8 @@
 #ifndef CONTROLLER_GUI_H_
 #define CONTROLLER_GUI_H_
 
-#include <atc_biped_boom_init_test/controller_input.h>
-#include <atc_biped_boom_init_test/controller_status.h>
+#include <atc_init_biped_boom/controller_input.h>
+#include <atc_init_biped_boom/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
@@ -20,8 +20,8 @@ ros::Subscriber sub;
 ros::Publisher pub;
 
 // Data
-atc_biped_boom_init_test::controller_input controllerDataOut;
-atc_biped_boom_init_test::controller_status controllerDataIn;
+atc_init_biped_boom::controller_input controllerDataOut;
+atc_init_biped_boom::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::HScale *torque_A_hscale,
@@ -38,7 +38,7 @@ double torque_A_param;
 double torque_B_param;
 double torque_hip_param;
 
-void controllerCallback(const atc_biped_boom_init_test::controller_status &status);
+void controllerCallback(const atc_init_biped_boom::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */
 

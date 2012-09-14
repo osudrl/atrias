@@ -1,24 +1,24 @@
 /*! \file controller_component.cpp
  *  \author Andrew Peekema
- *  \brief Orocos Component code for the atc_biped_boom_init_test controller.
+ *  \brief Orocos Component code for the atc_init_biped_boom controller.
  */
 
-#include <atc_biped_boom_init_test/controller_component.h>
+#include <atc_init_biped_boom/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ATCBipedBoomInitTest::ATCBipedBoomInitTest(std::string name):
+ATCInitBipedBoomTest::ATCInitBipedBoomTest(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCBipedBoomInitTest::runController, this, ClientThread)
+        ->addOperation("runController", &ATCInitBipedBoomTest::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties
-    this->addProperty("bipedBoomInit0Name", bipedBoomInit0Name);
+    this->addProperty("initBipedBoom0Name", initBipedBoom0Name);
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -36,10 +36,10 @@ ATCBipedBoomInitTest::ATCBipedBoomInitTest(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ATCMT] atc_biped_boom_init_test controller constructed!" << endlog();
+    log(Info) << "[ATCMT] atc_init_biped_boom controller constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCBipedBoomInitTest::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::robot_state rs) {
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
     {
@@ -65,38 +65,38 @@ atrias_msgs::controller_output ATCBipedBoomInitTest::runController(atrias_msgs::
 }
 
 // Don't put control code below here!
-bool ATCBipedBoomInitTest::configureHook() {
+bool ATCInitBipedBoomTest::configureHook() {
     // Connect to the subcontrollers
-    bipedBoomInit0 = this->getPeer(bipedBoomInit0Name);
-    if (bipedBoomInit0)
-        bipedBoomInit0Done = bipedBoomInit0->provides("bipedBoomInit")->getOperation("done");
+    initBipedBoom0 = this->getPeer(initBipedBoom0Name);
+    if (initBipedBoom0)
+        initBipedBoom0Done = initBipedBoom0->provides("initBipedBoom")->getOperation("done");
 
-    bipedBoomInit0 = this->getPeer(bipedBoomInit0Name);
-    if (bipedBoomInit0)
-        bipedBoomInit0Run = bipedBoomInit0->provides("bipedBoomInit")->getOperation("run");
+    initBipedBoom0 = this->getPeer(initBipedBoom0Name);
+    if (initBipedBoom0)
+        initBipedBoom0Run = initBipedBoom0->provides("initBipedBoom")->getOperation("run");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
-bool ATCBipedBoomInitTest::startHook() {
+bool ATCInitBipedBoomTest::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCBipedBoomInitTest::updateHook() {
+void ATCInitBipedBoomTest::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCBipedBoomInitTest::stopHook() {
+void ATCInitBipedBoomTest::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCBipedBoomInitTest::cleanupHook() {
+void ATCInitBipedBoomTest::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCBipedBoomInitTest)
+ORO_CREATE_COMPONENT(ATCInitBipedBoomTest)
 
 }
 }

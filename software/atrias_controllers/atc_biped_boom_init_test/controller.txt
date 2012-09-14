@@ -1,1 +1,0 @@
-description=Testing the asc_biped_boom_init controller

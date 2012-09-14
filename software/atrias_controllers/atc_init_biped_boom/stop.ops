@@ -6,8 +6,8 @@ import("rtt_rospack")
 controller.stop()
 
 # Shut the subcontrollers down
-scripting.runScript(rospack.find("asc_biped_boom_init") + "/stop.ops")
-ascBipedBoomInitStop(controller.bipedBoomInit0Name)
+scripting.runScript(rospack.find("asc_init_biped_boom") + "/stop.ops")
+ascInitBipedBoomStop(controller.initBipedBoom0Name)
 
 # cleanup the atc
 controller.cleanup()
