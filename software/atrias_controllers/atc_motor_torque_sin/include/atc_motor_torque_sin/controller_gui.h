@@ -19,11 +19,13 @@ ros::Publisher pub;
 
 atc_motor_torque_sin::controller_input controllerDataOut;
 
-Gtk::HScale *leg_angle_amplitude_hscale,
-            *leg_angle_frequency_hscale,
-            *leg_length_amplitude_hscale,
-            *leg_length_frequency_hscale,
-            *p_sine_wave_hscale,
-            *d_sine_wave_hscale;
+Gtk::ComboBox *motor_selection_combobox;
+
+Gtk::SpinButton *motor_offset_spinbutton;
+
+Gtk::HScale *angle_amplitude_hscale,
+            *angle_frequency_hscale,
+            *length_amplitude_hscale,
+            *length_frequency_hscale;
 
 #endif /* CONTROLLER_GUI_H_ */
