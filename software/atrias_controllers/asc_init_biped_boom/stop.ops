@@ -6,7 +6,7 @@ export void dummyFunction( ) {
     return
 }
 
-export void ascBipedBoomInitStop( string controllerName ) {
+export void ascInitBipedBoomStop( string controllerName ) {
     print.ln("Beginning of the stop function. Controller name: " + controllerName)
     # This dummyFunction call is a hack to make function calling work
     dummyFunction()

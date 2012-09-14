@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b atc_biped_boom_init_test is ... 
+\b atc_init_biped_boom is ... 
 
 <!-- 
 Provide an overview of your package.

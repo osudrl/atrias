@@ -1,13 +1,13 @@
 /*
  * controller_gui.cpp
  *
- * atc_biped_boom_init_test controller
+ * atc_init_biped_boom controller
  *
  *  Created on: May 5, 2012
  *      Author: Michael Anderson
  */
 
-#include <atc_biped_boom_init_test/controller_gui.h>
+#include <atc_init_biped_boom/controller_gui.h>
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
@@ -22,15 +22,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torque_hip_hscale->set_range(-10., 10.);
 
         // Set up subscriber and publisher.
-        sub = nh.subscribe("atc_biped_boom_init_test_status", 0, controllerCallback);
-        pub = nh.advertise<atc_biped_boom_init_test::controller_input>("atc_biped_boom_init_test_input", 0);
+        sub = nh.subscribe("atc_init_biped_boom_status", 0, controllerCallback);
+        pub = nh.advertise<atc_init_biped_boom::controller_input>("atc_init_biped_boom_input", 0);
         return true;
     }
     return false;
 }
 
 //! \brief Update our local copy of the controller status.
-void controllerCallback(const atc_biped_boom_init_test::controller_status &status) {
+void controllerCallback(const atc_init_biped_boom::controller_status &status) {
     controllerDataIn = status;
 }
 

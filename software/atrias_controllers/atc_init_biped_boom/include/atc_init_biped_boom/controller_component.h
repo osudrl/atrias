@@ -3,7 +3,7 @@
 
 /*! \file controller_component.h
  *  \author Andrew Peekema
- *  \brief Orocos Component header for atc_biped_boom_init_test controller.
+ *  \brief Orocos Component header for atc_init_biped_boom controller.
  */
 
 // Orocos 
@@ -22,22 +22,22 @@
 #include <robot_invariant_defs.h>
 
 // Datatypes
-#include <atc_biped_boom_init_test/controller_input.h>
-#include <atc_biped_boom_init_test/controller_status.h>
-#include <atc_biped_boom_init_test/controller_log_data.h>
+#include <atc_init_biped_boom/controller_input.h>
+#include <atc_init_biped_boom/controller_status.h>
+#include <atc_init_biped_boom/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace atc_biped_boom_init_test;
+using namespace atc_init_biped_boom;
 
 namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCBipedBoomInitTest : public TaskContext {
+class ATCInitBipedBoomTest : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
@@ -45,14 +45,14 @@ private:
     atrias_msgs::controller_output co;
 
     // Subcontroller names
-    std::string bipedBoomInit0Name;
+    std::string initBipedBoom0Name;
 
     // Subcontroller components
-    TaskContext *bipedBoomInit0; 
+    TaskContext *initBipedBoom0; 
 
     // Subcontroller operations
-    OperationCaller<bool(void)> bipedBoomInit0Done;
-    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs, RobotPos pos)> bipedBoomInit0Run;
+    OperationCaller<bool(void)> initBipedBoom0Done;
+    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs, RobotPos pos)> initBipedBoom0Run;
 
     // Logging
     controller_log_data              logData;
@@ -65,7 +65,7 @@ private:
 
 public:
     // Constructor
-    ATCBipedBoomInitTest(std::string name);
+    ATCInitBipedBoomTest(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();
