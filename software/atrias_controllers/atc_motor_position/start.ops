@@ -1,7 +1,6 @@
 # For loading subcontroller scripts
 require("scripting")
 require("print")
-import("rtt_rospack")
 
 # Set up the top controller
 import("atc_motor_position")

@@ -43,6 +43,20 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_hip_motor_p_spinbutton->set_range(0., 100);
         position_hip_motor_d_spinbutton->set_range(0., 10);
 
+        // Set default values
+        position_left_A_hscale->set_value(M_PI/4.0);
+        position_left_B_hscale->set_value(3.0*M_PI/4.0);
+        position_left_hip_hscale->set_value(hipCenter);
+        position_right_A_hscale->set_value(M_PI/4.0);
+        position_right_B_hscale->set_value(3.0*M_PI/4.0);
+        position_right_hip_hscale->set_value(hipCenter);
+        position_leg_motor_p_spinbutton->set_value(600.0);
+        position_leg_motor_d_spinbutton->set_value(20.0);
+        position_hip_motor_p_spinbutton->set_value(0.0);
+        position_hip_motor_d_spinbutton->set_value(0.0);
+        set_leg_motor_position_checkbutton->set_active(false);
+        set_hip_motor_position_checkbutton->set_active(false);
+
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
         pub = nh.advertise<atc_motor_position::controller_input>("atc_motor_position_input", 0);
@@ -56,11 +70,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 void controllerCallback(const atc_motor_position::controller_status &status) {
     controllerDataIn = status;
 }
-
-//void getParam(std::string name, double param, Gtk::Object* gtkObj) {
-//    nh.getParam(name, param);
-//    gtkObj->set_value(param);
-//}
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
@@ -105,13 +114,13 @@ void setParameters() {
 
 void guiUpdate() {
     if ((!controllerDataIn.isEnabled) && set_leg_motor_position_checkbutton->get_active() && set_hip_motor_position_checkbutton->get_active()) {
-    	//We want to update the sliders with the current position
-    	position_left_A_hscale->set_value(controllerDataIn.motorPositionLeftA);
-    	position_left_B_hscale->set_value(controllerDataIn.motorPositionLeftB);
-    	position_left_hip_hscale->set_value(controllerDataIn.motorPositionLeftHip);
-    	position_right_A_hscale->set_value(controllerDataIn.motorPositionRightA);
-    	position_right_B_hscale->set_value(controllerDataIn.motorPositionRightB);
-    	position_right_hip_hscale->set_value(controllerDataIn.motorPositionRightHip);
+        //We want to update the sliders with the current position
+        position_left_A_hscale->set_value(controllerDataIn.motorPositionLeftA);
+        position_left_B_hscale->set_value(controllerDataIn.motorPositionLeftB);
+        position_left_hip_hscale->set_value(controllerDataIn.motorPositionLeftHip);
+        position_right_A_hscale->set_value(controllerDataIn.motorPositionRightA);
+        position_right_B_hscale->set_value(controllerDataIn.motorPositionRightB);
+        position_right_hip_hscale->set_value(controllerDataIn.motorPositionRightHip);
     }
 
     controllerDataOut.des_motor_ang_left_A    = position_left_A_hscale->get_value();

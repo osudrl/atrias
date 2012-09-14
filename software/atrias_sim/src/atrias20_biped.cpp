@@ -10,7 +10,7 @@ GazeboControllerConnector::GazeboControllerConnector()
 {
     legMotorGearRatio = 50;
     hipGearRatio = 64;
-    legTorqueConstant = 0.060; // N*m/Amp
+    legTorqueConstant = 0.099; // N*m/Amp
     hipTorqueConstant = 0.126; // N*m/Amp
     prevLeftLegAngle = 0.0;
     prevRightLegAngle = 0.0;
@@ -88,9 +88,9 @@ void GazeboControllerConnector::Load(physics::WorldPtr _parent, sdf::ElementPtr 
     ros::init(argc, argv, "gazebo_controller_plugin");
     ros::NodeHandle nh;
 
-	// Tell rtOps and the controllers that we're a full biped.
-	ciso.robotConfiguration = (atrias::rtOps::RobotConfiguration_t) atrias::rtOps::RobotConfiguration::BIPED_FULL;
-	ciso.disableSafeties = true;
+    // Tell rtOps and the controllers that we're a full biped.
+    ciso.robotConfiguration = (atrias::rtOps::RobotConfiguration_t) atrias::rtOps::RobotConfiguration::BIPED_FULL;
+    ciso.disableSafeties = true;
 
     atrias_sim_sub = nh.subscribe("atrias_controller_requests", 0, &GazeboControllerConnector::atrias_controller_callback, this);
     atrias_sim_pub = nh.advertise<atrias_msgs::robot_state>("atrias_sim_data", 10);
@@ -201,7 +201,7 @@ void GazeboControllerConnector::OnUpdate()
 
     motorRot = this->hipLinks.leftMotor->GetWorldPose().CoordRotationSub(hipRot);
     motorRot.GetAsAxis(axis, angle);
-    angle = angle*axis.x;
+    angle = angle*axis.x + 3.0*M_PI/2.0;
     angle = wrap_angle(angle);
     ciso.lLeg.hip.legBodyAngle = angle;
     ciso.lLeg.hip.legBodyVelocity = (angle - prevLeftLegAngle) / timestep; 
@@ -209,7 +209,7 @@ void GazeboControllerConnector::OnUpdate()
 
     motorRot = this->hipLinks.rightMotor->GetWorldPose().CoordRotationSub(hipRot);
     motorRot.GetAsAxis(axis, angle);
-    angle = angle*axis.x + M_PI;
+    angle = angle*axis.x + 3.0*M_PI/2.0;
     angle = wrap_angle(angle);
     ciso.rLeg.hip.legBodyAngle = angle;
     ciso.rLeg.hip.legBodyVelocity = (angle - prevRightLegAngle) / timestep; 
