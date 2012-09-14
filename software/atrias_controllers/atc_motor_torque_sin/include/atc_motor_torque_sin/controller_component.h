@@ -41,6 +41,7 @@ private:
 
     InputPort<controller_input>     guiDataIn;
 
+
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state);
 
@@ -53,6 +54,8 @@ private:
 
     // Math variables
     SinOut sinOut;
+    int prevMotor;
+    double current;
 
 
 public:

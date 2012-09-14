@@ -41,18 +41,17 @@ ATCComponent::ATCComponent(std::string name):
 }
 
 atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
+    // Do nothing unless told otherwise
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
-    {
-        // Do nothing
-        co.lLeg.motorCurrentA = 0.0;
-        co.lLeg.motorCurrentB = 0.0;
-        co.lLeg.motorCurrentHip = 0.0;
-        co.rLeg.motorCurrentA = 0.0;
-        co.rLeg.motorCurrentB = 0.0;
-        co.rLeg.motorCurrentHip = 0.0;
         return co;
-    }
 
     // begin control code //
 

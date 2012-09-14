@@ -11,9 +11,7 @@
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
-//#include <rtt/OperationCaller.hpp>
 #include <rtt/Component.hpp>
-//#include <rtt/Property.hpp>
 
 // C
 #include <stdlib.h>
@@ -32,6 +30,7 @@ class ASCSinGenerator : public TaskContext {
 private:
     // Operation
     SinOut runController(double frequency, double amplitude);
+    void reset(void);
 
     SinOut sinOut;
 
