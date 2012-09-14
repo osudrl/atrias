@@ -1,6 +1,6 @@
 # Set up the top controller
-import("atc_motor_sin_wave")
-loadComponent("controller", "ATCMotorSinWave")
+import("atc_motor_torque_sin")
+loadComponent("controller", "ATCMotorTorqueSin")
 setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 
 # Connect RTOps with this controller (so they can see each other's operations)
@@ -40,7 +40,7 @@ controller.sin1Name = sin1Name
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
-gui_policy.name_id = "/atc_motor_sin_wave_input"
+gui_policy.name_id = "/atc_motor_torque_sin_input"
 stream("controller.gui_data_in", gui_policy)
 
 # Configure components and subcomponents

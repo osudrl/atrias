@@ -56,6 +56,8 @@ typedef enum {
 // Limit switch masks for medullas
 #define MEDULLA_LLEG_ASIDE_LSW_MASK                    0b00111111
 #define MEDULLA_LLEG_BSIDE_LSW_MASK                    0b00011111
+#define MEDULLA_RLEG_ASIDE_LSW_MASK                    0b00111111
+#define MEDULLA_RLEG_BSIDE_LSW_MASK                    0b00011111
 
 // Medulla errors
 typedef enum {

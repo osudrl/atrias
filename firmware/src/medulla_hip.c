@@ -48,10 +48,12 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
 limit_sw_port_t hip_limit_sw_port;
 adc_port_t adc_port_a, adc_port_b;
 renishaw_ssi_encoder_t hip_encoder;
+#ifdef USING_IMU
 IMU_data_t hip_imu;
 
 //IMU read pacing Flag
 uint8_t hip_imu_pace_flag;
+#endif
 
 // variables for filtering thermistor and voltage values
 uint8_t hip_thermistor_counter;
@@ -113,6 +115,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	initilize_amp(false, hip_measured_current_pdo, 0);
 
+	#ifdef USING_IMU
 	if (id == MEDULLA_RIGHT_HIP_ID) {
 		#ifdef DEBUG_HIGH
 		printf("[Medulla Hip] Initializin IMU\n");
@@ -121,6 +124,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 		init_IMU(&PORTE, &USARTE0, &hip_imu, hip_imu_data_pdo);
 		hip_imu_pace_flag = 0;
 	}
+	#endif
 	
 	*master_watchdog = hip_counter_pdo;
 	*packet_counter = hip_medulla_counter_pdo;
@@ -130,11 +134,11 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 }
 
 inline void hip_enable_outputs(void) {
-	//enable_amp(true);
+	enable_amp(false);
 }
 
 inline void hip_disable_outputs(void) {
-//	disable_amp(true);
+	disable_amp(false);
 }
 
 void hip_update_inputs(uint8_t id) {
@@ -153,8 +157,11 @@ void hip_update_inputs(uint8_t id) {
 	while (!adc_read_complete(&adc_port_b));
 	while (!renishaw_ssi_encoder_read_complete(&hip_encoder));
 
+	renishaw_ssi_encoder_process_data(&hip_encoder);
+	
 	hip_send_current_read = true;
 
+	#ifdef USING_IMU
 	if (id == MEDULLA_RIGHT_HIP_ID) {
 		if(hip_imu_pace_flag){
 			hip_imu_pace_flag = 0;
@@ -166,6 +173,7 @@ void hip_update_inputs(uint8_t id) {
 			hip_imu_pace_flag = 1;
 		}
 	}
+	#endif
 }
 
 bool hip_run_halt(uint8_t id) {

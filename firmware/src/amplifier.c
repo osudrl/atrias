@@ -90,6 +90,9 @@ void set_amp_output(int32_t value) {
 		//io_set_output(amp_direction_pin,io_high);
 		PORTC.OUTSET = 1<<3;
 		pwm_set_output(&amp_pwm_output,(uint16_t)value);
+
+		//for verifying pwm update rate, toggle PORTC pin 5
+		PORTC.OUT ^= 0b00100000;
 	}
 }
 

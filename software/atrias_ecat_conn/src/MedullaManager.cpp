@@ -88,10 +88,10 @@ void MedullaManager::initHipMedulla(ec_slavet slave) {
 			lLegHip = medulla;
 			break;
 		case MEDULLA_RIGHT_HIP_ID:
-			log(RTT::Info) << "Left hip medulla identified" <<
+			log(RTT::Info) << "Right hip medulla identified" <<
 				RTT::endlog();
-			delete(lLegHip);
-			lLegHip = medulla;
+			delete(rLegHip);
+			rLegHip = medulla;
 			break;
 		default:
 			log(RTT::Warning) << "Hip medulla not identified."
