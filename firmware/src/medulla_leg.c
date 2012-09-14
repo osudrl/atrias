@@ -159,6 +159,10 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	*leg_medulla_id_pdo = id;
 	*commanded_state = leg_command_state_pdo;
 	*current_state = leg_current_state_pdo;
+
+	//Set PORTC Pin 5 to output to debug pwm update rate
+	PORTC.DIR |= 0b00100000;
+
 }
 
 inline void leg_enable_outputs(void) {
