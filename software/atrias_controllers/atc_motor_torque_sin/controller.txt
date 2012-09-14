@@ -1,0 +1,1 @@
+description=Applies a PD controller to adjust the motor angle in a sine wave.
