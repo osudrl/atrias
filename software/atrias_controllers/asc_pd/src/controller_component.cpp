@@ -26,8 +26,8 @@ ASCPD::ASCPD(std::string name):
     // For logging
     // Create a port
     addPort(logPort); 
-    // Unbuffered
-    ConnPolicy policy = RTT::ConnPolicy::data();
+    // Buffer connection so we get all data. Reasonable buffer size of 100000.
+    ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
     // Transport type = ROS
     policy.transport = 3;
     // ROS topic name
