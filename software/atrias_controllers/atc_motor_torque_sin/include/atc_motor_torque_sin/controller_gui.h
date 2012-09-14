@@ -23,9 +23,7 @@ Gtk::ComboBox *motor_selection_combobox;
 
 Gtk::SpinButton *motor_offset_spinbutton;
 
-Gtk::HScale *angle_amplitude_hscale,
-            *angle_frequency_hscale,
-            *length_amplitude_hscale,
-            *length_frequency_hscale;
+Gtk::HScale *amplitude_hscale,
+            *frequency_hscale;
 
 #endif /* CONTROLLER_GUI_H_ */
