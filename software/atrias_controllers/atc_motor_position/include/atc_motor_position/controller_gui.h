@@ -22,17 +22,21 @@ ros::Publisher pub;
 atc_motor_position::controller_input controllerDataOut;
 atc_motor_position::controller_status controllerDataIn;
 
+// Math
+double hipIn, hipOut, hipCenter;
+
 // GUI elements
 Gtk::HScale *position_left_A_hscale,
-        *position_left_B_hscale,
-	*position_left_hip_hscale,
-	*position_right_A_hscale,
-	*position_right_B_hscale,
-	*position_right_hip_hscale,
-        *leg_motor_p_spinbutton,
-        *leg_motor_d_spinbutton,
-        *hip_motor_p_spinbutton,
-        *hip_motor_d_spinbutton;
+            *position_left_B_hscale,
+            *position_left_hip_hscale,
+            *position_right_A_hscale,
+            *position_right_B_hscale,
+            *position_right_hip_hscale;
+
+Gtk::SpinButton *position_leg_motor_p_spinbutton,
+                *position_leg_motor_d_spinbutton,
+                *position_hip_motor_p_spinbutton,
+                *position_hip_motor_d_spinbutton;
 
 Gtk::CheckButton *set_leg_motor_position_checkbutton;
 Gtk::CheckButton *set_hip_motor_position_checkbutton;

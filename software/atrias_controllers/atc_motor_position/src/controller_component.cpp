@@ -45,25 +45,25 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     // Set the PD gains
     // lLeg
     // MotorA
-    P0.set(guiIn.leg_p_gain);
-    D0.set(guiIn.leg_d_gain);
+    P0.set(guiIn.leg_motor_p_gain);
+    D0.set(guiIn.leg_motor_d_gain);
     // MotorB
-    P1.set(guiIn.leg_p_gain);
-    D1.set(guiIn.leg_d_gain);
-    // lHip
-    P2.set(guiIn.hip_p_gain);
-    D2.set(guiIn.hip_d_gain);
+    P1.set(guiIn.leg_motor_p_gain);
+    D1.set(guiIn.leg_motor_d_gain);
+    // Hip
+    P2.set(guiIn.hip_motor_p_gain);
+    D2.set(guiIn.hip_motor_d_gain);
 
     // rLeg
     // MotorA
-    P3.set(guiIn.leg_p_gain);
-    D3.set(guiIn.leg_d_gain);
+    P3.set(guiIn.leg_motor_p_gain);
+    D3.set(guiIn.leg_motor_d_gain);
     // MotorB
-    P4.set(guiIn.leg_p_gain);
-    D4.set(guiIn.leg_d_gain);
-    // rHip
-    P5.set(guiIn.hip_p_gain);
-    D5.set(guiIn.hip_d_gain);
+    P4.set(guiIn.leg_motor_p_gain);
+    D4.set(guiIn.leg_motor_d_gain);
+    // Hip
+    P5.set(guiIn.hip_motor_p_gain);
+    D5.set(guiIn.hip_motor_d_gain);
 
     // lLeg
     // motorA
@@ -82,9 +82,9 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
 
     // Hip
     targetPos = guiIn.des_motor_ang_left_hip;
-    currentPos = rs.lLeg.halfB.motorAngle;
+    currentPos = rs.lLeg.hip.legBodyAngle;
     targetVel = 0.0;
-    currentVel = rs.lLeg.halfB.motorVelocity;
+    currentVel = rs.lLeg.hip.legBodyVelocity;
     co.lLeg.motorCurrentHip = pd2Controller(targetPos, currentPos, targetVel, currentVel);
 
     // rLeg
@@ -104,9 +104,9 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
 
     // Hip
     targetPos = guiIn.des_motor_ang_right_hip;
-    currentPos = rs.lLeg.halfB.motorAngle;
+    currentPos = rs.rLeg.hip.legBodyAngle;
     targetVel = 0.0;
-    currentVel = rs.lLeg.halfB.motorVelocity;
+    currentVel = rs.rLeg.hip.legBodyVelocity;
     co.rLeg.motorCurrentHip = pd5Controller(targetPos, currentPos, targetVel, currentVel);
 
     co.command = medulla_state_run;

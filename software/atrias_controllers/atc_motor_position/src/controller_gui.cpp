@@ -29,16 +29,33 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_hip_motor_p_spinbutton && position_hip_motor_d_spinbutton &&
         set_leg_motor_position_checkbutton && set_hip_motor_position_checkbutton) {
         // Set ranges.
-        position_left_A_hscale->set_range(-1 * (M_PI / 4.), M_PI);
+        hipIn = (M_PI/180.0)*9.0;  // design is 10.0 degrees
+        hipOut = (M_PI/180.0)*19.0; // design is 20.0 degrees
+        hipCenter = (3.0*M_PI/2.0);
+        position_left_A_hscale->set_range(-1. * (M_PI / 4.), M_PI);
         position_left_B_hscale->set_range(0, (5. * M_PI) / 4.);
-        position_left_hip_hscale->set_range(0, 0);   // TODO: Calculate range.
-        position_right_A_hscale->set_range(-1 * (M_PI / 4.), M_PI);
+        position_left_hip_hscale->set_range(-1.0 * hipIn + hipCenter, hipOut + hipCenter);
+        position_right_A_hscale->set_range(-1. * (M_PI / 4.), M_PI);
         position_right_B_hscale->set_range(0, (5. * M_PI) / 4.);
-        position_right_hip_hscale->set_range(0, 0);   // TODO: Calculate range.
-	position_leg_motor_p_spinbutton->set_range(0., 10000.);
+        position_right_hip_hscale->set_range(-1.0 * hipOut + hipCenter, hipIn + hipCenter);
+        position_leg_motor_p_spinbutton->set_range(0., 10000.);
         position_leg_motor_d_spinbutton->set_range(0., 500.);
-	position_hip_motor_p_spinbutton->set_range(0., 0.);   // TODO: Calculate range.
-        position_hip_motor_d_spinbutton->set_range(0., 0.);   // TODO: Calculate range.
+        position_hip_motor_p_spinbutton->set_range(0., 100);
+        position_hip_motor_d_spinbutton->set_range(0., 10);
+
+        // Set default values
+        position_left_A_hscale->set_value(M_PI/4.0);
+        position_left_B_hscale->set_value(3.0*M_PI/4.0);
+        position_left_hip_hscale->set_value(hipCenter);
+        position_right_A_hscale->set_value(M_PI/4.0);
+        position_right_B_hscale->set_value(3.0*M_PI/4.0);
+        position_right_hip_hscale->set_value(hipCenter);
+        position_leg_motor_p_spinbutton->set_value(600.0);
+        position_leg_motor_d_spinbutton->set_value(20.0);
+        position_hip_motor_p_spinbutton->set_value(0.0);
+        position_hip_motor_d_spinbutton->set_value(0.0);
+        set_leg_motor_position_checkbutton->set_active(false);
+        set_hip_motor_position_checkbutton->set_active(false);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
@@ -53,11 +70,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 void controllerCallback(const atc_motor_position::controller_status &status) {
     controllerDataIn = status;
 }
-
-//void getParam(std::string name, double param, Gtk::Object* gtkObj) {
-//    nh.getParam(name, param);
-//    gtkObj->set_value(param);
-//}
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
@@ -101,14 +113,14 @@ void setParameters() {
 }
 
 void guiUpdate() {
-    if ((!controllerDataIn.isEnabled) && set_position_checkbutton->get_active()) {
-    	//We want to update the sliders with the current position
-    	position_left_A_hscale->set_value(controllerDataIn.motorPositionLeftA);
-    	position_left_B_hscale->set_value(controllerDataIn.motorPositionLeftB);
-    	position_left_hip_hscale->set_value(controllerDataIn.motorPositionLeftHip);
-    	position_right_A_hscale->set_value(controllerDataIn.motorPositionRightA);
-    	position_right_B_hscale->set_value(controllerDataIn.motorPositionRightB);
-    	position_right_hip_hscale->set_value(controllerDataIn.motorPositionRightHip);
+    if ((!controllerDataIn.isEnabled) && set_leg_motor_position_checkbutton->get_active() && set_hip_motor_position_checkbutton->get_active()) {
+        //We want to update the sliders with the current position
+        position_left_A_hscale->set_value(controllerDataIn.motorPositionLeftA);
+        position_left_B_hscale->set_value(controllerDataIn.motorPositionLeftB);
+        position_left_hip_hscale->set_value(controllerDataIn.motorPositionLeftHip);
+        position_right_A_hscale->set_value(controllerDataIn.motorPositionRightA);
+        position_right_B_hscale->set_value(controllerDataIn.motorPositionRightB);
+        position_right_hip_hscale->set_value(controllerDataIn.motorPositionRightHip);
     }
 
     controllerDataOut.des_motor_ang_left_A    = position_left_A_hscale->get_value();
@@ -117,10 +129,10 @@ void guiUpdate() {
     controllerDataOut.des_motor_ang_right_A   = position_right_A_hscale->get_value();
     controllerDataOut.des_motor_ang_right_B   = position_right_B_hscale->get_value();
     controllerDataOut.des_motor_ang_right_hip = position_right_hip_hscale->get_value();
-    controllerDataOut.leg_motor_p_gain        = position_leg_motor_p_gain_spinbutton->get_value();
-    controllerDataOut.leg_motor_d_gain        = position_leg_motor_d_gain_spinbutton->get_value();
-    controllerDataOut.hip_motor_p_gain        = position_hip_motor_p_gain_spinbutton->get_value();
-    controllerDataOut.hip_motor_d_gain        = position_hip_motor_d_gain_spinbutton->get_value();
+    controllerDataOut.leg_motor_p_gain        = position_leg_motor_p_spinbutton->get_value();
+    controllerDataOut.leg_motor_d_gain        = position_leg_motor_d_spinbutton->get_value();
+    controllerDataOut.hip_motor_p_gain        = position_hip_motor_p_spinbutton->get_value();
+    controllerDataOut.hip_motor_d_gain        = position_hip_motor_d_spinbutton->get_value();
 
     pub.publish(controllerDataOut);
 }

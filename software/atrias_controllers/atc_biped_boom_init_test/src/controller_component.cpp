@@ -53,11 +53,6 @@ atrias_msgs::controller_output ATCBipedBoomInitTest::runController(atrias_msgs::
         return co;
     }
 
-    bipedBoomInit0PassRobotState(rs);
-    lMotorCurrent = bipedBoomInit0LeftLeg(M_PI/4.0, 3.0*M_PI/4.0);
-    co.lLeg.motorCurrentA = lMotorCurrent.A;
-    co.lLeg.motorCurrentB = lMotorCurrent.B;
-
     // Command a run state
     co.command = medulla_state_run;
 
@@ -74,15 +69,11 @@ bool ATCBipedBoomInitTest::configureHook() {
     // Connect to the subcontrollers
     bipedBoomInit0 = this->getPeer(bipedBoomInit0Name);
     if (bipedBoomInit0)
-        bipedBoomInit0LeftLeg = bipedBoomInit0->provides("bipedBoomInit")->getOperation("leftLeg");
+        bipedBoomInit0Done = bipedBoomInit0->provides("bipedBoomInit")->getOperation("done");
 
     bipedBoomInit0 = this->getPeer(bipedBoomInit0Name);
     if (bipedBoomInit0)
-        bipedBoomInit0IsInitialized = bipedBoomInit0->provides("bipedBoomInit")->getOperation("isInitialized");
-
-    bipedBoomInit0 = this->getPeer(bipedBoomInit0Name);
-    if (bipedBoomInit0)
-        bipedBoomInit0PassRobotState = bipedBoomInit0->provides("bipedBoomInit")->getOperation("passRobotState");
+        bipedBoomInit0Run = bipedBoomInit0->provides("bipedBoomInit")->getOperation("run");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;

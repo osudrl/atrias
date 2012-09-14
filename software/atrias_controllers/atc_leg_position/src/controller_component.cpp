@@ -43,7 +43,7 @@ ATCLegPosition::ATCLegPosition(std::string name):
     targetVel = 0;
     currentVel = 0;
 
-    log(Info) << "[ATCMP] Leg position controller constructed!" << endlog();
+    log(Info) << "[ATCLP] Leg position controller constructed!" << endlog();
 }
 
 // Put control code here.
@@ -174,12 +174,12 @@ bool ATCLegPosition::configureHook() {
     P5 = pd5->properties()->getProperty("P");
     D5 = pd5->properties()->getProperty("D");
 
-    log(Info) << "[ATCMP] configured!" << endlog();
+    log(Info) << "[ATCLP] configured!" << endlog();
     return true;
 }
 
 bool ATCLegPosition::startHook() {
-    log(Info) << "[ATCMP] started!" << endlog();
+    log(Info) << "[ATCLP] started!" << endlog();
     return true;
 }
 
@@ -188,12 +188,12 @@ void ATCLegPosition::updateHook() {
 }
 
 void ATCLegPosition::stopHook() {
-    log(Info) << "[ATCMP] stopped!" << endlog();
+    log(Info) << "[ATCLP] stopped!" << endlog();
 }
 
 void ATCLegPosition::cleanupHook() {
     delete pubTimer;
-    log(Info) << "[ATCMP] cleaned up!" << endlog();
+    log(Info) << "[ATCLP] cleaned up!" << endlog();
 }
 
 ORO_CREATE_COMPONENT(ATCLegPosition)
