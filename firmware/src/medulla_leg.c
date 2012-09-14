@@ -67,6 +67,7 @@ biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
 
 // variables for filtering thermistor and voltage values
+uint8_t limit_switch_counter;
 uint8_t thermistor_counter;
 uint16_t motor_voltage_counter;
 uint16_t logic_voltage_counter;
@@ -106,7 +107,10 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	switch (id) {
 		case MEDULLA_LEFT_LEG_A_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_LLEG_ASIDE_LSW_MASK,&TCF0,leg_estop); break;
 		case MEDULLA_LEFT_LEG_B_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_LLEG_BSIDE_LSW_MASK,&TCF0,leg_estop); break;
+		case MEDULLA_RIGHT_LEG_A_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_RLEG_ASIDE_LSW_MASK,&TCF0,leg_estop); break;
+		case MEDULLA_RIGHT_LEG_B_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_RLEG_BSIDE_LSW_MASK,&TCF0,leg_estop); break;
 	}
+	limit_switch_counter = 0;
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing ADC ports\n");
@@ -236,7 +240,13 @@ void leg_wait_loop() {
 
 bool leg_check_error(uint8_t id) {
 	#ifdef ERROR_CHECK_LIMIT_SWITCH
-	if (limit_sw_get_port(&limit_sw_port)) { // If any of the limit switches are pressed, go to error
+	if (limit_sw_get_port(&limit_sw_port)) {
+		limit_switch_counter ++;
+	}
+	else if (limit_switch_counter > 0)
+		limit_switch_counter --;
+	
+	if (limit_switch_counter > 50) {
 		#if defined DEBUG_LOW || DEBUG_HIGH
 		printf("[Medulla Leg] Limit switch error: %d\n",limit_sw_get_port(&limit_sw_port));
 		#endif
