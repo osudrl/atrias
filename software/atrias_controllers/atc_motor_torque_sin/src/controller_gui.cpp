@@ -9,6 +9,12 @@
 
 #include <atc_motor_torque_sin/controller_gui.h>
 
+void reset_gui() {
+    motor_offset_spinbutton->set_value(0.0);
+    amplitude_hscale->set_value(0.0);
+    frequency_hscale->set_value(0.0);
+}
+
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("motor_selection_combobox", motor_selection_combobox);
     gui->get_widget("motor_offset_spinbutton", motor_offset_spinbutton);
@@ -21,6 +27,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         amplitude_hscale->set_range(0., 1.0);
         frequency_hscale->set_range(0., 20.);
         pub = nh.advertise<atc_motor_torque_sin::controller_input>("atc_motor_torque_sin_input", 0);
+
+        // Reset the GUI when motor selection is changed.
+        motor_selection_combobox->signal_changed().connect(sigc::ptr_fun((void(*)()) reset_gui));
+
         return true;
     }
     return false;
