@@ -96,6 +96,7 @@ void ConnManager::loop() {
 		if (midCycle) {
 			// Missed deadline!
 			eCatConn->sendEvent(controllerManager::RtOpsEvent::MISSED_DEADLINE);
+			log(RTT::Warning) << "MISSED DEADLINE!!!!!" << RTT::endlog();
 		}
 		// This is used to compensate for timing overshoots when adjusting
 		// to match the DC clock.
