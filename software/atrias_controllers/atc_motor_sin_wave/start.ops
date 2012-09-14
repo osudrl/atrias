@@ -32,8 +32,8 @@ addPeer("controller", sin1Name)
 # Pass the names of the subcontrollers to the controller
 controller.pd0Name = pd0Name
 controller.pd1Name = pd1Name
-controller.pd2Name = pd1Name
-controller.pd3Name = pd1Name
+controller.pd2Name = pd2Name
+controller.pd3Name = pd3Name
 controller.sin0Name = sin0Name
 controller.sin1Name = sin1Name
 
