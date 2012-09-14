@@ -3,7 +3,7 @@
 
 /*! \file controller_component.h
  *  \author Andrew Peekema
- *  \brief Orocos Component header for the asc_biped_boom_init subcontroller.
+ *  \brief Orocos Component header for the asc_init_biped_boom subcontroller.
  */
 
 // Orocos 
@@ -23,16 +23,16 @@
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/globals.h>
-#include <asc_biped_boom_init/controller_log_data.h>
+#include <asc_init_biped_boom/controller_log_data.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace asc_biped_boom_init;
+using namespace asc_init_biped_boom;
 
 namespace atrias {
 namespace controller {
 
-class ASCBipedBoomInit : public TaskContext {
+class ASCInitBipedBoom : public TaskContext {
 private:
     // Operations
     bool done(void);
@@ -65,7 +65,7 @@ private:
 
 public:
     // Constructor
-    ASCBipedBoomInit(std::string name);
+    ASCInitBipedBoom(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();

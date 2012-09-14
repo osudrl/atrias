@@ -1,22 +1,22 @@
 /*! \file controller_component.cpp
  *  \author Andrew Peekema
- *  \brief Orocos Component code for the asc_biped_boom_init subcontroller.
+ *  \brief Orocos Component code for the asc_init_biped_boom subcontroller.
  */
 
-#include <asc_biped_boom_init/controller_component.h>
+#include <asc_init_biped_boom/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ASCBipedBoomInit::ASCBipedBoomInit(std::string name):
+ASCInitBipedBoom::ASCInitBipedBoom(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log")
 {
     this->provides("bipedBoomInit")
-        ->addOperation("done", &ASCBipedBoomInit::done, this)
+        ->addOperation("done", &ASCInitBipedBoom::done, this)
         .doc("Returns true if at the requested point");
     this->provides("bipedBoomInit")
-        ->addOperation("run", &ASCBipedBoomInit::run, this);
+        ->addOperation("run", &ASCInitBipedBoom::run, this);
 
     // Add properties
     this->addProperty("pd0Name", pd0Name);
@@ -32,16 +32,16 @@ ASCBipedBoomInit::ASCBipedBoomInit(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ASCBipedBoomInit] asc_biped_boom_init controller constructed!" << endlog();
+    log(Info) << "[ASCInitBipedBoom] asc_init_biped_boom controller constructed!" << endlog();
 }
 
-bool ASCBipedBoomInit::done(void)
+bool ASCInitBipedBoom::done(void)
 {
     // Are we done?
     return false;
 }
 
-atrias_msgs::controller_output ASCBipedBoomInit::run(atrias_msgs::robot_state rs, RobotPos pos)
+atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs, RobotPos pos)
 {
     // Determine the robot config
     robotConfig = (uint8_t)rs.robotConfiguration;
@@ -101,7 +101,7 @@ atrias_msgs::controller_output ASCBipedBoomInit::run(atrias_msgs::robot_state rs
 
 }
 
-bool ASCBipedBoomInit::configureHook() {
+bool ASCInitBipedBoom::configureHook() {
     // Connect to the subcontrollers
     pd0 = this->getPeer(pd0Name);
     if (pd0)
@@ -111,27 +111,27 @@ bool ASCBipedBoomInit::configureHook() {
     D0 = pd0->properties()->getProperty("D");
     P0 = pd0->properties()->getProperty("P");
 
-    log(Info) << "[ASCBipedBoomInit] configured!" << endlog();
+    log(Info) << "[ASCInitBipedBoom] configured!" << endlog();
     return true;
 }
 
-bool ASCBipedBoomInit::startHook() {
-    log(Info) << "[ASCBipedBoomInit] started!" << endlog();
+bool ASCInitBipedBoom::startHook() {
+    log(Info) << "[ASCInitBipedBoom] started!" << endlog();
     return true;
 }
 
-void ASCBipedBoomInit::updateHook() {
+void ASCInitBipedBoom::updateHook() {
 }
 
-void ASCBipedBoomInit::stopHook() {
-    log(Info) << "[ASCBipedBoomInit] stopped!" << endlog();
+void ASCInitBipedBoom::stopHook() {
+    log(Info) << "[ASCInitBipedBoom] stopped!" << endlog();
 }
 
-void ASCBipedBoomInit::cleanupHook() {
-    log(Info) << "[ASCBipedBoomInit] cleaned up!" << endlog();
+void ASCInitBipedBoom::cleanupHook() {
+    log(Info) << "[ASCInitBipedBoom] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ASCBipedBoomInit)
+ORO_CREATE_COMPONENT(ASCInitBipedBoom)
 
 }
 }

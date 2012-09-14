@@ -1,13 +1,13 @@
 <package>
-  <description brief="asc_biped_boom_init">
+  <description brief="asc_init_biped_boom">
 
-     asc_biped_boom_init
+     asc_init_biped_boom
 
   </description>
   <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/asc_biped_boom_init</url>
+  <url>http://ros.org/wiki/asc_init_biped_boom</url>
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>

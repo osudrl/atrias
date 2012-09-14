@@ -13,7 +13,7 @@ export void ascBipedBoomInitStart( string controllerName ) {
     print.ln("Dummy function returned")
 
     # Set up the component
-    loadComponent(controllerName, "ASCBipedBoomInit")
+    loadComponent(controllerName, "ASCInitBipedBoom")
     setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
     
     # Set up subcontrollers
