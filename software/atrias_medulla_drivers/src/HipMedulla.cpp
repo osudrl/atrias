@@ -1,5 +1,7 @@
 #include "atrias_medulla_drivers/HipMedulla.h"
 
+#include <rtt/Logger.hpp>
+
 namespace atrias {
 
 namespace medullaDrivers {
@@ -21,7 +23,7 @@ HipMedulla::HipMedulla() : Medulla() {
 	pdoEntryDatas[13] = {2, (void**) &thermistor1};
 	pdoEntryDatas[14] = {2, (void**) &thermistor2};
 	pdoEntryDatas[15] = {2, (void**) &ampMeasuredCurrent};
-	pdoEntryDatas[16] = {4, (void**) &accelX};
+	/*pdoEntryDatas[16] = {4, (void**) &accelX};
 	pdoEntryDatas[17] = {4, (void**) &accelY};
 	pdoEntryDatas[18] = {4, (void**) &accelZ};
 	pdoEntryDatas[19] = {4, (void**) &angRateX};
@@ -36,9 +38,9 @@ HipMedulla::HipMedulla() : Medulla() {
 	pdoEntryDatas[28] = {4, (void**) &m31};
 	pdoEntryDatas[29] = {4, (void**) &m32};
 	pdoEntryDatas[30] = {4, (void**) &m33};
-	pdoEntryDatas[31] = {4, (void**) &timer};
-	pdoEntryDatas[32] = {2, (void**) &incrementalEncoder};
-	pdoEntryDatas[33] = {2, (void**) &incrementalEncoderTimestamp};
+	pdoEntryDatas[31] = {4, (void**) &timer};*/
+	pdoEntryDatas[/*32*/16] = {2, (void**) &incrementalEncoder};
+	pdoEntryDatas[/*33*/17] = {2, (void**) &incrementalEncoderTimestamp};
 }
 
 PDORegData HipMedulla::getPDORegData() {
@@ -103,7 +105,14 @@ void HipMedulla::updateEncoderValues(RTT::os::TimeService::nsecs delta_time,
 	                        actualDeltaTime;
 	hip.legBodyAngle     += dir * HIP_INC_ENCODER_RAD_PER_TICK * deltaPos;
 	hip.absoluteBodyAngle = (((int32_t) *hipEncoder) - calib_val) *
-	                        HIP_ABS_ENCODER_RAD_PER_TICK + calib_pos;
+	                        HIP_ABS_ENCODER_RAD_PER_TICK * -dir + calib_pos;
+    // Compensate for rollover
+    hip.absoluteBodyAngle = fmod(hip.absoluteBodyAngle, M_PI);
+    // Compensate for the difference between % and modulo.
+    hip.absoluteBodyAngle += M_PI;
+    hip.absoluteBodyAngle = fmod(hip.absoluteBodyAngle, M_PI);
+    hip.absoluteBodyAngle += M_PI;
+
 	hip.legBodyAngle     += (hip.absoluteBodyAngle - hip.legBodyAngle) / 100000.0;
 	if (!incrementalEncoderInitialized) {
 		hip.legBodyAngle = hip.absoluteBodyAngle;
@@ -122,6 +131,7 @@ void HipMedulla::processTransmitData(atrias_msgs::controller_output& controller_
 }
 
 void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
+    //log(RTT::Info) << "ID: " << (int) *id << " Counts: " << *hipEncoder << RTT::endlog();
 	// If we don't have new data, don't run. It's pointless, and results in
 	// NaN velocities.
 	if (*timingCounter == timingCounterValue)
@@ -158,7 +168,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	hip.motorThermB  = processThermistorValue(*thermistor1);
 	hip.motorThermC  = processThermistorValue(*thermistor2);
 	hip.motorCurrent = processAmplifierCurrent(*ampMeasuredCurrent);
-	hip.accelX       = *accelX;
+	/*hip.accelX       = *accelX;
 	hip.accelY       = *accelY;
 	hip.accelZ       = *accelZ;
 	hip.angRateX     = *angRateX;
@@ -173,7 +183,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	hip.m31          = *m31;
 	hip.m32          = *m32;
 	hip.m33          = *m33;
-	hip.IMUTimer     = *timer;
+	hip.IMUTimer     = *timer;*/
 }
 
 }

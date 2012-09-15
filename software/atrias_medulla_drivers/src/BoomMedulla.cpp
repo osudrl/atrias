@@ -11,9 +11,9 @@ BoomMedulla::BoomMedulla() : Medulla() {
 	pdoEntryDatas[3]  = {1, (void**) &state};
 	pdoEntryDatas[4]  = {1, (void**) &timingCounter};
 	pdoEntryDatas[5]  = {1, (void**) &errorFlags};
-	pdoEntryDatas[6]  = {4, (void**) &xEncoder};
+	pdoEntryDatas[6]  = {4, (void**) /*&xEncoder*/&pitchEncoder};
 	pdoEntryDatas[7]  = {2, (void**) &xTimestamp};
-	pdoEntryDatas[8]  = {4, (void**) &pitchEncoder};
+	pdoEntryDatas[8]  = {4, (void**) /*&pitchEncoder*/&xEncoder};
 	pdoEntryDatas[9]  = {2, (void**) &pitchTimestamp};
 	pdoEntryDatas[10] = {4, (void**) &zEncoder};
 	pdoEntryDatas[11] = {2, (void**) &zTimestamp};

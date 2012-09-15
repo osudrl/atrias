@@ -32,7 +32,8 @@ typedef enum {
 // Number of PDO entries in each direction for each Medulla type
 #define MEDULLA_LEG_TX_PDO_COUNT                                              22
 #define MEDULLA_LEG_RX_PDO_COUNT                                               3
-#define MEDULLA_HIP_TX_PDO_COUNT                                              31
+//#define MEDULLA_HIP_TX_PDO_COUNT                                              31
+#define MEDULLA_HIP_TX_PDO_COUNT                                              15
 #define MEDULLA_HIP_RX_PDO_COUNT                                               3
 #define MEDULLA_BOOM_TX_PDO_COUNT                                             11
 #define MEDULLA_BOOM_RX_PDO_COUNT                                              2

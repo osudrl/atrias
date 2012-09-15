@@ -55,18 +55,18 @@
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          1
+#define LEFT_HIP_CALIB_VAL          1603
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         1
+#define RIGHT_HIP_CALIB_VAL         478
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           4.0
+#define LEFT_HIP_CALIB_POS           4.57101731097
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          4.0
+#define RIGHT_HIP_CALIB_POS          4.90961118586
 
 #endif // ROBOT_VARIANT_DEFS_H

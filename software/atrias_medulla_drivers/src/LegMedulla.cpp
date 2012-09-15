@@ -57,19 +57,19 @@ void LegMedulla::updateLegPositionOffset() {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			legPositionOffset = robotState.lLeg.halfA.motorAngle -
-			                   robotState.lLeg.halfA.legAngle;
+			                    robotState.lLeg.halfA.legAngle;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			legPositionOffset = robotState.lLeg.halfB.motorAngle -
-			                   robotState.lLeg.halfB.legAngle;
+			                    robotState.lLeg.halfB.legAngle;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			legPositionOffset = robotState.rLeg.halfA.motorAngle -
-			                   robotState.rLeg.halfA.legAngle;
+			                    robotState.rLeg.halfA.legAngle;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			legPositionOffset = robotState.rLeg.halfB.motorAngle -
-			                   robotState.rLeg.halfB.legAngle;
+			                    robotState.rLeg.halfB.legAngle;
 			break;
 	}
 	if (fabs(legPositionOffset) > MAX_LEG_POS_ADJUSTMENT) {
@@ -217,7 +217,7 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 			}
 			if (!skipLegEncoder) {
 				robotState.lLeg.halfA.legAngle   =
-					encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+					encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
@@ -227,7 +227,7 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 			}
 			if (!skipLegEncoder) {
 				robotState.lLeg.halfB.legAngle   =
-					encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+					encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
@@ -237,7 +237,7 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 			}
 			if (!skipLegEncoder) {
 				robotState.rLeg.halfA.legAngle   =
-					encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC);
+					encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
@@ -247,7 +247,7 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 			}
 			if (!skipLegEncoder) {
 				robotState.rLeg.halfB.legAngle   =
-					encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC);
+					encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 	}
