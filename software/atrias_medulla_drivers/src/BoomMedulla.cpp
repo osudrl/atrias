@@ -11,9 +11,9 @@ BoomMedulla::BoomMedulla() : Medulla() {
 	pdoEntryDatas[3]  = {1, (void**) &state};
 	pdoEntryDatas[4]  = {1, (void**) &timingCounter};
 	pdoEntryDatas[5]  = {1, (void**) &errorFlags};
-	pdoEntryDatas[6]  = {4, (void**) /*&xEncoder*/&pitchEncoder};
+	pdoEntryDatas[6]  = {4, (void**) &xEncoder};
 	pdoEntryDatas[7]  = {2, (void**) &xTimestamp};
-	pdoEntryDatas[8]  = {4, (void**) /*&pitchEncoder*/&xEncoder};
+	pdoEntryDatas[8]  = {4, (void**) &pitchEncoder};
 	pdoEntryDatas[9]  = {2, (void**) &pitchTimestamp};
 	pdoEntryDatas[10] = {4, (void**) &zEncoder};
 	pdoEntryDatas[11] = {2, (void**) &zTimestamp};
@@ -64,6 +64,7 @@ void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state& robotState) {
 	// Obtain the deltas
 	int deltaPos = ((int32_t) *xEncoder) - ((int32_t) xEncoderValue);
+    xEncoderValue += deltaPos;
 	double actualDeltaTime =
 		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
 		((double) (((int16_t) *xTimestamp) - xTimestampValue))
@@ -76,6 +77,7 @@ void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
                                       atrias_msgs::robot_state& robotState) {
+    //log(RTT::Info) << "Boom pitch encoder counts: " << *pitchEncoder << RTT::endlog();
 	// Obtain the deltas
 	int deltaPos = ((int32_t) *pitchEncoder) - ((int32_t) pitchEncoderValue);
 	
@@ -103,6 +105,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state&   robotState) {
+    //log(RTT::Info) << "Z Encoder value: " << *zEncoder << RTT::endlog();
 	// Obtain the deltas.
 	int deltaPos = ((int32_t) *zEncoder) - ((int32_t) zEncoderValue);
 	double actualDeltaTime =

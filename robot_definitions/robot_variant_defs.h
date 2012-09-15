@@ -18,7 +18,7 @@
   * In encoder ticks.
   * Not set yet.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  128115
+#define BOOM_PITCH_VERTICAL_VALUE  32670
 
 /** @brief The length of the boom. For Z calculations.
   * This is measured from the center of rotation to the center of the hip's
@@ -47,11 +47,11 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            3.141592653589793238462643383279502884197169
+#define BOOM_Z_CALIB_LOC            2.88677458279862112023
 
 /** @brief The value of the boom encoder at the calibration location.
   */
-#define BOOM_Z_CALIB_VAL            1
+#define BOOM_Z_CALIB_VAL            38278
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
