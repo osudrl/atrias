@@ -6,18 +6,8 @@ connect("atrias_cm.rt_ops_data_out", "atrias_rt.controller_manager_data_in", pol
 var ConnPolicy ros_policy
 ros_policy.transport = 3
 
-# This should not be buffered because the GUI is only interested
-# in the latest data and sending extra causes lag
-ros_policy.name_id = "/gui_robot_state_in"
-stream("atrias_rt.rt_ops_gui_out", ros_policy)
-
+# Unbuffered connections for "real-time" displays
 ros_policy.type = DATA
-
-#ros_policy.name_id = "/atrias_sim_data"
-#stream("atrias_rt.gazebo_data_in", ros_policy)
-
-#ros_policy.name_id = "/atrias_controller_requests"
-#stream("atrias_rt.gazebo_data_out", ros_policy)
 
 ros_policy.name_id = "/gui_input"
 stream("atrias_cm.gui_data_out", ros_policy)
@@ -25,10 +15,10 @@ stream("atrias_cm.gui_data_out", ros_policy)
 ros_policy.name_id = "/gui_output"
 stream("atrias_cm.gui_data_in", ros_policy)
 
-ros_policy.name_id = "/gui_data"
+ros_policy.name_id = "/gui_robot_state_in"
 stream("atrias_rt.rt_ops_gui_out", ros_policy)
 
-# For logging
+# Buffered connections for logging
 ros_policy.type = BUFFER
 ros_policy.size = 100000
 
