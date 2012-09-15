@@ -26,6 +26,9 @@ int16_t *hip_measured_current_pdo;
 //pointer to desired IMU data pdo
 uint8_t *hip_imu_data_pdo;
 
+uint16_t *hip_incremental_encoder_pdo;
+uint16_t *hip_incremental_encoder_timestamp_pdo;
+
 ecat_pdo_entry_t hip_rx_pdos[] = {{((void**)(&hip_command_state_pdo)),1},
                               {((void**)(&hip_counter_pdo)),2},
                               {((void**)(&hip_motor_current_pdo)),4}};
@@ -41,13 +44,16 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_logic_voltage_pdo)),2},
                               {((void**)(&hip_thermistor_pdo)),6},
                               {((void**)(&hip_measured_current_pdo)),2},
-							  {((void**)(&hip_imu_data_pdo)),64}};
+//							  {((void**)(&hip_imu_data_pdo)),64},
+                              {((void**)(&hip_incremental_encoder_pdo)),2},
+                              {((void**)(&hip_incremental_encoder_timestamp_pdo)),2}};
 
 
 // Structs for the medulla library
 limit_sw_port_t hip_limit_sw_port;
 adc_port_t adc_port_a, adc_port_b;
 renishaw_ssi_encoder_t hip_encoder;
+quadrature_encoder_t hip_inc_encoder;
 #ifdef USING_IMU
 IMU_data_t hip_imu;
 
@@ -60,12 +66,14 @@ uint8_t hip_thermistor_counter;
 uint16_t hip_motor_voltage_counter;
 uint16_t hip_logic_voltage_counter;
 bool hip_send_current_read;
+TC0_t *hip_timestamp_timer;
 
 void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	hip_thermistor_counter = 0;
 	hip_motor_voltage_counter = 0;
 	hip_logic_voltage_counter = 0;
+	hip_timestamp_timer = timestamp_timer;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing leg with ID: %04x\n",id);
@@ -79,7 +87,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, MEDULLA_HIP_TX_PDO_COUNT); 
+	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, 13); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Hip] Initilizing limit switches\n");
@@ -109,6 +117,11 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	printf("[Medulla Hip] Initilizing hip encoder\n");
 	#endif
 	hip_encoder = renishaw_ssi_encoder_init(&PORTC,&SPIC,timestamp_timer,hip_encoder_pdo,hip_encoder_timestamp_pdo);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Hip] Initilizing incremental encoder\n");
+	#endif
+	hip_inc_encoder = quadrature_encoder_init(io_init_pin(&PORTD,0),io_init_pin(&PORTD,5),false,&TCF1,16384);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing amplifiers\n");
@@ -156,6 +169,11 @@ void hip_update_inputs(uint8_t id) {
 	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
 	while (!renishaw_ssi_encoder_read_complete(&hip_encoder));
+
+	cli();
+	*hip_incremental_encoder_pdo = quadrature_encoder_get_value(&hip_inc_encoder);
+	*hip_incremental_encoder_timestamp_pdo = hip_timestamp_timer->CNT;
+	sei();
 
 	renishaw_ssi_encoder_process_data(&hip_encoder);
 	

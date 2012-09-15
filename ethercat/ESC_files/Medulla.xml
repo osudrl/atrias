@@ -398,7 +398,7 @@
 				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
 				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
 				<RxPdo Fixed="1" Sm="2">
-					<Index>#x1600</Index>
+					<Index>#x1601</Index>
 					<Name>uControllerInput</Name>
 					<Entry>
 						<Index>#x0005</Index>
@@ -423,7 +423,7 @@
 					</Entry>
 				</RxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A00</Index>
+					<Index>#x1A08</Index>
 					<Name>uController Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
@@ -462,7 +462,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A01</Index>
+					<Index>#x1A09</Index>
 					<Name>Hip Encoder</Name>
 					<Entry>
 						<Index>#x0007</Index>
@@ -480,7 +480,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A02</Index>
+					<Index>#x1A0A</Index>
 					<Name>Power</Name>
 					<Entry>
 						<Index>#x0006</Index>
@@ -498,7 +498,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A03</Index>
+					<Index>#x1A0B</Index>
 					<Name>Thermistors</Name>
 					<Entry>
 						<Index>#x0006</Index>
@@ -523,7 +523,7 @@
 					</Entry>	
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A04</Index>
+					<Index>#x1A0C</Index>
 					<Name>Measured Current</Name>
 					<Entry>
 						<Index>#x0002</Index>
@@ -533,8 +533,8 @@
 						<DataType>INT</DataType>
 					</Entry>					
 				</TxPdo>
-				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A05</Index>
+<!--				<TxPdo Fixed="1" Sm="3">
+					<Index>#x1A0D</Index>
 					<Name>IMU Data</Name>
 					<Entry>
 						<Index>#x0008</Index>
@@ -648,9 +648,9 @@
 						<BitLen>32</BitLen>
 						<Name>Timer</Name>
 					</Entry>
-				</TxPdo>
+				</TxPdo> -->
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A06</Index>
+					<Index>#x1A0E</Index>
 					<Name>Incremental Encoder</Name>
 					<Entry>
 						<Index>#x0006</Index>
@@ -692,7 +692,7 @@
 				<Sm StartAddress="#x1000" ControlByte="#x4" Enable="1">Outputs</Sm>
 				<Sm StartAddress="#x2000" ControlByte="#x0" Enable="1">Inputs</Sm>
 				<RxPdo Fixed="1" Sm="2">
-					<Index>#x1600</Index>
+					<Index>#x1602</Index>
 					<Name>uControllerInput</Name>
 					<Entry>
 						<Index>#x0005</Index>
@@ -710,7 +710,7 @@
 					</Entry>					
 				</RxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A00</Index>
+					<Index>#x1A0F</Index>
 					<Name>uController Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
@@ -742,7 +742,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A01</Index>
+					<Index>#x1A10</Index>
 					<Name>X Encoder</Name>
 					<Entry>
 						<Index>#x0007</Index>
@@ -760,7 +760,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A02</Index>
+					<Index>#x1A11</Index>
 					<Name>Pitch Encoder</Name>
 					<Entry>
 						<Index>#x0007</Index>
@@ -778,7 +778,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A03</Index>
+					<Index>#x1A12</Index>
 					<Name>Z Encoder</Name>
 					<Entry>
 						<Index>#x0007</Index>
@@ -796,7 +796,7 @@
 					</Entry>
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A04</Index>
+					<Index>#x1A13</Index>
 					<Name>Power</Name>
 					<Entry>
 						<Index>#x0006</Index>

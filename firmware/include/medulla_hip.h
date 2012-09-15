@@ -24,10 +24,10 @@
 #define AMP1_ENABLED_bm (1<<1)
 
 // Defines for which systems to check for error state
-#define ERROR_CHECK_LIMIT_SWITCH
-#define ERROR_CHECK_THERMISTORS
-#define ERROR_CHECK_MOTOR_VOLTAGE
-#define ERROR_CHECK_LOGIC_VOLTAGE
+//#define ERROR_CHECK_LIMIT_SWITCH
+//#define ERROR_CHECK_THERMISTORS
+//#define ERROR_CHECK_MOTOR_VOLTAGE
+//#define ERROR_CHECK_LOGIC_VOLTAGE
 //#define ERROR_CHECK_AMP
 
 void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);

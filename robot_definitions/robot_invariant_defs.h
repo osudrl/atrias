@@ -24,7 +24,7 @@ typedef enum {
 // Total size of process data in each direction for each Medulla type
 #define MEDULLA_LEG_INPUTS_SIZE                                               47
 #define MEDULLA_LEG_OUTPUTS_SIZE                                               7
-#define MEDULLA_HIP_INPUTS_SIZE                                               91
+#define MEDULLA_HIP_INPUTS_SIZE                                               27
 #define MEDULLA_HIP_OUTPUTS_SIZE                                               7
 #define MEDULLA_BOOM_INPUTS_SIZE                                              24
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
