@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     if (motor_selection_combobox && motor_offset_spinbutton &&
             amplitude_hscale && frequency_hscale) {
         motor_offset_spinbutton->set_range(-0.1, 0.1);
-        amplitude_hscale->set_range(0., 1.0);
+        amplitude_hscale->set_range(0., 10.0);
         frequency_hscale->set_range(0., 20.);
         pub = nh.advertise<atc_motor_torque_sin::controller_input>("atc_motor_torque_sin_input", 0);
 
