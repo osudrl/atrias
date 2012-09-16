@@ -1,13 +1,13 @@
 <package>
-  <description brief="asc_sin_generator">
+  <description brief="asc_path_generator">
 
-     asc_sin_generator
+     asc_path_generator
 
   </description>
   <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/asc_pd</url>
+  <url>http://ros.org/wiki/asc_path_generator</url>
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>

@@ -14,6 +14,6 @@
   <depend package="rtt_rosnode" />
   <depend package="rtt" />
   <depend package="asc_pd" />
-  <depend package="asc_sin_generator" />
+  <depend package="asc_path_generator" />
 
 </package>

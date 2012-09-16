@@ -72,12 +72,12 @@ private:
     Property<double> P3;
     Property<double> D3;
 
-    OperationCaller<SinOut(double, double)> sin0Controller;
-    OperationCaller<SinOut(double, double)> sin1Controller;
-    OperationCaller<SinOut(double, double)> sin2Controller;
-    OperationCaller<SinOut(double, double)> sin3Controller;
+    OperationCaller<MotorState(double, double)> sin0Controller;
+    OperationCaller<MotorState(double, double)> sin1Controller;
+    OperationCaller<MotorState(double, double)> sin2Controller;
+    OperationCaller<MotorState(double, double)> sin3Controller;
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
-    OperationCaller<MotorVelocity(SinOut, SinOut)> legToMotorVel;
+    OperationCaller<MotorVelocity(MotorState, MotorState)> legToMotorVel;
     OperationCaller<double(double, double, double, double)> pd0Controller;
     OperationCaller<double(double, double, double, double)> pd1Controller;
     OperationCaller<double(double, double, double, double)> pd2Controller;
@@ -88,7 +88,7 @@ private:
     double targetPos, currentPos, targetVel, currentVel;
     MotorAngle lMotorAngle, rMotorAngle;
     MotorVelocity lMotorVelocity, rMotorVelocity;
-    SinOut lLegLen, lLegAng, rLegLen, rLegAng;
+    MotorState lLegLen, lLegAng, rLegLen, rLegAng;
 
 
 public:

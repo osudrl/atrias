@@ -23,11 +23,6 @@ struct MotorState {
     double vel;
 };
 
-struct SinOut {
-    double pos;
-    double vel;
-};
-
 struct RobotPosLeg {
     double hip;
     double A;

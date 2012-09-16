@@ -60,13 +60,13 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     // Get a sinusoidal input
     leftMotorBSin = sin0Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
     rightMotorBSin = sin1Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
-    // motorBSin.pos / .vel
+    // motorBSin.ang / .vel
 
     // Set resonable center positions
     centerAAngle = M_PI/4;
     centerBAngle = 3*M_PI/4;
-    leftMotorBSin.pos = leftMotorBSin.pos + centerBAngle;
-    rightMotorBSin.pos = rightMotorBSin.pos + centerBAngle;
+    leftMotorBSin.ang = leftMotorBSin.ang + centerBAngle;
+    rightMotorBSin.ang = rightMotorBSin.ang + centerBAngle;
 
     // Set the PD gains
     // Left leg
@@ -93,7 +93,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
     
     // Calculate motorB current
-    targetPos = leftMotorBSin.pos;
+    targetPos = leftMotorBSin.ang;
     currentPos = rs.lLeg.halfB.motorAngle;
     targetVel = leftMotorBSin.vel;
     currentVel = rs.lLeg.halfB.motorVelocity;
@@ -108,7 +108,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     controllerOutput.rLeg.motorCurrentA = pd2Controller(targetPos, currentPos, targetVel, currentVel);
     
     // Calculate motorB current
-    targetPos = rightMotorBSin.pos;
+    targetPos = rightMotorBSin.ang;
     currentPos = rs.rLeg.halfB.motorAngle;
     targetVel = rightMotorBSin.vel;
     currentVel = rs.rLeg.halfB.motorVelocity;
@@ -125,10 +125,10 @@ bool ATCMotorSinWave::configureHook() {
     // Sin controllers
     sin0 = this->getPeer(sin0Name);
     if (sin0)
-        sin0Controller = sin0->provides("sg")->getOperation("runController");
+        sin0Controller = sin0->provides("sinGen")->getOperation("runController");
     sin1 = this->getPeer(sin1Name);
     if (sin1)
-        sin1Controller = sin1->provides("sg")->getOperation("runController");
+        sin1Controller = sin1->provides("sinGen")->getOperation("runController");
 
     // PD controllers
     pd0 = this->getPeer(pd0Name);

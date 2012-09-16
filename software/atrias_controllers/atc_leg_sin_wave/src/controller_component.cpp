@@ -66,22 +66,22 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     lLegAng = sin1Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
     rLegLen = sin2Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
     rLegAng = sin3Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
-    // lLegLen.pos / .vel
+    // lLegLen.ang / .vel
 
     // Set resonable center positions
     centerLength = 0.8;
     centerAngle = M_PI/2;
-    lLegLen.pos = lLegLen.pos + centerLength;
-    lLegAng.pos = lLegAng.pos + centerAngle;
-    rLegLen.pos = -rLegLen.pos + centerLength;
+    lLegLen.ang = lLegLen.ang + centerLength;
+    lLegAng.ang = lLegAng.ang + centerAngle;
+    rLegLen.ang = -rLegLen.ang + centerLength;
     rLegLen.vel = -rLegLen.vel;
-    rLegAng.pos = -rLegAng.pos + centerAngle;
+    rLegAng.ang = -rLegAng.ang + centerAngle;
     rLegAng.vel = -rLegAng.vel;
 
     // Transform to motor positions and velocities
-    lMotorAngle = legToMotorPos(lLegAng.pos, lLegLen.pos);
+    lMotorAngle = legToMotorPos(lLegAng.ang, lLegLen.ang);
     lMotorVelocity = legToMotorVel(lLegAng, lLegLen);
-    rMotorAngle = legToMotorPos(rLegAng.pos, rLegLen.pos);
+    rMotorAngle = legToMotorPos(rLegAng.ang, rLegLen.ang);
     rMotorVelocity = legToMotorVel(rLegAng, rLegLen);
     // lMotorAngle.A / .B
 
@@ -142,19 +142,19 @@ bool ATCLegSinWave::configureHook() {
     // Sin controllers
     sin0 = this->getPeer(sin0Name);
     if (sin0)
-        sin0Controller = sin0->provides("sg")->getOperation("runController");
+        sin0Controller = sin0->provides("sinGen")->getOperation("runController");
 
     sin1 = this->getPeer(sin1Name);
     if (sin1)
-        sin1Controller = sin1->provides("sg")->getOperation("runController");
+        sin1Controller = sin1->provides("sinGen")->getOperation("runController");
 
     sin2 = this->getPeer(sin2Name);
     if (sin2)
-        sin2Controller = sin2->provides("sg")->getOperation("runController");
+        sin2Controller = sin2->provides("sinGen")->getOperation("runController");
 
     sin3 = this->getPeer(sin3Name);
     if (sin3)
-        sin3Controller = sin3->provides("sg")->getOperation("runController");
+        sin3Controller = sin3->provides("sinGen")->getOperation("runController");
 
     // Transforms
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");

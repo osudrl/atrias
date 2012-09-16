@@ -54,7 +54,7 @@ atrias_msgs::controller_output ATCMotorTorqueSin::runController(atrias_msgs::rob
     sinOut = sin0Controller(guiIn.frq, guiIn.amp);
 
     // Compensate for motor construction and assembly variations 
-    current = sinOut.pos + guiIn.offset;
+    current = sinOut.ang + guiIn.offset;
 
     // lLeg A
     if      (guiIn.motor == 0)
@@ -86,8 +86,8 @@ bool ATCMotorTorqueSin::configureHook() {
     sin0 = this->getPeer(sin0Name);
     if (sin0)
     {
-        sin0Controller = sin0->provides("sg")->getOperation("runController");
-        sin0Reset      = sin0->provides("sg")->getOperation("reset");
+        sin0Controller = sin0->provides("sinGen")->getOperation("runController");
+        sin0Reset      = sin0->provides("sinGen")->getOperation("reset");
     }
 
     log(Info) << "[ATCMTS] configured!" << endlog();

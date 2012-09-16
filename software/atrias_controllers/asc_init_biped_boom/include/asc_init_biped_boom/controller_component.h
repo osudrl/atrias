@@ -36,7 +36,8 @@ class ASCInitBipedBoom : public TaskContext {
 private:
     // Operations
     bool done(void);
-    atrias_msgs::controller_output run(atrias_msgs::robot_state rs, RobotPos pos);
+    bool init(atrias_msgs::robot_state rs, RobotPos pos);
+    atrias_msgs::controller_output run(atrias_msgs::robot_state rs);
 
     // Operation variables
     atrias_msgs::controller_output co;
@@ -44,9 +45,21 @@ private:
 
     // Subcontroller names
     std::string pd0Name;
+    std::string smoothPath0Name;
+    std::string smoothPath1Name;
+    std::string smoothPath2Name;
+    std::string smoothPath3Name;
+    std::string smoothPath4Name;
+    std::string smoothPath5Name;
 
     // Subcontroller components
     TaskContext *pd0;
+    TaskContext *smoothPath0;
+    TaskContext *smoothPath1;
+    TaskContext *smoothPath2;
+    TaskContext *smoothPath3;
+    TaskContext *smoothPath4;
+    TaskContext *smoothPath5;
 
     // Service properties
     Property<double> D0;
@@ -54,9 +67,23 @@ private:
 
     // Subcontroller operations
     OperationCaller<double(double, double, double, double)> pd0RunController;
+    OperationCaller<void(double, double)> smoothPath0Init;
+    OperationCaller<void(double, double)> smoothPath1Init;
+    OperationCaller<void(double, double)> smoothPath2Init;
+    OperationCaller<void(double, double)> smoothPath3Init;
+    OperationCaller<void(double, double)> smoothPath4Init;
+    OperationCaller<void(double, double)> smoothPath5Init;
+    OperationCaller<MotorState(double, double)> smoothPath0Run;
+    OperationCaller<MotorState(double, double)> smoothPath1Run;
+    OperationCaller<MotorState(double, double)> smoothPath2Run;
+    OperationCaller<MotorState(double, double)> smoothPath3Run;
+    OperationCaller<MotorState(double, double)> smoothPath4Run;
+    OperationCaller<MotorState(double, double)> smoothPath5Run;
 
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;
+    MotorState lLegAState, lLegBState;
+    double frequency, amplitude;
 
     // Logging
     controller_log_data logData;

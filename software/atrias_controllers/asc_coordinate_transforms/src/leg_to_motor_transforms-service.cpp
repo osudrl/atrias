@@ -19,10 +19,10 @@ MotorAngle LegToMotorTransforms::posTransform(double legAng, double legLen)
     return motorAngle;
 }
 
-MotorVelocity LegToMotorTransforms::velTransform(SinOut legAng, SinOut legLen)
+MotorVelocity LegToMotorTransforms::velTransform(MotorState legAng, MotorState legLen)
 {
-    motorVelocity.A = legAng.vel + legLen.vel / sqrt(1.0 - legLen.pos*legLen.pos);
-    motorVelocity.B = legAng.vel - legLen.vel / sqrt(1.0 - legLen.pos*legLen.pos);
+    motorVelocity.A = legAng.vel + legLen.vel / sqrt(1.0 - legLen.ang*legLen.ang);
+    motorVelocity.B = legAng.vel - legLen.vel / sqrt(1.0 - legLen.ang*legLen.ang);
     return motorVelocity;
 }
 

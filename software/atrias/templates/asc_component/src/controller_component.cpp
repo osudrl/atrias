@@ -30,7 +30,7 @@ ASCComponent::ASCComponent(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ASCComponent] asc_component controller constructed!" << endlog();
+    log(Info) << "[ASCComponent] Constructed!" << endlog();
 }
 
 // Put control code here.

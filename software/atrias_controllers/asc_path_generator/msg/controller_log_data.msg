@@ -1,4 +1,4 @@
 Header header
 
-float64 pos
+float64 ang
 float64 vel

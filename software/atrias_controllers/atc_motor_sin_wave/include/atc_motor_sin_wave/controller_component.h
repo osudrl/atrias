@@ -69,8 +69,8 @@ private:
     Property<double> P3;
     Property<double> D3;
 
-    OperationCaller<SinOut(double, double)> sin0Controller;
-    OperationCaller<SinOut(double, double)> sin1Controller;
+    OperationCaller<MotorState(double, double)> sin0Controller;
+    OperationCaller<MotorState(double, double)> sin1Controller;
     OperationCaller<double(double, double, double, double)> pd0Controller;
     OperationCaller<double(double, double, double, double)> pd1Controller;
     OperationCaller<double(double, double, double, double)> pd2Controller;
@@ -80,8 +80,8 @@ private:
     double centerBAngle;
     double centerAAngle;
     double targetPos, currentPos, targetVel, currentVel;
-    SinOut leftMotorBSin;
-    SinOut rightMotorBSin;
+    MotorState leftMotorBSin;
+    MotorState rightMotorBSin;
 
 
 public:

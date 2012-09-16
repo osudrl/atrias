@@ -45,7 +45,8 @@ private:
     // Controller variables
     atrias_msgs::controller_output co;
     double cycle;
-    bool initStatus;
+    bool initStatus, runStatus;
+    RobotPos pos;
 
     // Subcontroller names
     std::string initBipedBoom0Name;
@@ -54,8 +55,9 @@ private:
     TaskContext *initBipedBoom0; 
 
     // Subcontroller operations
+    OperationCaller<bool(atrias_msgs::robot_state rs, RobotPos pos)> initBipedBoom0Init;
+    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs)> initBipedBoom0Run;
     OperationCaller<bool(void)> initBipedBoom0Done;
-    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs, RobotPos pos)> initBipedBoom0Run;
 
     // Logging
     controller_log_data              logData;

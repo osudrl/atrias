@@ -15,6 +15,6 @@
   <depend package="rtt" />
   <depend package="asc_coordinate_transforms" />
   <depend package="asc_pd" />
-  <depend package="asc_sin_generator" />
+  <depend package="asc_path_generator" />
 
 </package>

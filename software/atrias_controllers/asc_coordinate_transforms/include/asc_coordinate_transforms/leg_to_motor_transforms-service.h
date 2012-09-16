@@ -18,7 +18,7 @@ class LegToMotorTransforms : public Service {
 
         // Operations
         MotorAngle posTransform(double legAng, double legLen);
-        MotorVelocity velTransform(SinOut legAng, SinOut legLen);
+        MotorVelocity velTransform(MotorState legAng, MotorState legLen);
 
     private:
         MotorAngle motorAngle;

@@ -37,7 +37,7 @@ ATCComponent::ATCComponent(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    log(Info) << "[ATCMT] atc_component controller constructed!" << endlog();
+    log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
 atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {

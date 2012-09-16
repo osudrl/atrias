@@ -13,13 +13,22 @@ ASCInitBipedBoom::ASCInitBipedBoom(std::string name):
     logPort(name + "_log")
 {
     this->provides("bipedBoomInit")
-        ->addOperation("done", &ASCInitBipedBoom::done, this)
-        .doc("Returns true if at the requested point");
+        ->addOperation("init", &ASCInitBipedBoom::init, this);
     this->provides("bipedBoomInit")
         ->addOperation("run", &ASCInitBipedBoom::run, this);
+    this->provides("bipedBoomInit")
+        ->addOperation("done", &ASCInitBipedBoom::done, this)
+        .doc("Returns true if at the requested point");
 
     // Add properties
     this->addProperty("pd0Name", pd0Name);
+    this->addProperty("smoothPath0Name", smoothPath0Name);
+    this->addProperty("smoothPath1Name", smoothPath1Name);
+    this->addProperty("smoothPath2Name", smoothPath2Name);
+    this->addProperty("smoothPath3Name", smoothPath3Name);
+    this->addProperty("smoothPath4Name", smoothPath4Name);
+    this->addProperty("smoothPath5Name", smoothPath5Name);
+
     // Logging
     // Create a port
     addPort(logPort); 
@@ -41,7 +50,7 @@ bool ASCInitBipedBoom::done(void)
     return false;
 }
 
-bool ASCInitBipedBoom:init(atrias_msgs::robot_state rs, RobotPos pos)
+bool ASCInitBipedBoom::init(atrias_msgs::robot_state rs, RobotPos pos)
 {
     robotConfig = (uint8_t)rs.robotConfiguration;
 
@@ -54,30 +63,30 @@ bool ASCInitBipedBoom:init(atrias_msgs::robot_state rs, RobotPos pos)
     // We have a robot.  What is it?
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_NOHIP)
     {
-        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
-        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        smoothPath0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        smoothPath1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
     }
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_HIP)
     {
-        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
-        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
-        pathGen2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
+        smoothPath0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        smoothPath1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        smoothPath2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
     }
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_NOHIP)
     {
-        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
-        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
-        pathGen3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
-        pathGen4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
+        smoothPath0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        smoothPath1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        smoothPath3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
+        smoothPath4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
     }
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_FULL)
     {
-        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
-        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
-        pathGen2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
-        pathGen3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
-        pathGen4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
-        pathGen5Init(rs.rLeg.hip.legBodyAngle, pos.rLeg.hip);
+        smoothPath0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        smoothPath1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        smoothPath2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
+        smoothPath3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
+        smoothPath4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
+        smoothPath5Init(rs.rLeg.hip.legBodyAngle, pos.rLeg.hip);
     }
     return true;
 }
@@ -103,22 +112,24 @@ atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_NOHIP)
     {
         // Run the path generator
-        lLegAPath = pathGen0Run();
-        lLegBPath = pathGen1Run();
+        frequency = 1; // 1 Hz
+        amplitude = 1; // TODO: remove this.  It is not necessary
+        lLegAState = smoothPath0Run(frequency, amplitude);
+        lLegBState = smoothPath1Run(frequency, amplitude);
 
         // Run the pd controllers
         P0.set(600.0);
         D0.set(20.0);
 
-        targetPos = lLegAPath.ang;
+        targetPos = lLegAState.ang;
         currentPos = rs.lLeg.halfA.motorAngle;
-        targetVel = lLegAPath.vel;
+        targetVel = lLegAState.vel;
         currentVel = rs.lLeg.halfA.motorVelocity;
         co.lLeg.motorCurrentA = pd0RunController(targetPos, currentPos, targetVel, currentVel);
 
-        targetPos = lLegBPath.ang;
+        targetPos = lLegBState.ang;
         currentPos = rs.lLeg.halfB.motorAngle;
-        targetVel = lLegBPath.vel;
+        targetVel = lLegBState.vel;
         currentVel = rs.lLeg.halfB.motorVelocity;
         co.lLeg.motorCurrentB = pd0RunController(targetPos, currentPos, targetVel, currentVel);
     }
@@ -143,6 +154,48 @@ bool ASCInitBipedBoom::configureHook() {
     pd0 = this->getPeer(pd0Name);
     if (pd0)
         pd0RunController = pd0->provides("pd")->getOperation("runController");
+
+    smoothPath0 = this->getPeer(smoothPath0Name);
+    if (smoothPath0)
+    {
+        smoothPath0Init = smoothPath0->provides("smoothPath")->getOperation("init");
+        smoothPath0Run = smoothPath0->provides("smoothPath")->getOperation("run");
+    }
+
+    smoothPath1 = this->getPeer(smoothPath1Name);
+    if (smoothPath1)
+    {
+        smoothPath1Init = smoothPath1->provides("smoothPath")->getOperation("init");
+        smoothPath1Run = smoothPath1->provides("smoothPath")->getOperation("run");
+    }
+
+    smoothPath2 = this->getPeer(smoothPath2Name);
+    if (smoothPath2)
+    {
+        smoothPath2Init = smoothPath2->provides("smoothPath")->getOperation("init");
+        smoothPath2Run = smoothPath2->provides("smoothPath")->getOperation("run");
+    }
+
+    smoothPath3 = this->getPeer(smoothPath3Name);
+    if (smoothPath3)
+    {
+        smoothPath3Init = smoothPath3->provides("smoothPath")->getOperation("init");
+        smoothPath3Run = smoothPath3->provides("smoothPath")->getOperation("run");
+    }
+
+    smoothPath4 = this->getPeer(smoothPath4Name);
+    if (smoothPath4)
+    {
+        smoothPath4Init = smoothPath4->provides("smoothPath")->getOperation("init");
+        smoothPath4Run = smoothPath4->provides("smoothPath")->getOperation("run");
+    }
+
+    smoothPath5 = this->getPeer(smoothPath5Name);
+    if (smoothPath5)
+    {
+        smoothPath5Init = smoothPath5->provides("smoothPath")->getOperation("init");
+        smoothPath5Run = smoothPath5->provides("smoothPath")->getOperation("run");
+    }
 
     // Get references to subcontroller component properties
     D0 = pd0->properties()->getProperty("D");

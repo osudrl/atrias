@@ -58,14 +58,24 @@ atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::
     // Set the desired robot position
     if (cycle == 0)
     {
+        pos.lLeg.A = M_PI/4;
+        pos.lLeg.B = 3.0*M_PI/4;
+        pos.lLeg.hip = 0.0;
+        pos.rLeg.A = M_PI/4;
+        pos.rLeg.B = 3.0*M_PI/4;
+        pos.rLeg.hip = 0.0;
         initStatus = initBipedBoom0Init(rs, pos);
         if (initStatus == false)
-            log(Error) << "[ATCMT] asc_init_biped_boom failed to initialize" << endlog;
+            log(Error) << "[ATCMT] asc_init_biped_boom failed to initialize" << endlog();
         cycle++;
     }
 
     // Run the startup controller
     co = initBipedBoom0Run(rs);
+
+    // Check to see if we are done
+    // TODO: implement this in the subcontroller
+    runStatus = initBipedBoom0Done();
 
     // Command a run state
     co.command = medulla_state_run;
@@ -83,11 +93,11 @@ bool ATCInitBipedBoomTest::configureHook() {
     // Connect to the subcontrollers
     initBipedBoom0 = this->getPeer(initBipedBoom0Name);
     if (initBipedBoom0)
-        initBipedBoom0Done = initBipedBoom0->provides("initBipedBoom")->getOperation("done");
-
-    initBipedBoom0 = this->getPeer(initBipedBoom0Name);
-    if (initBipedBoom0)
+    {
+        initBipedBoom0Init = initBipedBoom0->provides("initBipedBoom")->getOperation("init");
         initBipedBoom0Run = initBipedBoom0->provides("initBipedBoom")->getOperation("run");
+        initBipedBoom0Done = initBipedBoom0->provides("initBipedBoom")->getOperation("done");
+    }
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;

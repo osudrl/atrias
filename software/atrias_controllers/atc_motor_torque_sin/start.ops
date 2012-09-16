@@ -7,9 +7,9 @@ setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 connectPeers("atrias_rt", "controller")
 
 # Set up subcontrollers
-import("asc_sin_generator")
+import("asc_path_generator")
 var string sin0Name = atrias_cm.getUniqueName("controller", "sin")
-loadComponent(sin0Name, "ASCSinGenerator")
+loadComponent(sin0Name, "ASCSinPathGenerator")
 
 # Connect this controller with its subcontrollers.
 addPeer("controller", sin0Name)

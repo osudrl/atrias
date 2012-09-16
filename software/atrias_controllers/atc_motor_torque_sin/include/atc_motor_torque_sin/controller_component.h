@@ -50,11 +50,11 @@ private:
 
     TaskContext *sin0;
 
-    OperationCaller<SinOut(double, double)> sin0Controller;
+    OperationCaller<MotorState(double, double)> sin0Controller;
     OperationCaller<void(void)> sin0Reset;
 
     // Math variables
-    SinOut sinOut;
+    MotorState sinOut;
     int prevMotor;
     double current;
 

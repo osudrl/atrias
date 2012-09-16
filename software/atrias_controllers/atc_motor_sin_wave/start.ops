@@ -8,7 +8,7 @@ connectPeers("atrias_rt", "controller")
 
 # Set up subcontrollers
 import("asc_pd")
-import("asc_sin_generator")
+import("asc_path_generator")
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
@@ -19,8 +19,8 @@ loadComponent(pd0Name, "ASCPD")
 loadComponent(pd1Name, "ASCPD")
 loadComponent(pd2Name, "ASCPD")
 loadComponent(pd3Name, "ASCPD")
-loadComponent(sin0Name, "ASCSinGenerator")
-loadComponent(sin1Name, "ASCSinGenerator")
+loadComponent(sin0Name, "ASCSinPathGenerator")
+loadComponent(sin1Name, "ASCSinPathGenerator")
 
 # Connect this controller with its subcontrollers.
 addPeer("controller", pd0Name)
