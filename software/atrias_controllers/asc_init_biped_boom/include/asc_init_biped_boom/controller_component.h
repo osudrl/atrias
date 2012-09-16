@@ -57,7 +57,6 @@ private:
 
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;
-    double cap;
 
     // Logging
     controller_log_data logData;

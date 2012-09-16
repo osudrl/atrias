@@ -41,46 +41,84 @@ bool ASCInitBipedBoom::done(void)
     return false;
 }
 
-atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs, RobotPos pos)
+bool ASCInitBipedBoom:init(atrias_msgs::robot_state rs, RobotPos pos)
 {
-    // Determine the robot config
     robotConfig = (uint8_t)rs.robotConfiguration;
-    co.lLeg.motorCurrentA = 0.0;
-    co.lLeg.motorCurrentB = 0.0;
-    co.lLeg.motorCurrentHip = 0.0;
-    co.rLeg.motorCurrentA = 0.0;
-    co.rLeg.motorCurrentB = 0.0;
-    co.rLeg.motorCurrentHip = 0.0;
-    co.command = medulla_state_idle;
 
     // If nothing is going on
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::DISABLE)
-    {
-        return co;
-    }
-    else if (robotConfig == (uint8_t)rtOps::RobotConfiguration::UNKNOWN)
-    {
-        return co;
-    }
+        return false;
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::UNKNOWN)
+        return false;
 
     // We have a robot.  What is it?
     if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_NOHIP)
     {
-        // Set up the sin wave controllers
-        // Set up the pd controllers
+        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_HIP)
+    {
+        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        pathGen2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_NOHIP)
+    {
+        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        pathGen3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
+        pathGen4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
+    }
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::BIPED_FULL)
+    {
+        pathGen0Init(rs.lLeg.halfA.motorAngle, pos.lLeg.A);
+        pathGen1Init(rs.lLeg.halfB.motorAngle, pos.lLeg.B);
+        pathGen2Init(rs.lLeg.hip.legBodyAngle, pos.lLeg.hip);
+        pathGen3Init(rs.rLeg.halfA.motorAngle, pos.rLeg.A);
+        pathGen4Init(rs.rLeg.halfB.motorAngle, pos.rLeg.B);
+        pathGen5Init(rs.rLeg.hip.legBodyAngle, pos.rLeg.hip);
+    }
+    return true;
+}
 
-        P0.set(500.0);
+atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs)
+{
+    // Determine the robot config
+    robotConfig             = (uint8_t)rs.robotConfiguration;
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+
+    // If nothing is going on
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::DISABLE)
+        return co;
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::UNKNOWN)
+        return co;
+
+    // We have a robot.  What is it?
+    if (robotConfig == (uint8_t)rtOps::RobotConfiguration::LEFT_LEG_NOHIP)
+    {
+        // Run the path generator
+        lLegAPath = pathGen0Run();
+        lLegBPath = pathGen1Run();
+
+        // Run the pd controllers
+        P0.set(600.0);
         D0.set(20.0);
 
-        targetPos = 1.0;
+        targetPos = lLegAPath.ang;
         currentPos = rs.lLeg.halfA.motorAngle;
-        targetVel = 0.0;
+        targetVel = lLegAPath.vel;
         currentVel = rs.lLeg.halfA.motorVelocity;
         co.lLeg.motorCurrentA = pd0RunController(targetPos, currentPos, targetVel, currentVel);
 
-        targetPos = 2.0;
+        targetPos = lLegBPath.ang;
         currentPos = rs.lLeg.halfB.motorAngle;
-        targetVel = 0.0;
+        targetVel = lLegBPath.vel;
         currentVel = rs.lLeg.halfB.motorVelocity;
         co.lLeg.motorCurrentB = pd0RunController(targetPos, currentPos, targetVel, currentVel);
     }
@@ -98,7 +136,6 @@ atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs
     }
     co.command = medulla_state_run;
     return co;
-
 }
 
 bool ASCInitBipedBoom::configureHook() {

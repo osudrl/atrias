@@ -36,22 +36,36 @@ ATCInitBipedBoomTest::ATCInitBipedBoomTest(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
+    // Initial values
+    cycle = 0;
+
     log(Info) << "[ATCMT] atc_init_biped_boom controller constructed!" << endlog();
 }
 
 atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::robot_state rs) {
+    // Do nothing
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
-    {
-        // Do nothing
-        co.lLeg.motorCurrentA = 0.0;
-        co.lLeg.motorCurrentB = 0.0;
-        co.lLeg.motorCurrentHip = 0.0;
-        co.rLeg.motorCurrentA = 0.0;
-        co.rLeg.motorCurrentB = 0.0;
-        co.rLeg.motorCurrentHip = 0.0;
         return co;
+
+    // Set the desired robot position
+    if (cycle == 0)
+    {
+        initStatus = initBipedBoom0Init(rs, pos);
+        if (initStatus == false)
+            log(Error) << "[ATCMT] asc_init_biped_boom failed to initialize" << endlog;
+        cycle++;
     }
+
+    // Run the startup controller
+    co = initBipedBoom0Run(rs);
 
     // Command a run state
     co.command = medulla_state_run;

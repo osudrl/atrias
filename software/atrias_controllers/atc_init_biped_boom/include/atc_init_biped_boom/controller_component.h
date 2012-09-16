@@ -42,7 +42,10 @@ private:
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
+    // Controller variables
     atrias_msgs::controller_output co;
+    double cycle;
+    bool initStatus;
 
     // Subcontroller names
     std::string initBipedBoom0Name;

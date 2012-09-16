@@ -18,20 +18,20 @@ struct MotorVelocity {
     double B;
 };
 
+struct MotorState {
+    double ang;
+    double vel;
+};
+
 struct SinOut {
     double pos;
     double vel;
 };
 
-struct RobotPosLegHalf {
-    double A;
-    double B;
-};
-
 struct RobotPosLeg {
     double hip;
-    RobotPosLegHalf halfA;
-    RobotPosLegHalf halfB;
+    double A;
+    double B;
 };
 
 struct RobotPos {
