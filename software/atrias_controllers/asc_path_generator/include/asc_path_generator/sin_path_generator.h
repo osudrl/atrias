@@ -31,10 +31,11 @@ private:
     // Operation
     MotorState runController(double frequency, double amplitude);
     void reset(void);
+    void setPhase(double _phase);
 
     MotorState sinOut;
 
-    double accumulator;
+    double accumulator, phase;
 
     asc_path_generator::controller_log_data logData;
     OutputPort<asc_path_generator::controller_log_data> logPort;

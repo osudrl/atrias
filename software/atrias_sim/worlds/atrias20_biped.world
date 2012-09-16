@@ -43,7 +43,7 @@
                 <origin pose="0 -0.158 0 0 0 0"/>
                 <axis xyz="1 0 0">
                     <dynamics damping="0.1" friction="0.1"/>
-                    <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
+                    <limit lower="-0.17" upper="0.35" effort="0.0" velocity="0.0"/>
                 </axis>
             </joint>
             <joint name="hip_to_right_leg_joint" type="revolute">
@@ -52,7 +52,7 @@
                 <origin pose="0 0.158 0 0 0 0"/>
                 <axis xyz="1 0 0">
                     <dynamics damping="0.1" friction="0.1"/>
-                    <limit lower="-1.50" upper="1.50" effort="0.0" velocity="0.0"/>
+                    <limit lower="-0.35" upper="0.17" effort="0.0" velocity="0.0"/>
                 </axis>
             </joint>
 
@@ -78,7 +78,6 @@
         <plugin name="pause_world" filename="libpause_world.so"/>
 
         <!--
-        -->
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
             <linkName>atrias20_left_leg::body_link</linkName>
@@ -87,6 +86,7 @@
             <modelName>atrias20</modelName>
             <linkName>atrias20_right_leg::body_link</linkName>
         </plugin>
+        -->
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
             <linkName>atrias21_hip::body_link</linkName>

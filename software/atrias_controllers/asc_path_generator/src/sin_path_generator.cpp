@@ -32,6 +32,7 @@ ASCSinPathGenerator::ASCSinPathGenerator(std::string name):
 
     // Setup the controller
     accumulator = 0.0;
+    phase = 0.0;
 
     log(Info) << "[ASCSG] Constructed!" << endlog();
 }
@@ -42,6 +43,12 @@ void ASCSinPathGenerator::reset(void)
     accumulator = 0.0;
 }
 
+void ASCSinPathGenerator::setPhase(double _phase)
+{
+    // Set the phase
+    phase = _phase;
+}
+
 MotorState ASCSinPathGenerator::runController(double frequency, double amplitude)
 {
     // The sin input
@@ -50,8 +57,8 @@ MotorState ASCSinPathGenerator::runController(double frequency, double amplitude
         accumulator -= 2.0*M_PI;
 
     // Return the function value and its derivative
-    sinOut.ang = amplitude*sin(accumulator);
-    sinOut.vel = amplitude*cos(accumulator)*2.0*M_PI*frequency;
+    sinOut.ang = amplitude*sin(accumulator + phase);
+    sinOut.vel = amplitude*cos(accumulator + phase)*2.0*M_PI*frequency;
 
     // Stuff the msg and push to ROS for logging
     logData.ang = sinOut.ang;
