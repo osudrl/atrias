@@ -1,204 +1,327 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-	<requires lib="gtk+" version="2.18" />
-	<object class="GtkVBox" id="controller_tab">
-		<property name="visible">True</property>
-		<property name="can_focus">False</property>
-		<child>
-			<object class="GtkLabel" id="angle_amplitude_label">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<property name="label" translatable="yes">Leg Angle Amplitude(rad):
+  <requires lib="gtk+" version="2.18"/>
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkTable" id="controller_tab">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="n_rows">10</property>
+    <property name="n_columns">2</property>
+    <child>
+      <object class="GtkLabel" id="angle_amplitude_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Leg Angle Amplitude(rad):
 				</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">0</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="angle_amplitude_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">1</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkLabel" id="angle_frequency_label">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<property name="label" translatable="yes">Leg Angle Frequency(Hz):
+      </object>
+    </child>
+    <child>
+      <object class="GtkHScale" id="angle_amplitude_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="angle_frequency_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Leg Angle Frequency(Hz):
 				</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">2</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="angle_frequency_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">3</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkLabel" id="length_amplitude_label">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<property name="label" translatable="yes">Leg Length Amplitude(m):
+      </object>
+      <packing>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="angle_frequency_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="length_amplitude_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Leg Length Amplitude(m):
 				</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">4</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="length_amplitude_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">5</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkLabel" id="length_frequency_label">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<property name="label" translatable="yes">Leg Length Frequency(Hz):
+      </object>
+      <packing>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="length_amplitude_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="length_frequency_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Leg Length Frequency(Hz):
 				</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">6</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="length_frequency_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">7</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHBox" id="hbox7">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<child>
-					<object class="GtkLabel" id="p_sine_wave_label">
-						<property name="visible">True</property>
-						<property name="can_focus">False</property>
-						<property name="label" translatable="yes">P Gain:</property>
-					</object>
-					<packing>
-						<property name="expand">True</property>
-						<property name="fill">True</property>
-						<property name="position">0</property>
-					</packing>
-				</child>
-				<child>
-					<object class="GtkEntry" id="p_sine_wave_entry">
-						<property name="visible">True</property>
-						<property name="can_focus">True</property>
-						<property name="invisible_char">●</property>
-						<property name="invisible_char_set">True</property>
-					</object>
-					<packing>
-						<property name="expand">True</property>
-						<property name="fill">True</property>
-						<property name="position">1</property>
-					</packing>
-				</child>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">8</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="p_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">9</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHBox" id="hbox8">
-				<property name="visible">True</property>
-				<property name="can_focus">False</property>
-				<child>
-					<object class="GtkLabel" id="d_sine_wave_label">
-						<property name="visible">True</property>
-						<property name="can_focus">False</property>
-						<property name="label" translatable="yes">D Gain:</property>
-					</object>
-					<packing>
-						<property name="expand">True</property>
-						<property name="fill">True</property>
-						<property name="position">0</property>
-					</packing>
-				</child>
-				<child>
-					<object class="GtkEntry" id="d_sine_wave_entry">
-						<property name="visible">True</property>
-						<property name="can_focus">True</property>
-						<property name="invisible_char">●</property>
-						<property name="invisible_char_set">True</property>
-					</object>
-					<packing>
-						<property name="expand">True</property>
-						<property name="fill">True</property>
-						<property name="position">1</property>
-					</packing>
-				</child>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">10</property>
-			</packing>
-		</child>
-		<child>
-			<object class="GtkHScale" id="d_hscale">
-				<property name="visible">True</property>
-				<property name="can_focus">True</property>
-				<property name="digits">3</property>
-			</object>
-			<packing>
-				<property name="expand">True</property>
-				<property name="fill">True</property>
-				<property name="position">11</property>
-			</packing>
-		</child>
-	</object>
+      </object>
+      <packing>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="length_frequency_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="top_attach">7</property>
+        <property name="bottom_attach">8</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="hbox7">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="leg_p_sine_wave_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Leg P Gain:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="leg_p_gain_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">3</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="top_attach">8</property>
+        <property name="bottom_attach">9</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="hbox8">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="leg_d_sine_wave_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Leg D Gain:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="leg_d_gain_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">3</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="top_attach">9</property>
+        <property name="bottom_attach">10</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="hip_angle_amplitude_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">3</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHScale" id="hip_angle_frequency_hscale">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="round_digits">1</property>
+        <property name="digits">3</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="hip_angle_amplitude_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Hip Angle Amplitude (rad):</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="hip_angle_frequency_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Hip Angle Frequency (Hz):</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="hbox1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="hip_p_gain_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Hip P Gain:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="hip_p_gain_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">3</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="hbox2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="hip_d_gain_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Hip D Gain:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="hip_d_gain_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">3</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
 </interface>

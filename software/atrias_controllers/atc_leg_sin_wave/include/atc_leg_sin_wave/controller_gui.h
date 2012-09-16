@@ -26,8 +26,13 @@ Gtk::HScale *leg_angle_amplitude_hscale,
             *leg_angle_frequency_hscale,
             *leg_length_amplitude_hscale,
             *leg_length_frequency_hscale,
-            *p_sine_wave_hscale,
-            *d_sine_wave_hscale;
+	    *hip_angle_amplitude_hscale,
+	    *hip_angle_frequency_hscale;
+
+Gtk::SpinButton *leg_p_gain_entry,
+	        *leg_d_gain_entry,
+	        *hip_p_gain_entry,
+	        *hip_d_gain_entry;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
