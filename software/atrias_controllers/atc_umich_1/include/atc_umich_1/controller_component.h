@@ -23,8 +23,6 @@
 
 // Datatypes
 #include <atc_umich_1/controller_input.h>
-#include <atc_umich_1/controller_status.h>
-#include <atc_umich_1/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
