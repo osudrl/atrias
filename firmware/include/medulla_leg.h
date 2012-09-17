@@ -13,6 +13,7 @@
 #include "adc.h"
 #include "biss_encoder.h"
 #include "quadrature_encoder.h"
+#include "usart_adc.h"
 
 #include "amplifier.h"
 

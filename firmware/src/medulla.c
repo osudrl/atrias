@@ -35,6 +35,7 @@ UART_USES_PORT(USARTD0)
 // ADCs on port a and b
 ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
+USART_ADC_USES_PORT(USARTF0)
 
 int main(void) {
 	// Initilize the clock to 32 Mhz oscillator
@@ -165,6 +166,10 @@ int main(void) {
 			printf("[ERROR] Unknown medulla ID: %04x, aborting.\n",medulla_id);
 			while (1);
 	}
+
+	// Wait for a second so all the hardware can initilize first
+	_delay_ms(1000);
+
 	// Call the initilize function to initilize all the hardware for this medulla
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Calling init for specific medulla\n");

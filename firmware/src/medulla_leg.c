@@ -65,6 +65,7 @@ limit_sw_port_t limit_sw_port;
 adc_port_t adc_port_a, adc_port_b;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
+usart_adc_t knee_adc;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
@@ -76,6 +77,7 @@ uint8_t leg_encoder_error_counter;
 bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
 uint32_t prev_motor_position;
+uint16_t leg_knee_adc_aux4;
 
 
 void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
@@ -127,12 +129,17 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	adc_init_pin(&adc_port_a,4,thermistor_pdo+3);
 	adc_init_pin(&adc_port_a,5,thermistor_pdo+4);
 	adc_init_pin(&adc_port_a,6,thermistor_pdo+5);
-
+	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing voltage monitoring pins\n");
 	#endif
 	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
 	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Leg] Initilizing strain guage and toe sensor ADC\n");
+	#endif
+	knee_adc = usart_adc_init(&PORTF,&USARTF0,io_init_pin(&PORTD,4), knee_force1_pdo, knee_force2_pdo, toe_sensor_pdo, 0);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing motor encoder\n");
@@ -159,10 +166,6 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	*leg_medulla_id_pdo = id;
 	*commanded_state = leg_command_state_pdo;
 	*current_state = leg_current_state_pdo;
-
-	//Set PORTC Pin 5 to output to debug pwm update rate
-	PORTC.DIR |= 0b00100000;
-
 }
 
 inline void leg_enable_outputs(void) {
@@ -174,6 +177,9 @@ inline void leg_disable_outputs(void) {
 }
 
 void leg_update_inputs(uint8_t id) {
+	// Since reading from the knee ADC takes so long, we start it first.
+	usart_adc_start_read(&knee_adc);
+
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
@@ -185,11 +191,13 @@ void leg_update_inputs(uint8_t id) {
 	// while we are waiting for things to complete, get the limit switch state
 	*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
 
+
 	// now wait for things to complete
 	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
+	while (!usart_adc_read_complete(&knee_adc));
 
 	cli();
 	*incremental_encoder_pdo = quadrature_encoder_get_value(&inc_encoder);
@@ -213,6 +221,9 @@ void leg_update_inputs(uint8_t id) {
 		*leg_error_flags_pdo |= medulla_error_encoder;
 		leg_encoder_error_counter++;
 	}
+
+	usart_adc_process_data(&knee_adc);
+
 	leg_send_current_read = true;
 }
 
