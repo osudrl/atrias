@@ -1,6 +1,6 @@
-double q1r
-double q2r
-double q3r
-double q1l
-double q2l
-double q3l
+float64 q1r
+float64 q2r
+float64 q3r
+float64 q1l
+float64 q2l
+float64 q3l
