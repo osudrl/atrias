@@ -38,13 +38,39 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
 
     // begin control code //
 
+    // Inputs
+    simulink_name_U.simulink_robot_input[0]  = rs.lLeg.hip.legBodyAngle;
+    simulink_name_U.simulink_robot_input[1]  = rs.lLeg.halfA.legAngle;
+    simulink_name_U.simulink_robot_input[2]  = rs.lLeg.halfA.motorAngle;
+    simulink_name_U.simulink_robot_input[3]  = rs.lLeg.halfB.legAngle;
+    simulink_name_U.simulink_robot_input[4]  = rs.lLeg.halfB.motorAngle;
+    simulink_name_U.simulink_robot_input[5]  = rs.rLeg.hip.legBodyAngle;
+    simulink_name_U.simulink_robot_input[6]  = rs.rLeg.halfA.legAngle;
+    simulink_name_U.simulink_robot_input[7]  = rs.rLeg.halfA.motorAngle;
+    simulink_name_U.simulink_robot_input[8]  = rs.rLeg.halfB.legAngle;
+    simulink_name_U.simulink_robot_input[9]  = rs.rLeg.halfB.motorAngle;
+    simulink_name_U.simulink_robot_input[10] = rs.position.xPosition;
+    simulink_name_U.simulink_robot_input[11] = rs.position.yPosition;
+    simulink_name_U.simulink_robot_input[12] = rs.position.zPosition;
+    simulink_name_U.simulink_robot_input[13] = rs.position.bodyPitch;
+
+    simulink_name_U.simulink_set_point_input[0] = guiIn.q1r;
+    simulink_name_U.simulink_set_point_input[1] = guiIn.q2r;
+    simulink_name_U.simulink_set_point_input[2] = guiIn.q3r;
+    simulink_name_U.simulink_set_point_input[3] = guiIn.q1l;
+    simulink_name_U.simulink_set_point_input[4] = guiIn.q2l;
+    simulink_name_U.simulink_set_point_input[5] = guiIn.q3l;
+
+    // Step the controller
+    simulink_name_step();
+
     // Stuff the msg
-    //co.rLeg.motorCurrentA   = guiIn.q1r;
-    //co.rLeg.motorCurrentB   = guiIn.q2r;
-    //co.rLeg.motorCurrentHip = guiIn.q3r;
-    //co.lLeg.motorCurrentA   = guiIn.q1l;
-    //co.lLeg.motorCurrentB   = guiIn.q2l;
-    //co.lLeg.motorCurrentHip = guiIn.q3l;
+    co.lLeg.motorCurrentA   = simulink_name_Y.simulink_output[0];
+    co.lLeg.motorCurrentB   = simulink_name_Y.simulink_output[1];
+    co.lLeg.motorCurrentHip = simulink_name_Y.simulink_output[2];
+    co.rLeg.motorCurrentA   = simulink_name_Y.simulink_output[3];
+    co.rLeg.motorCurrentB   = simulink_name_Y.simulink_output[4];
+    co.rLeg.motorCurrentHip = simulink_name_Y.simulink_output[5];
 
     // end control code //
 
@@ -57,6 +83,9 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
 
 // Don't put control code below here!
 bool ATCUmich1::configureHook() {
+    // Initialize the controller
+    simulink_name_initialize();
+
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
@@ -71,6 +100,9 @@ void ATCUmich1::updateHook() {
 }
 
 void ATCUmich1::stopHook() {
+    // Stop the controller
+    simulink_name_terminate();
+
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 

@@ -27,6 +27,11 @@
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 
+// MATLAB code
+extern "C" {
+#include <simulink_name.h>
+}
+
 using namespace RTT;
 using namespace Orocos;
 using namespace atc_umich_1;
