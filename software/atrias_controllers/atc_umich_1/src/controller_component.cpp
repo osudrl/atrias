@@ -10,7 +10,8 @@ namespace controller {
 
 ATCUmich1::ATCUmich1(std::string name):
     RTT::TaskContext(name),
-    guiDataIn("gui_data_in")
+    guiDataIn("gui_data_in"),
+    logPort("logOutput")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCUmich1::runController, this, ClientThread)
@@ -19,6 +20,19 @@ ATCUmich1::ATCUmich1(std::string name):
     // For the GUI
     addEventPort(guiDataIn);
     pubTimer = new GuiPublishTimer(20);
+
+    // For logging
+    // Create a port
+    addPort(logPort); 
+    // Connect with buffer size 100000 so we get all data.
+    ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
+    // Transport type = ROS
+    policy.transport = 3;
+    // ROS topic name
+    policy.name_id = "/" + name + "_log";
+    // Construct the stream between the port and ROS topic
+    logPort.createStream(policy);
+
 
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
@@ -39,40 +53,72 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
     // begin control code //
 
     // Inputs
-    simulink_name_U.simulink_robot_input[0]  = rs.lLeg.hip.legBodyAngle;
-    simulink_name_U.simulink_robot_input[1]  = rs.lLeg.halfA.legAngle;
-    simulink_name_U.simulink_robot_input[2]  = rs.lLeg.halfA.motorAngle;
-    simulink_name_U.simulink_robot_input[3]  = rs.lLeg.halfB.legAngle;
-    simulink_name_U.simulink_robot_input[4]  = rs.lLeg.halfB.motorAngle;
-    simulink_name_U.simulink_robot_input[5]  = rs.rLeg.hip.legBodyAngle;
-    simulink_name_U.simulink_robot_input[6]  = rs.rLeg.halfA.legAngle;
-    simulink_name_U.simulink_robot_input[7]  = rs.rLeg.halfA.motorAngle;
-    simulink_name_U.simulink_robot_input[8]  = rs.rLeg.halfB.legAngle;
-    simulink_name_U.simulink_robot_input[9]  = rs.rLeg.halfB.motorAngle;
-    simulink_name_U.simulink_robot_input[10] = rs.position.xPosition;
-    simulink_name_U.simulink_robot_input[11] = rs.position.yPosition;
-    simulink_name_U.simulink_robot_input[12] = rs.position.zPosition;
-    simulink_name_U.simulink_robot_input[13] = rs.position.bodyPitch;
+    // Robot state
+    simulink_name_U.x[0]  = rs.lLeg.hip.legBodyAngle;
+    simulink_name_U.x[1]  = rs.lLeg.halfA.legAngle;
+    simulink_name_U.x[2]  = rs.lLeg.halfA.motorAngle;
+    simulink_name_U.x[3]  = rs.lLeg.halfB.legAngle;
+    simulink_name_U.x[4]  = rs.lLeg.halfB.motorAngle;
+    simulink_name_U.x[5]  = rs.rLeg.hip.legBodyAngle;
+    simulink_name_U.x[6]  = rs.rLeg.halfA.legAngle;
+    simulink_name_U.x[7]  = rs.rLeg.halfA.motorAngle;
+    simulink_name_U.x[8]  = rs.rLeg.halfB.legAngle;
+    simulink_name_U.x[9]  = rs.rLeg.halfB.motorAngle;
+    simulink_name_U.x[10] = rs.position.xPosition;
+    simulink_name_U.x[11] = rs.position.yPosition;
+    simulink_name_U.x[12] = rs.position.zPosition;
+    simulink_name_U.x[13] = rs.position.bodyPitch;
 
-    simulink_name_U.simulink_set_point_input[0] = guiIn.q1r;
-    simulink_name_U.simulink_set_point_input[1] = guiIn.q2r;
-    simulink_name_U.simulink_set_point_input[2] = guiIn.q3r;
-    simulink_name_U.simulink_set_point_input[3] = guiIn.q1l;
-    simulink_name_U.simulink_set_point_input[4] = guiIn.q2l;
-    simulink_name_U.simulink_set_point_input[5] = guiIn.q3l;
+    // Set points
+    simulink_name_U.set_point_input[0] = guiIn.q1r;
+    simulink_name_U.set_point_input[1] = guiIn.q2r;
+    simulink_name_U.set_point_input[2] = guiIn.q3r;
+    simulink_name_U.set_point_input[3] = guiIn.q1l;
+    simulink_name_U.set_point_input[4] = guiIn.q2l;
+    simulink_name_U.set_point_input[5] = guiIn.q3l;
+
+    // KP and KD
+    simulink_name_U.kp[0] = guiIn.kp1;
+    simulink_name_U.kp[1] = guiIn.kp2;
+    simulink_name_U.kp[2] = guiIn.kp3;
+    simulink_name_U.kd[0] = guiIn.kd1;
+    simulink_name_U.kd[1] = guiIn.kd2;
+    simulink_name_U.kd[2] = guiIn.kd3;
+
+    // Epsilon
+    simulink_name_U.epsilon[0] = guiIn.epsilon;
+
 
     // Step the controller
     simulink_name_step();
 
+
     // Stuff the msg
-    co.lLeg.motorCurrentA   = simulink_name_Y.simulink_output[0];
-    co.lLeg.motorCurrentB   = simulink_name_Y.simulink_output[1];
-    co.lLeg.motorCurrentHip = simulink_name_Y.simulink_output[2];
-    co.rLeg.motorCurrentA   = simulink_name_Y.simulink_output[3];
-    co.rLeg.motorCurrentB   = simulink_name_Y.simulink_output[4];
-    co.rLeg.motorCurrentHip = simulink_name_Y.simulink_output[5];
+    co.lLeg.motorCurrentA   = simulink_name_Y.u[0];
+    co.lLeg.motorCurrentB   = simulink_name_Y.u[1];
+    co.lLeg.motorCurrentHip = simulink_name_Y.u[2];
+    co.rLeg.motorCurrentA   = simulink_name_Y.u[3];
+    co.rLeg.motorCurrentB   = simulink_name_Y.u[4];
+    co.rLeg.motorCurrentHip = simulink_name_Y.u[5];
 
     // end control code //
+
+    // Log the output
+    logData.y1r = simulink_name_Y.y[0];
+    logData.y2r = simulink_name_Y.y[1];
+    logData.y3r = simulink_name_Y.y[2];
+    logData.y1l = simulink_name_Y.y[3];
+    logData.y2l = simulink_name_Y.y[4];
+    logData.y3l = simulink_name_Y.y[5];
+
+    logData.dy1r = simulink_name_Y.dy[0];
+    logData.dy2r = simulink_name_Y.dy[1];
+    logData.dy3r = simulink_name_Y.dy[2];
+    logData.dy1l = simulink_name_Y.dy[3];
+    logData.dy2l = simulink_name_Y.dy[4];
+    logData.dy3l = simulink_name_Y.dy[5];
+
+    logPort.write(logData);
 
     // Command a run state
     co.command = medulla_state_run;

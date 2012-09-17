@@ -23,6 +23,7 @@
 
 // Datatypes
 #include <atc_umich_1/controller_input.h>
+#include <atc_umich_1/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
@@ -51,6 +52,11 @@ private:
     shared::GuiPublishTimer                         *pubTimer;
     controller_input                                guiIn;
     InputPort<controller_input>                     guiDataIn;
+
+    // For logging
+    atc_umich_1::controller_log_data logData;
+    OutputPort<atc_umich_1::controller_log_data> logPort;
+
 
 public:
     // Constructor
