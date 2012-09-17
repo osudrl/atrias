@@ -36,9 +36,6 @@ ASCSinPathGenerator::ASCSinPathGenerator(std::string name):
     accumulator = 0.0;
     phase = 0.0;
 
-    // Debugging
-    count = 0;
-
     log(Info) << "[ASCSG] Constructed!" << endlog();
 }
 
@@ -57,19 +54,11 @@ void ASCSinPathGenerator::setPhase(double _phase)
 MotorState ASCSinPathGenerator::runController(double frequency, double amplitude)
 {
     // Return the function value and its derivative
-    sinOut.ang = amplitude*sin(2.0*M_PI*(accumulator + phase));
-    sinOut.vel = amplitude*cos(2.0*M_PI*(accumulator + phase))*2.0*M_PI*frequency;
-
-    if (count < 1)
-    {
-        printf("Sin calculation:\n");
-        printf("Sin output = %f\n", sinOut.ang);
-        printf("Amplitude  = %f\n", amplitude);
-        count++;
-    }
+    sinOut.ang = amplitude*sin(2.0*M_PI*frequency*(accumulator + phase));
+    sinOut.vel = amplitude*cos(2.0*M_PI*frequency*(accumulator + phase))*2.0*M_PI*frequency;
 
     // The sin input
-    accumulator += 0.001*frequency;
+    accumulator += 0.001;
     if (accumulator >= 1.0)
         accumulator -= 1.0;
 

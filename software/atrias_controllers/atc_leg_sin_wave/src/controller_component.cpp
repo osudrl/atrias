@@ -51,9 +51,6 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
     targetVel = 0.0;
     currentVel = 0.0;
 
-    // Debugging
-    count = 0;
-
     log(Info) << "[ATCLSW] Leg sin wave controller constructed!" << endlog();
 }
 
@@ -84,13 +81,6 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     lHip    = sin4Controller(guiIn.hip_frq,     guiIn.hip_amp);
     rHip    = sin5Controller(guiIn.hip_frq,     guiIn.hip_amp);
 
-    if (count < 1)
-    {
-        // Debugging
-        printf("lHip offset sin = %f\n", (lHip.ang + guiIn.hip_amp));
-        printf("rHip offset sin = %f\n", (rHip.ang - guiIn.hip_amp));
-    }
-
     // Set resonable center positions
     centerLength = 0.8;
     centerAngle = M_PI/2.0;
@@ -112,25 +102,18 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     lHip.ang    = lHipStart + (lHip.ang + guiIn.hip_amp);
     rHip.ang    = rHipStart + (rHip.ang - guiIn.hip_amp);
 
-    if (count < 1)
-    {
-        //printf("lHip.ang = %f\n", lHip.ang);
-        //printf("rHip.ang = %f\n", rHip.ang);
-        count++;
-    }
-
-    // Inforce reasonable hip angles
-    /*
-    vertical = 3*M_PI/2;
-    if (lHip.ang < ( vertical - (M_PI/180*10)))
-        lHip.ang = vertical - (M_PI/180*10);
-    if (lHip.ang > ( vertical + (M_PI/180*20)))
-        lHip.ang = vertical + (M_PI/180*20);
-    if (rHip.ang < ( vertical + (M_PI/180*10)))
-        rHip.ang = vertical + (M_PI/180*10);
-    if (rHip.ang > ( vertical - (M_PI/180*20)))
-        rHip.ang = vertical - (M_PI/180*20);
-    */
+    // Enforce reasonable hip angles
+    vertical = 3.0*M_PI/2.0;
+    inAngle  = M_PI/180.0*10.0;
+    outAngle = M_PI/180.0*20.0;
+    if (lHip.ang < (vertical - inAngle))
+        lHip.ang =  vertical - inAngle;
+    if (lHip.ang > (vertical + outAngle))
+        lHip.ang =  vertical + outAngle;
+    if (rHip.ang > (vertical + inAngle))
+        rHip.ang =  vertical + inAngle;
+    if (rHip.ang < (vertical - outAngle))
+        rHip.ang =  vertical - outAngle;
 
     // Transform to motor positions and velocities
     lMotorAngle = legToMotorPos(lLegAng.ang, lLegLen.ang);
