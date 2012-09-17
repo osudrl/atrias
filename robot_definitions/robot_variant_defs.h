@@ -18,7 +18,7 @@
   * In encoder ticks.
   * Not set yet.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  32670
+#define BOOM_PITCH_VERTICAL_VALUE  109784
 
 /** @brief The length of the boom. For Z calculations.
   * This is measured from the center of rotation to the center of the hip's
