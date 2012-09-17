@@ -17,18 +17,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("q1l_hscale", q1l_hscale);
     gui->get_widget("q2l_hscale", q2l_hscale);
     gui->get_widget("q3l_hscale", q3l_hscale);
-    gui->get_widget("kp1_hscale", kp1_hscale);
-    gui->get_widget("kp2_hscale", kp2_hscale);
-    gui->get_widget("kp3_hscale", kp3_hscale);
-    gui->get_widget("kd1_hscale", kd1_hscale);
-    gui->get_widget("kd2_hscale", kd2_hscale);
-    gui->get_widget("kd3_hscale", kd3_hscale);
+    gui->get_widget("kp1_spinbutton", kp1_spinbutton);
+    gui->get_widget("kp2_spinbutton", kp2_spinbutton);
+    gui->get_widget("kp3_spinbutton", kp3_spinbutton);
+    gui->get_widget("kd1_spinbutton", kd1_spinbutton);
+    gui->get_widget("kd2_spinbutton", kd2_spinbutton);
+    gui->get_widget("kd3_spinbutton", kd3_spinbutton);
     gui->get_widget("epsilon_spinbutton", epsilon_spinbutton);
 
     if (q1r_hscale && q2r_hscale && q3r_hscale &&
         q1l_hscale && q2l_hscale && q3l_hscale &&
-        kp1_hscale && kp2_hscale && kp3_hscale &&
-        kd1_hscale && kd2_hscale && kd3_hscale &&
+        kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
+        kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         epsilon_spinbutton) {
         // Set ranges.
         q1r_hscale->set_range(140, 220);
@@ -37,13 +37,13 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         q1l_hscale->set_range(140, 220);
         q2l_hscale->set_range(140, 220);
         q3l_hscale->set_range(-15, 15);
-        kp1_hscale->set_range(   ,    );
-        kp2_hscale->set_range(   ,    );
-        kp3_hscale->set_range(   ,    );
-        kd1_hscale->set_range(   ,    );
-        kd2_hscale->set_range(   ,    );
-        kd3_hscale->set_range(   ,    );
-        epsilon_spinbutton->set_range(,);
+        kp1_hscale->set_range(0, 10);
+        kp2_hscale->set_range(0, 10);
+        kp3_hscale->set_range(0, 10);
+        kd1_hscale->set_range(0, 2);
+        kd2_hscale->set_range(0, 2);
+        kd3_hscale->set_range(0, 2);
+        epsilon_spinbutton->set_range(0, 0.2);
 
         // Set up subscriber and publisher.
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
@@ -76,12 +76,12 @@ void getParameters() {
     q1l_hscale->set_value(controllerDataOut.q1l);
     q2l_hscale->set_value(controllerDataOut.q2l);
     q3l_hscale->set_value(controllerDataOut.q3l);
-    q3l_hscale->set_value(controllerDataOut.kp1);
-    q3l_hscale->set_value(controllerDataOut.kp2);
-    q3l_hscale->set_value(controllerDataOut.kp3);
-    q3l_hscale->set_value(controllerDataOut.kd1);
-    q3l_hscale->set_value(controllerDataOut.kd2);
-    q3l_hscale->set_value(controllerDataOut.kd3);
+    kp1_spinbutton->set_value(controllerDataOut.kp1);
+    kp2_spinbutton->set_value(controllerDataOut.kp2);
+    kp3_spinbutton->set_value(controllerDataOut.kp3);
+    kd1_spinbutton->set_value(controllerDataOut.kd1);
+    kd2_spinbutton->set_value(controllerDataOut.kd2);
+    kd3_spinbutton->set_value(controllerDataOut.kd3);
     epsilon_spinbutton->set_value(controllerDataOut.epsilon);
 }
 
@@ -110,12 +110,12 @@ void guiUpdate() {
     controllerDataOut.q1l = q1l_hscale->get_value();
     controllerDataOut.q2l = q2l_hscale->get_value();
     controllerDataOut.q3l = q3l_hscale->get_value();
-    controllerDataOut.kp1 = kp1_hscale->get_value();
-    controllerDataOut.kp2 = kp2_hscale->get_value();
-    controllerDataOut.kp3 = kp3_hscale->get_value();
-    controllerDataOut.kd1 = kd1_hscale->get_value();
-    controllerDataOut.kd2 = kd2_hscale->get_value();
-    controllerDataOut.kd3 = kd3_hscale->get_value();
+    controllerDataOut.kp1 = kp1_spinbutton->get_value();
+    controllerDataOut.kp2 = kp2_spinbutton->get_value();
+    controllerDataOut.kp3 = kp3_spinbutton->get_value();
+    controllerDataOut.kd1 = kd1_spinbutton->get_value();
+    controllerDataOut.kd2 = kd2_spinbutton->get_value();
+    controllerDataOut.kd3 = kd3_spinbutton->get_value();
     controllerDataOut.epsilon = epsilon_spinbutton->get_value();
     pub.publish(controllerDataOut);
 }

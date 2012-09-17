@@ -26,15 +26,15 @@ Gtk::HScale *q1r_hscale,
         *q3r_hscale,
         *q1l_hscale,
         *q2l_hscale,
-        *q3l_hscale,
-        *kp1_hscale,
+        *q3l_hscale;
+
+Gtk::SpinButton *kp1_hscale,
         *kp2_hscale,
         *kp3_hscale,
         *kd1_hscale,
         *kd2_hscale,
-        *kd3_hscale;
-
-Gtk::SpinButton *epsilon_spinbutton;
+        *kd3_hscale,
+        *epsilon_spinbutton;
 
 #endif /* CONTROLLER_GUI_H_ */
 

@@ -231,10 +231,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kp1_hscale">
+              <object class="GtkSpinButton" id="kp1_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
@@ -256,10 +260,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kp2_hscale">
+              <object class="GtkSpinButton" id="kp2_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
@@ -269,7 +277,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="kp3_hscale">
+              <object class="GtkLabel" id="kp3_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">kP3</property>
@@ -281,10 +289,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kp3_label">
+              <object class="GtkSpinButton" id="kp3_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
@@ -328,10 +340,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kd1_hscale">
+              <object class="GtkSpinButton" id="kd1_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
@@ -353,10 +369,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kd2_hscale">
+              <object class="GtkSpinButton" id="kd2_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
@@ -378,10 +398,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="kd3_hscale">
+              <object class="GtkSpinButton" id="kd3_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
                 <property name="digits">3</property>
               </object>
               <packing>
