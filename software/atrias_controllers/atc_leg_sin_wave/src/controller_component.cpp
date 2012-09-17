@@ -50,6 +50,7 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
     currentPos = 0.0;
     targetVel = 0.0;
     currentVel = 0.0;
+    hipPeriod = 0.0;
 
     log(Info) << "[ATCLSW] Leg sin wave controller constructed!" << endlog();
 }
@@ -67,9 +68,12 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
         return co;
 
+    // If the frequency doesn't make the period infinite
+    if (guiIn.hip_frq > 0.001)
+        hipPeriod = 1.0/guiIn.hip_frq;
+
     // Set the sin controller phase shifts for the hip
     // so they start by going inwards
-    hipPeriod = 1.0/guiIn.hip_frq;
     sin4SetPhase(3.0/4.0*hipPeriod);
     sin5SetPhase(1.0/4.0*hipPeriod);
 

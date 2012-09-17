@@ -37,6 +37,9 @@ private:
 
     double accumulator, phase;
 
+    // Debugging
+    int count;
+
     asc_path_generator::controller_log_data logData;
     OutputPort<asc_path_generator::controller_log_data> logPort;
 
