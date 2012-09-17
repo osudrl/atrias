@@ -17,7 +17,7 @@
               <object class="GtkLabel" id="q1r_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q1R</property>
+                <property name="label" translatable="yes">q1R</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -42,7 +42,7 @@
               <object class="GtkLabel" id="q2r_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q1R</property>
+                <property name="label" translatable="yes">q1R</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -67,7 +67,7 @@
               <object class="GtkLabel" id="q3r_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q3R</property>
+                <property name="label" translatable="yes">q3R</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -103,7 +103,7 @@
               <object class="GtkLabel" id="q1l_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q1L</property>
+                <property name="label" translatable="yes">q1L</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -128,7 +128,7 @@
               <object class="GtkLabel" id="q2l_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q2L</property>
+                <property name="label" translatable="yes">q2L</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -153,7 +153,7 @@
               <object class="GtkLabel" id="q3l_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Q3L</property>
+                <property name="label" translatable="yes">q3L</property>
               </object>
               <packing>
                 <property name="expand">True</property>
