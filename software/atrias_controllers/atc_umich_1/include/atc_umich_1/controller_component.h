@@ -30,7 +30,7 @@
 
 // MATLAB code
 extern "C" {
-#include <simulink_name.h>
+#include <posing_controller_v2.h>
 }
 
 using namespace RTT;

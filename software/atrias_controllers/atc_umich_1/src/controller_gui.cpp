@@ -37,12 +37,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         q1l_hscale->set_range(140, 220);
         q2l_hscale->set_range(140, 220);
         q3l_hscale->set_range(-15, 15);
-        kp1_hscale->set_range(0, 10);
-        kp2_hscale->set_range(0, 10);
-        kp3_hscale->set_range(0, 10);
-        kd1_hscale->set_range(0, 2);
-        kd2_hscale->set_range(0, 2);
-        kd3_hscale->set_range(0, 2);
+        kp1_spinbutton->set_range(0, 10);
+        kp2_spinbutton->set_range(0, 10);
+        kp3_spinbutton->set_range(0, 10);
+        kd1_spinbutton->set_range(0, 2);
+        kd2_spinbutton->set_range(0, 2);
+        kd3_spinbutton->set_range(0, 2);
         epsilon_spinbutton->set_range(0, 0.2);
 
         // Set up subscriber and publisher.
