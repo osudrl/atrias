@@ -151,15 +151,6 @@ void ControllerWrapper::OnUpdate()
     else
         ciso.lLeg.toeSwitch = 0;
 
-    this->lock.unlock();
-
-    // Put the robot state in the publishing queue
-    atrias_sim_pub.publish(ciso);
-
-    // Publish the robot state and get the torque requests
-    ros::spinOnce();
-
-    this->lock.lock();
     // Add the torques to the simulation
     this->motorA->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentA * legTorqueConstant * gearRatio, 0.));
     this->body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentA * legTorqueConstant * gearRatio, 0.));
@@ -167,6 +158,12 @@ void ControllerWrapper::OnUpdate()
     this->body->AddRelativeTorque(math::Vector3(0., -1. * cosi.lLeg.motorCurrentB * legTorqueConstant * gearRatio, 0.));
 
     this->lock.unlock();
+
+    // Put the robot state in the publishing queue
+    atrias_sim_pub.publish(ciso);
+
+    // Publish the robot state and get the torque requests
+    ros::spinOnce();
 }
 
 

@@ -215,15 +215,6 @@ void GazeboControllerConnector::OnUpdate()
     ciso.rLeg.hip.legBodyVelocity = (angle - prevRightLegAngle) / timestep; 
     prevRightLegAngle = angle;
 
-    this->lock.unlock();
-
-    // Put the robot state in the publishing queue
-    atrias_sim_pub.publish(ciso);
-
-    // Publish the robot state and get the torque requests
-    ros::spinOnce();
-
-    this->lock.lock();
     // Add the torques to the simulation
     // Left Leg
     this->leftLegLinks.motorA->AddRelativeTorque(math::Vector3(0., cosi.lLeg.motorCurrentA * legTorqueConstant * legMotorGearRatio, 0.));
@@ -244,6 +235,12 @@ void GazeboControllerConnector::OnUpdate()
     this->hipLinks.body->AddRelativeTorque(math::Vector3(-1. * cosi.lLeg.motorCurrentHip * hipTorqueConstant * hipGearRatio, 0., 0.));
 
     this->lock.unlock();
+
+    // Put the robot state in the publishing queue
+    atrias_sim_pub.publish(ciso);
+
+    // Publish the robot state and get the torque requests
+    ros::spinOnce();
 }
 
 
