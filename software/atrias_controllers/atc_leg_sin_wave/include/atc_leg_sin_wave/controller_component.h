@@ -104,14 +104,10 @@ private:
     // Math variables
     double centerLength, centerAngle, hipCenter;
     double targetPos, currentPos, targetVel, currentVel;
-    double hipPeriod, vertical;
+    double hipPeriod, vertical, inAngle, outAngle;
     MotorAngle lMotorAngle, rMotorAngle;
     MotorVelocity lMotorVelocity, rMotorVelocity;
     MotorState lLegLen, lLegAng, rLegLen, rLegAng, lHip, rHip;
-
-    // Debugging
-    int count;
-
 
 public:
     // Constructor
