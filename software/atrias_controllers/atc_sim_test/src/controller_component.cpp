@@ -33,34 +33,21 @@ ATCSimTest::ATCSimTest(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
+    co.command = medulla_state_run;
+
     log(Info) << "[ATCMT] atc_sim_test controller constructed!" << endlog();
 }
 
 atrias_msgs::controller_output ATCSimTest::runController(atrias_msgs::robot_state rs) {
-    // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
-    {
-        // Do nothing
-        co.lLeg.motorCurrentA = 0.0;
-        co.lLeg.motorCurrentB = 0.0;
-        co.lLeg.motorCurrentHip = 0.0;
-        co.rLeg.motorCurrentA = 0.0;
-        co.rLeg.motorCurrentB = 0.0;
-        co.rLeg.motorCurrentHip = 0.0;
-        return co;
-    }
-
-    // begin control code //
+	if (fabs(co.lLeg.motorCurrentA) != 120.0) {
+		co.lLeg.motorCurrentA = 120.0;
+	} else {
+		co.lLeg.motorCurrentA *= -1.0;
+	}
 
     // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
     co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
-
-    // end control code //
-
-    // Command a run state
-    co.command = medulla_state_run;
 
     // Stuff the msg and push to ROS for logging
     logData.desiredState = 0.0;
