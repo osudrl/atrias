@@ -40,6 +40,9 @@ private:
     asc_path_generator::controller_log_data logData;
     OutputPort<asc_path_generator::controller_log_data> logPort;
 
+    // Debugging
+    int count;
+
 public:
     // Constructor
     ASCSinPathGenerator(std::string name);

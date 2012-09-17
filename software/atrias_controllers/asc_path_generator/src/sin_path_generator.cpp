@@ -17,6 +17,8 @@ ASCSinPathGenerator::ASCSinPathGenerator(std::string name):
         .doc("Run the controller.");
     this->provides("sinGen")
         ->addOperation("reset", &ASCSinPathGenerator::reset, this, OwnThread);
+    this->provides("sinGen")
+        ->addOperation("setPhase", &ASCSinPathGenerator::setPhase, this, OwnThread);
 
     // For logging
     // Create a port
@@ -33,6 +35,9 @@ ASCSinPathGenerator::ASCSinPathGenerator(std::string name):
     // Setup the controller
     accumulator = 0.0;
     phase = 0.0;
+
+    // Debugging
+    count = 0;
 
     log(Info) << "[ASCSG] Constructed!" << endlog();
 }
@@ -51,14 +56,22 @@ void ASCSinPathGenerator::setPhase(double _phase)
 
 MotorState ASCSinPathGenerator::runController(double frequency, double amplitude)
 {
-    // The sin input
-    accumulator += 0.001*2.0*M_PI*frequency;
-    if (accumulator >= 2.0*M_PI)
-        accumulator -= 2.0*M_PI;
-
     // Return the function value and its derivative
-    sinOut.ang = amplitude*sin(accumulator + phase);
-    sinOut.vel = amplitude*cos(accumulator + phase)*2.0*M_PI*frequency;
+    sinOut.ang = amplitude*sin(2.0*M_PI*(accumulator + phase));
+    sinOut.vel = amplitude*cos(2.0*M_PI*(accumulator + phase))*2.0*M_PI*frequency;
+
+    if (count < 1)
+    {
+        printf("Sin calculation:\n");
+        printf("Sin output = %f\n", sinOut.ang);
+        printf("Amplitude  = %f\n", amplitude);
+        count++;
+    }
+
+    // The sin input
+    accumulator += 0.001*frequency;
+    if (accumulator >= 1.0)
+        accumulator -= 1.0;
 
     // Stuff the msg and push to ROS for logging
     logData.ang = sinOut.ang;

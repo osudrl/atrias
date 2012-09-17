@@ -46,41 +46,50 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
     addEventPort(guiDataIn);
 
     // Set Defaults
-    targetPos = 0;
-    currentPos = 0;
-    targetVel = 0;
-    currentVel = 0;
+    targetPos = 0.0;
+    currentPos = 0.0;
+    targetVel = 0.0;
+    currentVel = 0.0;
+
+    // Debugging
+    count = 0;
 
     log(Info) << "[ATCLSW] Leg sin wave controller constructed!" << endlog();
 }
 
 // Put control code here.
 atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_state rs) {
+    // Default to zero
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
-    {
-        // Do nothing
-        co.lLeg.motorCurrentA = 0.0;
-        co.lLeg.motorCurrentB = 0.0;
-        co.lLeg.motorCurrentHip = 0.0;
-        co.rLeg.motorCurrentA = 0.0;
-        co.rLeg.motorCurrentB = 0.0;
-        co.rLeg.motorCurrentHip = 0.0;
         return co;
-    }
 
     // Set the sin controller phase shifts for the hip
     // so they start by going inwards
-    sin4SetPhase(3.0/4.0/guiIn.hip_frq);
-    sin5SetPhase(1.0/4.0/guiIn.hip_frq);
+    hipPeriod = 1.0/guiIn.hip_frq;
+    sin4SetPhase(3.0/4.0*hipPeriod);
+    sin5SetPhase(1.0/4.0*hipPeriod);
 
     // Get a sinusoidal input
     lLegLen = sin0Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
     lLegAng = sin1Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
     rLegLen = sin2Controller(guiIn.leg_len_frq, guiIn.leg_len_amp);
     rLegAng = sin3Controller(guiIn.leg_ang_frq, guiIn.leg_ang_amp);
-    lHip    = sin4Controller(guiIn.hip_frq, guiIn.hip_amp);
-    rHip    = sin5Controller(guiIn.hip_frq, guiIn.hip_amp);
+    lHip    = sin4Controller(guiIn.hip_frq,     guiIn.hip_amp);
+    rHip    = sin5Controller(guiIn.hip_frq,     guiIn.hip_amp);
+
+    if (count < 1)
+    {
+        // Debugging
+        printf("lHip offset sin = %f\n", (lHip.ang + guiIn.hip_amp));
+        printf("rHip offset sin = %f\n", (rHip.ang - guiIn.hip_amp));
+    }
 
     // Set resonable center positions
     centerLength = 0.8;
@@ -98,10 +107,30 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     rLegAng.ang = -rLegAng.ang + centerAngle;
     rLegAng.vel = -rLegAng.vel;
 
-  //angle       = restPos   + sinWave  + vertical offset
-    lHip.ang    = lHipStart + lHip.ang + guiIn.hip_amp;
-    rHip.ang    = rHipStart + rHip.ang - guiIn.hip_amp;
 
+  //angle       = restPos   +  sinWave  + vertical offset
+    lHip.ang    = lHipStart + (lHip.ang + guiIn.hip_amp);
+    rHip.ang    = rHipStart + (rHip.ang - guiIn.hip_amp);
+
+    if (count < 1)
+    {
+        //printf("lHip.ang = %f\n", lHip.ang);
+        //printf("rHip.ang = %f\n", rHip.ang);
+        count++;
+    }
+
+    // Inforce reasonable hip angles
+    /*
+    vertical = 3*M_PI/2;
+    if (lHip.ang < ( vertical - (M_PI/180*10)))
+        lHip.ang = vertical - (M_PI/180*10);
+    if (lHip.ang > ( vertical + (M_PI/180*20)))
+        lHip.ang = vertical + (M_PI/180*20);
+    if (rHip.ang < ( vertical + (M_PI/180*10)))
+        rHip.ang = vertical + (M_PI/180*10);
+    if (rHip.ang > ( vertical - (M_PI/180*20)))
+        rHip.ang = vertical - (M_PI/180*20);
+    */
 
     // Transform to motor positions and velocities
     lMotorAngle = legToMotorPos(lLegAng.ang, lLegLen.ang);
