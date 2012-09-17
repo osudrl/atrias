@@ -13,10 +13,10 @@ ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     logPort(name + "_log")
 {
     this->provides("smoothPath")
-        ->addOperation("run", &ASCSmoothPathGenerator::run, this, OwnThread)
+        ->addOperation("run", &ASCSmoothPathGenerator::run, this, ClientThread)
         .doc("Run the controller.");
     this->provides("smoothPath")
-        ->addOperation("init", &ASCSmoothPathGenerator::init, this, OwnThread);
+        ->addOperation("init", &ASCSmoothPathGenerator::init, this, ClientThread);
 
     // For logging
     // Create a port

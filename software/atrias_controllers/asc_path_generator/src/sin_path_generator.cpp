@@ -13,12 +13,12 @@ ASCSinPathGenerator::ASCSinPathGenerator(std::string name):
     logPort(name + "_log")
 {
     this->provides("sinGen")
-        ->addOperation("runController", &ASCSinPathGenerator::runController, this, OwnThread)
+        ->addOperation("runController", &ASCSinPathGenerator::runController, this, ClientThread)
         .doc("Run the controller.");
     this->provides("sinGen")
-        ->addOperation("reset", &ASCSinPathGenerator::reset, this, OwnThread);
+        ->addOperation("reset", &ASCSinPathGenerator::reset, this, ClientThread);
     this->provides("sinGen")
-        ->addOperation("setPhase", &ASCSinPathGenerator::setPhase, this, OwnThread);
+        ->addOperation("setPhase", &ASCSinPathGenerator::setPhase, this, ClientThread);
 
     // For logging
     // Create a port
