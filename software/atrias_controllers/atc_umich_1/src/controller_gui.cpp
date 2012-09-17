@@ -29,16 +29,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         q3l_hscale->set_range(-15, 15);
 
         // Set up subscriber and publisher.
-        sub = nh.subscribe("atc_umich_1_status", 0, controllerCallback);
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
         return true;
     }
     return false;
-}
-
-//! \brief Update our local copy of the controller status.
-void controllerCallback(const atc_umich_1::controller_status &status) {
-    controllerDataIn = status;
 }
 
 //! \brief Get parameters from the server and configure GUI accordingly.

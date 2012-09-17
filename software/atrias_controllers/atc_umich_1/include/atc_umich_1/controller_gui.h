@@ -9,19 +9,16 @@
 #define CONTROLLER_GUI_H_
 
 #include <atc_umich_1/controller_input.h>
-#include <atc_umich_1/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
 
 // ROS
 ros::NodeHandle nh;
-ros::Subscriber sub;
 ros::Publisher pub;
 
 // Data
 atc_umich_1::controller_input controllerDataOut;
-atc_umich_1::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::HScale *q1r_hscale,
@@ -30,8 +27,6 @@ Gtk::HScale *q1r_hscale,
         *q1l_hscale,
         *q2l_hscale,
         *q3l_hscale;
-
-void controllerCallback(const atc_umich_1::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */
 
