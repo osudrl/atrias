@@ -13,7 +13,7 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCLegSinWave::runController, this, OwnThread)
+        ->addOperation("runController", &ATCLegSinWave::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.

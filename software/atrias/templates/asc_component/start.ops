@@ -5,7 +5,6 @@ import("asc_component")
 # TODO: Figure out where/when to call this
 var string controllerName
 loadComponent(controllerName, "ASCComponent")
-setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
 
 # Set up service plugins
 # Set up subcontrollers

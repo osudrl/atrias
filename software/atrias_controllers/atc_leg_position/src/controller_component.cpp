@@ -14,7 +14,7 @@ ATCLegPosition::ATCLegPosition(std::string name):
     guiDataOut("gui_data_out")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCLegPosition::runController, this, OwnThread)
+        ->addOperation("runController", &ATCLegPosition::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.

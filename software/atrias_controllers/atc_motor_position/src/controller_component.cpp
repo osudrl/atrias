@@ -14,7 +14,7 @@ ATCMotorPosition::ATCMotorPosition(std::string name):
     guiDataOut("gui_data_out")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCMotorPosition::runController, this, OwnThread)
+        ->addOperation("runController", &ATCMotorPosition::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.

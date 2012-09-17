@@ -3,7 +3,6 @@ require("print")
 # Set up the top controller
 import("atc_leg_position")
 loadComponent("controller", "ATCLegPosition")
-setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")

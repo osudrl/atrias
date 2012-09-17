@@ -13,7 +13,7 @@ ATCMotorTorqueSin::ATCMotorTorqueSin(std::string name):
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCMotorTorqueSin::runController, this, OwnThread)
+        ->addOperation("runController", &ATCMotorTorqueSin::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.

@@ -13,7 +13,7 @@ ASCComponent::ASCComponent(std::string name):
     logPort(name + "_log")
 {
     this->provides("exampleService")
-        ->addOperation("runController", &ASCComponent::runController, this, OwnThread)
+        ->addOperation("runController", &ASCComponent::runController, this, ClientThread)
         .doc("Run the controller.");
 
     // Add properties

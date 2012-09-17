@@ -4,7 +4,6 @@ atrias_cm.resetControllerNames()
 # Set up the component
 import("atc_sim_test")
 loadComponent("controller", "ATCSimTest")
-setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")

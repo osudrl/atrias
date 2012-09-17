@@ -14,7 +14,6 @@ export void ascInitBipedBoomStart( string controllerName ) {
 
     # Set up the component
     loadComponent(controllerName, "ASCInitBipedBoom")
-    setActivity(controllerName, 0, HighestPriority, ORO_SCHED_RT)
     
     # Set up subcontrollers
     import("asc_pd")

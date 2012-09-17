@@ -15,7 +15,7 @@ ASCPD::ASCPD(std::string name):
     logPort("logOutput")
 {
     this->provides("pd")
-        ->addOperation("runController", &ASCPD::runController, this, /*OwnThread*/ClientThread)
+        ->addOperation("runController", &ASCPD::runController, this, ClientThread)
         .doc("Run the controller.");
 
     this->addProperty("P", P)

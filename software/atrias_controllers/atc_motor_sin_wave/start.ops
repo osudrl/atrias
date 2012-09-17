@@ -1,7 +1,6 @@
 # Set up the top controller
 import("atc_motor_sin_wave")
 loadComponent("controller", "ATCMotorSinWave")
-setActivity("controller", 0, HighestPriority, ORO_SCHED_RT)
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")

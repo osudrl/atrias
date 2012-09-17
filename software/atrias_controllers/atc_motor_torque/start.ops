@@ -1,7 +1,6 @@
 # Set up the component
 import("atc_motor_torque");
 loadComponent("controller", "ATCMotorTorque");
-setActivity("controller", 0, 70, ORO_SCHED_RT);
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller");

@@ -13,7 +13,7 @@ ATCMotorSinWave::ATCMotorSinWave(std::string name):
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCMotorSinWave::runController, this, OwnThread)
+        ->addOperation("runController", &ATCMotorSinWave::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.
