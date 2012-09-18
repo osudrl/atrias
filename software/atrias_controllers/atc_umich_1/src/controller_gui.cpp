@@ -45,6 +45,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kd3_spinbutton->set_range(0, 10);
         epsilon_spinbutton->set_range(0, 1);
 
+        // Set increments.
+        q1r_spinbutton->set_increments(0.01);
+
         // Set up subscriber and publisher.
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
         return true;
