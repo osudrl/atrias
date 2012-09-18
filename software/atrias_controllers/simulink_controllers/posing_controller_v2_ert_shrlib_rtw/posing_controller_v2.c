@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'posing_controller_v2'.
  *
- * Model version                  : 1.28
+ * Model version                  : 1.29
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Mon Sep 17 20:00:26 2012
+ * C/C++ source code generated on : Mon Sep 17 21:15:46 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -542,8 +542,19 @@ void posing_controller_v2_step(void)
   /* '<S2>:1:55' */
   rtb_u[2] = -rtb_u[2];
   for (i = 0; i < 6; i++) {
-    /* Outport: '<Root>/u' */
-    posing_controller_v2_Y.u[i] = rtb_u[i];
+    /* Saturate: '<Root>/Saturation' */
+    if (rtb_u[i] >= posing_controller_v2_P.Saturation_UpperSat[i]) {
+      /* Outport: '<Root>/u' */
+      posing_controller_v2_Y.u[i] = posing_controller_v2_P.Saturation_UpperSat[i];
+    } else if (rtb_u[i] <= posing_controller_v2_P.Saturation_LowerSat[i]) {
+      /* Outport: '<Root>/u' */
+      posing_controller_v2_Y.u[i] = posing_controller_v2_P.Saturation_LowerSat[i];
+    } else {
+      /* Outport: '<Root>/u' */
+      posing_controller_v2_Y.u[i] = rtb_u[i];
+    }
+
+    /* End of Saturate: '<Root>/Saturation' */
 
     /* Outport: '<Root>/y' */
     posing_controller_v2_Y.y[i] = rtb_y[i];
