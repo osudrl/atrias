@@ -19,8 +19,8 @@ ros::Subscriber sub;
 ros::Publisher pub;
 
 // Data
-astc_umich_1::controller_input controllerDataOut;
-astc_umich_1::controller_status controllerDataIn;
+atc_umich_1::controller_input controllerDataOut;
+atc_umich_1::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::SpinButton *q1r_spinbutton,
@@ -41,18 +41,18 @@ Gtk::SpinButton *q1r_spinbutton,
 
 	*y1l_spinbutton,
 	*y2l_spinbutton,
-	*y2l_spinbutton,
+	*y3l_spinbutton,
 	*y1r_spinbutton,
 	*y2r_spinbutton,
-	*y2r_spinbutton,
+	*y3r_spinbutton,
 	*dy1l_spinbutton,
 	*dy2l_spinbutton,
-	*dy2l_spinbutton,
+	*dy3l_spinbutton,
 	*dy1r_spinbutton,
 	*dy2r_spinbutton,
-	*dy2r_spinbutton;
+	*dy3r_spinbutton;
 
-void controllerCallback(const atc_motor_position::controller_status &status);
+void controllerCallback(const atc_umich_1::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */
 
