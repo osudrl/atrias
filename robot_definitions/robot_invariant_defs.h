@@ -106,7 +106,7 @@ typedef enum {
 
 // The minimum and maximum distance in positions between the motors. For leg length
 // protection.
-#define LEG_LOC_DIFF_MIN                                             0.430715562
+#define LEG_LOC_DIFF_MIN                                                     0.0
 #define LEG_LOC_DIFF_MAX                                              2.47639612
 
 #define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
