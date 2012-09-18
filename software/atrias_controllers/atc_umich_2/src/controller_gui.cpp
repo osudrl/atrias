@@ -37,6 +37,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("dy1r_spinbutton", dy1r_spinbutton);
     gui->get_widget("dy2r_spinbutton", dy2r_spinbutton);
     gui->get_widget("dy3r_spinbutton", dy3r_spinbutton);
+   
+    gui->get_widget("s_spinbutton", s_spinbutton);
+    gui->get_widget("ds_spinbutton", ds_spinbutton);
 
     if (kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
@@ -46,7 +49,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         y1r_spinbutton && y2r_spinbutton && y3r_spinbutton &&
         dy1l_spinbutton && dy2l_spinbutton && dy3l_spinbutton &&
         dy1r_spinbutton && dy2r_spinbutton && dy3r_spinbutton &&
-        s_mode_combo_box && s_freq_spinbutton) {
+        s_mode_combo_box && s_freq_spinbutton && s_spinbutton &&
+		ds_spinbutton) {
         // Set ranges.
         kp1_spinbutton->set_range(0, 50);
         kp2_spinbutton->set_range(0, 50);
@@ -61,18 +65,20 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torso_offset_spinbutton->set_range(-20., 20.);
         s_freq_spinbutton->set_range(0., 2.);
 
-        y1r_spinbutton->set_range(-10, 10);
-        y2r_spinbutton->set_range(-10, 10);
-        y3r_spinbutton->set_range(-10, 10);
-        y1l_spinbutton->set_range(-10, 10);
-        y2l_spinbutton->set_range(-10, 10);
-        y3l_spinbutton->set_range(-10, 10);
-        dy1r_spinbutton->set_range(-10, 10);
-        dy2r_spinbutton->set_range(-10, 10);
-        dy3r_spinbutton->set_range(-10, 10);
-        dy1l_spinbutton->set_range(-10, 10);
-        dy2l_spinbutton->set_range(-10, 10);
-        dy3l_spinbutton->set_range(-10, 10);
+        y1r_spinbutton->set_range(-10000, 10000);
+        y2r_spinbutton->set_range(-10000, 10000);
+        y3r_spinbutton->set_range(-10000, 10000);
+        y1l_spinbutton->set_range(-10000, 10000);
+        y2l_spinbutton->set_range(-10000, 10000);
+        y3l_spinbutton->set_range(-10000, 10000);
+        dy1r_spinbutton->set_range(-10000, 10000);
+        dy2r_spinbutton->set_range(-10000, 10000);
+        dy3r_spinbutton->set_range(-10000, 10000);
+        dy1l_spinbutton->set_range(-10000, 10000);
+        dy2l_spinbutton->set_range(-10000, 10000);
+        dy3l_spinbutton->set_range(-10000, 10000);
+        s_spinbutton->set_range(-10000, 10000);
+        ds_spinbutton->set_range(-10000, 10000);
 
         // Set increments.
         kp1_spinbutton->set_increments(0.1, 1.0);
@@ -161,6 +167,8 @@ void guiUpdate() {
     dy1r_spinbutton->set_value(controllerDataIn.dyr[0]);
     dy2r_spinbutton->set_value(controllerDataIn.dyr[1]);
     dy3r_spinbutton->set_value(controllerDataIn.dyr[2]);
+    s_spinbutton->set_value(controllerDataIn.s);
+    ds_spinbutton->set_value(controllerDataIn.ds);
 
     controllerDataOut.s_mode = (uint8_t)s_mode_combo_box->get_active_row_number();
     controllerDataOut.s_freq = s_freq_spinbutton->get_value();

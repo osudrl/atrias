@@ -50,6 +50,8 @@ Gtk::SpinButton *s_freq_spinbutton,
 	*dy1r_spinbutton,
 	*dy2r_spinbutton,
 	*dy3r_spinbutton;
+	*s_spinbutton;
+	*ds_spinbutton;
 
 void controllerCallback(const atc_umich_2::controller_status &status);
 
