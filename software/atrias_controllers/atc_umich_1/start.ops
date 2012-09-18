@@ -12,6 +12,9 @@ connectPeers("atrias_rt", "controller")
 var ConnPolicy gui_policy
 gui_policy.transport = 3
 
+gui_policy.name_id = "/atc_umich_1_status"
+stream("controller.gui_data_out", gui_policy)
+
 gui_policy.name_id = "/atc_umich_1_input"
 stream("controller.gui_data_in", gui_policy)
 
