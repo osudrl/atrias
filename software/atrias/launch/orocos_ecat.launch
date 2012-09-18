@@ -1,6 +1,4 @@
 <launch>
-    <!-- Start data publishing node. -->
-
     <!-- Launch the Orocos script for atrias_ecat_master -->
     <node name    = "atrias_control_rosnode"
           pkg     = "ocl"
