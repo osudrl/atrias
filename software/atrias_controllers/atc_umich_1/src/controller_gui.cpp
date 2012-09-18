@@ -46,10 +46,26 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kd1_spinbutton->set_range(0, 10);
         kd2_spinbutton->set_range(0, 10);
         kd3_spinbutton->set_range(0, 10);
+        leg_saturation_cap_spinbutton->set_range(0, 60);
+        hip_saturation_cap_spinbutton->set_range(0, 10);
         epsilon_spinbutton->set_range(0, 1);
 
         // Set increments.
-        q1r_spinbutton->set_increments(0.01);
+        q1r_spinbutton->set_increments(0.1, 1.0);
+        q2r_spinbutton->set_increments(0.1, 1.0);
+        q3r_spinbutton->set_increments(0.1, 1.0);
+        q1l_spinbutton->set_increments(0.1, 1.0);
+        q1l_spinbutton->set_increments(0.1, 1.0);
+        q1l_spinbutton->set_increments(0.1, 1.0);
+        kp1_spinbutton->set_increments(0.1, 1.0);
+        kp2_spinbutton->set_increments(0.1, 1.0);
+        kp3_spinbutton->set_increments(0.1, 1.0);
+        kd1_spinbutton->set_increments(0.1, 1.0);
+        kd2_spinbutton->set_increments(0.1, 1.0);
+        kd3_spinbutton->set_increments(0.1, 1.0);
+        leg_saturation_cap_spinbutton->set_increments(0.1, 1.0);
+        hip_saturation_cap_spinbutton->set_increments(0.1, 1.0);
+        epsilon_spinbutton->set_increments(0.01, 0.1);
 
         // Set up subscriber and publisher.
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
