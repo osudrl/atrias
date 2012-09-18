@@ -55,8 +55,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         q2r_spinbutton->set_increments(0.1, 1.0);
         q3r_spinbutton->set_increments(0.1, 1.0);
         q1l_spinbutton->set_increments(0.1, 1.0);
-        q1l_spinbutton->set_increments(0.1, 1.0);
-        q1l_spinbutton->set_increments(0.1, 1.0);
+        q2l_spinbutton->set_increments(0.1, 1.0);
+        q3l_spinbutton->set_increments(0.1, 1.0);
         kp1_spinbutton->set_increments(0.1, 1.0);
         kp2_spinbutton->set_increments(0.1, 1.0);
         kp3_spinbutton->set_increments(0.1, 1.0);
