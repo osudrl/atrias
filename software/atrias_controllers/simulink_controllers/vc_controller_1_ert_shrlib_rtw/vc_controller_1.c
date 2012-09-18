@@ -6,7 +6,7 @@
  * Model version                  : 1.28
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Tue Sep 18 19:08:43 2012
+ * C/C++ source code generated on : Tue Sep 18 19:18:28 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -836,6 +836,9 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     }
   }
 
+  s = fmin(1.0, s);
+  s = fmax(0.0, s);
+
   /* % Compute terms in controller */
   vc_controller_1_invNxN(D, D_inv);
 
@@ -1176,85 +1179,43 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   pd[3] = Kp_0[3] + Kd_0[3];
 
   /*  */
-  if (s > 1.0) {
-    for (i = 0; i < 11; i++) {
-      jacob_h[i << 2] = -jacob_h_0[i << 2];
-      jacob_h[1 + (i << 2)] = -jacob_h_0[(i << 2) + 1];
-      jacob_h[2 + (i << 2)] = -jacob_h_0[(i << 2) + 2];
-      jacob_h[3 + (i << 2)] = -jacob_h_0[(i << 2) + 3];
-    }
-
-    for (i = 0; i < 4; i++) {
-      for (b_j = 0; b_j < 11; b_j++) {
-        jacob_h_0[i + (b_j << 2)] = 0.0;
-        for (i_0 = 0; i_0 < 11; i_0++) {
-          jacob_h_0[i + (b_j << 2)] = jacob_h[(i_0 << 2) + i] * D_inv[11 * b_j +
-            i_0] + jacob_h_0[(b_j << 2) + i];
-        }
-      }
-    }
-
-    for (i = 0; i < 4; i++) {
-      Kp_0[i] = 0.0;
-      for (b_j = 0; b_j < 11; b_j++) {
-        Kp_0[i] += jacob_h_0[(b_j << 2) + i] * H[b_j];
-      }
-    }
-
-    for (i = 0; i < 4; i++) {
-      Kd_0[i] = 0.0;
-      for (b_j = 0; b_j < 11; b_j++) {
-        Kd_0[i] += 0.0 * dq[b_j];
-      }
-    }
-
-    c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
-    e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
-    c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
-    e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
-
-    /* %%L2fh */
-    /* uBound=diag([3 3 7 7])*ones(4,1); */
-  } else {
-    for (i = 0; i < 11; i++) {
-      jacob_h[i << 2] = -jacob_h_0[i << 2];
-      jacob_h[1 + (i << 2)] = -jacob_h_0[(i << 2) + 1];
-      jacob_h[2 + (i << 2)] = -jacob_h_0[(i << 2) + 2];
-      jacob_h[3 + (i << 2)] = -jacob_h_0[(i << 2) + 3];
-    }
-
-    for (i = 0; i < 4; i++) {
-      for (b_j = 0; b_j < 11; b_j++) {
-        jacob_h_0[i + (b_j << 2)] = 0.0;
-        for (i_0 = 0; i_0 < 11; i_0++) {
-          jacob_h_0[i + (b_j << 2)] = jacob_h[(i_0 << 2) + i] * D_inv[11 * b_j +
-            i_0] + jacob_h_0[(b_j << 2) + i];
-        }
-      }
-    }
-
-    for (i = 0; i < 4; i++) {
-      Kp_0[i] = 0.0;
-      for (b_j = 0; b_j < 11; b_j++) {
-        Kp_0[i] += jacob_h_0[(b_j << 2) + i] * H[b_j];
-      }
-    }
-
-    for (i = 0; i < 4; i++) {
-      Kd_0[i] = 0.0;
-      for (b_j = 0; b_j < 11; b_j++) {
-        Kd_0[i] += 0.0 * dq[b_j];
-      }
-    }
-
-    c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
-    e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
-    c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
-    e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
-
-    /* %%L2fh */
+  for (i = 0; i < 11; i++) {
+    jacob_h[i << 2] = -jacob_h_0[i << 2];
+    jacob_h[1 + (i << 2)] = -jacob_h_0[(i << 2) + 1];
+    jacob_h[2 + (i << 2)] = -jacob_h_0[(i << 2) + 2];
+    jacob_h[3 + (i << 2)] = -jacob_h_0[(i << 2) + 3];
   }
 
+  for (i = 0; i < 4; i++) {
+    for (b_j = 0; b_j < 11; b_j++) {
+      jacob_h_0[i + (b_j << 2)] = 0.0;
+      for (i_0 = 0; i_0 < 11; i_0++) {
+        jacob_h_0[i + (b_j << 2)] = jacob_h[(i_0 << 2) + i] * D_inv[11 * b_j +
+          i_0] + jacob_h_0[(b_j << 2) + i];
+      }
+    }
+  }
+
+  for (i = 0; i < 4; i++) {
+    Kp_0[i] = 0.0;
+    for (b_j = 0; b_j < 11; b_j++) {
+      Kp_0[i] += jacob_h_0[(b_j << 2) + i] * H[b_j];
+    }
+  }
+
+  for (i = 0; i < 4; i++) {
+    Kd_0[i] = 0.0;
+    for (b_j = 0; b_j < 11; b_j++) {
+      Kd_0[i] += 0.0 * dq[b_j];
+    }
+  }
+
+  c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
+  e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
+  c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
+  e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
+
+  /* %%L2fh */
   if (pdCtrl != 0.0) {
     u[0] = -pd[0];
     u[1] = -pd[1];
