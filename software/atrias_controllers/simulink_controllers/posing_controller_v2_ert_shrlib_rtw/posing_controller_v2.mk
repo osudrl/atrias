@@ -41,7 +41,7 @@
 #  BUILD           - Invoke make from the build procedure (yes/no)?
 #  SYS_TARGET_FILE - Name of system target file.
 
-MAKECMD         = /afs/engin.umich.edu/caen/rhel_6/matlab-2012a/bin/glnxa64/gmake
+MAKECMD         = /usr/local/MATLAB/R2012a/bin/glnxa64/gmake
 HOST            = UNIX
 BUILD           = yes
 SYS_TARGET_FILE = any
@@ -87,10 +87,10 @@ COMPILER_TOOL_CHAIN = unix
 MODEL                   = posing_controller_v2
 MODULES                 = posing_controller_v2_data.c rtGetInf.c rtGetNaN.c rt_nonfinite.c 
 MAKEFILE                = posing_controller_v2.mk
-MATLAB_ROOT             = /afs/engin.umich.edu/caen/rhel_6/matlab-2012a
-ALT_MATLAB_ROOT         = /afs/engin.umich.edu/caen/rhel_6/matlab-2012a
+MATLAB_ROOT             = /usr/local/MATLAB/R2012a
+ALT_MATLAB_ROOT         = /usr/local/MATLAB/R2012a
 MASTER_ANCHOR_DIR       = 
-START_DIR               = /afs/umich.edu/user/b/g/bgbuss/Private/Research/Biped/code/trunk/atrias/simulink-controllers
+START_DIR               = /home/andrew/ROS/atrias/software/atrias_controllers/simulink_controllers
 S_FUNCTIONS             = 
 S_FUNCTIONS_LIB         = 
 NUMST                   = 1

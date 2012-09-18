@@ -1,0 +1,15 @@
+float64 q1r
+float64 q2r
+float64 q3r
+float64 q1l
+float64 q2l
+float64 q3l
+float64 kp1
+float64 kp2
+float64 kp3
+float64 kd1
+float64 kd2
+float64 kd3
+float64 leg_saturation_cap
+float64 hip_saturation_cap
+float64 epsilon
