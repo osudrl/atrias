@@ -11,6 +11,7 @@ namespace controller {
 ATCUmich1::ATCUmich1(std::string name):
     RTT::TaskContext(name),
     guiDataIn("gui_data_in"),
+    guiDataOut("gui_data_out"),
     logPort("logOutput")
 {
     this->provides("atc")
@@ -19,6 +20,8 @@ ATCUmich1::ATCUmich1(std::string name):
 
     // For the GUI
     addEventPort(guiDataIn);
+    addPort(guiDataOut);
+
     pubTimer = new GuiPublishTimer(20);
 
     // For logging
@@ -89,8 +92,8 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
     posing_controller_v2_U.epsilon = guiIn.epsilon;
 
     // Cap value
-    posing_controller_v2_U.leg_sat = guiIn.leg_saturation_cap;
-    posing_controller_v2_U.hip_sat = guiIn.hip_saturation_cap;
+    posing_controller_v2_U.sat_val[0] = guiIn.leg_saturation_cap;
+    posing_controller_v2_U.sat_val[1] = guiIn.hip_saturation_cap;
 
     // Step the controller
     posing_controller_v2_step();
@@ -105,6 +108,26 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
     co.rLeg.motorCurrentHip = posing_controller_v2_Y.u[5];
 
     // end control code //
+
+    // Output info to the gui
+    if (pubTimer->readyToSend())
+    {
+        guiOut.yr[0] = posing_controller_v2_Y.y[0];
+        guiOut.yr[1] = posing_controller_v2_Y.y[1];
+        guiOut.yr[2] = posing_controller_v2_Y.y[2];
+        guiOut.yl[0] = posing_controller_v2_Y.y[3];
+        guiOut.yl[1] = posing_controller_v2_Y.y[4];
+        guiOut.yl[2] = posing_controller_v2_Y.y[5];
+
+        guiOut.dyr[0] = posing_controller_v2_Y.dy[0];
+        guiOut.dyr[1] = posing_controller_v2_Y.dy[1];
+        guiOut.dyr[2] = posing_controller_v2_Y.dy[2];
+        guiOut.dyl[0] = posing_controller_v2_Y.dy[3];
+        guiOut.dyl[1] = posing_controller_v2_Y.dy[4];
+        guiOut.dyl[2] = posing_controller_v2_Y.dy[5];
+
+        guiDataOut.write(guiOut);
+    }
 
     // Log the output
     logData.y1r = posing_controller_v2_Y.y[0];
