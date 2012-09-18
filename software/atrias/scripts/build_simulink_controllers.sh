@@ -36,12 +36,15 @@ function chooseAController
 function makeMatlabController
 {
     # The controller directory is the first argument
-    echo "$controllerDir"
     controllerDir="$1"
+    echo
+    echo
+    echo "Building: $controllerDir"
+    echo
+    echo
     # Convert the makefile to the local machine
     cd "$controllerDir"
     controllerMakefile=$(ls | grep mk$ )
-    echo "$controllerMakefile"
     controllerName="${controllerMakefile%.*}"
     sed -i "s|^MAKECMD         =.*|MAKECMD         = ${localMatlabPath}/bin/glnxa64/gmake|" "${controllerMakefile}"
     sed -i "s|^MATLAB_ROOT             =.*|MATLAB_ROOT             = ${localMatlabPath}|" "${controllerMakefile}"
