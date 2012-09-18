@@ -6,7 +6,7 @@
  * Model version                  : 1.28
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Tue Sep 18 17:35:05 2012
+ * C/C++ source code generated on : Tue Sep 18 19:08:43 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -51,7 +51,7 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   const real_T theta_limits[2], real_T h_alpha[24], const real_T poly_cor[20],
   const real_T kp[2], const real_T kd[2], real_T pdCtrl, real_T pdPlusFwdCtrl,
   real_T L2fhCtrl, real_T stance_leg, real_T a3scuff, real_T a4scuff, uint8_T
-  s_mode, real_T s_freq, real_T u[4], real_T y[4], real_T dy[4], real_T *s,
+  s_mode, real_T s_freq, real_T u[4], real_T y[4], real_T dy[4], real_T *s_out,
   real_T *ds);
 
 /* Function for MATLAB Function: '<Root>/controller' */
@@ -782,9 +782,10 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   const real_T theta_limits[2], real_T h_alpha[24], const real_T poly_cor[20],
   const real_T kp[2], const real_T kd[2], real_T pdCtrl, real_T pdPlusFwdCtrl,
   real_T L2fhCtrl, real_T stance_leg, real_T a3scuff, real_T a4scuff, uint8_T
-  s_mode, real_T s_freq, real_T u[4], real_T y[4], real_T dy[4], real_T *s,
+  s_mode, real_T s_freq, real_T u[4], real_T y[4], real_T dy[4], real_T *s_out,
   real_T *ds)
 {
+  real_T s;
   real_T D_inv[121];
   real_T d[4];
   real_T h_alpha_temp[24];
@@ -792,11 +793,10 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   real_T Kp[16];
   real_T Kd[16];
   real_T pd[4];
-  real_T delta_theta;
   real_T c[11];
   real_T dsdq[11];
   real_T jacob_h[44];
-  real_T x[6];
+  real_T b_x[6];
   real_T d_y[6];
   int32_T i;
   int32_T b_j;
@@ -807,10 +807,11 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   real_T Kd_0[4];
   real_T jacob_h_0[44];
   int32_T i_0;
-  real_T b_x_idx;
-  real_T b_x_idx_0;
+  real_T c_x_idx;
+  real_T c_x_idx_0;
   real_T e_y_idx;
   real_T e_y_idx_0;
+  real_T d_0;
 
   /*  */
   /* % Choices */
@@ -818,18 +819,20 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   /*  [kp, kd, qTdesired] = ATRIAS2D_FeedbackParams; */
   /*  */
   /* % s */
-  vc_controller_1_ATRIAS2D_SS_s(q, dq, theta_limits, stance_leg, &b_x_idx,
-    &e_y_idx, &b_x_idx_0, &e_y_idx_0, &delta_theta, c, dsdq);
-  *s = b_x_idx;
-  *ds = e_y_idx;
+  vc_controller_1_ATRIAS2D_SS_s(q, dq, theta_limits, stance_leg, &s, &c_x_idx,
+    &e_y_idx, &c_x_idx_0, &e_y_idx_0, c, dsdq);
+  *ds = c_x_idx;
+  *s_out = s;
   if (s_mode == 0) {
-    *s = 0.0;
+    s = 0.0;
     *ds = 0.0;
   } else {
     if (s_mode == 1) {
-      *s = sin(6.2831853071795862 * s_freq * t) * 0.5 + 0.5;
+      c_x_idx = sin(6.2831853071795862 * s_freq * t);
+      s = 0.5 * c_x_idx + 0.5;
       *ds = 6.2831853071795862 * s_freq * 0.5 * cos(6.2831853071795862 * s_freq *
         t);
+      *s_out = 0.5 * c_x_idx + 0.5;
     }
   }
 
@@ -875,14 +878,14 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   /*  */
   /*  end */
   memset(&h_alpha_temp[0], 0, 24U * sizeof(real_T));
-  x[0] = 0.0;
-  x[1] = 0.0;
-  x[2] = a3scuff;
-  x[3] = a4scuff;
-  x[4] = 0.0;
-  x[5] = 0.0;
+  b_x[0] = 0.0;
+  b_x[1] = 0.0;
+  b_x[2] = a3scuff;
+  b_x[3] = a4scuff;
+  b_x[4] = 0.0;
+  b_x[5] = 0.0;
   for (i = 0; i < 6; i++) {
-    h_alpha[3 + (i << 2)] = h_alpha[(i << 2) + 3] + x[i];
+    h_alpha[3 + (i << 2)] = h_alpha[(i << 2) + 3] + b_x[i];
   }
 
   if (!(stance_leg != 0.0)) {
@@ -944,20 +947,20 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
 
   /* %     */
   for (i = 0; i < 6; i++) {
-    x[i] = 1.0;
+    b_x[i] = 1.0;
     d_y[i] = 1.0;
   }
 
   for (i = 0; i < 5; i++) {
-    x[1 + i] = *s * x[i];
-    d_y[1 + i] = (1.0 - *s) * d_y[i];
+    b_x[1 + i] = s * b_x[i];
+    d_y[1 + i] = (1.0 - s) * d_y[i];
   }
 
   for (i = 0; i < 4; i++) {
     pd[i] = 0.0;
     for (b_j = 0; b_j < 6; b_j++) {
-      pd[i] += h_alpha_temp[(b_j << 2) + i] * (real_T)e[b_j] * x[b_j] * d_y[5 -
-        b_j];
+      pd[i] += h_alpha_temp[(b_j << 2) + i] * (real_T)e[b_j] * b_x[b_j] * d_y[5
+        - b_j];
     }
   }
 
@@ -965,14 +968,14 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   y[1] -= pd[1];
   y[2] -= pd[2];
   y[3] -= pd[3];
-  vc_controller_1_bezierd(h_alpha_temp, *s, pd);
+  vc_controller_1_bezierd(h_alpha_temp, s, pd);
   for (i = 0; i < 4; i++) {
-    b_x_idx = 0.0;
+    c_x_idx = 0.0;
     for (b_j = 0; b_j < 11; b_j++) {
-      b_x_idx += jacob_h[(b_j << 2) + i] * dq[b_j];
+      c_x_idx += jacob_h[(b_j << 2) + i] * dq[b_j];
     }
 
-    dy[i] = b_x_idx - pd[i] * *ds;
+    dy[i] = c_x_idx - pd[i] * *ds;
   }
 
   d[0] = 0.0;
@@ -981,26 +984,26 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   d[3] = 0.0;
 
   /* % */
-  b_x_idx = *s * *s;
-  e_y_idx = (1.0 - *s) * (1.0 - *s);
-  b_x_idx_0 = *s * b_x_idx;
-  e_y_idx_0 = (1.0 - *s) * e_y_idx;
+  c_x_idx = s * s;
+  e_y_idx = (1.0 - s) * (1.0 - s);
+  c_x_idx_0 = s * c_x_idx;
+  e_y_idx_0 = (1.0 - s) * e_y_idx;
   for (i = 0; i < 4; i++) {
-    delta_theta = ((h_alpha_temp[i + 20] - h_alpha_temp[i + 16] * 2.0) +
-                   h_alpha_temp[i + 12]) * 20.0 * b_x_idx_0 + (((h_alpha_temp[i
-      + 16] - h_alpha_temp[i + 12] * 2.0) + h_alpha_temp[i + 8]) * 60.0 *
-      b_x_idx * (1.0 - *s) + (((h_alpha_temp[i + 12] - h_alpha_temp[i + 8] * 2.0)
-      + h_alpha_temp[i + 4]) * 60.0 * *s * e_y_idx + ((h_alpha_temp[i + 8] -
-      h_alpha_temp[i + 4] * 2.0) + h_alpha_temp[i]) * 20.0 * e_y_idx_0));
-    d[i] = delta_theta;
+    d_0 = ((h_alpha_temp[i + 20] - h_alpha_temp[i + 16] * 2.0) + h_alpha_temp[i
+           + 12]) * 20.0 * c_x_idx_0 + (((h_alpha_temp[i + 16] - h_alpha_temp[i
+      + 12] * 2.0) + h_alpha_temp[i + 8]) * 60.0 * c_x_idx * (1.0 - s) +
+      (((h_alpha_temp[i + 12] - h_alpha_temp[i + 8] * 2.0) + h_alpha_temp[i + 4])
+       * 60.0 * s * e_y_idx + ((h_alpha_temp[i + 8] - h_alpha_temp[i + 4] * 2.0)
+      + h_alpha_temp[i]) * 20.0 * e_y_idx_0));
+    d[i] = d_0;
   }
 
-  b_x_idx = *ds * *ds;
-  d[0] *= b_x_idx;
-  d[1] *= b_x_idx;
-  d[2] *= b_x_idx;
-  d[3] *= b_x_idx;
-  vc_controller_1_bezierd(h_alpha_temp, *s, pd);
+  c_x_idx = *ds * *ds;
+  d[0] *= c_x_idx;
+  d[1] *= c_x_idx;
+  d[2] *= c_x_idx;
+  d[3] *= c_x_idx;
+  vc_controller_1_bezierd(h_alpha_temp, s, pd);
   for (i = 0; i < 11; i++) {
     jacob_h_0[i << 2] = jacob_h[i << 2] - pd[0] * dsdq[i];
     jacob_h_0[1 + (i << 2)] = jacob_h[(i << 2) + 1] - pd[1] * dsdq[i];
@@ -1008,50 +1011,50 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     jacob_h_0[3 + (i << 2)] = jacob_h[(i << 2) + 3] - pd[3] * dsdq[i];
   }
 
-  if (*s < 1.0) {
-    s_0 = (*s <= 0.5);
+  if (s < 1.0) {
+    s_0 = (s <= 0.5);
     if (s_0) {
-      b_x_idx = (((*s * poly_cor[16] + poly_cor[12]) * *s + poly_cor[8]) * *s +
-                 poly_cor[4]) * *s + poly_cor[0];
+      c_x_idx = (((s * poly_cor[16] + poly_cor[12]) * s + poly_cor[8]) * s +
+                 poly_cor[4]) * s + poly_cor[0];
     } else {
-      b_x_idx = 0.0 * poly_cor[0];
+      c_x_idx = 0.0 * poly_cor[0];
     }
 
-    y[0] -= b_x_idx;
+    y[0] -= c_x_idx;
     if (s_0) {
-      b_x_idx = (((*s * poly_cor[17] + poly_cor[13]) * *s + poly_cor[9]) * *s +
-                 poly_cor[5]) * *s + poly_cor[1];
+      c_x_idx = (((s * poly_cor[17] + poly_cor[13]) * s + poly_cor[9]) * s +
+                 poly_cor[5]) * s + poly_cor[1];
     } else {
-      b_x_idx = 0.0 * poly_cor[1];
+      c_x_idx = 0.0 * poly_cor[1];
     }
 
-    y[1] -= b_x_idx;
+    y[1] -= c_x_idx;
     if (s_0) {
-      b_x_idx = (((*s * poly_cor[18] + poly_cor[14]) * *s + poly_cor[10]) * *s +
-                 poly_cor[6]) * *s + poly_cor[2];
+      c_x_idx = (((s * poly_cor[18] + poly_cor[14]) * s + poly_cor[10]) * s +
+                 poly_cor[6]) * s + poly_cor[2];
     } else {
-      b_x_idx = 0.0 * poly_cor[2];
+      c_x_idx = 0.0 * poly_cor[2];
     }
 
-    y[2] -= b_x_idx;
+    y[2] -= c_x_idx;
     if (s_0) {
-      b_x_idx = (((*s * poly_cor[19] + poly_cor[15]) * *s + poly_cor[11]) * *s +
-                 poly_cor[7]) * *s + poly_cor[3];
+      c_x_idx = (((s * poly_cor[19] + poly_cor[15]) * s + poly_cor[11]) * s +
+                 poly_cor[7]) * s + poly_cor[3];
     } else {
-      b_x_idx = 0.0 * poly_cor[3];
+      c_x_idx = 0.0 * poly_cor[3];
     }
 
-    y[3] -= b_x_idx;
-    if (*s <= 0.5) {
-      b_x_idx = *s * 4.0;
-      pd[0] = ((3.0 * poly_cor[12] + b_x_idx * poly_cor[16]) * *s + 2.0 *
-               poly_cor[8]) * *s + poly_cor[4];
-      pd[1] = ((3.0 * poly_cor[13] + b_x_idx * poly_cor[17]) * *s + 2.0 *
-               poly_cor[9]) * *s + poly_cor[5];
-      pd[2] = ((3.0 * poly_cor[14] + b_x_idx * poly_cor[18]) * *s + 2.0 *
-               poly_cor[10]) * *s + poly_cor[6];
-      pd[3] = ((3.0 * poly_cor[15] + b_x_idx * poly_cor[19]) * *s + 2.0 *
-               poly_cor[11]) * *s + poly_cor[7];
+    y[3] -= c_x_idx;
+    if (s <= 0.5) {
+      c_x_idx = s * 4.0;
+      pd[0] = ((3.0 * poly_cor[12] + c_x_idx * poly_cor[16]) * s + 2.0 *
+               poly_cor[8]) * s + poly_cor[4];
+      pd[1] = ((3.0 * poly_cor[13] + c_x_idx * poly_cor[17]) * s + 2.0 *
+               poly_cor[9]) * s + poly_cor[5];
+      pd[2] = ((3.0 * poly_cor[14] + c_x_idx * poly_cor[18]) * s + 2.0 *
+               poly_cor[10]) * s + poly_cor[6];
+      pd[3] = ((3.0 * poly_cor[15] + c_x_idx * poly_cor[19]) * s + 2.0 *
+               poly_cor[11]) * s + poly_cor[7];
     } else {
       pd[0] = 0.0 * poly_cor[4];
       pd[1] = 0.0 * poly_cor[5];
@@ -1063,15 +1066,15 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     dy[1] -= pd[1] * *ds;
     dy[2] -= pd[2] * *ds;
     dy[3] -= pd[3] * *ds;
-    if (*s <= 0.5) {
-      b_x_idx = *s * 12.0;
-      pd[0] = (6.0 * poly_cor[12] + b_x_idx * poly_cor[16]) * *s + 2.0 *
+    if (s <= 0.5) {
+      c_x_idx = s * 12.0;
+      pd[0] = (6.0 * poly_cor[12] + c_x_idx * poly_cor[16]) * s + 2.0 *
         poly_cor[8];
-      pd[1] = (6.0 * poly_cor[13] + b_x_idx * poly_cor[17]) * *s + 2.0 *
+      pd[1] = (6.0 * poly_cor[13] + c_x_idx * poly_cor[17]) * s + 2.0 *
         poly_cor[9];
-      pd[2] = (6.0 * poly_cor[14] + b_x_idx * poly_cor[18]) * *s + 2.0 *
+      pd[2] = (6.0 * poly_cor[14] + c_x_idx * poly_cor[18]) * s + 2.0 *
         poly_cor[10];
-      pd[3] = (6.0 * poly_cor[15] + b_x_idx * poly_cor[19]) * *s + 2.0 *
+      pd[3] = (6.0 * poly_cor[15] + c_x_idx * poly_cor[19]) * s + 2.0 *
         poly_cor[11];
     } else {
       pd[0] = 0.0 * poly_cor[8];
@@ -1080,21 +1083,21 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
       pd[3] = 0.0 * poly_cor[11];
     }
 
-    b_x_idx = *ds * *ds;
-    d[0] += pd[0] * b_x_idx;
-    d[1] += pd[1] * b_x_idx;
-    d[2] += pd[2] * b_x_idx;
-    d[3] += pd[3] * b_x_idx;
-    if (*s <= 0.5) {
-      b_x_idx = *s * 4.0;
-      pd[0] = ((3.0 * poly_cor[12] + b_x_idx * poly_cor[16]) * *s + 2.0 *
-               poly_cor[8]) * *s + poly_cor[4];
-      pd[1] = ((3.0 * poly_cor[13] + b_x_idx * poly_cor[17]) * *s + 2.0 *
-               poly_cor[9]) * *s + poly_cor[5];
-      pd[2] = ((3.0 * poly_cor[14] + b_x_idx * poly_cor[18]) * *s + 2.0 *
-               poly_cor[10]) * *s + poly_cor[6];
-      pd[3] = ((3.0 * poly_cor[15] + b_x_idx * poly_cor[19]) * *s + 2.0 *
-               poly_cor[11]) * *s + poly_cor[7];
+    c_x_idx = *ds * *ds;
+    d[0] += pd[0] * c_x_idx;
+    d[1] += pd[1] * c_x_idx;
+    d[2] += pd[2] * c_x_idx;
+    d[3] += pd[3] * c_x_idx;
+    if (s <= 0.5) {
+      c_x_idx = s * 4.0;
+      pd[0] = ((3.0 * poly_cor[12] + c_x_idx * poly_cor[16]) * s + 2.0 *
+               poly_cor[8]) * s + poly_cor[4];
+      pd[1] = ((3.0 * poly_cor[13] + c_x_idx * poly_cor[17]) * s + 2.0 *
+               poly_cor[9]) * s + poly_cor[5];
+      pd[2] = ((3.0 * poly_cor[14] + c_x_idx * poly_cor[18]) * s + 2.0 *
+               poly_cor[10]) * s + poly_cor[6];
+      pd[3] = ((3.0 * poly_cor[15] + c_x_idx * poly_cor[19]) * s + 2.0 *
+               poly_cor[11]) * s + poly_cor[7];
     } else {
       pd[0] = 0.0 * poly_cor[4];
       pd[1] = 0.0 * poly_cor[5];
@@ -1156,15 +1159,15 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   Kd[10] = pd[2];
   Kd[15] = pd[3];
   for (i = 0; i < 4; i++) {
-    b_x_idx = Kp[i + 12] * y[3] + (Kp[i + 8] * y[2] + (Kp[i + 4] * y[1] + Kp[i] *
+    c_x_idx = Kp[i + 12] * y[3] + (Kp[i + 8] * y[2] + (Kp[i + 4] * y[1] + Kp[i] *
       y[0]));
-    Kp_0[i] = b_x_idx;
+    Kp_0[i] = c_x_idx;
   }
 
   for (i = 0; i < 4; i++) {
-    b_x_idx = Kd[i + 12] * dy[3] + (Kd[i + 8] * dy[2] + (Kd[i + 4] * dy[1] +
+    c_x_idx = Kd[i + 12] * dy[3] + (Kd[i + 8] * dy[2] + (Kd[i + 4] * dy[1] +
       Kd[i] * dy[0]));
-    Kd_0[i] = b_x_idx;
+    Kd_0[i] = c_x_idx;
   }
 
   pd[0] = Kp_0[0] + Kd_0[0];
@@ -1173,7 +1176,7 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   pd[3] = Kp_0[3] + Kd_0[3];
 
   /*  */
-  if (*s > 1.0) {
+  if (s > 1.0) {
     for (i = 0; i < 11; i++) {
       jacob_h[i << 2] = -jacob_h_0[i << 2];
       jacob_h[1 + (i << 2)] = -jacob_h_0[(i << 2) + 1];
@@ -1205,9 +1208,9 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
       }
     }
 
-    b_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
+    c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
     e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
-    b_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
+    c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
     e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
 
     /* %%L2fh */
@@ -1244,9 +1247,9 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
       }
     }
 
-    b_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
+    c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
     e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
-    b_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
+    c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
     e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
 
     /* %%L2fh */
@@ -1259,16 +1262,16 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     u[3] = -pd[3];
     vc_controller_1_mldivide(DecoupMatrix, u);
   } else if (pdPlusFwdCtrl != 0.0) {
-    u[0] = -b_x_idx - pd[0];
+    u[0] = -c_x_idx - pd[0];
     u[1] = -e_y_idx - pd[1];
-    u[2] = -b_x_idx_0 - pd[2];
+    u[2] = -c_x_idx_0 - pd[2];
     u[3] = -e_y_idx_0 - pd[3];
     vc_controller_1_mldivide(DecoupMatrix, u);
   } else {
     if (L2fhCtrl != 0.0) {
-      u[0] = -b_x_idx;
+      u[0] = -c_x_idx;
       u[1] = -e_y_idx;
-      u[2] = -b_x_idx_0;
+      u[2] = -c_x_idx_0;
       u[3] = -e_y_idx_0;
       vc_controller_1_mldivide(DecoupMatrix, u);
     }
