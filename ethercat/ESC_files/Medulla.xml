@@ -533,7 +533,7 @@
 						<DataType>INT</DataType>
 					</Entry>					
 				</TxPdo>
-<!--				<TxPdo Fixed="1" Sm="3">
+				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A0D</Index>
 					<Name>IMU Data</Name>
 					<Entry>
@@ -648,7 +648,7 @@
 						<BitLen>32</BitLen>
 						<Name>Timer</Name>
 					</Entry>
-				</TxPdo> -->
+				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A0E</Index>
 					<Name>Incremental Encoder</Name>
