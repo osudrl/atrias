@@ -24,12 +24,10 @@ atc_umich_2::controller_input controllerDataOut;
 atc_umich_2::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::SpinButton *q1r_spinbutton,
-        *q2r_spinbutton,
-        *q3r_spinbutton,
-        *q1l_spinbutton,
-        *q2l_spinbutton,
-        *q3l_spinbutton,
+Gtk::ComboBox *s_mode_combo_box;
+
+Gtk::SpinButton *s_freq_spinbutton,
+        *torso_offset_spinbutton,
         *kp1_spinbutton,
         *kp2_spinbutton,
         *kp3_spinbutton,
