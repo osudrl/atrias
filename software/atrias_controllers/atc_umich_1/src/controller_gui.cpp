@@ -23,12 +23,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("kd1_spinbutton", kd1_spinbutton);
     gui->get_widget("kd2_spinbutton", kd2_spinbutton);
     gui->get_widget("kd3_spinbutton", kd3_spinbutton);
+    gui->get_widget("leg_saturation_spinbutton", leg_saturation_spinbutton);
+    gui->get_widget("hip_saturation_spinbutton", hip_saturation_spinbutton);
     gui->get_widget("epsilon_spinbutton", epsilon_spinbutton);
 
     if (q1r_spinbutton && q2r_spinbutton && q3r_spinbutton &&
         q1l_spinbutton && q2l_spinbutton && q3l_spinbutton &&
         kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
+        leg_saturation_spinbutton && hip_saturation_spinbutton &&
         epsilon_spinbutton) {
         // Set ranges.
         q1r_spinbutton->set_range(100, 250);
@@ -70,6 +73,8 @@ void getParameters() {
     nh.getParam("/atrias_gui/kd1", controllerDataOut.kd1);
     nh.getParam("/atrias_gui/kd2", controllerDataOut.kd2);
     nh.getParam("/atrias_gui/kd3", controllerDataOut.kd3);
+    nh.getParam("/atrias_gui/leg_saturation_cap", controllerDataOut.leg_saturation_cap);
+    nh.getParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.getParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
 
     // Configure the GUI.
@@ -85,6 +90,8 @@ void getParameters() {
     kd1_spinbutton->set_value(controllerDataOut.kd1);
     kd2_spinbutton->set_value(controllerDataOut.kd2);
     kd3_spinbutton->set_value(controllerDataOut.kd3);
+    leg_saturation_spinbutton->set_value(controllerDataOut.leg_saturation_cap);
+    hip_saturation_spinbutton->set_value(controllerDataOut.hip_saturation_cap);
     epsilon_spinbutton->set_value(controllerDataOut.epsilon);
 }
 
@@ -102,6 +109,8 @@ void setParameters() {
     nh.setParam("/atrias_gui/kd1", controllerDataOut.kd1);
     nh.setParam("/atrias_gui/kd2", controllerDataOut.kd2);
     nh.setParam("/atrias_gui/kd3", controllerDataOut.kd3);
+    nh.setParam("/atrias_gui/leg_saturation_cap", controllerDataOut.leg_saturation_cap);
+    nh.setParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.setParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
 }
 
@@ -119,6 +128,8 @@ void guiUpdate() {
     controllerDataOut.kd1 = kd1_spinbutton->get_value();
     controllerDataOut.kd2 = kd2_spinbutton->get_value();
     controllerDataOut.kd3 = kd3_spinbutton->get_value();
+    controllerDataOut.leg_saturation_cap = leg_saturation_spinbutton->get_value();
+    controllerDataOut.hip_saturation_cap = hip_saturation_spinbutton->get_value();
     controllerDataOut.epsilon = epsilon_spinbutton->get_value();
     pub.publish(controllerDataOut);
 }

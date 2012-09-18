@@ -26,14 +26,15 @@ Gtk::SpinButton *q1r_spinbutton,
         *q3r_spinbutton,
         *q1l_spinbutton,
         *q2l_spinbutton,
-        *q3l_spinbutton;
-
-Gtk::SpinButton *kp1_spinbutton,
+        *q3l_spinbutton,
+        *kp1_spinbutton,
         *kp2_spinbutton,
         *kp3_spinbutton,
         *kd1_spinbutton,
         *kd2_spinbutton,
         *kd3_spinbutton,
+        *leg_saturation_cap_spinbutton,
+        *hip_saturation_cap_spinbutton,
         *epsilon_spinbutton;
 
 #endif /* CONTROLLER_GUI_H_ */
