@@ -6,7 +6,7 @@
  * Model version                  : 1.28
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Tue Sep 18 16:35:06 2012
+ * C/C++ source code generated on : Tue Sep 18 17:35:05 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
