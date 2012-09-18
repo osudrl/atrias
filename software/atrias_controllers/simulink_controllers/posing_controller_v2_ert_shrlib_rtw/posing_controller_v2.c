@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'posing_controller_v2'.
  *
- * Model version                  : 1.29
+ * Model version                  : 1.32
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Mon Sep 17 21:15:46 2012
+ * C/C++ source code generated on : Mon Sep 17 21:44:55 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -101,11 +101,13 @@ void posing_controller_v2_step(void)
   real_T Kp_1[6];
   int32_T i_0;
   real_T Kd_0[6];
+  real_T u_sat_idx;
+  real_T u_sat_idx_0;
 
   /* MATLAB Function: '<Root>/coordXfm' incorporates:
    *  Inport: '<Root>/q_osu'
    */
-  /* MATLAB Function 'coordXfm': '<S3>:1' */
+  /* MATLAB Function 'coordXfm': '<S4>:1' */
   /*  */
   /*  lLeg: */
   /*    hip: */
@@ -132,32 +134,32 @@ void posing_controller_v2_step(void)
   /*    yPosition */
   /*    zPosition */
   /*    bodyPitch */
-  /* '<S3>:1:29' */
-  /* '<S3>:1:30' */
-  /* '<S3>:1:31' */
-  /* '<S3>:1:32' */
-  /* '<S3>:1:33' */
-  /* '<S3>:1:34' */
-  /* '<S3>:1:35' */
-  /* '<S3>:1:36' */
-  /* '<S3>:1:37' */
-  /* '<S3>:1:38' */
-  /* '<S3>:1:39' */
-  /* '<S3>:1:41' */
-  /* '<S3>:1:42' */
-  /* '<S3>:1:44' */
-  /* '<S3>:1:46' */
-  /* '<S3>:1:47' */
-  /* '<S3>:1:48' */
-  /* '<S3>:1:49' */
-  /* '<S3>:1:50' */
-  /* '<S3>:1:51' */
-  /* '<S3>:1:53' */
-  /* '<S3>:1:54' */
-  /* '<S3>:1:55' */
-  /* '<S3>:1:56' */
-  /* '<S3>:1:57' */
-  /* '<S3>:1:59' */
+  /* '<S4>:1:29' */
+  /* '<S4>:1:30' */
+  /* '<S4>:1:31' */
+  /* '<S4>:1:32' */
+  /* '<S4>:1:33' */
+  /* '<S4>:1:34' */
+  /* '<S4>:1:35' */
+  /* '<S4>:1:36' */
+  /* '<S4>:1:37' */
+  /* '<S4>:1:38' */
+  /* '<S4>:1:39' */
+  /* '<S4>:1:41' */
+  /* '<S4>:1:42' */
+  /* '<S4>:1:44' */
+  /* '<S4>:1:46' */
+  /* '<S4>:1:47' */
+  /* '<S4>:1:48' */
+  /* '<S4>:1:49' */
+  /* '<S4>:1:50' */
+  /* '<S4>:1:51' */
+  /* '<S4>:1:53' */
+  /* '<S4>:1:54' */
+  /* '<S4>:1:55' */
+  /* '<S4>:1:56' */
+  /* '<S4>:1:57' */
+  /* '<S4>:1:59' */
   rtb_q_um[0] = -posing_controller_v2_U.q_osu[10];
   rtb_q_um[1] = posing_controller_v2_U.q_osu[12];
   rtb_q_um[2] = posing_controller_v2_U.q_osu[13] + 1.5707963267948966;
@@ -357,7 +359,7 @@ void posing_controller_v2_step(void)
       rtb_q_um[12];
   }
 
-  /* DiscreteFilter: '<Root>/Discrete Filter' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter_tmp = (posing_controller_v2_U.set_point[0] -
@@ -365,7 +367,7 @@ void posing_controller_v2_step(void)
                         posing_controller_v2_DWork.DiscreteFilter_DSTATE) /
     posing_controller_v2_P.DiscreteFilter_DenCoef[0];
 
-  /* DiscreteFilter: '<Root>/Discrete Filter1' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter1' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter1_tmp = (posing_controller_v2_U.set_point[1] -
@@ -373,7 +375,7 @@ void posing_controller_v2_step(void)
     posing_controller_v2_DWork.DiscreteFilter1_DSTATE) /
     posing_controller_v2_P.DiscreteFilter1_DenCoef[0];
 
-  /* DiscreteFilter: '<Root>/Discrete Filter2' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter2' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter2_tmp = (posing_controller_v2_U.set_point[2] -
@@ -381,7 +383,7 @@ void posing_controller_v2_step(void)
     posing_controller_v2_DWork.DiscreteFilter2_DSTATE) /
     posing_controller_v2_P.DiscreteFilter2_DenCoef[0];
 
-  /* DiscreteFilter: '<Root>/Discrete Filter3' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter3' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter3_tmp = (posing_controller_v2_U.set_point[3] -
@@ -389,7 +391,7 @@ void posing_controller_v2_step(void)
     posing_controller_v2_DWork.DiscreteFilter3_DSTATE) /
     posing_controller_v2_P.DiscreteFilter3_DenCoef[0];
 
-  /* DiscreteFilter: '<Root>/Discrete Filter4' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter4' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter4_tmp = (posing_controller_v2_U.set_point[4] -
@@ -397,7 +399,7 @@ void posing_controller_v2_step(void)
     posing_controller_v2_DWork.DiscreteFilter4_DSTATE) /
     posing_controller_v2_P.DiscreteFilter4_DenCoef[0];
 
-  /* DiscreteFilter: '<Root>/Discrete Filter5' incorporates:
+  /* DiscreteFilter: '<S2>/Discrete Filter5' incorporates:
    *  Inport: '<Root>/set_point'
    */
   DiscreteFilter5_tmp = (posing_controller_v2_U.set_point[5] -
@@ -406,38 +408,39 @@ void posing_controller_v2_step(void)
     posing_controller_v2_P.DiscreteFilter5_DenCoef[0];
 
   /* MATLAB Function: '<Root>/controller' incorporates:
-   *  DiscreteFilter: '<Root>/Discrete Filter'
-   *  DiscreteFilter: '<Root>/Discrete Filter1'
-   *  DiscreteFilter: '<Root>/Discrete Filter2'
-   *  DiscreteFilter: '<Root>/Discrete Filter3'
-   *  DiscreteFilter: '<Root>/Discrete Filter4'
-   *  DiscreteFilter: '<Root>/Discrete Filter5'
+   *  DiscreteFilter: '<S2>/Discrete Filter'
+   *  DiscreteFilter: '<S2>/Discrete Filter1'
+   *  DiscreteFilter: '<S2>/Discrete Filter2'
+   *  DiscreteFilter: '<S2>/Discrete Filter3'
+   *  DiscreteFilter: '<S2>/Discrete Filter4'
+   *  DiscreteFilter: '<S2>/Discrete Filter5'
    *  Inport: '<Root>/epsilon'
    *  Inport: '<Root>/kd'
    *  Inport: '<Root>/kp'
+   *  Inport: '<Root>/sat_val'
    */
-  /* MATLAB Function 'controller': '<S2>:1' */
+  /* MATLAB Function 'controller': '<S3>:1' */
   /* %eml */
   /*  x vector 26 by 1 */
   /*  kp vector 3 by 1 */
   /*  kd vector 3 by 1 */
   /*  set point vecotr 6 by 1 */
-  /* '<S2>:1:10' */
-  /* '<S2>:1:11' */
-  /* '<S2>:1:14' */
-  /* '<S2>:1:15' */
-  /* '<S2>:1:16' */
-  /* '<S2>:1:17' */
-  /* '<S2>:1:18' */
-  /* '<S2>:1:19' */
-  /* '<S2>:1:22' */
-  /* '<S2>:1:23' */
-  /* '<S2>:1:24' */
-  /* '<S2>:1:25' */
-  /* '<S2>:1:26' */
-  /* '<S2>:1:27' */
-  /* '<S2>:1:29' */
-  /* '<S2>:1:30' */
+  /* '<S3>:1:10' */
+  /* '<S3>:1:11' */
+  /* '<S3>:1:14' */
+  /* '<S3>:1:15' */
+  /* '<S3>:1:16' */
+  /* '<S3>:1:17' */
+  /* '<S3>:1:18' */
+  /* '<S3>:1:19' */
+  /* '<S3>:1:22' */
+  /* '<S3>:1:23' */
+  /* '<S3>:1:24' */
+  /* '<S3>:1:25' */
+  /* '<S3>:1:26' */
+  /* '<S3>:1:27' */
+  /* '<S3>:1:29' */
+  /* '<S3>:1:30' */
   rtb_dy[0] = rtb_VectorConcatenate[18];
   rtb_dy[1] = rtb_VectorConcatenate[19];
   rtb_dy[2] = rtb_VectorConcatenate[20];
@@ -445,7 +448,7 @@ void posing_controller_v2_step(void)
   rtb_dy[4] = rtb_VectorConcatenate[24];
   rtb_dy[5] = rtb_VectorConcatenate[25];
 
-  /* '<S2>:1:31' */
+  /* '<S3>:1:31' */
   rtb_y[0] = rtb_VectorConcatenate[5] -
     posing_controller_v2_P.DiscreteFilter_NumCoef * DiscreteFilter_tmp *
     3.1415926535897931 / 180.0;
@@ -465,9 +468,9 @@ void posing_controller_v2_step(void)
     posing_controller_v2_P.DiscreteFilter5_NumCoef * DiscreteFilter5_tmp *
     3.1415926535897931 / 180.0;
 
-  /* '<S2>:1:32' */
-  /* '<S2>:1:34' */
-  /* '<S2>:1:35' */
+  /* '<S3>:1:32' */
+  /* '<S3>:1:34' */
+  /* '<S3>:1:35' */
   for (i = 0; i < 36; i++) {
     Kp[i] = 0.0;
     Kd[i] = 0.0;
@@ -475,41 +478,41 @@ void posing_controller_v2_step(void)
 
   Kp[0] = posing_controller_v2_U.kp[0];
 
-  /* '<S2>:1:36' */
+  /* '<S3>:1:36' */
   Kp[7] = posing_controller_v2_U.kp[1];
 
-  /* '<S2>:1:37' */
+  /* '<S3>:1:37' */
   Kp[14] = posing_controller_v2_U.kp[2];
 
-  /* '<S2>:1:38' */
+  /* '<S3>:1:38' */
   Kp[21] = posing_controller_v2_U.kp[0];
 
-  /* '<S2>:1:39' */
+  /* '<S3>:1:39' */
   Kp[28] = posing_controller_v2_U.kp[1];
 
-  /* '<S2>:1:40' */
+  /* '<S3>:1:40' */
   Kp[35] = posing_controller_v2_U.kp[2];
 
-  /* '<S2>:1:42' */
-  /* '<S2>:1:43' */
+  /* '<S3>:1:42' */
+  /* '<S3>:1:43' */
   Kd[0] = posing_controller_v2_U.kd[0];
 
-  /* '<S2>:1:44' */
+  /* '<S3>:1:44' */
   Kd[7] = posing_controller_v2_U.kd[1];
 
-  /* '<S2>:1:45' */
+  /* '<S3>:1:45' */
   Kd[14] = posing_controller_v2_U.kd[2];
 
-  /* '<S2>:1:46' */
+  /* '<S3>:1:46' */
   Kd[21] = posing_controller_v2_U.kd[0];
 
-  /* '<S2>:1:47' */
+  /* '<S3>:1:47' */
   Kd[28] = posing_controller_v2_U.kd[1];
 
-  /* '<S2>:1:48' */
+  /* '<S3>:1:48' */
   Kd[35] = posing_controller_v2_U.kd[2];
 
-  /* '<S2>:1:51' */
+  /* '<S3>:1:51' */
   rtb_DiscreteFilter = rt_powd_snf(posing_controller_v2_U.epsilon, 2.0);
   for (i = 0; i < 6; i++) {
     for (i_0 = 0; i_0 < 6; i_0++) {
@@ -538,23 +541,36 @@ void posing_controller_v2_step(void)
   }
 
   /* transform to OSU coordinates */
-  /* '<S2>:1:54' */
-  /* '<S2>:1:55' */
+  /* '<S3>:1:54' */
+  /* '<S3>:1:55' */
   rtb_u[2] = -rtb_u[2];
-  for (i = 0; i < 6; i++) {
-    /* Saturate: '<Root>/Saturation' */
-    if (rtb_u[i] >= posing_controller_v2_P.Saturation_UpperSat[i]) {
-      /* Outport: '<Root>/u' */
-      posing_controller_v2_Y.u[i] = posing_controller_v2_P.Saturation_UpperSat[i];
-    } else if (rtb_u[i] <= posing_controller_v2_P.Saturation_LowerSat[i]) {
-      /* Outport: '<Root>/u' */
-      posing_controller_v2_Y.u[i] = posing_controller_v2_P.Saturation_LowerSat[i];
-    } else {
-      /* Outport: '<Root>/u' */
-      posing_controller_v2_Y.u[i] = rtb_u[i];
-    }
 
-    /* End of Saturate: '<Root>/Saturation' */
+  /* '<S3>:1:57' */
+  /* '<S3>:1:62' */
+  /* '<S3>:1:63' */
+  rtb_DiscreteFilter = fmax(-posing_controller_v2_U.sat_val[0], fmin(rtb_u[1],
+    posing_controller_v2_U.sat_val[0]));
+  u_sat_idx = fmax(-posing_controller_v2_U.sat_val[0], fmin(rtb_u[3],
+    posing_controller_v2_U.sat_val[0]));
+  u_sat_idx_0 = fmax(-posing_controller_v2_U.sat_val[0], fmin(rtb_u[4],
+    posing_controller_v2_U.sat_val[0]));
+  rtb_u[0] = fmax(-posing_controller_v2_U.sat_val[0], fmin(rtb_u[0],
+    posing_controller_v2_U.sat_val[0]));
+  rtb_u[1] = rtb_DiscreteFilter;
+  rtb_u[3] = u_sat_idx;
+  rtb_u[4] = u_sat_idx_0;
+
+  /* '<S3>:1:58' */
+  /* '<S3>:1:62' */
+  /* '<S3>:1:63' */
+  rtb_DiscreteFilter = fmax(-posing_controller_v2_U.sat_val[1], fmin(rtb_u[5],
+    posing_controller_v2_U.sat_val[1]));
+  rtb_u[2] = fmax(-posing_controller_v2_U.sat_val[1], fmin(rtb_u[2],
+    posing_controller_v2_U.sat_val[1]));
+  rtb_u[5] = rtb_DiscreteFilter;
+  for (i = 0; i < 6; i++) {
+    /* Outport: '<Root>/u' */
+    posing_controller_v2_Y.u[i] = rtb_u[i];
 
     /* Outport: '<Root>/y' */
     posing_controller_v2_Y.y[i] = rtb_y[i];
@@ -1123,22 +1139,22 @@ void posing_controller_v2_step(void)
                   sizeof(real_T)*4);
   }
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter' */
   posing_controller_v2_DWork.DiscreteFilter_DSTATE = DiscreteFilter_tmp;
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter1' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter1' */
   posing_controller_v2_DWork.DiscreteFilter1_DSTATE = DiscreteFilter1_tmp;
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter2' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter2' */
   posing_controller_v2_DWork.DiscreteFilter2_DSTATE = DiscreteFilter2_tmp;
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter3' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter3' */
   posing_controller_v2_DWork.DiscreteFilter3_DSTATE = DiscreteFilter3_tmp;
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter4' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter4' */
   posing_controller_v2_DWork.DiscreteFilter4_DSTATE = DiscreteFilter4_tmp;
 
-  /* Update for DiscreteFilter: '<Root>/Discrete Filter5' */
+  /* Update for DiscreteFilter: '<S2>/Discrete Filter5' */
   posing_controller_v2_DWork.DiscreteFilter5_DSTATE = DiscreteFilter5_tmp;
 }
 
@@ -1295,27 +1311,27 @@ void posing_controller_v2_initialize(void)
   posing_controller_v2_DWork.DirtyDerivative12_DSTATE[3] =
     posing_controller_v2_P.DirtyDerivative12_X0[3];
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter' */
   posing_controller_v2_DWork.DiscreteFilter_DSTATE =
     posing_controller_v2_P.DiscreteFilter_InitialStates;
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter1' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter1' */
   posing_controller_v2_DWork.DiscreteFilter1_DSTATE =
     posing_controller_v2_P.DiscreteFilter1_InitialStates;
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter2' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter2' */
   posing_controller_v2_DWork.DiscreteFilter2_DSTATE =
     posing_controller_v2_P.DiscreteFilter2_InitialStates;
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter3' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter3' */
   posing_controller_v2_DWork.DiscreteFilter3_DSTATE =
     posing_controller_v2_P.DiscreteFilter3_InitialStates;
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter4' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter4' */
   posing_controller_v2_DWork.DiscreteFilter4_DSTATE =
     posing_controller_v2_P.DiscreteFilter4_InitialStates;
 
-  /* InitializeConditions for DiscreteFilter: '<Root>/Discrete Filter5' */
+  /* InitializeConditions for DiscreteFilter: '<S2>/Discrete Filter5' */
   posing_controller_v2_DWork.DiscreteFilter5_DSTATE =
     posing_controller_v2_P.DiscreteFilter5_InitialStates;
 }
