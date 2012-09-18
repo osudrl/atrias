@@ -72,14 +72,6 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
     posing_controller_v2_U.q_osu[12] = rs.position.zPosition;
     posing_controller_v2_U.q_osu[13] = rs.position.bodyPitch;
 
-    // Set points
-    posing_controller_v2_U.set_point[0] = guiIn.q1r;
-    posing_controller_v2_U.set_point[1] = guiIn.q2r;
-    posing_controller_v2_U.set_point[2] = guiIn.q3r;
-    posing_controller_v2_U.set_point[3] = guiIn.q1l;
-    posing_controller_v2_U.set_point[4] = guiIn.q2l;
-    posing_controller_v2_U.set_point[5] = guiIn.q3l;
-
     // KP and KD
     posing_controller_v2_U.kp[0] = guiIn.kp1;
     posing_controller_v2_U.kp[1] = guiIn.kp2;
@@ -94,6 +86,15 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
     // Cap value
     posing_controller_v2_U.sat_val[0] = guiIn.leg_saturation_cap;
     posing_controller_v2_U.sat_val[1] = guiIn.hip_saturation_cap;
+
+    // Torso offset
+    posing_controller_v2_U.torso_offset = guiIn.torsoOffset;
+
+    // What type of "walking" are we doing?
+    posing_controller_v2_U.s_mode = guiIn.sMode;
+
+    // Walking frequency
+    posing_controller_v2_U.s_freq = guiIn.sFreq;
 
     // Step the controller
     posing_controller_v2_step();
