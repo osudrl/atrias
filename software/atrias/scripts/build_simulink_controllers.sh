@@ -128,7 +128,7 @@ while [ 1 ]; do
         ;;
     2)
         controllerDirs=( $(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||') )
-        clear
+        break
         ;;
     3)
         break
@@ -145,5 +145,8 @@ done
 
 for controllerDir in ${controllerDirs[@]}
 do
-    makeMatlabController $controllerDir
+    if [ "$controllerDir" != "" ]
+    then
+        makeMatlabController $controllerDir
+    fi
 done
