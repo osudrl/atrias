@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'posing_controller_v2'.
  *
- * Model version                  : 1.27
+ * Model version                  : 1.28
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Mon Sep 17 19:14:31 2012
+ * C/C++ source code generated on : Mon Sep 17 20:00:26 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -447,17 +447,23 @@ void posing_controller_v2_step(void)
 
   /* '<S2>:1:31' */
   rtb_y[0] = rtb_VectorConcatenate[5] -
-    posing_controller_v2_P.DiscreteFilter_NumCoef * DiscreteFilter_tmp;
+    posing_controller_v2_P.DiscreteFilter_NumCoef * DiscreteFilter_tmp *
+    3.1415926535897931 / 180.0;
   rtb_y[1] = rtb_VectorConcatenate[6] -
-    posing_controller_v2_P.DiscreteFilter1_NumCoef * DiscreteFilter1_tmp;
+    posing_controller_v2_P.DiscreteFilter1_NumCoef * DiscreteFilter1_tmp *
+    3.1415926535897931 / 180.0;
   rtb_y[2] = rtb_VectorConcatenate[7] -
-    posing_controller_v2_P.DiscreteFilter2_NumCoef * DiscreteFilter2_tmp;
+    posing_controller_v2_P.DiscreteFilter2_NumCoef * DiscreteFilter2_tmp *
+    3.1415926535897931 / 180.0;
   rtb_y[3] = rtb_VectorConcatenate[10] -
-    posing_controller_v2_P.DiscreteFilter3_NumCoef * DiscreteFilter3_tmp;
+    posing_controller_v2_P.DiscreteFilter3_NumCoef * DiscreteFilter3_tmp *
+    3.1415926535897931 / 180.0;
   rtb_y[4] = rtb_VectorConcatenate[11] -
-    posing_controller_v2_P.DiscreteFilter4_NumCoef * DiscreteFilter4_tmp;
+    posing_controller_v2_P.DiscreteFilter4_NumCoef * DiscreteFilter4_tmp *
+    3.1415926535897931 / 180.0;
   rtb_y[5] = rtb_VectorConcatenate[12] -
-    posing_controller_v2_P.DiscreteFilter5_NumCoef * DiscreteFilter5_tmp;
+    posing_controller_v2_P.DiscreteFilter5_NumCoef * DiscreteFilter5_tmp *
+    3.1415926535897931 / 180.0;
 
   /* '<S2>:1:32' */
   /* '<S2>:1:34' */

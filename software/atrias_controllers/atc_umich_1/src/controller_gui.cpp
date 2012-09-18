@@ -31,11 +31,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         epsilon_spinbutton) {
         // Set ranges.
-        q1r_hscale->set_range(140, 220);
-        q2r_hscale->set_range(140, 220);
+        q1r_hscale->set_range(100, 250);
+        q2r_hscale->set_range(100, 250);
         q3r_hscale->set_range(-15, 15);
-        q1l_hscale->set_range(140, 220);
-        q2l_hscale->set_range(140, 220);
+        q1l_hscale->set_range(100, 250);
+        q2l_hscale->set_range(100, 250);
         q3l_hscale->set_range(-15, 15);
         kp1_spinbutton->set_range(0, 50);
         kp2_spinbutton->set_range(0, 50);
