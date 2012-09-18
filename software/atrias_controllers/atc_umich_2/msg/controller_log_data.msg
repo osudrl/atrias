@@ -11,3 +11,6 @@ float64 dy3r
 float64 dy1l
 float64 dy2l
 float64 dy3l
+
+float64 s
+float64 ds

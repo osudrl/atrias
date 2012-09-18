@@ -31,7 +31,7 @@
 
 // MATLAB code
 extern "C" {
-#include <posing_controller_v2.h>
+#include <vc_controller_1.h>
 }
 
 using namespace RTT;
