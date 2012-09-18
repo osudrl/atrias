@@ -11,12 +11,6 @@
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("q1r_spinbutton", q1r_spinbutton);
-    gui->get_widget("q2r_spinbutton", q2r_spinbutton);
-    gui->get_widget("q3r_spinbutton", q3r_spinbutton);
-    gui->get_widget("q1l_spinbutton", q1l_spinbutton);
-    gui->get_widget("q2l_spinbutton", q2l_spinbutton);
-    gui->get_widget("q3l_spinbutton", q3l_spinbutton);
     gui->get_widget("kp1_spinbutton", kp1_spinbutton);
     gui->get_widget("kp2_spinbutton", kp2_spinbutton);
     gui->get_widget("kp3_spinbutton", kp3_spinbutton);
@@ -26,6 +20,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_saturation_cap_spinbutton", leg_saturation_cap_spinbutton);
     gui->get_widget("hip_saturation_cap_spinbutton", hip_saturation_cap_spinbutton);
     gui->get_widget("epsilon_spinbutton", epsilon_spinbutton);
+
+    gui->get_widget("s_freq_spinbutton", s_freq_spinbutton);
+    gui->get_widget("s_mode_combo_box", s_mode_combo_box);
+    gui->get_widget("torso_offset_spinbutton", torso_offset_spinbutton);
 
     gui->get_widget("y1l_spinbutton", y1l_spinbutton);
     gui->get_widget("y2l_spinbutton", y2l_spinbutton);
@@ -40,23 +38,16 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("dy2r_spinbutton", dy2r_spinbutton);
     gui->get_widget("dy3r_spinbutton", dy3r_spinbutton);
 
-    if (q1r_spinbutton && q2r_spinbutton && q3r_spinbutton &&
-        q1l_spinbutton && q2l_spinbutton && q3l_spinbutton &&
-        kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
+    if (kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         leg_saturation_cap_spinbutton && hip_saturation_cap_spinbutton &&
-        epsilon_spinbutton &&
+        epsilon_spinbutton && torso_offset_spinbutton &&
         y1l_spinbutton && y2l_spinbutton && y3l_spinbutton &&
         y1r_spinbutton && y2r_spinbutton && y3r_spinbutton &&
         dy1l_spinbutton && dy2l_spinbutton && dy3l_spinbutton &&
-        dy1r_spinbutton && dy2r_spinbutton && dy3r_spinbutton) {
+        dy1r_spinbutton && dy2r_spinbutton && dy3r_spinbutton &&
+        s_mode_combo_box && s_freq_spinbutton) {
         // Set ranges.
-        q1r_spinbutton->set_range(100, 250);
-        q2r_spinbutton->set_range(100, 250);
-        q3r_spinbutton->set_range(-15, 15);
-        q1l_spinbutton->set_range(100, 250);
-        q2l_spinbutton->set_range(100, 250);
-        q3l_spinbutton->set_range(-15, 15);
         kp1_spinbutton->set_range(0, 50);
         kp2_spinbutton->set_range(0, 50);
         kp3_spinbutton->set_range(0, 50);
@@ -66,6 +57,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         leg_saturation_cap_spinbutton->set_range(0, 60);
         hip_saturation_cap_spinbutton->set_range(0, 10);
         epsilon_spinbutton->set_range(0, 1);
+
+        torso_offset_spinbutton->set_range(-20., 20.);
+        s_freq_spinbutton->set_range(0., 2.);
 
         y1r_spinbutton->set_range(-10, 10);
         y2r_spinbutton->set_range(-10, 10);
@@ -81,12 +75,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dy3l_spinbutton->set_range(-10, 10);
 
         // Set increments.
-        q1r_spinbutton->set_increments(0.1, 1.0);
-        q2r_spinbutton->set_increments(0.1, 1.0);
-        q3r_spinbutton->set_increments(0.1, 1.0);
-        q1l_spinbutton->set_increments(0.1, 1.0);
-        q2l_spinbutton->set_increments(0.1, 1.0);
-        q3l_spinbutton->set_increments(0.1, 1.0);
         kp1_spinbutton->set_increments(0.1, 1.0);
         kp2_spinbutton->set_increments(0.1, 1.0);
         kp3_spinbutton->set_increments(0.1, 1.0);
@@ -112,12 +100,10 @@ void controllerCallback(const atc_umich_2::controller_status &status) {
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/q1r", controllerDataOut.q1r);
-    nh.getParam("/atrias_gui/q2r", controllerDataOut.q2r);
-    nh.getParam("/atrias_gui/q3r", controllerDataOut.q3r);
-    nh.getParam("/atrias_gui/q1l", controllerDataOut.q1l);
-    nh.getParam("/atrias_gui/q2l", controllerDataOut.q2l);
-    nh.getParam("/atrias_gui/q3l", controllerDataOut.q3l);
+	int s_mode_tmp;
+    nh.getParam("/atrias_gui/s_mode", s_mode_tmp);
+    controllerDataOut.s_mode = (uint8_t)s_mode_tmp;
+    nh.getParam("/atrias_gui/s_freq", controllerDataOut.s_freq);
     nh.getParam("/atrias_gui/kp1", controllerDataOut.kp1);
     nh.getParam("/atrias_gui/kp2", controllerDataOut.kp2);
     nh.getParam("/atrias_gui/kp3", controllerDataOut.kp3);
@@ -127,14 +113,11 @@ void getParameters() {
     nh.getParam("/atrias_gui/leg_saturation_cap", controllerDataOut.leg_saturation_cap);
     nh.getParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.getParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
+    nh.getParam("/atrias_gui/torso_offset", controllerDataOut.torso_offset);
 
     // Configure the GUI.
-    q1r_spinbutton->set_value(controllerDataOut.q1r);
-    q2r_spinbutton->set_value(controllerDataOut.q2r);
-    q3r_spinbutton->set_value(controllerDataOut.q3r);
-    q1l_spinbutton->set_value(controllerDataOut.q1l);
-    q2l_spinbutton->set_value(controllerDataOut.q2l);
-    q3l_spinbutton->set_value(controllerDataOut.q3l);
+    s_mode_combo_box->set_active(controllerDataOut.s_mode);
+    s_freq_spinbutton->set_value(controllerDataOut.s_freq);
     kp1_spinbutton->set_value(controllerDataOut.kp1);
     kp2_spinbutton->set_value(controllerDataOut.kp2);
     kp3_spinbutton->set_value(controllerDataOut.kp3);
@@ -144,16 +127,13 @@ void getParameters() {
     leg_saturation_cap_spinbutton->set_value(controllerDataOut.leg_saturation_cap);
     hip_saturation_cap_spinbutton->set_value(controllerDataOut.hip_saturation_cap);
     epsilon_spinbutton->set_value(controllerDataOut.epsilon);
+    torso_offset_spinbutton->set_value(controllerDataOut.torso_offset);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/q1r", controllerDataOut.q1r);
-    nh.setParam("/atrias_gui/q2r", controllerDataOut.q2r);
-    nh.setParam("/atrias_gui/q3r", controllerDataOut.q3r);
-    nh.setParam("/atrias_gui/q1l", controllerDataOut.q1l);
-    nh.setParam("/atrias_gui/q2l", controllerDataOut.q2l);
-    nh.setParam("/atrias_gui/q3l", controllerDataOut.q3l);
+    nh.setParam("/atrias_gui/s_mode", controllerDataOut.s_mode);
+    nh.setParam("/atrias_gui/s_freq", controllerDataOut.s_freq);
     nh.setParam("/atrias_gui/kp1", controllerDataOut.kp1);
     nh.setParam("/atrias_gui/kp2", controllerDataOut.kp2);
     nh.setParam("/atrias_gui/kp3", controllerDataOut.kp3);
@@ -163,6 +143,7 @@ void setParameters() {
     nh.setParam("/atrias_gui/leg_saturation_cap", controllerDataOut.leg_saturation_cap);
     nh.setParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.setParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
+    nh.setParam("/atrias_gui/torso_offset", controllerDataOut.torso_offset);
 }
 
 //! \brief Update the GUI.
@@ -181,12 +162,8 @@ void guiUpdate() {
     dy2r_spinbutton->set_value(controllerDataIn.dyr[1]);
     dy3r_spinbutton->set_value(controllerDataIn.dyr[2]);
 
-    controllerDataOut.q1r = q1r_spinbutton->get_value();
-    controllerDataOut.q2r = q2r_spinbutton->get_value();
-    controllerDataOut.q3r = q3r_spinbutton->get_value();
-    controllerDataOut.q1l = q1l_spinbutton->get_value();
-    controllerDataOut.q2l = q2l_spinbutton->get_value();
-    controllerDataOut.q3l = q3l_spinbutton->get_value();
+    controllerDataOut.s_mode = (uint8_t)s_mode_combo_box->get_active_row_number();
+    controllerDataOut.s_freq = s_freq_spinbutton->get_value();
     controllerDataOut.kp1 = kp1_spinbutton->get_value();
     controllerDataOut.kp2 = kp2_spinbutton->get_value();
     controllerDataOut.kp3 = kp3_spinbutton->get_value();
@@ -196,6 +173,7 @@ void guiUpdate() {
     controllerDataOut.leg_saturation_cap = leg_saturation_cap_spinbutton->get_value();
     controllerDataOut.hip_saturation_cap = hip_saturation_cap_spinbutton->get_value();
     controllerDataOut.epsilon = epsilon_spinbutton->get_value();
+    controllerDataOut.torso_offset = torso_offset_spinbutton->get_value();
     pub.publish(controllerDataOut);
 }
 
