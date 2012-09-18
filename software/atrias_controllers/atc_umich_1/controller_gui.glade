@@ -26,11 +26,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q1r_hscale">
+              <object class="GtkSpinButton" id="q1r_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -51,11 +55,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q2r_hscale">
+              <object class="GtkSpinButton" id="q2r_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -76,11 +84,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q3r_hscale">
+              <object class="GtkSpinButton" id="q3r_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -123,11 +135,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q1l_hscale">
+              <object class="GtkSpinButton" id="q1l_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -148,11 +164,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q2l_hscale">
+              <object class="GtkSpinButton" id="12l_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -173,11 +193,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHScale" id="q3l_hscale">
+              <object class="GtkSpinButton" id="q3l_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="round_digits">3</property>
-                <property name="digits">3</property>
+                <property name="invisible_char">•</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+                <property name="digits">1</property>
               </object>
               <packing>
                 <property name="expand">True</property>

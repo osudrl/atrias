@@ -21,12 +21,12 @@ ros::Publisher pub;
 atc_umich_1::controller_input controllerDataOut;
 
 // GUI elements
-Gtk::HScale *q1r_hscale,
-        *q2r_hscale,
-        *q3r_hscale,
-        *q1l_hscale,
-        *q2l_hscale,
-        *q3l_hscale;
+Gtk::SpinButton *q1r_spinbutton,
+        *q2r_spinbutton,
+        *q3r_spinbutton,
+        *q1l_spinbutton,
+        *q2l_spinbutton,
+        *q3l_spinbutton;
 
 Gtk::SpinButton *kp1_spinbutton,
         *kp2_spinbutton,

@@ -11,12 +11,12 @@
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("q1r_hscale", q1r_hscale);
-    gui->get_widget("q2r_hscale", q2r_hscale);
-    gui->get_widget("q3r_hscale", q3r_hscale);
-    gui->get_widget("q1l_hscale", q1l_hscale);
-    gui->get_widget("q2l_hscale", q2l_hscale);
-    gui->get_widget("q3l_hscale", q3l_hscale);
+    gui->get_widget("q1r_spinbutton", q1r_spinbutton);
+    gui->get_widget("q2r_spinbutton", q2r_spinbutton);
+    gui->get_widget("q3r_spinbutton", q3r_spinbutton);
+    gui->get_widget("q1l_spinbutton", q1l_spinbutton);
+    gui->get_widget("q2l_spinbutton", q2l_spinbutton);
+    gui->get_widget("q3l_spinbutton", q3l_spinbutton);
     gui->get_widget("kp1_spinbutton", kp1_spinbutton);
     gui->get_widget("kp2_spinbutton", kp2_spinbutton);
     gui->get_widget("kp3_spinbutton", kp3_spinbutton);
@@ -25,18 +25,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("kd3_spinbutton", kd3_spinbutton);
     gui->get_widget("epsilon_spinbutton", epsilon_spinbutton);
 
-    if (q1r_hscale && q2r_hscale && q3r_hscale &&
-        q1l_hscale && q2l_hscale && q3l_hscale &&
+    if (q1r_spinbutton && q2r_spinbutton && q3r_spinbutton &&
+        q1l_spinbutton && q2l_spinbutton && q3l_spinbutton &&
         kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         epsilon_spinbutton) {
         // Set ranges.
-        q1r_hscale->set_range(100, 250);
-        q2r_hscale->set_range(100, 250);
-        q3r_hscale->set_range(-15, 15);
-        q1l_hscale->set_range(100, 250);
-        q2l_hscale->set_range(100, 250);
-        q3l_hscale->set_range(-15, 15);
+        q1r_spinbutton->set_range(100, 250);
+        q2r_spinbutton->set_range(100, 250);
+        q3r_spinbutton->set_range(-15, 15);
+        q1l_spinbutton->set_range(100, 250);
+        q2l_spinbutton->set_range(100, 250);
+        q3l_spinbutton->set_range(-15, 15);
         kp1_spinbutton->set_range(0, 50);
         kp2_spinbutton->set_range(0, 50);
         kp3_spinbutton->set_range(0, 50);
@@ -70,12 +70,12 @@ void getParameters() {
     nh.getParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
 
     // Configure the GUI.
-    q1r_hscale->set_value(controllerDataOut.q1r);
-    q2r_hscale->set_value(controllerDataOut.q2r);
-    q3r_hscale->set_value(controllerDataOut.q3r);
-    q1l_hscale->set_value(controllerDataOut.q1l);
-    q2l_hscale->set_value(controllerDataOut.q2l);
-    q3l_hscale->set_value(controllerDataOut.q3l);
+    q1r_spinbutton->set_value(controllerDataOut.q1r);
+    q2r_spinbutton->set_value(controllerDataOut.q2r);
+    q3r_spinbutton->set_value(controllerDataOut.q3r);
+    q1l_spinbutton->set_value(controllerDataOut.q1l);
+    q2l_spinbutton->set_value(controllerDataOut.q2l);
+    q3l_spinbutton->set_value(controllerDataOut.q3l);
     kp1_spinbutton->set_value(controllerDataOut.kp1);
     kp2_spinbutton->set_value(controllerDataOut.kp2);
     kp3_spinbutton->set_value(controllerDataOut.kp3);
@@ -104,12 +104,12 @@ void setParameters() {
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.q1r = q1r_hscale->get_value();
-    controllerDataOut.q2r = q2r_hscale->get_value();
-    controllerDataOut.q3r = q3r_hscale->get_value();
-    controllerDataOut.q1l = q1l_hscale->get_value();
-    controllerDataOut.q2l = q2l_hscale->get_value();
-    controllerDataOut.q3l = q3l_hscale->get_value();
+    controllerDataOut.q1r = q1r_spinbutton->get_value();
+    controllerDataOut.q2r = q2r_spinbutton->get_value();
+    controllerDataOut.q3r = q3r_spinbutton->get_value();
+    controllerDataOut.q1l = q1l_spinbutton->get_value();
+    controllerDataOut.q2l = q2l_spinbutton->get_value();
+    controllerDataOut.q3l = q3l_spinbutton->get_value();
     controllerDataOut.kp1 = kp1_spinbutton->get_value();
     controllerDataOut.kp2 = kp2_spinbutton->get_value();
     controllerDataOut.kp3 = kp3_spinbutton->get_value();
