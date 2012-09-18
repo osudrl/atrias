@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'posing_controller_v2'.
  *
- * Model version                  : 1.29
+ * Model version                  : 1.32
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Mon Sep 17 21:15:46 2012
+ * C/C++ source code generated on : Mon Sep 17 21:44:55 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -57,12 +57,12 @@ typedef struct {
   real_T DirtyDerivative10_DSTATE[4];  /* '<S1>/DirtyDerivative10' */
   real_T DirtyDerivative11_DSTATE[4];  /* '<S1>/DirtyDerivative11' */
   real_T DirtyDerivative12_DSTATE[4];  /* '<S1>/DirtyDerivative12' */
-  real_T DiscreteFilter_DSTATE;        /* '<Root>/Discrete Filter' */
-  real_T DiscreteFilter1_DSTATE;       /* '<Root>/Discrete Filter1' */
-  real_T DiscreteFilter2_DSTATE;       /* '<Root>/Discrete Filter2' */
-  real_T DiscreteFilter3_DSTATE;       /* '<Root>/Discrete Filter3' */
-  real_T DiscreteFilter4_DSTATE;       /* '<Root>/Discrete Filter4' */
-  real_T DiscreteFilter5_DSTATE;       /* '<Root>/Discrete Filter5' */
+  real_T DiscreteFilter_DSTATE;        /* '<S2>/Discrete Filter' */
+  real_T DiscreteFilter1_DSTATE;       /* '<S2>/Discrete Filter1' */
+  real_T DiscreteFilter2_DSTATE;       /* '<S2>/Discrete Filter2' */
+  real_T DiscreteFilter3_DSTATE;       /* '<S2>/Discrete Filter3' */
+  real_T DiscreteFilter4_DSTATE;       /* '<S2>/Discrete Filter4' */
+  real_T DiscreteFilter5_DSTATE;       /* '<S2>/Discrete Filter5' */
 } D_Work_posing_controller_v2;
 
 /* External inputs (root inport signals with auto storage) */
@@ -72,6 +72,7 @@ typedef struct {
   real_T kd[3];                        /* '<Root>/kd' */
   real_T epsilon;                      /* '<Root>/epsilon' */
   real_T set_point[6];                 /* '<Root>/set_point' */
+  real_T sat_val[2];                   /* '<Root>/sat_val' */
 } ExternalInputs_posing_controlle;
 
 /* External outputs (root outports fed by signals with auto storage) */
@@ -279,64 +280,58 @@ struct Parameters_posing_controller_v2_ {
                                         * Referenced by: '<S1>/DirtyDerivative12'
                                         */
   real_T DiscreteFilter_InitialStates; /* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter'
+                                        * Referenced by: '<S2>/Discrete Filter'
                                         */
   real_T DiscreteFilter_NumCoef;       /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter'
+                                        * Referenced by: '<S2>/Discrete Filter'
                                         */
   real_T DiscreteFilter_DenCoef[2];    /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter'
+                                        * Referenced by: '<S2>/Discrete Filter'
                                         */
   real_T DiscreteFilter1_InitialStates;/* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter1'
+                                        * Referenced by: '<S2>/Discrete Filter1'
                                         */
   real_T DiscreteFilter1_NumCoef;      /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter1'
+                                        * Referenced by: '<S2>/Discrete Filter1'
                                         */
   real_T DiscreteFilter1_DenCoef[2];   /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter1'
+                                        * Referenced by: '<S2>/Discrete Filter1'
                                         */
   real_T DiscreteFilter2_InitialStates;/* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter2'
+                                        * Referenced by: '<S2>/Discrete Filter2'
                                         */
   real_T DiscreteFilter2_NumCoef;      /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter2'
+                                        * Referenced by: '<S2>/Discrete Filter2'
                                         */
   real_T DiscreteFilter2_DenCoef[2];   /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter2'
+                                        * Referenced by: '<S2>/Discrete Filter2'
                                         */
   real_T DiscreteFilter3_InitialStates;/* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter3'
+                                        * Referenced by: '<S2>/Discrete Filter3'
                                         */
   real_T DiscreteFilter3_NumCoef;      /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter3'
+                                        * Referenced by: '<S2>/Discrete Filter3'
                                         */
   real_T DiscreteFilter3_DenCoef[2];   /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter3'
+                                        * Referenced by: '<S2>/Discrete Filter3'
                                         */
   real_T DiscreteFilter4_InitialStates;/* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter4'
+                                        * Referenced by: '<S2>/Discrete Filter4'
                                         */
   real_T DiscreteFilter4_NumCoef;      /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter4'
+                                        * Referenced by: '<S2>/Discrete Filter4'
                                         */
   real_T DiscreteFilter4_DenCoef[2];   /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter4'
+                                        * Referenced by: '<S2>/Discrete Filter4'
                                         */
   real_T DiscreteFilter5_InitialStates;/* Expression: 0
-                                        * Referenced by: '<Root>/Discrete Filter5'
+                                        * Referenced by: '<S2>/Discrete Filter5'
                                         */
   real_T DiscreteFilter5_NumCoef;      /* Expression: [1-0.998]
-                                        * Referenced by: '<Root>/Discrete Filter5'
+                                        * Referenced by: '<S2>/Discrete Filter5'
                                         */
   real_T DiscreteFilter5_DenCoef[2];   /* Expression: [1 -0.998]
-                                        * Referenced by: '<Root>/Discrete Filter5'
-                                        */
-  real_T Saturation_UpperSat[6];       /* Expression: [8 8 5 8 8 5]
-                                        * Referenced by: '<Root>/Saturation'
-                                        */
-  real_T Saturation_LowerSat[6];       /* Expression: -[8 8 5 8 8 5]
-                                        * Referenced by: '<Root>/Saturation'
+                                        * Referenced by: '<S2>/Discrete Filter5'
                                         */
 };
 
@@ -381,8 +376,9 @@ extern struct RT_MODEL_posing_controller_v2 *const posing_controller_v2_M;
  *
  * '<Root>' : 'posing_controller_v2'
  * '<S1>'   : 'posing_controller_v2/DerivFilters'
- * '<S2>'   : 'posing_controller_v2/controller'
- * '<S3>'   : 'posing_controller_v2/coordXfm'
+ * '<S2>'   : 'posing_controller_v2/Subsystem'
+ * '<S3>'   : 'posing_controller_v2/controller'
+ * '<S4>'   : 'posing_controller_v2/coordXfm'
  */
 #endif                                 /* RTW_HEADER_posing_controller_v2_h_ */
 

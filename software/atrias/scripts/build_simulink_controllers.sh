@@ -12,14 +12,41 @@ if [ ! -f "${localMatlabPath}/bin/matlab" ]; then
     exit
 fi
 
-# The simulink_controllers directory
+# Change to the simulink_controllers directory
+cd "${0%/*}/../../atrias_controllers/simulink_controllers"
 simulinkControllersDir=$(pwd)
+
+# Move any .zip downloaded files with the correct controller suffix to the simulink_controller directory
+downloadFiles=( $(ls ~/Downloads) )
+for download in ${downloadFiles[@]}
+do
+    controllerZip=$(echo $download | grep "_ert_shrlib_rtw-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].zip$")
+    # If it is a controller
+    if [ "$controllerZip" != "" ]
+    then
+        # Remove the current controller if it exists
+        oldControllerDir=$(echo $controllerZip | sed "s/-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].zip$//")
+        oldControllerName=$(echo $oldControllerDir | sed "s/_ert_shrlib_rtw//")
+        rm -f -r "$oldControllerDir"
+        rm -f "lib${oldControllerName}.so"
+        # Move and extract the new controller
+        mv ~/Downloads/$download .
+        unzip -q "$download"
+        rm -f "$download"
+        rm -f ~/Downloads/$download
+        # Feedback
+        echo
+        echo "Note:"
+        echo "Extracted $download to simulink_controllers"
+        echo
+    fi
+done
 
 # Pick a controller
 controllerList=$(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||')
 while [ 1 ]; do
     echo "Simulink controllers:"
-    echo "$controllerList" | nl -w1 -s") "
+    echo "$controllerList" | sed "s/_ert_shrlib_rtw//" | nl -w1 -s") "
     echo
     echo "What controller do you want to make?"
     read controllerNumber
