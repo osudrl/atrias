@@ -88,6 +88,9 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
     // Epsilon
     posing_controller_v2_U.epsilon = guiIn.epsilon;
 
+    // Cap value
+    posing_controller_v2_U.leg_sat = guiIn.leg_saturation_cap;
+    posing_controller_v2_U.hip_sat = guiIn.hip_saturation_cap;
 
     // Step the controller
     posing_controller_v2_step();
