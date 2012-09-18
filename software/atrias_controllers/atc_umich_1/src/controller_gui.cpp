@@ -27,12 +27,29 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("hip_saturation_cap_spinbutton", hip_saturation_cap_spinbutton);
     gui->get_widget("epsilon_spinbutton", epsilon_spinbutton);
 
+    gui->get_widget("y1l_spinbutton", y1l_spinbutton);
+    gui->get_widget("y2l_spinbutton", y2l_spinbutton);
+    gui->get_widget("y3l_spinbutton", y3l_spinbutton);
+    gui->get_widget("y1r_spinbutton", y1r_spinbutton);
+    gui->get_widget("y2r_spinbutton", y2r_spinbutton);
+    gui->get_widget("y3r_spinbutton", y3r_spinbutton);
+    gui->get_widget("dy1l_spinbutton", dy1l_spinbutton);
+    gui->get_widget("dy2l_spinbutton", dy2l_spinbutton);
+    gui->get_widget("dy3l_spinbutton", dy3l_spinbutton);
+    gui->get_widget("dy1r_spinbutton", dy1r_spinbutton);
+    gui->get_widget("dy2r_spinbutton", dy2r_spinbutton);
+    gui->get_widget("dy3r_spinbutton", dy3r_spinbutton);
+
     if (q1r_spinbutton && q2r_spinbutton && q3r_spinbutton &&
         q1l_spinbutton && q2l_spinbutton && q3l_spinbutton &&
         kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         leg_saturation_cap_spinbutton && hip_saturation_cap_spinbutton &&
-        epsilon_spinbutton) {
+        epsilon_spinbutton &&
+	y1l_spinbutton && y2l_spinbutton && y2l_spinbutton &&
+	y1r_spinbutton && y2r_spinbutton && y2r_spinbutton &&
+	dy1l_spinbutton && dy2l_spinbutton && dy2l_spinbutton &&
+	dy1r_spinbutton && dy2r_spinbutton && dy2r_spinbutton &&) {
         // Set ranges.
         q1r_spinbutton->set_range(100, 250);
         q2r_spinbutton->set_range(100, 250);
@@ -68,6 +85,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         epsilon_spinbutton->set_increments(0.01, 0.1);
 
         // Set up subscriber and publisher.
+        sub = nh.subscribe("atc_umich1_status", 0, controllerCallback);
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
         return true;
     }
@@ -132,6 +150,20 @@ void setParameters() {
 
 //! \brief Update the GUI.
 void guiUpdate() {
+    // Update controller status values
+    y1l_spinbutton->set_value(controllerDataIn.yl[0]);
+    y2l_spinbutton->set_value(controllerDataIn.yl[1]);
+    y3l_spinbutton->set_value(controllerDataIn.yl[2]);
+    y1r_spinbutton->set_value(controllerDataIn.yr[0]);
+    y2r_spinbutton->set_value(controllerDataIn.yr[1]);
+    y3r_spinbutton->set_value(controllerDataIn.yr[2]);
+    dy1l_spinbutton->set_value(controllerDataIn.dyl[0]);
+    dy2l_spinbutton->set_value(controllerDataIn.dyl[1]);
+    dy3l_spinbutton->set_value(controllerDataIn.dyl[2]);
+    dy1r_spinbutton->set_value(controllerDataIn.dyr[0]);
+    dy2r_spinbutton->set_value(controllerDataIn.dyr[1]);
+    dy3r_spinbutton->set_value(controllerDataIn.dyr[2]);
+
     controllerDataOut.q1r = q1r_spinbutton->get_value();
     controllerDataOut.q2r = q2r_spinbutton->get_value();
     controllerDataOut.q3r = q3r_spinbutton->get_value();
