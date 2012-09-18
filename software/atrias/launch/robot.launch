@@ -6,6 +6,7 @@
     <machine name       = "i1000a-1"
              address    = "i1000a-1"
              user       = "root"
+			 env-loader = "/home/drl/atrias_env.sh"
              default    = "true" />
     <env name="ROS_MASTER_URI" value="http://cov020-hp0:11311" />
 
