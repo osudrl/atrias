@@ -46,10 +46,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         leg_saturation_cap_spinbutton && hip_saturation_cap_spinbutton &&
         epsilon_spinbutton &&
-        y1l_spinbutton && y2l_spinbutton && y2l_spinbutton &&
-        y1r_spinbutton && y2r_spinbutton && y2r_spinbutton &&
-        dy1l_spinbutton && dy2l_spinbutton && dy2l_spinbutton &&
-        dy1r_spinbutton && dy2r_spinbutton && dy2r_spinbutton) {
+        y1l_spinbutton && y2l_spinbutton && y3l_spinbutton &&
+        y1r_spinbutton && y2r_spinbutton && y3r_spinbutton &&
+        dy1l_spinbutton && dy2l_spinbutton && dy3l_spinbutton &&
+        dy1r_spinbutton && dy2r_spinbutton && dy3r_spinbutton) {
         // Set ranges.
         q1r_spinbutton->set_range(100, 250);
         q2r_spinbutton->set_range(100, 250);
@@ -66,6 +66,19 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         leg_saturation_cap_spinbutton->set_range(0, 60);
         hip_saturation_cap_spinbutton->set_range(0, 10);
         epsilon_spinbutton->set_range(0, 1);
+
+        y1r_spinbutton->set_range(-10, 10);
+        y2r_spinbutton->set_range(-10, 10);
+        y3r_spinbutton->set_range(-10, 10);
+        y1l_spinbutton->set_range(-10, 10);
+        y2l_spinbutton->set_range(-10, 10);
+        y3l_spinbutton->set_range(-10, 10);
+        dy1r_spinbutton->set_range(-10, 10);
+        dy2r_spinbutton->set_range(-10, 10);
+        dy3r_spinbutton->set_range(-10, 10);
+        dy1l_spinbutton->set_range(-10, 10);
+        dy2l_spinbutton->set_range(-10, 10);
+        dy3l_spinbutton->set_range(-10, 10);
 
         // Set increments.
         q1r_spinbutton->set_increments(0.1, 1.0);
@@ -85,11 +98,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         epsilon_spinbutton->set_increments(0.01, 0.1);
 
         // Set up subscriber and publisher.
-        sub = nh.subscribe("atc_umich1_status", 0, controllerCallback);
+        sub = nh.subscribe("atc_umich_1_status", 0, controllerCallback);
         pub = nh.advertise<atc_umich_1::controller_input>("atc_umich_1_input", 0);
         return true;
     }
     return false;
+}
+
+void controllerCallback(const atc_umich_1::controller_status &status) {
+    controllerDataIn = status;
 }
 
 //! \brief Get parameters from the server and configure GUI accordingly.
