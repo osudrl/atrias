@@ -46,10 +46,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         leg_saturation_cap_spinbutton && hip_saturation_cap_spinbutton &&
         epsilon_spinbutton &&
-	y1l_spinbutton && y2l_spinbutton && y2l_spinbutton &&
-	y1r_spinbutton && y2r_spinbutton && y2r_spinbutton &&
-	dy1l_spinbutton && dy2l_spinbutton && dy2l_spinbutton &&
-	dy1r_spinbutton && dy2r_spinbutton && dy2r_spinbutton &&) {
+        y1l_spinbutton && y2l_spinbutton && y2l_spinbutton &&
+        y1r_spinbutton && y2r_spinbutton && y2r_spinbutton &&
+        dy1l_spinbutton && dy2l_spinbutton && dy2l_spinbutton &&
+        dy1r_spinbutton && dy2r_spinbutton && dy2r_spinbutton) {
         // Set ranges.
         q1r_spinbutton->set_range(100, 250);
         q2r_spinbutton->set_range(100, 250);

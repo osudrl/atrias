@@ -9,6 +9,7 @@
 #define CONTROLLER_GUI_H_
 
 #include <atc_umich_1/controller_input.h>
+#include <atc_umich_1/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
