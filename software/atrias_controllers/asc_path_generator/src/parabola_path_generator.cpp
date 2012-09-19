@@ -54,10 +54,31 @@ void ASCParabolaPathGenerator::setPhase(double _phase)
 MotorState ASCParabolaPathGenerator::runController(double frequency, double amplitude)
 {
 	// The parabola input
-	accumulator += 0.001;
-	// Wrap the parabola input when the input value gets to be a multiple of 2.0*pi
-	if (accumulator >= (1.0/frequency))
-		accumulator -= (1.0/frequency);
+	accumulator += 0.002 * frequency;
+	// Wrap the parabola input when the input value gets large enough.
+	if (accumulator >= 2.0)
+		accumulator -= 2.0;
+	
+	// Our location in the cycle, w/ phase offset.
+	double location = accumulator + phase;
+	
+	// Correct for any overshoot due to adding accumulator and phase.
+	location        = fmod(location, 2.0);
+	location       += 2.0;
+	location        = fmod(location, 2.0);
+	
+	if (location < 1.0) {
+		// We are in the first half of the cycle (positive position, neg. accel.).
+		parabolaOut.ang = -4.0*amplitude*location*location +
+		                   4.0*amplitude*location;
+		
+		parabolaOut.vel = -8.0*amplitude*frequency*location + 4.0*amplitude*frequency;
+	} else {
+		// We are in the second half of the cycle.
+		parabolaOut.ang = 4.0*amplitude*(location - 1.0)*(location - 1.0) -
+		                  4.0*amplitude*(location - 1.0);
+		parabolaOut.vel = 8.0*amplitude*frequency*(location - 1.0) - 4.0*amplitude*frequency;
+	}
 
 	// Stuff the msg and push to ROS for logging
 	logData.ang = parabolaOut.ang;
