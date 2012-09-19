@@ -41,6 +41,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("s_spinbutton", s_spinbutton);
     gui->get_widget("ds_spinbutton", ds_spinbutton);
 
+    gui->get_widget("left_support_leg_radiobutton", left_support_leg_radiobutton);
+    gui->get_widget("right_support_leg_radiobutton", right_support_leg_radiobutton);
+
     if (kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
         leg_saturation_cap_spinbutton && hip_saturation_cap_spinbutton &&
@@ -50,7 +53,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dy1l_spinbutton && dy2l_spinbutton && dy3l_spinbutton &&
         dy1r_spinbutton && dy2r_spinbutton && dy3r_spinbutton &&
         s_mode_combo_box && s_freq_spinbutton && s_spinbutton &&
-		ds_spinbutton) {
+	ds_spinbutton && left_support_leg_radiobutton && right_support_leg_radiobutton) {
         // Set ranges.
         kp1_spinbutton->set_range(0, 50);
         kp2_spinbutton->set_range(0, 50);
@@ -182,6 +185,7 @@ void guiUpdate() {
     controllerDataOut.hip_saturation_cap = hip_saturation_cap_spinbutton->get_value();
     controllerDataOut.epsilon = epsilon_spinbutton->get_value();
     controllerDataOut.torso_offset = torso_offset_spinbutton->get_value();
+    controllerDataOut.stance_leg = left_support_leg_radiobutton->get_active();
     pub.publish(controllerDataOut);
 }
 

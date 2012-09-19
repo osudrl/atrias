@@ -26,6 +26,9 @@ atc_umich_2::controller_status controllerDataIn;
 // GUI elements
 Gtk::ComboBox *s_mode_combo_box;
 
+Gtk::RadioButton *left_support_leg_radiobutton,
+                 *right_support_leg_radiobutton; 	
+
 Gtk::SpinButton *s_freq_spinbutton,
         *torso_offset_spinbutton,
         *kp1_spinbutton,
