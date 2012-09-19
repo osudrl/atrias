@@ -67,6 +67,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
         torso_offset_spinbutton->set_range(-20., 20.);
         s_freq_spinbutton->set_range(0., 2.);
+	right_support_leg_radiobutton->set_active(true);
 
         y1r_spinbutton->set_range(-10000, 10000);
         y2r_spinbutton->set_range(-10000, 10000);
