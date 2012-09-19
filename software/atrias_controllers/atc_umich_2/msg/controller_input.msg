@@ -9,6 +9,7 @@ float64 hip_saturation_cap
 float64 epsilon
 float64 torso_offset
 float64 s_freq
+float64[2] q3_des
 
 uint8 s_mode
 
