@@ -57,99 +57,102 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
 
     // Inputs
     // Robot state
-    vc_controller_1_U.q_osu[0]  = rs.lLeg.hip.legBodyAngle;
-    vc_controller_1_U.q_osu[1]  = rs.lLeg.halfA.legAngle;
-    vc_controller_1_U.q_osu[2]  = rs.lLeg.halfA.motorAngle;
-    vc_controller_1_U.q_osu[3]  = rs.lLeg.halfB.legAngle;
-    vc_controller_1_U.q_osu[4]  = rs.lLeg.halfB.motorAngle;
-    vc_controller_1_U.q_osu[5]  = rs.rLeg.hip.legBodyAngle;
-    vc_controller_1_U.q_osu[6]  = rs.rLeg.halfA.legAngle;
-    vc_controller_1_U.q_osu[7]  = rs.rLeg.halfA.motorAngle;
-    vc_controller_1_U.q_osu[8]  = rs.rLeg.halfB.legAngle;
-    vc_controller_1_U.q_osu[9]  = rs.rLeg.halfB.motorAngle;
-    vc_controller_1_U.q_osu[10] = rs.position.xPosition;
-    vc_controller_1_U.q_osu[11] = rs.position.yPosition;
-    vc_controller_1_U.q_osu[12] = rs.position.zPosition;
-    vc_controller_1_U.q_osu[13] = rs.position.bodyPitch;
+    vc_controller_2_U.q_osu[0]  = rs.lLeg.hip.legBodyAngle;
+    vc_controller_2_U.q_osu[1]  = rs.lLeg.halfA.legAngle;
+    vc_controller_2_U.q_osu[2]  = rs.lLeg.halfA.motorAngle;
+    vc_controller_2_U.q_osu[3]  = rs.lLeg.halfB.legAngle;
+    vc_controller_2_U.q_osu[4]  = rs.lLeg.halfB.motorAngle;
+    vc_controller_2_U.q_osu[5]  = rs.rLeg.hip.legBodyAngle;
+    vc_controller_2_U.q_osu[6]  = rs.rLeg.halfA.legAngle;
+    vc_controller_2_U.q_osu[7]  = rs.rLeg.halfA.motorAngle;
+    vc_controller_2_U.q_osu[8]  = rs.rLeg.halfB.legAngle;
+    vc_controller_2_U.q_osu[9]  = rs.rLeg.halfB.motorAngle;
+    vc_controller_2_U.q_osu[10] = rs.position.xPosition;
+    vc_controller_2_U.q_osu[11] = rs.position.yPosition;
+    vc_controller_2_U.q_osu[12] = rs.position.zPosition;
+    vc_controller_2_U.q_osu[13] = rs.position.bodyPitch;
 
     // KP and KD
-    vc_controller_1_U.kp[0] = guiIn.kp1;
-    vc_controller_1_U.kp[1] = guiIn.kp2;
-    vc_controller_1_U.kp[2] = guiIn.kp3;
-    vc_controller_1_U.kd[0] = guiIn.kd1;
-    vc_controller_1_U.kd[1] = guiIn.kd2;
-    vc_controller_1_U.kd[2] = guiIn.kd3;
+    vc_controller_2_U.kp[0] = guiIn.kp1;
+    vc_controller_2_U.kp[1] = guiIn.kp2;
+    vc_controller_2_U.kp[2] = guiIn.kp3;
+    vc_controller_2_U.kd[0] = guiIn.kd1;
+    vc_controller_2_U.kd[1] = guiIn.kd2;
+    vc_controller_2_U.kd[2] = guiIn.kd3;
 
     // Epsilon
-    vc_controller_1_U.epsilon = guiIn.epsilon;
+    vc_controller_2_U.epsilon = guiIn.epsilon;
 
     // Cap value
-    vc_controller_1_U.sat_val[0] = guiIn.leg_saturation_cap;
-    vc_controller_1_U.sat_val[1] = guiIn.hip_saturation_cap;
+    vc_controller_2_U.sat_val[0] = guiIn.leg_saturation_cap;
+    vc_controller_2_U.sat_val[1] = guiIn.hip_saturation_cap;
 
     // Torso offset
-    vc_controller_1_U.torso_offset = guiIn.torso_offset;
+    vc_controller_2_U.torso_offset = guiIn.torso_offset;
 
     // What type of "walking" are we doing?
-    vc_controller_1_U.s_mode = guiIn.s_mode;
+    vc_controller_2_U.s_mode = guiIn.s_mode;
 
     // Walking frequency
-    vc_controller_1_U.s_freq = guiIn.s_freq;
+    vc_controller_2_U.s_freq = guiIn.s_freq;
+
+    // Stance leg
+    vc_controller_2_U.stance_leg = guiIn.stance_leg;
 
     // Step the controller
-    vc_controller_1_step();
+    vc_controller_2_step();
 
 
     // Stuff the msg
-    co.lLeg.motorCurrentA   = vc_controller_1_Y.u[0];
-    co.lLeg.motorCurrentB   = vc_controller_1_Y.u[1];
-    co.lLeg.motorCurrentHip = vc_controller_1_Y.u[2];
-    co.rLeg.motorCurrentA   = vc_controller_1_Y.u[3];
-    co.rLeg.motorCurrentB   = vc_controller_1_Y.u[4];
-    co.rLeg.motorCurrentHip = vc_controller_1_Y.u[5];
+    co.lLeg.motorCurrentA   = vc_controller_2_Y.u[0];
+    co.lLeg.motorCurrentB   = vc_controller_2_Y.u[1];
+    co.lLeg.motorCurrentHip = vc_controller_2_Y.u[2];
+    co.rLeg.motorCurrentA   = vc_controller_2_Y.u[3];
+    co.rLeg.motorCurrentB   = vc_controller_2_Y.u[4];
+    co.rLeg.motorCurrentHip = vc_controller_2_Y.u[5];
 
     // end control code //
 
     // Output info to the gui
     if (pubTimer->readyToSend())
     {
-        guiOut.yr[0] = vc_controller_1_Y.y[0];
-        guiOut.yr[1] = vc_controller_1_Y.y[1];
-        guiOut.yr[2] = vc_controller_1_Y.y[2];
-        guiOut.yl[0] = vc_controller_1_Y.y[3];
-        guiOut.yl[1] = vc_controller_1_Y.y[4];
-        guiOut.yl[2] = vc_controller_1_Y.y[5];
+        guiOut.yr[0] = vc_controller_2_Y.y[0];
+        guiOut.yr[1] = vc_controller_2_Y.y[1];
+        guiOut.yr[2] = vc_controller_2_Y.y[2];
+        guiOut.yl[0] = vc_controller_2_Y.y[3];
+        guiOut.yl[1] = vc_controller_2_Y.y[4];
+        guiOut.yl[2] = vc_controller_2_Y.y[5];
 
-        guiOut.dyr[0] = vc_controller_1_Y.dy[0];
-        guiOut.dyr[1] = vc_controller_1_Y.dy[1];
-        guiOut.dyr[2] = vc_controller_1_Y.dy[2];
-        guiOut.dyl[0] = vc_controller_1_Y.dy[3];
-        guiOut.dyl[1] = vc_controller_1_Y.dy[4];
-        guiOut.dyl[2] = vc_controller_1_Y.dy[5];
+        guiOut.dyr[0] = vc_controller_2_Y.dy[0];
+        guiOut.dyr[1] = vc_controller_2_Y.dy[1];
+        guiOut.dyr[2] = vc_controller_2_Y.dy[2];
+        guiOut.dyl[0] = vc_controller_2_Y.dy[3];
+        guiOut.dyl[1] = vc_controller_2_Y.dy[4];
+        guiOut.dyl[2] = vc_controller_2_Y.dy[5];
 
-        guiOut.s = vc_controller_1_Y.s;
-        guiOut.ds = vc_controller_1_Y.ds;
+        guiOut.s = vc_controller_2_Y.s;
+        guiOut.ds = vc_controller_2_Y.ds;
 
         guiDataOut.write(guiOut);
     }
 
     // Log the output
-    logData.y1r = vc_controller_1_Y.y[0];
-    logData.y2r = vc_controller_1_Y.y[1];
-    logData.y3r = vc_controller_1_Y.y[2];
-    logData.y1l = vc_controller_1_Y.y[3];
-    logData.y2l = vc_controller_1_Y.y[4];
-    logData.y3l = vc_controller_1_Y.y[5];
+    logData.y1r = vc_controller_2_Y.y[0];
+    logData.y2r = vc_controller_2_Y.y[1];
+    logData.y3r = vc_controller_2_Y.y[2];
+    logData.y1l = vc_controller_2_Y.y[3];
+    logData.y2l = vc_controller_2_Y.y[4];
+    logData.y3l = vc_controller_2_Y.y[5];
 
-    logData.dy1r = vc_controller_1_Y.dy[0];
-    logData.dy2r = vc_controller_1_Y.dy[1];
-    logData.dy3r = vc_controller_1_Y.dy[2];
-    logData.dy1l = vc_controller_1_Y.dy[3];
-    logData.dy2l = vc_controller_1_Y.dy[4];
-    logData.dy3l = vc_controller_1_Y.dy[5];
+    logData.dy1r = vc_controller_2_Y.dy[0];
+    logData.dy2r = vc_controller_2_Y.dy[1];
+    logData.dy3r = vc_controller_2_Y.dy[2];
+    logData.dy1l = vc_controller_2_Y.dy[3];
+    logData.dy2l = vc_controller_2_Y.dy[4];
+    logData.dy3l = vc_controller_2_Y.dy[5];
 
-    logData.s  = vc_controller_1_Y.s;
-    logData.ds = vc_controller_1_Y.ds;
+    logData.s  = vc_controller_2_Y.s;
+    logData.ds = vc_controller_2_Y.ds;
 
     logPort.write(logData);
 
@@ -163,7 +166,7 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
 // Don't put control code below here!
 bool ATCUmich2::configureHook() {
     // Initialize the controller
-    vc_controller_1_initialize();
+    vc_controller_2_initialize();
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
@@ -180,7 +183,7 @@ void ATCUmich2::updateHook() {
 
 void ATCUmich2::stopHook() {
     // Stop the controller
-    vc_controller_1_terminate();
+    vc_controller_2_terminate();
 
     log(Info) << "[ATCMT] stopped!" << endlog();
 }

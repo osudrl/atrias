@@ -1,9 +1,3 @@
-float64 q1r
-float64 q2r
-float64 q3r
-float64 q1l
-float64 q2l
-float64 q3l
 float64 kp1
 float64 kp2
 float64 kp3
@@ -17,3 +11,5 @@ float64 torso_offset
 float64 s_freq
 
 uint8 s_mode
+
+bool stance_leg

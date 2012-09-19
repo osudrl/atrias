@@ -31,7 +31,7 @@
 
 // MATLAB code
 extern "C" {
-#include <vc_controller_1.h>
+#include <vc_controller_2.h>
 }
 
 using namespace RTT;
