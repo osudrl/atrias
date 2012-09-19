@@ -116,8 +116,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
         // Set default values
         s_threshold_spinbutton->set_value(0.9);
-        stance_spring_threshold->set_value(-1.0);
-        swing_spring_threshold->set_value(-0.2);
+        stance_spring_threshold_spinbutton->set_value(-1.0);
+        switch_spring_threshold_spinbutton->set_value(-0.2);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_umich_2_status", 0, controllerCallback);
