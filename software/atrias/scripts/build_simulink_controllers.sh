@@ -46,6 +46,9 @@ function makeMatlabController
     cd "$controllerDir"
     controllerMakefile=$(ls | grep mk$ )
     controllerName="${controllerMakefile%.*}"
+    # Keep an origonal copy of the makefile
+    cp "$controllerMakefile" "${controllerMakefile}.bak"
+
     sed -i "s|^MAKECMD         =.*|MAKECMD         = ${localMatlabPath}/bin/glnxa64/gmake|" "${controllerMakefile}"
     sed -i "s|^MATLAB_ROOT             =.*|MATLAB_ROOT             = ${localMatlabPath}|" "${controllerMakefile}"
     sed -i "s|^ALT_MATLAB_ROOT         =.*|ALT_MATLAB_ROOT         = ${localMatlabPath}|" "${controllerMakefile}"
@@ -59,6 +62,9 @@ function makeMatlabController
 
     # make the controller
     make -f ${controllerMakefile}
+
+    # Restore the origonal makefile in order to prevent git confusion
+    mv -f "${controllerMakefile}.bak" "$controllerMakefile"
 
     # Move the shared library to where ROS expects it
     cd ..
@@ -113,7 +119,7 @@ do
 done
 
 # Pick a controller
-controllerList=$(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||')
+controllerList=$(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||' | sort)
 
 while [ 1 ]; do
     clear
@@ -122,8 +128,8 @@ while [ 1 ]; do
     echo
     echo "What do you want to do?"
     echo "1) Add a controller to make"
-    echo "2) Add all of the controllers to make"
-    echo "3) Run make"
+    echo "2) Run make"
+    echo "3) Make all of the controllers"
     echo "4) Exit"
     read choice
 
@@ -132,10 +138,10 @@ while [ 1 ]; do
         chooseAController
         ;;
     2)
-        controllerDirs=( $(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||') )
         break
         ;;
     3)
+        controllerDirs=( $(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||') )
         break
         ;;
     4)
@@ -146,7 +152,6 @@ while [ 1 ]; do
         ;;
     esac
 done
-
 
 for controllerDir in ${controllerDirs[@]}
 do
