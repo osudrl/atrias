@@ -11,6 +11,10 @@ float64 torso_offset
 float64 s_freq
 float64[2] q3_des
 
+float64[3] swap_threshold
+float64[2] scuff
+
+uint8 swap
 uint8 s_mode
 
 bool stance_leg
