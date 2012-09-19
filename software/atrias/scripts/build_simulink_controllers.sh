@@ -33,7 +33,7 @@ function chooseAController
     done
 }
 
-function makeMatlabController
+function makeController
 {
     # The controller directory is the first argument
     controllerDir="$1"
@@ -157,6 +157,6 @@ for controllerDir in ${controllerDirs[@]}
 do
     if [ "$controllerDir" != "" ]
     then
-        makeMatlabController $controllerDir
+        makeController $controllerDir
     fi
 done
