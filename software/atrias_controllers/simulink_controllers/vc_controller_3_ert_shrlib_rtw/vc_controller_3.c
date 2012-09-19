@@ -6,7 +6,7 @@
  * Model version                  : 1.48
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Wed Sep 19 14:39:00 2012
+ * C/C++ source code generated on : Wed Sep 19 14:47:08 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -522,14 +522,14 @@ static void vc_controlle_compute_stance_leg(const real_T q[11], real_T s, real_T
   } else if (swap == 1) {
     /*  Swap on springs and on "s" */
     if ((s > swap_threshold[0]) && (springDeflection[0] > swap_threshold[1] *
-         180.0 / 3.1415926535897931) && (springDeflection[1] < swap_threshold[2]
-         * 180.0 / 3.1415926535897931)) {
+         3.1415926535897931 / 180.0) && (springDeflection[1] < swap_threshold[2]
+         * 3.1415926535897931 / 180.0)) {
       *stance_leg = 1.0 - *stance_leg;
     }
   } else if (swap == 2) {
     /*  swap on springs */
-    if ((springDeflection[0] > swap_threshold[1] * 180.0 / 3.1415926535897931) &&
-        (springDeflection[1] < swap_threshold[2] * 180.0 / 3.1415926535897931))
+    if ((springDeflection[0] > swap_threshold[1] * 3.1415926535897931 / 180.0) &&
+        (springDeflection[1] < swap_threshold[2] * 3.1415926535897931 / 180.0))
     {
       *stance_leg = 1.0 - *stance_leg;
     }
