@@ -58,12 +58,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	ds_spinbutton && left_support_leg_radiobutton && right_support_leg_radiobutton &&
         q3l_des_spinbutton && q3r_des_spinbutton) {
         // Set ranges.
-        kp1_spinbutton->set_range(0, 50);
-        kp2_spinbutton->set_range(0, 50);
-        kp3_spinbutton->set_range(0, 50);
-        kd1_spinbutton->set_range(0, 10);
-        kd2_spinbutton->set_range(0, 10);
-        kd3_spinbutton->set_range(0, 10);
+        kp1_spinbutton->set_range(0, 500);
+        kp2_spinbutton->set_range(0, 500);
+        kp3_spinbutton->set_range(0, 500);
+        kd1_spinbutton->set_range(0, 100);
+        kd2_spinbutton->set_range(0, 100);
+        kd3_spinbutton->set_range(0, 100);
         leg_saturation_cap_spinbutton->set_range(0, 60);
         hip_saturation_cap_spinbutton->set_range(0, 10);
         epsilon_spinbutton->set_range(0, 1);
