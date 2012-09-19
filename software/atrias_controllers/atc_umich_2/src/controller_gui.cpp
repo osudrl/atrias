@@ -43,8 +43,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("q3l_des_spinbutton", q3l_des_spinbutton);
     gui->get_widget("q3r_des_spinbutton", q3r_des_spinbutton);
 
-    gui->get_widget("q3l_des_radiobutton", left_support_leg_radiobutton);
-    gui->get_widget("q3r_des_radiobutton", right_support_leg_radiobutton);
+    gui->get_widget("left_support_leg_radiobutton", left_support_leg_radiobutton);
+    gui->get_widget("right_support_legradiobutton", right_support_leg_radiobutton);
 
     if (kp1_spinbutton && kp2_spinbutton && kp3_spinbutton &&
         kd1_spinbutton && kd2_spinbutton && kd3_spinbutton &&
