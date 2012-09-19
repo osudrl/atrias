@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'vc_controller_2'.
  *
- * Model version                  : 1.31
+ * Model version                  : 1.33
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Tue Sep 18 20:12:55 2012
+ * C/C++ source code generated on : Tue Sep 18 21:29:27 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -1270,6 +1270,8 @@ void vc_controller_2_step(void)
   real_T C_1[11];
   real_T B_HarmonicDrive[11];
   int32_T i_0;
+  real_T y3_idx;
+  real_T y3_idx_0;
 
   /* Clock: '<Root>/Clock' */
   rtb_Clock = vc_controller_2_M->Timing.t[0];
@@ -1565,6 +1567,7 @@ void vc_controller_2_step(void)
    *  Inport: '<Root>/epsilon'
    *  Inport: '<Root>/kd'
    *  Inport: '<Root>/kp'
+   *  Inport: '<Root>/q3_des'
    *  Inport: '<Root>/s_freq'
    *  Inport: '<Root>/s_mode'
    *  Inport: '<Root>/sat_val'
@@ -1646,6 +1649,9 @@ void vc_controller_2_step(void)
   /*  dq vector 13 by 1 */
   /*  kp vector 1 by 1 */
   /*  kd vector 1 by 1 */
+  y3_idx = q[7] - vc_controller_2_U.q3_des[0] * 3.1415926535897931 / 180.0;
+  y3_idx_0 = q[12] - vc_controller_2_U.q3_des[1] * 3.1415926535897931 / 180.0;
+
   /* transform to OSU coordinates */
   /* '<S2>:1:32' */
   /* '<S2>:1:33' */
@@ -1661,10 +1667,10 @@ void vc_controller_2_step(void)
   /* '<S2>:1:37' */
   x[0] = u[0];
   x[1] = u[1];
-  x[2] = -((-kp[2] * q[7] + -0.0 * q[12]) - (kd[2] * dq[7] + 0.0 * dq[12]));
+  x[2] = -((-kp[2] * y3_idx + -0.0 * y3_idx_0) - (kd[2] * dq[7] + 0.0 * dq[12]));
   x[3] = u[2];
   x[4] = u[3];
-  x[5] = (-0.0 * q[7] + -kp[2] * q[12]) - (0.0 * dq[7] + kd[2] * dq[12]);
+  x[5] = (-0.0 * y3_idx + -kp[2] * y3_idx_0) - (0.0 * dq[7] + kd[2] * dq[12]);
 
   /* '<S2>:1:38' */
   for (i = 0; i < 6; i++) {
@@ -1680,10 +1686,10 @@ void vc_controller_2_step(void)
    */
   vc_controller_2_Y.y[0] = vc_controller_2_P.rad2deg1_Gain * y[0];
   vc_controller_2_Y.y[1] = vc_controller_2_P.rad2deg1_Gain * y[1];
-  vc_controller_2_Y.y[2] = vc_controller_2_P.rad2deg1_Gain * q[7];
+  vc_controller_2_Y.y[2] = vc_controller_2_P.rad2deg1_Gain * y3_idx;
   vc_controller_2_Y.y[3] = vc_controller_2_P.rad2deg1_Gain * y[2];
   vc_controller_2_Y.y[4] = vc_controller_2_P.rad2deg1_Gain * y[3];
-  vc_controller_2_Y.y[5] = vc_controller_2_P.rad2deg1_Gain * q[12];
+  vc_controller_2_Y.y[5] = vc_controller_2_P.rad2deg1_Gain * y3_idx_0;
 
   /* Outport: '<Root>/dy' incorporates:
    *  Gain: '<Root>/rad2deg2'

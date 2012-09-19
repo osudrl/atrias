@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'vc_controller_2'.
  *
- * Model version                  : 1.31
+ * Model version                  : 1.33
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Tue Sep 18 20:12:55 2012
+ * C/C++ source code generated on : Tue Sep 18 21:29:27 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic

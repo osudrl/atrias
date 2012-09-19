@@ -54,7 +54,7 @@ Gtk::SpinButton *s_freq_spinbutton,
 	*dy2r_spinbutton,
 	*dy3r_spinbutton,
 	*s_spinbutton,
-	*ds_spinbutton;
+	*ds_spinbutton,
 	*q3l_des_spinbutton,
 	*q3r_des_spinbutton;
 

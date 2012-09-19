@@ -99,6 +99,11 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
     // Stance leg
     vc_controller_2_U.stance_leg = guiIn.stance_leg;
 
+    // Set the hip angles
+    vc_controller_2_U.q3_des[0] = guiIn.q3_des[0];
+    vc_controller_2_U.q3_des[1] = guiIn.q3_des[1];
+
+
     // Step the controller
     vc_controller_2_step();
 
