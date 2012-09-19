@@ -24,7 +24,8 @@ atc_umich_2::controller_input controllerDataOut;
 atc_umich_2::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::ComboBox *s_mode_combo_box;
+Gtk::ComboBox *s_mode_combo_box,
+              *swap_type_combo_box;
 
 Gtk::RadioButton *left_support_leg_radiobutton,
                  *right_support_leg_radiobutton; 	
@@ -40,6 +41,12 @@ Gtk::SpinButton *s_freq_spinbutton,
         *leg_saturation_cap_spinbutton,
         *hip_saturation_cap_spinbutton,
         *epsilon_spinbutton,
+
+        *s_threshold_spinbutton,
+        *switch_spring_threshold_spinbutton,
+        *stance_spring_threshold_spinbutton,
+        *scuff_1_spinbutton,
+        *scuff_2_spinbutton,
 
 	*y1l_spinbutton,
 	*y2l_spinbutton,
