@@ -100,6 +100,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         hip_saturation_cap_spinbutton->set_increments(0.1, 1.0);
         epsilon_spinbutton->set_increments(0.01, 0.1);
 
+        // Set default values
+        s_threshold_spinbutton->set_value(0.9);
+        stance_spring_threshold->set_value(-1.0);
+        swing_spring_threshold->set_value(-0.2);
+
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_umich_2_status", 0, controllerCallback);
         pub = nh.advertise<atc_umich_2::controller_input>("atc_umich_2_input", 0);
