@@ -6,7 +6,7 @@
  *  \brief Orocos Component header for atc_demo controller.
  */
 
-// Orocos 
+// Orocos
 #include <rtt/os/main.h>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
@@ -38,43 +38,43 @@ using namespace shared;
 namespace controller {
 
 class ATCDemo : public TaskContext {
-private:
-    // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
+	private:
+		// This Operation is called by the RT Operations Manager.
+		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
-    atrias_msgs::controller_output co;
+		atrias_msgs::controller_output co;
 
-    // Subcontroller names
-    std::string pathGenerator0Name;
+		// Subcontroller names
+		std::string pathGenerator0Name;
 
-    // Subcontroller components
-    TaskContext *pathGenerator0; 
+		// Subcontroller components
+		TaskContext *pathGenerator0;
 
-    // Service properties
+		// Service properties
 
-    // Subcontroller operations
+		// Subcontroller operations
 
-    // Logging
-    controller_log_data              logData;
-    OutputPort<controller_log_data>  logPort;
+		// Logging
+		controller_log_data logData;
+		OutputPort<controller_log_data>  logPort;
 
-    // For the GUI
-    shared::GuiPublishTimer                         *pubTimer;
-    controller_input                                guiIn;
-    controller_status                               guiOut;
-    OutputPort<controller_status>                   guiDataOut;
-    InputPort<controller_input>                     guiDataIn;
+		// For the GUI
+		shared::GuiPublishTimer                         *pubTimer;
+		controller_input guiIn;
+		controller_status guiOut;
+		OutputPort<controller_status>                   guiDataOut;
+		InputPort<controller_input>                     guiDataIn;
 
-public:
-    // Constructor
-    ATCDemo(std::string name);
+	public:
+		// Constructor
+		ATCDemo(std::string name);
 
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
 };
 }
 }
