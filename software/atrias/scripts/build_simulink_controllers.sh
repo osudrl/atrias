@@ -122,7 +122,6 @@ done
 controllerList=$(find . -mindepth 1 -maxdepth 1 -type d | sed 's|^./||' | sort)
 
 while [ 1 ]; do
-    clear
     echo "Controllers to make:"
     echo "${controllerDirs[@]-None}" | sed "s| |\n|g"
     echo

@@ -6,7 +6,7 @@
  * Model version                  : 1.48
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Wed Sep 19 14:47:08 2012
+ * C/C++ source code generated on : Thu Sep 20 12:53:50 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -52,8 +52,8 @@ static void vc_controller_3_mldivide(const real_T A[16], real_T B[4]);
 static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   real_T dq[11], const real_T D[121], const real_T H[11], const real_T B[44],
   const real_T theta_limits[2], const real_T h_alpha[24], const real_T poly_cor
-  [20], const real_T kp[2], const real_T kd[2], real_T pdCtrl, real_T
-  pdPlusFwdCtrl, real_T L2fhCtrl, real_T stance_leg, const real_T scuff[2],
+  [20], const real_T kp[2], const real_T kd[2], real_T qTdesired, real_T pdCtrl,
+  real_T pdPlusFwdCtrl, real_T L2fhCtrl, real_T stance_leg, const real_T scuff[2],
   uint8_T s_mode, real_T s_freq, boolean_T stance_leg_manual, uint8_T swap,
   const real_T swap_threshold[3], real_T u[4], real_T y[4], real_T dy[4], real_T
   *s_out, real_T *ds, real_T *stance_leg_next);
@@ -842,8 +842,8 @@ static void vc_controller_3_mldivide(const real_T A[16], real_T B[4])
 static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   real_T dq[11], const real_T D[121], const real_T H[11], const real_T B[44],
   const real_T theta_limits[2], const real_T h_alpha[24], const real_T poly_cor
-  [20], const real_T kp[2], const real_T kd[2], real_T pdCtrl, real_T
-  pdPlusFwdCtrl, real_T L2fhCtrl, real_T stance_leg, const real_T scuff[2],
+  [20], const real_T kp[2], const real_T kd[2], real_T qTdesired, real_T pdCtrl,
+  real_T pdPlusFwdCtrl, real_T L2fhCtrl, real_T stance_leg, const real_T scuff[2],
   uint8_T s_mode, real_T s_freq, boolean_T stance_leg_manual, uint8_T swap,
   const real_T swap_threshold[3], real_T u[4], real_T y[4], real_T dy[4], real_T
   *s_out, real_T *ds, real_T *stance_leg_next)
@@ -860,7 +860,7 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   real_T dsdq[11];
   real_T jacob_h[44];
   real_T b_x[6];
-  real_T d_y[6];
+  real_T e_y[6];
   int32_T i;
   int32_T b_j;
   static const int8_T e[6] = { 1, 5, 10, 10, 5, 1 };
@@ -872,8 +872,8 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   int32_T i_0;
   real_T c_x_idx;
   real_T c_x_idx_0;
-  real_T e_y_idx;
-  real_T e_y_idx_0;
+  real_T f_y_idx;
+  real_T f_y_idx_0;
   real_T d_0;
 
   /*  */
@@ -883,7 +883,7 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   /*  */
   /* % s */
   vc_controller_3_ATRIAS2D_SS_s(q, dq, theta_limits, stance_leg, &s, &c_x_idx,
-    &e_y_idx, &c_x_idx_0, &e_y_idx_0, c, dsdq);
+    &f_y_idx, &c_x_idx_0, &f_y_idx_0, c, dsdq);
   *ds = c_x_idx;
   *s_out = s;
   if (s_mode == 0) {
@@ -990,6 +990,12 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     }
   }
 
+  c_x_idx = qTdesired * 3.1415926535897931 / 180.0;
+  for (i = 0; i < 6; i++) {
+    h_alpha_temp[i << 2] += c_x_idx;
+    h_alpha_temp[1 + (i << 2)] = h_alpha_temp[(i << 2) + 1] + c_x_idx;
+  }
+
   /* %%%%%  ATRIAS2D_Fdbk_Terms.m */
   /* %%%  05-Sep-2012 18:17:02 */
   /* %%% */
@@ -1030,18 +1036,18 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   /* %     */
   for (i = 0; i < 6; i++) {
     b_x[i] = 1.0;
-    d_y[i] = 1.0;
+    e_y[i] = 1.0;
   }
 
   for (i = 0; i < 5; i++) {
     b_x[1 + i] = s * b_x[i];
-    d_y[1 + i] = (1.0 - s) * d_y[i];
+    e_y[1 + i] = (1.0 - s) * e_y[i];
   }
 
   for (i = 0; i < 4; i++) {
     pd[i] = 0.0;
     for (b_j = 0; b_j < 6; b_j++) {
-      pd[i] += h_alpha_temp[(b_j << 2) + i] * (real_T)e[b_j] * b_x[b_j] * d_y[5
+      pd[i] += h_alpha_temp[(b_j << 2) + i] * (real_T)e[b_j] * b_x[b_j] * e_y[5
         - b_j];
     }
   }
@@ -1067,16 +1073,16 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
 
   /* % */
   c_x_idx = s * s;
-  e_y_idx = (1.0 - s) * (1.0 - s);
+  f_y_idx = (1.0 - s) * (1.0 - s);
   c_x_idx_0 = s * c_x_idx;
-  e_y_idx_0 = (1.0 - s) * e_y_idx;
+  f_y_idx_0 = (1.0 - s) * f_y_idx;
   for (i = 0; i < 4; i++) {
     d_0 = ((h_alpha_temp[i + 20] - h_alpha_temp[i + 16] * 2.0) + h_alpha_temp[i
            + 12]) * 20.0 * c_x_idx_0 + (((h_alpha_temp[i + 16] - h_alpha_temp[i
       + 12] * 2.0) + h_alpha_temp[i + 8]) * 60.0 * c_x_idx * (1.0 - s) +
       (((h_alpha_temp[i + 12] - h_alpha_temp[i + 8] * 2.0) + h_alpha_temp[i + 4])
-       * 60.0 * s * e_y_idx + ((h_alpha_temp[i + 8] - h_alpha_temp[i + 4] * 2.0)
-      + h_alpha_temp[i]) * 20.0 * e_y_idx_0));
+       * 60.0 * s * f_y_idx + ((h_alpha_temp[i + 8] - h_alpha_temp[i + 4] * 2.0)
+      + h_alpha_temp[i]) * 20.0 * f_y_idx_0));
     d[i] = d_0;
   }
 
@@ -1290,9 +1296,9 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
   }
 
   c_x_idx = (Kp_0[0] + Kd_0[0]) - d[0];
-  e_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
+  f_y_idx = (Kp_0[1] + Kd_0[1]) - d[1];
   c_x_idx_0 = (Kp_0[2] + Kd_0[2]) - d[2];
-  e_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
+  f_y_idx_0 = (Kp_0[3] + Kd_0[3]) - d[3];
 
   /* %%L2fh */
   if (pdCtrl != 0.0) {
@@ -1303,16 +1309,16 @@ static void ATRIAS2D_SS_feedback_control_Ro(real_T t, const real_T q[11], const
     vc_controller_3_mldivide(DecoupMatrix, u);
   } else if (pdPlusFwdCtrl != 0.0) {
     u[0] = -c_x_idx - pd[0];
-    u[1] = -e_y_idx - pd[1];
+    u[1] = -f_y_idx - pd[1];
     u[2] = -c_x_idx_0 - pd[2];
-    u[3] = -e_y_idx_0 - pd[3];
+    u[3] = -f_y_idx_0 - pd[3];
     vc_controller_3_mldivide(DecoupMatrix, u);
   } else {
     if (L2fhCtrl != 0.0) {
       u[0] = -c_x_idx;
-      u[1] = -e_y_idx;
+      u[1] = -f_y_idx;
       u[2] = -c_x_idx_0;
-      u[3] = -e_y_idx_0;
+      u[3] = -f_y_idx_0;
       vc_controller_3_mldivide(DecoupMatrix, u);
     }
   }
@@ -1720,7 +1726,7 @@ void vc_controller_3_step(void)
   ATRIAS2D_SS_feedback_control_Ro(rtb_Clock, tmp, tmp_0, D, C_0, B,
     vc_controller_3_P.Constant12_Value, vc_controller_3_P.Constant13_Value,
     vc_controller_3_P.Constant14_Value, *(real_T (*)[2])&kp[0], *(real_T (*)[2])
-    &kd[0], vc_controller_3_P.Constant24_Value,
+    &kd[0], vc_controller_3_B.DiscreteFilter, vc_controller_3_P.Constant24_Value,
     vc_controller_3_P.Constant25_Value, vc_controller_3_P.Constant23_Value,
     vc_controller_3_B.stance_leg_state, vc_controller_3_U.scuff,
     vc_controller_3_U.s_mode, vc_controller_3_U.s_freq,
