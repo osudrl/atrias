@@ -62,6 +62,9 @@ private:
     atc_umich_2::controller_log_data logData;
     OutputPort<atc_umich_2::controller_log_data> logPort;
 
+    TaskContext *rtOps;
+    OperationCaller<std_msgs::Header(void)> getRosHeader;
+
 
 public:
     // Constructor

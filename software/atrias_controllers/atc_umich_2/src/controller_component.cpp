@@ -154,6 +154,8 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
     }
 
     // Log the output
+    logData.header = getRosHeader();
+
     logData.y1r = vc_controller_3_Y.y[0];
     logData.y2r = vc_controller_3_Y.y[1];
     logData.y3r = vc_controller_3_Y.y[2];
@@ -171,6 +173,15 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
     logData.s  = vc_controller_3_Y.s;
     logData.ds = vc_controller_3_Y.ds;
 
+    logData.lLegMotorCurrentA   = vc_controller_3_Y.u[0];
+    logData.lLegMotorCurrentB   = vc_controller_3_Y.u[1];
+    logData.lLegMotorCurrentHip = vc_controller_3_Y.u[2];
+    logData.rLegMotorCurrentA   = vc_controller_3_Y.u[3];
+    logData.rLegMotorCurrentB   = vc_controller_3_Y.u[4];
+    logData.rLegMotorCurrentHip = vc_controller_3_Y.u[5];
+
+    logData.count = vc_controller_3_Y.count;
+
     logPort.write(logData);
 
     // Command a run state
@@ -182,6 +193,11 @@ atrias_msgs::controller_output ATCUmich2::runController(atrias_msgs::robot_state
 
 // Don't put control code below here!
 bool ATCUmich2::configureHook() {
+    // Operation for timestamps
+    rtOps = this->getPeer("RTOps");
+    if (rtOps)
+        getRosHeader = rtOps->provides("timestamps")->getOperation("getROSHeader");
+
     // Initialize the controller
     vc_controller_3_initialize();
 
