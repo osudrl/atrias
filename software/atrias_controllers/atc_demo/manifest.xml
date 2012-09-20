@@ -1,0 +1,17 @@
+<package>
+  <description brief="atc_demo">
+
+     atc_demo
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_demo</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="asc_path_generator" />
+
+</package>
