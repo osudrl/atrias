@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'vc_controller_3'.
  *
- * Model version                  : 1.48
+ * Model version                  : 1.51
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Thu Sep 20 12:53:50 2012
+ * C/C++ source code generated on : Thu Sep 20 16:41:51 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -469,8 +469,14 @@ Parameters_vc_controller_3 vc_controller_3_P = {
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<Root>/rad2deg1'
                                         */
-  57.295779513082323                   /* Expression: 180/pi
+  57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<Root>/rad2deg2'
+                                        */
+  0U,                                  /* Computed Parameter: counter_X0
+                                        * Referenced by: '<Root>/counter'
+                                        */
+  1U                                   /* Computed Parameter: Constant_Value
+                                        * Referenced by: '<Root>/Constant'
                                         */
 };
 

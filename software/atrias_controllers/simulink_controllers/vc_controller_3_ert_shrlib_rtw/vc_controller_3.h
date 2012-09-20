@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'vc_controller_3'.
  *
- * Model version                  : 1.48
+ * Model version                  : 1.51
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Thu Sep 20 12:53:50 2012
+ * C/C++ source code generated on : Thu Sep 20 16:41:51 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -72,6 +72,7 @@ typedef struct {
   real_T DiscreteFilter_DSTATE;        /* '<Root>/Discrete Filter' */
   real_T stance_leg_state_DSTATE;      /* '<Root>/stance_leg_state' */
   real_T DiscreteFilter_tmp;           /* '<Root>/Discrete Filter' */
+  uint32_T counter_DSTATE;             /* '<Root>/counter' */
 } D_Work_vc_controller_3;
 
 /* External inputs (root inport signals with auto storage) */
@@ -98,6 +99,7 @@ typedef struct {
   real_T dy[6];                        /* '<Root>/dy' */
   real_T s;                            /* '<Root>/s' */
   real_T ds;                           /* '<Root>/ds' */
+  uint32_T count;                      /* '<Root>/count' */
 } ExternalOutputs_vc_controller_3;
 
 /* Parameters (auto storage) */
@@ -341,6 +343,12 @@ struct Parameters_vc_controller_3_ {
                                         */
   real_T rad2deg2_Gain;                /* Expression: 180/pi
                                         * Referenced by: '<Root>/rad2deg2'
+                                        */
+  uint32_T counter_X0;                 /* Computed Parameter: counter_X0
+                                        * Referenced by: '<Root>/counter'
+                                        */
+  uint32_T Constant_Value;             /* Computed Parameter: Constant_Value
+                                        * Referenced by: '<Root>/Constant'
                                         */
 };
 

@@ -148,6 +148,19 @@ void getParameters() {
     nh.getParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.getParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
     nh.getParam("/atrias_gui/torso_offset", controllerDataOut.torso_offset);
+    nh.getParam("/atrias_gui/q3_des_0", controllerDataOut.q3_des[0]);
+    nh.getParam("/atrias_gui/q3_des_1", controllerDataOut.q3_des[1]);
+    nh.getParam("/atrias_gui/swap_threshold_0", controllerDataOut.swap_threshold[0]);
+    nh.getParam("/atrias_gui/swap_threshold_1", controllerDataOut.swap_threshold[1]);
+    nh.getParam("/atrias_gui/swap_threshold_2", controllerDataOut.swap_threshold[2]);
+    nh.getParam("/atrias_gui/scuff_0", controllerDataOut.scuff[0]);
+    nh.getParam("/atrias_gui/scuff_1", controllerDataOut.scuff[1]);
+    int swap_temp;
+    nh.getParam("/atrias_gui/swap", swap_temp);
+    controllerDataOut.swap = (uint8_t)swap_temp;
+    bool stance_leg_temp;
+    nh.getParam("/atrias_gui/stance_leg", stance_leg_temp);
+    controllerDataOut.stance_leg = (bool)stance_leg_temp;
 
     // Configure the GUI.
     s_mode_combo_box->set_active(controllerDataOut.s_mode);
@@ -162,6 +175,15 @@ void getParameters() {
     hip_saturation_cap_spinbutton->set_value(controllerDataOut.hip_saturation_cap);
     epsilon_spinbutton->set_value(controllerDataOut.epsilon);
     torso_offset_spinbutton->set_value(controllerDataOut.torso_offset);
+    q3r_des_spinbutton->set_value(controllerDataOut.q3_des[0]);
+    q3l_des_spinbutton->set_value(controllerDataOut.q3_des[1]);
+    s_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[0]);
+    stance_spring_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[1]);
+    switch_spring_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[2]);
+    scuff_1_spinbutton->set_value(controllerDataOut.scuff[0]);
+    scuff_2_spinbutton->set_value(controllerDataOut.scuff[1]);
+    swap_type_combo_box->set_active(controllerDataOut.swap);
+    left_support_leg_radiobutton->set_active(controllerDataOut.stance_leg);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -178,6 +200,15 @@ void setParameters() {
     nh.setParam("/atrias_gui/hip_saturation_cap", controllerDataOut.hip_saturation_cap);
     nh.setParam("/atrias_gui/epsilon", controllerDataOut.epsilon);
     nh.setParam("/atrias_gui/torso_offset", controllerDataOut.torso_offset);
+    nh.setParam("/atrias_gui/q3_des_0", controllerDataOut.q3_des[0]);
+    nh.setParam("/atrias_gui/q3_des_1", controllerDataOut.q3_des[1]);
+    nh.setParam("/atrias_gui/swap_threshold_0", controllerDataOut.swap_threshold[0]);
+    nh.setParam("/atrias_gui/swap_threshold_1", controllerDataOut.swap_threshold[1]);
+    nh.setParam("/atrias_gui/swap_threshold_2", controllerDataOut.swap_threshold[2]);
+    nh.setParam("/atrias_gui/scuff_0", controllerDataOut.scuff[0]);
+    nh.setParam("/atrias_gui/scuff_1", controllerDataOut.scuff[1]);
+    nh.setParam("/atrias_gui/swap", controllerDataOut.swap);
+    nh.setParam("/atrias_gui/stance_leg", controllerDataOut.stance_leg);
 }
 
 //! \brief Update the GUI.

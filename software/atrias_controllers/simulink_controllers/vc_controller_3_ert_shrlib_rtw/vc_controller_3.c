@@ -3,10 +3,10 @@
  *
  * Code generated for Simulink model 'vc_controller_3'.
  *
- * Model version                  : 1.48
+ * Model version                  : 1.51
  * Simulink Coder version         : 8.2 (R2012a) 29-Dec-2011
  * TLC version                    : 8.2 (Jan 25 2012)
- * C/C++ source code generated on : Thu Sep 20 12:53:50 2012
+ * C/C++ source code generated on : Thu Sep 20 16:41:51 2012
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -486,32 +486,43 @@ static void vc_controlle_compute_stance_leg(const real_T q[11], real_T s, real_T
   *stance_leg, boolean_T stance_leg_manual, uint8_T swap, const real_T
   swap_threshold[3])
 {
-  real_T springDeflection[2];
+  real_T springDeflectionLS[2];
   real_T xtmp;
-  static const int8_T A[22] = { 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0,
-    0, -1, 0, 0, 0, 1 };
+  static const int8_T A[8] = { -1, 0, 1, 0, 0, -1, 0, 1 };
 
+  static const int8_T b_A[44] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0,
+    0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 1, 0,
+    0, 0, 0, 1 };
+
+  real_T b_A_0[4];
   int32_T i;
   int32_T i_0;
 
   /*  function */
   /*  springDeflection = [v_log__robot__state_robotState_rLeg_halfB_motorAngle-v_log__robot__state_robotState_rLeg_halfB_legAngle v_log__robot__state_robotState_lLeg_halfB_motorAngle-v_log__robot__state_robotState_lLeg_halfB_legAngle]; */
-  /*  % right spring2 */
-  for (i = 0; i < 2; i++) {
-    springDeflection[i] = 0.0;
+  /*  springDeflection = [0 0 0 0 -1 0 1 0  0 0 0; ... % right spring2 */
+  /*                      0 0 0 0  0 0 0 0 -1 0 1]*q;  % left spring2 */
+  /*  springDeflection = [sp1R; sp2R; sp1L; sp2L] */
+  for (i = 0; i < 4; i++) {
+    b_A_0[i] = 0.0;
     for (i_0 = 0; i_0 < 11; i_0++) {
-      springDeflection[i] += (real_T)A[(i_0 << 1) + i] * q[i_0];
+      b_A_0[i] += (real_T)b_A[(i_0 << 2) + i] * q[i_0];
     }
   }
 
-  /*  left spring2 */
-  /*  swap SpringDeflection if needed such that springDeflection = */
-  /*  [springDeflectionStance; springDeflectionSwing] */
+  for (i = 0; i < 2; i++) {
+    xtmp = (real_T)A[i + 6] * b_A_0[3] + ((real_T)A[i + 4] * b_A_0[2] + ((real_T)
+      A[i + 2] * b_A_0[1] + (real_T)A[i] * b_A_0[0]));
+    springDeflectionLS[i] = xtmp;
+  }
+
+  /*  swap SpringDeflectionLS if needed such that springDeflectionLS = */
+  /*  [springDeflectionLS_Stance; springDeflectionLS_Swing] */
   if (*stance_leg == 1.0) {
     /*  left stance */
-    xtmp = springDeflection[0];
-    springDeflection[0] = springDeflection[1];
-    springDeflection[1] = xtmp;
+    xtmp = springDeflectionLS[0];
+    springDeflectionLS[0] = springDeflectionLS[1];
+    springDeflectionLS[1] = xtmp;
   }
 
   if (swap == 0) {
@@ -521,16 +532,16 @@ static void vc_controlle_compute_stance_leg(const real_T q[11], real_T s, real_T
     }
   } else if (swap == 1) {
     /*  Swap on springs and on "s" */
-    if ((s > swap_threshold[0]) && (springDeflection[0] > swap_threshold[1] *
-         3.1415926535897931 / 180.0) && (springDeflection[1] < swap_threshold[2]
-         * 3.1415926535897931 / 180.0)) {
+    if ((s > swap_threshold[0]) && (springDeflectionLS[0] > swap_threshold[1] *
+         3.1415926535897931 / 180.0) && (springDeflectionLS[1] < swap_threshold
+         [2] * 3.1415926535897931 / 180.0)) {
       *stance_leg = 1.0 - *stance_leg;
     }
   } else if (swap == 2) {
     /*  swap on springs */
-    if ((springDeflection[0] > swap_threshold[1] * 3.1415926535897931 / 180.0) &&
-        (springDeflection[1] < swap_threshold[2] * 3.1415926535897931 / 180.0))
-    {
+    if ((springDeflectionLS[0] > swap_threshold[1] * 3.1415926535897931 / 180.0)
+        && (springDeflectionLS[1] < swap_threshold[2] * 3.1415926535897931 /
+            180.0)) {
       *stance_leg = 1.0 - *stance_leg;
     }
   } else {
@@ -1329,6 +1340,7 @@ void vc_controller_3_step(void)
 {
   /* local block i/o variables */
   real_T rtb_Clock;
+  uint32_T rtb_Sum;
   real_T kp[3];
   real_T kd[3];
   real_T q[13];
@@ -1806,6 +1818,18 @@ void vc_controller_3_step(void)
    *  MATLAB Function: '<Root>/controller'
    */
   vc_controller_3_Y.ds = ds;
+
+  /* Outport: '<Root>/count' incorporates:
+   *  UnitDelay: '<Root>/counter'
+   */
+  vc_controller_3_Y.count = vc_controller_3_DWork.counter_DSTATE;
+
+  /* Sum: '<Root>/Sum' incorporates:
+   *  Constant: '<Root>/Constant'
+   *  UnitDelay: '<Root>/counter'
+   */
+  rtb_Sum = vc_controller_3_P.Constant_Value +
+    vc_controller_3_DWork.counter_DSTATE;
 
   /* Update for DiscreteStateSpace: '<S1>/DirtyDerivative' */
   {
@@ -2422,6 +2446,9 @@ void vc_controller_3_step(void)
   vc_controller_3_DWork.stance_leg_state_DSTATE =
     vc_controller_3_B.stance_leg_next;
 
+  /* Update for UnitDelay: '<Root>/counter' */
+  vc_controller_3_DWork.counter_DSTATE = rtb_Sum;
+
   /* Update absolute time for base rate */
   /* The "clockTick0" counts the number of times the code of this task has
    * been executed. The absolute time is the multiplication of "clockTick0"
@@ -2625,6 +2652,9 @@ void vc_controller_3_initialize(void)
   /* InitializeConditions for UnitDelay: '<Root>/stance_leg_state' */
   vc_controller_3_DWork.stance_leg_state_DSTATE =
     vc_controller_3_P.stance_leg_state_X0;
+
+  /* InitializeConditions for UnitDelay: '<Root>/counter' */
+  vc_controller_3_DWork.counter_DSTATE = vc_controller_3_P.counter_X0;
 }
 
 /* Model terminate function */
