@@ -11,15 +11,18 @@
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("torque_A_hscale", torque_A_hscale);
-    gui->get_widget("torque_B_hscale", torque_B_hscale);
-    gui->get_widget("torque_hip_hscale", torque_hip_hscale);
+    gui->get_widget("frequency_spinbutton", frequency_spinbutton);
+    gui->get_widget("leg_magnitude_spinbutton", leg_magnitude_spinbutton);
+    gui->get_widget("hip_magnitude_spinbutton", hip_magnitude_spinbutton);
+    gui->get_widget("sweep_radiobutton", sweep_radiobutton);
+    gui->get_widget("extend_radiobutton", extend_radiobutton);
 
-    if (torque_A_hscale && torque_B_hscale && torque_hip_hscale) {
+    if (frequency_spinbutton && leg_magnitude_spinbutton && hip_magnitude_spinbutton &&
+            sweep_radiobutton && extend_radiobutton) {
         // Set ranges.
-        torque_A_hscale->set_range(-10., 10.);
-        torque_B_hscale->set_range(-10., 10.);
-        torque_hip_hscale->set_range(-10., 10.);
+        frequency_spinbutton->set_range(0, 10);
+        leg_magnitude_spinbutton->set_range(0, 3);
+        hip_magnitude_spinbutton->set_range(0, 1);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_fast_leg_swing_status", 0, controllerCallback);
@@ -36,29 +39,20 @@ void controllerCallback(const atc_fast_leg_swing::controller_status &status) {
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
-    // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/torque_A", torque_A_param);
-    nh.getParam("/atrias_gui/torque_B", torque_B_param);
-    nh.getParam("/atrias_gui/torque_hip", torque_hip_param);
-
-    // Configure the GUI.
-    torque_A_hscale->set_value(torque_A_param);
-    torque_B_hscale->set_value(torque_B_param);
-    torque_hip_hscale->set_value(torque_hip_param);
+    // Disabled.
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/torque_A", torque_A_param);
-    nh.setParam("/atrias_gui/torque_B", torque_B_param);
-    nh.setParam("/atrias_gui/torque_hip", torque_hip_param);
+    // Disabled.
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
-    controllerDataOut.des_motor_torque_B   = torque_B_param   = torque_B_hscale->get_value();
-    controllerDataOut.des_motor_torque_hip = torque_hip_param = torque_hip_hscale->get_value();
+    controllerDataOut.frequency = frequency_spinbutton->get_value();
+    controllerDataOut.leg_magnitude = leg_magnitude_spinbutton->get_value();
+    controllerDataOut.hip_magnitude = hip_magnitude_spinbutton->get_value();
+    controllerDataOut.mode = (sweep_radiobutton->get_active()) ? 0 : 1;
     pub.publish(controllerDataOut);
 }
 

@@ -1,3 +1,5 @@
-float64 des_motor_torque_A
-float64 des_motor_torque_B
-float64 des_motor_torque_hip
+float64 frequency
+float64 leg_magnitude
+float64 hip_magnitude
+uint8   mode
+
