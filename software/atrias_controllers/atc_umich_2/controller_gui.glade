@@ -213,10 +213,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="switch_spring_threshold_label">
+          <object class="GtkLabel" id="swing_spring_threshold_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Switch Spring Threshold</property>
+            <property name="label" translatable="yes">Swing Spring Threshold</property>
           </object>
           <packing>
             <property name="left_attach">4</property>
@@ -224,7 +224,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="switch_spring_threshold_spinbutton">
+          <object class="GtkSpinButton" id="swing_spring_threshold_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>

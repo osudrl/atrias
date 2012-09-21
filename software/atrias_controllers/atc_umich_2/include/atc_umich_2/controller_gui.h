@@ -43,7 +43,7 @@ Gtk::SpinButton *s_freq_spinbutton,
         *epsilon_spinbutton,
 
         *s_threshold_spinbutton,
-        *switch_spring_threshold_spinbutton,
+        *swing_spring_threshold_spinbutton,
         *stance_spring_threshold_spinbutton,
         *scuff_1_spinbutton,
         *scuff_2_spinbutton,
