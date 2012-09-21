@@ -1,0 +1,11 @@
+# Shut stuff down
+controller.stop()
+unloadComponent(controller.pd0Name)
+unloadComponent(controller.pd1Name)
+unloadComponent(controller.pd2Name)
+unloadComponent(controller.pd3Name)
+unloadComponent(controller.pd4Name)
+unloadComponent(controller.pd5Name)
+controller.cleanup()
+unloadComponent("controller")
+atrias_cm.resetControllerNames()

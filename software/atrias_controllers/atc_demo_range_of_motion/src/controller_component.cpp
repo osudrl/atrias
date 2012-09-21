@@ -1,0 +1,248 @@
+/*! \file controller_component.cpp
+ *  \author Andrew Peekema
+ *  \brief Orocos Component code for the atc_demo_range_of_motion controller.
+ */
+
+#include <atc_demo_range_of_motion/controller_component.h>
+
+namespace atrias {
+namespace controller {
+
+ATCDemoRangeOfMotion::ATCDemoRangeOfMotion(std::string name):
+    RTT::TaskContext(name),
+    logPort(name + "_log"),
+    guiDataIn("gui_data_in")
+{
+    this->provides("atc")
+        ->addOperation("runController", &ATCDemoRangeOfMotion::runController, this, ClientThread)
+        .doc("Get robot_state from RTOps and return controller output.");
+
+    // Add properties
+    this->addProperty("pd0Name", pd0Name);
+    this->addProperty("pd1Name", pd1Name);
+    this->addProperty("pd2Name", pd2Name);
+    this->addProperty("pd3Name", pd3Name);
+    this->addProperty("pd4Name", pd4Name);
+    this->addProperty("pd5Name", pd5Name);
+    this->addProperty("spg0Name", spg0Name);
+    this->addProperty("spg1Name", spg1Name);
+    this->addProperty("spg2Name", spg2Name);
+    this->addProperty("spg3Name", spg3Name);
+    this->addProperty("spg4Name", spg4Name);
+    this->addProperty("spg5Name", spg5Name);
+
+    // For the GUI
+    addEventPort(guiDataIn);
+    pubTimer = new GuiPublishTimer(20);
+
+    // Logging
+    // Create a port
+    addPort(logPort);
+    // Buffer port so we capture all data.
+    ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
+    // Transport type = ROS
+    policy.transport = 3;
+    // ROS topic name
+    policy.name_id = "/" + name + "_log";
+    // Construct the stream between the port and ROS topic
+    logPort.createStream(policy);
+
+    log(Info) << "[ATCMT] Constructed!" << endlog();
+}
+
+
+
+atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::robot_state rs) {
+    // Do nothing unless told otherwise
+    co.lLeg.motorCurrentA   = 0.0;
+    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentA   = 0.0;
+    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentHip = 0.0;
+
+    // Only run the controller when we're enabled
+    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+        return co;
+
+    // begin control code //
+
+    // Set gains
+    // Left leg motor A
+    P0.set(guiIn.p_gain);
+    D0.set(guiIn.d_gain);
+    // Left leg motor B
+    P1.set(guiIn.p_gain);
+    D1.set(guiIn.d_gain);
+    // Left leg motor hip
+    P2.set(guiIn.hip_p_gain);
+    D2.set(guiIn.hip_d_gain);
+    // Right leg motor A
+    P3.set(guiIn.p_gain);
+    D3.set(guiIn.d_gain);
+    // Right leg motor B
+    P4.set(guiIn.p_gain);
+    D4.set(guiIn.d_gain);
+    // Right leg motor hip
+    P5.set(guiIn.hip_p_gain);
+    D5.set(guiIn.hip_d_gain);
+
+    // If GUI input differs from current desired motor positions, update
+    // current desired motor positions and reinitialize the smooth path
+    // generators.
+    if (desLeftAPos != guiIn.desLeftAPos) {
+        desLeftAPos = guiIn.desLeftAPos;
+        spg0Init(rs.lLeg.halfA.motorAngle, desLeftAPos, guiIn.legDuration);
+    }
+    if (desLeftBPos != guiIn.desLeftBPos) {
+        desLeftBPos = guiIn.desLeftBPos;
+        spg1Init(rs.lLeg.halfB.motorAngle, desLeftBPos, guiIn.legDuration);
+    }
+    if (desLeftHipPos != guiIn.desLeftHipPos) {
+        desLeftHipPos = guiIn.desLeftHipPos;
+        spg2Init(rs.lLeg.hip.motorAngle, desLeftHipPos, guiIn.hipDuration);
+    }
+    if (desRightAPos != guiIn.desRightAPos) {
+        desRightAPos = guiIn.desRightAPos;
+        spg3Init(rs.rLeg.halfA.motorAngle, desRightAPos, guiIn.legDuration);
+    }
+    if (desRightBPos != guiIn.desRightBPos) {
+        desRightBPos = guiIn.desRightBPos;
+        spg4Init(rs.rLeg.halfB.motorAngle, desRightBPos, guiIn.legDuration);
+    }
+    if (desRightHipPos != guiIn.desRightHipPos) {
+        desRightHipPos = guiIn.desRightHipPos;
+        spg5Init(rs.rLeg.hip.motorAngle, desRightHipPos, guiIn.hipDuration);
+    }
+
+    // Run the smooth path generators.
+    desLeftAState    = spg0RunController();
+    desLeftBState    = spg1RunController();
+    desLeftHipState  = spg2RunController();
+    desRightAState   = spg3RunController();
+    desRightBState   = spg4RunController();
+    desRightHipState = spg5RunController();
+
+    // Stuff the msg
+    co.lLeg.motorCurrentA   = pd0RunController(desLeftAState.ang,    rs.lLeg.halfA.motorAngle, desLeftAState.vel,    rs.lLeg.halfA.motorVelocity);
+    co.lLeg.motorCurrentB   = pd1RunController(desLeftBState.ang,    rs.lLeg.halfB.motorAngle, desLeftBState.vel,    rs.lLeg.halfB.motorVelocity);
+    co.lLeg.motorCurrentHip = pd2RunController(desLeftHipState.ang,  rs.lLeg.hip.motorAngle,   desLeftHipState.vel,  rs.lLeg.hip.motorVelocity);
+    co.rLeg.motorCurrentA   = pd0RunController(desRightAState.ang,   rs.rLeg.halfA.motorAngle, desRightAState.vel,   rs.rLeg.halfA.motorVelocity);
+    co.rLeg.motorCurrentB   = pd1RunController(desRightBState.ang,   rs.rLeg.halfB.motorAngle, desRightBState.vel,   rs.rLeg.halfB.motorVelocity);
+    co.rLeg.motorCurrentHip = pd2RunController(desRightHipState.ang, rs.rLeg.hip.motorAngle,   desRightHipState.vel, rs.rLeg.hip.motorVelocity);
+
+    // end control code //
+
+    // Command a run state
+    co.command = medulla_state_run;
+
+    // Stuff the msg and push to ROS for logging
+    logData.desiredState = 0.0;
+    logPort.write(logData);
+
+    // Output for RTOps
+    return co;
+}
+
+// Don't put control code below here!
+bool ATCDemoRangeOfMotion::configureHook() {
+    // Connect to the subcontrollers
+    pd0 = this->getPeer(pd0Name);
+    if (pd0)
+        pd0RunController = pd0->provides("pd")->getOperation("runController");
+
+    pd1 = this->getPeer(pd1Name);
+    if (pd1)
+        pd1RunController = pd1->provides("pd")->getOperation("runController");
+
+    pd2 = this->getPeer(pd2Name);
+    if (pd2)
+        pd2RunController = pd2->provides("pd")->getOperation("runController");
+
+    pd3 = this->getPeer(pd3Name);
+    if (pd3)
+        pd3RunController = pd3->provides("pd")->getOperation("runController");
+
+    pd4 = this->getPeer(pd4Name);
+    if (pd4)
+        pd4RunController = pd4->provides("pd")->getOperation("runController");
+
+    pd5 = this->getPeer(pd5Name);
+    if (pd5)
+        pd5RunController = pd5->provides("pd")->getOperation("runController");
+
+    spg0 = this->getPeer(spg0Name);
+    if (spg0) {
+        spg0Init          = spg0->provides("smoothPath")->getOperation("init");
+        spg0RunController = spg0->provides("smoothPath")->getOperation("runController");
+    }
+
+    spg1 = this->getPeer(spg1Name);
+    if (spg1) {
+        spg1Init          = spg1->provides("smoothPath")->getOperation("init");
+        spg1RunController = spg1->provides("smoothPath")->getOperation("runController");
+    }
+
+    spg2 = this->getPeer(spg2Name);
+    if (spg2) {
+        spg2Init          = spg2->provides("smoothPath")->getOperation("init");
+        spg2RunController = spg2->provides("smoothPath")->getOperation("runController");
+    }
+
+    spg3 = this->getPeer(spg3Name);
+    if (spg3) {
+        spg3Init          = spg3->provides("smoothPath")->getOperation("init");
+        spg3RunController = spg3->provides("smoothPath")->getOperation("runController");
+    }
+
+    spg4 = this->getPeer(spg4Name);
+    if (spg4) {
+        spg4Init          = spg4->provides("smoothPath")->getOperation("init");
+        spg4RunController = spg4->provides("smoothPath")->getOperation("runController");
+    }
+
+    spg5 = this->getPeer(spg5Name);
+    if (spg5) {
+        spg5Init          = spg5->provides("smoothPath")->getOperation("init");
+        spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
+    }
+
+    // Get references to subcontroller component properties
+    D0 = pd0->properties()->getProperty("D");
+    D1 = pd1->properties()->getProperty("D");
+    D2 = pd2->properties()->getProperty("D");
+    D3 = pd3->properties()->getProperty("D");
+    D4 = pd4->properties()->getProperty("D");
+    D5 = pd5->properties()->getProperty("D");
+    P0 = pd0->properties()->getProperty("P");
+    P1 = pd1->properties()->getProperty("P");
+    P2 = pd2->properties()->getProperty("P");
+    P3 = pd3->properties()->getProperty("P");
+    P4 = pd4->properties()->getProperty("P");
+    P5 = pd5->properties()->getProperty("P");
+
+    log(Info) << "[ATCMT] configured!" << endlog();
+    return true;
+}
+
+bool ATCDemoRangeOfMotion::startHook() {
+    log(Info) << "[ATCMT] started!" << endlog();
+    return true;
+}
+
+void ATCDemoRangeOfMotion::updateHook() {
+    guiDataIn.read(guiIn);
+}
+
+void ATCDemoRangeOfMotion::stopHook() {
+    log(Info) << "[ATCMT] stopped!" << endlog();
+}
+
+void ATCDemoRangeOfMotion::cleanupHook() {
+    log(Info) << "[ATCMT] cleaned up!" << endlog();
+}
+
+ORO_CREATE_COMPONENT(ATCDemoRangeOfMotion)
+
+}
+}

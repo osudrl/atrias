@@ -1,0 +1,17 @@
+<package>
+  <description brief="atc_demo_range_of_motion">
+
+     atc_demo_range_of_motion
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_demo_range_of_motion</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="asc_pd" />
+
+</package>
