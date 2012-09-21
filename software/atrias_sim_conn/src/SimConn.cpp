@@ -14,7 +14,7 @@ SimConn::SimConn(std::string name) :
 	this->requires("atrias_rt")
 	    ->addOperationCaller(newStateCallback);
 	
-	addEventPort(gazeboDataIn);
+	addPort(gazeboDataIn);
 	addPort(gazeboDataOut);
 }
 

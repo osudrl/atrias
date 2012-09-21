@@ -8,13 +8,19 @@ loadComponent("atrias_connector", "SimConn")
 # Let these see each other.
 connectPeers("atrias_connector", "atrias_rt")
 
-# Make sure the sim connector is NOT real-time
-setActivity("atrias_connector", 0, 50, ORO_SCHED_OTHER)
+# The connector used to be an aperiodic activity that was triggered by an
+# EventPort, but it had performance issues (/log_robot_state was not updated as
+# frequently as data became available on /atrias_sim_data).
+setActivity("atrias_connector", 0.0005, 50, ORO_SCHED_RT)
 
 # Make RT Ops realtime.
 setActivity("atrias_rt", 0, 80, ORO_SCHED_RT)
 
 var ConnPolicy gazeboConnPolicy
+
+# Buffer connection so the controllers run at simulation frequency.
+gazeboConnPolicy.type = BUFFER
+gazeboConnPolicy.size = 100000
 gazeboConnPolicy.transport = 3
 gazeboConnPolicy.name_id = "/atrias_sim_data"
 stream("atrias_connector.gazebo_data_in",  gazeboConnPolicy)
