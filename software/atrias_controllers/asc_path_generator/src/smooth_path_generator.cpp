@@ -30,30 +30,30 @@ ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
 
-    // Setup the controller
-    timeElapsed = 0.0;
-    isFinished = false;
-
     log(Info) << name << " Constructed!" << endlog();
 }
 
 // Get start and end positions as well as the duration of time the motion
 // should take.
 void ASCSmoothPathGenerator::init(double startVal, double endVal, double durationVal) {
-    start    = startVal;
-    end      = endVal;
-    duration = durationVal;
+    // Setup the controller
+    timeElapsed = 0.0;
+    isFinished  = false;
+    start       = startVal;
+    end         = endVal;
+    duration    = durationVal;
 }
 
 // Output.
-double ASCSmoothPathGenerator::runController() {
+MotorState ASCSmoothPathGenerator::runController() {
     //// Return the function value and its derivative
     //// TODO: Make this equation the proper one
     //output.ang = amplitude*sin(accumulator);
     //output.vel = amplitude*cos(accumulator)*2.0*M_PI*frequency;
 
     if (!isFinished) {
-        output = (end - start) * 0.5 * (sin((M_PI/duration) * (timeElapsed - 0.5*M_PI)) + 1);
+        output.ang = (end - start) * 0.5 * (sin((M_PI/duration) * (timeElapsed - 0.5*M_PI))) + 0.5;
+        output.vel = (end - start) * 0.5 * (cos((M_PI/duration) * (timeElapsed - 0.5*M_PI))) * M_PI/duration + 0.5
         timeElapsed += 0.001;
 
         // If the elapsed time is greater than the requested duration, we are

@@ -35,7 +35,7 @@ private:
     double start, end, duration;
 
     // Output
-    double output;
+    MotorState output;
 
     // Time elapsed since beginning of controller.
     double timeElapsed;
