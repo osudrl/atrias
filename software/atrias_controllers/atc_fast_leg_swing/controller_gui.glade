@@ -182,6 +182,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <property name="group">sweep_radiobutton</property>
               </object>
               <packing>
                 <property name="expand">True</property>
