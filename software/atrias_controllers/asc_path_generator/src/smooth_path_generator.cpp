@@ -53,7 +53,7 @@ MotorState ASCSmoothPathGenerator::runController() {
 
     if (!isFinished) {
         output.ang = (end - start) * 0.5 * (sin((M_PI/duration) * (timeElapsed - 0.5*M_PI))) + 0.5;
-        output.vel = (end - start) * 0.5 * (cos((M_PI/duration) * (timeElapsed - 0.5*M_PI))) * M_PI/duration + 0.5
+        output.vel = (end - start) * 0.5 * (cos((M_PI/duration) * (timeElapsed - 0.5*M_PI))) * M_PI/duration + 0.5;
         timeElapsed += 0.001;
 
         // If the elapsed time is greater than the requested duration, we are

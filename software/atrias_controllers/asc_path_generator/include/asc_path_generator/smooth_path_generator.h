@@ -29,8 +29,8 @@ namespace controller {
 class ASCSmoothPathGenerator : public TaskContext {
 private:
     // Operations
-    double runController();
-    void init(double, double);
+    MotorState runController();
+    void init(double, double, double);
 
     double start, end, duration;
 
