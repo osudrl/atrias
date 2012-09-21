@@ -47,25 +47,50 @@ class ATCFastLegSwing : public TaskContext {
 		// Subcontroller names
 		std::string pathGenerator0Name;
 		std::string pathGenerator1Name;
+		std::string pathGenerator2Name;
 		std::string pd0Name;
 		std::string pd1Name;
-
+		std::string pd2Name;
+		std::string pd3Name;
+		std::string pd4Name;
+		std::string pd5Name;
+		
 		// Subcontroller components
 		TaskContext *pathGenerator0;
 		TaskContext *pathGenerator1;
+		TaskContext *pathGenerator2;
 		TaskContext *pd0;
 		TaskContext *pd1;
+		TaskContext *pd2;
+		TaskContext *pd3;
+		TaskContext *pd4;
+		TaskContext *pd5;
 
 		// Service properties
 		Property<double> P0;
 		Property<double> D0;
 		Property<double> P1;
 		Property<double> D1;
+		Property<double> P2;
+		Property<double> D2;
+		Property<double> P3;
+		Property<double> D3;
+		Property<double> P4;
+		Property<double> D4;
+		Property<double> P5;
+		Property<double> D5;
 		
 		// Subcontroller operations
 		OperationCaller<MotorState(double, double)> path0Controller;
+		OperationCaller<MotorState(double, double)> path1Controller;
+		OperationCaller<MotorState(double, double)> path2Controller;
+		OperationCaller<void(double)>               path2ControllerSetPhase;
 		OperationCaller<double(double, double, double, double)> pd0Controller;
 		OperationCaller<double(double, double, double, double)> pd1Controller;
+		OperationCaller<double(double, double, double, double)> pd2Controller;
+		OperationCaller<double(double, double, double, double)> pd3Controller;
+		OperationCaller<double(double, double, double, double)> pd4Controller;
+		OperationCaller<double(double, double, double, double)> pd5Controller;
 		
 		// Logging
 		controller_log_data logData;
