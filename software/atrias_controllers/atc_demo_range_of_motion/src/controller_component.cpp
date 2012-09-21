@@ -69,20 +69,20 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
 
     // Set gains
     // Left leg motor A
-    P0.set(guiIn.p_gain);
-    D0.set(guiIn.d_gain);
+    P0.set(guiIn.leg_p_gain);
+    D0.set(guiIn.leg_d_gain);
     // Left leg motor B
-    P1.set(guiIn.p_gain);
-    D1.set(guiIn.d_gain);
+    P1.set(guiIn.leg_p_gain);
+    D1.set(guiIn.leg_d_gain);
     // Left leg motor hip
     P2.set(guiIn.hip_p_gain);
     D2.set(guiIn.hip_d_gain);
     // Right leg motor A
-    P3.set(guiIn.p_gain);
-    D3.set(guiIn.d_gain);
+    P3.set(guiIn.leg_p_gain);
+    D3.set(guiIn.leg_d_gain);
     // Right leg motor B
-    P4.set(guiIn.p_gain);
-    D4.set(guiIn.d_gain);
+    P4.set(guiIn.leg_p_gain);
+    D4.set(guiIn.leg_d_gain);
     // Right leg motor hip
     P5.set(guiIn.hip_p_gain);
     D5.set(guiIn.hip_d_gain);
@@ -90,29 +90,29 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     // If GUI input differs from current desired motor positions, update
     // current desired motor positions and reinitialize the smooth path
     // generators.
-    if (desLeftAPos != guiIn.desLeftAPos) {
-        desLeftAPos = guiIn.desLeftAPos;
-        spg0Init(rs.lLeg.halfA.motorAngle, desLeftAPos, guiIn.legDuration);
+    if (desLeftAState.ang != guiIn.desLeftAPos) {
+        desLeftAState.ang = guiIn.desLeftAPos;
+        spg0Init(rs.lLeg.halfA.motorAngle, desLeftAState.ang, guiIn.legDuration);
     }
-    if (desLeftBPos != guiIn.desLeftBPos) {
-        desLeftBPos = guiIn.desLeftBPos;
-        spg1Init(rs.lLeg.halfB.motorAngle, desLeftBPos, guiIn.legDuration);
+    if (desLeftBState.ang != guiIn.desLeftBPos) {
+        desLeftBState.ang = guiIn.desLeftBPos;
+        spg1Init(rs.lLeg.halfB.motorAngle, desLeftBState.ang, guiIn.legDuration);
     }
-    if (desLeftHipPos != guiIn.desLeftHipPos) {
-        desLeftHipPos = guiIn.desLeftHipPos;
-        spg2Init(rs.lLeg.hip.motorAngle, desLeftHipPos, guiIn.hipDuration);
+    if (desLeftHipState.ang != guiIn.desLeftHipPos) {
+        desLeftHipState.ang = guiIn.desLeftHipPos;
+        spg2Init(rs.lLeg.hip.legBodyAngle, desLeftHipState.ang, guiIn.hipDuration);
     }
-    if (desRightAPos != guiIn.desRightAPos) {
-        desRightAPos = guiIn.desRightAPos;
-        spg3Init(rs.rLeg.halfA.motorAngle, desRightAPos, guiIn.legDuration);
+    if (desRightAState.ang != guiIn.desRightAPos) {
+        desRightAState.ang = guiIn.desRightAPos;
+        spg3Init(rs.rLeg.halfA.motorAngle, desRightAState.ang, guiIn.legDuration);
     }
-    if (desRightBPos != guiIn.desRightBPos) {
-        desRightBPos = guiIn.desRightBPos;
-        spg4Init(rs.rLeg.halfB.motorAngle, desRightBPos, guiIn.legDuration);
+    if (desRightBState.ang != guiIn.desRightBPos) {
+        desRightBState.ang = guiIn.desRightBPos;
+        spg4Init(rs.rLeg.halfB.motorAngle, desRightBState.ang, guiIn.legDuration);
     }
-    if (desRightHipPos != guiIn.desRightHipPos) {
-        desRightHipPos = guiIn.desRightHipPos;
-        spg5Init(rs.rLeg.hip.motorAngle, desRightHipPos, guiIn.hipDuration);
+    if (desRightHipState.ang != guiIn.desRightHipPos) {
+        desRightHipState.ang = guiIn.desRightHipPos;
+        spg5Init(rs.rLeg.hip.legBodyAngle, desRightHipState.ang, guiIn.hipDuration);
     }
 
     // Run the smooth path generators.
@@ -126,10 +126,10 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     // Stuff the msg
     co.lLeg.motorCurrentA   = pd0RunController(desLeftAState.ang,    rs.lLeg.halfA.motorAngle, desLeftAState.vel,    rs.lLeg.halfA.motorVelocity);
     co.lLeg.motorCurrentB   = pd1RunController(desLeftBState.ang,    rs.lLeg.halfB.motorAngle, desLeftBState.vel,    rs.lLeg.halfB.motorVelocity);
-    co.lLeg.motorCurrentHip = pd2RunController(desLeftHipState.ang,  rs.lLeg.hip.motorAngle,   desLeftHipState.vel,  rs.lLeg.hip.motorVelocity);
+    co.lLeg.motorCurrentHip = pd2RunController(desLeftHipState.ang,  rs.lLeg.hip.legBodyAngle,   desLeftHipState.vel,  rs.lLeg.hip.motorVelocity);
     co.rLeg.motorCurrentA   = pd0RunController(desRightAState.ang,   rs.rLeg.halfA.motorAngle, desRightAState.vel,   rs.rLeg.halfA.motorVelocity);
     co.rLeg.motorCurrentB   = pd1RunController(desRightBState.ang,   rs.rLeg.halfB.motorAngle, desRightBState.vel,   rs.rLeg.halfB.motorVelocity);
-    co.rLeg.motorCurrentHip = pd2RunController(desRightHipState.ang, rs.rLeg.hip.motorAngle,   desRightHipState.vel, rs.rLeg.hip.motorVelocity);
+    co.rLeg.motorCurrentHip = pd2RunController(desRightHipState.ang, rs.rLeg.hip.legBodyAngle,   desRightHipState.vel, rs.rLeg.hip.motorVelocity);
 
     // end control code //
 

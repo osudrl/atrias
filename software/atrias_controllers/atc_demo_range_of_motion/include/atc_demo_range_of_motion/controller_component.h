@@ -93,18 +93,18 @@ private:
     OperationCaller<double(double, double, double, double)> pd3RunController;
     OperationCaller<double(double, double, double, double)> pd4RunController;
     OperationCaller<double(double, double, double, double)> pd5RunController;
-    OperationCaller<double(void)> spg0Init;
-    OperationCaller<double(void)> spg1Init;
-    OperationCaller<double(void)> spg2Init;
-    OperationCaller<double(void)> spg3Init;
-    OperationCaller<double(void)> spg4Init;
-    OperationCaller<double(void)> spg5Init;
-    OperationCaller<double(void)> spg0RunController;
-    OperationCaller<double(void)> spg1RunController;
-    OperationCaller<double(void)> spg2RunController;
-    OperationCaller<double(void)> spg3RunController;
-    OperationCaller<double(void)> spg4RunController;
-    OperationCaller<double(void)> spg5RunController;
+    OperationCaller<void(double, double, double)> spg0Init;
+    OperationCaller<void(double, double, double)> spg1Init;
+    OperationCaller<void(double, double, double)> spg2Init;
+    OperationCaller<void(double, double, double)> spg3Init;
+    OperationCaller<void(double, double, double)> spg4Init;
+    OperationCaller<void(double, double, double)> spg5Init;
+    OperationCaller<MotorState(void)> spg0RunController;
+    OperationCaller<MotorState(void)> spg1RunController;
+    OperationCaller<MotorState(void)> spg2RunController;
+    OperationCaller<MotorState(void)> spg3RunController;
+    OperationCaller<MotorState(void)> spg4RunController;
+    OperationCaller<MotorState(void)> spg5RunController;
 
     // Current desired motor states
     MotorState desLeftAState,
