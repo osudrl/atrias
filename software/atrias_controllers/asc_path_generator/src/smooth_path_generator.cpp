@@ -13,7 +13,7 @@ ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     logPort(name + "_log")
 {
     this->provides("smoothPath")
-        ->addOperation("run", &ASCSmoothPathGenerator::run, this, ClientThread)
+        ->addOperation("run", &ASCSmoothPathGenerator::runController, this, ClientThread)
         .doc("Run the controller.");
     this->provides("smoothPath")
         ->addOperation("init", &ASCSmoothPathGenerator::init, this, ClientThread);
@@ -31,33 +31,42 @@ ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     logPort.createStream(policy);
 
     // Setup the controller
-    accumulator = 0.0;
+    timeElapsed = 0.0;
+    isFinished = false;
 
     log(Info) << name << " Constructed!" << endlog();
 }
 
-void ASCSmoothPathGenerator::init(double startAng, double endAng)
-{
-    // Nothing yet
-    return;
+// Get start and end positions as well as the duration of time the motion
+// should take.
+void ASCSmoothPathGenerator::init(double startVal, double endVal, double durationVal) {
+    start    = startVal;
+    end      = endVal;
+    duration = durationVal;
 }
 
-MotorState ASCSmoothPathGenerator::run(double frequency, double amplitude)
-{
-    // The function
-    accumulator += 0.001*2.0*M_PI*frequency;
-    if (accumulator >= 2.0*M_PI)
-        accumulator -= 2.0*M_PI;
+// Output.
+double ASCSmoothPathGenerator::runController() {
+    //// Return the function value and its derivative
+    //// TODO: Make this equation the proper one
+    //output.ang = amplitude*sin(accumulator);
+    //output.vel = amplitude*cos(accumulator)*2.0*M_PI*frequency;
 
-    // Return the function value and its derivative
-    // TODO: Make this equation the proper one
-    output.ang = amplitude*sin(accumulator);
-    output.vel = amplitude*cos(accumulator)*2.0*M_PI*frequency;
+    if (!isFinished) {
+        output = (end - start) * 0.5 * (sin((M_PI/duration) * (timeElapsed - 0.5*M_PI)) + 1);
+        timeElapsed += 0.001;
+
+        // If the elapsed time is greater than the requested duration, we are
+        // done.
+        if (timeElapsed >= duration) {
+            isFinished = true;
+        }
+    }
 
     // Stuff the msg and push to ROS for logging
-    logData.ang = output.ang;
-    logData.vel = output.vel;
-    logPort.write(logData);
+    //logData.ang = output.ang;
+    //logData.vel = output.vel;
+    //logPort.write(logData);
 
     return output;
 }

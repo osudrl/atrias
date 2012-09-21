@@ -28,13 +28,20 @@ namespace controller {
 
 class ASCSmoothPathGenerator : public TaskContext {
 private:
-    // Operation
-    MotorState run(double frequency, double amplitude);
-    void init(double startAng, double endAng);
+    // Operations
+    double runController();
+    void init(double, double);
 
-    MotorState output;
+    double start, end, duration;
 
-    double accumulator;
+    // Output
+    double output;
+
+    // Time elapsed since beginning of controller.
+    double timeElapsed;
+
+    // Has the controller finished?
+    bool isFinished;
 
     asc_path_generator::controller_log_data logData;
     OutputPort<asc_path_generator::controller_log_data> logPort;
