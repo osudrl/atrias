@@ -6,7 +6,7 @@ ELabsConn::ELabsConn(std::string name) : TaskContext(name),
 	
 	this->provides("connector")
 	    ->addOperation("sendControllerOutput", &ELabsConn::sendControllerOutput, this, RTT::ClientThread);
-	this->requires("atrias_rt")
+	this->requires("rtOps")
 	    ->addOperationCaller(newStateCallback);
 	
 	rt_fd   = -1;
