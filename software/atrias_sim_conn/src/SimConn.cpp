@@ -14,7 +14,7 @@ SimConn::SimConn(std::string name) :
 	this->requires("rtOps")
 	    ->addOperationCaller(newStateCallback);
 	
-	addEventPort(gazeboDataIn);
+	addPort(gazeboDataIn);
 	addPort(gazeboDataOut);
 }
 
