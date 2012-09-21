@@ -104,12 +104,18 @@ typedef enum {
 #define LEG_B_MOTOR_MIN_LOC                                          0.785398163
 #define LEG_B_MOTOR_MAX_LOC                                           3.44702527
 
+#define LEFT_HIP_MOTOR_MIN_LOC                                               0.0   // TODO: Get actual value.
+#define LEFT_HIP_MOTOR_MAX_LOC                                               0.0   // TODO: Get actual value.
+#define RIGHT_HIP_MOTOR_MIN_LOC                                              0.0   // TODO: Get actual value.
+#define RIGHT_HIP_MOTOR_MAX_LOC                                              0.0   // TODO: Get actual value.
+
 // The minimum and maximum distance in positions between the motors. For leg length
 // protection.
 #define LEG_LOC_DIFF_MIN                                                     0.0
 #define LEG_LOC_DIFF_MAX                                              2.47639612
 
 #define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
+#define HIP_LOC_SAFETY_DISTANCE                                              0.2   // TODO: This is a fake value!
 
 // The maximum acceptable change in encoder value in a single cycle, for detecting
 // erroneous encoder readings.

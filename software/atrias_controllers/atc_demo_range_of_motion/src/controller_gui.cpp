@@ -24,12 +24,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_leg_motor_p_spinbutton && position_leg_motor_d_spinbutton &&
         position_hip_motor_p_spinbutton && position_hip_motor_d_spinbutton) {
         // Set ranges.
-        position_left_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE,       LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
-        position_left_B_spinbutton->set_range(LEG_B_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE,       LEG_B_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
-        position_left_hip_spinbutton->set_range(LEFT_HIP_MOTOR_MIN_LOC   + LEFT_HIP_LOC_SAFETY_DISTANCE,  LEFT_HIP_MOTOR_MAX_LOC  - LEFT_HIP_LOC_SAFETY_DISTANCE);
-        position_right_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC       + LEG_LOC_SAFETY_DISTANCE,       LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
-        position_right_B_spinbutton->set_range(LEG_B_MOTOR_MIN_LOC       + LEG_LOC_SAFETY_DISTANCE,       LEG_B_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
-        position_right_hip_spinbutton->set_range(RIGHT_HIP_MOTOR_MIN_LOC + RIGHT_HIP_LOC_SAFETY_DISTANCE, RIGHT_HIP_MOTOR_MAX_LOC - RIGHT_HIP_LOC_SAFETY_DISTANCE);
+        position_left_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE, LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
+        position_left_B_spinbutton->set_range(LEG_B_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE, LEG_B_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
+        position_left_hip_spinbutton->set_range(LEFT_HIP_MOTOR_MIN_LOC   + HIP_LOC_SAFETY_DISTANCE, LEFT_HIP_MOTOR_MAX_LOC  - HIP_LOC_SAFETY_DISTANCE);
+        position_right_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC       + LEG_LOC_SAFETY_DISTANCE, LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
+        position_right_B_spinbutton->set_range(LEG_B_MOTOR_MIN_LOC       + LEG_LOC_SAFETY_DISTANCE, LEG_B_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
+        position_right_hip_spinbutton->set_range(RIGHT_HIP_MOTOR_MIN_LOC + HIP_LOC_SAFETY_DISTANCE, RIGHT_HIP_MOTOR_MAX_LOC - HIP_LOC_SAFETY_DISTANCE);
         position_leg_motor_p_spinbutton->set_range(0, 5000);
         position_leg_motor_d_spinbutton->set_range(0, 300);
         position_hip_motor_p_spinbutton->set_range(0, 100);
