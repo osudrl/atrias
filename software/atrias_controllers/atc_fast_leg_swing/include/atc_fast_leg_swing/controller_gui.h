@@ -26,7 +26,11 @@ atc_fast_leg_swing::controller_status controllerDataIn;
 // GUI elements
 Gtk::SpinButton *frequency_spinbutton,
                 *leg_magnitude_spinbutton,
-                *hip_magnitude_spinbutton;
+                *hip_magnitude_spinbutton,
+                *leg_p_spinbutton,
+                *leg_d_spinbutton,
+                *hip_p_spinbutton,
+                *hip_d_spinbutton;
 
 Gtk::RadioButton *sweep_radiobutton,
                  *extend_radiobutton;
