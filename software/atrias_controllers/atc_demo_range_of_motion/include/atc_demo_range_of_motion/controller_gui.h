@@ -1,8 +1,5 @@
 /*
  * controller_gui.h
- *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
  */
 
 #ifndef CONTROLLER_GUI_H_
@@ -24,19 +21,16 @@ atc_demo_range_of_motion::controller_input controllerDataOut;
 atc_demo_range_of_motion::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *torque_A_hscale,
-        *torque_B_hscale,
-        *torque_hip_hscale;
-
-Gtk::CheckButton *set_position_checkbutton;
-
-// Parameters
-//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
-//     arise when both C and python nodes access the same parameter. See:
-//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double torque_A_param;
-double torque_B_param;
-double torque_hip_param;
+Gtk::SpinButton *position_left_A_spinbutton,
+                *position_left_B_spinbutton,
+                *position_left_hip_spinbutton,
+                *position_right_A_spinbutton,
+                *position_right_B_spinbutton,
+                *position_right_hip_spinbutton,
+                *position_leg_motor_p_spinbutton,
+                *position_leg_motor_d_spinbutton,
+                *position_hip_motor_p_spinbutton,
+                *position_hip_motor_d_spinbutton;
 
 void controllerCallback(const atc_demo_range_of_motion::controller_status &status);
 
