@@ -48,6 +48,9 @@ class ATCFastLegSwing : public TaskContext {
 		std::string pathGenerator0Name;
 		std::string pathGenerator1Name;
 		std::string pathGenerator2Name;
+		std::string pathGenerator3Name;
+		std::string pathGenerator4Name;
+		std::string pathGenerator5Name;
 		std::string pd0Name;
 		std::string pd1Name;
 		std::string pd2Name;
@@ -59,6 +62,9 @@ class ATCFastLegSwing : public TaskContext {
 		TaskContext *pathGenerator0;
 		TaskContext *pathGenerator1;
 		TaskContext *pathGenerator2;
+		TaskContext *pathGenerator3;
+		TaskContext *pathGenerator4;
+		TaskContext *pathGenerator5;
 		TaskContext *pd0;
 		TaskContext *pd1;
 		TaskContext *pd2;
@@ -85,6 +91,10 @@ class ATCFastLegSwing : public TaskContext {
 		OperationCaller<MotorState(double, double)> path1Controller;
 		OperationCaller<MotorState(double, double)> path2Controller;
 		OperationCaller<void(double)>               path2ControllerSetPhase;
+		OperationCaller<MotorState(double, double)> path3Controller;
+		OperationCaller<MotorState(double, double)> path4Controller;
+		OperationCaller<MotorState(double, double)> path5Controller;
+		OperationCaller<void(double)>               path5ControllerSetPhase;
 		OperationCaller<double(double, double, double, double)> pd0Controller;
 		OperationCaller<double(double, double, double, double)> pd1Controller;
 		OperationCaller<double(double, double, double, double)> pd2Controller;

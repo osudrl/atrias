@@ -21,6 +21,15 @@ loadComponent(pathGenerator1Name, "ASCParabolaPathGenerator")
 var string pathGenerator2Name = atrias_cm.getUniqueName("controller", "pathGenerator")
 loadComponent(pathGenerator2Name, "ASCParabolaPathGenerator")
 
+var string pathGenerator3Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator3Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator4Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator4Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator5Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator5Name, "ASCParabolaPathGenerator")
+
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd0Name, "ASCPD")
 
@@ -43,6 +52,9 @@ loadComponent(pd5Name, "ASCPD")
 addPeer("controller", pathGenerator0Name)
 addPeer("controller", pathGenerator1Name)
 addPeer("controller", pathGenerator2Name)
+addPeer("controller", pathGenerator3Name)
+addPeer("controller", pathGenerator4Name)
+addPeer("controller", pathGenerator5Name)
 addPeer("controller", pd0Name)
 addPeer("controller", pd1Name)
 addPeer("controller", pd2Name)
@@ -54,6 +66,9 @@ addPeer("controller", pd5Name)
 controller.pathGenerator0Name = pathGenerator0Name
 controller.pathGenerator1Name = pathGenerator1Name
 controller.pathGenerator2Name = pathGenerator2Name
+controller.pathGenerator3Name = pathGenerator3Name
+controller.pathGenerator4Name = pathGenerator4Name
+controller.pathGenerator5Name = pathGenerator5Name
 controller.pd0Name = pd0Name
 controller.pd1Name = pd1Name
 controller.pd2Name = pd2Name

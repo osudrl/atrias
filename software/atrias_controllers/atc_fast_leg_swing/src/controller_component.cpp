@@ -21,6 +21,9 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 	this->addProperty("pathGenerator0Name", pathGenerator0Name);
 	this->addProperty("pathGenerator1Name", pathGenerator1Name);
 	this->addProperty("pathGenerator2Name", pathGenerator2Name);
+	this->addProperty("pathGenerator3Name", pathGenerator3Name);
+	this->addProperty("pathGenerator4Name", pathGenerator4Name);
+	this->addProperty("pathGenerator5Name", pathGenerator5Name);
 	this->addProperty("pd0Name", pd0Name);
 	this->addProperty("pd1Name", pd1Name);
 	this->addProperty("pd2Name", pd2Name);
@@ -59,13 +62,13 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	MotorState desiredLHState = path2Controller(2, .1);
 	desiredLHState.ang += 1.5 * M_PI;
 	
-	MotorState desiredRAState = {0.0, 0.0};
+	MotorState desiredRAState = path3Controller(1, .2);
 	desiredRAState.ang += M_PI / 4.0;
 	
-	MotorState desiredRBState = {0.0, 0.0};
+	MotorState desiredRBState = path4Controller(1, .2);
 	desiredRBState.ang += .75 * M_PI;
 	
-	MotorState desiredRHState = {0.0, 0.0};
+	MotorState desiredRHState = path5Controller(2, .1);
 	desiredRHState.ang += 1.5 * M_PI;
 	
 	P0.set(500.0);
@@ -113,6 +116,21 @@ bool ATCFastLegSwing::configureHook() {
 		path2Controller         = pathGenerator2->provides("parabolaGen")->getOperation("runController");
 		path2ControllerSetPhase = pathGenerator2->provides("parabolaGen")->getOperation("setPhase");
 		path2ControllerSetPhase(0.5);
+	}
+	
+	pathGenerator3 = this->getPeer(pathGenerator3Name);
+	if (pathGenerator3)
+		path3Controller = pathGenerator3->provides("parabolaGen")->getOperation("runController");
+		
+	pathGenerator4 = this->getPeer(pathGenerator4Name);
+	if (pathGenerator4)
+		path4Controller = pathGenerator4->provides("parabolaGen")->getOperation("runController");
+	
+	pathGenerator5 = this->getPeer(pathGenerator5Name);
+	if (pathGenerator5) {
+		path5Controller         = pathGenerator5->provides("parabolaGen")->getOperation("runController");
+		path5ControllerSetPhase = pathGenerator5->provides("parabolaGen")->getOperation("setPhase");
+		path5ControllerSetPhase(0.0);
 	}
 	
 	pd0 = this->getPeer(pd0Name);
