@@ -1,0 +1,15 @@
+{
+global:
+posing_controller_v2_M_;
+posing_controller_v2_M;
+posing_controller_v2_U;
+posing_controller_v2_Y;
+posing_controller_v2_initialize;
+posing_controller_v2_step;
+posing_controller_v2_terminate;
+
+
+posing_controller_v2_P;
+local:
+		*;
+};

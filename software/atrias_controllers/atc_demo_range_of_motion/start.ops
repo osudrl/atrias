@@ -1,0 +1,53 @@
+# Clean up the controller namespace
+atrias_cm.resetControllerNames()
+
+# Set up the component
+import("atc_demo_range_of_motion")
+loadComponent("controller", "ATCDemoRangeOfMotion")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "controller")
+
+# Set up subcontrollers
+import("asc_pd")
+var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd0Name, "ASCPD")
+var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd1Name, "ASCPD")
+var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd2Name, "ASCPD")
+var string pd3Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd3Name, "ASCPD")
+var string pd4Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd4Name, "ASCPD")
+var string pd5Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd5Name, "ASCPD")
+
+# Connect this controller with its subcontrollers
+addPeer("controller", pd0Name)
+addPeer("controller", pd1Name)
+addPeer("controller", pd2Name)
+addPeer("controller", pd3Name)
+addPeer("controller", pd4Name)
+addPeer("controller", pd5Name)
+
+# Pass the names of the subcontrollers to the controller
+controller.pd0Name = pd0Name
+controller.pd1Name = pd1Name
+controller.pd2Name = pd2Name
+controller.pd3Name = pd3Name
+controller.pd4Name = pd4Name
+controller.pd5Name = pd5Name
+
+# Set up the gui connection
+var ConnPolicy gui_policy
+gui_policy.transport = 3
+
+gui_policy.name_id = "/atc_demo_range_of_motion_input"
+stream("controller.gui_data_in", gui_policy)
+
+# Configure the component
+controller.configure()
+
+# Start the component
+controller.start()

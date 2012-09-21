@@ -28,8 +28,8 @@ ATCComponent::ATCComponent(std::string name):
     // Logging
     // Create a port
     addPort(logPort);
-    // Unbuffered
-    ConnPolicy policy = RTT::ConnPolicy::data();
+    // Buffer port so we capture all data.
+    ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
     // Transport type = ROS
     policy.transport = 3;
     // ROS topic name

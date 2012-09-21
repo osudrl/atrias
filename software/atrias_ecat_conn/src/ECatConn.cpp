@@ -11,9 +11,9 @@ ECatConn::ECatConn(std::string name) :
 	    ->addOperation("sendControllerOutput", &ECatConn::sendControllerOutput, this, RTT::ClientThread);
 	this->provides("disableSafeties")
 	    ->addOperation("disableSafeties", &ECatConn::disableSafeties, this, RTT::ClientThread);
-	this->requires("atrias_rt")
+	this->requires("rtOps")
 	    ->addOperationCaller(newStateCallback);
-	this->requires("atrias_rt")
+	this->requires("rtOps")
 	    ->addOperationCaller(sendEvent);
 	
 	connManager = new ConnManager(this);

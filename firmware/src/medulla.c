@@ -200,7 +200,9 @@ int main(void) {
 	#endif
 	
 	previous_master_watchdog = *master_watchdog_counter;
+	#ifdef ENABLE_LEDS
 	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN;
+	#endif
 	while(1) {
 		// Check if there was a falling edge of the ethercat IRQ pin
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {

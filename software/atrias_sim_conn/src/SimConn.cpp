@@ -11,7 +11,7 @@ SimConn::SimConn(std::string name) :
          gazeboDataOut("gazebo_data_out") {
 	this->provides("connector")
 	    ->addOperation("sendControllerOutput", &SimConn::sendControllerOutput, this, RTT::ClientThread);
-	this->requires("atrias_rt")
+	this->requires("rtOps")
 	    ->addOperationCaller(newStateCallback);
 	
 	addPort(gazeboDataIn);

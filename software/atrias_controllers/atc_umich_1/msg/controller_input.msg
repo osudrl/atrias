@@ -10,4 +10,6 @@ float64 kp3
 float64 kd1
 float64 kd2
 float64 kd3
+float64 leg_saturation_cap
+float64 hip_saturation_cap
 float64 epsilon

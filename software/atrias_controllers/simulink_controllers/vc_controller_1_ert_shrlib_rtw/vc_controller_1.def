@@ -1,0 +1,15 @@
+{
+global:
+vc_controller_1_M_;
+vc_controller_1_M;
+vc_controller_1_U;
+vc_controller_1_Y;
+vc_controller_1_initialize;
+vc_controller_1_step;
+vc_controller_1_terminate;
+
+
+vc_controller_1_P;
+local:
+		*;
+};

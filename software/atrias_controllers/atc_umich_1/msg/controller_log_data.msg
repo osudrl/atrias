@@ -1,13 +1,13 @@
-y1r
-y2r
-y3r
-y1l
-y2l
-y3l
+float64 y1r
+float64 y2r
+float64 y3r
+float64 y1l
+float64 y2l
+float64 y3l
 
-dy1r
-dy2r
-dy3r
-dy1l
-dy2l
-dy3l
+float64 dy1r
+float64 dy2r
+float64 dy3r
+float64 dy1l
+float64 dy2l
+float64 dy3l
