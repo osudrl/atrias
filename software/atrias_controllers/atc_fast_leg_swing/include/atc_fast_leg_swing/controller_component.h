@@ -89,10 +89,13 @@ class ATCFastLegSwing : public TaskContext {
 		// Subcontroller operations
 		OperationCaller<MotorState(double, double)> path0Controller;
 		OperationCaller<MotorState(double, double)> path1Controller;
+		OperationCaller<void(double)>               path1ControllerSetPhase;
 		OperationCaller<MotorState(double, double)> path2Controller;
 		OperationCaller<void(double)>               path2ControllerSetPhase;
 		OperationCaller<MotorState(double, double)> path3Controller;
+		OperationCaller<void(double)>               path3ControllerSetPhase;
 		OperationCaller<MotorState(double, double)> path4Controller;
+		OperationCaller<void(double)>               path4ControllerSetPhase;
 		OperationCaller<MotorState(double, double)> path5Controller;
 		OperationCaller<void(double)>               path5ControllerSetPhase;
 		OperationCaller<double(double, double, double, double)> pd0Controller;

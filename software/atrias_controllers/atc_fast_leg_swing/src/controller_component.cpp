@@ -53,13 +53,21 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 }
 
 atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot_state rs) {
+	// Whether we should extend and retract, as opposed to swinging the legs.
+	bool extend = false;
+	
+	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
+	path2ControllerSetPhase((extend) ? 1.0 : 1.0);
+	path3ControllerSetPhase((extend) ? 1.0 : 0.0);
+	path5ControllerSetPhase((extend) ? 1.0 : 0.0);
+	
 	MotorState desiredLAState = path0Controller(1, .2);
 	desiredLAState.ang += M_PI / 4.0;
 	
 	MotorState desiredLBState = path1Controller(1, .2);
 	desiredLBState.ang += .75 * M_PI;
 	
-	MotorState desiredLHState = path2Controller(2, .1);
+	MotorState desiredLHState = path2Controller((extend) ? 1.0 : 2.0, .1);
 	desiredLHState.ang += 1.5 * M_PI;
 	
 	MotorState desiredRAState = path3Controller(1, .2);
@@ -68,7 +76,7 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	MotorState desiredRBState = path4Controller(1, .2);
 	desiredRBState.ang += .75 * M_PI;
 	
-	MotorState desiredRHState = path5Controller(2, .1);
+	MotorState desiredRHState = path5Controller((extend) ? 1.0 : 2.0, .1);
 	desiredRHState.ang += 1.5 * M_PI;
 	
 	P0.set(500.0);
@@ -108,29 +116,33 @@ bool ATCFastLegSwing::configureHook() {
 		path0Controller = pathGenerator0->provides("parabolaGen")->getOperation("runController");
 		
 	pathGenerator1 = this->getPeer(pathGenerator1Name);
-	if (pathGenerator1)
-		path1Controller = pathGenerator1->provides("parabolaGen")->getOperation("runController");
+	if (pathGenerator1) {
+		path1Controller         = pathGenerator1->provides("parabolaGen")->getOperation("runController");
+		path1ControllerSetPhase = pathGenerator1->provides("parabolaGen")->getOperation("setPhase");
+	}
 	
 	pathGenerator2 = this->getPeer(pathGenerator2Name);
 	if (pathGenerator2) {
 		path2Controller         = pathGenerator2->provides("parabolaGen")->getOperation("runController");
 		path2ControllerSetPhase = pathGenerator2->provides("parabolaGen")->getOperation("setPhase");
-		path2ControllerSetPhase(0.5);
 	}
 	
 	pathGenerator3 = this->getPeer(pathGenerator3Name);
-	if (pathGenerator3)
-		path3Controller = pathGenerator3->provides("parabolaGen")->getOperation("runController");
+	if (pathGenerator3) {
+		path3Controller         = pathGenerator3->provides("parabolaGen")->getOperation("runController");
+		path3ControllerSetPhase = pathGenerator3->provides("parabolaGen")->getOperation("setPhase");
+	}
 		
 	pathGenerator4 = this->getPeer(pathGenerator4Name);
-	if (pathGenerator4)
-		path4Controller = pathGenerator4->provides("parabolaGen")->getOperation("runController");
+	if (pathGenerator4) {
+		path4Controller         = pathGenerator4->provides("parabolaGen")->getOperation("runController");
+		path4ControllerSetPhase = pathGenerator4->provides("parabolaGen")->getOperation("setPhase");
+	}
 	
 	pathGenerator5 = this->getPeer(pathGenerator5Name);
 	if (pathGenerator5) {
 		path5Controller         = pathGenerator5->provides("parabolaGen")->getOperation("runController");
 		path5ControllerSetPhase = pathGenerator5->provides("parabolaGen")->getOperation("setPhase");
-		path5ControllerSetPhase(0.0);
 	}
 	
 	pd0 = this->getPeer(pd0Name);
