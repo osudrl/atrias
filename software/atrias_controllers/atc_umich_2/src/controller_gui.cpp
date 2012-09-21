@@ -26,7 +26,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("torso_offset_spinbutton", torso_offset_spinbutton);
     gui->get_widget("swap_type_combo_box", swap_type_combo_box);
     gui->get_widget("s_threshold_spinbutton", s_threshold_spinbutton);
-    gui->get_widget("switch_spring_threshold_spinbutton", switch_spring_threshold_spinbutton);
+    gui->get_widget("swing_spring_threshold_spinbutton", swing_spring_threshold_spinbutton);
     gui->get_widget("stance_spring_threshold_spinbutton", stance_spring_threshold_spinbutton);
     gui->get_widget("scuff_1_spinbutton", scuff_1_spinbutton);
     gui->get_widget("scuff_2_spinbutton", scuff_2_spinbutton);
@@ -63,7 +63,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         s_mode_combo_box && s_freq_spinbutton && s_spinbutton &&
 	ds_spinbutton && left_support_leg_radiobutton && right_support_leg_radiobutton &&
         q3l_des_spinbutton && q3r_des_spinbutton && swap_type_combo_box &&
-        s_threshold_spinbutton && switch_spring_threshold_spinbutton &&
+        s_threshold_spinbutton && swing_spring_threshold_spinbutton &&
         stance_spring_threshold_spinbutton && scuff_1_spinbutton &&
         scuff_2_spinbutton) {
         // Set ranges.
@@ -81,8 +81,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         s_freq_spinbutton->set_range(0., 2.);
         right_support_leg_radiobutton->set_active(true);
         s_threshold_spinbutton->set_range(0.5, 1.5);
-        switch_spring_threshold_spinbutton->set_range(-5., 5.);
-        stance_spring_threshold_spinbutton->set_range(-5., 5.);
+        swing_spring_threshold_spinbutton->set_range(-10., 10.);
+        stance_spring_threshold_spinbutton->set_range(-10., 10.);
         scuff_1_spinbutton->set_range(0., 1.);
         scuff_2_spinbutton->set_range(0., 2.);
 
@@ -117,7 +117,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         // Set default values
         s_threshold_spinbutton->set_value(0.9);
         stance_spring_threshold_spinbutton->set_value(-1.0);
-        switch_spring_threshold_spinbutton->set_value(-0.2);
+        swing_spring_threshold_spinbutton->set_value(-0.2);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_umich_2_status", 0, controllerCallback);
@@ -179,7 +179,7 @@ void getParameters() {
     q3l_des_spinbutton->set_value(controllerDataOut.q3_des[1]);
     s_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[0]);
     stance_spring_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[1]);
-    switch_spring_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[2]);
+    swing_spring_threshold_spinbutton->set_value(controllerDataOut.swap_threshold[2]);
     scuff_1_spinbutton->set_value(controllerDataOut.scuff[0]);
     scuff_2_spinbutton->set_value(controllerDataOut.scuff[1]);
     swap_type_combo_box->set_active(controllerDataOut.swap);
@@ -246,7 +246,7 @@ void guiUpdate() {
     controllerDataOut.q3_des[1] = q3l_des_spinbutton->get_value();
     controllerDataOut.swap_threshold[0] = s_threshold_spinbutton->get_value();
     controllerDataOut.swap_threshold[1] = stance_spring_threshold_spinbutton->get_value();
-    controllerDataOut.swap_threshold[2] = switch_spring_threshold_spinbutton->get_value();
+    controllerDataOut.swap_threshold[2] = swing_spring_threshold_spinbutton->get_value();
     controllerDataOut.scuff[0] = scuff_1_spinbutton->get_value();
     controllerDataOut.scuff[1] = scuff_2_spinbutton->get_value();
     controllerDataOut.swap = (uint8_t)swap_type_combo_box->get_active_row_number();
