@@ -296,7 +296,7 @@ void LegMedulla::processVelocities(RTT::os::TimeService::nsecs deltaTime, atrias
 			}
 			if (!skipLegEncoder) {
 				robotState.rLeg.halfA.legVelocity   =
-					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_A_RAD_PER_CNT  /
 					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
 			}
 			break;
