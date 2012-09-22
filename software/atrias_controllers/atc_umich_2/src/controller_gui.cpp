@@ -70,11 +70,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         kp1_spinbutton->set_range(0, 500);
         kp2_spinbutton->set_range(0, 500);
         kp3_spinbutton->set_range(0, 500);
-        kd1_spinbutton->set_range(0, 100);
-        kd2_spinbutton->set_range(0, 100);
-        kd3_spinbutton->set_range(0, 100);
+        kd1_spinbutton->set_range(0, 500);
+        kd2_spinbutton->set_range(0, 500);
+        kd3_spinbutton->set_range(0, 500);
         leg_saturation_cap_spinbutton->set_range(0, 60);
-        hip_saturation_cap_spinbutton->set_range(0, 10);
+        hip_saturation_cap_spinbutton->set_range(0, 60);
         epsilon_spinbutton->set_range(0, 1);
 
         torso_offset_spinbutton->set_range(-20., 20.);
@@ -100,8 +100,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dy3l_spinbutton->set_range(-10000, 10000);
         s_spinbutton->set_range(-10000, 10000);
         ds_spinbutton->set_range(-10000, 10000);
-        q3l_des_spinbutton->set_range(-5, 5);
-        q3r_des_spinbutton->set_range(-5, 5);
+        q3l_des_spinbutton->set_range(-10, 10);
+        q3r_des_spinbutton->set_range(-10, 10);
 
         // Set increments.
         kp1_spinbutton->set_increments(0.1, 1.0);
