@@ -475,7 +475,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="leg_duration_spinbutton">
+                  <object class="GtkSpinButton" id="position_leg_duration_spinbutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -515,7 +515,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="hip_duration_spinbutton">
+                  <object class="GtkSpinButton" id="position_hip_duration_spinbutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
