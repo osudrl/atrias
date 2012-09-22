@@ -80,8 +80,8 @@ void getParameters() {
     position_leg_motor_d_spinbutton->set_value(controllerDataOut.leg_d_gain);
     position_hip_motor_p_spinbutton->set_value(controllerDataOut.hip_p_gain);
     position_hip_motor_d_spinbutton->set_value(controllerDataOut.hip_d_gain);
-    position_leg_duration_spinbutton->set_value(controllerDataOut.leg_duration);
-    position_hip_duration_spinbutton->set_value(controllerDataOut.hip_duration);
+    position_leg_duration_spinbutton->set_value(controllerDataOut.legDuration);
+    position_hip_duration_spinbutton->set_value(controllerDataOut.hipDuration);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
