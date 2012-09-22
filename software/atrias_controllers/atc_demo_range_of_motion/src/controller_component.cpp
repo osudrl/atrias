@@ -91,7 +91,13 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     // If GUI input differs from current desired motor positions, update
     // current desired motor positions and reinitialize the smooth path
     // generators.
-    if (guiIn.mode == 0) {   // Manual mode.
+    if (guiIn.mode == 0 &&
+            spg0IsFinished &&
+            spg1IsFinished &&
+            spg2IsFinished &&
+            spg3IsFinished &&
+            spg4IsFinished &&
+            spg5IsFinished) {   // Manual mode.
         autoDemoStep = 0;
         if (desLeftAState.ang != guiIn.desLeftAPos && spg0IsFinished.get()) {
             desLeftAState.ang = guiIn.desLeftAPos;
