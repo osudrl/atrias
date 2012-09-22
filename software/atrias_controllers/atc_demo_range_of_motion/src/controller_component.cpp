@@ -125,7 +125,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
         }
     }
     else if (guiIn.mode == 1) {   // Few-at-a-time mode.
-        double la, lb, lh, ra, rb, rh;   // For temporary storage of angles for easier typing of the math.
+        static double la, lb, lh, ra, rb, rh;   // For temporary storage of angles for easier typing of the math.
         switch (autoDemoStep) {
             case 0:
                 // Move Left A all the way up.
@@ -144,23 +144,16 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 }
                 break;
             case 2:
-                // Move Left B far away from Left A.
+                // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
                 if (spg1IsFinished) {
-                    lb = la + (LEG_LOC_DIFF_MAX + 0.1);
+                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    la = lb - (LEG_LOC_DIFF_MAX - 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, 1);
+                    spg0Init(rs.lLeg.halfA.motorAngle, la, 1);
                     autoDemoStep++;
                 }
                 break;
             case 3:
-                // Move Left B all the way up while bringing Left A closer to B.
-                if (spg1IsFinished) {
-                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
-                    la = lb - (LEG_LOC_DIFF_MAX + 0.1);
-                    spg1Init(rs.lLeg.halfB.motorAngle, lb, 1.5);
-                    spg0Init(rs.lLeg.halfA.motorAngle, la, 0.5);   // Keep Left A moving faster than Left B so it can catch up.
-                    autoDemoStep++;
-                }
-            case 4:
                 // Move Left A close to Left B.
                 if (spg0IsFinished && spg1IsFinished) {
                     la = lb - (LEG_LOC_SAFETY_DISTANCE + 0.1);
@@ -168,17 +161,18 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                     autoDemoStep++;
                 }
                 break;
-            case 5:
-                // Move Left A down (we're going to point the toe down).
+            case 4:
+                // Move Left A far away from Left B.
                 if (spg0IsFinished) {
-                    la = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    la = lb - (LEG_LOC_DIFF_MAX - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, 1);
                     autoDemoStep++;
                 }
                 break;
-            case 6:
-                // Move Left B down next to Left A.
+            case 5:
+                // Back to neutral with toe pointing down.
                 if (spg0IsFinished) {
+                    la = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     lb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, 1);
                     autoDemoStep = 0;
