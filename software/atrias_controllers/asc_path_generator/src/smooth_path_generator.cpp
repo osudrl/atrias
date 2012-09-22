@@ -10,13 +10,17 @@ namespace controller {
 
 ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     RTT::TaskContext(name),
+    timeElapsed(0.0),
+    isFinished(true),
     logPort(name + "_log")
 {
     this->provides("smoothPath")
-        ->addOperation("run", &ASCSmoothPathGenerator::runController, this, ClientThread)
+        ->addOperation("runController", &ASCSmoothPathGenerator::runController, this, ClientThread)
         .doc("Run the controller.");
     this->provides("smoothPath")
         ->addOperation("init", &ASCSmoothPathGenerator::init, this, ClientThread);
+    this->addProperty("isFinished", isFinished)
+        .doc("Has this finished?");
 
     // For logging
     // Create a port
@@ -46,19 +50,19 @@ void ASCSmoothPathGenerator::init(double startVal, double endVal, double duratio
 
 // Output.
 MotorState ASCSmoothPathGenerator::runController() {
-    //// Return the function value and its derivative
-    //// TODO: Make this equation the proper one
-    //output.ang = amplitude*sin(accumulator);
-    //output.vel = amplitude*cos(accumulator)*2.0*M_PI*frequency;
-
     if (!isFinished) {
-        output.ang = (end - start) * 0.5 * (sin((M_PI/duration) * (timeElapsed - 0.5*M_PI))) + 0.5;
-        output.vel = (end - start) * 0.5 * (cos((M_PI/duration) * (timeElapsed - 0.5*M_PI))) * M_PI/duration + 0.5;
+        output.ang = start + (end - start) * (0.5 * (sin((M_PI/duration) * timeElapsed - 0.5*M_PI)) + 0.5);
+        output.vel = (end - start) * (0.5 * (cos((M_PI/duration) * timeElapsed - 0.5*M_PI)) * M_PI/duration);
         timeElapsed += 0.001;
 
         // If the elapsed time is greater than the requested duration, we are
         // done.
         if (timeElapsed >= duration) {
+            // This may be unnecessary, but make sure the output is at the end value.
+            output.ang = end;
+            output.vel = 0.0;
+
+            // And we are done.
             isFinished = true;
         }
     }

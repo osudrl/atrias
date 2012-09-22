@@ -72,12 +72,12 @@ MotorState ASCParabolaPathGenerator::runController(double frequency, double ampl
 		parabolaOut.ang = -4.0*amplitude*location*location +
 		                   4.0*amplitude*location;
 		
-		parabolaOut.vel = -8.0*amplitude*frequency*location + 4.0*amplitude*frequency;
+		parabolaOut.vel = -16.0*amplitude*frequency*location + 8.0*amplitude*frequency;
 	} else {
 		// We are in the second half of the cycle.
 		parabolaOut.ang = 4.0*amplitude*(location - 1.0)*(location - 1.0) -
 		                  4.0*amplitude*(location - 1.0);
-		parabolaOut.vel = 8.0*amplitude*frequency*(location - 1.0) - 4.0*amplitude*frequency;
+		parabolaOut.vel = 16.0*amplitude*frequency*(location - 1.0) - 8.0*amplitude*frequency;
 	}
 
 	// Stuff the msg and push to ROS for logging

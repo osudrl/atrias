@@ -54,43 +54,50 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 
 atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot_state rs) {
 	// Whether we should extend and retract, as opposed to swinging the legs.
-	bool extend = false;
-	
+	bool   extend  = guiIn.mode;
+	double freq    = guiIn.frequency;
+	double legampl = guiIn.leg_magnitude;
+	double hipampl = guiIn.hip_magnitude;
+	double legP    = guiIn.leg_p_gain;
+	double legD    = guiIn.leg_d_gain;
+	double hipP    = guiIn.hip_p_gain;
+	double hipD    = guiIn.hip_d_gain;
+
 	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
 	path2ControllerSetPhase((extend) ? 1.0 : 1.0);
 	path3ControllerSetPhase((extend) ? 1.0 : 0.0);
 	path5ControllerSetPhase((extend) ? 1.0 : 0.0);
 	
-	MotorState desiredLAState = path0Controller(1, .2);
-	desiredLAState.ang += M_PI / 4.0;
+	MotorState desiredLAState = path0Controller(freq, legampl);
+	desiredLAState.ang += M_PI / 3.0;
 	
-	MotorState desiredLBState = path1Controller(1, .2);
-	desiredLBState.ang += .75 * M_PI;
+	MotorState desiredLBState = path1Controller(freq, legampl);
+	desiredLBState.ang += 2.0 * M_PI / 3.0;
 	
-	MotorState desiredLHState = path2Controller((extend) ? 1.0 : 2.0, .1);
+	MotorState desiredLHState = path2Controller((extend) ? freq : (2.0*freq), hipampl);
 	desiredLHState.ang += 1.5 * M_PI;
 	
-	MotorState desiredRAState = path3Controller(1, .2);
-	desiredRAState.ang += M_PI / 4.0;
+	MotorState desiredRAState = path3Controller(freq, legampl);
+	desiredRAState.ang += M_PI / 3.0;
 	
-	MotorState desiredRBState = path4Controller(1, .2);
-	desiredRBState.ang += .75 * M_PI;
+	MotorState desiredRBState = path4Controller(freq, legampl);
+	desiredRBState.ang += 2.0 * M_PI / 3.0;
 	
-	MotorState desiredRHState = path5Controller((extend) ? 1.0 : 2.0, .1);
+	MotorState desiredRHState = path5Controller((extend) ? freq : (2.0*freq), legampl);
 	desiredRHState.ang += 1.5 * M_PI;
 	
-	P0.set(500.0);
-	D0.set(30.0);
-	P1.set(500.0);
-	D1.set(30.0);
-	P2.set(100.0);
-	D2.set(10.0);
-	P3.set(500.0);
-	D3.set(30.0);
-	P4.set(500.0);
-	D4.set(30.0);
-	P5.set(100.0);
-	D5.set(10.0);
+	P0.set(legP);
+	D0.set(legD);
+	P1.set(legP);
+	D1.set(legD);
+	P2.set(hipP);
+	D2.set(hipD);
+	P3.set(legP);
+	D3.set(legD);
+	P4.set(legP);
+	D4.set(legD);
+	P5.set(hipP);
+	D5.set(hipD);
 	
 	co.lLeg.motorCurrentA   = pd0Controller(desiredLAState.ang, rs.lLeg.halfA.motorAngle, desiredLAState.vel, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB   = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
