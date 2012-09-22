@@ -54,14 +54,14 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 
 atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot_state rs) {
 	// Whether we should extend and retract, as opposed to swinging the legs.
-	bool   extend  = false;
-	double freq    = 1.0;
-	double legampl = .2;
-	double hipampl = .05;
-	double legP    = 600.0;
-	double legD    = 40.0;
-	double hipP    = 0.0;
-	double hipD    = 0.0;
+	bool   extend  = guiIn.mode;
+	double freq    = guiIn.frequency;
+	double legampl = guiIn.leg_magnitude;
+	double hipampl = guiIn.hip_magnitude;
+	double legP    = guiIn.leg_p_gain;
+	double legD    = guiIn.leg_d_gain;
+	double hipP    = guiIn.hip_p_gain;
+	double hipD    = guiIn.hip_d_gain;
 
 	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
 	path2ControllerSetPhase((extend) ? 1.0 : 1.0);
