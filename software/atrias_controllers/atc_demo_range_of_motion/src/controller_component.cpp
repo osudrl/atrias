@@ -220,6 +220,12 @@ bool ATCDemoRangeOfMotion::configureHook() {
     P3 = pd3->properties()->getProperty("P");
     P4 = pd4->properties()->getProperty("P");
     P5 = pd5->properties()->getProperty("P");
+    spg0IsFinished = spg0->properties()->getProperty("isFinished");
+    spg1IsFinished = spg1->properties()->getProperty("isFinished");
+    spg2IsFinished = spg2->properties()->getProperty("isFinished");
+    spg3IsFinished = spg3->properties()->getProperty("isFinished");
+    spg4IsFinished = spg4->properties()->getProperty("isFinished");
+    spg5IsFinished = spg5->properties()->getProperty("isFinished");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
