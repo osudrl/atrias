@@ -116,7 +116,7 @@ void guiUpdate() {
     controllerDataOut.hip_d_gain = position_hip_motor_d_spinbutton->get_value();
     controllerDataOut.legDuration = position_leg_duration_spinbutton->get_value();
     controllerDataOut.hipDuration = position_hip_duration_spinbutton->get_value();
-    controllerDataOut.mode = position_mode_combobox->get_active();
+    controllerDataOut.mode = position_mode_combobox->get_active_row_number();
 
     pub.publish(controllerDataOut);
 }

@@ -13,3 +13,5 @@ float64 hip_d_gain
 float64 legDuration
 float64 hipDuration
 
+uint8 mode
+

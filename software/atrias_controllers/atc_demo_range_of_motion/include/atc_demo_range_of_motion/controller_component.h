@@ -120,6 +120,9 @@ private:
                desRightBState,
                desRightHipState;
 
+    // Current step number in automated demo.
+    uint8_t autoDemoStep;
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
