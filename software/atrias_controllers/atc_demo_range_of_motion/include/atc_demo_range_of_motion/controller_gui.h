@@ -34,6 +34,8 @@ Gtk::SpinButton *position_left_A_spinbutton,
                 *position_leg_duration_spinbutton,
                 *position_hip_duration_spinbutton;
 
+Gtk::ComboBox *position_mode_combobox;
+
 void controllerCallback(const atc_demo_range_of_motion::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */

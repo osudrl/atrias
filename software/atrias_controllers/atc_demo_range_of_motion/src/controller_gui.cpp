@@ -20,12 +20,14 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("position_hip_motor_d_spinbutton", position_hip_motor_d_spinbutton);
     gui->get_widget("position_leg_duration_spinbutton", position_leg_duration_spinbutton);
     gui->get_widget("position_hip_duration_spinbutton", position_hip_duration_spinbutton);
+    gui->get_widget("position_mode_combobox", position_mode_combobox);
 
     if (position_left_A_spinbutton && position_left_B_spinbutton && position_left_hip_spinbutton &&
         position_right_A_spinbutton && position_right_B_spinbutton && position_right_hip_spinbutton &&
         position_leg_motor_p_spinbutton && position_leg_motor_d_spinbutton &&
         position_hip_motor_p_spinbutton && position_hip_motor_d_spinbutton &&
-        position_leg_duration_spinbutton && position_hip_duration_spinbutton) {
+        position_leg_duration_spinbutton && position_hip_duration_spinbutton &&
+        position_mode_combobox) {
         // Set ranges.
         position_left_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE, LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
         position_left_B_spinbutton->set_range(LEG_B_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE, LEG_B_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
@@ -114,6 +116,7 @@ void guiUpdate() {
     controllerDataOut.hip_d_gain = position_hip_motor_d_spinbutton->get_value();
     controllerDataOut.legDuration = position_leg_duration_spinbutton->get_value();
     controllerDataOut.hipDuration = position_hip_duration_spinbutton->get_value();
+    controllerDataOut.mode = position_mode_combobox->get_active();
 
     pub.publish(controllerDataOut);
 }
