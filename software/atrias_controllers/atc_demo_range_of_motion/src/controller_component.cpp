@@ -129,7 +129,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
         switch (autoDemoStep) {
             case 0:
                 // Move Left A all the way up.
-                if (spg1IsFinished) {
+                if (spg0IsFinished && spg1IsFinished) {
                     la = LEG_A_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, 1);   // This will set spg0IsFinished to false.
                     autoDemoStep++;
@@ -174,6 +174,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 if (spg0IsFinished) {
                     la = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     lb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    spg0Init(rs.lLeg.halfA.motorAngle, la, 1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, 1);
                     autoDemoStep = 0;
                 }
