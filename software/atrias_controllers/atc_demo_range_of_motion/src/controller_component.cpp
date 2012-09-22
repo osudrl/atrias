@@ -148,84 +148,88 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
 bool ATCDemoRangeOfMotion::configureHook() {
     // Connect to the subcontrollers
     pd0 = this->getPeer(pd0Name);
-    if (pd0)
+    if (pd0) {
         pd0RunController = pd0->provides("pd")->getOperation("runController");
+        P0 = pd0->properties()->getProperty("P");
+        D0 = pd0->properties()->getProperty("D");
+    }
 
     pd1 = this->getPeer(pd1Name);
-    if (pd1)
+    if (pd1) {
         pd1RunController = pd1->provides("pd")->getOperation("runController");
+        P1 = pd1->properties()->getProperty("P");
+        D1 = pd1->properties()->getProperty("D");
+    }
 
     pd2 = this->getPeer(pd2Name);
-    if (pd2)
+    if (pd2) {
         pd2RunController = pd2->provides("pd")->getOperation("runController");
+        P2 = pd2->properties()->getProperty("P");
+        D2 = pd2->properties()->getProperty("D");
+    }
 
     pd3 = this->getPeer(pd3Name);
-    if (pd3)
+    if (pd3) {
         pd3RunController = pd3->provides("pd")->getOperation("runController");
+        P3 = pd3->properties()->getProperty("P");
+        D3 = pd3->properties()->getProperty("D");
+    }
 
     pd4 = this->getPeer(pd4Name);
-    if (pd4)
+    if (pd4) {
         pd4RunController = pd4->provides("pd")->getOperation("runController");
+        P4 = pd4->properties()->getProperty("P");
+        D4 = pd4->properties()->getProperty("D");
+    }
 
     pd5 = this->getPeer(pd5Name);
-    if (pd5)
+    if (pd5) {
         pd5RunController = pd5->provides("pd")->getOperation("runController");
+        P5 = pd5->properties()->getProperty("P");
+        D5 = pd5->properties()->getProperty("D");
+    }
 
     spg0 = this->getPeer(spg0Name);
     if (spg0) {
         spg0Init          = spg0->provides("smoothPath")->getOperation("init");
         spg0RunController = spg0->provides("smoothPath")->getOperation("runController");
+        spg0IsFinished    = spg0->properties()->getProperty("isFinished");
     }
 
     spg1 = this->getPeer(spg1Name);
     if (spg1) {
         spg1Init          = spg1->provides("smoothPath")->getOperation("init");
         spg1RunController = spg1->provides("smoothPath")->getOperation("runController");
+        spg1IsFinished    = spg1->properties()->getProperty("isFinished");
     }
 
     spg2 = this->getPeer(spg2Name);
     if (spg2) {
         spg2Init          = spg2->provides("smoothPath")->getOperation("init");
         spg2RunController = spg2->provides("smoothPath")->getOperation("runController");
+        spg2IsFinished    = spg2->properties()->getProperty("isFinished");
     }
 
     spg3 = this->getPeer(spg3Name);
     if (spg3) {
         spg3Init          = spg3->provides("smoothPath")->getOperation("init");
         spg3RunController = spg3->provides("smoothPath")->getOperation("runController");
+        spg3IsFinished    = spg3->properties()->getProperty("isFinished");
     }
 
     spg4 = this->getPeer(spg4Name);
     if (spg4) {
         spg4Init          = spg4->provides("smoothPath")->getOperation("init");
         spg4RunController = spg4->provides("smoothPath")->getOperation("runController");
+        spg4IsFinished    = spg4->properties()->getProperty("isFinished");
     }
 
     spg5 = this->getPeer(spg5Name);
     if (spg5) {
         spg5Init          = spg5->provides("smoothPath")->getOperation("init");
         spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
+        spg5IsFinished    = spg5->properties()->getProperty("isFinished");
     }
-
-    // Get references to subcontroller component properties
-    D0 = pd0->properties()->getProperty("D");
-    D1 = pd1->properties()->getProperty("D");
-    D2 = pd2->properties()->getProperty("D");
-    D3 = pd3->properties()->getProperty("D");
-    D4 = pd4->properties()->getProperty("D");
-    D5 = pd5->properties()->getProperty("D");
-    P0 = pd0->properties()->getProperty("P");
-    P1 = pd1->properties()->getProperty("P");
-    P2 = pd2->properties()->getProperty("P");
-    P3 = pd3->properties()->getProperty("P");
-    P4 = pd4->properties()->getProperty("P");
-    P5 = pd5->properties()->getProperty("P");
-    spg0IsFinished = spg0->properties()->getProperty("isFinished");
-    spg1IsFinished = spg1->properties()->getProperty("isFinished");
-    spg2IsFinished = spg2->properties()->getProperty("isFinished");
-    spg3IsFinished = spg3->properties()->getProperty("isFinished");
-    spg4IsFinished = spg4->properties()->getProperty("isFinished");
-    spg5IsFinished = spg5->properties()->getProperty("isFinished");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
