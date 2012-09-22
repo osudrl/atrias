@@ -126,10 +126,10 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     // Stuff the msg
     co.lLeg.motorCurrentA   = pd0RunController(desLeftAState.ang,    rs.lLeg.halfA.motorAngle, desLeftAState.vel,    rs.lLeg.halfA.motorVelocity);
     co.lLeg.motorCurrentB   = pd1RunController(desLeftBState.ang,    rs.lLeg.halfB.motorAngle, desLeftBState.vel,    rs.lLeg.halfB.motorVelocity);
-    co.lLeg.motorCurrentHip = pd2RunController(desLeftHipState.ang,  rs.lLeg.hip.legBodyAngle,   desLeftHipState.vel,  rs.lLeg.hip.motorVelocity);
+    co.lLeg.motorCurrentHip = pd2RunController(desLeftHipState.ang,  rs.lLeg.hip.legBodyAngle, desLeftHipState.vel,  rs.lLeg.hip.motorVelocity);
     co.rLeg.motorCurrentA   = pd0RunController(desRightAState.ang,   rs.rLeg.halfA.motorAngle, desRightAState.vel,   rs.rLeg.halfA.motorVelocity);
     co.rLeg.motorCurrentB   = pd1RunController(desRightBState.ang,   rs.rLeg.halfB.motorAngle, desRightBState.vel,   rs.rLeg.halfB.motorVelocity);
-    co.rLeg.motorCurrentHip = pd2RunController(desRightHipState.ang, rs.rLeg.hip.legBodyAngle,   desRightHipState.vel, rs.rLeg.hip.motorVelocity);
+    co.rLeg.motorCurrentHip = pd2RunController(desRightHipState.ang, rs.rLeg.hip.legBodyAngle, desRightHipState.vel, rs.rLeg.hip.motorVelocity);
 
     // end control code //
 
