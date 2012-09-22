@@ -30,7 +30,9 @@ Gtk::SpinButton *position_left_A_spinbutton,
                 *position_leg_motor_p_spinbutton,
                 *position_leg_motor_d_spinbutton,
                 *position_hip_motor_p_spinbutton,
-                *position_hip_motor_d_spinbutton;
+                *position_hip_motor_d_spinbutton,
+                *position_leg_duration_spinbutton,
+                *position_hip_duration_spinbutton;
 
 void controllerCallback(const atc_demo_range_of_motion::controller_status &status);
 
