@@ -10,13 +10,17 @@ namespace controller {
 
 ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
     RTT::TaskContext(name),
+    timeElapsed(0.0),
+    isFinished(true),
     logPort(name + "_log")
 {
     this->provides("smoothPath")
-        ->addOperation("run", &ASCSmoothPathGenerator::runController, this, ClientThread)
+        ->addOperation("runController", &ASCSmoothPathGenerator::runController, this, ClientThread)
         .doc("Run the controller.");
     this->provides("smoothPath")
         ->addOperation("init", &ASCSmoothPathGenerator::init, this, ClientThread);
+    this->addProperty("isFinished", isFinished)
+        .doc("Has this finished?");
 
     // For logging
     // Create a port
