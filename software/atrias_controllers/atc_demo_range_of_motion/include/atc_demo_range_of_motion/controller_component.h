@@ -85,6 +85,12 @@ private:
     Property<double> P3;
     Property<double> P4;
     Property<double> P5;
+    Property<bool> spg0IsFinished;
+    Property<bool> spg1IsFinished;
+    Property<bool> spg2IsFinished;
+    Property<bool> spg3IsFinished;
+    Property<bool> spg4IsFinished;
+    Property<bool> spg5IsFinished;
 
     // Subcontroller operations
     OperationCaller<double(double, double, double, double)> pd0RunController;

@@ -90,27 +90,27 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     // If GUI input differs from current desired motor positions, update
     // current desired motor positions and reinitialize the smooth path
     // generators.
-    if (desLeftAState.ang != guiIn.desLeftAPos) {
+    if (desLeftAState.ang != guiIn.desLeftAPos && spg0IsFinished.get()) {
         desLeftAState.ang = guiIn.desLeftAPos;
         spg0Init(rs.lLeg.halfA.motorAngle, desLeftAState.ang, guiIn.legDuration);
     }
-    if (desLeftBState.ang != guiIn.desLeftBPos) {
+    if (desLeftBState.ang != guiIn.desLeftBPos && spg1IsFinished.get()) {
         desLeftBState.ang = guiIn.desLeftBPos;
         spg1Init(rs.lLeg.halfB.motorAngle, desLeftBState.ang, guiIn.legDuration);
     }
-    if (desLeftHipState.ang != guiIn.desLeftHipPos) {
+    if (desLeftHipState.ang != guiIn.desLeftHipPos && spg2IsFinished.get()) {
         desLeftHipState.ang = guiIn.desLeftHipPos;
         spg2Init(rs.lLeg.hip.legBodyAngle, desLeftHipState.ang, guiIn.hipDuration);
     }
-    if (desRightAState.ang != guiIn.desRightAPos) {
+    if (desRightAState.ang != guiIn.desRightAPos && spg3IsFinished.get()) {
         desRightAState.ang = guiIn.desRightAPos;
         spg3Init(rs.rLeg.halfA.motorAngle, desRightAState.ang, guiIn.legDuration);
     }
-    if (desRightBState.ang != guiIn.desRightBPos) {
+    if (desRightBState.ang != guiIn.desRightBPos && spg4IsFinished.get()) {
         desRightBState.ang = guiIn.desRightBPos;
         spg4Init(rs.rLeg.halfB.motorAngle, desRightBState.ang, guiIn.legDuration);
     }
-    if (desRightHipState.ang != guiIn.desRightHipPos) {
+    if (desRightHipState.ang != guiIn.desRightHipPos && spg5IsFinished.get()) {
         desRightHipState.ang = guiIn.desRightHipPos;
         spg5Init(rs.rLeg.hip.legBodyAngle, desRightHipState.ang, guiIn.hipDuration);
     }
