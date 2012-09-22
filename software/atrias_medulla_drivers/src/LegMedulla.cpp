@@ -212,40 +212,48 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			if (!skipMotorEncoder) {
+				//log(RTT::Info) << "Left leg A motor encoder counts: " << *motorEncoder << RTT::endlog();
 				robotState.lLeg.halfA.motorAngle =
 					encTicksToRad(*motorEncoder, LEFT_TRAN_A_CALIB_VAL,  LEFT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
 			}
 			if (!skipLegEncoder) {
+				//log(RTT::Info) << "Left leg A leg encoder counts: " << *legEncoder << RTT::endlog();
 				robotState.lLeg.halfA.legAngle   =
 					encTicksToRad(*legEncoder,   LEFT_LEG_A_CALIB_VAL,   LEFT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			if (!skipMotorEncoder) {
+				//log(RTT::Info) << "Left leg B motor encoder counts: " << *motorEncoder << RTT::endlog();
 				robotState.lLeg.halfB.motorAngle =
 					encTicksToRad(*motorEncoder, LEFT_TRAN_B_CALIB_VAL,  LEFT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
 			}
 			if (!skipLegEncoder) {
+				//log(RTT::Info) << "Left leg B leg encoder counts: " << *legEncoder << RTT::endlog();
 				robotState.lLeg.halfB.legAngle   =
 					encTicksToRad(*legEncoder,   LEFT_LEG_B_CALIB_VAL,   LEFT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			if (!skipMotorEncoder) {
+				//log(RTT::Info) << "Right leg A motor encoder counts: " << *motorEncoder << RTT::endlog();
 				robotState.rLeg.halfA.motorAngle =
 					encTicksToRad(*motorEncoder, RIGHT_TRAN_A_CALIB_VAL, RIGHT_TRAN_A_RAD_PER_CNT, LEG_A_CALIB_LOC);
 			}
 			if (!skipLegEncoder) {
+				//log(RTT::Info) << "Right leg A leg encoder counts: " << *legEncoder << RTT::endlog();
 				robotState.rLeg.halfA.legAngle   =
 					encTicksToRad(*legEncoder,   RIGHT_LEG_A_CALIB_VAL,  RIGHT_LEG_A_RAD_PER_CNT,  LEG_A_CALIB_LOC) + legPositionOffset;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			if (!skipMotorEncoder) {
+				//log(RTT::Info) << "Right leg B motor encoder counts: " << *motorEncoder << RTT::endlog();
 				robotState.rLeg.halfB.motorAngle =
 					encTicksToRad(*motorEncoder, RIGHT_TRAN_B_CALIB_VAL, RIGHT_TRAN_B_RAD_PER_CNT, LEG_B_CALIB_LOC);
 			}
 			if (!skipLegEncoder) {
+				//log(RTT::Info) << "Right leg B leg encoder counts: " << *legEncoder << RTT::endlog();
 				robotState.rLeg.halfB.legAngle   =
 					encTicksToRad(*legEncoder,   RIGHT_LEG_B_CALIB_VAL,  RIGHT_LEG_B_RAD_PER_CNT,  LEG_B_CALIB_LOC) + legPositionOffset;
 			}

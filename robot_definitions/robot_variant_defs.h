@@ -11,7 +11,7 @@
 #undef INCLUDE_LEFT_LEG
 
 #define INCLUDE_RIGHT_LEG
-#include "leg1_definitions.h"
+#include "leg3_definitions.h"
 #undef INCLUDE_RIGHT_LEG
 
 /** @brief The pitch encoder's reading when the robot is vertical.
