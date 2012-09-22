@@ -148,7 +148,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
             case 3:
                 // Move Left B all the way up while bringing Left A closer to B.
                 if (spg1IsFinished) {
-                    lb = LEG_B_MOTOR_MAX_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     la = lb - (LEG_LOC_DIFF_MAX + 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, 1.5);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, 0.5);   // Keep Left A moving faster than Left B so it can catch up.
