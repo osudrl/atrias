@@ -78,10 +78,10 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	}
 
 	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
-	path2ControllerSetPhase((extend) ? 1.0 : 0.5);
+	path2ControllerSetPhase((extend) ? 1.0 : 1.5);
 	path3ControllerSetPhase((extend) ? 1.0 : 1.0);
 	path4ControllerSetPhase((extend) ? 0.0 : 1.0);
-	path5ControllerSetPhase((extend) ? 1.0 : 1.5);
+	path5ControllerSetPhase((extend) ? 1.0 : 0.5);
 	
 	MotorState desiredLAState = path0Controller(freq, legampl);
 	desiredLAState.ang += M_PI / 3.0;
@@ -105,9 +105,13 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	double inAngle  = M_PI/180.0*10.0;
 	double outAngle = M_PI/180.0*20.0;
 	if (desiredLHState.ang < (vertical - inAngle))
+    {
 		desiredLHState.ang =  vertical - inAngle;
+    }
 	if (desiredLHState.ang > (vertical + outAngle))
+    {
 		desiredLHState.ang =  vertical + outAngle;
+    }
 	if (desiredRHState.ang > (vertical + inAngle))
 		desiredRHState.ang =  vertical + inAngle;
 	if (desiredRHState.ang < (vertical - outAngle))
