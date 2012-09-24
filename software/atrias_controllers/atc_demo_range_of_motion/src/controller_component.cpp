@@ -131,7 +131,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 // Move Left A all the way up and Left B far away from A.
                 if (spg0IsFinished && spg1IsFinished) {
                     la = LEG_A_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
-                    lb = la + (LEG_LOC_DIFF_MAX - 0.1);
+                    lb = la + (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     autoDemoStep++;
@@ -149,7 +149,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
                 if (spg1IsFinished) {
                     lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
-                    la = lb - (LEG_LOC_DIFF_MAX - 0.1);
+                    la = lb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     autoDemoStep++;
@@ -166,7 +166,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
             case 4:
                 // Move Left A far away from Left B.
                 if (spg0IsFinished) {
-                    la = lb - (LEG_LOC_DIFF_MAX - 0.1);
+                    la = lb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     autoDemoStep++;
                 }
