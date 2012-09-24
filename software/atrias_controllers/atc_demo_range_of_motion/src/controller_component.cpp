@@ -147,21 +147,21 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                     lb = LEG_B_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     ra = LEG_A_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
-                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 2:
                 // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
-                if (spg1IsFinished && spg4IsFinished) {
-                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                if (spg1IsFinished && spg3IsFinished) {
                     la = LEG_A_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     ra = LEG_A_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     rb = LEG_B_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
-                    spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
-                    spg4Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
-                    spg3Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
+                    spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
@@ -171,17 +171,17 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                     la = lb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     rb = ra + (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
-                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 4:
                 // Back to neutral with toe pointing down.
-                if (spg0IsFinished && spg3IsFinished) {
+                if (spg0IsFinished && spg4IsFinished) {
                     la = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     lb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
-                    rb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     ra = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    rb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
