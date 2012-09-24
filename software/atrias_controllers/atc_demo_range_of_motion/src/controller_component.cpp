@@ -129,47 +129,63 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
         switch (autoDemoStep) {
             case 0:
                 // Move Left A all the way up and Left B far away from A.
-                if (spg0IsFinished && spg1IsFinished) {
+                if (spg0IsFinished && spg1IsFinished && spg3IsFinished && spg4IsFinished) {
                     la = LEG_A_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     lb = la + (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
+                    rb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    ra = rb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 1: 
                 // Move Left B close to Left A.
-                if (spg0IsFinished) {
+                if (spg0IsFinished && spg1IsFinished && spg3IsFinished && spg4IsFinished) {
                     lb = LEG_B_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    ra = LEG_A_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 2:
                 // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
-                if (spg1IsFinished) {
+                if (spg1IsFinished && spg4IsFinished) {
                     lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     la = LEG_A_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    ra = LEG_A_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    rb = LEG_B_MOTOR_MIN_LOC + (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 3:
                 // Move Left A close to Left B.
-                if (spg0IsFinished && spg1IsFinished) {
+                if (spg0IsFinished && spg1IsFinished && spg3IsFinished && spg4IsFinished) {
                     la = lb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
+                    rb = ra + (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 4:
                 // Back to neutral with toe pointing down.
-                if (spg0IsFinished) {
+                if (spg0IsFinished && spg3IsFinished) {
                     la = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     lb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    rb = 0.5*M_PI + (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    ra = 0.5*M_PI - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
+                    spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+                    spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
                     autoDemoStep = 0;
                 }
                 break;
