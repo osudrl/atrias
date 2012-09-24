@@ -146,19 +146,19 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 }
                 break;
             case 2:
-                // Move Left A close to Left B.
-                if (spg0IsFinished && spg1IsFinished) {
+                // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
+                if (spg1IsFinished) {
+                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
                     la = LEG_A_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                    spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     autoDemoStep++;
                 }
                 break;
             case 3:
-                // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
-                if (spg1IsFinished) {
-                    lb = LEG_B_MOTOR_MAX_LOC - (LEG_LOC_SAFETY_DISTANCE + 0.1);
+                // Move Left A close to Left B.
+                if (spg0IsFinished && spg1IsFinished) {
                     la = lb - (LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE - 0.1);
-                    spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
                     spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
                     autoDemoStep++;
                 }
