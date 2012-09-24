@@ -70,6 +70,13 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
         // Get hip starting positions
         lHipStart = rs.lLeg.hip.legBodyAngle;
         rHipStart = rs.rLeg.hip.legBodyAngle;
+        // Reset the sin controllers
+        sin0Reset();
+        sin1Reset();
+        sin2Reset();
+        sin3Reset();
+        sin4Reset();
+        sin5Reset();
         return co;
     }
 
@@ -206,25 +213,38 @@ bool ATCLegSinWave::configureHook() {
     // Sin controllers
     sin0 = this->getPeer(sin0Name);
     if (sin0)
+    {
         sin0Controller = sin0->provides("sinGen")->getOperation("runController");
+        sin0Reset      = sin0->provides("sinGen")->getOperation("reset");
+    }
 
     sin1 = this->getPeer(sin1Name);
     if (sin1)
+    {
         sin1Controller = sin1->provides("sinGen")->getOperation("runController");
+        sin1Reset      = sin1->provides("sinGen")->getOperation("reset");
+    }
 
     sin2 = this->getPeer(sin2Name);
     if (sin2)
+    {
         sin2Controller = sin2->provides("sinGen")->getOperation("runController");
+        sin2Reset      = sin2->provides("sinGen")->getOperation("reset");
+    }
 
     sin3 = this->getPeer(sin3Name);
     if (sin3)
+    {
         sin3Controller = sin3->provides("sinGen")->getOperation("runController");
+        sin3Reset      = sin3->provides("sinGen")->getOperation("reset");
+    }
 
     sin4 = this->getPeer(sin4Name);
     if (sin4)
     {
         sin4Controller = sin4->provides("sinGen")->getOperation("runController");
         sin4SetPhase   = sin4->provides("sinGen")->getOperation("setPhase");
+        sin4Reset      = sin4->provides("sinGen")->getOperation("reset");
     }
 
     sin5 = this->getPeer(sin5Name);
@@ -232,6 +252,7 @@ bool ATCLegSinWave::configureHook() {
     {
         sin5Controller = sin5->provides("sinGen")->getOperation("runController");
         sin5SetPhase   = sin5->provides("sinGen")->getOperation("setPhase");
+        sin5Reset      = sin5->provides("sinGen")->getOperation("reset");
     }
 
     // Transforms

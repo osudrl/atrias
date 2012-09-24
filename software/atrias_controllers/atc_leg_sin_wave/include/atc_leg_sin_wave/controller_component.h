@@ -85,13 +85,20 @@ private:
     Property<double> D5;
 
     OperationCaller<MotorState(double, double)> sin0Controller;
+    OperationCaller<void(void)> sin0Reset;
     OperationCaller<MotorState(double, double)> sin1Controller;
+    OperationCaller<void(void)> sin1Reset;
     OperationCaller<MotorState(double, double)> sin2Controller;
+    OperationCaller<void(void)> sin2Reset;
     OperationCaller<MotorState(double, double)> sin3Controller;
+    OperationCaller<void(void)> sin3Reset;
     OperationCaller<MotorState(double, double)> sin4Controller;
     OperationCaller<void(double)>               sin4SetPhase;
+    OperationCaller<void(void)> sin4Reset;
     OperationCaller<MotorState(double, double)> sin5Controller;
     OperationCaller<void(double)>               sin5SetPhase;
+    OperationCaller<void(void)> sin5Reset;
+
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
     OperationCaller<MotorVelocity(MotorState, MotorState)> legToMotorVel;
     OperationCaller<double(double, double, double, double)> pd0Controller;
