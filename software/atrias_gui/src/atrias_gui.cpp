@@ -258,7 +258,10 @@ void load_parameters() {
             // use nh.hasParam() here, but nh is out of the scope of this
             // function.   TODO: This could hang if the exec() call above
             // fails.  I need another check in the while().
-            while (!ros::param::has("/atrias_gui")) {}
+			// This has been disabled (Soo-Hyun, 9/24/12) because of the hang
+			// mentioned above. The effect is that the load parameter button
+			// must be pressed twice, but that is better than hanging.
+			//while (!ros::param::has("/atrias_gui")) {}
             controllerGetParameters();
             ROS_INFO("GUI: Loaded GUI settings from %s.", metadata[controllerName].guiConfigPath.c_str());
         }
