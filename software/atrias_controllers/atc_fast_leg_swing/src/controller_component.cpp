@@ -34,6 +34,9 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 	// For the GUI
 	addEventPort(guiDataIn);
 	pubTimer = new GuiPublishTimer(20);
+	
+	lHipStart = 3.0 * M_PI / 2.0;
+	rHipStart = 3.0 * M_PI / 2.0;
 
 	// Logging
 	// Create a port
@@ -62,11 +65,23 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	double legD    = guiIn.leg_d_gain;
 	double hipP    = guiIn.hip_p_gain;
 	double hipD    = guiIn.hip_d_gain;
+	
+	if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+		lHipStart = rs.lLeg.hip.legBodyAngle;
+		rHipStart = rs.rLeg.hip.legBodyAngle;
+		path0ControllerReset();
+		path1ControllerReset();
+		path2ControllerReset();
+		path3ControllerReset();
+		path4ControllerReset();
+		path5ControllerReset();
+	}
 
 	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
-	path2ControllerSetPhase((extend) ? 1.0 : 1.0);
-	path3ControllerSetPhase((extend) ? 1.0 : 0.0);
-	path5ControllerSetPhase((extend) ? 1.0 : 0.0);
+	path2ControllerSetPhase((extend) ? 1.0 : 0.5);
+	path3ControllerSetPhase((extend) ? 1.0 : 1.0);
+	path4ControllerSetPhase((extend) ? 0.0 : 1.0);
+	path5ControllerSetPhase((extend) ? 1.0 : 1.5);
 	
 	MotorState desiredLAState = path0Controller(freq, legampl);
 	desiredLAState.ang += M_PI / 3.0;
@@ -75,7 +90,7 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	desiredLBState.ang += 2.0 * M_PI / 3.0;
 	
 	MotorState desiredLHState = path2Controller((extend) ? freq : (2.0*freq), hipampl);
-	desiredLHState.ang += 1.5 * M_PI;
+	desiredLHState.ang += hipampl + lHipStart;
 	
 	MotorState desiredRAState = path3Controller(freq, legampl);
 	desiredRAState.ang += M_PI / 3.0;
@@ -83,8 +98,20 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	MotorState desiredRBState = path4Controller(freq, legampl);
 	desiredRBState.ang += 2.0 * M_PI / 3.0;
 	
-	MotorState desiredRHState = path5Controller((extend) ? freq : (2.0*freq), legampl);
-	desiredRHState.ang += 1.5 * M_PI;
+	MotorState desiredRHState = path5Controller((extend) ? freq : (2.0*freq), hipampl);
+	desiredRHState.ang += rHipStart - hipampl;
+	
+	double vertical = 3.0*M_PI/2.0;
+	double inAngle  = M_PI/180.0*10.0;
+	double outAngle = M_PI/180.0*20.0;
+	if (desiredLHState.ang < (vertical - inAngle))
+		desiredLHState.ang =  vertical - inAngle;
+	if (desiredLHState.ang > (vertical + outAngle))
+		desiredLHState.ang =  vertical + outAngle;
+	if (desiredRHState.ang > (vertical + inAngle))
+		desiredRHState.ang =  vertical + inAngle;
+	if (desiredRHState.ang < (vertical - outAngle))
+		desiredRHState.ang =  vertical - outAngle;
 	
 	P0.set(legP);
 	D0.set(legD);
@@ -119,37 +146,44 @@ bool ATCFastLegSwing::configureHook() {
 	// Connect to the subcontrollers
 	// Get references to subcontroller component properties
 	pathGenerator0 = this->getPeer(pathGenerator0Name);
-	if (pathGenerator0)
-		path0Controller = pathGenerator0->provides("parabolaGen")->getOperation("runController");
+	if (pathGenerator0) {
+		path0Controller      = pathGenerator0->provides("parabolaGen")->getOperation("runController");
+		path0ControllerReset = pathGenerator0->provides("parabolaGen")->getOperation("reset");
+	}
 		
 	pathGenerator1 = this->getPeer(pathGenerator1Name);
 	if (pathGenerator1) {
 		path1Controller         = pathGenerator1->provides("parabolaGen")->getOperation("runController");
 		path1ControllerSetPhase = pathGenerator1->provides("parabolaGen")->getOperation("setPhase");
+		path1ControllerReset    = pathGenerator1->provides("parabolaGen")->getOperation("reset");
 	}
 	
 	pathGenerator2 = this->getPeer(pathGenerator2Name);
 	if (pathGenerator2) {
 		path2Controller         = pathGenerator2->provides("parabolaGen")->getOperation("runController");
 		path2ControllerSetPhase = pathGenerator2->provides("parabolaGen")->getOperation("setPhase");
+		path2ControllerReset    = pathGenerator2->provides("parabolaGen")->getOperation("reset");
 	}
 	
 	pathGenerator3 = this->getPeer(pathGenerator3Name);
 	if (pathGenerator3) {
 		path3Controller         = pathGenerator3->provides("parabolaGen")->getOperation("runController");
 		path3ControllerSetPhase = pathGenerator3->provides("parabolaGen")->getOperation("setPhase");
+		path3ControllerReset    = pathGenerator3->provides("parabolaGen")->getOperation("reset");
 	}
 		
 	pathGenerator4 = this->getPeer(pathGenerator4Name);
 	if (pathGenerator4) {
 		path4Controller         = pathGenerator4->provides("parabolaGen")->getOperation("runController");
 		path4ControllerSetPhase = pathGenerator4->provides("parabolaGen")->getOperation("setPhase");
+		path4ControllerReset    = pathGenerator4->provides("parabolaGen")->getOperation("reset");
 	}
 	
 	pathGenerator5 = this->getPeer(pathGenerator5Name);
 	if (pathGenerator5) {
 		path5Controller         = pathGenerator5->provides("parabolaGen")->getOperation("runController");
 		path5ControllerSetPhase = pathGenerator5->provides("parabolaGen")->getOperation("setPhase");
+		path5ControllerReset    = pathGenerator5->provides("parabolaGen")->getOperation("reset");
 	}
 	
 	pd0 = this->getPeer(pd0Name);

@@ -43,6 +43,9 @@ class ATCFastLegSwing : public TaskContext {
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
 		atrias_msgs::controller_output co;
+		
+		double lHipStart;
+		double rHipStart;
 
 		// Subcontroller names
 		std::string pathGenerator0Name;
@@ -88,16 +91,22 @@ class ATCFastLegSwing : public TaskContext {
 		
 		// Subcontroller operations
 		OperationCaller<MotorState(double, double)> path0Controller;
+		OperationCaller<void(void)>                 path0ControllerReset;
 		OperationCaller<MotorState(double, double)> path1Controller;
 		OperationCaller<void(double)>               path1ControllerSetPhase;
+		OperationCaller<void(void)>                 path1ControllerReset;
 		OperationCaller<MotorState(double, double)> path2Controller;
 		OperationCaller<void(double)>               path2ControllerSetPhase;
+		OperationCaller<void(void)>                 path2ControllerReset;
 		OperationCaller<MotorState(double, double)> path3Controller;
 		OperationCaller<void(double)>               path3ControllerSetPhase;
+		OperationCaller<void(void)>                 path3ControllerReset;
 		OperationCaller<MotorState(double, double)> path4Controller;
 		OperationCaller<void(double)>               path4ControllerSetPhase;
+		OperationCaller<void(void)>                 path4ControllerReset;
 		OperationCaller<MotorState(double, double)> path5Controller;
 		OperationCaller<void(double)>               path5ControllerSetPhase;
+		OperationCaller<void(void)>                 path5ControllerReset;
 		OperationCaller<double(double, double, double, double)> pd0Controller;
 		OperationCaller<double(double, double, double, double)> pd1Controller;
 		OperationCaller<double(double, double, double, double)> pd2Controller;
