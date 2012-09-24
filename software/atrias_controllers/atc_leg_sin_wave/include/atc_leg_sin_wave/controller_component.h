@@ -105,6 +105,7 @@ private:
     double centerLength, centerAngle, hipCenter;
     double targetPos, currentPos, targetVel, currentVel;
     double hipPeriod, vertical, inAngle, outAngle;
+    double rHipStart, lHipStart;
     MotorAngle lMotorAngle, rMotorAngle;
     MotorVelocity lMotorVelocity, rMotorVelocity;
     MotorState lLegLen, lLegAng, rLegLen, rLegAng, lHip, rHip;

@@ -66,7 +66,12 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     co.rLeg.motorCurrentHip = 0.0;
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    {
+        // Get hip starting positions
+        lHipStart = rs.lLeg.hip.legBodyAngle;
+        rHipStart = rs.rLeg.hip.legBodyAngle;
         return co;
+    }
 
     // If the frequency doesn't make the period infinite
     if (guiIn.hip_frq > 0.001)
@@ -88,8 +93,6 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     // Set resonable center positions
     centerLength = 0.8;
     centerAngle = M_PI/2.0;
-    static double lHipStart = rs.lLeg.hip.legBodyAngle;
-    static double rHipStart = rs.rLeg.hip.legBodyAngle;
 
     lLegLen.ang = lLegLen.ang + centerLength;
 
