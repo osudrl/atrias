@@ -177,6 +177,12 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 ra = 0.5*M_PI - LEG_DEMO_SAFE_DIST;
                 rb = 0.5*M_PI + LEG_DEMO_SAFE_DIST;
                 runAutoDemoStep(rs);
+                break;
+            case 5:
+                // Loop back to beginning.
+                // TODO: This is a dumb artifact of Soo-Hyun's use of
+                // runAutoDemoStep. This will cause the demo controller to lose
+                // a second every 1000 seconds, but whatever.
                 autoDemoStep = 0;
                 break;
         }
