@@ -128,6 +128,10 @@ private:
     // Current step number in automated demo.
     uint8_t autoDemoStep;
 
+    // Function that initializes the smooth path generators and increments
+    // autoDemoStep.
+    void runAutoDemoStep(atrias_msgs::robot_state);
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;

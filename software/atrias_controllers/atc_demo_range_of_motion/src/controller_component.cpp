@@ -51,16 +51,16 @@ ATCDemoRangeOfMotion::ATCDemoRangeOfMotion(std::string name):
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
-void runAutoDemoStep(double la, double lb, double lh, double ra, double rb, double rh)
+void ATCDemoRangeOfMotion::runAutoDemoStep(atrias_msgs::robot_state rs)
 {
     if (spg0IsFinished && spg1IsFinished && spg2IsFinished &&
             spg3IsFinished && spg4IsFinished && spg5IsFinished) {
-        spg0Init(rs.lLeg.halfA.motorAngle, desLeftAState.ang,    guiIn.legDuration);
-        spg1Init(rs.lLeg.halfB.motorAngle, desLeftBState.ang,    guiIn.legDuration);
-        spg2Init(rs.lLeg.hip.legBodyAngle, desLeftHipState.ang,  guiIn.legDuration);
-        spg3Init(rs.rLeg.halfA.motorAngle, desRightAState.ang,   guiIn.legDuration);
-        spg4Init(rs.rLeg.halfB.motorAngle, desRightBState.ang,   guiIn.legDuration);
-        spg5Init(rs.rLeg.hip.legBodyAngle, desRightHipState.ang, guiIn.legDuration);
+        spg0Init(rs.lLeg.halfA.motorAngle, la, guiIn.legDuration);
+        spg1Init(rs.lLeg.halfB.motorAngle, lb, guiIn.legDuration);
+        spg2Init(rs.lLeg.hip.legBodyAngle, lh, guiIn.legDuration);
+        spg3Init(rs.rLeg.halfA.motorAngle, ra, guiIn.legDuration);
+        spg4Init(rs.rLeg.halfB.motorAngle, rb, guiIn.legDuration);
+        spg5Init(rs.rLeg.hip.legBodyAngle, rh, guiIn.legDuration);
 
         autoDemoStep++;
     }
@@ -148,13 +148,13 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 rb = LEG_B_MOTOR_MAX_LOC - LEG_DEMO_SAFE_DIST;
                 ra = rb - (LEG_LOC_DIFF_MAX - LEG_DEMO_SAFE_DIST);
                 rh = rs.rLeg.hip.legBodyAngle;
-                runAutoDemoStep();
+                runAutoDemoStep(rs);
                 break;
             case 1: 
                 // Move Left B close to Left A.
                 lb = LEG_B_MOTOR_MIN_LOC + LEG_DEMO_SAFE_DIST;
                 ra = LEG_A_MOTOR_MAX_LOC - LEG_DEMO_SAFE_DIST;
-                runAutoDemoStep();
+                runAutoDemoStep(rs);
                 break;
             case 2:
                 // Move Left B all the way up and keep A close enough to avoid hitting hardstop.
@@ -162,13 +162,13 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 lb = LEG_B_MOTOR_MAX_LOC - LEG_DEMO_SAFE_DIST;
                 ra = LEG_A_MOTOR_MIN_LOC + LEG_DEMO_SAFE_DIST;
                 rb = LEG_B_MOTOR_MIN_LOC + LEG_DEMO_SAFE_DIST;
-                runAutoDemoStep();
+                runAutoDemoStep(rs);
                 break;
             case 3:
                 // Move Left A close to Left B.
                 la = lb - (LEG_LOC_DIFF_MAX - LEG_DEMO_SAFE_DIST);
                 rb = ra + (LEG_LOC_DIFF_MAX - LEG_DEMO_SAFE_DIST);
-                runAutoDemoStep();
+                runAutoDemoStep(rs);
                 break;
             case 4:
                 // Back to neutral with toe pointing down.
@@ -176,7 +176,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
                 lb = 0.5*M_PI + LEG_DEMO_SAFE_DIST;
                 ra = 0.5*M_PI - LEG_DEMO_SAFE_DIST;
                 rb = 0.5*M_PI + LEG_DEMO_SAFE_DIST;
-                runAutoDemoStep();
+                runAutoDemoStep(rs);
                 autoDemoStep = 0;
                 break;
         }
