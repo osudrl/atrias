@@ -20,4 +20,4 @@ typekit/
 .tb_history
 orocos.log
 gui_config.yaml
-robot_definitions/robot_invariant_defs.h
+robot_definitions/robot_variant_defs.h
