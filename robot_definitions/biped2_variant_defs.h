@@ -63,10 +63,10 @@
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           4.57101731097
+#define LEFT_HIP_CALIB_POS          4.530874738177279
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          4.90961118586
+#define RIGHT_HIP_CALIB_POS         4.810127418496372
 
 #endif // ROBOT_VARIANT_DEFS_H
