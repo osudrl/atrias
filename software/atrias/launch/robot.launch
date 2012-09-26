@@ -3,8 +3,8 @@
     <include file="$(find atrias)/launch/gui.launch" />
 
     <!-- Set up remote (robot) machine information. -->
-    <machine name       = "i1000a-1"
-             address    = "i1000a-1"
+    <machine name       = "i1000a-2"
+             address    = "i1000a-2"
              user       = "root"
 			 env-loader = "/home/drl/atrias_env.sh"
              default    = "true" />
