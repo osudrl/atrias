@@ -8,7 +8,7 @@
              user       = "root"
 			 env-loader = "/home/drl/atrias_env.sh"
              default    = "true" />
-    <env name="ROS_MASTER_URI" value="http://cov020-hp0:11311" />
+    <env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />
 
     <node name   = "robot_launch_script"
 	      pkg    = "atrias"
