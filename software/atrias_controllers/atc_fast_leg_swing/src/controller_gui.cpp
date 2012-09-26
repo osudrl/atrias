@@ -26,8 +26,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
             sweep_radiobutton && extend_radiobutton) {
         // Set ranges.
         frequency_spinbutton->set_range(0, 10);
-        leg_magnitude_spinbutton->set_range(0, 3);
-        hip_magnitude_spinbutton->set_range(0, 1);
+        leg_magnitude_spinbutton->set_range(0, 1.5);   // Magnitude is distance away from center.
+        hip_magnitude_spinbutton->set_range(0, M_PI/12-.05);
         leg_p_spinbutton->set_range(0, 2000);
         leg_d_spinbutton->set_range(0, 200);
         hip_p_spinbutton->set_range(0, 500);
