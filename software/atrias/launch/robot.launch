@@ -6,14 +6,13 @@
     <machine name       = "i1000a-2"
              address    = "i1000a-2"
              user       = "root"
-			 env-loader = "/home/drl/atrias_env.sh"
+             env-loader = "/home/drl/atrias_env.sh"
              default    = "true" />
-    <env name="ROS_MASTER_URI" value="http://drl-guilaptop:11311" />
 
     <node name   = "robot_launch_script"
-	      pkg    = "atrias"
-		  type   = "robot.sh"
-		  output = "screen">
+              pkg    = "atrias"
+              type   = "robot.sh"
+              output = "screen">
     </node>
 
     <!--<include file="$(find atrias)/launch/orocos_ecat.launch" />-->
