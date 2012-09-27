@@ -39,8 +39,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_leg_motor_d_spinbutton->set_range(0, 300);
         position_hip_motor_p_spinbutton->set_range(0, 100);
         position_hip_motor_d_spinbutton->set_range(0, 10);
-        position_leg_duration_spinbutton->set_range(0, 5);
-        position_hip_duration_spinbutton->set_range(0, 5);
+        position_leg_duration_spinbutton->set_range(0.55, 5);
+        position_hip_duration_spinbutton->set_range(0.1, 5);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_demo_range_of_motion_status", 0, controllerCallback);
