@@ -21,7 +21,7 @@
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Frequnecy (Hz)</property>
+                    <property name="label" translatable="yes">Frequency (Hz)</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -62,7 +62,7 @@
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Leg magnitude</property>
+                    <property name="label" translatable="yes">Leg magnitude (rad)</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -103,7 +103,7 @@
                   <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Hip magnitude</property>
+                    <property name="label" translatable="yes">Hip magnitude (rad)</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
