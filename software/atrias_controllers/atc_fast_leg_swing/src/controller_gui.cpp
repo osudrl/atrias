@@ -26,8 +26,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
             sweep_radiobutton && extend_radiobutton) {
         // Set ranges.
         frequency_spinbutton->set_range(0, 10);
-        leg_magnitude_spinbutton->set_range(0, 1.5);   // Magnitude is distance away from center.
-        hip_magnitude_spinbutton->set_range(0, M_PI/12-.05);
+        leg_magnitude_spinbutton->set_range(0, 0.85);   // Magnitude is distance away from center.
+        hip_magnitude_spinbutton->set_range(0, 0.085);
         leg_p_spinbutton->set_range(0, 2000);
         leg_d_spinbutton->set_range(0, 200);
         hip_p_spinbutton->set_range(0, 500);
@@ -66,6 +66,14 @@ void guiUpdate() {
     controllerDataOut.hip_p_gain = hip_p_spinbutton->get_value();
     controllerDataOut.hip_d_gain = hip_d_spinbutton->get_value();
     controllerDataOut.mode = (sweep_radiobutton->get_active()) ? 0 : 1;
+
+    if (sweep_radiobutton->get_active()) {   // Sweep mode
+        leg_magnitude_spinbutton->set_range(0, 0.085);
+    }
+    else {
+        leg_magnitude_spinbutton->set_range(0, 0.25);
+    }
+
     pub.publish(controllerDataOut);
 }
 
