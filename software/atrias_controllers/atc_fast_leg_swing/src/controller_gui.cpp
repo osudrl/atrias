@@ -69,11 +69,12 @@ void guiUpdate() {
 
     if (sweep_radiobutton->get_active()) {   // Sweep mode
         leg_magnitude_spinbutton->set_range(0, 0.85);
-        leg_magnitude_spinbutton->set_value(0);
     }
     else {   // Extend mode.
         leg_magnitude_spinbutton->set_range(0, 0.25);
-        leg_magnitude_spinbutton->set_value(0);
+        if (leg_magnitude_spinbutton->get_value() > 0.25) {
+            leg_magnitude_spinbutton->set_value(0.25);
+        }
     }
 
     pub.publish(controllerDataOut);
