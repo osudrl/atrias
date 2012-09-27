@@ -48,6 +48,12 @@ class ATCFastLegSwing : public TaskContext {
 		double rHipStart;
 
 		// Subcontroller names
+        std::string spg0Name;
+        std::string spg1Name;
+        std::string spg2Name;
+        std::string spg3Name;
+        std::string spg4Name;
+        std::string spg5Name;
 		std::string pathGenerator0Name;
 		std::string pathGenerator1Name;
 		std::string pathGenerator2Name;
@@ -62,6 +68,12 @@ class ATCFastLegSwing : public TaskContext {
 		std::string pd5Name;
 		
 		// Subcontroller components
+        TaskContext *spg0;
+        TaskContext *spg1;
+        TaskContext *spg2;
+        TaskContext *spg3;
+        TaskContext *spg4;
+        TaskContext *spg5;
 		TaskContext *pathGenerator0;
 		TaskContext *pathGenerator1;
 		TaskContext *pathGenerator2;
@@ -88,8 +100,26 @@ class ATCFastLegSwing : public TaskContext {
 		Property<double> D4;
 		Property<double> P5;
 		Property<double> D5;
+        Property<bool> spg0IsFinished;
+        Property<bool> spg1IsFinished;
+        Property<bool> spg2IsFinished;
+        Property<bool> spg3IsFinished;
+        Property<bool> spg4IsFinished;
+        Property<bool> spg5IsFinished;
 		
 		// Subcontroller operations
+        OperationCaller<void(double, double, double)> spg0Init;
+        OperationCaller<void(double, double, double)> spg1Init;
+        OperationCaller<void(double, double, double)> spg2Init;
+        OperationCaller<void(double, double, double)> spg3Init;
+        OperationCaller<void(double, double, double)> spg4Init;
+        OperationCaller<void(double, double, double)> spg5Init;
+        OperationCaller<MotorState(void)> spg0RunController;
+        OperationCaller<MotorState(void)> spg1RunController;
+        OperationCaller<MotorState(void)> spg2RunController;
+        OperationCaller<MotorState(void)> spg3RunController;
+        OperationCaller<MotorState(void)> spg4RunController;
+        OperationCaller<MotorState(void)> spg5RunController;
 		OperationCaller<MotorState(double, double)> path0Controller;
 		OperationCaller<void(void)>                 path0ControllerReset;
 		OperationCaller<MotorState(double, double)> path1Controller;

@@ -18,6 +18,12 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 	.doc("Get robot_state from RTOps and return controller output.");
 
 	// Add properties
+    this->addProperty("spg0Name", spg0Name);
+    this->addProperty("spg1Name", spg1Name);
+    this->addProperty("spg2Name", spg2Name);
+    this->addProperty("spg3Name", spg3Name);
+    this->addProperty("spg4Name", spg4Name);
+    this->addProperty("spg5Name", spg5Name);
 	this->addProperty("pathGenerator0Name", pathGenerator0Name);
 	this->addProperty("pathGenerator1Name", pathGenerator1Name);
 	this->addProperty("pathGenerator2Name", pathGenerator2Name);
@@ -38,6 +44,8 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 	lHipStart = 3.0 * M_PI / 2.0;
 	rHipStart = 3.0 * M_PI / 2.0;
 
+    spgInitialized = false;   // Have the smooth path generators been initialized?
+
 	// Logging
 	// Create a port
 	addPort(logPort);
@@ -56,67 +64,104 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 }
 
 atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot_state rs) {
-	// Whether we should extend and retract, as opposed to swinging the legs.
-	bool   extend  = guiIn.mode;
-	double freq    = guiIn.frequency;
-	double legampl = guiIn.leg_magnitude;
-	double hipampl = guiIn.hip_magnitude;
-	double legP    = guiIn.leg_p_gain;
-	double legD    = guiIn.leg_d_gain;
-	double hipP    = guiIn.hip_p_gain;
-	double hipD    = guiIn.hip_d_gain;
-	
-	if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
-		lHipStart = rs.lLeg.hip.legBodyAngle + .05;
-		rHipStart = rs.rLeg.hip.legBodyAngle - .05;
-		path0ControllerReset();
-		path1ControllerReset();
-		path2ControllerReset();
-		path3ControllerReset();
-		path4ControllerReset();
-		path5ControllerReset();
-	}
+    // Whether we should extend and retract, as opposed to swinging the legs.
+    bool   extend  = guiIn.mode;
+    double freq    = guiIn.frequency;
+    double legampl = guiIn.leg_magnitude;
+    double hipampl = guiIn.hip_magnitude;
+    double legP    = guiIn.leg_p_gain;
+    double legD    = guiIn.leg_d_gain;
+    double hipP    = guiIn.hip_p_gain;
+    double hipD    = guiIn.hip_d_gain;
 
-	path1ControllerSetPhase((extend) ? 1.0 : 0.0);
-	path2ControllerSetPhase((extend) ? 1.0 : 0.5);
-	path3ControllerSetPhase((extend) ? 1.0 : 1.0);
-	path4ControllerSetPhase((extend) ? 0.0 : 1.0);
-	path5ControllerSetPhase((extend) ? 1.0 : 1.5);
-	
-	MotorState desiredLAState = path0Controller(freq, legampl);
-	desiredLAState.ang += M_PI / 3.0;
-	
-	MotorState desiredLBState = path1Controller(freq, legampl);
-	desiredLBState.ang += 2.0 * M_PI / 3.0;
-	
-	MotorState desiredLHState = path2Controller((extend) ? freq : (2.0*freq), hipampl);
-	desiredLHState.ang += hipampl + lHipStart;
-	
-	MotorState desiredRAState = path3Controller(freq, legampl);
-	desiredRAState.ang += M_PI / 3.0;
-	
-	MotorState desiredRBState = path4Controller(freq, legampl);
-	desiredRBState.ang += 2.0 * M_PI / 3.0;
-	
-	MotorState desiredRHState = path5Controller((extend) ? freq : (2.0*freq), hipampl);
-	desiredRHState.ang += rHipStart - hipampl;
-	
-	double vertical = 3.0*M_PI/2.0;
-	double inAngle  = M_PI/180.0*10.0;
-	double outAngle = M_PI/180.0*20.0;
-	if (desiredLHState.ang < (vertical - inAngle))
-    {
-		desiredLHState.ang =  vertical - inAngle;
+    MotorState desiredLAState,
+               desiredLBState,
+               desiredLHState,
+               desiredRAState,
+               desiredRBState,
+               desiredRHState;
+
+    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+        lHipStart = rs.lLeg.hip.legBodyAngle + .05;
+        rHipStart = rs.rLeg.hip.legBodyAngle - .05;
+        path0ControllerReset();
+        path1ControllerReset();
+        path2ControllerReset();
+        path3ControllerReset();
+        path4ControllerReset();
+        path5ControllerReset();
     }
-	if (desiredLHState.ang > (vertical + outAngle))
-    {
-		desiredLHState.ang =  vertical + outAngle;
+
+    // Initialize smooth path generators if they haven't been yet.
+    if (!spgInitialized &&
+            spg0 && spg1 && spg2 && spg3 && spg4 && spg5) {
+        spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,     2.0);
+        spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
+        spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart,    2.0);
+        spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,     2.0);
+        spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
+        spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart,    2.0);
     }
-	if (desiredRHState.ang > (vertical + inAngle))
-		desiredRHState.ang =  vertical + inAngle;
-	if (desiredRHState.ang < (vertical - outAngle))
-		desiredRHState.ang =  vertical - outAngle;
-	
+
+    // Run Ryan's code if initialization has finished.
+    if (spg0IsFinished &&
+            spg1IsFinished &&
+            spg2IsFinished &&
+            spg3IsFinished &&
+            spg4IsFinished &&
+            spg5IsFinished) {
+
+        path1ControllerSetPhase((extend) ? 1.0 : 0.0);
+        path2ControllerSetPhase((extend) ? 1.0 : 0.5);
+        path3ControllerSetPhase((extend) ? 1.0 : 1.0);
+        path4ControllerSetPhase((extend) ? 0.0 : 1.0);
+        path5ControllerSetPhase((extend) ? 1.0 : 1.5);
+        
+        desiredLAState = path0Controller(freq, legampl);
+        desiredLAState.ang += M_PI / 3.0;
+        
+        desiredLBState = path1Controller(freq, legampl);
+        desiredLBState.ang += 2.0 * M_PI / 3.0;
+        
+        desiredLHState = path2Controller((extend) ? freq : (2.0*freq), hipampl);
+        desiredLHState.ang += hipampl + lHipStart;
+        
+        desiredRAState = path3Controller(freq, legampl);
+        desiredRAState.ang += M_PI / 3.0;
+        
+        desiredRBState = path4Controller(freq, legampl);
+        desiredRBState.ang += 2.0 * M_PI / 3.0;
+        
+        desiredRHState = path5Controller((extend) ? freq : (2.0*freq), hipampl);
+        desiredRHState.ang += rHipStart - hipampl;
+        
+        double vertical = 3.0*M_PI/2.0;
+        double inAngle  = M_PI/180.0*10.0;
+        double outAngle = M_PI/180.0*20.0;
+        if (desiredLHState.ang < (vertical - inAngle))
+        {
+            desiredLHState.ang =  vertical - inAngle;
+        }
+        if (desiredLHState.ang > (vertical + outAngle))
+        {
+            desiredLHState.ang =  vertical + outAngle;
+        }
+        if (desiredRHState.ang > (vertical + inAngle))
+            desiredRHState.ang =  vertical + inAngle;
+        if (desiredRHState.ang < (vertical - outAngle))
+            desiredRHState.ang =  vertical - outAngle;
+    }
+
+    // Otherwise, continue smoothly moving to start position.
+    else {
+        desiredLAState = spg0RunController();
+        desiredLBState = spg1RunController();
+        desiredLHState = spg2RunController();
+        desiredRAState = spg3RunController();
+        desiredRBState = spg4RunController();
+        desiredRHState = spg5RunController();
+    }
+
 	P0.set(legP);
 	D0.set(legD);
 	P1.set(legP);
@@ -149,6 +194,48 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 bool ATCFastLegSwing::configureHook() {
 	// Connect to the subcontrollers
 	// Get references to subcontroller component properties
+    spg0 = this->getPeer(spg0Name);
+    if (spg0) {
+        spg0Init          = spg0->provides("smoothPath")->getOperation("init");
+        spg0RunController = spg0->provides("smoothPath")->getOperation("runController");
+        spg0IsFinished    = spg0->properties()->getPorperty("isFinished");
+    }
+
+    spg1 = this->getPeer(spg1Name);
+    if (spg1) {
+        spg1Init          = spg1->provides("smoothPath")->getOperation("init");
+        spg1RunController = spg1->provides("smoothPath")->getOperation("runController");
+        spg1IsFinished    = spg1->properties()->getPorperty("isFinished");
+    }
+
+    spg2 = this->getPeer(spg2Name);
+    if (spg2) {
+        spg2Init          = spg2->provides("smoothPath")->getOperation("init");
+        spg2RunController = spg2->provides("smoothPath")->getOperation("runController");
+        spg2IsFinished    = spg2->properties()->getPorperty("isFinished");
+    }
+
+    spg3 = this->getPeer(spg3Name);
+    if (spg3) {
+        spg3Init          = spg3->provides("smoothPath")->getOperation("init");
+        spg3RunController = spg3->provides("smoothPath")->getOperation("runController");
+        spg3IsFinished    = spg3->properties()->getPorperty("isFinished");
+    }
+
+    spg4 = this->getPeer(spg4Name);
+    if (spg4) {
+        spg4Init          = spg4->provides("smoothPath")->getOperation("init");
+        spg4RunController = spg4->provides("smoothPath")->getOperation("runController");
+        spg4IsFinished    = spg4->properties()->getPorperty("isFinished");
+    }
+
+    spg5 = this->getPeer(spg5Name);
+    if (spg5) {
+        spg5Init          = spg5->provides("smoothPath")->getOperation("init");
+        spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
+        spg5IsFinished    = spg5->properties()->getPorperty("isFinished");
+    }
+
 	pathGenerator0 = this->getPeer(pathGenerator0Name);
 	if (pathGenerator0) {
 		path0Controller      = pathGenerator0->provides("parabolaGen")->getOperation("runController");
