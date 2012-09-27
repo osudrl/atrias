@@ -44,7 +44,7 @@ ATCFastLegSwing::ATCFastLegSwing(std::string name) :
 	lHipStart = 3.0 * M_PI / 2.0;
 	rHipStart = 3.0 * M_PI / 2.0;
 
-    spgInitialized = false;   // Have the smooth path generators been initialized?
+    demoRunning = false;   // Have the smooth path generators been initialized?
 
 	// Logging
 	// Create a port
@@ -82,6 +82,21 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
                desiredRHState;
 
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+        // Slowly lower the hip. NOTE: This needs to happen before lHipStart
+        // and rHipStart are updated again! NOTE: This currently has no effect,
+        // since motor outputs are zeroed on controller disable.
+        if (demoRunning) {
+            spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+            spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+            spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart-.05, 2.0);
+            spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+            spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+            spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart+.05, 2.0);
+
+            demoRunning = false;
+            log(Info) << "[ATCFLS] Relaxing." << endlog();
+        }
+
         lHipStart = rs.lLeg.hip.legBodyAngle + .05;
         rHipStart = rs.rLeg.hip.legBodyAngle - .05;
         path0ControllerReset();
@@ -91,9 +106,8 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         path4ControllerReset();
         path5ControllerReset();
     }
-
     // Initialize smooth path generators if they haven't been yet.
-    if (!spgInitialized &&
+    else if (!demoRunning &&
             spg0 && spg1 && spg2 && spg3 && spg4 && spg5) {
         spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,     2.0);
         spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
@@ -101,6 +115,9 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,     2.0);
         spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
         spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart,    2.0);
+
+        demoRunning = true;
+        log(Info) << "[ATCFLS] Initialized." << endlog();
     }
 
     // Run Ryan's code if initialization has finished.
@@ -198,42 +215,42 @@ bool ATCFastLegSwing::configureHook() {
     if (spg0) {
         spg0Init          = spg0->provides("smoothPath")->getOperation("init");
         spg0RunController = spg0->provides("smoothPath")->getOperation("runController");
-        spg0IsFinished    = spg0->properties()->getPorperty("isFinished");
+        spg0IsFinished    = spg0->properties()->getProperty("isFinished");
     }
 
     spg1 = this->getPeer(spg1Name);
     if (spg1) {
         spg1Init          = spg1->provides("smoothPath")->getOperation("init");
         spg1RunController = spg1->provides("smoothPath")->getOperation("runController");
-        spg1IsFinished    = spg1->properties()->getPorperty("isFinished");
+        spg1IsFinished    = spg1->properties()->getProperty("isFinished");
     }
 
     spg2 = this->getPeer(spg2Name);
     if (spg2) {
         spg2Init          = spg2->provides("smoothPath")->getOperation("init");
         spg2RunController = spg2->provides("smoothPath")->getOperation("runController");
-        spg2IsFinished    = spg2->properties()->getPorperty("isFinished");
+        spg2IsFinished    = spg2->properties()->getProperty("isFinished");
     }
 
     spg3 = this->getPeer(spg3Name);
     if (spg3) {
         spg3Init          = spg3->provides("smoothPath")->getOperation("init");
         spg3RunController = spg3->provides("smoothPath")->getOperation("runController");
-        spg3IsFinished    = spg3->properties()->getPorperty("isFinished");
+        spg3IsFinished    = spg3->properties()->getProperty("isFinished");
     }
 
     spg4 = this->getPeer(spg4Name);
     if (spg4) {
         spg4Init          = spg4->provides("smoothPath")->getOperation("init");
         spg4RunController = spg4->provides("smoothPath")->getOperation("runController");
-        spg4IsFinished    = spg4->properties()->getPorperty("isFinished");
+        spg4IsFinished    = spg4->properties()->getProperty("isFinished");
     }
 
     spg5 = this->getPeer(spg5Name);
     if (spg5) {
         spg5Init          = spg5->provides("smoothPath")->getOperation("init");
         spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
-        spg5IsFinished    = spg5->properties()->getPorperty("isFinished");
+        spg5IsFinished    = spg5->properties()->getProperty("isFinished");
     }
 
 	pathGenerator0 = this->getPeer(pathGenerator0Name);

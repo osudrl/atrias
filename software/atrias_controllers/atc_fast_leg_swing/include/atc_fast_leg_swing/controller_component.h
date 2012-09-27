@@ -47,6 +47,8 @@ class ATCFastLegSwing : public TaskContext {
 		double lHipStart;
 		double rHipStart;
 
+        bool demoRunning;
+
 		// Subcontroller names
         std::string spg0Name;
         std::string spg1Name;

@@ -1,5 +1,11 @@
 # Shut stuff down
 controller.stop()
+unloadComponent(controller.spg0Name)
+unloadComponent(controller.spg1Name)
+unloadComponent(controller.spg2Name)
+unloadComponent(controller.spg3Name)
+unloadComponent(controller.spg4Name)
+unloadComponent(controller.spg5Name)
 unloadComponent(controller.pathGenerator0Name)
 unloadComponent(controller.pathGenerator1Name)
 unloadComponent(controller.pathGenerator2Name)
