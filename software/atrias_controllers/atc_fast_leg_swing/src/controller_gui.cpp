@@ -68,7 +68,7 @@ void guiUpdate() {
     controllerDataOut.mode = (sweep_radiobutton->get_active()) ? 0 : 1;
 
     if (sweep_radiobutton->get_active()) {   // Sweep mode
-        leg_magnitude_spinbutton->set_range(0, 0.085);
+        leg_magnitude_spinbutton->set_range(0, 0.85);
     }
     else {
         leg_magnitude_spinbutton->set_range(0, 0.25);
