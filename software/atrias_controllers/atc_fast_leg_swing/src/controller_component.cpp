@@ -67,8 +67,8 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 	double hipD    = guiIn.hip_d_gain;
 	
 	if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
-		lHipStart = rs.lLeg.hip.legBodyAngle;
-		rHipStart = rs.rLeg.hip.legBodyAngle;
+		lHipStart = rs.lLeg.hip.legBodyAngle + .05;
+		rHipStart = rs.rLeg.hip.legBodyAngle - .05;
 		path0ControllerReset();
 		path1ControllerReset();
 		path2ControllerReset();

@@ -127,16 +127,6 @@ typedef enum {
   */
 #define MTR_MAX_COUNT                                                      19900
 
-// ... and the maximum torque (for scaling)
-#define MTR_MAX_TORQUE                                                      60.0
-#define MTR_HIP_MAX_TORQUE                                                  60.0
-
-// Here are the main motor torque limits. These are not used for scaling, just as limits.
-#define MAX_MTR_TRQ_CMD                                                     60.0
-#define MIN_MTR_TRQ_CMD                                                    -60.0
-#define MAX_HIP_MTR_TRQ_CMD                                                 60.0
-#define MIN_HIP_MTR_TRQ_CMD                                                -60.0
-
 // Limits the maximum adjustment that may be applied to the leg position when the spring deflections
 // are zeroed during initialization (in radians).
 #define MAX_LEG_POS_ADJUSTMENT                                               0.1
