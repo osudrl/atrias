@@ -20,10 +20,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("hip_d_spinbutton", hip_d_spinbutton);
     gui->get_widget("sweep_radiobutton", sweep_radiobutton);
     gui->get_widget("extend_radiobutton", extend_radiobutton);
+    gui->get_widget("demo_enable_togglebutton", demo_enable_togglebutton);
 
     if (frequency_spinbutton && leg_magnitude_spinbutton && hip_magnitude_spinbutton &&
             leg_p_spinbutton && leg_d_spinbutton && hip_p_spinbutton && hip_d_spinbutton &&
-            sweep_radiobutton && extend_radiobutton) {
+            sweep_radiobutton && extend_radiobutton &&
+            demo_enable_togglebutton) {
         // Set ranges.
         frequency_spinbutton->set_range(0, 10);
         leg_magnitude_spinbutton->set_range(0, 0.85);   // Magnitude is distance away from center.
@@ -66,6 +68,7 @@ void guiUpdate() {
     controllerDataOut.hip_p_gain = hip_p_spinbutton->get_value();
     controllerDataOut.hip_d_gain = hip_d_spinbutton->get_value();
     controllerDataOut.mode = (sweep_radiobutton->get_active()) ? 0 : 1;
+    controllerDataOut.demoEnabled = (demo_enable_togglebutton->get_active()) ? 1 : 0;
 
     if (sweep_radiobutton->get_active()) {   // Sweep mode
         leg_magnitude_spinbutton->set_range(0, 0.85);

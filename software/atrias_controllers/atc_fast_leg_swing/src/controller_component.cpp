@@ -82,21 +82,6 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
                desiredRHState;
 
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
-        // Slowly lower the hip. NOTE: This needs to happen before lHipStart
-        // and rHipStart are updated again! NOTE: This currently has no effect,
-        // since motor outputs are zeroed on controller disable.
-        if (demoRunning) {
-            spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
-            spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
-            spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart-.05, 2.0);
-            spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
-            spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
-            spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart+.05, 2.0);
-
-            demoRunning = false;
-            log(Info) << "[ATCFLS] Relaxing." << endlog();
-        }
-
         lHipStart = rs.lLeg.hip.legBodyAngle + .05;
         rHipStart = rs.rLeg.hip.legBodyAngle - .05;
         path0ControllerReset();
@@ -106,9 +91,21 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         path4ControllerReset();
         path5ControllerReset();
     }
-    // Initialize smooth path generators if they haven't been yet.
-    else if (!demoRunning &&
-            spg0 && spg1 && spg2 && spg3 && spg4 && spg5) {
+    // Slowly lower the hip. NOTE: This needs to happen before lHipStart
+    // and rHipStart are updated again! NOTE: This currently has no effect,
+    // since motor outputs are zeroed on controller disable.
+    if (!guiIn.demoEnabled && demoRunning) {   // GUI says disable, and we haven't done so yet.
+        spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart-.05, 2.0);
+        spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart+.05, 2.0);
+
+        demoRunning = false;
+        log(Info) << "[ATCFLS] Demo disabled." << endlog();
+    }
+    else if (guiIn.demoEnabled && !demoRunning) {   // GUI says enable, and we haven't done so yet.
         spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,     2.0);
         spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
         spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart,    2.0);
@@ -117,11 +114,12 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart,    2.0);
 
         demoRunning = true;
-        log(Info) << "[ATCFLS] Initialized." << endlog();
+        log(Info) << "[ATCFLS] Demo enabled." << endlog();
     }
 
     // Run Ryan's code if initialization has finished.
-    if (spg0IsFinished &&
+    if (demoRunning &&
+            spg0IsFinished &&
             spg1IsFinished &&
             spg2IsFinished &&
             spg3IsFinished &&

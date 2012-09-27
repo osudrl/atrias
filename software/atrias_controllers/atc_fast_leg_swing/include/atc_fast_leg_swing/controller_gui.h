@@ -35,6 +35,8 @@ Gtk::SpinButton *frequency_spinbutton,
 Gtk::RadioButton *sweep_radiobutton,
                  *extend_radiobutton;
 
+Gtk::ToggleButton *demo_enable_togglebutton;
+
 void controllerCallback(const atc_fast_leg_swing::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */
