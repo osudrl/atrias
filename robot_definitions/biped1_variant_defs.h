@@ -69,4 +69,16 @@
   */
 #define RIGHT_HIP_CALIB_POS          4.8538
 
+/** @brief Maximum motor torque for scaling
+  */
+#define MTR_MAX_TORQUE                                                      60.0
+#define MTR_HIP_MAX_TORQUE                                                  60.0
+
+/** @brief Main motor torque limits. These are not used for scaling, just as limits.
+  */
+#define MAX_MTR_TRQ_CMD                                                     60.0
+#define MIN_MTR_TRQ_CMD                                                    -60.0
+#define MAX_HIP_MTR_TRQ_CMD                                                 60.0
+#define MIN_HIP_MTR_TRQ_CMD                                                -60.0
+
 #endif // ROBOT_VARIANT_DEFS_H
