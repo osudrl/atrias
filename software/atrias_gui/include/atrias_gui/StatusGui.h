@@ -11,6 +11,7 @@
 #include <ros/ros.h>
 #include <atrias_shared/drl_math.h>
 #include <robot_invariant_defs.h>
+#include <robot_variant_defs.h>
 #include <gtkmm.h>
 #include <atrias_msgs/rt_ops_cycle.h>
 
