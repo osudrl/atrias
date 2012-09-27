@@ -62,7 +62,7 @@
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Leg magnitude (rad or m)</property>
+                    <property name="label" translatable="yes">Leg magnitude (rad)</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
