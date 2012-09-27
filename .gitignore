@@ -10,6 +10,8 @@ software/atrias_msgs/src
 software/atrias_msgs/include
 boost/
 typekit/
+.cproject
+.project
 
 # Files to ignore
 *.o
@@ -17,6 +19,7 @@ typekit/
 *.pc
 *~
 *.swp
+*.pyc
 .tb_history
 orocos.log
 gui_config.yaml
