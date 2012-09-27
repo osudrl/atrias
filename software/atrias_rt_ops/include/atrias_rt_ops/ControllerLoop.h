@@ -16,6 +16,7 @@ class ControllerLoop;
 
 // ATRIAS
 #include <robot_invariant_defs.h>
+#include <robot_variant_defs.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/drl_math.h>
