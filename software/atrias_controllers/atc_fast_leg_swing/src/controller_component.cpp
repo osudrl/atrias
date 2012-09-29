@@ -81,20 +81,14 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
                desiredRBState,
                desiredRHState;
 
+    // Get limp hip angle when powered off.
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
         lHipStart = rs.lLeg.hip.legBodyAngle + .05;
         rHipStart = rs.rLeg.hip.legBodyAngle - .05;
-        path0ControllerReset();
-        path1ControllerReset();
-        path2ControllerReset();
-        path3ControllerReset();
-        path4ControllerReset();
-        path5ControllerReset();
     }
-    // Slowly lower the hip. NOTE: This needs to happen before lHipStart
-    // and rHipStart are updated again! NOTE: This currently has no effect,
-    // since motor outputs are zeroed on controller disable.
-    if (!guiIn.demoEnabled && demoRunning) {   // GUI says disable, and we haven't done so yet.
+
+    // GUI says disable, and we haven't done so yet.
+    if (!guiIn.demoEnabled && demoRunning) {
         spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
         spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
         spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart-.05, 2.0);
@@ -105,7 +99,9 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         demoRunning = false;
         log(Info) << "[ATCFLS] Demo disabled." << endlog();
     }
-    else if (guiIn.demoEnabled && !demoRunning) {   // GUI says enable, and we haven't done so yet.
+
+    // GUI says enable, and we haven't done so yet.
+    else if (guiIn.demoEnabled && !demoRunning) {
         spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,     2.0);
         spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
         spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart,    2.0);
@@ -117,7 +113,7 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         log(Info) << "[ATCFLS] Demo enabled." << endlog();
     }
 
-    // Run Ryan's code if initialization has finished.
+    // Run Ryan's code if demo is running and initialization has finished.
     if (demoRunning &&
             spg0IsFinished &&
             spg1IsFinished &&
@@ -154,21 +150,23 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         double inAngle  = M_PI/180.0*10.0;
         double outAngle = M_PI/180.0*20.0;
         if (desiredLHState.ang < (vertical - inAngle))
-        {
             desiredLHState.ang =  vertical - inAngle;
-        }
         if (desiredLHState.ang > (vertical + outAngle))
-        {
             desiredLHState.ang =  vertical + outAngle;
-        }
         if (desiredRHState.ang > (vertical + inAngle))
             desiredRHState.ang =  vertical + inAngle;
         if (desiredRHState.ang < (vertical - outAngle))
             desiredRHState.ang =  vertical - outAngle;
     }
 
-    // Otherwise, continue smoothly moving to start position.
+    // Otherwise, smoothly move to either the started or stopped position.
     else {
+        path0ControllerReset();
+        path1ControllerReset();
+        path2ControllerReset();
+        path3ControllerReset();
+        path4ControllerReset();
+        path5ControllerReset();
         desiredLAState = spg0RunController();
         desiredLBState = spg1RunController();
         desiredLHState = spg2RunController();
