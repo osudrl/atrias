@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ROBOT="i1000a-1"
-GUI_COMPUTER="cov020-hp0"
+ROBOT="i1000a-2"
+GUI_COMPUTER="drl-guicomputer"
 
 if [ $HOSTNAME == $GUI_COMPUTER ]; then
     rsync -avz --progress -e ssh drl@$ROBOT:/home/drl/atrias/software/atrias/bagfiles/*.bag `rospack find atrias`/bagfiles
