@@ -81,10 +81,32 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
                desiredRBState,
                desiredRHState;
 
-    // Calculate neutral (powered) hip angle.
+    // Things to do when the controller is disabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+        // Calculate neutral (powered) hip angle.
         lHipStart = rs.lLeg.hip.legBodyAngle + .05;
         rHipStart = rs.rLeg.hip.legBodyAngle - .05;
+
+        // Keep desired motor angles equal to the current motor angles so the
+        // motors don't jump when the controller is enabled.
+        desiredLAState.ang = rs.lLeg.halfA.motorAngle;
+        desiredLBState.ang = rs.lLeg.halfB.motorAngle;
+        desiredLHState.ang = rs.lLeg.hip.legBodyAngle;
+        desiredRAState.ang = rs.rLeg.halfA.motorAngle;
+        desiredRBState.ang = rs.rLeg.halfB.motorAngle;
+        desiredRHState.ang = rs.rLeg.hip.legBodyAngle;
+
+        // Reset smooth path generators. This is needed in case the user
+        // disables the controller before disabling the demo, which is a
+        // problem since the generators do not run when the controller is
+        // disabled, which means they will finish only once the controller is
+        // re-enabled, and that only with outdated data.
+        spg0IsFinished = true;
+        spg1IsFinished = true;
+        spg2IsFinished = true;
+        spg3IsFinished = true;
+        spg4IsFinished = true;
+        spg5IsFinished = true;
     }
 
     // GUI says disable demo but demo is still running.
@@ -167,12 +189,25 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         path3ControllerReset();
         path4ControllerReset();
         path5ControllerReset();
-        desiredLAState = spg0RunController();
-        desiredLBState = spg1RunController();
-        desiredLHState = spg2RunController();
-        desiredRAState = spg3RunController();
-        desiredRBState = spg4RunController();
-        desiredRHState = spg5RunController();
+
+        // Run smooth path generators only when needed (especially only if the
+        // controller is enabled). Otherwise, they will put desired motor
+        // angles at positions that may cause the controller to jump upon
+        // enable.
+        if ((uint8_t)rs.cmState == (uint8_t)controllerManager::RtOpsCommand::ENABLE &&
+                !spg0IsFinished &&
+                !spg1IsFinished &&
+                !spg2IsFinished &&
+                !spg3IsFinished &&
+                !spg4IsFinished &&
+                !spg5IsFinished) {
+            desiredLAState = spg0RunController();
+            desiredLBState = spg1RunController();
+            desiredLHState = spg2RunController();
+            desiredRAState = spg3RunController();
+            desiredRBState = spg4RunController();
+            desiredRHState = spg5RunController();
+        }
     }
 
 	P0.set(legP);
