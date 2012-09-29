@@ -23,7 +23,7 @@ IMU
 	GND	Purple	-		8    
 
 HIP Encoder
-Magnetic
+Magnetic (RMB32)
 	5v	Yellow
 	GND	Green
 	Clk+	Purple
