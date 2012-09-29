@@ -50,12 +50,34 @@ void controllerCallback(const atc_fast_leg_swing::controller_status &status) {
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
-    // Disabled.
+    // Get parameters in the atrias_gui namespace.
+    nh.getParam("/atrias_gui/frequency", controllerDataOut.frequency);
+    nh.getParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
+    nh.getParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
+    nh.getParam("/atrias_gui/leg_p", controllerDataOut.leg_p);
+    nh.getParam("/atrias_gui/leg_d", controllerDataOut.leg_d);
+    nh.getParam("/atrias_gui/hip_p", controllerDataOut.hip_p);
+    nh.getParam("/atrias_gui/hip_d", controllerDataOut.hip_d);
+
+    // Configure the GUI.
+    frequency_spinbutton->set_value(controllerDataOut.frequency);
+    leg_magnitude_spinbutton->set_value(controllerDataOut.leg_magnitude);
+    hip_magnitude_spinbutton->set_value(controllerDataOut.hip_magnitude);
+    leg_p_spinbutton->set_value(controllerDataOut.leg_p);
+    leg_d_spinbutton->set_value(controllerDataOut.leg_d);
+    hip_p_spinbutton->set_value(controllerDataOut.hip_p);
+    hip_d_spinbutton->set_value(controllerDataOut.hip_d);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    // Disabled.
+    nh.getParam("/atrias_gui/frequency", controllerDataOut.frequency);
+    nh.getParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
+    nh.getParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
+    nh.getParam("/atrias_gui/leg_p", controllerDataOut.leg_p);
+    nh.getParam("/atrias_gui/leg_d", controllerDataOut.leg_d);
+    nh.getParam("/atrias_gui/hip_p", controllerDataOut.hip_p);
+    nh.getParam("/atrias_gui/hip_d", controllerDataOut.hip_d);
 }
 
 //! \brief Update the GUI.
