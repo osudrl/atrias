@@ -71,13 +71,13 @@ void getParameters() {
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.getParam("/atrias_gui/frequency", controllerDataOut.frequency);
-    nh.getParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
-    nh.getParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
-    nh.getParam("/atrias_gui/leg_p_gain", controllerDataOut.leg_p_gain);
-    nh.getParam("/atrias_gui/leg_d_gain", controllerDataOut.leg_d_gain);
-    nh.getParam("/atrias_gui/hip_p_gain", controllerDataOut.hip_p_gain);
-    nh.getParam("/atrias_gui/hip_d_gain", controllerDataOut.hip_d_gain);
+    nh.setParam("/atrias_gui/frequency", controllerDataOut.frequency);
+    nh.setParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
+    nh.setParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
+    nh.setParam("/atrias_gui/leg_p_gain", controllerDataOut.leg_p_gain);
+    nh.setParam("/atrias_gui/leg_d_gain", controllerDataOut.leg_d_gain);
+    nh.setParam("/atrias_gui/hip_p_gain", controllerDataOut.hip_p_gain);
+    nh.setParam("/atrias_gui/hip_d_gain", controllerDataOut.hip_d_gain);
 }
 
 //! \brief Update the GUI.
