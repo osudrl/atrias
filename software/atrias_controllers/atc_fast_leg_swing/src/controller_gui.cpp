@@ -54,19 +54,19 @@ void getParameters() {
     nh.getParam("/atrias_gui/frequency", controllerDataOut.frequency);
     nh.getParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
     nh.getParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
-    nh.getParam("/atrias_gui/leg_p", controllerDataOut.leg_p);
-    nh.getParam("/atrias_gui/leg_d", controllerDataOut.leg_d);
-    nh.getParam("/atrias_gui/hip_p", controllerDataOut.hip_p);
-    nh.getParam("/atrias_gui/hip_d", controllerDataOut.hip_d);
+    nh.getParam("/atrias_gui/leg_p_gain", controllerDataOut.leg_p_gain);
+    nh.getParam("/atrias_gui/leg_d_gain", controllerDataOut.leg_d_gain);
+    nh.getParam("/atrias_gui/hip_p_gain", controllerDataOut.hip_p_gain);
+    nh.getParam("/atrias_gui/hip_d_gain", controllerDataOut.hip_d_gain);
 
     // Configure the GUI.
     frequency_spinbutton->set_value(controllerDataOut.frequency);
     leg_magnitude_spinbutton->set_value(controllerDataOut.leg_magnitude);
     hip_magnitude_spinbutton->set_value(controllerDataOut.hip_magnitude);
-    leg_p_spinbutton->set_value(controllerDataOut.leg_p);
-    leg_d_spinbutton->set_value(controllerDataOut.leg_d);
-    hip_p_spinbutton->set_value(controllerDataOut.hip_p);
-    hip_d_spinbutton->set_value(controllerDataOut.hip_d);
+    leg_p_spinbutton->set_value(controllerDataOut.leg_p_gain);
+    leg_d_spinbutton->set_value(controllerDataOut.leg_d_gain);
+    hip_p_spinbutton->set_value(controllerDataOut.hip_p_gain);
+    hip_d_spinbutton->set_value(controllerDataOut.hip_d_gain);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -74,10 +74,10 @@ void setParameters() {
     nh.getParam("/atrias_gui/frequency", controllerDataOut.frequency);
     nh.getParam("/atrias_gui/leg_magnitude", controllerDataOut.leg_magnitude);
     nh.getParam("/atrias_gui/hip_magnitude", controllerDataOut.hip_magnitude);
-    nh.getParam("/atrias_gui/leg_p", controllerDataOut.leg_p);
-    nh.getParam("/atrias_gui/leg_d", controllerDataOut.leg_d);
-    nh.getParam("/atrias_gui/hip_p", controllerDataOut.hip_p);
-    nh.getParam("/atrias_gui/hip_d", controllerDataOut.hip_d);
+    nh.getParam("/atrias_gui/leg_p_gain", controllerDataOut.leg_p_gain);
+    nh.getParam("/atrias_gui/leg_d_gain", controllerDataOut.leg_d_gain);
+    nh.getParam("/atrias_gui/hip_p_gain", controllerDataOut.hip_p_gain);
+    nh.getParam("/atrias_gui/hip_d_gain", controllerDataOut.hip_d_gain);
 }
 
 //! \brief Update the GUI.
