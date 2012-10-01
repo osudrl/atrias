@@ -19,7 +19,7 @@ def logRequestCallback (req):
         currentlyLogging = True
 
     elif not req.enableLogging and currentlyLogging:
-        # Invoke rosnode kill and wait for it to return.
+        # Invoke rosnode kill and wait (blocking).
         subprocess.call(["rosnode", "kill", "atrias_rosbag"])
         roslaunchProcess.wait()   # Wait for processes to die, and reap them.
         currentlyLogging = False
