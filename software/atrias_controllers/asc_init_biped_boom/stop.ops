@@ -6,13 +6,17 @@ export void dummyFunction( ) {
     return
 }
 
-export void ascInitBipedBoomStop( string controllerName ) {
-    print.ln("Beginning of the stop function. Controller name: " + controllerName)
-    # This dummyFunction call is a hack to make function calling work
+export void ascInitBipedBoomStop( string ascInstance ) {
+    # Hack to make function calling work
     dummyFunction()
-    print.ln("Dummy function returned")
-    scripting.eval(controllerName + ".stop()")
-    scripting.eval(controllerName + ".cleanup()")
-    unloadComponent(controllerName)
-    print.ln(controllerName + "cleaned up")
+
+    # Stop the asc
+    scripting.eval(ascInstance + ".stop()")
+
+    # Shut subcontrollers down
+    #Nothing to shut down
+
+    # Cleanup
+    scripting.eval(ascInstance + ".cleanup()")
+    unloadComponent(ascInstance)
 }

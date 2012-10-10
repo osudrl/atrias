@@ -1,0 +1,14 @@
+<package>
+  <description brief="ac_orocos_functions">
+
+     ac_orocos_functions
+
+  </description>
+  <author>Andrew Peekema</author>
+  <license></license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/ac_orocos_functions</url>
+
+</package>
+
+

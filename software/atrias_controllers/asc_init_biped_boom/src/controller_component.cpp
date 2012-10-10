@@ -12,16 +12,16 @@ ASCInitBipedBoom::ASCInitBipedBoom(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log")
 {
-    this->provides("bipedBoomInit")
+    this->provides("ASCInitBipedBoom")
         ->addOperation("init", &ASCInitBipedBoom::init, this);
-    this->provides("bipedBoomInit")
+    this->provides("ASCInitBipedBoom")
         ->addOperation("run", &ASCInitBipedBoom::run, this);
-    this->provides("bipedBoomInit")
+    this->provides("ASCInitBipedBoom")
         ->addOperation("done", &ASCInitBipedBoom::done, this)
         .doc("Returns true if at the requested point");
 
     // Add properties
-    this->addProperty("pd0Name", pd0Name);
+    this->addProperty("ASCPD0Name", ASCPD0Name);
     this->addProperty("smoothPath0Name", smoothPath0Name);
     this->addProperty("smoothPath1Name", smoothPath1Name);
     this->addProperty("smoothPath2Name", smoothPath2Name);
@@ -151,7 +151,7 @@ atrias_msgs::controller_output ASCInitBipedBoom::run(atrias_msgs::robot_state rs
 
 bool ASCInitBipedBoom::configureHook() {
     // Connect to the subcontrollers
-    pd0 = this->getPeer(pd0Name);
+    pd0 = this->getPeer(ASCPD0Name);
     if (pd0)
         pd0RunController = pd0->provides("pd")->getOperation("runController");
 

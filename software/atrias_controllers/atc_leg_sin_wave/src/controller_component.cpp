@@ -16,41 +16,29 @@ ATCLegSinWave::ATCLegSinWave(std::string name):
         ->addOperation("runController", &ATCLegSinWave::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
-    // Add properties.
-    this->addProperty("pd0Name", pd0Name)
-        .doc("Name of 0th PD subcontroller.");
-    this->addProperty("pd1Name", pd1Name)
-        .doc("Name of 1st PD subcontroller.");
-    this->addProperty("pd2Name", pd2Name)
-        .doc("Name of 2th PD subcontroller.");
-    this->addProperty("pd3Name", pd3Name)
-        .doc("Name of 3th PD subcontroller.");
-    this->addProperty("pd4Name", pd4Name)
-        .doc("Name of 4th PD subcontroller.");
-    this->addProperty("pd5Name", pd5Name)
-        .doc("Name of 5th PD subcontroller.");
-    this->addProperty("sin0Name", sin0Name)
-        .doc("Name of 0th sin generator subcontroller.");
-    this->addProperty("sin1Name", sin1Name)
-        .doc("Name of 1st sin generator subcontroller.");
-    this->addProperty("sin2Name", sin2Name)
-        .doc("Name of 2th sin generator subcontroller.");
-    this->addProperty("sin3Name", sin3Name)
-        .doc("Name of 3th sin generator subcontroller.");
-    this->addProperty("sin4Name", sin4Name)
-        .doc("Name of 4th sin generator subcontroller.");
-    this->addProperty("sin5Name", sin5Name)
-        .doc("Name of 5th sin generator subcontroller.");
+    // Add subcontroller names
+    this->addProperty("pd0Name",  pd0Name);
+    this->addProperty("pd1Name",  pd1Name);
+    this->addProperty("pd2Name",  pd2Name);
+    this->addProperty("pd3Name",  pd3Name);
+    this->addProperty("pd4Name",  pd4Name);
+    this->addProperty("pd5Name",  pd5Name);
+    this->addProperty("sin0Name", sin0Name);
+    this->addProperty("sin1Name", sin1Name);
+    this->addProperty("sin2Name", sin2Name);
+    this->addProperty("sin3Name", sin3Name);
+    this->addProperty("sin4Name", sin4Name);
+    this->addProperty("sin5Name", sin5Name);
 
-    // Add ports.
+    // Add ports
     addEventPort(guiDataIn);
 
     // Set Defaults
-    targetPos = 0.0;
+    targetPos  = 0.0;
     currentPos = 0.0;
-    targetVel = 0.0;
+    targetVel  = 0.0;
     currentVel = 0.0;
-    hipPeriod = 0.0;
+    hipPeriod  = 1.0;
 
     log(Info) << "[ATCLSW] Leg sin wave controller constructed!" << endlog();
 }
@@ -64,6 +52,7 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     co.rLeg.motorCurrentA   = 0.0;
     co.rLeg.motorCurrentB   = 0.0;
     co.rLeg.motorCurrentHip = 0.0;
+
     // Only run the controller when we're enabled
     if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
     {

@@ -1,19 +1,24 @@
-# Set up the top controller
+## Setup
+require("scripting")
+require("print")
+import("rtt_rospack")
+
+# Clean up the controller namespace
+atrias_cm.resetControllerNames()
+
+# Function for setting up subcontrollers
+scripting.runScript(rospack.find("ac_orocos_functions") + "/ascFunctions.ops")
+
+## Run
+# Import and load the component
 import("atc_motor_torque_sin")
 loadComponent("controller", "ATCMotorTorqueSin")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# Set up subcontrollers
-import("asc_path_generator")
-var string sin0Name = atrias_cm.getUniqueName("controller", "sin")
-loadComponent(sin0Name, "ASCSinPathGenerator")
-
-# Connect this controller with its subcontrollers.
-addPeer("controller", sin0Name)
-# Pass the names of the subcontrollers to the controller
-controller.sin0Name = sin0Name
+# Import and start the subcontrollers
+controller.sin0Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
 
 # Set up the gui connection
 var ConnPolicy gui_policy

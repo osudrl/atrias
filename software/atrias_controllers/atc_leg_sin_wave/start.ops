@@ -1,67 +1,38 @@
-# Set up the top controller
+## Setup
+require("scripting")
+require("print")
+import("rtt_rospack")
+
+# Clean up the controller namespace
+atrias_cm.resetControllerNames()
+
+# Function for setting up subcontrollers
+scripting.runScript(rospack.find("ac_orocos_functions") + "/ascFunctions.ops")
+
+## Run
+# Import and load the component
 import("atc_leg_sin_wave")
 loadComponent("controller", "ATCLegSinWave")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# Set up subcontrollers
-require("legToMotorTransforms")
-loadService("controller", "legToMotorTransforms")
+# Import and start the subcontrollers
+ascKickStart("controller", "asc_coordinate_transforms", "legToMotorTransforms")
 
-import("asc_pd")
-import("asc_path_generator")
-var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
-var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
-var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
-var string pd3Name = atrias_cm.getUniqueName("controller", "pd")
-var string pd4Name = atrias_cm.getUniqueName("controller", "pd")
-var string pd5Name = atrias_cm.getUniqueName("controller", "pd")
-var string sin0Name = atrias_cm.getUniqueName("controller", "sin")
-var string sin1Name = atrias_cm.getUniqueName("controller", "sin")
-var string sin2Name = atrias_cm.getUniqueName("controller", "sin")
-var string sin3Name = atrias_cm.getUniqueName("controller", "sin")
-var string sin4Name = atrias_cm.getUniqueName("controller", "sin")
-var string sin5Name = atrias_cm.getUniqueName("controller", "sin")
-loadComponent(pd0Name, "ASCPD")
-loadComponent(pd1Name, "ASCPD")
-loadComponent(pd2Name, "ASCPD")
-loadComponent(pd3Name, "ASCPD")
-loadComponent(pd4Name, "ASCPD")
-loadComponent(pd5Name, "ASCPD")
-loadComponent(sin0Name, "ASCSinPathGenerator")
-loadComponent(sin1Name, "ASCSinPathGenerator")
-loadComponent(sin2Name, "ASCSinPathGenerator")
-loadComponent(sin3Name, "ASCSinPathGenerator")
-loadComponent(sin4Name, "ASCSinPathGenerator")
-loadComponent(sin5Name, "ASCSinPathGenerator")
+controller.pd0Name = ascKickStart("controller", "asc_pd", "ASCPD")
+controller.pd1Name = ascKickStart("controller", "asc_pd", "ASCPD")
+controller.pd2Name = ascKickStart("controller", "asc_pd", "ASCPD")
+controller.pd3Name = ascKickStart("controller", "asc_pd", "ASCPD")
+controller.pd4Name = ascKickStart("controller", "asc_pd", "ASCPD")
+controller.pd5Name = ascKickStart("controller", "asc_pd", "ASCPD")
 
-# Connect this controller with its subcontrollers.
-addPeer("controller", pd0Name)
-addPeer("controller", pd1Name)
-addPeer("controller", pd2Name)
-addPeer("controller", pd3Name)
-addPeer("controller", pd4Name)
-addPeer("controller", pd5Name)
-addPeer("controller", sin0Name)
-addPeer("controller", sin1Name)
-addPeer("controller", sin2Name)
-addPeer("controller", sin3Name)
-addPeer("controller", sin4Name)
-addPeer("controller", sin5Name)
-# Pass the names of the subcontrollers to the controller
-controller.pd0Name = pd0Name
-controller.pd1Name = pd1Name
-controller.pd2Name = pd2Name
-controller.pd3Name = pd3Name
-controller.pd4Name = pd4Name
-controller.pd5Name = pd5Name
-controller.sin0Name = sin0Name
-controller.sin1Name = sin1Name
-controller.sin2Name = sin2Name
-controller.sin3Name = sin3Name
-controller.sin4Name = sin4Name
-controller.sin5Name = sin5Name
+controller.sin0Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
+controller.sin1Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
+controller.sin2Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
+controller.sin3Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
+controller.sin4Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
+controller.sin5Name = ascKickStart("controller", "asc_path_generator", "ASCSinPathGenerator")
 
 # Set up the gui connection
 var ConnPolicy gui_policy
