@@ -21,6 +21,8 @@ atc_demo_range_of_motion::controller_input controllerDataOut;
 atc_demo_range_of_motion::controller_status controllerDataIn;
 
 // GUI elements
+Gtk::HScale *position_leg_duration_hscale;
+
 Gtk::SpinButton *position_left_A_spinbutton,
                 *position_left_B_spinbutton,
                 *position_left_hip_spinbutton,
@@ -31,7 +33,6 @@ Gtk::SpinButton *position_left_A_spinbutton,
                 *position_leg_motor_d_spinbutton,
                 *position_hip_motor_p_spinbutton,
                 *position_hip_motor_d_spinbutton,
-                *position_leg_duration_spinbutton,
                 *position_hip_duration_spinbutton;
 
 Gtk::ComboBox *position_mode_combobox;

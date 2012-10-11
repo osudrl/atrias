@@ -1,3 +1,3 @@
-{desLeftAPos: 1.0, desLeftBPos: 2.0, desLeftHipPos: 0.2, desRightAPos: 1.0, desRightBPos: 2.0,
-  desRightHipPos: 0.2, hipDuration: 2.0, hip_d_gain: 0.0, hip_p_gain: 0.0, legDuration: 2.0,
-  leg_d_gain: 10.0, leg_p_gain: 200.0}
+{desLeftAPos: 1.0, desLeftBPos: 2.0, desLeftHipPos: 0.2, desRightAPos: 1.25, desRightBPos: 2.0,
+  desRightHipPos: 0.2, hipDuration: 0.1, hip_d_gain: 0.0, hip_p_gain: 0.0, legDuration: 2.5,
+  leg_d_gain: 20.0, leg_p_gain: 600.0}

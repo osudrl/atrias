@@ -11,9 +11,9 @@
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("frequency_spinbutton", frequency_spinbutton);
-    gui->get_widget("leg_magnitude_spinbutton", leg_magnitude_spinbutton);
-    gui->get_widget("hip_magnitude_spinbutton", hip_magnitude_spinbutton);
+    gui->get_widget("frequency_hscale", frequency_hscale);
+    gui->get_widget("leg_magnitude_hscale", leg_magnitude_hscale);
+    gui->get_widget("hip_magnitude_hscale", hip_magnitude_hscale);
     gui->get_widget("leg_p_spinbutton", leg_p_spinbutton);
     gui->get_widget("leg_d_spinbutton", leg_d_spinbutton);
     gui->get_widget("hip_p_spinbutton", hip_p_spinbutton);
@@ -22,19 +22,26 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("extend_radiobutton", extend_radiobutton);
     gui->get_widget("demo_enable_togglebutton", demo_enable_togglebutton);
 
-    if (frequency_spinbutton && leg_magnitude_spinbutton && hip_magnitude_spinbutton &&
+    if (frequency_hscale && leg_magnitude_hscale && hip_magnitude_hscale &&
             leg_p_spinbutton && leg_d_spinbutton && hip_p_spinbutton && hip_d_spinbutton &&
             sweep_radiobutton && extend_radiobutton &&
             demo_enable_togglebutton) {
         // Set ranges.
-        frequency_spinbutton->set_range(0, 10);
-        leg_magnitude_spinbutton->set_range(0, 0.85);   // Magnitude is distance away from center.
-        hip_magnitude_spinbutton->set_range(0, 0.085);
+        frequency_hscale->set_range(0.0, 0.7);
+        leg_magnitude_hscale->set_range(0, 0.85);   // Magnitude is distance away from center.
+        hip_magnitude_hscale->set_range(0, 0.15);
         leg_p_spinbutton->set_range(0, 2000);
         leg_d_spinbutton->set_range(0, 200);
         hip_p_spinbutton->set_range(0, 500);
         hip_d_spinbutton->set_range(0, 50);
 
+        frequency_hscale->set_value(0.3);
+        leg_magnitude_hscale->set_value(0.0);   // Magnitude is distance away from center.
+        hip_magnitude_hscale->set_value(0.0);
+        leg_p_spinbutton->set_value(600.0);
+        leg_d_spinbutton->set_value(20.0);
+        hip_p_spinbutton->set_value(150.0);
+        hip_d_spinbutton->set_value(10.0);
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_fast_leg_swing_status", 0, controllerCallback);
         pub = nh.advertise<atc_fast_leg_swing::controller_input>("atc_fast_leg_swing_input", 0);
@@ -60,9 +67,9 @@ void getParameters() {
     nh.getParam("/atrias_gui/hip_d_gain", controllerDataOut.hip_d_gain);
 
     // Configure the GUI.
-    frequency_spinbutton->set_value(controllerDataOut.frequency);
-    leg_magnitude_spinbutton->set_value(controllerDataOut.leg_magnitude);
-    hip_magnitude_spinbutton->set_value(controllerDataOut.hip_magnitude);
+    frequency_hscale->set_value(controllerDataOut.frequency);
+    leg_magnitude_hscale->set_value(controllerDataOut.leg_magnitude);
+    hip_magnitude_hscale->set_value(controllerDataOut.hip_magnitude);
     leg_p_spinbutton->set_value(controllerDataOut.leg_p_gain);
     leg_d_spinbutton->set_value(controllerDataOut.leg_d_gain);
     hip_p_spinbutton->set_value(controllerDataOut.hip_p_gain);
@@ -82,9 +89,9 @@ void setParameters() {
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.frequency = frequency_spinbutton->get_value();
-    controllerDataOut.leg_magnitude = leg_magnitude_spinbutton->get_value();
-    controllerDataOut.hip_magnitude = hip_magnitude_spinbutton->get_value();
+    controllerDataOut.frequency = frequency_hscale->get_value();
+    controllerDataOut.leg_magnitude = leg_magnitude_hscale->get_value();
+    controllerDataOut.hip_magnitude = hip_magnitude_hscale->get_value();
     controllerDataOut.leg_p_gain = leg_p_spinbutton->get_value();
     controllerDataOut.leg_d_gain = leg_d_spinbutton->get_value();
     controllerDataOut.hip_p_gain = hip_p_spinbutton->get_value();
@@ -93,12 +100,12 @@ void guiUpdate() {
     controllerDataOut.demoEnabled = (demo_enable_togglebutton->get_active()) ? 1 : 0;
 
     if (sweep_radiobutton->get_active()) {   // Sweep mode
-        leg_magnitude_spinbutton->set_range(0, 0.85);
+        leg_magnitude_hscale->set_range(0, 0.85);
     }
     else {   // Extend mode.
-        leg_magnitude_spinbutton->set_range(0, 0.25);
-        if (leg_magnitude_spinbutton->get_value() > 0.25) {
-            leg_magnitude_spinbutton->set_value(0.25);
+        leg_magnitude_hscale->set_range(0, 0.425);
+        if (leg_magnitude_hscale->get_value() > 0.425) {
+            leg_magnitude_hscale->set_value(0.425);
         }
     }
 

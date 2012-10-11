@@ -18,7 +18,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("position_leg_motor_d_spinbutton", position_leg_motor_d_spinbutton);
     gui->get_widget("position_hip_motor_p_spinbutton", position_hip_motor_p_spinbutton);
     gui->get_widget("position_hip_motor_d_spinbutton", position_hip_motor_d_spinbutton);
-    gui->get_widget("position_leg_duration_spinbutton", position_leg_duration_spinbutton);
+    gui->get_widget("position_leg_duration_hscale", position_leg_duration_hscale);
     gui->get_widget("position_hip_duration_spinbutton", position_hip_duration_spinbutton);
     gui->get_widget("position_mode_combobox", position_mode_combobox);
 
@@ -26,7 +26,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_right_A_spinbutton && position_right_B_spinbutton && position_right_hip_spinbutton &&
         position_leg_motor_p_spinbutton && position_leg_motor_d_spinbutton &&
         position_hip_motor_p_spinbutton && position_hip_motor_d_spinbutton &&
-        position_leg_duration_spinbutton && position_hip_duration_spinbutton &&
+        position_leg_duration_hscale && position_hip_duration_spinbutton &&
         position_mode_combobox) {
         // Set ranges.
         position_left_A_spinbutton->set_range(LEG_A_MOTOR_MIN_LOC        + LEG_LOC_SAFETY_DISTANCE, LEG_A_MOTOR_MAX_LOC     - LEG_LOC_SAFETY_DISTANCE);
@@ -39,8 +39,16 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         position_leg_motor_d_spinbutton->set_range(0, 300);
         position_hip_motor_p_spinbutton->set_range(0, 100);
         position_hip_motor_d_spinbutton->set_range(0, 10);
-        position_leg_duration_spinbutton->set_range(0.55, 5);
+        position_leg_duration_hscale->set_range(0.75, 5);
         position_hip_duration_spinbutton->set_range(0.1, 5);
+
+	position_left_A_spinbutton->set_value(1.0);
+	position_left_B_spinbutton->set_value(2.0);
+	position_right_A_spinbutton->set_value(1.0);
+	position_right_B_spinbutton->set_value(2.0);
+        position_leg_motor_p_spinbutton->set_value(600);
+        position_leg_motor_d_spinbutton->set_value(20);
+        position_leg_duration_hscale->set_value(2.5);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_demo_range_of_motion_status", 0, controllerCallback);
@@ -82,7 +90,7 @@ void getParameters() {
     position_leg_motor_d_spinbutton->set_value(controllerDataOut.leg_d_gain);
     position_hip_motor_p_spinbutton->set_value(controllerDataOut.hip_p_gain);
     position_hip_motor_d_spinbutton->set_value(controllerDataOut.hip_d_gain);
-    position_leg_duration_spinbutton->set_value(controllerDataOut.legDuration);
+    position_leg_duration_hscale->set_value(controllerDataOut.legDuration);
     position_hip_duration_spinbutton->set_value(controllerDataOut.hipDuration);
 }
 
@@ -114,7 +122,7 @@ void guiUpdate() {
     controllerDataOut.leg_d_gain = position_leg_motor_d_spinbutton->get_value();
     controllerDataOut.hip_p_gain = position_hip_motor_p_spinbutton->get_value();
     controllerDataOut.hip_d_gain = position_hip_motor_d_spinbutton->get_value();
-    controllerDataOut.legDuration = position_leg_duration_spinbutton->get_value();
+    controllerDataOut.legDuration = position_leg_duration_hscale->get_value();
     controllerDataOut.hipDuration = position_hip_duration_spinbutton->get_value();
     controllerDataOut.mode = position_mode_combobox->get_active_row_number();
 

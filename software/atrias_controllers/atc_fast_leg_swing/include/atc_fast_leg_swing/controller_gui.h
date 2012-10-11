@@ -24,10 +24,11 @@ atc_fast_leg_swing::controller_input controllerDataOut;
 atc_fast_leg_swing::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::SpinButton *frequency_spinbutton,
-                *leg_magnitude_spinbutton,
-                *hip_magnitude_spinbutton,
-                *leg_p_spinbutton,
+Gtk::HScale *frequency_hscale,
+            *leg_magnitude_hscale,
+            *hip_magnitude_hscale;
+
+Gtk::SpinButton *leg_p_spinbutton,
                 *leg_d_spinbutton,
                 *hip_p_spinbutton,
                 *hip_d_spinbutton;

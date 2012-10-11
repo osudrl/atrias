@@ -1,2 +1,2 @@
-{frequency: 0.7, hip_d_gain: 10.0, hip_magnitude: 0.0, hip_p_gain: 150.0, leg_d_gain: 20.0,
+{frequency: 0.301, hip_d_gain: 10.0, hip_magnitude: 0.0, hip_p_gain: 150.0, leg_d_gain: 20.0,
   leg_magnitude: 0.0, leg_p_gain: 600.0}
