@@ -111,12 +111,22 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 
     // GUI says disable demo but demo is still running.
     if (!guiIn.demoEnabled && demoRunning) {
-        spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
-        spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
-        spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart-.05, 2.0);
-        spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
-        spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
-        spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart+.05, 2.0);
+        if (extend) {
+        	spg0Init(rs.lLeg.halfA.motorAngle, 0.851598663,      2.0);
+        	spg1Init(rs.lLeg.halfB.motorAngle, 2.289994011,  2.0);
+        	spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart, 2.0);
+        	spg3Init(rs.rLeg.halfA.motorAngle, 0.851598663,      2.0);
+        	spg4Init(rs.rLeg.halfB.motorAngle, 2.289994011,  2.0);
+        	spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart, 2.0);
+        }
+        else {
+        	spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        	spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        	spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart, 2.0);
+        	spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        	spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        	spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart, 2.0);
+        }
 
         demoRunning = false;
         log(Info) << "[ATCFLS] Demo disabled." << endlog();
@@ -124,12 +134,22 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
 
     // GUI says enable demo but demo is not running.
     else if (guiIn.demoEnabled && !demoRunning) {
-        spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,     2.0);
-        spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
-        spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart,    2.0);
-        spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,     2.0);
-        spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0, 2.0);
-        spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart,    2.0);
+        if (extend) {
+        	spg0Init(rs.lLeg.halfA.motorAngle, 0.851598663,      2.0);
+        	spg1Init(rs.lLeg.halfB.motorAngle, 2.289994011,  2.0);
+        	spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart, 2.0);
+        	spg3Init(rs.rLeg.halfA.motorAngle, 0.851598663,      2.0);
+        	spg4Init(rs.rLeg.halfB.motorAngle, 2.289994011,  2.0);
+        	spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart, 2.0);
+        }
+        else {
+        	spg0Init(rs.lLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        	spg1Init(rs.lLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        	spg2Init(rs.lLeg.hip.legBodyAngle, lHipStart, 2.0);
+        	spg3Init(rs.rLeg.halfA.motorAngle, M_PI/3.0,      2.0);
+        	spg4Init(rs.rLeg.halfB.motorAngle, 2.0*M_PI/3.0,  2.0);
+        	spg5Init(rs.rLeg.hip.legBodyAngle, rHipStart, 2.0);
+        }
 
         demoRunning = true;
         log(Info) << "[ATCFLS] Demo enabled." << endlog();
@@ -151,19 +171,31 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         path5ControllerSetPhase((extend) ? 1.0 : 1.5);
 
         desiredLAState = path0Controller(freq, legampl);
-        desiredLAState.ang += M_PI / 3.0;
+	  if (extend)
+	        desiredLAState.ang += 0.851598663;
+	  else
+	        desiredLAState.ang += M_PI / 3.0;
 
         desiredLBState = path1Controller(freq, legampl);
-        desiredLBState.ang += 2.0 * M_PI / 3.0;
+	  if	(extend)
+        	desiredLBState.ang += 2.289994011;
+	  else
+        	desiredLBState.ang += 2.0 * M_PI / 3.0;
 
         desiredLHState = path2Controller((extend) ? freq : (2.0*freq), hipampl);
         desiredLHState.ang += hipampl + lHipStart;
 
         desiredRAState = path3Controller(freq, legampl);
-        desiredRAState.ang += M_PI / 3.0;
+	  if (extend)
+        	desiredRAState.ang += 0.851598663;
+	  else
+        	desiredRAState.ang += M_PI / 3.0;
 
         desiredRBState = path4Controller(freq, legampl);
-        desiredRBState.ang += 2.0 * M_PI / 3.0;
+	  if (extend) 
+	        desiredRBState.ang += 2.289994011;
+	  else
+        	desiredRBState.ang += 2.0 * M_PI / 3.0;
 
         desiredRHState = path5Controller((extend) ? freq : (2.0*freq), hipampl);
         desiredRHState.ang += rHipStart - hipampl;
@@ -195,12 +227,12 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         // angles at positions that may cause the controller to jump upon
         // enable.
         if ((uint8_t)rs.cmState == (uint8_t)controllerManager::RtOpsCommand::ENABLE &&
-                !spg0IsFinished &&
-                !spg1IsFinished &&
-                !spg2IsFinished &&
-                !spg3IsFinished &&
-                !spg4IsFinished &&
-                !spg5IsFinished) {
+               (!spg0IsFinished ||
+                !spg1IsFinished ||
+                !spg2IsFinished ||
+                !spg3IsFinished ||
+                !spg4IsFinished ||
+                !spg5IsFinished)) {
             desiredLAState = spg0RunController();
             desiredLBState = spg1RunController();
             desiredLHState = spg2RunController();
