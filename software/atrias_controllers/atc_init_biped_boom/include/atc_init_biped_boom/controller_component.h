@@ -37,7 +37,7 @@ namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCInitBipedBoomTest : public TaskContext {
+class ATCInitBipedBoom : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
@@ -49,15 +49,15 @@ private:
     RobotPos pos;
 
     // Subcontroller names
-    std::string initBipedBoom0Name;
+    std::string ASCInitBipedBoom0Name;
 
     // Subcontroller components
-    TaskContext *initBipedBoom0; 
+    TaskContext *ASCInitBipedBoom0;
 
     // Subcontroller operations
-    OperationCaller<bool(atrias_msgs::robot_state rs, RobotPos pos)> initBipedBoom0Init;
-    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs)> initBipedBoom0Run;
-    OperationCaller<bool(void)> initBipedBoom0Done;
+    OperationCaller<bool(atrias_msgs::robot_state rs, RobotPos pos)> ASCInitBipedBoom0Init;
+    OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state rs)> ASCInitBipedBoom0Run;
+    OperationCaller<bool(void)> ASCInitBipedBoom0Done;
 
     // Logging
     controller_log_data              logData;
@@ -70,7 +70,7 @@ private:
 
 public:
     // Constructor
-    ATCInitBipedBoomTest(std::string name);
+    ATCInitBipedBoom(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();

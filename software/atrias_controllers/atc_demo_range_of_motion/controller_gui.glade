@@ -601,7 +601,7 @@
         <col id="0" translatable="yes">Manual</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Few at a time</col>
+        <col id="0" translatable="yes">Auto</col>
       </row>
     </data>
   </object>

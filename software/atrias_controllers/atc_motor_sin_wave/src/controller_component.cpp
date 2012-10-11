@@ -91,7 +91,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     targetVel = 0.0;
     currentVel = rs.lLeg.halfA.motorVelocity;
     controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
-    
+
     // Calculate motorB current
     targetPos = leftMotorBSin.ang;
     currentPos = rs.lLeg.halfB.motorAngle;
@@ -106,7 +106,7 @@ atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot
     targetVel = 0.0;
     currentVel = rs.rLeg.halfA.motorVelocity;
     controllerOutput.rLeg.motorCurrentA = pd2Controller(targetPos, currentPos, targetVel, currentVel);
-    
+
     // Calculate motorB current
     targetPos = rightMotorBSin.ang;
     currentPos = rs.rLeg.halfB.motorAngle;

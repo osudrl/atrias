@@ -44,7 +44,7 @@ private:
     uint8_t robotConfig;
 
     // Subcontroller names
-    std::string pd0Name;
+    std::string ASCPD0Name;
     std::string smoothPath0Name;
     std::string smoothPath1Name;
     std::string smoothPath2Name;

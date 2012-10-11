@@ -8,17 +8,17 @@
 namespace atrias {
 namespace controller {
 
-ATCInitBipedBoomTest::ATCInitBipedBoomTest(std::string name):
+ATCInitBipedBoom::ATCInitBipedBoom(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCInitBipedBoomTest::runController, this, ClientThread)
+        ->addOperation("runController", &ATCInitBipedBoom::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties
-    this->addProperty("initBipedBoom0Name", initBipedBoom0Name);
+    this->addProperty("ASCInitBipedBoom0Name", ASCInitBipedBoom0Name);
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -42,7 +42,7 @@ ATCInitBipedBoomTest::ATCInitBipedBoomTest(std::string name):
     log(Info) << "[ATCMT] atc_init_biped_boom controller constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCInitBipedBoom::runController(atrias_msgs::robot_state rs) {
     // Do nothing
     co.lLeg.motorCurrentA   = 0.0;
     co.lLeg.motorCurrentB   = 0.0;
@@ -64,18 +64,18 @@ atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::
         pos.rLeg.A = M_PI/4;
         pos.rLeg.B = 3.0*M_PI/4;
         pos.rLeg.hip = 0.0;
-        initStatus = initBipedBoom0Init(rs, pos);
+        initStatus = ASCInitBipedBoom0Init(rs, pos);
         if (initStatus == false)
             log(Error) << "[ATCMT] asc_init_biped_boom failed to initialize" << endlog();
         cycle++;
     }
 
     // Run the startup controller
-    co = initBipedBoom0Run(rs);
+    co = ASCInitBipedBoom0Run(rs);
 
     // Check to see if we are done
     // TODO: implement this in the subcontroller
-    runStatus = initBipedBoom0Done();
+    runStatus = ASCInitBipedBoom0Done();
 
     // Command a run state
     co.command = medulla_state_run;
@@ -89,38 +89,38 @@ atrias_msgs::controller_output ATCInitBipedBoomTest::runController(atrias_msgs::
 }
 
 // Don't put control code below here!
-bool ATCInitBipedBoomTest::configureHook() {
+bool ATCInitBipedBoom::configureHook() {
     // Connect to the subcontrollers
-    initBipedBoom0 = this->getPeer(initBipedBoom0Name);
-    if (initBipedBoom0)
+    ASCInitBipedBoom0 = this->getPeer(ASCInitBipedBoom0Name);
+    if (ASCInitBipedBoom0)
     {
-        initBipedBoom0Init = initBipedBoom0->provides("initBipedBoom")->getOperation("init");
-        initBipedBoom0Run = initBipedBoom0->provides("initBipedBoom")->getOperation("run");
-        initBipedBoom0Done = initBipedBoom0->provides("initBipedBoom")->getOperation("done");
+        ASCInitBipedBoom0Init = ASCInitBipedBoom0->provides("ASCInitBipedBoom")->getOperation("init");
+        ASCInitBipedBoom0Run = ASCInitBipedBoom0->provides("ASCInitBipedBoom")->getOperation("run");
+        ASCInitBipedBoom0Done = ASCInitBipedBoom0->provides("ASCInitBipedBoom")->getOperation("done");
     }
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
-bool ATCInitBipedBoomTest::startHook() {
+bool ATCInitBipedBoom::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCInitBipedBoomTest::updateHook() {
+void ATCInitBipedBoom::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCInitBipedBoomTest::stopHook() {
+void ATCInitBipedBoom::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCInitBipedBoomTest::cleanupHook() {
+void ATCInitBipedBoom::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCInitBipedBoomTest)
+ORO_CREATE_COMPONENT(ATCInitBipedBoom)
 
 }
 }
