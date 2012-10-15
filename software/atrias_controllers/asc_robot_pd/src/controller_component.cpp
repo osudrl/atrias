@@ -1,6 +1,6 @@
 /*! \file controller_component.cpp
- *  \author Soo-Hyun Yoo
- *  \brief Orocos Component code for the leg position controller.
+ *  \author Andrew Peekema
+ *  \brief Orocos Component code for the robot position controller.
  */
 
 #include <asc_robot_pd/controller_component.h>
@@ -8,13 +8,13 @@
 namespace atrias {
 namespace controller {
 
-ATCLegPosition::ATCLegPosition(std::string name):
+ASCRobotPd::ASCRobotPd(std::string name):
     RTT::TaskContext(name),
     guiDataIn("gui_data_in"),
     guiDataOut("gui_data_out")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCLegPosition::runController, this, ClientThread)
+        ->addOperation("runController", &ASCRobotPd::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.
@@ -43,11 +43,11 @@ ATCLegPosition::ATCLegPosition(std::string name):
     targetVel = 0;
     currentVel = 0;
 
-    log(Info) << "[ATCLP] Leg position controller constructed!" << endlog();
+    log(Info) << "[ASCRobotPd] controller constructed!" << endlog();
 }
 
 // Put control code here.
-atrias_msgs::controller_output ATCLegPosition::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ASCRobotPd::runController(atrias_msgs::robot_state rs) {
     // Set the PD gains
     // lLeg
     // MotorA
@@ -132,7 +132,7 @@ atrias_msgs::controller_output ATCLegPosition::runController(atrias_msgs::robot_
 }
 
 // Don't put control code below here!
-bool ATCLegPosition::configureHook() {
+bool ASCRobotPd::configureHook() {
     // Connect to the subcontrollers
     pd0 = this->getPeer(pd0Name);
     if (pd0)
@@ -174,29 +174,29 @@ bool ATCLegPosition::configureHook() {
     P5 = pd5->properties()->getProperty("P");
     D5 = pd5->properties()->getProperty("D");
 
-    log(Info) << "[ATCLP] configured!" << endlog();
+    log(Info) << "[ASCRobotPd] configured!" << endlog();
     return true;
 }
 
-bool ATCLegPosition::startHook() {
-    log(Info) << "[ATCLP] started!" << endlog();
+bool ASCRobotPd::startHook() {
+    log(Info) << "[ASCRobotPd] started!" << endlog();
     return true;
 }
 
-void ATCLegPosition::updateHook() {
+void ASCRobotPd::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCLegPosition::stopHook() {
-    log(Info) << "[ATCLP] stopped!" << endlog();
+void ASCRobotPd::stopHook() {
+    log(Info) << "[ASCRobotPd] stopped!" << endlog();
 }
 
-void ATCLegPosition::cleanupHook() {
+void ASCRobotPd::cleanupHook() {
     delete pubTimer;
-    log(Info) << "[ATCLP] cleaned up!" << endlog();
+    log(Info) << "[ASCRobotPd] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCLegPosition)
+ORO_CREATE_COMPONENT(ASCRobotPd)
 
 }
 }

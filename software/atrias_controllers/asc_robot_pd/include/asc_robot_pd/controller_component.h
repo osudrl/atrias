@@ -34,7 +34,7 @@ namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCLegPosition : public TaskContext {
+class ASCRobotPd : public TaskContext {
 private:
     shared::GuiPublishTimer         *pubTimer;
 
@@ -94,7 +94,7 @@ private:
 
 public:
     // Constructor
-    ATCLegPosition(std::string name);
+    ASCRobotPd(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();
