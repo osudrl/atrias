@@ -9,126 +9,124 @@ namespace atrias {
 namespace controller {
 
 ASCRobotPd::ASCRobotPd(std::string name):
-    RTT::TaskContext(name),
-    guiDataIn("gui_data_in"),
-    guiDataOut("gui_data_out")
+    RTT::TaskContext(name)
 {
-    this->provides("atc")
+    this->provides("robot_pd")
         ->addOperation("runController", &ASCRobotPd::runController, this, ClientThread)
-        .doc("Get robot_state from RTOps and return controller output.");
+        .doc("Get a desired robot state and return a controller output.");
 
     // Add properties.
-    this->addProperty("pd0Name", pd0Name)
-        .doc("Name of 0th PD subcontroller.");
-    this->addProperty("pd1Name", pd1Name)
-        .doc("Name of 1st PD subcontroller.");
-    this->addProperty("pd2Name", pd2Name)
-        .doc("Name of 2th PD subcontroller.");
-    this->addProperty("pd3Name", pd3Name)
-        .doc("Name of 3st PD subcontroller.");
-    this->addProperty("pd4Name", pd4Name)
-        .doc("Name of 4st PD subcontroller.");
-    this->addProperty("pd5Name", pd5Name)
-        .doc("Name of 5st PD subcontroller.");
-
-    // Add ports.
-    addEventPort(guiDataIn);
-    addPort(guiDataOut);
-
-    pubTimer = new GuiPublishTimer(20);
+    this->addProperty("pd0Name", pd0Name);
+    this->addProperty("pd1Name", pd1Name);
+    this->addProperty("pd2Name", pd2Name);
+    this->addProperty("pd3Name", pd3Name);
+    this->addProperty("pd4Name", pd4Name);
+    this->addProperty("pd5Name", pd5Name);
+    this->addProperty("legP", legP);
+    this->addProperty("legD", legD);
+    this->addProperty("hipP", hipP);
+    this->addProperty("hipD", hipD);
 
     // Set Defaults
-    targetPos = 0;
-    currentPos = 0;
-    targetVel = 0;
-    currentVel = 0;
+    legP       = 0.0;
+    legD       = 0.0;
+    hipP       = 0.0;
+    hipD       = 0.0;
+    targetPos  = 0.0;
+    currentPos = 0.0;
+    targetVel  = 0.0;
+    currentVel = 0.0;
 
     log(Info) << "[ASCRobotPd] controller constructed!" << endlog();
 }
 
 // Put control code here.
-atrias_msgs::controller_output ASCRobotPd::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ASCRobotPd::runController(atrias_msgs::robot_state rs, DesiredRobotState ds) {
     // Set the PD gains
     // lLeg
     // MotorA
-    P0.set(guiIn.p_gain);
-    D0.set(guiIn.d_gain);
+    P0.set(legP);
+    D0.set(legD);
     // MotorB
-    P1.set(guiIn.p_gain);
-    D1.set(guiIn.d_gain);
+    P1.set(legP);
+    D1.set(legD);
     // Hip
-    P2.set(guiIn.hip_p_gain);
-    D2.set(guiIn.hip_d_gain);
+    P2.set(hipP);
+    D2.set(hipD);
     // rLeg
     // MotorA
-    P3.set(guiIn.p_gain);
-    D3.set(guiIn.d_gain);
+    P3.set(legP);
+    D3.set(legD);
     // MotorB
-    P4.set(guiIn.p_gain);
-    D4.set(guiIn.d_gain);
+    P4.set(legP);
+    D4.set(legD);
     // Hip
-    P5.set(guiIn.hip_p_gain);
-    D5.set(guiIn.hip_d_gain);
+    P5.set(hipP);
+    D5.set(hipD);
 
-    // Transform from leg angle and length to motor positions
-    leftMotorAngle = legToMotorPos(guiIn.leg_ang, guiIn.leg_len);
-    rightMotorAngle = legToMotorPos(guiIn.leg_ang, guiIn.leg_len);
+    // Structs for the transforms
+    lLegAng.ang = ds.left.leg.ang;
+    lLegAng.vel = ds.left.leg.angVel;
+    lLegLen.ang = ds.left.leg.len;
+    lLegLen.vel = ds.left.leg.lenVel;
+    rLegAng.ang = ds.right.leg.ang;
+    rLegAng.vel = ds.right.leg.angVel;
+    rLegLen.ang = ds.right.leg.len;
+    rLegLen.vel = ds.right.leg.lenVel;
+    // Transform from leg to motor positions
+    lMotorAng = legToMotorPos(ds.left.leg.ang,  ds.left.leg.len);
+    rMotorAng = legToMotorPos(ds.right.leg.ang, ds.right.leg.len);
+    // Transform from leg to motor velocities
+    lMotorVel = legToMotorVel(lLegAng, lLegLen);
+    rMotorVel = legToMotorVel(rLegAng, rLegLen);
 
     // lLeg
     // Calculate motorA current
-    targetPos = leftMotorAngle.A;
+    targetPos  = lMotorAng.A;
     currentPos = rs.lLeg.halfA.motorAngle;
-    targetVel = 0.0;
+    targetVel  = lMotorVel.A;
     currentVel = rs.lLeg.halfA.motorVelocity;
-    controllerOutput.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate motorB current
-    targetPos = leftMotorAngle.B;
+    targetPos  = lMotorAng.B;
     currentPos = rs.lLeg.halfB.motorAngle;
-    targetVel = 0.0;
+    targetVel  = lMotorVel.B;
     currentVel = rs.lLeg.halfB.motorVelocity;
-    controllerOutput.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate hip current
-    targetPos = guiIn.hip_ang;
+    targetPos  = ds.left.hip.ang;
     currentPos = rs.lLeg.hip.legBodyAngle;
-    targetVel = 0.0;
+    targetVel  = ds.left.hip.vel;
     currentVel = rs.lLeg.hip.legBodyVelocity;
-    controllerOutput.lLeg.motorCurrentHip = pd2Controller(targetPos, currentPos, targetVel, currentVel);
+    co.lLeg.motorCurrentHip = pd2Controller(targetPos, currentPos, targetVel, currentVel);
 
     // rLeg
     // Calculate motorA current
-    targetPos = rightMotorAngle.A;
+    targetPos  = rMotorAng.A;
     currentPos = rs.rLeg.halfA.motorAngle;
-    targetVel = 0.0;
+    targetVel  = rMotorVel.A;
     currentVel = rs.rLeg.halfA.motorVelocity;
-    controllerOutput.rLeg.motorCurrentA = pd3Controller(targetPos, currentPos, targetVel, currentVel);
+    co.rLeg.motorCurrentA = pd3Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate motorB current
-    targetPos = rightMotorAngle.B;
+    targetPos  = rMotorAng.B;
     currentPos = rs.rLeg.halfB.motorAngle;
-    targetVel = 0.0;
+    targetVel  = rMotorVel.A;
     currentVel = rs.rLeg.halfB.motorVelocity;
-    controllerOutput.rLeg.motorCurrentB = pd4Controller(targetPos, currentPos, targetVel, currentVel);
+    co.rLeg.motorCurrentB = pd4Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate hip current
-    // TODO: Get correct values from the gui
-    //targetPos = guiIn.hip_ang;
+    targetPos  = ds.right.hip.ang;
     currentPos = rs.rLeg.hip.legBodyAngle;
-    targetVel = 0.0;
+    targetVel  = ds.right.hip.vel;
     currentVel = rs.rLeg.hip.legBodyVelocity;
-    //controllerOutput.rLeg.motorCurrentHip = pd5Controller(targetPos, currentPos, targetVel, currentVel);
+    co.rLeg.motorCurrentHip = pd5Controller(targetPos, currentPos, targetVel, currentVel);
 
-    controllerOutput.command = medulla_state_run;
+    co.command = medulla_state_run;
 
-    // If we're enabled, inform the GUI
-    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
-
-    // Send data to the GUI
-    if (pubTimer->readyToSend())
-        guiDataOut.write(guiOut);
-
-    return controllerOutput;
+    return co;
 }
 
 // Don't put control code below here!
@@ -159,6 +157,7 @@ bool ASCRobotPd::configureHook() {
         pd5Controller = pd5->provides("pd")->getOperation("runController");
 
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
+    legToMotorVel = this->provides("legToMotorTransforms")->getOperation("velTransform");
 
     // Get references to the attributes
     P0 = pd0->properties()->getProperty("P");
@@ -184,7 +183,7 @@ bool ASCRobotPd::startHook() {
 }
 
 void ASCRobotPd::updateHook() {
-    guiDataIn.read(guiIn);
+    // Do nothing
 }
 
 void ASCRobotPd::stopHook() {
@@ -192,7 +191,6 @@ void ASCRobotPd::stopHook() {
 }
 
 void ASCRobotPd::cleanupHook() {
-    delete pubTimer;
     log(Info) << "[ASCRobotPd] cleaned up!" << endlog();
 }
 

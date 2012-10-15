@@ -1,6 +1,6 @@
 /*! \file controller_component.h
- *  \author Soo-Hyun Yoo
- *  \brief Orocos Component header for leg position controller.
+ *  \author Andrew Peekema
+ *  \brief Orocos Component header for the robot position controller.
  */
 
 // Orocos 
@@ -36,19 +36,9 @@ namespace controller {
 
 class ASCRobotPd : public TaskContext {
 private:
-    shared::GuiPublishTimer         *pubTimer;
+    atrias_msgs::controller_output  co;
 
-    atrias_msgs::robot_state        robotState;
-    atrias_msgs::controller_output  controllerOutput;
-
-    controller_input                guiIn;
-    controller_status               guiOut;
-
-    InputPort<controller_input>     guiDataIn;
-    OutputPort<controller_status>   guiDataOut;
-
-    // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state);
+    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs, DesiredRobotState ds);
 
     // Variables for subcontrollers
     std::string pd0Name;
@@ -57,6 +47,10 @@ private:
     std::string pd3Name;
     std::string pd4Name;
     std::string pd5Name;
+    double legP;
+    double legD;
+    double hipP;
+    double hipD;
 
     TaskContext *pd0;
     TaskContext *pd1;
@@ -86,11 +80,14 @@ private:
     OperationCaller<double(double, double, double, double)> pd4Controller;
     OperationCaller<double(double, double, double, double)> pd5Controller;
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
+    OperationCaller<MotorVelocity(MotorState, MotorState)> legToMotorVel;
 
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;
-    MotorAngle leftMotorAngle;
-    MotorAngle rightMotorAngle;
+    MotorAngle lMotorAng, rMotorAng;
+    MotorVelocity lMotorVel, rMotorVel;
+    MotorState lLegAng, lLegLen;
+    MotorState rLegAng, rLegLen;
 
 public:
     // Constructor
