@@ -2,21 +2,19 @@
 require("scripting")
 require("print")
 
-export void dummyFunction( ) {
-    return
-}
-
-export void ascInitBipedBoomStop( string ascInstance ) {
+export void ASCInitBipedBoomStop( string ascInstance ) {
     # Hack to make function calling work
     dummyFunction()
 
-    # Stop the asc
-    scripting.eval(ascInstance + ".stop()")
-
     # Shut subcontrollers down
-    #Nothing to shut down
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD0Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath0Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath1Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath2Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath3Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath4Name")
+    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath5Name")
 
-    # Cleanup
-    scripting.eval(ascInstance + ".cleanup()")
-    unloadComponent(ascInstance)
+    # Return void
+    return
 }

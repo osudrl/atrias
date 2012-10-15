@@ -1,0 +1,19 @@
+# Shut stuff down
+require("scripting")
+require("print")
+
+export void ASCRobotPdStop( string ascInstance ) {
+    # Hack to make function calling work
+    dummyFunction()
+
+    # Shut subcontrollers down
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD0Name")
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD1Name")
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD2Name")
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD3Name")
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD4Name")
+    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD5Name")
+
+    # Return void
+    return
+}

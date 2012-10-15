@@ -67,18 +67,18 @@ private:
 
     // Subcontroller operations
     OperationCaller<double(double, double, double, double)> pd0RunController;
-    OperationCaller<void(double, double)> smoothPath0Init;
-    OperationCaller<void(double, double)> smoothPath1Init;
-    OperationCaller<void(double, double)> smoothPath2Init;
-    OperationCaller<void(double, double)> smoothPath3Init;
-    OperationCaller<void(double, double)> smoothPath4Init;
-    OperationCaller<void(double, double)> smoothPath5Init;
-    OperationCaller<MotorState(double, double)> smoothPath0Run;
-    OperationCaller<MotorState(double, double)> smoothPath1Run;
-    OperationCaller<MotorState(double, double)> smoothPath2Run;
-    OperationCaller<MotorState(double, double)> smoothPath3Run;
-    OperationCaller<MotorState(double, double)> smoothPath4Run;
-    OperationCaller<MotorState(double, double)> smoothPath5Run;
+    OperationCaller<void(double, double, double)> smoothPath0Init;
+    OperationCaller<void(double, double, double)> smoothPath1Init;
+    OperationCaller<void(double, double, double)> smoothPath2Init;
+    OperationCaller<void(double, double, double)> smoothPath3Init;
+    OperationCaller<void(double, double, double)> smoothPath4Init;
+    OperationCaller<void(double, double, double)> smoothPath5Init;
+    OperationCaller<MotorState(void)> smoothPath0Run;
+    OperationCaller<MotorState(void)> smoothPath1Run;
+    OperationCaller<MotorState(void)> smoothPath2Run;
+    OperationCaller<MotorState(void)> smoothPath3Run;
+    OperationCaller<MotorState(void)> smoothPath4Run;
+    OperationCaller<MotorState(void)> smoothPath5Run;
 
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;

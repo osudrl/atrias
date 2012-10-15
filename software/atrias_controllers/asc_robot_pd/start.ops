@@ -1,0 +1,28 @@
+# Subcontroller's subcontrollers
+require("scripting")
+require("print")
+
+export void ASCRobotPdSubcontrollers( string ascInstance ) {
+    # Hack to make function calling work
+    dummyFunction()
+
+    # Import and start the subcontrollers
+    var string ASCPD0Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string ASCPD1Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string ASCPD2Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string ASCPD3Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string ASCPD4Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string ASCPD5Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    ascKickStart(ascInstance, "asc_coordinate_transforms", "legToMotorTransforms")
+
+    # Store the subcontroller names
+    scripting.eval(ascInstance + ".ASCPD0Name = \"" + ASCPD0Name + "\"")
+    scripting.eval(ascInstance + ".ASCPD1Name = \"" + ASCPD1Name + "\"")
+    scripting.eval(ascInstance + ".ASCPD2Name = \"" + ASCPD2Name + "\"")
+    scripting.eval(ascInstance + ".ASCPD3Name = \"" + ASCPD3Name + "\"")
+    scripting.eval(ascInstance + ".ASCPD4Name = \"" + ASCPD4Name + "\"")
+    scripting.eval(ascInstance + ".ASCPD5Name = \"" + ASCPD5Name + "\"")
+
+    # Return void
+    return
+}
