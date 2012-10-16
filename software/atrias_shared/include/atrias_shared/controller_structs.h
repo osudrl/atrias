@@ -34,6 +34,23 @@ struct RobotPos {
     RobotPosLeg rLeg;
 };
 
+struct RobotLeg {
+    double ang;
+    double angVel;
+    double len;
+    double lenVel;
+};
+
+struct RobotSide {
+    RobotLeg leg;
+    MotorState hip;
+};
+
+struct DesiredRobotState {
+    RobotSide left;
+    RobotSide right;
+};
+
 }
 }
 

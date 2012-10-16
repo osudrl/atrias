@@ -1,4 +1,4 @@
-# Start function for the subcontroller
+# Subcontroller's subcontrollers
 require("scripting")
 require("print")
 
@@ -8,8 +8,21 @@ export void ASCInitBipedBoomSubcontrollers( string ascInstance ) {
 
     # Import and start the subcontrollers
     var string ASCPD0Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
+    var string smoothPath0Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+    var string smoothPath1Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+    var string smoothPath2Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+    var string smoothPath3Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+    var string smoothPath4Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+    var string smoothPath5Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
+
     # Store the subcontroller name
     scripting.eval(ascInstance + ".ASCPD0Name = \"" + ASCPD0Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath0Name = \"" + smoothPath0Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath1Name = \"" + smoothPath1Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath2Name = \"" + smoothPath2Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath3Name = \"" + smoothPath3Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath4Name = \"" + smoothPath4Name + "\"")
+    scripting.eval(ascInstance + ".smoothPath5Name = \"" + smoothPath5Name + "\"")
 
     # Return void
     return

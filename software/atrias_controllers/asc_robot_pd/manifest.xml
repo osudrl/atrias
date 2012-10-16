@@ -1,0 +1,19 @@
+<package>
+  <description brief="asc_robot_pd">
+
+     asc_robot_pd
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_robot_pd</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="rtt" />
+  <depend package="asc_coordinate_transforms" />
+  <depend package="asc_pd" />
+
+</package>

@@ -45,6 +45,7 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 # and installs in the directory lib/orocos/asc_coordinate_transforms/plugins/
 #
 orocos_service(leg_to_motor_transforms-service src/leg_to_motor_transforms-service.cpp) # ...only one service per library !
+orocos_service(com_to_leg_transforms-service src/com_to_leg_transforms-service.cpp)
 #
 # You may add multiple orocos_service statements.
 

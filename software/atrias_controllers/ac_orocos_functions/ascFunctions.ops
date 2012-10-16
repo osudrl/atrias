@@ -46,3 +46,25 @@ export string ascKickStart( string atcInstance, string ascPackage, string ascCom
     # Return the subcontroller instance name
     return ascInstance
 }
+
+export void ascKickOut( string ascPackage, string ascComponent, string ascInstance ) {
+    # Hack to make function calling work
+    dummyFunction()
+
+    # stop the component
+    scripting.eval(ascInstance + ".stop()")
+
+    # Run stop.ops if it exists
+    if ( scripting.runScript(rospack.find(ascPackage) + "/stop.ops") ) then
+        # stop the subcontroller's subcontrollers
+        scripting.eval(ascComponent + "Stop(\"" + ascInstance + "\")")
+    else
+        print.ln("This error indicates that there are no subcontrollers for " + ascPackage)
+
+    # Cleanup and unload the component
+    scripting.eval(ascInstance + ".cleanup()")
+    unloadComponent(ascInstance)
+
+    # Return void
+    return
+}

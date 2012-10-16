@@ -119,9 +119,9 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
         rHip.ang =  vertical - outAngle;
 
     // Transform to motor positions and velocities
-    lMotorAngle = legToMotorPos(lLegAng.ang, lLegLen.ang);
+    lMotorAngle    = legToMotorPos(lLegAng.ang, lLegLen.ang);
     lMotorVelocity = legToMotorVel(lLegAng, lLegLen);
-    rMotorAngle = legToMotorPos(rLegAng.ang, rLegLen.ang);
+    rMotorAngle    = legToMotorPos(rLegAng.ang, rLegLen.ang);
     rMotorVelocity = legToMotorVel(rLegAng, rLegLen);
     // lMotorAngle.A / .B
 
