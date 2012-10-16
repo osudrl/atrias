@@ -42,16 +42,10 @@ private:
 	/*
 	 * Medulla Status
 	 */
-	Gtk::Entry  *MedullaA_TempA,
-	            *MedullaA_TempB,
-	            *MedullaA_TempC,
-	            *MedullaA_VLogic,
+	Gtk::Entry  *MedullaA_VLogic,
 	            *MedullaA_VMotor;
 
-	Gtk::Entry  *MedullaB_TempA,
-	            *MedullaB_TempB,
-	            *MedullaB_TempC,
-	            *MedullaB_VLogic,
+	Gtk::Entry  *MedullaB_VLogic,
 	            *MedullaB_VMotor;
 
 	Gtk::Entry  *medullaAError_entry,
@@ -62,8 +56,6 @@ private:
 	 * End Medulla Status
 	 */
 
-	Gtk::Label *cpu_load_label;
-
 	Gtk::ProgressBar *motor_torqueLeftA_progress_bar,
 	                 *motor_torqueLeftB_progress_bar,
 	                 *motor_torqueLeftHip_progress_bar,
@@ -73,8 +65,7 @@ private:
 	                 *spring_deflectionLeftA_progress_bar,
 	                 *spring_deflectionLeftB_progress_bar,
 	                 *spring_deflectionRightA_progress_bar,
-	                 *spring_deflectionRightB_progress_bar,
-	                 *cpu_load_bar;
+	                 *spring_deflectionRightB_progress_bar;
 
 	Gtk::Entry  *xPosDisplay,
 	            *yPosDisplay,
@@ -92,8 +83,12 @@ private:
 	            *spring_deflection_left_B_entry,
 	            *spring_deflection_right_A_entry,
 	            *spring_deflection_right_B_entry,
-	            *legLengthDisplay,
-	            *legAngleDisplay;
+	            *leftLegLengthDisplay,
+	            *leftLegAngleDisplay,
+	            *rightLegLengthDisplay,
+	            *rightLegAngleDisplay,
+                    *leftHipAngleDisplay,
+                    *rightHipAngleDisplay;
 };
 
 #endif /* STATUSGUI_H_ */
