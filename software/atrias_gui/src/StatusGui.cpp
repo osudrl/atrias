@@ -49,8 +49,12 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("torqueLeftBDisplay", torqueLeftBDisplay);
     gui->get_widget("torqueLeftHipDisplay", torqueLeftHipDisplay);
 
-    gui->get_widget("legLengthDisplay", legLengthDisplay);
-    gui->get_widget("legAngleDisplay", legAngleDisplay);
+    gui->get_widget("leftLegLengthDisplay", leftLegLengthDisplay);
+    gui->get_widget("leftLegAngleDisplay", leftLegAngleDisplay);
+    gui->get_widget("rightLegLengthDisplay", rightLegLengthDisplay);
+    gui->get_widget("rightLegAngleDisplay", rightLegAngleDisplay);
+    gui->get_widget("leftHipAngleDisplay", leftHipAngleDisplay);
+    gui->get_widget("rightHipAngleDisplay", rightHipAngleDisplay);
 
     gui->get_widget("spring_deflection_left_A_entry", spring_deflection_left_A_entry);
     gui->get_widget("spring_deflection_left_B_entry", spring_deflection_left_B_entry);
@@ -72,15 +76,9 @@ StatusGui::StatusGui(char *path) {
     /*
      * This block is for the Medulla Status section.
      */
-    gui->get_widget("MedullaA_TempA", MedullaA_TempA);
-    gui->get_widget("MedullaA_TempB", MedullaA_TempB);
-    gui->get_widget("MedullaA_TempC", MedullaA_TempC);
     gui->get_widget("MedullaA_VLogic", MedullaA_VLogic);
     gui->get_widget("MedullaA_VMotor", MedullaA_VMotor);
 
-    gui->get_widget("MedullaB_TempA", MedullaB_TempA);
-    gui->get_widget("MedullaB_TempB", MedullaB_TempB);
-    gui->get_widget("MedullaB_TempC", MedullaB_TempC);
     gui->get_widget("MedullaB_VLogic", MedullaB_VLogic);
     gui->get_widget("MedullaB_VMotor", MedullaB_VMotor);
 
@@ -88,9 +86,6 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("medullaBError_entry", medullaBError_entry);
     gui->get_widget("medullaHipError_entry", medullaHipError_entry);
     gui->get_widget("medullaBoomError_entry", medullaBoomError_entry);
-
-    gui->get_widget("cpu_load_label", cpu_load_label);
-    gui->get_widget("cpu_load_bar", cpu_load_bar);
 
     usageIndex = 0;
 
@@ -175,9 +170,22 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     zVelDisplay->set_text(buffer);
 
     sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.lLeg.halfA.motorAngle, rtCycle.robotState.lLeg.halfB.motorAngle));
-    legLengthDisplay->set_text(buffer);
+    leftLegLengthDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.lLeg.halfA.motorAngle, rtCycle.robotState.lLeg.halfB.motorAngle));
-    legAngleDisplay->set_text(buffer);
+    leftLegAngleDisplay->set_text(buffer);
+
+    sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.rLeg.halfA.motorAngle, rtCycle.robotState.rLeg.halfB.motorAngle));
+    rightLegLengthDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.rLeg.halfA.motorAngle, rtCycle.robotState.rLeg.halfB.motorAngle));
+    rightLegAngleDisplay->set_text(buffer);
+
+    //Commented out until we figure out where the hip angle went in the robot state
+    /*sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.motorAngle);
+    leftHipLengthDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", rtCycle.robotState.rLeg.hip.motorAngle);
+    rightHipLengthDisplay->set_text(buffer);*/
+    leftHipAngleDisplay->set_text("0.0");
+    rightHipAngleDisplay->set_text("0.0");
 
     //TODO: Fix this
     /*if (usageIndex < CPU_USAGE_AVERAGE_TICKS) {
