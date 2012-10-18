@@ -266,7 +266,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="rightLegAngleDisplay1">
+              <object class="GtkEntry" id="rightLegAngleDisplay">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">•</property>
@@ -284,7 +284,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="rightLegHipAngleDisplay">
+              <object class="GtkEntry" id="rightHipAngleDisplay">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">•</property>
@@ -398,7 +398,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="leftLegHipAngleDisplay">
+              <object class="GtkEntry" id="leftHipAngleDisplay">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">•</property>
