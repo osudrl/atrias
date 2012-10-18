@@ -1,4 +1,3 @@
-## Setup
 require("scripting")
 require("print")
 import("rtt_rospack")
@@ -6,19 +5,26 @@ import("rtt_rospack")
 # Clean up the controller namespace
 atrias_cm.resetControllerNames()
 
-# Function for setting up subcontrollers
-scripting.runScript(rospack.find("ac_orocos_functions") + "/ascFunctions.ops")
-
-## Run
-# Import and load the component
+# Set up the component
 import("atc_init_biped_boom")
 loadComponent("controller", "ATCInitBipedBoom")
 
-# Connect RTOps with this controller so they can call each other's operations)
+# Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# Import and start the subcontrollers
-controller.ASCInitBipedBoom0Name = ascKickStart("controller", "asc_init_biped_boom", "ASCInitBipedBoom")
+# Set up the subcontroller environment
+var string initBipedBoom0Name = atrias_cm.getUniqueName("controller", "initBipedBoom")
+import("asc_init_biped_boom")
+
+# Get the functions and start the subcontroller
+scripting.runScript(rospack.find("asc_init_biped_boom") + "/start.ops")
+ascInitBipedBoomStart(initBipedBoom0Name)
+
+# Connect this controller with its subcontroller
+addPeer("controller", initBipedBoom0Name)
+
+# Pass the names of the subcontroller to the controller
+controller.initBipedBoom0Name = initBipedBoom0Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy
@@ -27,6 +33,8 @@ gui_policy.transport = 3
 gui_policy.name_id = "/atc_init_biped_boom_input"
 stream("controller.gui_data_in", gui_policy)
 
-# Configure and start the component
+# Configure the component
 controller.configure()
+
+# Start the component
 controller.start()

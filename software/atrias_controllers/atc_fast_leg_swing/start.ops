@@ -1,43 +1,110 @@
-## Setup
-require("scripting")
-require("print")
-import("rtt_rospack")
-
 # Clean up the controller namespace
 atrias_cm.resetControllerNames()
 
-# Function for setting up subcontrollers
-scripting.runScript(rospack.find("ac_orocos_functions") + "/ascFunctions.ops")
-
-## Run
-# Import and load the component
+# Set up the component
 import("atc_fast_leg_swing")
 loadComponent("controller", "ATCFastLegSwing")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# Import and start the subcontrollers
-controller.pd0Name = ascKickStart("controller", "asc_pd", "ASCPD")
-controller.pd1Name = ascKickStart("controller", "asc_pd", "ASCPD")
-controller.pd2Name = ascKickStart("controller", "asc_pd", "ASCPD")
-controller.pd3Name = ascKickStart("controller", "asc_pd", "ASCPD")
-controller.pd4Name = ascKickStart("controller", "asc_pd", "ASCPD")
-controller.pd5Name = ascKickStart("controller", "asc_pd", "ASCPD")
+# Set up subcontrollers
+import("asc_pd")
+import("asc_path_generator")
 
-controller.spg0Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
-controller.spg1Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
-controller.spg2Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
-controller.spg3Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
-controller.spg4Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
-controller.spg5Name = ascKickStart("controller", "asc_path_generator", "ASCSmoothPathGenerator")
+var string spg0Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg0Name, "ASCSmoothPathGenerator")
 
-controller.pathGenerator0Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
-controller.pathGenerator1Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
-controller.pathGenerator2Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
-controller.pathGenerator3Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
-controller.pathGenerator4Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
-controller.pathGenerator5Name = ascKickStart("controller", "asc_path_generator", "ASCParabolaPathGenerator")
+var string spg1Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg1Name, "ASCSmoothPathGenerator")
+
+var string spg2Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg2Name, "ASCSmoothPathGenerator")
+
+var string spg3Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg3Name, "ASCSmoothPathGenerator")
+
+var string spg4Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg4Name, "ASCSmoothPathGenerator")
+
+var string spg5Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg5Name, "ASCSmoothPathGenerator")
+
+var string pathGenerator0Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator0Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator1Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator1Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator2Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator2Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator3Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator3Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator4Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator4Name, "ASCParabolaPathGenerator")
+
+var string pathGenerator5Name = atrias_cm.getUniqueName("controller", "pathGenerator")
+loadComponent(pathGenerator5Name, "ASCParabolaPathGenerator")
+
+var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd0Name, "ASCPD")
+
+var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd1Name, "ASCPD")
+
+var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd2Name, "ASCPD")
+
+var string pd3Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd3Name, "ASCPD")
+
+var string pd4Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd4Name, "ASCPD")
+
+var string pd5Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd5Name, "ASCPD")
+
+# Connect this controller with its subcontrollers
+addPeer("controller", spg0Name)
+addPeer("controller", spg1Name)
+addPeer("controller", spg2Name)
+addPeer("controller", spg3Name)
+addPeer("controller", spg4Name)
+addPeer("controller", spg5Name)
+addPeer("controller", pathGenerator0Name)
+addPeer("controller", pathGenerator1Name)
+addPeer("controller", pathGenerator2Name)
+addPeer("controller", pathGenerator3Name)
+addPeer("controller", pathGenerator4Name)
+addPeer("controller", pathGenerator5Name)
+addPeer("controller", pd0Name)
+addPeer("controller", pd1Name)
+addPeer("controller", pd2Name)
+addPeer("controller", pd3Name)
+addPeer("controller", pd4Name)
+addPeer("controller", pd5Name)
+
+# Pass the names of the subcontrollers to the controller
+controller.spg0Name = spg0Name
+controller.spg1Name = spg1Name
+controller.spg2Name = spg2Name
+controller.spg3Name = spg3Name
+controller.spg4Name = spg4Name
+controller.spg5Name = spg5Name
+controller.pathGenerator0Name = pathGenerator0Name
+controller.pathGenerator1Name = pathGenerator1Name
+controller.pathGenerator2Name = pathGenerator2Name
+controller.pathGenerator3Name = pathGenerator3Name
+controller.pathGenerator4Name = pathGenerator4Name
+controller.pathGenerator5Name = pathGenerator5Name
+controller.pd0Name = pd0Name
+controller.pd1Name = pd1Name
+controller.pd2Name = pd2Name
+controller.pd3Name = pd3Name
+controller.pd4Name = pd4Name
+controller.pd5Name = pd5Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy
