@@ -1,13 +1,15 @@
 require("scripting")
 require("print")
+import("rtt_rospack")
 
 # Stop the atc
 controller.stop()
 
-# Shut subcontrollers down
-ascKickOut("asc_init_biped_boom", "ASCInitBipedBoom", controller.initBipedBoom0Name)
+# Shut the subcontrollers down
+scripting.runScript(rospack.find("asc_init_biped_boom") + "/stop.ops")
+ascInitBipedBoomStop(controller.initBipedBoom0Name)
 
-# Cleanup and unload the component
+# cleanup the atc
 controller.cleanup()
 unloadComponent("controller")
 atrias_cm.resetControllerNames()

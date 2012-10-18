@@ -2,19 +2,17 @@
 require("scripting")
 require("print")
 
-export void ASCInitBipedBoomStop( string ascInstance ) {
-    # Hack to make function calling work
-    dummyFunction()
-
-    # Shut subcontrollers down
-    ascKickOut("asc_pd", "ASCPD", scripting.eval(ascInstance + ".ASCPD0Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath0Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath1Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath2Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath3Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath4Name")
-    ascKickOut("asc_path_generator", "ASCSmoothPathGenerator", scripting.eval(ascInstance + ".smoothPath5Name")
-
-    # Return void
+export void dummyFunction( ) {
     return
+}
+
+export void ascInitBipedBoomStop( string controllerName ) {
+    print.ln("Beginning of the stop function. Controller name: " + controllerName)
+    # This dummyFunction call is a hack to make function calling work
+    dummyFunction()
+    print.ln("Dummy function returned")
+    scripting.eval(controllerName + ".stop()")
+    scripting.eval(controllerName + ".cleanup()")
+    unloadComponent(controllerName)
+    print.ln(controllerName + "cleaned up")
 }

@@ -1,10 +1,11 @@
-# Stop the atc
+# Shut stuff down
 controller.stop()
-
-# Shut subcontrollers down
-ascKickOut("asc_robot_pd", "ASCRobotPd", controller.robotPd0Name)
-
-# Cleanup and unload the component
 controller.cleanup()
+unloadComponent(controller.pd0Name)
+unloadComponent(controller.pd1Name)
+unloadComponent(controller.pd2Name)
+unloadComponent(controller.pd3Name)
+unloadComponent(controller.pd4Name)
+unloadComponent(controller.pd5Name)
 unloadComponent("controller")
 atrias_cm.resetControllerNames()

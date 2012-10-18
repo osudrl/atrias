@@ -1,24 +1,44 @@
-## Setup
-require("scripting")
 require("print")
-import("rtt_rospack")
 
-# Clean up the controller namespace
-atrias_cm.resetControllerNames()
-
-# Function for setting up subcontrollers
-scripting.runScript(rospack.find("ac_orocos_functions") + "/acFunctions.ops")
-
-## Run
-# Import and load the component
+# Set up the top controller
 import("atc_leg_position")
 loadComponent("controller", "ATCLegPosition")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# Import and start the subcontrollers
-controller.robotPd0Name = ascKickStart("controller", "asc_robot_pd", "ASCRobotPd")
+# Set up subcontrollers
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
+
+import("asc_pd")
+var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd2Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd3Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd4Name = atrias_cm.getUniqueName("controller", "pd")
+var string pd5Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd0Name, "ASCPD")
+loadComponent(pd1Name, "ASCPD")
+loadComponent(pd2Name, "ASCPD")
+loadComponent(pd3Name, "ASCPD")
+loadComponent(pd4Name, "ASCPD")
+loadComponent(pd5Name, "ASCPD")
+
+# Connect this controller with its subcontrollers.
+addPeer("controller", pd0Name)
+addPeer("controller", pd1Name)
+addPeer("controller", pd2Name)
+addPeer("controller", pd3Name)
+addPeer("controller", pd4Name)
+addPeer("controller", pd5Name)
+# Pass the names of the subcontrollers to the controller
+controller.pd0Name = pd0Name
+controller.pd1Name = pd1Name
+controller.pd2Name = pd2Name
+controller.pd3Name = pd3Name
+controller.pd4Name = pd4Name
+controller.pd5Name = pd5Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy

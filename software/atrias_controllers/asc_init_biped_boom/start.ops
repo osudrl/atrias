@@ -1,28 +1,37 @@
-# Subcontroller's subcontrollers
+# Start function for the subcontroller
 require("scripting")
 require("print")
 
-export void ASCInitBipedBoomSubcontrollers( string ascInstance ) {
-    # Hack to make function calling work
+export void dummyFunction( ) {
+    return
+}
+
+export void ascInitBipedBoomStart( string controllerName ) {
+    print.ln("Beginning of the subcontroller start function. Controller name: " + controllerName)
+    # This dummyFunction call is a hack to make function calling work
     dummyFunction()
+    print.ln("Dummy function returned")
 
-    # Import and start the subcontrollers
-    var string ASCPD0Name = ascKickStart(ascInstance, "asc_pd", "ASCPD")
-    var string smoothPath0Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-    var string smoothPath1Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-    var string smoothPath2Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-    var string smoothPath3Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-    var string smoothPath4Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-    var string smoothPath5Name = ascKickStart(ascInstance, "asc_path_generator", "ASCSmoothPathGenerator")
-
-    # Store the subcontroller name
-    scripting.eval(ascInstance + ".ASCPD0Name = \"" + ASCPD0Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath0Name = \"" + smoothPath0Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath1Name = \"" + smoothPath1Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath2Name = \"" + smoothPath2Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath3Name = \"" + smoothPath3Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath4Name = \"" + smoothPath4Name + "\"")
-    scripting.eval(ascInstance + ".smoothPath5Name = \"" + smoothPath5Name + "\"")
+    # Set up the component
+    loadComponent(controllerName, "ASCInitBipedBoom")
+    
+    # Set up subcontrollers
+    import("asc_pd")
+    var string pd0Name = atrias_cm.getUniqueName(controllerName, "pd")
+    loadComponent(pd0Name, "ASCPD")
+    
+    # Connect this controller with its subcontrollers
+    addPeer(controllerName, pd0Name)
+    
+    # Pass the names of the subcontrollers to the controller
+    scripting.eval(controllerName + ".pd0Name = \"" + pd0Name + "\"")
+    
+    # Configure the component
+    scripting.eval(controllerName + ".configure()")
+    
+    # Start the component
+    scripting.eval(controllerName + ".start()")
+    print.ln("End of the subcontroller function")
 
     # Return void
     return
