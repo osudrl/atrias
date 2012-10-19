@@ -15,14 +15,8 @@ ATCMotorTest::ATCMotorTest(std::string name) :
 	->addOperation("runController", &ATCMotorTest::runController, this, ClientThread)
 	.doc("Get robot_state from RTOps and return controller output.");
 
-	log(Info) << "[ATCMT] Constructed!" << endlog();
-}
-
-atrias_msgs::controller_output ATCMotorTest::runController(atrias_msgs::robot_state rs) {
-	atrias_msgs::controller_output co;
-	
 	// Do nothing unless told otherwise
-	co.lLeg.motorCurrentA   = 0.7;
+	co.lLeg.motorCurrentA   = 0.0;
 	co.lLeg.motorCurrentB   = 0.0;
 	co.lLeg.motorCurrentHip = 0.0;
 	co.rLeg.motorCurrentA   = 0.0;
@@ -31,6 +25,20 @@ atrias_msgs::controller_output ATCMotorTest::runController(atrias_msgs::robot_st
 	
 	// Command a run state
 	co.command = medulla_state_run;
+	
+	nextSwitchTime = 0;
+
+	log(Info) << "[ATCMT] Constructed!" << endlog();
+}
+
+atrias_msgs::controller_output ATCMotorTest::runController(atrias_msgs::robot_state rs) {
+	RTT::os::TimeService::nsecs cur_time = SECOND_IN_NANOSECONDS * rs.header.stamp.sec +
+	                                                               rs.header.stamp.nsec;
+
+	if (cur_time > nextSwitchTime) {
+		// We need to generate a new output torque and duration.
+		co.lLeg.motorCurrentA = (rand() - RAND_MAX/2.0) * MAX_TORQUE * 2.0 / RAND_MAX;
+	}
 
 	// Output for RTOps
 	return co;

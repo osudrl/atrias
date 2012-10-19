@@ -10,6 +10,7 @@
 #include <rtt/os/main.h>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
+#include <rtt/os/TimeService.hpp>
 #include <rtt/TaskContext.hpp>
 #include <rtt/OperationCaller.hpp>
 #include <rtt/Component.hpp>
@@ -17,7 +18,6 @@
 // C
 #include <stdlib.h>
 
-#include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
 
@@ -33,14 +33,19 @@ using namespace RTT;
 using namespace Orocos;
 using namespace atc_motor_test;
 
+#define MAX_TORQUE 0.7
+
 namespace atrias {
-using namespace shared;
 namespace controller {
 
 class ATCMotorTest : public TaskContext {
 	private:
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
+		
+		RTT::os::TimeService::nsecs nextSwitchTime;
+		
+		atrias_msgs::controller_output co;
 		
 	public:
 		// Constructor
