@@ -38,6 +38,9 @@ atrias_msgs::controller_output ATCMotorTest::runController(atrias_msgs::robot_st
 	if (cur_time > nextSwitchTime) {
 		// We need to generate a new output torque and duration.
 		co.lLeg.motorCurrentA = (rand() - RAND_MAX/2.0) * MAX_TORQUE * 2.0 / RAND_MAX;
+		nextSwitchTime = cur_time +
+			(((double)rand()) * (MAX_DURATION_SEC - MIN_DURATION_SEC) / RAND_MAX + MIN_DURATION_SEC)
+			* SECOND_IN_NANOSECONDS;
 	}
 
 	// Output for RTOps
