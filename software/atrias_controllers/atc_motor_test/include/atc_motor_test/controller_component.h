@@ -33,10 +33,10 @@ using namespace RTT;
 using namespace Orocos;
 using namespace atc_motor_test;
 
-#define MAX_TORQUE       1.5
-#define MIN_TORQUE       0.5
-#define MIN_DURATION_SEC 0.5
-#define MAX_DURATION_SEC 1.0
+#define MAX_TORQUE       1.0
+#define MIN_TORQUE       0.4
+#define MIN_DURATION_SEC 1.0
+#define MAX_DURATION_SEC 10.0
 
 namespace atrias {
 namespace controller {
