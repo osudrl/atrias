@@ -17,7 +17,7 @@
 
 // C
 #include <stdlib.h>
-
+#include <atrias_shared/drl_math.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
 
@@ -34,6 +34,7 @@ using namespace Orocos;
 using namespace atc_motor_test;
 
 #define MAX_TORQUE       0.7
+#define MIN_TORQUE       0.4
 #define MIN_DURATION_SEC 1.0
 #define MAX_DURATION_SEC 10.0
 
