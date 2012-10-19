@@ -1,0 +1,1 @@
+description=Tests a motor by transmitting random torques for random durations.
