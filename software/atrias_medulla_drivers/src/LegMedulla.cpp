@@ -45,10 +45,10 @@ void LegMedulla::postOpInit() {
 	incrementalEncoderValue          =           *incrementalEncoder;
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
-	updateLegPositionOffset();
+	updatePositionOffsets();
 }
 
-void LegMedulla::updateLegPositionOffset() {
+void LegMedulla::updatePositionOffsets() {
 	skipMotorEncoder  = false;
 	skipLegEncoder    = false;
 	legPositionOffset = 0.0;
@@ -58,18 +58,22 @@ void LegMedulla::updateLegPositionOffset() {
 		case MEDULLA_LEFT_LEG_A_ID:
 			legPositionOffset = robotState.lLeg.halfA.motorAngle -
 			                    robotState.lLeg.halfA.legAngle;
+			incrementalEncoderStart = robotState.lLeg.halfA.motorAngle;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			legPositionOffset = robotState.lLeg.halfB.motorAngle -
 			                    robotState.lLeg.halfB.legAngle;
+			incrementalEncoderStart = robotState.lLeg.halfB.motorAngle;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			legPositionOffset = robotState.rLeg.halfA.motorAngle -
 			                    robotState.rLeg.halfA.legAngle;
+			incrementalEncoderStart = robotState.rLeg.halfA.motorAngle;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			legPositionOffset = robotState.rLeg.halfB.motorAngle -
 			                    robotState.rLeg.halfB.legAngle;
+			incrementalEncoderStart = robotState.rLeg.halfB.motorAngle;
 			break;
 	}
 	if (fabs(legPositionOffset) > MAX_LEG_POS_ADJUSTMENT) {
@@ -100,6 +104,7 @@ void LegMedulla::processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTim
 	// This compensates for wraparound.
 	int16_t deltaPos = ((int32_t) *incrementalEncoder + (1 << 15) - incrementalEncoderValue) % (1 << 16) - (1 << 15);
 	incrementalEncoderValue += deltaPos;
+	incrementalEncoderPos   += deltaPos;
 	
 	// Let's take into account the timestamps, too.
 	double adjustedTime = ((double) deltaTime) / SECOND_IN_NANOSECONDS +
@@ -110,25 +115,33 @@ void LegMedulla::processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTim
 	
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			robotState.lLeg.halfA.rotorAngle += deltaPos * INC_ENC_RAD_PER_TICK;
+			robotState.lLeg.halfA.rotorAngle    =
+				incrementalEncoderStart +
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * LEFT_MOTOR_A_DIRECTION;
 			robotState.lLeg.halfA.rotorVelocity =
 				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
 			break;
 			
 		case MEDULLA_LEFT_LEG_B_ID:
-			robotState.lLeg.halfB.rotorAngle += deltaPos * INC_ENC_RAD_PER_TICK;
+			robotState.lLeg.halfB.rotorAngle    =
+				incrementalEncoderStart +
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * RIGHT_MOTOR_B_DIRECTION;
 			robotState.lLeg.halfB.rotorVelocity =
 				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
 			break;
 			
 		case MEDULLA_RIGHT_LEG_A_ID:
-			robotState.rLeg.halfA.rotorAngle += deltaPos * INC_ENC_RAD_PER_TICK;
+			robotState.rLeg.halfA.rotorAngle    =
+				incrementalEncoderStart +
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * LEFT_MOTOR_A_DIRECTION;
 			robotState.rLeg.halfA.rotorVelocity =
 				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
 			break;
 			
 		case MEDULLA_RIGHT_LEG_B_ID:
-			robotState.rLeg.halfB.rotorAngle += deltaPos * INC_ENC_RAD_PER_TICK;
+			robotState.rLeg.halfB.rotorAngle    =
+				incrementalEncoderStart +
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * RIGHT_MOTOR_B_DIRECTION;
 			robotState.rLeg.halfB.rotorVelocity =
 				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
 			break;

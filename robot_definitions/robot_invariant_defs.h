@@ -143,7 +143,7 @@ typedef enum {
 /** @brief This is the number of radians represented by one tick of the motor's internal incremental encoder.
   * Used for scaling.
   */
-#define INC_ENC_RAD_PER_TICK                              0.00044879895051282761
+#define INC_ENC_RAD_PER_TICK                                 0.00000897597901026
 
 /** @brief This is the rate at which the Medulla's timers run. Used for timestamp usage for velocity calculation.
   */

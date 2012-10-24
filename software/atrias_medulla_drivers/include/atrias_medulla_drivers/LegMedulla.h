@@ -66,6 +66,8 @@ class LegMedulla : public Medulla {
 	int64_t         legEncoderValue;
 	int32_t         motorEncoderTimestampValue;
 	int32_t         legEncoderTimestampValue;
+	double          incrementalEncoderStart;
+	long            incrementalEncoderPos;
 	uint16_t        incrementalEncoderValue;
 	uint16_t        incrementalEncoderTimestampValue;
 	uint8_t         timingCounterValue;
@@ -128,9 +130,9 @@ class LegMedulla : public Medulla {
 	  */
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
 	
-	/** @brief Updates the value of legPositionOffset.
+	/** @brief Updates the value of legPositionOffset and incrementalEncoderStart.
 	  */
-	void         updateLegPositionOffset();
+	void         updatePositionOffsets();
 	
 	public:
 		/** @brief Does the slave-specific init.
