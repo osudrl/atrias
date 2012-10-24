@@ -2,7 +2,7 @@
  * controller_gui.h
  *
  *  Created on: May 5, 2012
- *      Author: Michael Anderson
+ *      Author: Ryan Van Why
  */
 
 #ifndef CONTROLLER_GUI_H_
@@ -21,7 +21,6 @@ ros::Publisher pub;
 
 // Data
 atc_velocity_tuning::controller_input controllerDataOut;
-atc_velocity_tuning::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::HScale *torque_A_hscale,

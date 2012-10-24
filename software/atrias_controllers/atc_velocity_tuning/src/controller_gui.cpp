@@ -4,7 +4,7 @@
  * atc_velocity_tuning controller
  *
  *  Created on: May 5, 2012
- *      Author: Michael Anderson
+ *      Author: Ryan Van Why
  */
 
 #include <atc_velocity_tuning/controller_gui.h>

@@ -33,7 +33,6 @@ using namespace Orocos;
 using namespace atc_velocity_tuning;
 
 namespace atrias {
-using namespace shared;
 namespace controller {
 
 class ATCVelocityTuning : public TaskContext {
