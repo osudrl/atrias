@@ -1,1 +1,1 @@
-description=Tune a velocity controller through step inputs in setpoint.
+description=Aids in tuning proportional velocity controllers

@@ -8,11 +8,20 @@ loadComponent("controller", "ATCVelocityTuning")
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
+# Set up subcontrollers
+import("asc_pd")
+var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd0Name, "ASCPD")
+
+# Connect this controller with its subcontrollers
+addPeer("controller", pd0Name)
+
+# Pass the names of the subcontrollers to the controller
+controller.pd0Name = pd0Name
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
-gui_policy.name_id = "/atc_velocity_tuning_status"
-stream("controller.gui_data_out", gui_policy)
 
 gui_policy.name_id = "/atc_velocity_tuning_input"
 stream("controller.gui_data_in", gui_policy)
