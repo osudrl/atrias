@@ -22,13 +22,24 @@ ATCVelocityTuning::ATCVelocityTuning(std::string name) :
 	// For the GUI
 	addEventPort(guiDataIn);
 	
+	cur_dir = 1;
+	
 	log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
 atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::robot_state rs) {
+	P0.set(guiIn.Kp);
+	if (rs.lLeg.halfA.motorAngle > guiIn.maxPos)
+		cur_dir = -1;
+	if (rs.lLeg.halfA.motorAngle < guiIn.minPos)
+		cur_dir = 1;
+	
 	atrias_msgs::controller_output co;
 	
-	co.lLeg.motorCurrentA   = 0.0;
+	co.lLeg.motorCurrentA   = pd0RunController(cur_dir * guiIn.desVel,
+	                                           (guiIn.sensor) ? rs.lLeg.halfA.rotorVelocity :
+	                                                            rs.lLeg.halfA.motorVelocity,
+	                                           0.0, 0.0);
 	co.lLeg.motorCurrentB   = 0.0;
 	co.lLeg.motorCurrentHip = 0.0;
 	co.rLeg.motorCurrentA   = 0.0;
@@ -52,6 +63,8 @@ bool ATCVelocityTuning::configureHook() {
 	// Get references to subcontroller component properties
 	D0 = pd0->properties()->getProperty("D");
 	P0 = pd0->properties()->getProperty("P");
+	
+	D0.set(0.0);
 
 	log(Info) << "[ATCMT] configured!" << endlog();
 	return true;

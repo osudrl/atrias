@@ -53,6 +53,8 @@ class ATCVelocityTuning : public TaskContext {
 		// Subcontroller operations
 		OperationCaller<double(double, double, double, double)> pd0RunController;
 		
+		int cur_dir;
+		
 		// For the GUI
 		controller_input guiIn;
 		InputPort<controller_input>                     guiDataIn;
