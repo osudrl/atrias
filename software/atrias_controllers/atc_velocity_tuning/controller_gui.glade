@@ -1,83 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18" />
-  <object class="GtkVBox" id="controller_tab">
+  <requires lib="gtk+" version="2.18"/>
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkTable" id="table1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="n_rows">5</property>
+    <property name="n_columns">2</property>
     <child>
-      <object class="GtkLabel" id="torque_A_label">
+      <object class="GtkLabel" id="minPosLbl">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Motor Torque A:
-        </property>
+        <property name="label" translatable="yes">Minimum Position:</property>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_A_hscale">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="digits">3</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel" id="torque_B_label">
+      <object class="GtkLabel" id="maxPosLbl">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Motor Torque B:
-        </property>
+        <property name="label" translatable="yes">Maximum Position:</property>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_B_hscale">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="digits">3</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel" id="torque_hip_label1">
+      <object class="GtkLabel" id="desVelLbl">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="xalign">0.44999998807907104</property>
-        <property name="label" translatable="yes"> Motor Torque Hip:
-        </property>
+        <property name="label" translatable="yes">Desired Velocity (rad/s):</property>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">4</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_hip_hscale">
+      <object class="GtkLabel" id="kpLbl">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="digits">3</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Kp:</property>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">5</property>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="sensorLbl">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Feedback sensor:</property>
+      </object>
+      <packing>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="sensorButton">
+        <property name="label" translatable="yes">Use Rotor Encoder</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="minPosBox">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">•</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="digits">2</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="maxPosBox">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">•</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="digits">2</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="desVelBox">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">•</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="digits">2</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="kpBox">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">•</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="digits">1</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">3</property>
+        <property name="bottom_attach">4</property>
       </packing>
     </child>
   </object>
