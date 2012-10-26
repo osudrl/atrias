@@ -2,7 +2,7 @@
 <interface>
   <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkTable" id="table1">
+  <object class="GtkTable" id="controller_tab">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="n_rows">5</property>

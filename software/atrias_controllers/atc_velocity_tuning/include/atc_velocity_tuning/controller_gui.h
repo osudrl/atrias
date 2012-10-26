@@ -12,6 +12,7 @@
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
+#include <atrias_shared/drl_math.h>
 
 // ROS
 ros::NodeHandle nh;
@@ -27,8 +28,6 @@ Gtk::SpinButton *minPosSpnBtn,
                 *kpSpnBtn;
 
 Gtk::ToggleButton *sensorToggle;
-
-Gtk::CheckButton *set_position_checkbutton;
 
 #endif /* CONTROLLER_GUI_H_ */
 

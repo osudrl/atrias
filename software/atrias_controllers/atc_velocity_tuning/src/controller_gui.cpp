@@ -54,8 +54,10 @@ void setParameters() {
 
 //! \brief Update the GUI.
 void guiUpdate() {
-	controllerDataOut.minPos = minPosSpnBtn->get_value();
-	controllerDataOut.maxPos = maxPosSpnBtn->get_value();
+	double minPos = minPosSpnBtn->get_value();
+	double maxPos = maxPosSpnBtn->get_value();
+	controllerDataOut.minPos = MIN(minPos, maxPos);
+	controllerDataOut.maxPos = MAX(minPos, maxPos);
 	controllerDataOut.desVel = desVelSpnBtn->get_value();
 	controllerDataOut.Kp     = kpSpnBtn->get_value();
 	controllerDataOut.sensor = sensorToggle->get_active() ? 1 : 0;
