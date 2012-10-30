@@ -9,6 +9,11 @@
 
 #include <atc_eq_point/controller_gui.h>
 
+void gc_l_pressed()  {controllerDataOut.gc_l = 1;}
+void gc_l_released() {controllerDataOut.gc_l = 0;}
+void gc_r_pressed()  {controllerDataOut.gc_r = 1;}
+void gc_r_released() {controllerDataOut.gc_r = 0;}
+
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("control_combobox", control_combobox);
@@ -31,8 +36,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	if (control_combobox && gc_l_button && gc_r_button &&
 			aea_spinbutton && pea_spinbutton &&
-			l_leg_fl_spinbutton && p_af_spinbutton && d_af_spinbutton p_lf_spinbutton && d_lf_spinbutton && l_fl_spinbutton &&
-			l_leg_st_spinbutton && p_as_spinbutton && d_as_spinbutton p_ls_spinbutton && d_ls_spinbutton && l_st_spinbutton) {
+			l_leg_fl_spinbutton && p_af_spinbutton && d_af_spinbutton && p_lf_spinbutton && d_lf_spinbutton && l_fl_spinbutton &&
+			l_leg_st_spinbutton && p_as_spinbutton && d_as_spinbutton && p_ls_spinbutton && d_ls_spinbutton && l_st_spinbutton) {
 		// Set ranges.
 		aea_spinbutton->set_range(0.5, 1.5);
 		pea_spinbutton->set_range(1.5, 2.5);
@@ -48,6 +53,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		p_ls_spinbutton->set_range(0, 5000);
 		d_ls_spinbutton->set_range(0, 500);
 		l_st_spinbutton->set_range(0, 60);
+
+		// Connect buttons to functions.
+		gc_l_button->signal_pressed().connect(sigc::ptr_fun((void(*)())gc_l_pressed));
+		gc_l_button->signal_released().connect(sigc::ptr_fun((void(*)())gc_l_released));
+		gc_r_button->signal_pressed().connect(sigc::ptr_fun((void(*)())gc_r_pressed));
+		gc_r_button->signal_released().connect(sigc::ptr_fun((void(*)())gc_r_released));
 
 		// Set up subscriber and publisher.
 		sub = nh.subscribe("atc_eq_point_status", 0, controllerCallback);
@@ -75,8 +86,6 @@ void setParameters() {
 //! \brief Update the GUI.
 void guiUpdate() {
 	controllerDataOut.control  = control_combobox->get_active_row_number();
-	controllerDataOut.gc_l     = gc_l_button->get_active();
-	controllerDataOut.gc_r     = gc_r_button->get_active();
 	controllerDataOut.aea      = aea_spinbutton->get_value();
 	controllerDataOut.pea      = pea_spinbutton->get_value();
 	controllerDataOut.l_leg_fl = l_leg_fl_spinbutton->get_value();
