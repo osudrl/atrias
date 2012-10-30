@@ -54,6 +54,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		d_ls_spinbutton->set_range(0, 500);
 		l_st_spinbutton->set_range(0, 60);
 
+		// Set default values.
+		aea_spinbutton->set_value(1.00);
+		pea_spinbutton->set_value(2.00);
+		l_leg_fl_spinbutton->set_value(0.8);
+		l_leg_st_spinbutton->set_value(0.9);
+
 		// Connect buttons to functions.
 		gc_l_button->signal_pressed().connect(sigc::ptr_fun((void(*)())gc_l_pressed));
 		gc_l_button->signal_released().connect(sigc::ptr_fun((void(*)())gc_l_released));
