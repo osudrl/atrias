@@ -7,11 +7,11 @@
 
 // Include the calibration values for each leg
 #define INCLUDE_LEFT_LEG
-#include "leg2_definitions.h"
+#include "leg1_definitions.h"
 #undef INCLUDE_LEFT_LEG
 
 #define INCLUDE_RIGHT_LEG
-#include "leg1_definitions.h"
+#include "leg2_definitions.h"
 #undef INCLUDE_RIGHT_LEG
 
 /** @brief The pitch encoder's reading when the robot is vertical.
