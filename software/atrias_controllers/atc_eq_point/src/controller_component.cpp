@@ -51,6 +51,29 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
     // begin control code //
 
+	// initial state
+	
+		// move left leg to GUI.PEA and GUI.l_leg_stance
+		// move right leg to GUI.AEA and GUI.l_leg_stance
+		// (uint8_t)state=2
+	
+	// state machine
+			if (state == 2 & rLeg.leg_angle<pi/2 & rLeg.toeswitch = true)
+				{state = 1;}
+				
+			if (state == 1 & lLeg.leg_angle < pi/2 & lLeg.toeswitch = true)
+				{state = 2}
+				
+	// 
+			if (state == 1)						//stance leg right, flight leg left
+				if control == constant			//apply constant current 
+						if rleg.leg_angle < GUI.PEA
+							{co.rLeg.motorCurrentB = l_st;
+							 co.rLeg.motorCurrentA = GUI.p_ls*(GUI.l_leg_st-rLeg.leg_length)+GUI.d_ls(rLeg.MotorA_velocity)							
+							}
+							
+			
+	
     // Stuff the msg
     co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
