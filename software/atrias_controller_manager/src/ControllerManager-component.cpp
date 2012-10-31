@@ -31,6 +31,11 @@ ControllerManager::ControllerManager(std::string const& name) :
     this->addOperation("resetControllerNames", &ControllerManager::resetControllerNames, this, ClientThread)
             .doc("Free all unique names created for sub-controllers and make them re-available for assignment.");
 
+    this->addOperation("unloadController", &ControllerManager::unloadController, this, OwnThread)
+            .doc("Unload the current controller. For debugging purposes only.");
+    this->addOperation("loadController", &ControllerManager::loadController, this, OwnThread)
+            .doc("Load a new controller. For debugging purposes only.");
+
     state = ControllerManagerState::NO_CONTROLLER_LOADED;
     lastError = ControllerManagerError::NO_ERROR;
     currentControllerName = "";
