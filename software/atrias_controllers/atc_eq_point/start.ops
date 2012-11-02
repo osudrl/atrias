@@ -11,6 +11,7 @@ connectPeers("atrias_rt", "controller")
 # Set up subcontrollers
 require("legToMotorTransforms")
 loadService("controller", "legToMotorTransforms")
+import("asc_pd")
 import("asc_path_generator")
 
 var string spg0Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
