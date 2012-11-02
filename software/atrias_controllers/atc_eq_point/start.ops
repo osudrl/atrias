@@ -8,6 +8,35 @@ loadComponent("controller", "ATCEqPoint")
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
+# Set up subcontrollers
+import("asc_path_generator")
+
+var string spg0Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg0Name, "ASCSmoothPathGenerator")
+
+var string spg1Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg1Name, "ASCSmoothPathGenerator")
+
+var string spg2Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg2Name, "ASCSmoothPathGenerator")
+
+var string spg3Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg3Name, "ASCSmoothPathGenerator")
+
+var string spg4Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg4Name, "ASCSmoothPathGenerator")
+
+var string spg5Name = atrias_cm.getUniqueName("controller", "smoothPathGenerator")
+loadComponent(spg5Name, "ASCSmoothPathGenerator")
+
+# Connect this controller with its subcontrollers
+addPeer("controller", spg0Name)
+addPeer("controller", spg1Name)
+addPeer("controller", spg2Name)
+addPeer("controller", spg3Name)
+addPeer("controller", spg4Name)
+addPeer("controller", spg5Name)
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3

@@ -44,6 +44,38 @@ private:
 
     atrias_msgs::controller_output co;
 
+	// Subcontroller names
+	std::string spg0Name;
+	std::string spg1Name;
+	std::string spg2Name;
+	std::string spg3Name;
+	std::string spg4Name;
+	std::string spg5Name;
+
+	// Subcontroller components
+	TaskContext *spg0;
+	TaskContext *spg1;
+	TaskContext *spg2;
+	TaskContext *spg3;
+	TaskContext *spg4;
+	TaskContext *spg5;
+
+	// Service properties
+	Property<bool> spg0IsFinished;
+	Property<bool> spg1IsFinished;
+	Property<bool> spg2IsFinished;
+	Property<bool> spg3IsFinished;
+	Property<bool> spg4IsFinished;
+	Property<bool> spg5IsFinished;
+
+	// Subcontroller operations
+	OperationCaller<MotorState(void)> spg0RunController;
+	OperationCaller<MotorState(void)> spg1RunController;
+	OperationCaller<MotorState(void)> spg2RunController;
+	OperationCaller<MotorState(void)> spg3RunController;
+	OperationCaller<MotorState(void)> spg4RunController;
+	OperationCaller<MotorState(void)> spg5RunController;
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
