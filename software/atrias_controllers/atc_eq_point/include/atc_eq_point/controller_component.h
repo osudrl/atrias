@@ -51,6 +51,12 @@ private:
 	std::string spg3Name;
 	std::string spg4Name;
 	std::string spg5Name;
+	std::string pd0Name;
+	std::string pd1Name;
+	std::string pd2Name;
+	std::string pd3Name;
+	std::string pd4Name;
+	std::string pd5Name;
 
 	// Subcontroller components
 	TaskContext *spg0;
@@ -59,6 +65,12 @@ private:
 	TaskContext *spg3;
 	TaskContext *spg4;
 	TaskContext *spg5;
+	TaskContext *pd0;
+	TaskContext *pd1;
+	TaskContext *pd2;
+	TaskContext *pd3;
+	TaskContext *pd4;
+	TaskContext *pd5;
 
 	// Service properties
 	Property<bool> spg0IsFinished;
@@ -81,6 +93,12 @@ private:
 	OperationCaller<MotorState(void)> spg3RunController;
 	OperationCaller<MotorState(void)> spg4RunController;
 	OperationCaller<MotorState(void)> spg5RunController;
+	OperationCaller<double(double, double, double, double)> pd0Controller;
+	OperationCaller<double(double, double, double, double)> pd1Controller;
+	OperationCaller<double(double, double, double, double)> pd2Controller;
+	OperationCaller<double(double, double, double, double)> pd3Controller;
+	OperationCaller<double(double, double, double, double)> pd4Controller;
+	OperationCaller<double(double, double, double, double)> pd5Controller;
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
     // Logging
