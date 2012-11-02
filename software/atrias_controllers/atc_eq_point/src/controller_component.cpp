@@ -121,7 +121,9 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			spg4Init(rs.rLeg.halfB.motorAngle, rightMotorAngle.B, initDur);
 			spg5Init(rs.rLeg.hip.legBodyAngle, rs.rLeg.hip.legBodyAngle, initDur);
 
-		} else if (!spg0IsFinished && !spg1IsFinished && !spg2IsFinished &&
+		}
+
+		if (!spg0IsFinished && !spg1IsFinished && !spg2IsFinished &&
 				!spg3IsFinished && !spg4IsFinished && !spg5IsFinished) {
 			desiredLAState = spg0RunController();
 			desiredLBState = spg1RunController();
@@ -130,18 +132,18 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			desiredRBState = spg4RunController();
 			desiredRHState = spg5RunController();
 
+			co.lLeg.motorCurrentA   = pd0Controller(desiredLAState.ang, rs.lLeg.halfA.motorAngle, desiredLAState.vel, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB   = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
+			co.lLeg.motorCurrentHip = pd2Controller(desiredLHState.ang, rs.lLeg.hip.legBodyAngle, desiredLHState.vel, rs.lLeg.hip.legBodyVelocity);
+			co.rLeg.motorCurrentA   = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB   = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentHip = pd5Controller(desiredRHState.ang, rs.rLeg.hip.legBodyAngle, desiredRHState.vel, rs.rLeg.hip.legBodyVelocity);
+
 			if (spg0IsFinished && spg1IsFinished && spg2IsFinished &&
 					spg3IsFinished && spg4IsFinished && spg5IsFinished) {
 				state = 2;
 			}
 		}
-
-		co.lLeg.motorCurrentA   = pd0Controller(desiredLAState.ang, rs.lLeg.halfA.motorAngle, desiredLAState.vel, rs.lLeg.halfA.motorVelocity);
-		co.lLeg.motorCurrentB   = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
-		co.lLeg.motorCurrentHip = pd2Controller(desiredLHState.ang, rs.lLeg.hip.legBodyAngle, desiredLHState.vel, rs.lLeg.hip.legBodyVelocity);
-		co.rLeg.motorCurrentA   = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
-		co.rLeg.motorCurrentB   = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
-		co.rLeg.motorCurrentHip = pd5Controller(desiredRHState.ang, rs.rLeg.hip.legBodyAngle, desiredRHState.vel, rs.rLeg.hip.legBodyVelocity);
 
 		return co;
 	}
