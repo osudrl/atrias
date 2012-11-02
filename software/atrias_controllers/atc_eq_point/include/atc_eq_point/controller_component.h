@@ -44,9 +44,22 @@ private:
 
     atrias_msgs::controller_output co;
 
+
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
+
+	// internal variables
+
+	uint8 state
+	bool swing_st
+	float64 l_rLeg
+	float64 phi_rLeg
+	float64 l_lLeg
+	float64 phi_lLeg
+	float64 s
+	float64 l_swing
 
     // For the GUI
     shared::GuiPublishTimer                         *pubTimer;
