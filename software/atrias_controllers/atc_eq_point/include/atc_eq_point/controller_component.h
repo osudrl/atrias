@@ -117,6 +117,9 @@ private:
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
 
+    // PD gains for convenience (these are not set by the GUI)
+    double legP, legD, hipP, hipD;
+
 	// internal variables
     uint8_t state;
     bool sw_stance;
