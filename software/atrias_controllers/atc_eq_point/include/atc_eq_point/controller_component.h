@@ -79,6 +79,18 @@ private:
 	Property<bool> spg3IsFinished;
 	Property<bool> spg4IsFinished;
 	Property<bool> spg5IsFinished;
+	Property<double> P0;
+	Property<double> D0;
+	Property<double> P1;
+	Property<double> D1;
+	Property<double> P2;
+	Property<double> D2;
+	Property<double> P3;
+	Property<double> D3;
+	Property<double> P4;
+	Property<double> D4;
+	Property<double> P5;
+	Property<double> D5;
 
 	// Subcontroller operations
     OperationCaller<void(double, double, double)> spg0Init;
