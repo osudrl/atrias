@@ -24,16 +24,16 @@ ATCEqPoint::ATCEqPoint(std::string name):
     this->addProperty("spg3Name", spg3Name);
     this->addProperty("spg4Name", spg4Name);
     this->addProperty("spg5Name", spg5Name);
-	this->addProperty("spg0Name", spg0Name);
-	this->addProperty("spg1Name", spg1Name);
-	this->addProperty("spg2Name", spg2Name);
-	this->addProperty("spg3Name", spg3Name);
-	this->addProperty("spg4Name", spg4Name);
-	this->addProperty("spg5Name", spg5Name);
+	this->addProperty("pd0Name", pd0Name);
+	this->addProperty("pd1Name", pd1Name);
+	this->addProperty("pd2Name", pd2Name);
+	this->addProperty("pd3Name", pd3Name);
+	this->addProperty("pd4Name", pd4Name);
+	this->addProperty("pd5Name", pd5Name);
 
 	// Gains for PD controllers. These are set in the configureHook.
-	legP = 0;
-	legD = 0;
+	legP = 600;
+	legD = 30;
 	hipP = 0;
 	hipD = 0;
 
@@ -131,7 +131,12 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		}
 
-        // Need to populate co with these values!
+		co.lLeg.motorCurrentA   = pd0Controller(desiredLAState.ang, rs.lLeg.halfA.motorAngle, desiredLAState.vel, rs.lLeg.halfA.motorVelocity);
+		co.lLeg.motorCurrentB   = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
+		co.lLeg.motorCurrentHip = pd2Controller(desiredLHState.ang, rs.lLeg.hip.legBodyAngle, desiredLHState.vel, rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentA   = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
+		co.rLeg.motorCurrentB   = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
+		co.rLeg.motorCurrentHip = pd5Controller(desiredRHState.ang, rs.rLeg.hip.legBodyAngle, desiredRHState.vel, rs.rLeg.hip.legBodyVelocity);
 
 		return co;
 	}
