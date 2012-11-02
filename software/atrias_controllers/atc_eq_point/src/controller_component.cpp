@@ -90,8 +90,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 	// initial state
 	// Calculate motor angles
-	MotorAngle leftMotorAngle  = legToMotorPos(GUI.PEA, GUI.l_leg_stance);
-	MotorAngle rightMotorAngle = legToMotorPos(GUI.AEA, GUI.l_leg_stance);
+	MotorAngle leftMotorAngle  = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
+	MotorAngle rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
 	int initDur = 2.0;   // Duration of initialization sequence.
 
 	if (state != 2) {
@@ -119,131 +119,145 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		}
 
-		return;
+        // Need to populate co with these values!
+
+		return co;
 	}
 
-		// move left leg to GUI.PEA and GUI.l_leg_stance
-		// move right leg to GUI.AEA and GUI.l_leg_stance
+		// move left leg to GUI.pea and GUI.l_leg_stance
+		// move right leg to GUI.aea and GUI.l_leg_stance
 		// (uint8_t)state=2
 	
 	// calculate leg angle and length
 
-	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle+2*pi)/2);
+	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle+2*M_PI)/2);
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;
-	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle+2*pi)/2);
+	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle+2*M_PI)/2);
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;
 		
 	
 	// state machine
-			
-			if (state == 2 & phi_lLeg<pi/2 & rs.rLeg.toeSwitch = true)
-			{
-					state = 1;
-					sw_stance = false;
-			}
-			if (state == 1 & phi_lLeg < pi/2 & rs.lLeg.toeSwitch = true)
-			{
-					state = 2
-					sw_stance = false;
-			}
+	if (state == 2 && phi_lLeg<M_PI/2 && rs.rLeg.toeSwitch)
+	{
+		state = 1;
+		sw_stance = false;
+	}
+	if (state == 1 && phi_lLeg < M_PI/2 && rs.lLeg.toeSwitch)
+	{
+		state = 2;
+		sw_stance = false;
+	}
 
 	// generate motor commands
-			switch (state)		//stance leg right, flight leg left
-			{				
-				case 1:
-						if (phi_rLeg < guiIn.pea) & ~sw_stance	// stance leg rotate to PEA
-						switch (guiIn.control_combobox)
-							{
-							case 0:				
-								{
-									co.rLeg.motorCurrentB = guiIn.l_st;			//constant stance leg current
-								}
-							case 1:
-								{
-									co.rLeg.motorCurrentB = guiIn.p_as * (guiIn.PEA-phi_rLeg) + guiIn.d_as * (rs.rLeg.halfB.motorVelocity); // PD on leg angle
-								}
-							}
+	switch (state)		//stance leg right, flight leg left
+	{
+		case 1:
+			if ((phi_rLeg < guiIn.pea) && !sw_stance) {   // stance leg rotate to pea
+    			switch (guiIn.control)
+    				{
+    				case 0:				
+    					{
+    						co.rLeg.motorCurrentB = guiIn.l_st;			//constant stance leg current
+                            break;
+    					}
+    				case 1:
+    					{
+    						co.rLeg.motorCurrentB = guiIn.p_as * (guiIn.pea-phi_rLeg) + guiIn.d_as * (rs.rLeg.halfB.motorVelocity); // PD on leg angle
+                            break;
+    					}
+                    default:
+                        break;
+    				}
 
-						else		// if AEA was reached once
-						{
-								sw_stance=true;
-								co.rLeg.motorCurrentB = 0;
-						}
-						co.rLeg.motorCurrentA = guiIn.p_ls*(guiIn.l_leg_st-l_rLeg)+guiIn.d_ls(rLeg.MotorA_velocity);	//keep leg length
-
-						if (phi_lLeg > guiIn.aea) & ~sw_flight  // swing leg rotate to AEA
-						
-							switch (guiIn.control_combobox)
-							{
-							case 0:
-								{
-									co.lLeg.motorCurrentA = guiIn.l_fl;		//constant swing leg current
-								}
-							case 1:
-								{
-									co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.AEA-phi_lLeg) + guiIn.d_af * (rs.lLeg.halfA.motorVelocity);
-								}
-							}
-						else		// AEA is reached once
-						{
-							sw_flight=true;
-							co.lLeg.motorCurrentA = 0;
-						}
-						//map leg angle sweep of flight leg to 0->1
-						s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.AEA);
-						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin ( -pi/2 + 3*pi/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
-						co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_lLeg) + guiIn.d_lf * (rs.lLeg.halfB.motorVelocity);
-						}
-				case 2:			// stance leg left, swing leg right
-						if (phi_lLeg < guiIn.pea) & ~sw_stance	// stance leg rotate to PEA
-							switch (guiIn.control_combobox)
-								{
-								case 0:				
-									{
-										co.lLeg.motorCurrentB = guiIn.l_st;			//constant stance leg current
-									}
-								case 1:
-									{
-										co.lLeg.motorCurrentB = guiIn.p_as * (guiIn.PEA-phi_lLeg) + guiIn.d_as * (rs.lLeg.halfB.motorVelocity); // PD on leg angle
-									}
-								}
-
-							else		// if AEA was reached once
-							{
-									sw_stance=true;
-									co.lLeg.motorCurrentB = 0;
-							}
-							co.lLeg.motorCurrentA = guiIn.p_ls*(guiIn.l_leg_st-l_lLeg)+guiIn.d_ls(lLeg.MotorA_velocity);	//keep leg length
-
-							if (phi_rLeg > guiIn.aea) & ~sw_flight  // swing leg rotate to AEA
-						
-								switch (guiIn.control_combobox)
-								{
-								case 0:
-									{
-										co.rLeg.motorCurrentA = guiIn.l_fl;		//constant swing leg current
-									}
-								case 1:
-									{
-										co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.AEA-phi_rLeg) + guiIn.d_af * (rs.rLeg.halfA.motorVelocity);
-									}
-								}
-							else		// AEA is reached once
-							{
-								sw_flight=true;
-								co.rLeg.motorCurrentA = 0;
-							}
-							//map leg angle sweep of flight leg to 0->1
-							s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.AEA);
-							//keep desired leg length -> shorten leg depending on leg position
-							l_swing = sin ( -pi/2 + 3*pi/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
-							co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_rLeg) + guiIn.d_lf * (rs.rLeg.halfB.motorVelocity);
-							}
-
+            } else {   // if aea was reached once
+				sw_stance=true;
+				co.rLeg.motorCurrentB = 0;
 			}
-			
-	
+			co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_rLeg) + guiIn.d_ls * (rs.rLeg.halfA.motorVelocity);	//keep leg length
+
+			if ((phi_lLeg > guiIn.aea) && !sw_flight) {   // swing leg rotate to aea
+				switch (guiIn.control)
+				{
+				case 0:
+					{
+						co.lLeg.motorCurrentA = guiIn.l_fl;		//constant swing leg current
+                        break;
+					}
+				case 1:
+					{
+						co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.aea-phi_lLeg) + guiIn.d_af * (rs.lLeg.halfA.motorVelocity);
+                        break;
+					}
+                default:
+                    break;
+				}
+            } else {   // aea is reached once
+				sw_flight=true;
+				co.lLeg.motorCurrentA = 0;
+			}
+			//map leg angle sweep of flight leg to 0->1
+			s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+			//keep desired leg length -> shorten leg depending on leg position
+			l_swing = sin ( -M_PI/2 + 3*M_PI/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
+			co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_lLeg) + guiIn.d_lf * (rs.lLeg.halfB.motorVelocity);
+
+            break;
+
+		case 2:			// stance leg left, swing leg right
+			if ((phi_lLeg < guiIn.pea) && !sw_stance) {   // stance leg rotate to pea
+				switch (guiIn.control)
+				{
+					case 0:				
+					{
+						co.lLeg.motorCurrentB = guiIn.l_st;			//constant stance leg current
+                        break;
+					}
+					case 1:
+					{
+						co.lLeg.motorCurrentB = guiIn.p_as * (guiIn.pea-phi_lLeg) + guiIn.d_as * (rs.lLeg.halfB.motorVelocity); // PD on leg angle
+                        break;
+					}
+                    default:
+                        break;
+				}
+			} else {		// if aea was reached once
+				sw_stance=true;
+				co.lLeg.motorCurrentB = 0;
+			}
+			co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_lLeg) + guiIn.d_ls * (rs.lLeg.halfA.motorVelocity);	//keep leg length
+
+			if ((phi_rLeg > guiIn.aea) && !sw_flight) {   // swing leg rotate to aea
+				switch (guiIn.control)
+				{
+				case 0:
+					{
+						co.rLeg.motorCurrentA = guiIn.l_fl;		//constant swing leg current
+                        break;
+					}
+				case 1:
+					{
+						co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.aea-phi_rLeg) + guiIn.d_af * (rs.rLeg.halfA.motorVelocity);
+                        break;
+					}
+                default:
+                    break;
+				}
+            } else {   // aea is reached once
+				sw_flight=true;
+				co.rLeg.motorCurrentA = 0;
+			}
+			//map leg angle sweep of flight leg to 0->1
+			s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+			//keep desired leg length -> shorten leg depending on leg position
+			l_swing = sin ( -M_PI/2 + 3*M_PI/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
+			co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_rLeg) + guiIn.d_lf * (rs.rLeg.halfB.motorVelocity);
+
+            break;
+
+        default:
+            break;
+    } // end switch
+
     // Stuff the msg
     //co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
     //co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
@@ -307,6 +321,8 @@ bool ATCEqPoint::configureHook() {
         spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
         spg5IsFinished    = spg5->properties()->getProperty("isFinished");
     }
+
+    legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;

@@ -69,27 +69,34 @@ private:
 	Property<bool> spg5IsFinished;
 
 	// Subcontroller operations
+    OperationCaller<void(double, double, double)> spg0Init;
+    OperationCaller<void(double, double, double)> spg1Init;
+    OperationCaller<void(double, double, double)> spg2Init;
+    OperationCaller<void(double, double, double)> spg3Init;
+    OperationCaller<void(double, double, double)> spg4Init;
+    OperationCaller<void(double, double, double)> spg5Init;
 	OperationCaller<MotorState(void)> spg0RunController;
 	OperationCaller<MotorState(void)> spg1RunController;
 	OperationCaller<MotorState(void)> spg2RunController;
 	OperationCaller<MotorState(void)> spg3RunController;
 	OperationCaller<MotorState(void)> spg4RunController;
 	OperationCaller<MotorState(void)> spg5RunController;
+    OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
 
 	// internal variables
-
-	uint8 state
-	bool swing_st
-	float64 l_rLeg
-	float64 phi_rLeg
-	float64 l_lLeg
-	float64 phi_lLeg
-	float64 s
-	float64 l_swing
+    uint8_t state;
+    bool sw_stance;
+    bool sw_flight;
+    double l_rLeg;
+    double phi_rLeg;
+    double l_lLeg;
+    double phi_lLeg;
+    double s;
+    double l_swing;
 
     // For the GUI
     shared::GuiPublishTimer                         *pubTimer;
