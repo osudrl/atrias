@@ -95,6 +95,9 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
         spg4IsFinished = true;
         spg5IsFinished = true;
 
+		// Set state to something other than 2.
+		state = 0;
+
 		return co;
 	}
 
@@ -106,7 +109,9 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	MotorAngle rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
 	int initDur = 2.0;   // Duration of initialization sequence.
 
-	if (state != 2) {
+
+	// Smoothly initialize and set state to 2.
+	if (state == 0) {
 		if (spg0IsFinished && spg1IsFinished && spg2IsFinished &&
 				spg3IsFinished && spg4IsFinished && spg5IsFinished) {
 			spg0Init(rs.lLeg.halfA.motorAngle, leftMotorAngle.A, initDur);
@@ -141,10 +146,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		return co;
 	}
 
-		// move left leg to GUI.pea and GUI.l_leg_stance
-		// move right leg to GUI.aea and GUI.l_leg_stance
-		// (uint8_t)state=2
-	
 	// calculate leg angle and length
 
 	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle+2*M_PI)/2);
