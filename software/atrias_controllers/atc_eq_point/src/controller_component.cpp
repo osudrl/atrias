@@ -105,8 +105,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	// begin control code //
 
 	// map GUI buttons for GC (Simulation)
-	rGC = GUIin.gc_r;
-	lGC = GUIin.gc_l;
+	rGC = guiIn.gc_r;
+	lGC = guiIn.gc_l;
 
 	// read toeswitch from robot
 	rGC=rs.rLeg.toeSwitch;
@@ -228,8 +228,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		} else { // aea is reached once
 			sw_flight=true;
-			leftMotorAngle = legToMotorPos(guiIn.aea,gui_in.l_leg_st);
-			co.lLeg.motorCurrentA = pd1Controller(leftMotorAngle.A,rs.rLeg.halfA,motorAngle,0,0)
+			leftMotorAngle = legToMotorPos(guiIn.aea,guiIn.l_leg_st);
+			co.lLeg.motorCurrentA = pd1Controller(leftMotorAngle.A,rs.rLeg.halfA.motorAngle,0,0);
 		}
 		//map leg angle sweep of flight leg to 0->1
 		s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
@@ -258,8 +258,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		} else {                        // if aea was reached once
 			sw_stance=true;
-			leftMotorAngle = legToMotorPos(guiIn.pea,gui_in.l_leg_st);
-			co.lLeg.motorCurrentB = pd0Controller(leftMotorAngle.B,rs.rLeg.halfA,motorAngle,0,0)
+			leftMotorAngle = legToMotorPos(guiIn.pea,guiIn.l_leg_st);
+			co.lLeg.motorCurrentB = pd0Controller(leftMotorAngle.B,rs.rLeg.halfA.motorAngle,0,0);
 		}
 		co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_lLeg) - guiIn.d_ls * (rs.lLeg.halfA.motorVelocity);              //keep leg length
 
