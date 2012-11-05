@@ -151,6 +151,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 			if (spg0IsFinished && spg1IsFinished && spg2IsFinished &&
 			    spg3IsFinished && spg4IsFinished && spg5IsFinished) {
+                printf("Startup is finished\n");
 				state = 2;
 				P0.set(5000);
 				D0.set(300);
