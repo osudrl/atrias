@@ -152,6 +152,10 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			if (spg0IsFinished && spg1IsFinished && spg2IsFinished &&
 			    spg3IsFinished && spg4IsFinished && spg5IsFinished) {
 				state = 2;
+				P0.set(5000);
+				D0.set(300);
+				P1.set(600);
+				D1.set(30);
 			}
 		}
 
@@ -199,9 +203,10 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 					break;
 			}
 
-		} else { // if aea was reached once
+		} else { // if pea was reached once
 			sw_stance=true;
-			co.rLeg.motorCurrentB = 0;
+			rightMotorAngle = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
+			co.rLeg.motorCurrentB = pd0Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,0);
 		}
 		co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_rLeg) - guiIn.d_ls * (rs.rLeg.halfA.motorVelocity);              //keep leg length
 
@@ -215,7 +220,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				}
 				case 1:
 				{
-					co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.aea-phi_lLeg) - guiIn.d_af * (rs.lLeg.halfA.motorVelocity);
+					co.lLeg.motorCurrentA = guiIn.p_af * (guiIn.aea-phi_lLeg) - guiIn.d_af * (rs.lLeg.halfA.motorVelocity);
 					break;
 				}
 				default:
@@ -223,7 +228,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		} else { // aea is reached once
 			sw_flight=true;
-			co.lLeg.motorCurrentA = 0;
+			leftMotorAngle = legToMotorPos(guiIn.aea,gui_in.l_leg_st);
+			co.lLeg.motorCurrentA = pd1Controller(leftMotorAngle.A,rs.rLeg.halfA,motorAngle,0,0)
 		}
 		//map leg angle sweep of flight leg to 0->1
 		s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
@@ -252,7 +258,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		} else {                        // if aea was reached once
 			sw_stance=true;
-			co.lLeg.motorCurrentB = 0;
+			leftMotorAngle = legToMotorPos(guiIn.pea,gui_in.l_leg_st);
+			co.lLeg.motorCurrentB = pd0Controller(leftMotorAngle.B,rs.rLeg.halfA,motorAngle,0,0)
 		}
 		co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_lLeg) - guiIn.d_ls * (rs.lLeg.halfA.motorVelocity);              //keep leg length
 
@@ -266,7 +273,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				}
 				case 1:
 				{
-					co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.aea-phi_rLeg) - guiIn.d_af * (rs.rLeg.halfA.motorVelocity);
+					co.rLeg.motorCurrentA = guiIn.p_af * (guiIn.aea-phi_rLeg) - guiIn.d_af * (rs.rLeg.halfA.motorVelocity);
 					break;
 				}
 				default:
@@ -274,7 +281,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			}
 		} else { // aea is reached once
 			sw_flight=true;
-			co.rLeg.motorCurrentA = 0;
+			rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
+			co.rLeg.motorCurrentA = pd1Controller(rightMotorAngle.A,rs.rLeg.halfB.motorAngle,0,0);;
 		}
 		//map leg angle sweep of flight leg to 0->1
 		s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
