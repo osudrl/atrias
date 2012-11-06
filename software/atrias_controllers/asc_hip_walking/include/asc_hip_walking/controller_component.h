@@ -6,7 +6,7 @@
  *  \brief Orocos Component header for the asc_hip_walking subcontroller.
  */
 
-// Orocos 
+// Orocos
 #include <rtt/os/main.h>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
@@ -29,26 +29,26 @@ namespace atrias {
 namespace controller {
 
 class ASCHipWalking : public TaskContext {
-private:
-    // Operations
-    double runController(double exampleInput);
-
-    double out;
-
-    // Logging
-    controller_log_data logData;
-    OutputPort<controller_log_data> logPort;
-
-public:
-    // Constructor
-    ASCHipWalking(std::string name);
-
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
+	private:
+		// Operations
+		double runController(double exampleInput);
+		
+		double out;
+		
+		// Logging
+		controller_log_data logData;
+		OutputPort<controller_log_data> logPort;
+		
+	public:
+		// Constructor
+		ASCHipWalking(std::string name);
+		
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
 };
 
 }
