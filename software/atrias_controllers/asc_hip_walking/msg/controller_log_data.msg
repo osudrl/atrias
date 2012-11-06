@@ -1,2 +1,3 @@
-float64 input
-float64 output
+float64 legAngleIn
+float64 boomAngleIn
+float64 hipAngleOut

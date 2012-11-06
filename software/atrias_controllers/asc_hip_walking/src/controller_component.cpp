@@ -1,5 +1,5 @@
 /*! \file controller_component.cpp
- *  \author Andrew Peekema
+ *  \author Ryan Van Why
  *  \brief Orocos Component code for the asc_hip_walking subcontroller.
  */
 
@@ -12,7 +12,7 @@ ASCHipWalking::ASCHipWalking(std::string name) :
 	RTT::TaskContext(name),
 	logPort(name + "_log")
 {
-	this->provides("exampleService")
+	this->provides("hipAngle")
 	->addOperation("runController", &ASCHipWalking::runController, this, ClientThread)
 	.doc("Run the controller.");
 
@@ -32,12 +32,15 @@ ASCHipWalking::ASCHipWalking(std::string name) :
 }
 
 // Put control code here.
-double ASCHipWalking::runController(double exampleInput) {
-	out = exampleInput;
+double ASCHipWalking::runController(double legAngle, double boomAngle) {
+	double legAngleFromVert = fabs(legAngle - M_PI / 2.0);
+	double out = 0.0;
 
 	// Stuff the msg and push to ROS for logging
-	logData.input = exampleInput;
-	logData.output = out;
+	controller_log_data logData;
+	logData.legAngleIn  = legAngle;
+	logData.boomAngleIn = boomAngle;
+	logData.hipAngleOut = out;
 	logPort.write(logData);
 
 	// Output for the parent controller
