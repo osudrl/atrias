@@ -137,6 +137,10 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 		if (!spg0IsFinished && !spg1IsFinished && !spg2IsFinished &&
 		    !spg3IsFinished && !spg4IsFinished && !spg5IsFinished) {
+			
+			spg2SetTgt(hip0Controller((rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 0));
+			spg5SetTgt(hip1Controller((rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 1));
+
 			desiredLAState = spg0RunController();
 			desiredLBState = spg1RunController();
 			desiredLHState = spg2RunController();
@@ -166,6 +170,10 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 		return co;
 	}
+
+	// Hip control.
+	co.lLeg.motorCurrentHip = pd2Controller(hip0Controller((rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 0), rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentHip = pd5Controller(hip1Controller((rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 1), rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 
 	// calculate leg angle and length
 
@@ -359,6 +367,7 @@ bool ATCEqPoint::configureHook() {
 	if (spg2) {
 		spg2Init          = spg2->provides("smoothPath")->getOperation("init");
 		spg2RunController = spg2->provides("smoothPath")->getOperation("runController");
+		spg2SetTgt        = spg2->provides("smoothPath")->getOperation("setTgt");
 		spg2IsFinished    = spg2->properties()->getProperty("isFinished");
 	}
 
@@ -380,6 +389,7 @@ bool ATCEqPoint::configureHook() {
 	if (spg5) {
 		spg5Init          = spg5->provides("smoothPath")->getOperation("init");
 		spg5RunController = spg5->provides("smoothPath")->getOperation("runController");
+		spg5SetTgt        = spg5->provides("smoothPath")->getOperation("setTgt");
 		spg5IsFinished    = spg5->properties()->getProperty("isFinished");
 	}
 

@@ -100,9 +100,11 @@ class ATCEqPoint : public TaskContext {
 		OperationCaller<void(double, double, double)>           spg0Init;
 		OperationCaller<void(double, double, double)>           spg1Init;
 		OperationCaller<void(double, double, double)>           spg2Init;
+		OperationCaller<void(double)>                           spg2SetTgt;
 		OperationCaller<void(double, double, double)>           spg3Init;
 		OperationCaller<void(double, double, double)>           spg4Init;
 		OperationCaller<void(double, double, double)>           spg5Init;
+		OperationCaller<void(double)>                           spg5SetTgt;
 		OperationCaller<MotorState(void)>                       spg0RunController;
 		OperationCaller<MotorState(void)>                       spg1RunController;
 		OperationCaller<MotorState(void)>                       spg2RunController;
