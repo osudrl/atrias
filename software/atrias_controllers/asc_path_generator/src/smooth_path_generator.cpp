@@ -19,6 +19,8 @@ ASCSmoothPathGenerator::ASCSmoothPathGenerator(std::string name):
         .doc("Run the controller.");
     this->provides("smoothPath")
         ->addOperation("init", &ASCSmoothPathGenerator::init, this, ClientThread);
+    this->provides("smoothPath")
+        ->addOperation("setTgt", &ASCSmoothPathGenerator::setTgt, this, ClientThread);
     this->addProperty("isFinished", isFinished)
         .doc("Has this finished?");
 
@@ -46,6 +48,11 @@ void ASCSmoothPathGenerator::init(double startVal, double endVal, double duratio
     start       = startVal;
     end         = endVal;
     duration    = durationVal;
+}
+
+// Set a new endpoint -- can be done while running, if change in endpoint is continuous.
+void ASCSmoothPathGenerator::setTgt(double endVal) {
+	end = endVal;
 }
 
 // Output.

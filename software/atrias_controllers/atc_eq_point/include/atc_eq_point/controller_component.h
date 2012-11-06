@@ -57,6 +57,8 @@ class ATCEqPoint : public TaskContext {
 		std::string pd3Name;
 		std::string pd4Name;
 		std::string pd5Name;
+		std::string hip0Name;
+		std::string hip1Name;
 		
 		// Subcontroller components
 		TaskContext *spg0;
@@ -71,6 +73,8 @@ class ATCEqPoint : public TaskContext {
 		TaskContext *pd3;
 		TaskContext *pd4;
 		TaskContext *pd5;
+		TaskContext *hip0;
+		TaskContext *hip1;
 		
 		// Service properties
 		Property<bool>   spg0IsFinished;
@@ -111,6 +115,8 @@ class ATCEqPoint : public TaskContext {
 		OperationCaller<double(double, double, double, double)> pd3Controller;
 		OperationCaller<double(double, double, double, double)> pd4Controller;
 		OperationCaller<double(double, double, double, double)> pd5Controller;
+		OperationCaller<double(double, double, int)>            hip0Controller;
+		OperationCaller<double(double, double, int)>            hip1Controller;
 		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
 		
 		// Logging

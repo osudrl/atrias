@@ -31,6 +31,7 @@ private:
     // Operations
     MotorState runController();
     void init(double, double, double);
+    void setTgt(double);
 
     double start, end, duration;
 

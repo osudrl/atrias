@@ -50,6 +50,12 @@ loadComponent(pd4Name, "ASCPD")
 var string pd5Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd5Name, "ASCPD")
 
+var string hip0Name = atrias_cm.getUniqueName("controller", "hip")
+loadComponent(hip0Name, "ASCHipWalking")
+
+var string hip1Name = atrias_cm.getUniqueName("controller", "hip")
+loadComponent(hip1Name, "ASCHipWalking")
+
 
 # Connect this controller with its subcontrollers
 addPeer("controller", spg0Name)
@@ -64,6 +70,8 @@ addPeer("controller", pd2Name)
 addPeer("controller", pd3Name)
 addPeer("controller", pd4Name)
 addPeer("controller", pd5Name)
+addPeer("controller", hip0Name)
+addPeer("controller", hip1Name)
 
 # Pass the names of the subcontrollers to the controller
 controller.spg0Name = spg0Name
@@ -78,6 +86,8 @@ controller.pd2Name = pd2Name
 controller.pd3Name = pd3Name
 controller.pd4Name = pd4Name
 controller.pd5Name = pd5Name
+controller.hip0Name = hip0Name
+controller.hip1Name = hip1Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy
