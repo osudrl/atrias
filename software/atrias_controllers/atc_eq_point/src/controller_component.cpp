@@ -155,10 +155,12 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			    spg3IsFinished && spg4IsFinished && spg5IsFinished) {
                 printf("Startup is finished\n");
 				state = 2;
-				P0.set(5000);
-				D0.set(300);
+				sw_flight = true;
+				sw_stance = true;
+				P0.set(600);
+				D0.set(50);
 				P1.set(600);
-				D1.set(30);
+				D1.set(50);
 			}
 		}
 
@@ -171,24 +173,32 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;
 	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle+2*M_PI)/2);
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;
-
-
+   
+   
+   printf("GCR: %s phi_r: %f state: %d \n",rGC,phi_rLeg,state);
+   
+	
 	// state machine
-	if (state == 2 && phi_lLeg<M_PI/2 && rGC)
+	if (state == 2 && phi_rLeg<M_PI/2 && rGC)
 	{
 		state = 1;
 		sw_stance = false;
+		sw_flight = false;
+		printf("state change to 1");
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC)
 	{
 		state = 2;
 		sw_stance = false;
+		sw_flight = false;
+		printf("state change to 2");
 	}
-
+	//printf("case statement\n");
 	// generate motor commands
 	switch (state)          //stance leg right, flight leg left
 	{
 	case 1:
+		//printf("case 1\n");
 		if ((phi_rLeg < guiIn.pea) && !sw_stance) {           // stance leg rotate to pea
 			switch (guiIn.control)
 			{
@@ -205,13 +215,14 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
-
+		co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_rLeg) - guiIn.d_ls * (rs.rLeg.halfA.motorVelocity);              //keep leg length
 		} else { // if pea was reached once
 			sw_stance=true;
 			rightMotorAngle = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
-			co.rLeg.motorCurrentB = pd0Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,0);
+			co.rLeg.motorCurrentB = pd0Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = pd0Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 		}
-		co.rLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_rLeg) - guiIn.d_ls * (rs.rLeg.halfA.motorVelocity);              //keep leg length
+		
 
 		if ((phi_lLeg > guiIn.aea) && !sw_flight) {           // swing leg rotate to aea
 			switch (guiIn.control)
@@ -229,20 +240,23 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
+			//map leg angle sweep of flight leg to 0->1
+			s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+			//keep desired leg length -> shorten leg depending on leg position
+			l_swing = sin ( -M_PI/2 + 3*M_PI/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
+			co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_lLeg) - guiIn.d_lf * (rs.lLeg.halfB.motorVelocity);
 		} else { // aea is reached once
 			sw_flight=true;
 			leftMotorAngle = legToMotorPos(guiIn.aea,guiIn.l_leg_st);
-			co.lLeg.motorCurrentA = pd1Controller(leftMotorAngle.A,rs.rLeg.halfA.motorAngle,0,0);
+			co.lLeg.motorCurrentA = pd1Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 		}
-		//map leg angle sweep of flight leg to 0->1
-		s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
-		//keep desired leg length -> shorten leg depending on leg position
-		l_swing = sin ( -M_PI/2 + 3*M_PI/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
-		co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_lLeg) - guiIn.d_lf * (rs.lLeg.halfB.motorVelocity);
+		
 
 		break;
 
 	case 2:                         // stance leg left, swing leg right
+		//printf("case 2\n");
 		if ((phi_lLeg < guiIn.pea) && !sw_stance) {           // stance leg rotate to pea
 			switch (guiIn.control)
 			{
@@ -259,12 +273,15 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
+			co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_lLeg) - guiIn.d_ls * (rs.lLeg.halfA.motorVelocity);              //keep leg length
 		} else {                        // if aea was reached once
 			sw_stance=true;
 			leftMotorAngle = legToMotorPos(guiIn.pea,guiIn.l_leg_st);
-			co.lLeg.motorCurrentB = pd0Controller(leftMotorAngle.B,rs.rLeg.halfA.motorAngle,0,0);
+			co.lLeg.motorCurrentB = pd0Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+		   co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+		   //printf("stance leg standstill executed\n");
 		}
-		co.lLeg.motorCurrentA = guiIn.p_ls * (guiIn.l_leg_st-l_lLeg) - guiIn.d_ls * (rs.lLeg.halfA.motorVelocity);              //keep leg length
+		
 
 		if ((phi_rLeg > guiIn.aea) && !sw_flight) {           // swing leg rotate to aea
 			switch (guiIn.control)
@@ -282,16 +299,19 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
-		} else { // aea is reached once
-			sw_flight=true;
-			rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
-			co.rLeg.motorCurrentA = pd1Controller(rightMotorAngle.A,rs.rLeg.halfB.motorAngle,0,0);;
-		}
 		//map leg angle sweep of flight leg to 0->1
 		s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 		//keep desired leg length -> shorten leg depending on leg position
 		l_swing = sin ( -M_PI/2 + 3*M_PI/2*s)*guiIn.l_leg_fl/2+guiIn.l_leg_st-guiIn.l_leg_fl/2;
 		co.lLeg.motorCurrentB = guiIn.p_lf * (l_swing - l_rLeg) - guiIn.d_lf * (rs.rLeg.halfB.motorVelocity);
+		} else { // aea is reached once
+			sw_flight=true;
+			rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
+			co.rLeg.motorCurrentA = pd1Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = pd1Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+			//printf("flight leg standstill executed\n");
+		}
+		
 
 		break;
 
