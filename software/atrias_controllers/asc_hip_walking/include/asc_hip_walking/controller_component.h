@@ -30,8 +30,13 @@ namespace controller {
 
 class ASCHipWalking : public TaskContext {
 	private:
-		// Operations
-		double runController(double legAngle, double boomAngle);
+		/** @brief Computes the correct hip angle given the leg angle and boom angle.
+		  * @param legAngle This leg's angle
+		  * @param boomAngle The boom angle.
+		  * @param hip Which hip -- 0 for left, 1 for right.
+		  * @return The desired hip angle.
+		  */
+		double runController(double legAngle, double boomAngle, int hip);
 		
 		// Logging
 		OutputPort<controller_log_data> logPort;

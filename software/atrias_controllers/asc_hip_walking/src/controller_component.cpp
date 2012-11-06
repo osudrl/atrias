@@ -32,9 +32,24 @@ ASCHipWalking::ASCHipWalking(std::string name) :
 }
 
 // Put control code here.
-double ASCHipWalking::runController(double legAngle, double boomAngle) {
+double ASCHipWalking::runController(double legAngle, double boomAngle, int hip) {
 	double legAngleFromVert = fabs(legAngle - M_PI / 2.0);
 	double out = 0.0;
+
+	if (legAngleFromVert > .4) {
+		if (hip == 0) {
+			out = 4.7498;
+		} else {
+			out = 4.7432;
+		}
+	} else {
+		double norm = legAngleFromVert / .4;
+		if (hip == 0) {
+			out = 4.7158 + norm * .034;
+		} else {
+			out = 4.7157 + norm * .0275;
+		}
+	}
 
 	// Stuff the msg and push to ROS for logging
 	controller_log_data logData;
