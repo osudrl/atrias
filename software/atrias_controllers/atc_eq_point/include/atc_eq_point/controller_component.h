@@ -140,6 +140,9 @@ class ATCEqPoint : public TaskContext {
 		double  l_swing;
 		bool    rGC;
 		bool    lGC;
+		double  amp;
+		double  phi_MsA;
+		double  phi_MfB;
 		
 		// For the GUI
 		shared::GuiPublishTimer     *pubTimer;
