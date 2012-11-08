@@ -37,8 +37,8 @@ ATCEqPoint::ATCEqPoint(std::string name) :
 	// Gains for PD controllers. These are set in the configureHook.
 	legP = 600;
 	legD = 30;
-	hipP = 0;
-	hipD = 0;
+	hipP = 100;
+	hipD = 20;
 
 	// For the GUI
 	addEventPort(guiDataIn);
