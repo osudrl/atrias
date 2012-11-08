@@ -445,6 +445,14 @@ bool ATCEqPoint::configureHook() {
 	pd5 = this->getPeer(pd5Name);
 	if (pd5)
 		pd5Controller = pd5->provides("pd")->getOperation("runController");
+	
+	hip0 = this->getPeer(hip0Name);
+	if (hip0)
+		hip0Controller = hip0->provides("hipAngle")->getOperation("runController");
+	
+	hip1 = this->getPeer(hip1Name);
+	if (hip1)
+		hip1Controller = hip1->provides("hipAngle")->getOperation("runController");
 
 
 	P0 = pd0->properties()->getProperty("P");
