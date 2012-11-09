@@ -81,12 +81,55 @@ void controllerCallback(const atc_eq_point::controller_status &status) {
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
-	// Disabled.
+	// Get parameters.
+	nh.getParam("/atrias_gui/aea", controllerDataOut.aea);
+	nh.getParam("/atrias_gui/pea", controllerDataOut.pea);
+	nh.getParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
+	nh.getParam("/atrias_gui/p_af", controllerDataOut.p_af);
+	nh.getParam("/atrias_gui/d_af", controllerDataOut.d_af);
+	nh.getParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
+	nh.getParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
+	nh.getParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
+	nh.getParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
+	nh.getParam("/atrias_gui/p_as", controllerDataOut.p_as);
+	nh.getParam("/atrias_gui/d_as", controllerDataOut.d_as);
+	nh.getParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
+	nh.getParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
+	nh.getParam("/atrias_gui/l_st", controllerDataOut.l_st);
+
+	// Configure the GUI.
+	aea_spinbutton->set_value(controllerDataOut.aea);
+	pea_spinbutton->set_value(controllerDataOut.pea);
+	l_leg_fl_spinbutton->set_value(controllerDataOut.l_leg_fl);
+	p_af_spinbutton->set_value(controllerDataOut.p_af);
+	d_af_spinbutton->set_value(controllerDataOut.d_af);
+	p_lf_spinbutton->set_value(controllerDataOut.p_lf);
+	d_lf_spinbutton->set_value(controllerDataOut.d_lf);
+	l_fl_spinbutton->set_value(controllerDataOut.l_fl);
+	l_leg_st_spinbutton->set_value(controllerDataOut.l_leg_st);
+	p_as_spinbutton->set_value(controllerDataOut.p_as);
+	d_as_spinbutton->set_value(controllerDataOut.d_ls);
+	p_ls_spinbutton->set_value(controllerDataOut.p_ls);
+	d_ls_spinbutton->set_value(controllerDataOut.d_ls);
+	l_st_spinbutton->set_value(controllerDataOut.l_st);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-	// Disabled.
+	nh.setParam("/atrias_gui/aea", controllerDataOut.aea);
+	nh.setParam("/atrias_gui/pea", controllerDataOut.pea);
+	nh.setParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
+	nh.setParam("/atrias_gui/p_af", controllerDataOut.p_af);
+	nh.setParam("/atrias_gui/d_af", controllerDataOut.d_af);
+	nh.setParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
+	nh.setParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
+	nh.setParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
+	nh.setParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
+	nh.setParam("/atrias_gui/p_as", controllerDataOut.p_as);
+	nh.setParam("/atrias_gui/d_as", controllerDataOut.d_as);
+	nh.setParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
+	nh.setParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
+	nh.setParam("/atrias_gui/l_st", controllerDataOut.l_st);
 }
 
 //! \brief Update the GUI.
