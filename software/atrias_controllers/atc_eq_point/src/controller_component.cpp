@@ -36,9 +36,9 @@ ATCEqPoint::ATCEqPoint(std::string name) :
 
 	// Gains for PD controllers. These are set in the configureHook.
 	legP = 600;
-	legD = 30;
-	hipP = 100;
-	hipD = 20;
+	legD = 15;
+	hipP = 150;
+	hipD = 10;
 
 	// For the GUI
 	addEventPort(guiDataIn);
@@ -168,7 +168,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				amp = guiIn.l_leg_st-guiIn.l_leg_fl;
 			}
 		}
-
+         co.command = medulla_state_run;
 		return co;
 	}
 
@@ -261,17 +261,18 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			//keep desired leg length -> shorten leg depending on leg position
 			l_swing = sin ( -M_PI/2 + 2*M_PI*s)*(-amp/2)+guiIn.l_leg_fl+amp/2;
 			phi_MfB = phi_lLeg + acos(l_swing);
+            printf("s: %f, l_swing: %f, l_lLeg: %f \n", s,l_swing,l_lLeg);
 			D1.set(guiIn.d_lf);
 			P1.set(guiIn.p_lf);
-			co.lLeg.motorCurrentB = pd1Controller(phi_MfB,rs.lLeg.halfB.motorAngle,rs.lLeg.halfA.motorVelocity,rs.lLeg.halfB.motorVelocity); 
+			co.lLeg.motorCurrentB = pd1Controller(phi_MfB,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 		} else { // aea is reached once
 			sw_flight=true;
 			leftMotorAngle = legToMotorPos(guiIn.aea,guiIn.l_leg_st);
-			D0.set(guiIn.d_lf);
-			P0.set(guiIn.p_lf);
+			D0.set(guiIn.d_ls);
+			P0.set(guiIn.p_ls);
 			co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-			D1.set(guiIn.d_lf);
-			P1.set(guiIn.p_lf);
+			D1.set(guiIn.d_ls);
+			P1.set(guiIn.p_ls);
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 		}
 		
@@ -336,15 +337,15 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		phi_MfB = phi_rLeg + acos (l_swing);
 		D4.set(guiIn.d_lf);
 		P4.set(guiIn.p_lf);
-		co.rLeg.motorCurrentB = pd4Controller(phi_MfB,rs.rLeg.halfB.motorAngle,rs.rLeg.halfA.motorVelocity,rs.rLeg.halfB.motorVelocity); ;
+		co.rLeg.motorCurrentB = pd4Controller(phi_MfB,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity); ;
 		} else { // aea is reached once
 			sw_flight=true;
 			rightMotorAngle = legToMotorPos(guiIn.aea, guiIn.l_leg_st);
-			D3.set(guiIn.d_lf);
-			P3.set(guiIn.p_lf);
+			D3.set(guiIn.d_ls);
+			P3.set(guiIn.p_ls);
 			co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
-			D4.set(guiIn.d_lf);
-			P4.set(guiIn.p_lf);
+			D4.set(guiIn.d_ls);
+			P4.set(guiIn.p_ls);
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 			//printf("flight leg standstill executed\n");
 		}
