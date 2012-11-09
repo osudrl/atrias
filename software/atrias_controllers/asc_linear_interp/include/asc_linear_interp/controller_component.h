@@ -2,11 +2,11 @@
 #define __ASC_LINEAR_INTERP_H__
 
 /*! \file controller_component.h
- *  \author Andrew Peekema
+ *  \author Ryan Van Why
  *  \brief Orocos Component header for the asc_linear_interp subcontroller.
  */
 
-// Orocos 
+// Orocos
 #include <rtt/os/main.h>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
@@ -29,26 +29,23 @@ namespace atrias {
 namespace controller {
 
 class ASCLinearInterp : public TaskContext {
-private:
-    // Operations
-    double runController(double exampleInput);
-
-    double out;
-
-    // Logging
-    controller_log_data logData;
-    OutputPort<controller_log_data> logPort;
-
-public:
-    // Constructor
-    ASCLinearInterp(std::string name);
-
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
+	private:
+		// Operations
+		double runController(double input);
+		
+		// Logging
+		OutputPort<controller_log_data> logPort;
+		
+	public:
+		// Constructor
+		ASCLinearInterp(std::string name);
+		
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
 };
 
 }
