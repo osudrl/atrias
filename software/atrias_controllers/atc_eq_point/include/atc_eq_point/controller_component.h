@@ -143,7 +143,9 @@ class ATCEqPoint : public TaskContext {
 		double  amp;
 		double  phi_MsA;
 		double  phi_MfB;
-		
+		double  phiAf_des;
+		double  phiBs_des;
+
 		// For the GUI
 		shared::GuiPublishTimer     *pubTimer;
 		controller_input            guiIn;
