@@ -30,8 +30,24 @@ namespace controller {
 
 class ASCLinearInterp : public TaskContext {
 	private:
+		// The data points.
+		double *values;
+		int    numValues;
+
+		// The interval in which the interpolation occurs.
+		double a;
+		double b;
+
 		// Operations
 		double runController(double input);
+
+		/** @brief Inputs the array of points from which to sample.
+		  * @param samples    The samples.
+		  * @param numSamples The number of samples in \a values[]
+		  * @param start      The start of the interval.
+		  * @param end        The end of the interval.
+		  */
+		void   inputPoints(double samples[], int numSamples, double start, double end);
 		
 		// Logging
 		OutputPort<controller_log_data> logPort;

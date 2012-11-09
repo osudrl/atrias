@@ -13,8 +13,11 @@ ASCLinearInterp::ASCLinearInterp(std::string name) :
 	logPort(name + "_log")
 {
 	this->provides("interp")
-	->addOperation("getValue", &ASCLinearInterp::runController, this, ClientThread)
-	.doc("Return the interpolated value at some x value");
+		->addOperation("getValue", &ASCLinearInterp::runController, this, ClientThread)
+		.doc("Return the interpolated value at some x value");
+	this->provides("interp")
+		->addOperation("inputPoints", &ASCLinearInterp::inputPoints, this, ClientThread)
+		.doc("Input the points and interval in which to interpolate.");
 
 	// Logging
 	// Create a port
@@ -43,6 +46,13 @@ double ASCLinearInterp::runController(double input) {
 
 	// Output for the parent controller
 	return out;
+}
+
+void ASCLinearInterp::inputPoints(double samples[], int numSamples, double start, double end) {
+	values    = samples;
+	numValues = numSamples;
+	a         = (start < end) ? start : end;
+	b         = (start > end) ? start : end;
 }
 
 bool ASCLinearInterp::configureHook() {
