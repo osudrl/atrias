@@ -260,7 +260,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			s = (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
 			//keep desired leg length -> shorten leg depending on leg position
 			l_swing = sin ( -M_PI/2 + 2*M_PI*s)*(-amp/2)+guiIn.l_leg_fl+amp/2;
-			phi_MfB = phi_lLeg + acos(l_swing);
+			phi_MfB = rs.lLeg.halfA.motorAngle + 2 * acos(l_swing);
             printf("s: %f, l_swing: %f, l_lLeg: %f \n", s,l_swing,l_lLeg);
 			D1.set(guiIn.d_lf);
 			P1.set(guiIn.p_lf);
@@ -334,7 +334,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 		//keep desired leg length -> shorten leg depending on leg position
 		l_swing = sin ( -M_PI/2 + 2*M_PI*s)*(-amp/2)+guiIn.l_leg_fl+amp/2;
-		phi_MfB = phi_rLeg + acos (l_swing);
+		phi_MfB = rs.rLeg.halfA.motorAngle + 2 * acos (l_swing);
 		D4.set(guiIn.d_lf);
 		P4.set(guiIn.p_lf);
 		co.rLeg.motorCurrentB = pd4Controller(phi_MfB,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity); ;
