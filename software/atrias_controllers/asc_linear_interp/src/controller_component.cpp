@@ -38,6 +38,19 @@ ASCLinearInterp::ASCLinearInterp(std::string name) :
 double ASCLinearInterp::runController(double input) {
 	double out = 0.0;
 
+	if (input <= a) {
+		out = values[0];
+	} else if (input >= b) {
+		out = values[numValues];
+	} else {
+		double mapped = (input - a) * (numValues - 1) / (b - a);
+		double firstSample = values[(int) floor(mapped)];
+		// Note: input < b by now, so mapped < numValues
+		double secondSample = values[(int) floor(mapped) + 1];
+		double norm = fmod(mapped, 1);
+		out = norm * secondSample + (1.0 - norm) * firstSample;
+	}
+
 	// Stuff the msg and push to ROS for logging
 	controller_log_data logData;
 	logData.input  = input;
