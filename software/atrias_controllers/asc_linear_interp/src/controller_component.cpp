@@ -41,7 +41,7 @@ double ASCLinearInterp::runController(double input) {
 	if (input <= a) {
 		out = values[0];
 	} else if (input >= b) {
-		out = values[numValues];
+		out = values[numValues - 1];
 	} else {
 		double mapped = (input - a) * (numValues - 1) / (b - a);
 		double firstSample = values[(int) floor(mapped)];
