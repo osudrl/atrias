@@ -161,10 +161,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				state = 2;
 				sw_flight = true;
 				sw_stance = true;
-				P0.set(600);
-				D0.set(50);
-				P1.set(600);
-				D1.set(50);
 				amp = guiIn.l_leg_st-guiIn.l_leg_fl;
 			}
 		}
@@ -178,43 +174,38 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 	// calculate leg angle and length
 
-	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;
-	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);
-	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;
-	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);
-	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);
-	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);
+	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		//right leg angle
+	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
+	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		//left leg angle
+	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);	//left leg length
+	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
+	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
    
-   //printf("l_leg: %f, phi_MsA: %f, phi_MsB: %f\n",l_rLeg,rs.rLeg.halfA.motorAngle,rs.rLeg.halfB.motorAngle);
-   //printf("GCR: %" PRId8 "  phi_r: %f state: %d \n",rGC,phi_rLeg,state);
-   //std::cout << "GCR: " << rGC << std::endl;
-	
-	// state machine
-	if (state == 2 && phi_rLeg<M_PI/2 && rGC)
+  	// state machine
+	if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping
 	{
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
-		//printf("state change to 1\n");
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC)
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
-		//printf("state change to 2\n");
 	}
-	//printf("case statement\n");
-	// generate motor commands
-	switch (state)          //stance leg right, flight leg left
+
+
+// command legs ---------------------------------------------------------------------------
+	switch (state)																															//stance leg right, flight leg left
 	{
 	case 1:
-		if ((phi_rLeg < guiIn.pea) && !sw_stance) {           // stance leg rotate to pea
+		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance) {																			// stance leg rotate to pea
 			switch (guiIn.control)
 			{
 				case 0:
 				{
-					co.rLeg.motorCurrentB = guiIn.l_st;                                     //constant stance leg current
+					co.rLeg.motorCurrentB = guiIn.l_st;																						//constant stance leg current
 					break;
 				}
 				case 1:
@@ -227,12 +218,11 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
-		phi_MsA = phi_rLeg-acos(l_rLeg);     //keep leg length
-		//printf("phi_MsA: %f, phi_MsA: %f, phi_MsB: %f\n",phi_MsA,rs.rLeg.halfA.motorAngle,rs.rLeg.halfB.motorAngle);
+		phi_MsA = phi_rLeg-acos(l_rLeg);																									//keep leg length
 		D3.set(guiIn.d_ls);
 		P3.set(guiIn.p_ls);
 		co.rLeg.motorCurrentA = pd3Controller(phi_MsA,rs.rLeg.halfA.motorAngle,rs.rLeg.halfB.motorVelocity,rs.rLeg.halfA.motorVelocity); 
-		} else { // if pea was reached once
+		} else {																															 // if pea was reached once
 			sw_stance=true;
 			rightMotorAngle = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
 			D4.set(guiIn.d_ls);
@@ -244,8 +234,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		}
 		
 
-		if (((rs.lLeg.halfA.motorAngle > phiAf_des) || ((rs.lLeg.halfA.motorAngle <= phiAf_des) && (l_lLeg < guiIn.l_leg_st-0.015)))  && (!sw_flight)) {           // swing leg rotate to aea
-			if (rs.lLeg.halfA.motorAngle >phiAf_des)
+		if (((rs.lLeg.halfA.motorAngle > phiAf_des) || ((rs.lLeg.halfA.motorAngle <= phiAf_des) && (l_lLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to aea
+			if (rs.lLeg.halfA.motorAngle > phiAf_des)
 			{
 				switch (guiIn.control)
 				{
@@ -270,13 +260,12 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		//map leg angle sweep of flight leg to 0->1
 		s = (guiIn.pea-acos(guiIn.l_leg_st)-rs.lLeg.halfA.motorAngle) / (guiIn.pea - guiIn.aea);
 		//keep desired leg length -> shorten leg depending on leg position
-		l_swing = sin ( -M_PI/2 + 2*M_PI*s)*(-amp/2)+guiIn.l_leg_fl+amp/2;
-		printf("s: %f, l_swing: %f, l_lLeg: %f \n", s,l_swing,l_lLeg);
+		l_swing = sin ( -M_PI/2 + 2 * M_PI * s) * (-amp/2) + guiIn.l_leg_fl + amp/2;
 		phi_MfB = rs.lLeg.halfA.motorAngle + 2 * acos (l_swing);
-		D4.set(guiIn.d_lf);
-		P4.set(guiIn.p_lf);
+		D1.set(guiIn.d_lf);
+		P1.set(guiIn.p_lf);
 		co.lLeg.motorCurrentB = pd4Controller(phi_MfB,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity); ;
-		} else { // aea is reached once
+		} else {																														// aea is reached once
 			sw_flight=true;
 			leftMotorAngle = legToMotorPos(guiIn.aea,guiIn.l_leg_st);
 			D0.set(guiIn.d_ls);
@@ -291,8 +280,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		break;
 
 	case 2:                         // stance leg left, swing leg right
-		//std::cout << "swStance: " << sw_stance << std::endl;
-		if ((phi_lLeg < guiIn.pea) && !sw_stance) {           // stance leg rotate to pea
+		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance) {           // stance leg rotate to pea
 			switch (guiIn.control)
 			{
 				case 0:
@@ -311,10 +299,9 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 					break;
 			}
 			phi_MsA = phi_lLeg - acos(l_lLeg);     //keep leg length
-			//printf("phi_leg: %f, phi_MsA: %f, phi_MsB: %f\n",phi_lLeg,rs.lLeg.halfA.motorAngle,rs.lLeg.halfB.motorAngle);
 			D0.set(guiIn.d_ls);
 			P0.set(guiIn.p_ls); 
-			co.lLeg.motorCurrentA = pd0Controller(phi_MsA,rs.lLeg.halfA.motorAngle,rs.lLeg.halfB.motorVelocity,rs.lLeg.halfA.motorVelocity);             
+			co.lLeg.motorCurrentA = pd0Controller(phi_MsA,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);             
 		} else {                        // if aea was reached once
 			sw_stance=true;
 			leftMotorAngle = legToMotorPos(guiIn.pea,guiIn.l_leg_st);
@@ -326,8 +313,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		    co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 		  }
 		
-		
-		//printf("des_ang: %f curr_ang: %f\n",phiAf_des,rs.rLeg.halfA.motorAngle);
 		if (((rs.rLeg.halfA.motorAngle > phiAf_des) || ((rs.rLeg.halfA.motorAngle <= phiAf_des) && (l_rLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to aea
 			if (rs.rLeg.halfA.motorAngle >phiAf_des)
 			{
@@ -355,7 +340,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		s = (guiIn.pea-acos(guiIn.l_leg_st)-rs.rLeg.halfA.motorAngle) / (guiIn.pea - guiIn.aea);
 		//keep desired leg length -> shorten leg depending on leg position
 		l_swing = sin ( -M_PI/2 + 2*M_PI*s)*(-amp/2)+guiIn.l_leg_fl+amp/2;
-		printf("s: %f, l_swing: %f, l_lLeg: %f \n", s,l_swing,l_rLeg);
 		phi_MfB = rs.rLeg.halfA.motorAngle + 2 * acos (l_swing);
 		D4.set(guiIn.d_lf);
 		P4.set(guiIn.p_lf);
@@ -369,7 +353,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 			D4.set(guiIn.d_ls);
 			P4.set(guiIn.p_ls);
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
-			//printf("flight leg standstill executed\n");
 		}
 		
 
