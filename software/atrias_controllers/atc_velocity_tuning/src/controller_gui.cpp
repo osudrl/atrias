@@ -45,6 +45,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	desVelSpnBtn->set_value(1.0);
 	kpSpnBtn->set_value(10.0);
 
+	absEncoder->set_active(true);
+
 	// Set up publisher.
 	pub = nh.advertise<atc_velocity_tuning::controller_input>("atc_velocity_tuning_input", 0);
 	return true;
