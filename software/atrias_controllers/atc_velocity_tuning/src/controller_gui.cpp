@@ -16,12 +16,20 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("desVelBox",    desVelSpnBtn);
 	gui->get_widget("kpBox",        kpSpnBtn);
 	gui->get_widget("sensorButton", sensorToggle);
+	gui->get_widget("absEncoder",   absEncoder);
+	gui->get_widget("incEncoder",   incEncoder);
+	gui->get_widget("forward",      forward);
+	gui->get_widget("reverse",      reverse);
 
 	if (!minPosSpnBtn ||
 	    !maxPosSpnBtn ||
 	    !desVelSpnBtn ||
 	    !kpSpnBtn     ||
-	    !sensorToggle) {
+	    !sensorToggle ||
+	    !absEncoder   ||
+	    !incEncoder   ||
+	    !forward      ||
+	    !reverse) {
 		
 		return false;
 	}
@@ -56,11 +64,18 @@ void setParameters() {
 void guiUpdate() {
 	double minPos = minPosSpnBtn->get_value();
 	double maxPos = maxPosSpnBtn->get_value();
-	controllerDataOut.minPos = MIN(minPos, maxPos);
-	controllerDataOut.maxPos = MAX(minPos, maxPos);
-	controllerDataOut.desVel = desVelSpnBtn->get_value();
-	controllerDataOut.Kp     = kpSpnBtn->get_value();
-	controllerDataOut.sensor = sensorToggle->get_active() ? 1 : 0;
+	controllerDataOut.minPos    = MIN(minPos, maxPos);
+	controllerDataOut.maxPos    = MAX(minPos, maxPos);
+	controllerDataOut.desVel    = desVelSpnBtn->get_value();
+	controllerDataOut.Kp        = kpSpnBtn->get_value();
+	controllerDataOut.sensor    = sensorToggle->get_active() ? 1 : 0;
+	// The following ternary tree simply sets the value in
+	// relayMode to the relevant int for the ticked radio
+	// button, as defined in controller_input.msg
+	controllerDataOut.relayMode = (absEncoder->get_active()) ? 0 :
+	                              (incEncoder->get_active()) ? 1 :
+							(forward->get_active())    ? 2 :
+							                             3; // 3 = reverse
 	pub.publish(controllerDataOut);
 }
 

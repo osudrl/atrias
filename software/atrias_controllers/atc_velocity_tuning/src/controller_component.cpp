@@ -29,10 +29,22 @@ ATCVelocityTuning::ATCVelocityTuning(std::string name) :
 
 atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::robot_state rs) {
 	P0.set(guiIn.Kp);
-	if (rs.lLeg.halfA.motorAngle > guiIn.maxPos)
-		cur_dir = -1;
-	if (rs.lLeg.halfA.motorAngle < guiIn.minPos)
+
+	if (guiIn.relayMode == 0 || guiIn.relayMode == 1) {
+		// Set motorAngle based on the correct sensor.
+		double motorAngle = (guiIn.relayMode == 0) ? rs.lLeg.halfA.motorAngle : rs.lLeg.halfA.rotorAngle;
+
+		if (motorAngle > guiIn.maxPos)
+			cur_dir = -1;
+		if (motorAngle < guiIn.minPos)
+			cur_dir = 1;
+	} else if (guiIn.relayMode == 2) {
+		// Forward
 		cur_dir = 1;
+	} else {
+		// Reverse
+		cur_dir = -1;
+	}
 	
 	atrias_msgs::controller_output co;
 	

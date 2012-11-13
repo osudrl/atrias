@@ -28,5 +28,10 @@ Gtk::SpinButton *minPosSpnBtn,
 
 Gtk::ToggleButton *sensorToggle;
 
+Gtk::RadioButton  *absEncoder,
+                  *incEncoder,
+			   *forward,
+			   *reverse;
+
 #endif /* CONTROLLER_GUI_H_ */
 
