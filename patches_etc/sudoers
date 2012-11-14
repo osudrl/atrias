@@ -1,0 +1,2 @@
+Defaults    secure_path="/opt/ros/fuerte/bin:/opt/ros/fuerte/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/xenomai/bin/:/usr/xenomai/bin/"
+Defaults    env_keep="PYTHONPATH ROS_PACKAGE_PATH ROS_MASTER_URI OROCOS_TARGET"

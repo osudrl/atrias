@@ -49,9 +49,10 @@ void LegMedulla::postOpInit() {
 }
 
 void LegMedulla::updatePositionOffsets() {
-	skipMotorEncoder  = false;
-	skipLegEncoder    = false;
-	legPositionOffset = 0.0;
+	skipMotorEncoder      = false;
+	skipLegEncoder        = false;
+	legPositionOffset     = 0.0;
+    incrementalEncoderPos = 0.0;
 	atrias_msgs::robot_state robotState;
 	processPositions(robotState);
 	switch (*id) {
@@ -116,34 +117,34 @@ void LegMedulla::processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTim
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robotState.lLeg.halfA.rotorAngle    =
-				incrementalEncoderStart +
+				incrementalEncoderStart -
 				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * LEFT_MOTOR_A_DIRECTION;
 			robotState.lLeg.halfA.rotorVelocity =
-				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
+				((double) deltaPos) * INC_ENC_RAD_PER_TICK * -LEFT_MOTOR_A_DIRECTION / adjustedTime;
 			break;
 			
 		case MEDULLA_LEFT_LEG_B_ID:
 			robotState.lLeg.halfB.rotorAngle    =
-				incrementalEncoderStart +
-				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * RIGHT_MOTOR_B_DIRECTION;
+				incrementalEncoderStart -
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * LEFT_MOTOR_B_DIRECTION;
 			robotState.lLeg.halfB.rotorVelocity =
-				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
+				((double) deltaPos) * INC_ENC_RAD_PER_TICK * -LEFT_MOTOR_B_DIRECTION / adjustedTime;
 			break;
 			
 		case MEDULLA_RIGHT_LEG_A_ID:
 			robotState.rLeg.halfA.rotorAngle    =
-				incrementalEncoderStart +
-				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * LEFT_MOTOR_A_DIRECTION;
+				incrementalEncoderStart -
+				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * RIGHT_MOTOR_A_DIRECTION;
 			robotState.rLeg.halfA.rotorVelocity =
-				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
+				((double) deltaPos) * INC_ENC_RAD_PER_TICK * -RIGHT_MOTOR_A_DIRECTION / adjustedTime;
 			break;
 			
 		case MEDULLA_RIGHT_LEG_B_ID:
 			robotState.rLeg.halfB.rotorAngle    =
-				incrementalEncoderStart +
+				incrementalEncoderStart -
 				INC_ENC_RAD_PER_TICK * incrementalEncoderPos * RIGHT_MOTOR_B_DIRECTION;
 			robotState.rLeg.halfB.rotorVelocity =
-				((double) deltaPos) * INC_ENC_RAD_PER_TICK / adjustedTime;
+				((double) deltaPos) * INC_ENC_RAD_PER_TICK * -RIGHT_MOTOR_B_DIRECTION / adjustedTime;
 			break;
 	}
 }
