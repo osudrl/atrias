@@ -1,0 +1,24 @@
+# Set up the component
+import("asc_spring_torque")
+
+# TODO: Implement subcontroller naming
+# TODO: Figure out where/when to call this
+var string controllerName
+loadComponent(controllerName, "ASCSpringTorque")
+
+# Set up subcontrollers
+import("asc_linear_interp")
+var string linearInterp0Name = atrias_cm.getUniqueName("controller", "linearInterp")
+loadComponent(linearInterp0Name, "ASCLinearInterp")
+
+# Connect this controller with its subcontrollers
+addPeer("controller", linearInterp0Name)
+
+# Pass the names of the subcontrollers to the controller
+controller.linearInterp0Name = linearInterp0Name
+
+# Configure the component
+controllerName.configure()
+
+# Start the component
+controllerName.start()
