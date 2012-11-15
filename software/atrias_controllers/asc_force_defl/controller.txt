@@ -1,0 +1,1 @@
+description=Computes the difference between the side A spring deflection and the side B spring deflection needed to give a desired lengthwise leg force.
