@@ -1,0 +1,1 @@
+description=Computes the necessary spring deflection to achieve a given torque.

@@ -1,0 +1,17 @@
+<package>
+  <description brief="asc_torque_defl">
+
+     asc_torque_defl
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_torque_defl</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="asc_linear_interp" />
+
+</package>
