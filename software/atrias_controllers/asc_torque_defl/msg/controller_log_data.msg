@@ -1,2 +1,5 @@
-float64 input
-float64 output
+# Inputs
+float64 torque
+
+# Output
+float64 deflection
