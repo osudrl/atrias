@@ -1,0 +1,17 @@
+<package>
+  <description brief="asc_spring_force">
+
+     asc_spring_force
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_spring_force</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="rtt_rosnode" />
+  <depend package="asc_spring_torque" />
+
+</package>
