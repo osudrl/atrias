@@ -36,6 +36,7 @@ ASCTorqueDefl::ASCTorqueDefl(std::string name):
 
 // Put control code here.
 double ASCTorqueDefl::runController(double exampleInput) {
+		controller_log_data logData;
     out = exampleInput;
 
     // Stuff the msg and push to ROS for logging
