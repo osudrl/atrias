@@ -1,7 +1,8 @@
 # Shut stuff down
-# TODO: Implement subcontroller naming
-# TODO: Figure out where/when to call this
 var string controllerName
 controllerName.stop()
+linearInterp0Name.stop()
 controllerName.cleanup()
+linearInterp0Name.cleanup()
 unloadComponent(controllerName)
+unloadComponent(linearInterp0Name)

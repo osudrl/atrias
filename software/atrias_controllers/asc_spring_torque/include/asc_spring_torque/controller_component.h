@@ -16,8 +16,6 @@
 // C
 #include <stdlib.h>
 
-#include <robot_invariant_defs.h>
-
 // Datatypes
 #include <asc_spring_torque/controller_log_data.h>
 
@@ -25,13 +23,19 @@ using namespace RTT;
 using namespace Orocos;
 using namespace asc_spring_torque;
 
+// The torques versus deflection
+#define NUM_SAMPLES     2
+#define SAMPLES         {0.0, 1.0}
+#define MIN_SAMPLE_DEFL 0.0
+#define MAX_SAMPLE_DEFL 1.0
+
 namespace atrias {
 namespace controller {
 
 class ASCSpringTorque : public TaskContext {
 	private:
 		// Operations
-		double runController(double exampleInput);
+		double getTorque(double deflection);
 		
 		// Subcontroller names
 		std::string linearInterp0Name;
@@ -46,7 +50,6 @@ class ASCSpringTorque : public TaskContext {
 		OperationCaller<double(double)> linearInterp0GetValue;
 		
 		// Logging
-		controller_log_data             logData;
 		OutputPort<controller_log_data> logPort;
 		
 	public:
