@@ -48,7 +48,6 @@ class ASCSpringForce : public TaskContext {
 		OperationCaller<double(double)> springTorque1GetTorque;
 		
 		// Logging
-		controller_log_data logData;
 		OutputPort<controller_log_data> logPort;
 		
 	public:

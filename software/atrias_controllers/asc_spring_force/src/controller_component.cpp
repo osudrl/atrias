@@ -37,6 +37,7 @@ ASCSpringForce::ASCSpringForce(std::string name) :
 
 // Put control code here.
 double ASCSpringForce::getForce(double motorAAngle, double legAAngle, double motorBAngle, double legBAngle) {
+	controller_log_data logData;
 	// Stuff the msg and push to ROS for logging
 	logData.motorAAngle = motorAAngle;
 	logData.legAAngle   = legAAngle;
