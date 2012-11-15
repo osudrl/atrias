@@ -16,14 +16,18 @@
 // C
 #include <stdlib.h>
 
-#include <robot_invariant_defs.h>
-
 // Datatypes
 #include <asc_torque_defl/controller_log_data.h>
 
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_torque_defl;
+
+// The torques versus deflections
+#define NUM_SAMPLES    2
+#define SAMPLES        {0.0, 1.0}
+#define MIN_SAMPLE_TRQ 0.0
+#define MAX_SAMPLE_TRQ 1.0
 
 namespace atrias {
 namespace controller {
