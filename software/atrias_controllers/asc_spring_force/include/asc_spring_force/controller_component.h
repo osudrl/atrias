@@ -16,8 +16,6 @@
 // C
 #include <stdlib.h>
 
-#include <robot_invariant_defs.h>
-
 // Datatypes
 #include <asc_spring_force/controller_log_data.h>
 
@@ -31,7 +29,7 @@ namespace controller {
 class ASCSpringForce : public TaskContext {
 	private:
 		// Operations
-		double getForce(double motorAAngle, double legAAngle, double motorBAngle, double legBAngle);;
+		double getForce(double motorAAngle, double legAAngle, double motorBAngle, double legBAngle);
 		
 		// Subcontroller names
 		std::string springTorque0Name;
