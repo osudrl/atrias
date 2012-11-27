@@ -221,7 +221,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		phi_MsA = phi_rLeg-acos(l_rLeg);																									//keep leg length
 		D3.set(guiIn.d_ls);
 		P3.set(guiIn.p_ls);
-		co.rLeg.motorCurrentA = pd3Controller(phi_MsA,rs.rLeg.halfA.motorAngle,rs.rLeg.halfB.motorVelocity,rs.rLeg.halfA.motorVelocity); 
+		co.rLeg.motorCurrentA = pd3Controller(phi_MsA,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity); 
 		} else {																															 // if pea was reached once
 			sw_stance=true;
 			rightMotorAngle = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
