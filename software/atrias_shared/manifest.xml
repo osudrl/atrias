@@ -10,7 +10,6 @@
   <url>http://ros.org/wiki/atrias_shared</url>
 
 	<depend package="roscpp"/>
-	<depend package="rtt"/>
 
 	<export>
 		<cpp cflags="-std=c++0x -I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" /> />
