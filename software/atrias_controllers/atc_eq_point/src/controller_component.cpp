@@ -218,7 +218,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
-		phi_MsA = phi_rLeg-acos(l_rLeg);																									//keep leg length
+		phi_MsA = rs.rLeg.halfB.motorAngle-2*acos(l_leg_st);																									//keep leg length
 		D3.set(guiIn.d_ls);
 		P3.set(guiIn.p_ls);
 		co.rLeg.motorCurrentA = pd3Controller(phi_MsA,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity); 
@@ -298,7 +298,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				default:
 					break;
 			}
-			phi_MsA = phi_lLeg - acos(l_lLeg);     //keep leg length
+			phi_MsA = rs.lLeg.halfB.motorAngle - 2*acos(l_leg_st);     //keep leg length
 			D0.set(guiIn.d_ls);
 			P0.set(guiIn.p_ls); 
 			co.lLeg.motorCurrentA = pd0Controller(phi_MsA,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);             
