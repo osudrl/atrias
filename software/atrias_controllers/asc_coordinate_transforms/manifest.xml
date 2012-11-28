@@ -5,7 +5,6 @@
     <!--NOTE: set the license and author before you publish this code-->
     <license></license>
     <author>drl</author>
-    <depend package="rtt" />
     <depend package="atrias_shared" />
 
 </package>
