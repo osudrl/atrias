@@ -23,34 +23,20 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 rosbuild_gensrv()
 
-rosbuild_add_boost_directories()
+rosbuild_find_ros_package(atrias)
+if(DEFINED atrias_PACKAGE_PATH)
+	include(${atrias_PACKAGE_PATH}/atrias.cmake)
+else(DEFINED atrias_PACKAGE_PATH)
+	message(ERROR "Could not find package atrias. I'm not going to build anything!")
+endif(DEFINED atrias_PACKAGE_PATH)
 
-include_directories(../../robot_definitions)
+if(ATRIAS_BUILD_GUI)
+	rosbuild_add_boost_directories()
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+	rosbuild_add_executable(atrias_gui src/atrias_gui.cpp)
+	rosbuild_add_executable(atrias_gui src/StatusGui.cpp)
 
-rosbuild_add_executable(atrias_gui src/atrias_gui.cpp)
-rosbuild_add_executable(atrias_gui src/StatusGui.cpp)
-
-#old method for including gtkmm
-#include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
-#pkg_check_modules(GTKMM REQUIRED gtkmm-2.4)
-#include_directories(${GTKMM_INCLUDE_DIRS})
-#link_directories(${GTKMM_LIBRARY_DIRS})
-#target_link_libraries(atrias_gui ${GTKMM_LIBRARIES})
-
-find_package(GTK2 2.4 COMPONENTS gtk gtkmm)
-if (GTK2_FOUND)
-	include_directories(${GTK2_INCLUDE_DIRS})
-	target_link_libraries(atrias_gui ${GTK2_LIBRARIES})
-endif (GTK2_FOUND)
-
-target_link_libraries(atrias_gui controller_metadata)
-target_link_libraries(atrias_gui roslib)
+	target_link_libraries(atrias_gui controller_metadata)
+	target_link_libraries(atrias_gui roslib)
+endif(ATRIAS_BUILD_GUI)
 
