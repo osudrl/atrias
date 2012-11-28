@@ -14,6 +14,9 @@
       <row>
         <col id="0" translatable="yes">PD</col>
       </row>
+      <row>
+        <col id="0" translatable="yes">Asymmetry</col>
+      </row>
     </data>
   </object>
   <object class="GtkVBox" id="controller_tab">
