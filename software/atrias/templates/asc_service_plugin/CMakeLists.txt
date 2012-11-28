@@ -4,55 +4,57 @@
 #
 cmake_minimum_required(VERSION 2.6.3)
 
-#
-# This creates a standard cmake project. You may extend this file with
-# any cmake macro you see fit.
-#
 project(asc_service_plugin)
 
-#
-# Do setup in case of ros package, If ROS_ROOT is set, it is
-# recommended to use RTT/OCL through the ros packages.
-#
-set (ROS_ROOT $ENV{ROS_ROOT} )
-if (ROS_ROOT)
-  include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-  rosbuild_init()
-  rosbuild_find_ros_package( rtt )
-  set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/install )
-endif()
+include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
-# Set the CMAKE_PREFIX_PATH in case you're not using Orocos through ROS
-# for helping these find commands find RTT.
-find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
+# Set the build type.  Options are:
+#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
+#  Debug          : w/ debug symbols, w/o optimization
+#  Release        : w/o debug symbols, w/ optimization
+#  RelWithDebInfo : w/ debug symbols, w/ optimization
+#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
+#set(ROS_BUILD_TYPE RelWithDebInfo)
 
-# Defines the orocos_* cmake macros. See that file for additional
-# documentation.
-include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
+rosbuild_init()
 
-include_directories(../../../robot_definitions)
+#set the default path for built executables to the "bin" directory
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set the default path for built libraries to the "lib" directory
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#
-# Components, types and plugins.
-#
-# The CMake 'target' names are identical to the first argument of the
-# macros below, except for orocos_typegen_headers, where the target is fully
-# controlled by generated code of 'typegen'.
-#
+rosbuild_find_ros_package(atrias)
+if(DEFINED atrias_PACKAGE_PATH)
+	include(${atrias_PACKAGE_PATH}/atrias.cmake)
+else(DEFINED atrias_PACKAGE_PATH)
+	message(ERROR "Could not find package atrias. I'm not going to build anything!")
+endif(DEFINED atrias_PACKAGE_PATH)
 
-#
-# Building a Service:
-#
-# Creates a plugin library libasc_service_plugin-service-<target>.so
-# and installs in the directory lib/orocos/asc_service_plugin/plugins/
-#
-orocos_service(asc_service_plugin-service src/asc_service_plugin-service.cpp) # ...only one service per library !
-#
-# You may add multiple orocos_service statements.
+# Find RTT libraries and build Orocos Component.
+if(ATRIAS_BUILD_CONTROLLERS)
+	#
+	# Components, types and plugins.
+	#
+	# The CMake 'target' names are identical to the first argument of the
+	# macros below, except for orocos_typegen_headers, where the target is fully
+	# controlled by generated code of 'typegen'.
+	#
+
+	#
+	# Building a Service:
+	#
+	# Creates a plugin library libasc_service_plugin-service-<target>.so
+	# and installs in the directory lib/orocos/asc_service_plugin/plugins/
+	#
+	orocos_service(asc_service_plugin-service src/asc_service_plugin-service.cpp) # ...only one service per library !
+	#
+	# You may add multiple orocos_service statements.
 
 
-#
-# Generates and installs our package. Must be the last statement such
-# that it can pick up all above settings.
-#
-orocos_generate_package()
+	#
+	# Generates and installs our package. Must be the last statement such
+	# that it can pick up all above settings.
+	#
+	orocos_generate_package()
+endif(ATRIAS_BUILD_CONTROLLERS)
+

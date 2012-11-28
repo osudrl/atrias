@@ -4,7 +4,6 @@
     </description>
     <license>BSD</license>
     <author>drl</author>
-    <depend package="rtt" />
     <depend package="atrias_shared" />
 
 </package>
