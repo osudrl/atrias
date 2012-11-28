@@ -23,19 +23,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(../../robot_definitions)
 
-rosbuild_find_ros_package( rtt )
-#rosbuild_find_ros_package( ocl )
-set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
-#set( OCL_HINTS HINTS ${ocl_PACKAGE_PATH}/../install )
-
-# Set the CMAKE_PREFIX_PATH in case you're not using Orocos through ROS
-# for helping these find commands find RTT.
-find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
-
-# Defines the orocos_* cmake macros. See that file for additional
-# documentation.
-include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
-
 #common commands for building c++ executables and libraries
 rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 #rosbuild_add_library(gui_publish_timer SHARED src/GuiPublishTimer.cpp)
