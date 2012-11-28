@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/atrias_msgs</url>
 
   <depend package="roscpp" />
+  <depend package="rtt_rosnode" />
 
 </package>
 
