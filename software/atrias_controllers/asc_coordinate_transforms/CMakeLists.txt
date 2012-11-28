@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.6.3)
 
 project(asc_coordinate_transforms)
 
-set (ROS_ROOT $ENV{ROS_ROOT} )
+include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 # Set the build type.  Options are:
 #  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
