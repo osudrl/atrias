@@ -9,6 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/atrias_msgs</url>
 
+  <depend package="roscpp" />
+
 </package>
 
 
