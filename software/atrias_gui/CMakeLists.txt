@@ -36,6 +36,7 @@ if(ATRIAS_BUILD_GUI)
 	rosbuild_add_executable(atrias_gui src/atrias_gui.cpp)
 	rosbuild_add_executable(atrias_gui src/StatusGui.cpp)
 
+	target_link_libraries(atrias_gui ${GTK2_LIBRARIES})
 	target_link_libraries(atrias_gui controller_metadata)
 	target_link_libraries(atrias_gui roslib)
 endif(ATRIAS_BUILD_GUI)
