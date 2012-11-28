@@ -1,7 +1,7 @@
 
 # Specify build targets here.
 set(ATRIAS_BUILD_GUI 1)
-set(ATRIAS_BUILD_CONTROLLERS 0)
+set(ATRIAS_BUILD_CONTROLLERS 1)
 
 
 ### DO NOT EDIT BELOW THIS LINE ###
@@ -35,5 +35,14 @@ if(ATRIAS_BUILD_CONTROLLERS)
 		set(ATRIAS_BUILD_CONTROLLERS 0)
 		message(ERROR "Could not find rtt. Not building controller components.")
 	endif(DEFINED rtt_PACKAGE_PATH)
+
+	# The following removes the need to depend on rtt_rosnode in manifest.xml.
+	rosbuild_find_ros_package(rtt_rosnode)
+	if(DEFINED rtt_rosnode_PACKAGE_PATH)
+		include(${rtt_rosnode_PACKAGE_PATH}/cmake/GenerateRTTtypekit.cmake)
+		include_directories(${rtt_rosnode_PACKAGE_PATH}/src)
+	else(DEFINED rtt_rosnode_PACKAGE_PATH)
+		message(ERROR "Could not find rtt_rosnode. Not generating RTT typekits.")
+	endif(DEFINED rtt_rosnode_PACKAGE_PATH)
 endif(ATRIAS_BUILD_CONTROLLERS)
 
