@@ -6,20 +6,18 @@ MCU = atxmega128a1
 F_CPU = 32000000
 
 # Output file name (without extension)
-OUTPUT = medulla
+OUTPUT = led_test
 OUTPUT_DIR = .
 
 # Source Files
-SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
+SOURCES = main.c
 
 # Medulla_lib stuff
-MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
-#DEBUG_LEVEL = -DDEBUG_LOW
-DEBUG_LEVEL = -DDEBUG_HIGH
+MEDULLA_LIB_DIR = ../../../../medulla/firmware/medulla_lib
 
 # Build Options
 OBJDIR = .
-INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../include ../../robot_definitions
+INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include
 OPT = 2
 
 # AVR Dude options
@@ -28,9 +26,7 @@ PORT = usb
 
 # Create the compiler flags
 CFLAGS  = -DF_CPU=$(F_CPU)UL
-CFLAGS += $(DEBUG_LEVEL)
 CFLAGS += -O$(OPT)
-CFLAGS += -fshort-enums
 CFLAGS += -Wall
 CFLAGS += -include stdint.h
 CFLAGS += $(patsubst %,-I%,$(INCLUDE_DIRS))
@@ -87,5 +83,5 @@ $(shell mkdir $(OBJDIR) 2>/dev/null)
 $(shell mkdir $(OUTPUT_DIR) 2>/dev/null)
 
 # List phony targets
-.PHONY : all clean program
+.PHONY : all clean program size
 
