@@ -187,12 +187,14 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
+        s=0;;
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC)
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
+        s=0;
 	}
 
 
@@ -252,8 +254,11 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		}
 		
 		//*********************************************************************************************************************
-		if (((rs.lLeg.halfA.motorAngle > phiAf_des) || ((rs.lLeg.halfA.motorAngle <= phiAf_des) && (l_lLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to aea
-			if (rs.lLeg.halfA.motorAngle > phiAf_des)
+		//if (((rs.lLeg.halfA.motorAngle > phiAf_des) || ((rs.lLeg.halfA.motorAngle <= phiAf_des) && (l_lLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to ae
+        if ((s < 1) && (!sw_flight)) 
+        {
+			//if (rs.lLeg.halfA.motorAngle > phiAf_des)
+            if (1==1)
 			{
 				switch (guiIn.control)
 				{
@@ -288,14 +293,17 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 					case 2: //flex left leg
 					{
 						//map leg angle sweep of flight leg to 0->1
-						s = 1-(rs.lLeg.halfA.motorAngle-phiAf_des) / (guiIn.pea - guiIn.aea);
-						
+						s = guiIn.l_fl * (1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea));
+                        if (s>1)
+                            s=1;
 						//keep desired leg length -> shorten leg depending on leg position
 						l_swing = sin ( -M_PI/2 + 2 * M_PI * s) * (-amp/2) + guiIn.l_leg_fl + amp/2;
-						leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
+						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
+                        leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
+                        //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
 						P0.set(guiIn.p_lf);
-						co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfB.motorVelocity)-guiIn.l_fl;
+						co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 						D1.set(guiIn.d_lf);
 						P1.set(guiIn.p_lf);
 						co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
@@ -398,8 +406,11 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 		  }
 		
 //*******************************************************************************************************************************************************************************************************************
-		if (((rs.rLeg.halfA.motorAngle > phiAf_des) || ((rs.rLeg.halfA.motorAngle <= phiAf_des) && (l_rLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to aea
-			if (rs.rLeg.halfA.motorAngle >phiAf_des)
+		//if (((rs.rLeg.halfA.motorAngle > phiAf_des) || ((rs.rLeg.halfA.motorAngle <= phiAf_des) && (l_rLeg < guiIn.l_leg_st-0.01)))  && (!sw_flight)) {           // swing leg rotate to aea
+		if ((s<1) && (!sw_flight))
+        {
+        //	if (rs.rLeg.halfA.motorAngle >phiAf_des)
+            if (true)
 			{
 				switch (guiIn.control)
 				{
@@ -434,13 +445,17 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 					case 2: //flex right leg
 					{
 						//map leg angle sweep of flight leg to 0->1
-						s = (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+						s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
+						//keep desired leg length -> shorten leg depending on leg position
+						 if (s>1)
+                            s=1;
 						//keep desired leg length -> shorten leg depending on leg position
 						l_swing = sin ( -M_PI/2 + 2 * M_PI * s) * (-amp/2) + guiIn.l_leg_fl + amp/2;
-						rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
+						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
+                        rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
 						P3.set(guiIn.p_lf);
-						co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfB.motorVelocity)-guiIn.l_fl;
+						co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 						D4.set(guiIn.d_lf);
 						P4.set(guiIn.p_lf);
 						co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
