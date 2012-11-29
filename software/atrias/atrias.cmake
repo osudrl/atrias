@@ -1,6 +1,6 @@
 
 # Specify build targets here.
-set(ATRIAS_BUILD_GUI 1)
+set(ATRIAS_BUILD_GUI 0)
 set(ATRIAS_BUILD_CONTROLLERS 1)
 
 

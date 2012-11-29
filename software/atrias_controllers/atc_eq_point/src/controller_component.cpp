@@ -295,7 +295,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 						leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 						D0.set(guiIn.d_lf);
 						P0.set(guiIn.p_lf);
-						co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)-guiIn.l_fl;
+						co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfB.motorVelocity)-guiIn.l_fl;
 						D1.set(guiIn.d_lf);
 						P1.set(guiIn.p_lf);
 						co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
@@ -440,7 +440,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 						rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
 						P3.set(guiIn.p_lf);
-						co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)-guiIn.l_fl;
+						co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfB.motorVelocity)-guiIn.l_fl;
 						D4.set(guiIn.d_lf);
 						P4.set(guiIn.p_lf);
 						co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
