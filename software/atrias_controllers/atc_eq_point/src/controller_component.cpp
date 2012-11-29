@@ -182,16 +182,16 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
    
   	// state machine
-	if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping
-	\\ if (state == 2) && (s>0.98)
+	if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping 
+        // if (state == 2) && (s>0.98)
 	{
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
         s=0;;
 	}
-	if (state == 1 && phi_lLeg < M_PI/2 && lGC)
-	\\ if (state == 1) && (s>0.98)
+	if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
+        // if (state == 1) && (s>0.98)
 	{
 		state = 2;
 		sw_stance = false;
@@ -236,7 +236,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
                         if (s>1)
                             s=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (2 * M_PI * s) * (-amp) + guiIn.l_leg_fl;
+						l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
