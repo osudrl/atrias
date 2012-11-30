@@ -137,6 +137,7 @@ class ATCEqPoint : public TaskContext {
 		double  l_lLeg;
 		double  phi_lLeg;
 		double  s;
+        double  t;
 		double  l_swing;
 		bool    rGC;
 		bool    lGC;
