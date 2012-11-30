@@ -280,6 +280,7 @@ default:
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
 						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
@@ -341,6 +342,7 @@ default:
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
 						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						//l_swing = sin (M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
