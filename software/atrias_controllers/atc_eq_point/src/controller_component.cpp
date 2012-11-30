@@ -272,11 +272,14 @@ default:
         {
 			
             			//map leg angle sweep of flight leg to 0->1
+						t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 						s = guiIn.l_fl * (1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea));
-                        if (s>1)
+						if (s>1)
                             s=1;
+						if (t>1)
+							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
+						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
@@ -332,10 +335,12 @@ default:
 						s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
                         t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
 						//keep desired leg length -> shorten leg depending on leg position
-						 if (s>1)
+						if (s>1)
                             s=1;
+						if (t>1)
+							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (M_PI * s) * (-amp) + guiIn.l_leg_fl;
+						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
