@@ -6,7 +6,7 @@ MCU = atxmega128a1
 F_CPU = 32000000
 
 # Output file name (without extension)
-OUTPUT = ssi_encoder_test
+OUTPUT = incremental_encoder_test
 OUTPUT_DIR = .
 
 # Source Files
