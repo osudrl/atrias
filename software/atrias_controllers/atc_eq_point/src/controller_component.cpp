@@ -268,7 +268,7 @@ default:
 		}
 		
 	//******************************************************************************************************************************************************************************************************************
-		if ((s < 1) && (!sw_flight)) 
+		if ((t < 1) && (!sw_flight)) 
         {
 			
             			//map leg angle sweep of flight leg to 0->1
@@ -282,6 +282,7 @@ default:
 						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
+						printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
@@ -330,7 +331,7 @@ default:
 		  }
 		
 	//*******************************************************************************************************************************************************************************************************************
-		if ((s<1) && (!sw_flight))
+		if ((t<1) && (!sw_flight))
         {
         				//map leg angle sweep of flight leg to 0->1
 						s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
