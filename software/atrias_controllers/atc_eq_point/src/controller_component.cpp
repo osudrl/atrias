@@ -162,7 +162,8 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				sw_flight = true;
 				sw_stance = true;
 				amp = guiIn.l_leg_st-guiIn.l_leg_fl;
-			}
+                t=1;
+                }
 		}
          co.command = medulla_state_run;
 		return co;
@@ -181,23 +182,62 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
 	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
    
-  	// state machine
+switch (state)
+{
+    case 1:
+        t =1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+        break;
+    case 2:
+        t =1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+        break;
+    default:
+        break;
+}
+
+switch (guiIn.control)
+{
+case 1:
 	if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping 
-        // if (state == 2) && (s>0.98)
 	{
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
-        s=0;;
+        s=0;
+        t=0;
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
-        // if (state == 1) && (s>0.98)
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
         s=0;
+        t=0;
 	}
+	break;
+case 2:
+  	// state machine
+	//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping 
+	    if ((state == 2) && (t>0.99))
+	{
+		state = 1;
+		sw_stance = false;
+		sw_flight = false;
+        s=0;
+        t=0;
+	}
+	//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
+    if ((state == 1) && (t>0.99))
+	{
+		state = 2;
+		sw_stance = false;
+		sw_flight = false;
+        s=0;
+        t=0;
+	}
+	break;
+default:
+	break;
+}
 
 
 // command legs ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -290,6 +330,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
         {
         				//map leg angle sweep of flight leg to 0->1
 						s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
+                        t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
 						//keep desired leg length -> shorten leg depending on leg position
 						 if (s>1)
                             s=1;
