@@ -21,7 +21,7 @@ int main(void) {
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
 	
-	printf("Medulla Limit Swtich test.....\n> ");
+	printf("Medulla ADC test.....\n> ");
 
 	uint16_t adcb0,adcb1,adcb2,adcb3,adcb4,adcb5,adcb6,adcb7;
 	uint16_t adca1,adca2,adca3,adca4,adca5,adca6,adca7;

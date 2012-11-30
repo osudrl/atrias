@@ -21,7 +21,7 @@ int main(void) {
 	uart_port_t debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, outbuffer, 128, inbuffer, 128);
 	uart_connect_port(&debug_port, true);
 	
-	printf("Medulla SSI encoder test.....\n> ");
+	printf("Menial SSI encoder test.....\n> ");
 
 	spi_port_t spi_c = spi_init_port(&PORTC, &SPIC, spi_div32, false);
 	spi_port_t spi_d = spi_init_port(&PORTD, &SPID, spi_div32, false);
