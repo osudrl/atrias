@@ -2,11 +2,11 @@
 #define __ASC_FORCE_DEFL_H__
 
 /*! \file controller_component.h
- *  \author Andrew Peekema
+ *  \author Ryan Van Why
  *  \brief Orocos Component header for the asc_force_defl subcontroller.
  */
 
-// Orocos 
+// Orocos
 #include <rtt/os/main.h>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
@@ -29,38 +29,35 @@ namespace atrias {
 namespace controller {
 
 class ASCForceDefl : public TaskContext {
-private:
-    // Operations
-    double runController(double exampleInput);
-
-    double out;
-
-    // Subcontroller names
-    std::string torqueDefl0Name;
-
-    // Subcontroller components
-    TaskContext *torqueDefl0;
-
-    // Service properties
-    Property<std::string> linearInterp0Name0;
-
-    // Subcontroller operations
-    OperationCaller<double(double)> torqueDefl0GetDefl;
-
-    // Logging
-    controller_log_data logData;
-    OutputPort<controller_log_data> logPort;
-
-public:
-    // Constructor
-    ASCForceDefl(std::string name);
-
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
+	private:
+		// Operations
+		double getDeflectionDiff(double tgtForce);
+		
+		// Subcontroller names
+		std::string torqueDefl0Name;
+		
+		// Subcontroller components
+		TaskContext *torqueDefl0;
+		
+		// Service properties
+		Property<std::string> linearInterp0Name0;
+		
+		// Subcontroller operations
+		OperationCaller<double(double)> torqueDefl0GetDefl;
+		
+		// Logging
+		OutputPort<controller_log_data> logPort;
+		
+	public:
+		// Constructor
+		ASCForceDefl(std::string name);
+		
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
 };
 
 }
