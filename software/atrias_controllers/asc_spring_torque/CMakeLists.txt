@@ -41,3 +41,10 @@ if(ATRIAS_BUILD_CONTROLLERS)
 	ros_generate_rtt_typekit(asc_spring_torque)
 endif(ATRIAS_BUILD_CONTROLLERS)
 
+# Run our Python data processing script to generate the header.
+add_custom_command (
+	OUTPUT  processed_data.h
+	COMMAND ${PROJECT_SOURCE_DIR}/src/parse_data.py
+	ARGS    ${PROJECT_SOURCE_DIR}/springdata.txt ${PROJECT_BINARY_DIR}/processed_data.h
+)
+set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
