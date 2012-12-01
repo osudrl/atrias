@@ -1,0 +1,1 @@
+description=This controller decodes the force from the toe sensor to determine if the toe is on the ground.

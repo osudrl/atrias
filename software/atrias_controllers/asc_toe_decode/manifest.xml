@@ -1,0 +1,15 @@
+<package>
+  <description brief="asc_toe_decode">
+
+     asc_toe_decode
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_toe_decode</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+
+</package>
