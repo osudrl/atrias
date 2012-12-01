@@ -35,16 +35,23 @@ ASCForceDefl::ASCForceDefl(std::string name) :
 }
 
 // Put control code here.
-double ASCForceDefl::getDeflectionDiff(double force) {
+double ASCForceDefl::getDeflectionDiff(double force, double legAngleA, double legAngleB) {
 	controller_log_data logData;
 
-	// Stuff the msg and push to ROS for logging
-	logData.input = exampleInput;
-	logData.output = out;
+	// Stuff the msg
+	logData.input = force;
+
+	// Calculate the actual torque differential needed.
+	// This does not entirely compensate for non-linearities in the springs --
+	// it returns a perfect output if symmetrical spring deflections are desired
+	// or the springs are perfectly linear.
+	logData.output = 2.0 * torqueDefl0GetDefl(force * sin((legAngleB - legAngleA) / 2.0) / 4.0);
+
+	// Push the message to ROS for logging
 	logPort.write(logData);
 
 	// Output for the parent controller
-	return out;
+	return logData.output;
 }
 
 bool ASCForceDefl::configureHook() {
@@ -52,9 +59,6 @@ bool ASCForceDefl::configureHook() {
 	torqueDefl0 = this->getPeer(torqueDefl0Name);
 	if (torqueDefl0)
 		torqueDefl0GetDefl = torqueDefl0->provides("torqueDeflection")->getOperation("getDefl");
-
-	// Get references to subcontroller component properties
-	linearInterp0Name0 = torqueDefl0->properties()->getProperty("linearInterp0Name");
 
 	log(Info) << "[ASCForceDefl] configured!" << endlog();
 	return true;

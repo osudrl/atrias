@@ -31,16 +31,13 @@ namespace controller {
 class ASCForceDefl : public TaskContext {
 	private:
 		// Operations
-		double getDeflectionDiff(double tgtForce);
+		double getDeflectionDiff(double tgtForce, double legAngleA, double legAngleB);
 		
 		// Subcontroller names
 		std::string torqueDefl0Name;
 		
 		// Subcontroller components
 		TaskContext *torqueDefl0;
-		
-		// Service properties
-		Property<std::string> linearInterp0Name0;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> torqueDefl0GetDefl;
