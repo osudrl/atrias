@@ -46,9 +46,9 @@ double ASCSpringForce::getForce(double motorAAngle, double legAAngle, double mot
 	
 	// Compensates for changing leg geometry affecting torque->force relation
 	double csc_theta = 1.0 / sin((legBAngle - legAAngle) / 2.0);
-	logData.force       = 2.0 * csc_theta *
-	                      (springTorque0GetTorque(motorAAngle - legAAngle) -
-					   springTorque1GetTorque(motorBAngle - legBAngle));
+	logData.force    = 2.0 * csc_theta *
+	                   (springTorque0GetTorque(motorAAngle - legAAngle) -
+	                    springTorque1GetTorque(motorBAngle - legBAngle));
 
 	logPort.write(logData);
 
