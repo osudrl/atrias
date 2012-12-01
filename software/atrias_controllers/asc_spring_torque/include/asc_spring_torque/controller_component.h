@@ -36,6 +36,7 @@ class ASCSpringTorque : public TaskContext {
 	private:
 		// Operations
 		double getTorque(double deflection);
+		double getDeflection(double Torque);
 		
 		// Subcontroller names
 		std::string linearInterp0Name;

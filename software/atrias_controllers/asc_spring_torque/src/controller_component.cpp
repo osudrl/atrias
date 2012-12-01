@@ -15,6 +15,9 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 	this->provides("springTorque")
 	->addOperation("getTorque", &ASCSpringTorque::getTorque, this, ClientThread)
 	.doc("Calculates the torque from spring deflection");
+	this->provides("springTorque")
+	->addOperation("getDeflection", &ASCSpringTorque::getDeflection, this, ClientThread)
+	.doc("Calculates the deflection needed to achieve a given torque.");
 
 	// Add properties
 	this->addProperty("linearInterp0Name", linearInterp0Name);
@@ -49,6 +52,10 @@ double ASCSpringTorque::getTorque(double deflection) {
 
 	// Output for the parent controller
 	return logData.torque;
+}
+
+double ASCSpringTorque::getDeflection(double torque) {
+	return 0.0;
 }
 
 bool ASCSpringTorque::configureHook() {
