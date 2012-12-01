@@ -12,9 +12,9 @@ ASCToeDecode::ASCToeDecode(std::string name) :
 	RTT::TaskContext(name),
 	logPort(name + "_log")
 {
-	this->provides("exampleService")
+	this->provides("toeDecode")
 	->addOperation("runController", &ASCToeDecode::runController, this, ClientThread)
-	.doc("Run the controller.");
+	.doc("Updates the internal state and returns whether or not the toe's on the ground.");
 
 	// Logging
 	// Create a port
@@ -32,16 +32,28 @@ ASCToeDecode::ASCToeDecode(std::string name) :
 }
 
 // Put control code here.
-double ASCToeDecode::runController(double exampleInput) {
-	out = exampleInput;
+bool ASCToeDecode::runController(uint16_t force) {
+	controller_log_data logData;
 
 	// Stuff the msg and push to ROS for logging
-	logData.input = exampleInput;
-	logData.output = out;
+	logData.force = force;
+	logData.filtered_val = filtered_force;
+
+	// Note: A higher raw force reading means a lower actual force.
+	if (onGround && force > filtered_force + THRESHOLD) {
+		onGround = false;
+	} else if (!onGround && force < filtered_force - THRESHOLD) {
+		onGround = true;
+	}
+
+	logData.output = onGround;
 	logPort.write(logData);
 
+	// Update the filter
+	filtered_force += FILTER_GAIN * (force - filtered_force);
+
 	// Output for the parent controller
-	return out;
+	return onGround;
 }
 
 bool ASCToeDecode::configureHook() {

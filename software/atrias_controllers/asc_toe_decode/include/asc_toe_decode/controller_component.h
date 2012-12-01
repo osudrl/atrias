@@ -25,18 +25,22 @@ using namespace RTT;
 using namespace Orocos;
 using namespace asc_toe_decode;
 
+// The filter constant and detection threshold
+#define FILTER_GAIN 0.02
+#define THRESHOLD   1000.0
+
 namespace atrias {
 namespace controller {
 
 class ASCToeDecode : public TaskContext {
 	private:
 		// Operations
-		double runController(double exampleInput);
+		bool runController(uint16_t force);
 		
-		double out;
+		double filtered_force;
+		bool   onGround;
 		
 		// Logging
-		controller_log_data logData;
 		OutputPort<controller_log_data> logPort;
 		
 	public:

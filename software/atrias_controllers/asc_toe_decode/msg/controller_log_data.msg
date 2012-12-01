@@ -1,2 +1,3 @@
-float64 input
-float64 output
+uint16  force
+float64 filtered_val
+bool    output
