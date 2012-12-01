@@ -58,7 +58,7 @@ bool ASCForceDefl::configureHook() {
 	// Connect to the subcontrollers
 	torqueDefl0 = this->getPeer(torqueDefl0Name);
 	if (torqueDefl0)
-		torqueDefl0GetDefl = torqueDefl0->provides("torqueDeflection")->getOperation("getDefl");
+		torqueDefl0GetDefl = torqueDefl0->provides("springTorque")->getOperation("getDeflection");
 
 	log(Info) << "[ASCForceDefl] configured!" << endlog();
 	return true;
