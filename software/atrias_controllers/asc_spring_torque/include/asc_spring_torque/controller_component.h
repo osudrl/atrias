@@ -19,15 +19,12 @@
 // Datatypes
 #include <asc_spring_torque/controller_log_data.h>
 
+// Actual data.
+#include "processed_data.h"
+
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_spring_torque;
-
-// The torques versus deflection
-#define NUM_SAMPLES     2
-#define SAMPLES         {0.0, 1.0}
-#define MIN_SAMPLE_DEFL 0.0
-#define MAX_SAMPLE_DEFL 1.0
 
 namespace atrias {
 namespace controller {
@@ -39,16 +36,20 @@ class ASCSpringTorque : public TaskContext {
 		double getDeflection(double Torque);
 		
 		// Subcontroller names
+		// This is the deflection->torque interpolator
 		std::string linearInterp0Name;
+		// This is the torque->deflection interpolator
+		std::string linearInterp1Name;
 		
 		// Subcontroller components
 		TaskContext *linearInterp0;
-		
-		// Service properties
+		TaskContext *linearInterp1;
 		
 		// Subcontroller operations
 		OperationCaller<void(double samples[], int, double, double)> linearInterp0InputPoints;
 		OperationCaller<double(double)> linearInterp0GetValue;
+		OperationCaller<void(double samples[], int, double, double)> linearInterp1InputPoints;
+		OperationCaller<double(double)> linearInterp1GetValue;
 		
 		// Logging
 		OutputPort<controller_log_data> logPort;

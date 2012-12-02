@@ -21,6 +21,7 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 
 	// Add properties
 	this->addProperty("linearInterp0Name", linearInterp0Name);
+	this->addProperty("linearInterp1Name", linearInterp1Name);
 
 	// Logging
 	// Create a port
@@ -66,8 +67,18 @@ bool ASCSpringTorque::configureHook() {
 		linearInterp0GetValue    = linearInterp0->provides("interp")->getOperation("getValue");
 
 		// Input the actual data.
-		double torques[NUM_SAMPLES] = SAMPLES;
-		linearInterp0InputPoints(torques, NUM_SAMPLES, MIN_SAMPLE_DEFL, MAX_SAMPLE_DEFL);
+		double torques[NUM_TORQUE_SAMPLES] = TORQUE_SAMPLES;
+		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION);
+	}
+
+	linearInterp1 = this->getPeer(linearInterp1Name);
+	if (linearInterp1) {
+		linearInterp1InputPoints = linearInterp1->provides("interp")->getOperation("inputPoints");
+		linearInterp1GetValue    = linearInterp0->provides("interp")->getOperation("inputPoints");
+
+		// Input our data.
+		double deflections[NUM_DEFL_SAMPLES] = DEFL_SAMPLES;
+		linearInterp1InputPoints(deflections, NUM_DEFL_SAMPLES, 0.0, MAX_TORQUE);
 	}
 
 	log(Info) << "[ASCSpringTorque] configured!" << endlog();

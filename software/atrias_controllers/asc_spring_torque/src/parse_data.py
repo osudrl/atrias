@@ -21,14 +21,14 @@ outfile.write('''
 
 ''')
 
-outfile.write('#DEFINE NUM_TORQUE_SAMPLES 2\n')
+outfile.write('#define NUM_TORQUE_SAMPLES 2\n')
 # The indexes pull the exact value we need from the regression function's output
-outfile.write('#DEFINE TORQUE_SAMPLES     {0.0, ' + str(lstsq(deflections, torques)[0][0][0] * max(deflections)[0]) + '}\n')
-outfile.write('#DEFINE MAX_DEFLECTION     ' + str(max(deflections)[0]) + '\n')
+outfile.write('#define TORQUE_SAMPLES     {0.0, ' + str(lstsq(deflections, torques)[0][0][0] * max(deflections)[0]) + '}\n')
+outfile.write('#define MAX_DEFLECTION     ' + str(max(deflections)[0]) + '\n')
 
-outfile.write('#DEFINE NUM_DEFL_SAMPLES   2\n')
-outfile.write('#DEFINE DEFL_SAMPLES       {0.0, ' + str(lstsq(torques, deflections)[0][0][0] * max(torques)[0])     + '}\n')
-outfile.write('#DEFINE MAX_TORQUE         ' + str(max(torques)[0]) + '\n')
+outfile.write('#define NUM_DEFL_SAMPLES   2\n')
+outfile.write('#define DEFL_SAMPLES       {0.0, ' + str(lstsq(torques, deflections)[0][0][0] * max(torques)[0])     + '}\n')
+outfile.write('#define MAX_TORQUE         ' + str(max(torques)[0]) + '\n')
 
 outfile.write('''
 #endif // PROCESSEDDATA_H

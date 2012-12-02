@@ -55,3 +55,5 @@ add_custom_command (
 	DEPENDS ${PROJECT_BINARY_DIR}/testerdata.txt
 )
 set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
+
+include_directories(build/)
