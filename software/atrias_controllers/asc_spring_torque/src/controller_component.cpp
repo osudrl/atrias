@@ -47,7 +47,7 @@ double ASCSpringTorque::getTorque(double deflection) {
 	double norm = fabs(deflection);
 	double sign = (deflection >= 0.0) ? 1.0 : -1.0;
 
-	logData.torque     = sign * linearInterp0GetValue(norm);
+	logData.torque = sign * linearInterp0GetValue(norm);
 
 	logPort.write(logData);
 
@@ -56,7 +56,18 @@ double ASCSpringTorque::getTorque(double deflection) {
 }
 
 double ASCSpringTorque::getDeflection(double torque) {
-	return 0.0;
+	controller_log_data logData;
+
+	logData.torque = torque;
+
+	double norm = fabs(torque);
+	double sign = (torque >= 0.0) ? 1.0 : -1.0;
+
+	logData.deflection = sign * linearInterp1GetValue(norm);
+
+	logPort.write(logData);
+
+	return logData.deflection;
 }
 
 bool ASCSpringTorque::configureHook() {
