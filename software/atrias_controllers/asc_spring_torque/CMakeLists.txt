@@ -43,8 +43,15 @@ endif(ATRIAS_BUILD_CONTROLLERS)
 
 # Run our Python data processing script to generate the header.
 add_custom_command (
-	OUTPUT  processed_data.h
+	OUTPUT  ${PROJECT_BINARY_DIR}/testerdata.txt
+	COMMAND cat
+	ARGS    ${PROJECT_SOURCE_DIR}/data/* >${PROJECT_BINARY_DIR}/testerdata.txt
+)
+
+add_custom_command (
+	OUTPUT  ${PROJECT_BINARY_DIR}/processed_data.h
 	COMMAND ${PROJECT_SOURCE_DIR}/src/parse_data.py
-	ARGS    ${PROJECT_SOURCE_DIR}/data/ ${PROJECT_BINARY_DIR}/processed_data.h
+	ARGS    ${PROJECT_BINARY_DIR}/testerdata.txt ${PROJECT_BINARY_DIR}/processed_data.h
+	DEPENDS ${PROJECT_BINARY_DIR}/testerdata.txt
 )
 set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
