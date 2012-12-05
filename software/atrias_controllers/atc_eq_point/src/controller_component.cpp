@@ -161,7 +161,6 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 				state = 2;
 				sw_flight = true;
 				sw_stance = true;
-				amp = guiIn.l_leg_st-guiIn.l_leg_fl;
                 t=1;
                 }
 		}
@@ -175,6 +174,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
 	// calculate leg angle and length
 
+    amp=guiIn.l_leg_st-guiIn.l_leg_fl;
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		//right leg angle
 	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		//left leg angle
