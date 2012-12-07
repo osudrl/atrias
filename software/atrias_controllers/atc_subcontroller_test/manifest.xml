@@ -1,0 +1,16 @@
+<package>
+  <description brief="atc_subcontroller_test">
+
+     atc_subcontroller_test
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_subcontroller_test</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="asc_pd" />
+
+</package>
