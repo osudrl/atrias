@@ -40,24 +40,26 @@ ATCSubcontrollerTest::ATCSubcontrollerTest(std::string name) :
 
 atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::robot_state rs) {
 	atrias_msgs::controller_output co;
-		
-	co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-	co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-	co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
-
-	// end control code //
-
-	// Command a run state
 	co.command = medulla_state_run;
 
-	// Let the GUI know the controller run state
-	guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
+	// Let the GUI know the controller output
+	guiOut.out1 = 1.0;
+	guiOut.out2 = 0.1;
+	guiOut.out3 = 3.14;
+	guiOut.out4 = 4.21;
+	guiOut.out5 = 6.28;
+	guiOut.out6 = 2.718;
+	guiOut.out7 = 1.57;
+	guiOut.out8 = 20;
+	guiOut.out9 = 10.57;
+
 	// Send data to the GUI
 	if (pubTimer->readyToSend())
 		guiDataOut.write(guiOut);
 
-	// Stuff the msg and push to ROS for logging
-	logData.desiredState = 0.0;
+	logData.input  = guiIn;
+	logData.output = guiOut;
+
 	logPort.write(logData);
 
 	// Output for RTOps

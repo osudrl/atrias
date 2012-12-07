@@ -1,3 +1,9 @@
-float64 des_motor_torque_A
-float64 des_motor_torque_B
-float64 des_motor_torque_hip
+float64 in1
+float64 in2
+float64 in3
+float64 in4
+float64 in5
+float64 in6
+float64 in7
+float64 in8
+float64 in9

@@ -1,1 +1,9 @@
-bool isEnabled
+float64 out1
+float64 out2
+float64 out3
+float64 out4
+float64 out5
+float64 out6
+float64 out7
+float64 out8
+float64 out9

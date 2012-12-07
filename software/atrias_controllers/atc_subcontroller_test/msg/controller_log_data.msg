@@ -1,1 +1,2 @@
-float64 desiredState
+controller_input input
+controller_status output

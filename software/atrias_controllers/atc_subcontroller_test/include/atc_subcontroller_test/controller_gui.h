@@ -2,7 +2,7 @@
  * controller_gui.h
  *
  *  Created on: May 5, 2012
- *      Author: Michael Anderson
+ *      Author: Ryan Van Why
  */
 
 #ifndef CONTROLLER_GUI_H_
@@ -14,6 +14,9 @@
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
 
+#include <string>
+#include <boost/lexical_cast.hpp>
+
 // ROS
 ros::NodeHandle nh;
 ros::Subscriber sub;
@@ -24,19 +27,24 @@ atc_subcontroller_test::controller_input controllerDataOut;
 atc_subcontroller_test::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *torque_A_hscale,
-        *torque_B_hscale,
-        *torque_hip_hscale;
-
-Gtk::CheckButton *set_position_checkbutton;
-
-// Parameters
-//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
-//     arise when both C and python nodes access the same parameter. See:
-//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double torque_A_param;
-double torque_B_param;
-double torque_hip_param;
+Gtk::Entry *in1,
+          *in2,
+		*in3,
+		*in4,
+		*in5,
+		*in6,
+		*in7,
+		*in8,
+		*in9,
+		*out1,
+		*out2,
+		*out3,
+		*out4,
+		*out5,
+		*out6,
+		*out7,
+		*out8,
+		*out9;
 
 void controllerCallback(const atc_subcontroller_test::controller_status &status);
 
