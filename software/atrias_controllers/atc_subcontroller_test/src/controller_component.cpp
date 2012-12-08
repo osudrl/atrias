@@ -18,6 +18,9 @@ ATCSubcontrollerTest::ATCSubcontrollerTest(std::string name) :
 	->addOperation("runController", &ATCSubcontrollerTest::runController, this, ClientThread)
 	.doc("Get robot_state from RTOps and return controller output.");
 
+	this->addProperty("subcontrollerName", subcontrollerName)
+		.doc("The subcontroller's name.");
+
 	// For the GUI
 	addEventPort(guiDataIn);
 	addPort(guiDataOut);
@@ -42,16 +45,10 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 	atrias_msgs::controller_output co;
 	co.command = medulla_state_run;
 
+	subcontrollerProperty.set(guiIn.in1);
+
 	// Let the GUI know the controller output
-	guiOut.out1 = 1.0;
-	guiOut.out2 = 0.1;
-	guiOut.out3 = 3.14;
-	guiOut.out4 = 4.21;
-	guiOut.out5 = 6.28;
-	guiOut.out6 = 2.718;
-	guiOut.out7 = 1.57;
-	guiOut.out8 = 20;
-	guiOut.out9 = 10.57;
+	guiOut.out1 = subcontrollerOperationCaller(guiIn.in3, guiIn.in4, guiIn.in5, guiIn.in6);
 
 	// Send data to the GUI
 	if (pubTimer->readyToSend())
@@ -68,6 +65,11 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 
 // Don't put control code below here!
 bool ATCSubcontrollerTest::configureHook() {
+	subcontroller = this->getPeer(subcontrollerName);
+	if (subcontroller) {
+		subcontrollerOperationCaller = subcontroller->provides("pd")->getOperation("runController");
+		subcontrollerProperty = subcontroller->properties()->getProperty("P");
+	}
 	log(Info) << "[ATCMT] configured!" << endlog();
 	return true;
 }

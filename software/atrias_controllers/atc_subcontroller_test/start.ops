@@ -5,8 +5,14 @@ atrias_cm.resetControllerNames()
 import("atc_subcontroller_test")
 loadComponent("controller", "ATCSubcontrollerTest")
 
+controller.subcontrollerName = atrias_cm.getUniqueName("controller", "subcontroller")
+
+# This needs tweaked for each subcontroller
+loadComponent(controller.subcontrollerName, "ASCPD")
+
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
+connectPeers("controller", controller.subcontrollerName)
 
 # Set up the gui connection
 var ConnPolicy gui_policy
@@ -16,6 +22,9 @@ stream("controller.gui_data_out", gui_policy)
 
 gui_policy.name_id = "/atc_subcontroller_test_input"
 stream("controller.gui_data_in", gui_policy)
+
+gui_policy.name_id = "/subcontroller"
+stream(controller.subcontrollerName + ".logOutput", gui_policy)
 
 # Configure the component
 controller.configure()

@@ -45,6 +45,12 @@ class ATCSubcontrollerTest : public TaskContext {
 		// Logging
 		controller_log_data logData;
 		OutputPort<controller_log_data>  logPort;
+
+		// The subcontroller -- will need modification.
+		std::string      subcontrollerName;
+		TaskContext*     subcontroller;
+		Property<double> subcontrollerProperty;
+		OperationCaller<double(double, double, double, double)> subcontrollerOperationCaller;
 		
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;
