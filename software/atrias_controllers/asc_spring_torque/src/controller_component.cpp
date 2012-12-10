@@ -79,17 +79,17 @@ bool ASCSpringTorque::configureHook() {
 
 		// Input the actual data.
 		double torques[NUM_TORQUE_SAMPLES] = TORQUE_SAMPLES;
-		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION);
+		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION, true);
 	}
 
 	linearInterp1 = this->getPeer(linearInterp1Name);
 	if (linearInterp1) {
 		linearInterp1InputPoints = linearInterp1->provides("interp")->getOperation("inputPoints");
-		linearInterp1GetValue    = linearInterp0->provides("interp")->getOperation("inputPoints");
+		linearInterp1GetValue    = linearInterp1->provides("interp")->getOperation("getValue");
 
 		// Input our data.
 		double deflections[NUM_DEFL_SAMPLES] = DEFL_SAMPLES;
-		linearInterp1InputPoints(deflections, NUM_DEFL_SAMPLES, 0.0, MAX_TORQUE);
+		linearInterp1InputPoints(deflections, NUM_DEFL_SAMPLES, 0.0, MAX_TORQUE, true);
 	}
 
 	log(Info) << "[ASCSpringTorque] configured!" << endlog();

@@ -31,6 +31,8 @@ ASCLinearInterp::ASCLinearInterp(std::string name) :
 	// Construct the stream between the port and ROS topic
 	logPort.createStream(policy);
 
+	valuesOnHeap = nullptr;
+
 	log(Info) << "[ASCLinearInterp] Constructed!" << endlog();
 }
 
@@ -61,11 +63,23 @@ double ASCLinearInterp::runController(double input) {
 	return out;
 }
 
-void ASCLinearInterp::inputPoints(double samples[], int numSamples, double start, double end) {
-	values    = samples;
-	numValues = numSamples;
-	a         = (start < end) ? start : end;
-	b         = (start > end) ? start : end;
+// This allows the user to input data for interpolation. If copy is true, then this function is NOT
+// realtime-safe (it performs an allocation). If copy is false, than the samples array must be available
+// whenever the getValue operation is called.
+void ASCLinearInterp::inputPoints(double samples[], int numSamples, double start, double end, bool copy) {
+	if (copy) {
+		delete[](valuesOnHeap);
+
+		values = valuesOnHeap = new double[numSamples];
+		for (int i = 0; i < numSamples; i++) {
+			values[i] = samples[i];
+		}
+	} else {
+		values = samples;
+	}
+	numValues    = numSamples;
+	a            = (start < end) ? start : end;
+	b            = (start > end) ? start : end;
 }
 
 bool ASCLinearInterp::configureHook() {
@@ -86,6 +100,8 @@ void ASCLinearInterp::stopHook() {
 }
 
 void ASCLinearInterp::cleanupHook() {
+	delete[](valuesOnHeap);
+	valuesOnHeap = nullptr;
 	log(Info) << "[ASCLinearInterp] cleaned up!" << endlog();
 }
 

@@ -32,6 +32,9 @@ class ASCLinearInterp : public TaskContext {
 	private:
 		// The data points.
 		double *values;
+
+		// This points to any values we've dynamically allocated.
+		double *valuesOnHeap;
 		int    numValues;
 
 		// The interval in which the interpolation occurs.
@@ -46,8 +49,10 @@ class ASCLinearInterp : public TaskContext {
 		  * @param numSamples The number of samples in \a values[]
 		  * @param start      The start of the interval.
 		  * @param end        The end of the interval.
+		  * @param copy       Whether or not to make a copy of the data -- will break realtime,
+		  *                   but is necessary if samples[] won't be available later on.
 		  */
-		void   inputPoints(double samples[], int numSamples, double start, double end);
+		void   inputPoints(double samples[], int numSamples, double start, double end, bool copy);
 		
 		// Logging
 		OutputPort<controller_log_data> logPort;

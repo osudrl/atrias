@@ -46,9 +46,9 @@ class ASCSpringTorque : public TaskContext {
 		TaskContext *linearInterp1;
 		
 		// Subcontroller operations
-		OperationCaller<void(double samples[], int, double, double)> linearInterp0InputPoints;
+		OperationCaller<void(double samples[], int, double, double, bool)> linearInterp0InputPoints;
 		OperationCaller<double(double)> linearInterp0GetValue;
-		OperationCaller<void(double samples[], int, double, double)> linearInterp1InputPoints;
+		OperationCaller<void(double samples[], int, double, double, bool)> linearInterp1InputPoints;
 		OperationCaller<double(double)> linearInterp1GetValue;
 		
 		// Logging
