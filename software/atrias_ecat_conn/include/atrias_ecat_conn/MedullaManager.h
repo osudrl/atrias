@@ -117,9 +117,15 @@ class MedullaManager {
 		void processTransmitData(atrias_msgs::controller_output& controller_output);
 		
 		/** @brief Sets the timestamp in robot state.
-		  * @param time The current time in nanoseconds.
+		  * @param time The sensor measurement time in nanoseconds (for the controllers).
+          * @param receive_time The actual time of reception, in nanoseconds.
 		  */
-		void setTime(RTT::os::TimeService::nsecs time);
+		void setTime(RTT::os::TimeService::nsecs time, RTT::os::TimeService::nsecs receive_time);
+
+		/** @brief Sets the transmit time in robot state.
+		  * @param transmit_time The actual transmit time (from the DC).
+		  */
+		void setTransmitTime(RTT::os::TimeService::nsecs transmit_time);
 		
 		/** @brief Allows access to the robot state.
 		  * @return The robot state.
@@ -137,3 +143,5 @@ class MedullaManager {
 }
 
 #endif // MEDULLAMANAGER_H
+
+// vim: set noexpandtab:

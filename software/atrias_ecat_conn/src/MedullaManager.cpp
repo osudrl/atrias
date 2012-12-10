@@ -232,9 +232,14 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegHip->processTransmitData(controller_output);
 }
 
-void MedullaManager::setTime(RTT::os::TimeService::nsecs time) {
+void MedullaManager::setTime(RTT::os::TimeService::nsecs time, RTT::os::TimeService::nsecs receive_time) {
 	robotState.header.stamp.nsec = time % SECOND_IN_NANOSECONDS;
 	robotState.header.stamp.sec  = (time - robotState.header.stamp.nsec) / SECOND_IN_NANOSECONDS;
+    robotState.receiveDCTime     = receive_time;
+}
+
+void MedullaManager::setTransmitTime(RTT::os::TimeService::nsecs transmit_time) {
+    robotState.lastTransmitDCTime = transmit_time;
 }
 
 atrias_msgs::robot_state MedullaManager::getRobotState() {
@@ -248,3 +253,5 @@ void MedullaManager::setRobotConfiguration(rtOps::RobotConfiguration new_robot_c
 }
 
 }
+
+// vim: set noexpandtab:

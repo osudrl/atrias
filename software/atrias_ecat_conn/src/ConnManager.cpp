@@ -112,7 +112,8 @@ void ConnManager::loop() {
 		}
 		eCatConn->getMedullaManager()->setTime(
 			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
-			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_PERIOD_NS);
+			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_PERIOD_NS,
+            eCatTime);
 		
 		midCycle = true;
 		
@@ -128,7 +129,7 @@ void ConnManager::loop() {
 
 		RTT::os::TimeService::nsecs cur_time =
 			RTT::os::TimeService::Instance()->getNSecs();
-	
+
 		RTT::os::TimeService::nsecs sleepTime =
 			(targetTime + dcCorrection - cur_time)
 			% CONTROLLER_LOOP_PERIOD_NS;
@@ -138,7 +139,7 @@ void ConnManager::loop() {
 			      % CONTROLLER_LOOP_PERIOD_NS;
 
 		targetTime = sleepTime + cur_time;
-		
+
 		// The time to sleep. Sleeptime is guaranteed to be less than
 		// SECOND_IN_NANOSECONDS, so this is correct.
 		timespec delay = {
@@ -151,11 +152,16 @@ void ConnManager::loop() {
 
 void ConnManager::sendControllerOutput(
                   atrias_msgs::controller_output& controller_output) {
-	
-	RTT::os::MutexLock lock(eCatLock);
-	eCatConn->getMedullaManager()->processTransmitData(controller_output);
-	cycleECat();
-	midCycle = false;
+
+	RTT::os::TimeService::nsecs eCatTime;
+	{
+		RTT::os::MutexLock lock(eCatLock);
+		eCatConn->getMedullaManager()->processTransmitData(controller_output);
+		cycleECat();
+		midCycle = false;
+		eCatTime = ec_DCtime;
+	}
+	eCatConn->getMedullaManager()->setTransmitTime(eCatTime);
 }
 
 bool ConnManager::breakLoop() {
@@ -166,3 +172,5 @@ bool ConnManager::breakLoop() {
 }
 
 }
+
+// vim: set noexpandtab:
