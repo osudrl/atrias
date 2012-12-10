@@ -7,7 +7,7 @@ RTT::Service::shared_ptr SubController::getService(std::string name) {
 	log(RTT::Info) << "getService" << RTT::endlog();
 }
 
-void SubController::loadController(RTT::TaskContext* task_context, std::string type) {
+SubController::SubController(RTT::TaskContext* task_context, std::string type) {
 	log(RTT::Info) << "loadController" << RTT::endlog();
 }
 

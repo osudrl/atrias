@@ -26,11 +26,11 @@ class SubController {
 		RTT::Service::shared_ptr getService(std::string name);
 
 		/** @brief              Loads and configures this subcontroller.
-		  * @param task_context A pointer to this component's TaskContext. For interacting
+		  * @param task_context A pointer to this component's TaskContext, for interacting
 		  *                     with the deployer and other components.
 		  * @param type         The name of the main class of this subcontroller.
 		  */
-		void loadController(RTT::TaskContext* task_context, std::string type);
+		SubController(RTT::TaskContext* task_context, std::string type);
 
 		/** @brief Cleans up this class and the subcontroller.
 		  */
