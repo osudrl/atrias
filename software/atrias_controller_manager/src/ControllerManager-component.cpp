@@ -340,3 +340,5 @@ void ControllerManager::resetControllerNames() {
 ORO_CREATE_COMPONENT(ControllerManager);
 }
 }
+
+// vim: expandtab:sts=4
