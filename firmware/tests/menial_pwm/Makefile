@@ -6,7 +6,7 @@ MCU = atxmega128a1
 F_CPU = 32000000
 
 # Output file name (without extension)
-OUTPUT = limit_switch_test
+OUTPUT = pwm_test
 OUTPUT_DIR = .
 
 # Source Files
