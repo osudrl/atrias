@@ -16,6 +16,12 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+rosbuild_find_ros_package( rtt )
+set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
+
+find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
+include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
+
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
@@ -34,3 +40,7 @@ rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
 #rosbuild_add_executable(hello src/hello.cpp)
+
+orocos_library(SubController src/SubController.cpp)
+
+orocos_generate_package()
