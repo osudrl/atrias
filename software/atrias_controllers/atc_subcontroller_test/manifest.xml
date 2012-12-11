@@ -12,5 +12,5 @@
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
   <depend package="asc_spring_torque" />
-
+  <depend package="atrias_component_loader" />
 </package>

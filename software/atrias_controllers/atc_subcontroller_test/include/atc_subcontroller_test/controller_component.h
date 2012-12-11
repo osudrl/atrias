@@ -21,10 +21,11 @@
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
 
-// Datatypes
+// Our stuff
 #include <atc_subcontroller_test/controller_input.h>
 #include <atc_subcontroller_test/controller_status.h>
 #include <atc_subcontroller_test/controller_log_data.h>
+#include <atrias_component_loader/ComponentLoader.hpp>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
@@ -47,8 +48,7 @@ class ATCSubcontrollerTest : public TaskContext {
 		OutputPort<controller_log_data>  logPort;
 
 		// The subcontroller -- will need modification.
-		std::string      subcontrollerName;
-		TaskContext*     subcontroller;
+		ComponentLoader::ComponentLoader  controllerLoader;
 		Property<double> subcontrollerProperty;
 		OperationCaller<double(double)> subcontrollerOperationCaller;
 		

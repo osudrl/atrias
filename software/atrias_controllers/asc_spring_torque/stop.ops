@@ -1,8 +1,0 @@
-# Shut stuff down
-var string controllerName
-controllerName.stop()
-linearInterp0Name.stop()
-controllerName.cleanup()
-linearInterp0Name.cleanup()
-unloadComponent(controllerName)
-unloadComponent(linearInterp0Name)

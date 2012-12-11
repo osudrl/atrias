@@ -40,12 +40,6 @@ class ASCSpringTorque : public TaskContext {
 		ComponentLoader::ComponentLoader linearInterp0SubCont;
 		ComponentLoader::ComponentLoader linearInterp1SubCont;
 		
-		// Subcontroller names
-		// This is the deflection->torque interpolator
-		std::string linearInterp0Name;
-		// This is the torque->deflection interpolator
-		std::string linearInterp1Name;
-		
 		// Subcontroller components
 		TaskContext *linearInterp0;
 		TaskContext *linearInterp1;

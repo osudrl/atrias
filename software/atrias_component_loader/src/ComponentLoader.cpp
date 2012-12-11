@@ -11,6 +11,8 @@ RTT::TaskContext* ComponentLoader::loadComponent(RTT::TaskContext* task_context,
 	// Obtain access to the deployer
 	deployer = task_context->getPeer("Deployer");
 
+	log(RTT::Info) << "Deployer: " << deployer << RTT::endlog();
+
 	// Let's import this package, so the deployer recognizes the component type.
 	RTT::OperationCaller<bool(std::string)> import;
 	import = deployer->getOperation("import");
@@ -29,8 +31,11 @@ RTT::TaskContext* ComponentLoader::loadComponent(RTT::TaskContext* task_context,
 
 	// We need to be able to talk to this component.
 	// Note: After construction, the deployer automatically adds
-	// it as a peer.
+	// it as a peer, but it's only a one-way link.
 	component = deployer->getPeer(name);
+
+	// Make the deployer a peer of this component.
+	component->addPeer(deployer);
 
 	// Configure it.
 	RTT::OperationCaller<bool(void)> configureComponent;

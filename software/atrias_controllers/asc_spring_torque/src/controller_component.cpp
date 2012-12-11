@@ -10,8 +10,6 @@ namespace controller {
 
 ASCSpringTorque::ASCSpringTorque(std::string name) :
 	RTT::TaskContext(name),
-	//linearInterp0SubCont(this, "asc_linear_interp", "ASCLinearInterp"),
-	//linearInterp1SubCont(this, "asc_linear_interp", "ASCLinearInterp"),
 	logPort(name + "_log")
 {
 	this->provides("springTorque")
@@ -20,10 +18,6 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 	this->provides("springTorque")
 	->addOperation("getDeflection", &ASCSpringTorque::getDeflection, this, ClientThread)
 	.doc("Calculates the deflection needed to achieve a given torque.");
-
-	// Add properties
-	this->addProperty("linearInterp0Name", linearInterp0Name);
-	this->addProperty("linearInterp1Name", linearInterp1Name);
 
 	// Logging
 	// Create a port
@@ -49,7 +43,7 @@ double ASCSpringTorque::getTorque(double deflection) {
 	double norm = fabs(deflection);
 	double sign = (deflection >= 0.0) ? 1.0 : -1.0;
 
-	//logData.torque = sign * linearInterp0GetValue(norm);
+	logData.torque = sign * linearInterp0GetValue(norm);
 
 	logPort.write(logData);
 
@@ -73,9 +67,8 @@ double ASCSpringTorque::getDeflection(double torque) {
 }
 
 bool ASCSpringTorque::configureHook() {
-	linearInterp0SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");
 	// Connect to the subcontrollers
-	linearInterp0 = this->getPeer(linearInterp0Name);
+	linearInterp0 = linearInterp0SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");
 	if (linearInterp0) {
 		linearInterp0InputPoints = linearInterp0->provides("interp")->getOperation("inputPoints");
 		linearInterp0GetValue    = linearInterp0->provides("interp")->getOperation("getValue");
@@ -85,7 +78,7 @@ bool ASCSpringTorque::configureHook() {
 		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION, true);
 	}
 
-	linearInterp1 = this->getPeer(linearInterp1Name);
+	linearInterp1 = linearInterp1SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");;
 	if (linearInterp1) {
 		linearInterp1InputPoints = linearInterp1->provides("interp")->getOperation("inputPoints");
 		linearInterp1GetValue    = linearInterp1->provides("interp")->getOperation("getValue");
