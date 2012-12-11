@@ -1,32 +1,19 @@
 <package>
-  <description brief="atc_force_hopping">
-
-     atc_force_hopping
-
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atc_force_hopping</url>
-  <depend package="roscpp"/>
-  <depend package="atrias_shared"/>
-  <depend package="atrias_msgs"/>
-  <depend package="asc_path_generator" />
-  <depend package="asc_path_generator" />
-  <depend package="asc_path_generator" />
-  <depend package="asc_path_generator" />
-  <depend package="asc_path_generator" />
-  <depend package="asc_path_generator" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_hip_walking" />
-  <depend package="asc_hip_walking" />
-  <depend package="asc_toe_decode" />
-  <depend package="asc_toe_decode" />
-  <depend package="asc_spring_force" />
-
+	<description brief="atc_force_hopping">
+		atc_force_hopping
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/atc_force_hopping</url>
+	<depend package="roscpp"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="atrias_component_loader" />
+	<depend package="asc_path_generator" />
+	<depend package="asc_pd" />
+	<depend package="asc_hip_walking" />
+	<depend package="asc_toe_decode" />
 </package>
+
+<!-- vim: set noexpandtab: -->
