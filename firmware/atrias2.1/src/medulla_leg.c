@@ -101,7 +101,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT); 
+	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT-3); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Leg] Initilizing limit switches\n");
