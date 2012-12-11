@@ -1,10 +1,10 @@
-#ifndef SUBCONTROLLER_HPP
-#define SUBCONTROLLER_HPP
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-/** @file SubController.hpp
+/** @file   Controller.hpp
   * @author Ryan Van Why
-  * @brief This class represents a subcontroller to
-  *        higher-level controllers.
+  * @brief  This class represents a controller to
+  *         higher-level controllers.
   */
 
 // Standard libs
@@ -16,7 +16,7 @@
 namespace atrias {
 namespace controller {
 
-class SubController {
+class Controller {
 	public:
 		/** @brief Allows the controller to access this subcontroller
 		  * @return A pointer to this subcontroller
@@ -28,16 +28,16 @@ class SubController {
 		  *                     with the deployer and other components.
 		  * @param type         The name of the main class of this subcontroller.
 		  */
-		SubController(RTT::TaskContext* task_context, std::string type);
+		Controller(RTT::TaskContext* task_context, std::string type);
 
 		/** @brief Cleans up this class and the subcontroller.
 		  */
-		~SubController();
+		~Controller();
 };
 
 }
 }
 
-#endif // SUBCONTROLLER_HPP
+#endif // CONTROLLER_HPP
 
 // vim: noexpandtab

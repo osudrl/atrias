@@ -1,17 +1,17 @@
-#include "atrias_shared/SubController.hpp"
+#include "atrias_shared/Controller.hpp"
 
 namespace atrias {
 namespace controller {
 
-RTT::TaskContext* SubController::getTaskContext() {
+RTT::TaskContext* Controller::getTaskContext() {
 	log(RTT::Info) << "getService" << RTT::endlog();
 }
 
-SubController::SubController(RTT::TaskContext* task_context, std::string type) {
+Controller::Controller(RTT::TaskContext* task_context, std::string type) {
 	log(RTT::Info) << "loadController" << RTT::endlog();
 }
 
-SubController::~SubController() {
+Controller::~Controller() {
 	log(RTT::Info) << "destructor" << RTT::endlog();
 }
 
