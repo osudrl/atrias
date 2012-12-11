@@ -45,10 +45,10 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 	atrias_msgs::controller_output co;
 	co.command = medulla_state_run;
 
-	subcontrollerProperty.set(guiIn.in1);
+	//subcontrollerProperty.set(guiIn.in1);
 
 	// Let the GUI know the controller output
-	guiOut.out1 = subcontrollerOperationCaller(guiIn.in3, guiIn.in4, guiIn.in5, guiIn.in6);
+	guiOut.out1 = subcontrollerOperationCaller(guiIn.in3);
 
 	// Send data to the GUI
 	if (pubTimer->readyToSend())
@@ -67,8 +67,8 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 bool ATCSubcontrollerTest::configureHook() {
 	subcontroller = this->getPeer(subcontrollerName);
 	if (subcontroller) {
-		subcontrollerOperationCaller = subcontroller->provides("pd")->getOperation("runController");
-		subcontrollerProperty = subcontroller->properties()->getProperty("P");
+		subcontrollerOperationCaller = subcontroller->provides("springTorque")->getOperation("getTorque");
+		//subcontrollerProperty = subcontroller->properties()->getProperty("P");
 	}
 	log(Info) << "[ATCMT] configured!" << endlog();
 	return true;

@@ -39,6 +39,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(asc_spring_torque src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_spring_torque)
+	target_link_libraries(asc_spring_torque SubController-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 
 # Run our Python data processing script to generate the header.
@@ -57,3 +58,5 @@ add_custom_command (
 set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
 
 include_directories(build/)
+
+# vim: noexpandtab

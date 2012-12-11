@@ -11,7 +11,6 @@
 #include <string>
 
 // Orocos
-#include <rtt/Service.hpp>
 #include <rtt/TaskContext.hpp>
 
 namespace atrias {
@@ -19,11 +18,10 @@ namespace controller {
 
 class SubController {
 	public:
-		/** @brief Allows the controller to access this subcontroller's services.
-		  * @param name The name of this service
-		  * @return A pointer to this service.
+		/** @brief Allows the controller to access this subcontroller
+		  * @return A pointer to this subcontroller
 		  */
-		RTT::Service::shared_ptr getService(std::string name);
+		RTT::TaskContext* getTaskContext();
 
 		/** @brief              Loads and configures this subcontroller.
 		  * @param task_context A pointer to this component's TaskContext, for interacting

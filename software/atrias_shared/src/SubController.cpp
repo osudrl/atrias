@@ -1,9 +1,9 @@
 #include "atrias_shared/SubController.hpp"
 
 namespace atrias {
-namespace controller{
+namespace controller {
 
-RTT::Service::shared_ptr SubController::getService(std::string name) {
+RTT::TaskContext* SubController::getTaskContext() {
 	log(RTT::Info) << "getService" << RTT::endlog();
 }
 

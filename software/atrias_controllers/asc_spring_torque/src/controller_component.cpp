@@ -10,6 +10,8 @@ namespace controller {
 
 ASCSpringTorque::ASCSpringTorque(std::string name) :
 	RTT::TaskContext(name),
+	linearInterp0SubCont(this, "ASCLinearInterp"),
+	linearInterp1SubCont(this, "ASCLinearInterp"),
 	logPort(name + "_log")
 {
 	this->provides("springTorque")
@@ -47,7 +49,9 @@ double ASCSpringTorque::getTorque(double deflection) {
 	double norm = fabs(deflection);
 	double sign = (deflection >= 0.0) ? 1.0 : -1.0;
 
-	logData.torque = sign * linearInterp0GetValue(norm);
+	log(Info) << "test!" << endlog();
+
+	//logData.torque = sign * linearInterp0GetValue(norm);
 
 	logPort.write(logData);
 

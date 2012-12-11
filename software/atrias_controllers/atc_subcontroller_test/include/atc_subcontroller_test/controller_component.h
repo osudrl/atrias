@@ -50,7 +50,7 @@ class ATCSubcontrollerTest : public TaskContext {
 		std::string      subcontrollerName;
 		TaskContext*     subcontroller;
 		Property<double> subcontrollerProperty;
-		OperationCaller<double(double, double, double, double)> subcontrollerOperationCaller;
+		OperationCaller<double(double)> subcontrollerOperationCaller;
 		
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;
