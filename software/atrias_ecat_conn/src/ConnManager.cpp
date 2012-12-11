@@ -110,10 +110,14 @@ void ConnManager::loop() {
 			eCatTime = ec_DCtime;
 			eCatConn->getMedullaManager()->processReceiveData();
 		}
-		eCatConn->getMedullaManager()->setTime(
-			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
-			(eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_PERIOD_NS,
-            eCatTime);
+
+		timingInfo.controllerTime = (eCatTime + CONTROLLER_LOOP_OFFSET_NS) -
+		                            (eCatTime + CONTROLLER_LOOP_OFFSET_NS) % CONTROLLER_LOOP_PERIOD_NS;
+		timingInfo.receiveDCTime  = eCatTime;
+		timingInfo.overshoot      = overshoot;
+		timingInfo.targetTime     = targetTime;
+
+		eCatConn->getMedullaManager()->setTimingInfo(timingInfo);
 		
 		midCycle = true;
 		
@@ -122,7 +126,7 @@ void ConnManager::loop() {
 		// The division here functions as an IIR filter on the DC time.
 		// Since we offset the DC backwards in initialize() above, we try to align
 		// to a phase of 0.
-		RTT::os::TimeService::nsecs dcCorrection =
+		timingInfo.dcCorrection =
 			-((eCatTime-overshoot+CONTROLLER_LOOP_PERIOD_NS/2)
 			% CONTROLLER_LOOP_PERIOD_NS - CONTROLLER_LOOP_PERIOD_NS/2)
 			/ TIMING_FILTER_GAIN;
@@ -130,21 +134,21 @@ void ConnManager::loop() {
 		RTT::os::TimeService::nsecs cur_time =
 			RTT::os::TimeService::Instance()->getNSecs();
 
-		RTT::os::TimeService::nsecs sleepTime =
-			(targetTime + dcCorrection - cur_time)
+		timingInfo.sleepTime =
+			(targetTime + timingInfo.dcCorrection - cur_time)
 			% CONTROLLER_LOOP_PERIOD_NS;
-	
-		// Correct for the difference between % and modulo
-		sleepTime = (sleepTime + CONTROLLER_LOOP_PERIOD_NS)
-			      % CONTROLLER_LOOP_PERIOD_NS;
 
-		targetTime = sleepTime + cur_time;
+		// Correct for the difference between % and modulo
+		timingInfo.sleepTime = (timingInfo.sleepTime + CONTROLLER_LOOP_PERIOD_NS)
+		                       % CONTROLLER_LOOP_PERIOD_NS;
+
+		targetTime = timingInfo.sleepTime + cur_time;
 
 		// The time to sleep. Sleeptime is guaranteed to be less than
 		// SECOND_IN_NANOSECONDS, so this is correct.
 		timespec delay = {
 			0,
-			sleepTime
+			timingInfo.sleepTime
 		};
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &delay, NULL);
 	}
@@ -153,15 +157,11 @@ void ConnManager::loop() {
 void ConnManager::sendControllerOutput(
                   atrias_msgs::controller_output& controller_output) {
 
-	RTT::os::TimeService::nsecs eCatTime;
-	{
-		RTT::os::MutexLock lock(eCatLock);
-		eCatConn->getMedullaManager()->processTransmitData(controller_output);
-		cycleECat();
-		midCycle = false;
-		eCatTime = ec_DCtime;
-	}
-	eCatConn->getMedullaManager()->setTransmitTime(eCatTime);
+	RTT::os::MutexLock lock(eCatLock);
+	eCatConn->getMedullaManager()->processTransmitData(controller_output);
+	cycleECat();
+	midCycle = false;
+	timingInfo.lastTransmitDCTime = ec_DCtime;
 }
 
 bool ConnManager::breakLoop() {

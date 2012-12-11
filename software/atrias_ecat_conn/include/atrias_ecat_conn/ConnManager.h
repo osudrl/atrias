@@ -67,7 +67,11 @@ class ConnManager : public RTT::Activity {
 	/** @brief Used to detect missed deadlines.
 	  */
 	bool           midCycle;
-	
+
+	/** @brief This stores our timing information.
+	  */
+	atrias_msgs::robot_state_timing timingInfo;
+
 	public:
 		/** @brief The constructor.
 		  * @param ecat_conn A pointer to the ECatConn instance.
@@ -108,3 +112,5 @@ class ConnManager : public RTT::Activity {
 }
 
 #endif // CONNMANAGER_H
+
+// vim: noexpandtab

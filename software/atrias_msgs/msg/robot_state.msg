@@ -6,9 +6,8 @@ uint8 cmState
 
 uint8 robotConfiguration
 
-# These are values recorded from ECat's DC
-uint64 receiveDCTime
-uint64 lastTransmitDCTime
+# Our timing information.
+robot_state_timing timing
 
 # Whether or not safeties should be disabled. This will, in the future, be replaced w/ a GUI-controlled overrides system.
 bool disableSafeties

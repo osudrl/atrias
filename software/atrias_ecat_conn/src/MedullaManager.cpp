@@ -232,14 +232,10 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegHip->processTransmitData(controller_output);
 }
 
-void MedullaManager::setTime(RTT::os::TimeService::nsecs time, RTT::os::TimeService::nsecs receive_time) {
-	robotState.header.stamp.nsec = time % SECOND_IN_NANOSECONDS;
-	robotState.header.stamp.sec  = (time - robotState.header.stamp.nsec) / SECOND_IN_NANOSECONDS;
-	robotState.receiveDCTime     = receive_time;
-}
-
-void MedullaManager::setTransmitTime(RTT::os::TimeService::nsecs transmit_time) {
-	robotState.lastTransmitDCTime = transmit_time;
+void MedullaManager::setTimingInfo(atrias_msgs::robot_state_timing& timing_info) {
+	robotState.header.stamp.nsec = timing_info.controllerTime % SECOND_IN_NANOSECONDS;
+	robotState.header.stamp.sec  = (timing_info.controllerTime - robotState.header.stamp.nsec) / SECOND_IN_NANOSECONDS;
+	robotState.timing            = timing_info;
 }
 
 atrias_msgs::robot_state MedullaManager::getRobotState() {
