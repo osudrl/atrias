@@ -16,10 +16,6 @@ ASCSpringForce::ASCSpringForce(std::string name) :
 	->addOperation("getForce", &ASCSpringForce::getForce, this, ClientThread)
 	.doc("Calculates the leg's extension force from its geometry.");
 
-	// Add properties
-	this->addProperty("springTorque0Name", springTorque0Name);
-	this->addProperty("springTorque1Name", springTorque1Name);
-
 	// Logging
 	// Create a port
 	addPort(logPort);
@@ -58,11 +54,11 @@ double ASCSpringForce::getForce(double motorAAngle, double legAAngle, double mot
 
 bool ASCSpringForce::configureHook() {
 	// Connect to the subcontrollers
-	springTorque0 = this->getPeer(springTorque0Name);
+	TaskContext *springTorque0 = springTorque0Loader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
 	if (springTorque0)
 		springTorque0GetTorque = springTorque0->provides("springTorque")->getOperation("getTorque");
 
-	springTorque1 = this->getPeer(springTorque1Name);
+	TaskContext *springTorque1 = springTorque1Loader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
 	if (springTorque1)
 		springTorque1GetTorque = springTorque1->provides("springTorque")->getOperation("getTorque");
 
@@ -90,3 +86,5 @@ ORO_CREATE_COMPONENT(ASCSpringForce)
 
 }
 }
+
+// vim: noexpandtab
