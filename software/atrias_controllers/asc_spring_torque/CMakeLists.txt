@@ -39,7 +39,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(asc_spring_torque src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_spring_torque)
-	target_link_libraries(asc_spring_torque Controller-${OROCOS_TARGET})
+	target_link_libraries(asc_spring_torque ComponentLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 
 # Run our Python data processing script to generate the header.

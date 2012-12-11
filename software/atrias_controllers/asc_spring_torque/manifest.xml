@@ -1,16 +1,16 @@
 <package>
-  <description brief="asc_spring_torque">
-
-     asc_spring_torque
-
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/asc_spring_torque</url>
-  <depend package="roscpp"/>
-  <depend package="atrias_shared"/>
-  <depend package="atrias_msgs"/>
-  <depend package="asc_linear_interp" />
-
+	<description brief="asc_spring_torque">
+		asc_spring_torque
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/asc_spring_torque</url>
+	<depend package="roscpp"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="asc_linear_interp" />
+	<depend package="atrias_component_loader" />
 </package>
+
+<!-- vim: set noexpandtab: -->
