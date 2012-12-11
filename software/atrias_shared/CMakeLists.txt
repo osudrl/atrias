@@ -41,6 +41,4 @@ rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 
 #rosbuild_add_executable(hello src/hello.cpp)
 
-orocos_library(Controller src/Controller.cpp)
-
 orocos_generate_package()

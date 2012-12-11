@@ -1,0 +1,16 @@
+<package>
+	<description brief="atrias_component_loader">
+		atrias_component_loader
+	</description>
+	<author> Ryan Van Why </author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://code.google.com/p/atrias/</url>
+	<depend package="roscpp"/>
+     <depend package="rtt" />
+	<export>
+		<cpp cflags="-std=c++0x -I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" /> />
+	</export>
+</package>
+
+<!-- vim: set noexpandtab: -->
