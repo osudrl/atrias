@@ -18,7 +18,7 @@
 
 // Our stuff
 #include <asc_spring_torque/controller_log_data.h>
-#include <atrias_shared/SubController.hpp>
+#include <atrias_shared/Controller.hpp>
 
 // Actual data.
 #include "processed_data.h"
@@ -37,8 +37,8 @@ class ASCSpringTorque : public TaskContext {
 		double getDeflection(double Torque);
 
 		// These load and unload our subcontrollers.
-		SubController linearInterp0SubCont;
-		SubController linearInterp1SubCont;
+		Controller linearInterp0SubCont;
+		Controller linearInterp1SubCont;
 		
 		// Subcontroller names
 		// This is the deflection->torque interpolator

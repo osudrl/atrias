@@ -49,8 +49,6 @@ double ASCSpringTorque::getTorque(double deflection) {
 	double norm = fabs(deflection);
 	double sign = (deflection >= 0.0) ? 1.0 : -1.0;
 
-	log(Info) << "test!" << endlog();
-
 	//logData.torque = sign * linearInterp0GetValue(norm);
 
 	logPort.write(logData);
