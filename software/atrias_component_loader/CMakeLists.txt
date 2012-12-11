@@ -14,6 +14,8 @@ set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
 find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
+
 orocos_library(ComponentLoader src/ComponentLoader.cpp)
 
 orocos_generate_package()

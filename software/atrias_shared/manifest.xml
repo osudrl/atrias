@@ -9,7 +9,7 @@
 	<depend package="roscpp"/>
      <depend package="rtt" />
 	<export>
-		<cpp cflags="-std=c++0x -I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" /> />
+		<cpp cflags="-std=c++0x -I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" />
 	</export>
 </package>
 

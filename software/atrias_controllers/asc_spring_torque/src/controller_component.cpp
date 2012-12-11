@@ -10,8 +10,8 @@ namespace controller {
 
 ASCSpringTorque::ASCSpringTorque(std::string name) :
 	RTT::TaskContext(name),
-	linearInterp0SubCont(this, "ASCLinearInterp"),
-	linearInterp1SubCont(this, "ASCLinearInterp"),
+	//linearInterp0SubCont(this, "asc_linear_interp", "ASCLinearInterp"),
+	//linearInterp1SubCont(this, "asc_linear_interp", "ASCLinearInterp"),
 	logPort(name + "_log")
 {
 	this->provides("springTorque")
@@ -73,6 +73,7 @@ double ASCSpringTorque::getDeflection(double torque) {
 }
 
 bool ASCSpringTorque::configureHook() {
+	linearInterp0SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");
 	// Connect to the subcontrollers
 	linearInterp0 = this->getPeer(linearInterp0Name);
 	if (linearInterp0) {
