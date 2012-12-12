@@ -24,19 +24,21 @@ atc_force_hopping::controller_input controllerDataOut;
 atc_force_hopping::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale     *flightLegLen,
-                *retractDiff;
+Gtk::HScale       *flightLegLen,
+                  *retractDiff;
 
-Gtk::SpinButton *flightP,
-                *flightD,
-                *stanceP,
-                *stanceD;
+Gtk::SpinButton   *flightP,
+                  *flightD,
+                  *stanceP,
+                  *stanceD,
+                  *hipP,
+                  *hipD;
 
-Gtk::ComboBox   *stancePSrc,
-                *stanceDSrc,
-                *legMode;
+Gtk::ComboBox     *stancePSrc,
+                  *stanceDSrc,
+                  *legMode;
 
-Gtk::Button     *shutdownBtn;
+Gtk::ToggleButton *enable;
 
 void controllerCallback(const atc_force_hopping::controller_status &status);
 

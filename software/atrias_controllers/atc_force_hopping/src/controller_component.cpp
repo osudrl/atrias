@@ -49,13 +49,6 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 	if ((uint8_t)rs.cmState != (uint8_t) controllerManager::RtOpsCommand::ENABLE)
 		return co;
 
-	// begin control code //
-
-	// Stuff the msg
-	co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-	co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-	co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
-
 	// end control code //
 
 	// Command a run state
