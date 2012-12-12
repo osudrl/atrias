@@ -20,6 +20,8 @@ rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
+
 rosbuild_find_ros_package(atrias)
 if(DEFINED atrias_PACKAGE_PATH)
 	include(${atrias_PACKAGE_PATH}/atrias.cmake)
@@ -37,5 +39,6 @@ endif(ATRIAS_BUILD_GUI)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(atc_force_hopping src/controller_component.cpp)
 	ros_generate_rtt_typekit(atc_force_hopping)
+	target_link_libraries(atc_force_hopping ASCLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 

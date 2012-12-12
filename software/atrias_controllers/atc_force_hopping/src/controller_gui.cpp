@@ -22,7 +22,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("stancePSrcCombo", stancePSrc);
 	gui->get_widget("stanceDSrcCombo", stanceDSrc);
 	gui->get_widget("legModeCombo",    legMode);
-	gui->get_widget("enable",          enable);
+	gui->get_widget("lockLeg",         lockLeg);
 
 	if (!flightLegLen ||
 	    !retractDiff  ||
@@ -34,7 +34,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	    !hipD         ||
 	    !stancePSrc   ||
 	    !stanceDSrc   ||
-	    !enable) {
+	    !lockLeg) {
 	
 		// Oops, GUI construction failure...
 		return false;
@@ -82,7 +82,7 @@ void guiUpdate() {
 	controllerDataOut.stanceD      = stanceD->get_value();
 	controllerDataOut.hipP         = hipP->get_value();
 	controllerDataOut.hipD         = hipD->get_value();
-	controllerDataOut.enable       = enable->get_active() ? 1 : 0;
+	controllerDataOut.lockLeg      = lockLeg->get_active() ? 1 : 0;
 	pub.publish(controllerDataOut);
 }
 

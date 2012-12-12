@@ -22,12 +22,14 @@
 #include <robot_invariant_defs.h>
 
 // Datatypes
+#include "atc_force_hopping/controller_common.hpp"
 #include <atc_force_hopping/controller_input.h>
 #include <atc_force_hopping/controller_status.h>
 #include <atc_force_hopping/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
+#include <atrias_shared/globals.h>
 
 using namespace RTT;
 using namespace Orocos;
@@ -41,11 +43,13 @@ class ATCForceHopping : public TaskContext {
 	private:
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
-		
-		atrias_msgs::controller_output co;
+
+		State mode;
+
+		// This lets us send an event upon encountering an error
+		OperationCaller<void(controllerManager::RtOpsEvent, RtOpsEventMetadata_t)> sendEvent;
 		
 		// Logging
-		controller_log_data logData;
 		OutputPort<controller_log_data>  logPort;
 		
 		// For the GUI

@@ -15,4 +15,4 @@ int8    stanceDSrc
 int8    legMode
 
 # 0 = disable, 1 = enable
-int8    enable
+int8    lockLeg

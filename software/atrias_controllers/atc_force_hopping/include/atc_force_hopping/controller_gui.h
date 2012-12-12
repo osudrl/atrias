@@ -38,7 +38,7 @@ Gtk::ComboBox     *stancePSrc,
                   *stanceDSrc,
                   *legMode;
 
-Gtk::ToggleButton *enable;
+Gtk::ToggleButton *lockLeg;
 
 void controllerCallback(const atc_force_hopping::controller_status &status);
 

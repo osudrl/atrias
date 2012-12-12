@@ -37,24 +37,24 @@ ATCForceHopping::ATCForceHopping(std::string name) :
 }
 
 atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot_state rs) {
-	// Do nothing unless told otherwise
-	co.lLeg.motorCurrentA   = 0.0;
-	co.lLeg.motorCurrentB   = 0.0;
-	co.lLeg.motorCurrentHip = 0.0;
-	co.rLeg.motorCurrentA   = 0.0;
-	co.rLeg.motorCurrentB   = 0.0;
-	co.rLeg.motorCurrentHip = 0.0;
-
-	// Only run the controller when we're enabled
-	if ((uint8_t)rs.cmState != (uint8_t) controllerManager::RtOpsCommand::ENABLE)
-		return co;
-
-	// end control code //
-
-	// Command a run state
+	atrias_msgs::controller_output co;
 	co.command = medulla_state_run;
 
+	switch (mode) {
+		case INIT:
+			break;
+		case FLIGHT:
+			break;
+		case STANCE:
+			break;
+		case LOCKED:
+			break;
+		default:
+			co.command = medulla_state_error;
+	}
+
 	// Stuff the msg and push to ROS for logging
+	controller_log_data logData;
 	logData.desiredState = 0.0;
 	logPort.write(logData);
 
