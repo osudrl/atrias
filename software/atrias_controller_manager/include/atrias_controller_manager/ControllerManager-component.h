@@ -86,7 +86,6 @@ private:
     bool loadStateMachine(string path);
     void handleUserCommand(UserCommand command);
     void updateGui(); //Send updated information to the GUI
-    bool eStopFlagged(boost::array<uint8_t, NUM_MEDULLAS_ON_ROBOT> statuses);
 
     // These functions are provided as operations to sub-controller start
     // scripts to help them assign unique-names to their child controllers
