@@ -1,17 +1,15 @@
-#include "atrias_component_loader/ComponentLoader.hpp"
+#include "atrias_asc_loader/ASCLoader.hpp"
 
 namespace atrias {
-namespace ComponentLoader {
+namespace controller {
 
-ComponentLoader::ComponentLoader() {
-	component = nullptr;
+ASCLoader::ASCLoader() {
+	subcontroller = nullptr;
 }
 
-RTT::TaskContext* ComponentLoader::loadComponent(RTT::TaskContext* task_context, std::string package, std::string type) {
+RTT::TaskContext* ASCLoader::load(RTT::TaskContext* task_context, std::string package, std::string type) {
 	// Obtain access to the deployer
 	deployer = task_context->getPeer("Deployer");
-
-	log(RTT::Info) << "Deployer: " << deployer << RTT::endlog();
 
 	// Let's import this package, so the deployer recognizes the component type.
 	RTT::OperationCaller<bool(std::string)> import;
@@ -24,7 +22,7 @@ RTT::TaskContext* ComponentLoader::loadComponent(RTT::TaskContext* task_context,
 	getUniqueName = controllerManager->getOperation("getUniqueName");
 	name = getUniqueName(task_context->getName(), type);
 
-	// And actually load the component
+	// And actually load the controller
 	RTT::OperationCaller<bool(std::string, std::string)> loadComponent;
 	loadComponent = deployer->getOperation("loadComponent");
 	loadComponent(name, type);
@@ -32,38 +30,39 @@ RTT::TaskContext* ComponentLoader::loadComponent(RTT::TaskContext* task_context,
 	// We need to be able to talk to this component.
 	// Note: After construction, the deployer automatically adds
 	// it as a peer, but it's only a one-way link.
-	component = deployer->getPeer(name);
+	subcontroller = deployer->getPeer(name);
 
 	// Make the deployer a peer of this component.
-	component->addPeer(deployer);
+	// This makes the link two-way
+	subcontroller->addPeer(deployer);
 
 	// Configure it.
-	RTT::OperationCaller<bool(void)> configureComponent;
-	configureComponent = component->getOperation("configure");
-	configureComponent();
+	RTT::OperationCaller<bool(void)> configureController;
+	configureController = subcontroller->getOperation("configure");
+	configureController();
 
 	// And start it.
-	RTT::OperationCaller<bool(void)> startComponent;
-	startComponent = component->getOperation("start");
-	startComponent();
+	RTT::OperationCaller<bool(void)> startController;
+	startController = subcontroller->getOperation("start");
+	startController();
 
-	return component;
+	return subcontroller;
 }
 
-ComponentLoader::~ComponentLoader() {
-	// Verify that the component's actually been loaded.
-	if (!component)
+ASCLoader::~ASCLoader() {
+	// Verify that the controller's actually been loaded.
+	if (!subcontroller)
 		return;
 	
 	// Stop it
-	RTT::OperationCaller<bool(void)> stopComponent;
-	stopComponent = component->getOperation("stop");
-	stopComponent();
+	RTT::OperationCaller<bool(void)> stopController;
+	stopController = subcontroller->getOperation("stop");
+	stopController();
 
 	// And tell it to clean up.
-	RTT::OperationCaller<bool(void)> cleanupComponent;
-	cleanupComponent = component->getOperation("cleanup");
-	cleanupComponent();
+	RTT::OperationCaller<bool(void)> cleanupController;
+	cleanupController = subcontroller->getOperation("cleanup");
+	cleanupController();
 
 	// Then unload it.
 	RTT::OperationCaller<bool(std::string)> unloadComponent;

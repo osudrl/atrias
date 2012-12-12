@@ -16,6 +16,6 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
 
-orocos_library(ComponentLoader src/ComponentLoader.cpp)
+orocos_library(ASCLoader src/ASCLoader.cpp)
 
 orocos_generate_package()

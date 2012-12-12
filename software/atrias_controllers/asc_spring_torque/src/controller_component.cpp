@@ -68,7 +68,7 @@ double ASCSpringTorque::getDeflection(double torque) {
 
 bool ASCSpringTorque::configureHook() {
 	// Connect to the subcontrollers
-	linearInterp0 = linearInterp0SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");
+	linearInterp0 = linearInterp0SubCont.load(this, "asc_linear_interp", "ASCLinearInterp");
 	if (linearInterp0) {
 		linearInterp0InputPoints = linearInterp0->provides("interp")->getOperation("inputPoints");
 		linearInterp0GetValue    = linearInterp0->provides("interp")->getOperation("getValue");
@@ -78,7 +78,7 @@ bool ASCSpringTorque::configureHook() {
 		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION, true);
 	}
 
-	linearInterp1 = linearInterp1SubCont.loadComponent(this, "asc_linear_interp", "ASCLinearInterp");;
+	linearInterp1 = linearInterp1SubCont.load(this, "asc_linear_interp", "ASCLinearInterp");;
 	if (linearInterp1) {
 		linearInterp1InputPoints = linearInterp1->provides("interp")->getOperation("inputPoints");
 		linearInterp1GetValue    = linearInterp1->provides("interp")->getOperation("getValue");

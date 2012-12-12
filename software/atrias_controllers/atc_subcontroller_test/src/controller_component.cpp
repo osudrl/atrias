@@ -62,7 +62,7 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 
 // Don't put control code below here!
 bool ATCSubcontrollerTest::configureHook() {
-	TaskContext* subcontroller = controllerLoader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
+	TaskContext* subcontroller = controllerLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
 	if (subcontroller) {
 		subcontrollerOperationCaller = subcontroller->provides("springTorque")->getOperation("getTorque");
 		//subcontrollerProperty = subcontroller->properties()->getProperty("P");

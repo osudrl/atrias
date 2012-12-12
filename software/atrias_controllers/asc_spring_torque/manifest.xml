@@ -10,7 +10,7 @@
 	<depend package="atrias_shared"/>
 	<depend package="atrias_msgs"/>
 	<depend package="asc_linear_interp" />
-	<depend package="atrias_component_loader" />
+	<depend package="atrias_asc_loader" />
 </package>
 
 <!-- vim: set noexpandtab: -->
