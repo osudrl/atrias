@@ -41,7 +41,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	}
 
 	// Set ranges.
-	flightLegLen->set_range(.31 + cos(LEG_LOC_DIFF_MAX/2.0), 0.95);
+	flightLegLen->set_range(.56, 0.95);
 	retractDiff->set_range( 0.0, .3);
 	flightP->set_range(     0.0, 2000.0);
 	flightD->set_range(     0.0, 100.0);

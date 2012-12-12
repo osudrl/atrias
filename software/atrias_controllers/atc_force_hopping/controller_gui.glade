@@ -22,7 +22,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="round_digits">1</property>
-        <property name="digits">2</property>
+        <property name="digits">3</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -47,7 +47,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="round_digits">1</property>
-        <property name="digits">2</property>
+        <property name="digits">3</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -94,6 +94,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">0.10000000000000001</property>
             <property name="digits">1</property>
           </object>
           <packing>
@@ -112,6 +113,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">10</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -129,6 +131,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">0.10000000000000001</property>
             <property name="digits">1</property>
           </object>
           <packing>
@@ -147,6 +150,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">10</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -246,6 +250,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">10</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -263,6 +268,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">0.10000000000000001</property>
             <property name="digits">1</property>
           </object>
           <packing>
