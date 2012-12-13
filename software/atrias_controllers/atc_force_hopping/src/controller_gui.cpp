@@ -56,10 +56,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	retractDiff->set_value( 0.1);
 	flightP->set_value(     600.0);
 	flightD->set_value(     20.0);
-	stanceP->set_value(     600.0);
+	stanceP->set_value(     1500.0);
 	stanceD->set_value(     20.0);
-	hipP->set_value(        100.0);
-	hipD->set_value(        20.0);
+	hipP->set_value(        150.0);
+	hipD->set_value(        10.0);
 
 	// We also need to deal with the combo boxes, but that's for later...
 
