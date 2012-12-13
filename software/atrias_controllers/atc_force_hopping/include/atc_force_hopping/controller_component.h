@@ -51,9 +51,11 @@ class ATCForceHopping : public TaskContext {
 		OutputPort<controller_log_data>  logPort;
 		
 		// For the GUI
-		shared::GuiPublishTimer                         *pubTimer;
-		controller_input guiIn;
-		InputPort<controller_input>                     guiDataIn;
+		shared::GuiPublishTimer         *pubTimer;
+		controller_input                guiIn;
+		controller_status               guiOut;
+		InputPort<controller_input>     guiDataIn;
+		OutputPort<controller_status>   guiDataOut;
 
 		// Our subcontrollers
 		ASCLoader lLegAControllerLoader;

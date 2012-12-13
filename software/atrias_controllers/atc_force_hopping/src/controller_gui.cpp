@@ -22,6 +22,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("stancePSrcCombo", stancePSrc);
 	gui->get_widget("stanceDSrcCombo", stanceDSrc);
 	gui->get_widget("legModeCombo",    legMode);
+	gui->get_widget("stateLbl",        stateLbl);
 	gui->get_widget("lockLeg",         lockLeg);
 
 	if (!flightLegLen ||
@@ -34,6 +35,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	    !hipD         ||
 	    !stancePSrc   ||
 	    !stanceDSrc   ||
+	    !stateLbl     ||
 	    !lockLeg) {
 	
 		// Oops, GUI construction failure...
@@ -84,6 +86,21 @@ void guiUpdate() {
 	controllerDataOut.hipD         = hipD->get_value();
 	controllerDataOut.lockLeg      = lockLeg->get_active() ? 1 : 0;
 	pub.publish(controllerDataOut);
+
+	switch ((State) controllerDataIn.state) {
+		case State::INIT:
+			stateLbl->set_text("Initializing");
+			break;
+		case State::FLIGHT:
+			stateLbl->set_text("Flight");
+			break;
+		case State::STANCE:
+			stateLbl->set_text("Stance");
+			break;
+		case State::LOCKED:
+			stateLbl->set_text("Locked");
+			break;
+	}
 }
 
 //! \brief Take down the GUI.

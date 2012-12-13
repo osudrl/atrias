@@ -11,7 +11,8 @@ namespace controller {
 ATCForceHopping::ATCForceHopping(std::string name) :
 	RTT::TaskContext(name),
 	logPort(name + "_log"),
-	guiDataIn("gui_data_in")
+	guiDataIn("gui_data_in"),
+	guiDataOut("gui_data_out")
 {
 	this->provides("atc")
 	->addOperation("runController", &ATCForceHopping::runController, this, ClientThread)
@@ -19,6 +20,7 @@ ATCForceHopping::ATCForceHopping(std::string name) :
 
 	// For the GUI
 	addEventPort(guiDataIn);
+	addPort(guiDataOut);
 	pubTimer = new GuiPublishTimer(20);
 
 	// Logging
@@ -149,6 +151,11 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 	logData.desiredState = 0.0;
 	logPort.write(logData);
 
+	if (pubTimer->readyToSend()) {
+		guiOut.state = (State_t) mode;
+		guiDataOut.write(guiOut);
+	}
+
 	// Output for RTOps
 	return co;
 }
@@ -226,6 +233,7 @@ void ATCForceHopping::stopHook() {
 }
 
 void ATCForceHopping::cleanupHook() {
+	delete(pubTimer);
 	log(Info) << "[ATCFH] cleaned up!" << endlog();
 }
 

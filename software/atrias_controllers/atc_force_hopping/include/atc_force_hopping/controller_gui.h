@@ -8,11 +8,14 @@
 #ifndef CONTROLLER_GUI_H_
 #define CONTROLLER_GUI_H_
 
+#include "atc_force_hopping/common.hpp"
 #include <atc_force_hopping/controller_input.h>
 #include <atc_force_hopping/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
+
+using namespace atrias::controller;
 
 // ROS
 ros::NodeHandle nh;
@@ -37,6 +40,8 @@ Gtk::SpinButton   *flightP,
 Gtk::ComboBox     *stancePSrc,
                   *stanceDSrc,
                   *legMode;
+
+Gtk::Label        *stateLbl;
 
 Gtk::ToggleButton *lockLeg;
 

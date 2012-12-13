@@ -5,6 +5,10 @@
   * @brief Contains structures used by both the GUI and the controller itself.
   */
 
+#include <cstdint>
+
+#include <atrias_shared/globals.h>
+
 namespace atrias {
 namespace controller {
 
