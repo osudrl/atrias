@@ -16,9 +16,6 @@ ASCForceDefl::ASCForceDefl(std::string name) :
 	->addOperation("getDeflectionDiff", &ASCForceDefl::getDeflectionDiff, this, ClientThread)
 	.doc("Get the difference in spring deflections required to induce a certain lengthwise force.");
 
-	// Add properties
-	this->addProperty("torqueDefl0Name", torqueDefl0Name);
-
 	// Logging
 	// Create a port
 	addPort(logPort);
@@ -56,9 +53,9 @@ double ASCForceDefl::getDeflectionDiff(double force, double legAngleA, double le
 
 bool ASCForceDefl::configureHook() {
 	// Connect to the subcontrollers
-	torqueDefl0 = this->getPeer(torqueDefl0Name);
+	TaskContext* torqueDefl0 = torqueDefl0Loader.load(this, "asc_spring_torque", "ASCSpringTorque");
 	if (torqueDefl0)
-		torqueDefl0GetDefl = torqueDefl0->provides("springTorque")->getOperation("getDeflection");
+		torqueDefl0GetDefl = torqueDefl0->provides("forceDeflection")->getOperation("getDeflection");
 
 	log(Info) << "[ASCForceDefl] configured!" << endlog();
 	return true;
@@ -84,3 +81,5 @@ ORO_CREATE_COMPONENT(ASCForceDefl)
 
 }
 }
+
+// vim: noexpandtab

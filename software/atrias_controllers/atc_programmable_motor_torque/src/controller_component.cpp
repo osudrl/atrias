@@ -25,7 +25,7 @@ ATCProgrammableMotorTorque::ATCProgrammableMotorTorque(std::string name):
 
 // Put control code here.
 atrias_msgs::controller_output ATCProgrammableMotorTorque::runController(atrias_msgs::robot_state rs) {
-    if ((uint8_t)rs.cmState == (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+    if ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED) {
         if (currentSampleIndex < configData.size()) {
             if (fabs(guiIn.des_motor_torque_B) > CURRENT_ADJUSTMENT_THRESHOLD)
                 controllerOutput.lLeg.motorCurrentB = configData[currentSampleIndex] + guiIn.des_motor_torque_B;
@@ -113,3 +113,5 @@ ORO_CREATE_COMPONENT(ATCProgrammableMotorTorque)
 
 }
 }
+
+// vim: expandtab:sts=4

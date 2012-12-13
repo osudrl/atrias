@@ -138,7 +138,7 @@ void ControllerManager::cleanupHook() {
 bool ControllerManager::processRtOpsEvent() {
     if (NewData == rtOpsDataIn.read(rtOpsOutput)) {
         //std::cout << "Got event from RT ops! Event #: " << (int)rtOpsOutput.event << std::endl;
-        eManager->eventCallback((RtOpsEvent)rtOpsOutput.event);
+        eManager->eventCallback((rtOps::RtOpsEvent)rtOpsOutput.event);
         return true;
     }
     return false;
@@ -166,7 +166,7 @@ void ControllerManager::handleUserCommand(UserCommand command) {
             if (command == UserCommand::RUN) {
                 state = ControllerManagerState::CONTROLLER_RUNNING;
                 //Tell RT Ops to start the controller
-                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::ENABLE);
+                rtOpsDataOut.write((rtOps::RtOpsState_t) rtOps::RtOpsState::ENABLED);
             }
             //Should we restart?
             else if (command == UserCommand::UNLOAD_CONTROLLER) {
@@ -179,7 +179,7 @@ void ControllerManager::handleUserCommand(UserCommand command) {
             if (command == UserCommand::STOP) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
                 //Tell RT Ops to stop the controller
-                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
+                rtOpsDataOut.write((rtOps::RtOpsState_t) rtOps::RtOpsState::DISABLED);
             }
             //Should we restart?
             else if (command == UserCommand::UNLOAD_CONTROLLER) {
@@ -206,8 +206,8 @@ void ControllerManager::handleUserCommand(UserCommand command) {
 void ControllerManager::throwEstop(bool alertRtOps) {
     state = ControllerManagerState::CONTROLLER_ESTOPPED;
     if (alertRtOps) {
-        eManager->setEventWait(RtOpsEvent::ACK_E_STOP);
-        rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::E_STOP);
+        eManager->setEventWait(rtOps::RtOpsEvent::ACK_E_STOP);
+        rtOpsDataOut.write((rtOps::RtOpsState_t) rtOps::RtOpsState::E_STOP);
     }
     updateGui();
 }
@@ -220,8 +220,8 @@ bool ControllerManager::loadController(string controllerName) {
             metadata = controllerMetadata::loadControllerMetadata(path, controllerName);
             if (scriptingProvider->runScript(metadata.startScriptPath)) {
                 state = ControllerManagerState::CONTROLLER_STOPPED;
-                eManager->setEventWait(RtOpsEvent::ACK_DISABLE);
-                rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::DISABLE);
+                eManager->setEventWait(rtOps::RtOpsEvent::ACK_DISABLE);
+                rtOpsDataOut.write((rtOps::RtOpsState_t) rtOps::RtOpsState::DISABLED);
                 currentControllerName = controllerName;
                 return true;
             }
@@ -246,8 +246,8 @@ bool ControllerManager::loadController(string controllerName) {
  * not just unloaded.
  */
 void ControllerManager::unloadController() {
-    eManager->setEventWait(RtOpsEvent::ACK_RESET);
-    rtOpsDataOut.write((RtOpsCommand_t) RtOpsCommand::RESET);
+    eManager->setEventWait(rtOps::RtOpsEvent::ACK_RESET);
+    rtOpsDataOut.write((rtOps::RtOpsState_t) rtOps::RtOpsState::RESET);
 }
 
 void ControllerManager::setState(ControllerManagerState newState, bool shouldReset) {

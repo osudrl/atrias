@@ -82,7 +82,7 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
                desiredRHState;
 
     // Things to do when the controller is disabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE) {
+    if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
         // Calculate neutral (powered) hip angle.
         lHipStart = rs.lLeg.hip.legBodyAngle + .05;
         rHipStart = rs.rLeg.hip.legBodyAngle - .05;
@@ -226,7 +226,7 @@ atrias_msgs::controller_output ATCFastLegSwing::runController(atrias_msgs::robot
         // controller is enabled). Otherwise, they will put desired motor
         // angles at positions that may cause the controller to jump upon
         // enable.
-        if ((uint8_t)rs.cmState == (uint8_t)controllerManager::RtOpsCommand::ENABLE &&
+        if ((rtOps::RtOpsState)rs.rtOpsState == rtOps::RtOpsState::ENABLED &&
                (!spg0IsFinished ||
                 !spg1IsFinished ||
                 !spg2IsFinished ||
@@ -419,3 +419,5 @@ ORO_CREATE_COMPONENT(ATCFastLegSwing)
 
 }
 }
+
+// vim: noexpandtab

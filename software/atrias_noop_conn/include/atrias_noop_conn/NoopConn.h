@@ -25,24 +25,24 @@ namespace noopConn {
 
 class NoopConn : public RTT::TaskContext {
 	private:
-	/** @brief By calling this, we cycle RT Ops.
-	  */
-	RTT::OperationCaller<void(atrias_msgs::robot_state)>
-		newStateCallback;
-	
-	/** @brief Lets us report events, such as a missed deadline.
-	  */
-	RTT::OperationCaller<void(controllerManager::RtOpsEvent event)>
-		sendEvent;
-	
-	/** @brief Holds the robot state to be passed to RT Ops.
-	  */
-	atrias_msgs::robot_state robotState;
-	
-	/** @brief Used to detect missed deadlines.
-	  */
-	bool                     waitingForResponse;
-	
+		/** @brief By calling this, we cycle RT Ops.
+		  */
+		RTT::OperationCaller<void(atrias_msgs::robot_state)>
+			newStateCallback;
+		
+		/** @brief Lets us report events, such as a missed deadline.
+		  */
+		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)>
+			sendEvent;
+		
+		/** @brief Holds the robot state to be passed to RT Ops.
+		  */
+		atrias_msgs::robot_state robotState;
+		
+		/** @brief Used to detect missed deadlines.
+		  */
+		bool                     waitingForResponse;
+		
 	public:
 		/** @brief Initializes the Noop Connector
 		  * @param name The name for this component.
@@ -70,3 +70,5 @@ class NoopConn : public RTT::TaskContext {
 }
 
 #endif // NOOPCONN_H
+
+// vim: noexpandtab

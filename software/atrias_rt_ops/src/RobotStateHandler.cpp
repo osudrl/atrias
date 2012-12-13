@@ -14,8 +14,8 @@ atrias_msgs::robot_state RobotStateHandler::getRobotState() {
 }
 
 void RobotStateHandler::setRobotState(atrias_msgs::robot_state &newState) {
-	newState.cmState =
-		(controllerManager::RtOpsCommand_t) rtOps->getStateMachine()->getRtOpsState();
+	newState.rtOpsState =
+		(RtOpsState_t) rtOps->getStateMachine()->getRtOpsState();
 	checkForNewErrors(newState);
 	
 	RTT::os::MutexLock lock(robotStateLock);
@@ -24,9 +24,9 @@ void RobotStateHandler::setRobotState(atrias_msgs::robot_state &newState) {
 
 void RobotStateHandler::checkForNewErrors(atrias_msgs::robot_state &state) {
 	// Don't fire another event if we're already in estop (or resetting).
-	controllerManager::RtOpsCommand cur_state = rtOps->getStateMachine()->getRtOpsState();
-	if (cur_state == controllerManager::RtOpsCommand::E_STOP ||
-	    cur_state == controllerManager::RtOpsCommand::RESET)
+	RtOpsState cur_state = rtOps->getStateMachine()->getRtOpsState();
+	if (cur_state == RtOpsState::E_STOP ||
+	    cur_state == RtOpsState::RESET)
 		return;
 	
 	// Go through each Medulla, checking for the reset state:
@@ -39,10 +39,12 @@ void RobotStateHandler::checkForNewErrors(atrias_msgs::robot_state &state) {
 	    state.rLeg.halfB.medullaState == medulla_state_error) {
 		
 		// Send an event... and eStop too (even though that'll happen anyway...)
-		rtOps->getStateMachine()->eStop(controllerManager::RtOpsEvent::MEDULLA_ESTOP);
+		rtOps->getStateMachine()->eStop(RtOpsEvent::MEDULLA_ESTOP);
 	}
 }
 
 }
 
 }
+
+// vim: noexpandtab

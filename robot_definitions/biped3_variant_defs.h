@@ -1,22 +1,22 @@
 #ifndef ROBOT_VARIANT_DEFS_H
 #define ROBOT_VARIANT_DEFS_H
 
-// This is for biped #1
+// This is for biped #3
 
 // Include the calibration values for each leg
 #define INCLUDE_LEFT_LEG
-#include "leg4_definitions.h"
+#include "leg1_definitions.h"
 #undef INCLUDE_LEFT_LEG
 
 #define INCLUDE_RIGHT_LEG
-#include "leg3_definitions.h"
+#include "leg5_definitions.h"
 #undef INCLUDE_RIGHT_LEG
 
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
   * Not set yet.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  109784
+#define BOOM_PITCH_VERTICAL_VALUE  128863
 
 /** @brief The length of the boom. For Z calculations.
   * This is measured from the center of rotation to the center of the hip's
@@ -35,7 +35,7 @@
   * robot's "ground".
   * Measured with a measuring tape.
   */
-#define BOOM_HEIGHT                0.915
+#define BOOM_HEIGHT                0.963
 
 /** @brief The meters of boom motion per encoder tick.
   * This is calculated from the boom's length, the number of encoder ticks per
@@ -45,27 +45,27 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            2.88677458279862112023
+#define BOOM_Z_CALIB_LOC            2.97093794232861888
 
 /** @brief The value of the boom encoder at the calibration location.
   */
-#define BOOM_Z_CALIB_VAL            38278
+#define BOOM_Z_CALIB_VAL            88221
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          3249
+#define LEFT_HIP_CALIB_VAL          4592
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         1387
+#define RIGHT_HIP_CALIB_VAL         1526
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS          4.537856055185257
+#define LEFT_HIP_CALIB_POS           4.5955
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS         4.902629868852071
+#define RIGHT_HIP_CALIB_POS          4.8538
 
 /** @brief Maximum motor torque for scaling
   */

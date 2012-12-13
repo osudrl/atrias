@@ -76,7 +76,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	           desiredRHState;
 
 	// Only run the controller when we're enabled
-	if ((uint8_t)rs.cmState != (uint8_t) controllerManager::RtOpsCommand::ENABLE) {
+	if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
 		// Keep desired motor angles equal to the current motor angles so the
 		// motors don't jump when the controller is enabled.
 		desiredLAState.ang = rs.lLeg.halfA.motorAngle;
@@ -255,6 +255,7 @@ default:
 					D3.set(guiIn.d_ls);
 					P3.set(guiIn.p_ls);
 					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+					logData.currState = 1;
 		} else 
 		{																															 // if pea was reached once
 			sw_stance=true;
@@ -265,6 +266,7 @@ default:
 			D3.set(guiIn.d_ls);
 			P3.set(guiIn.p_ls);
 			co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+			logData.currState = 2;
 		}
 		
 	//******************************************************************************************************************************************************************************************************************
@@ -282,7 +284,7 @@ default:
 						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
-						printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
+						//printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
@@ -291,6 +293,7 @@ default:
 						D1.set(guiIn.d_lf);
 						P1.set(guiIn.p_lf);
 						co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+						logData.flightState = 1;
 		} else 
 		{																														// aea is reached once
 			sw_flight=true;
@@ -301,6 +304,7 @@ default:
 			D1.set(guiIn.d_ls);
 			P1.set(guiIn.p_ls);
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+			logData.flightState = 2;
 		}
 
 		break;
@@ -318,6 +322,7 @@ default:
 					D0.set(guiIn.d_ls);
 					P0.set(guiIn.p_ls);
 					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+					logData.currState = 3;
 		} else 
 		{                        // if aea was reached once
 			sw_stance=true;
@@ -328,6 +333,7 @@ default:
 			D0.set(guiIn.d_ls);
 			P0.set(guiIn.p_ls); 
 		    co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+			logData.currState = 4;
 		  }
 		
 	//*******************************************************************************************************************************************************************************************************************
@@ -352,6 +358,7 @@ default:
 						D4.set(guiIn.d_lf);
 						P4.set(guiIn.p_lf);
 						co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+						logData.flightState = 3;
 		} else 
 		{ // aea is reached once
 			sw_flight=true;
@@ -362,6 +369,7 @@ default:
 			D4.set(guiIn.d_ls);
 			P4.set(guiIn.p_ls);
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+			logData.flightState = 4;
 		}
 		break;
 
@@ -380,7 +388,6 @@ default:
 	co.command = medulla_state_run;
 
 	// Stuff the msg and push to ROS for logging
-	logData.desiredState = 0.0;
 	logPort.write(logData);
 
 	// Output for RTOps
@@ -522,3 +529,5 @@ ORO_CREATE_COMPONENT(ATCEqPoint)
 
 }
 }
+
+// vim: noexpandtab

@@ -3,8 +3,6 @@
 
 // This is for biped #1
 
-#define NUM_MEDULLAS_ON_ROBOT    7
-
 // Include the calibration values for each leg
 #define INCLUDE_LEFT_LEG
 #include "leg1_definitions.h"

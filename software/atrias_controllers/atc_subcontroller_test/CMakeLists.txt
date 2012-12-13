@@ -45,5 +45,7 @@ endif(ATRIAS_BUILD_GUI)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(atc_subcontroller_test src/controller_component.cpp)
 	ros_generate_rtt_typekit(atc_subcontroller_test)
+	target_link_libraries(atc_subcontroller_test ASCLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 
+# vim: noexpandtab

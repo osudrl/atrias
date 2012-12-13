@@ -18,8 +18,9 @@
 
 #include <robot_invariant_defs.h>
 
-// Datatypes
+// Our Stuff
 #include <asc_force_defl/controller_log_data.h>
+#include <atrias_asc_loader/ASCLoader.hpp>
 
 using namespace RTT;
 using namespace Orocos;
@@ -33,11 +34,8 @@ class ASCForceDefl : public TaskContext {
 		// Operations
 		double getDeflectionDiff(double tgtForce, double legAngleA, double legAngleB);
 		
-		// Subcontroller names
-		std::string torqueDefl0Name;
-		
-		// Subcontroller components
-		TaskContext *torqueDefl0;
+		// Subcontrollers
+		ASCLoader torqueDefl0Loader;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> torqueDefl0GetDefl;
@@ -61,3 +59,5 @@ class ASCForceDefl : public TaskContext {
 }
 
 #endif
+
+// vim: noexpandtab

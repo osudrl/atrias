@@ -47,8 +47,8 @@ private:
      */
     os::Mutex incomingEventsLock;
 
-    list<RtOpsEvent> incomingEvents;
-    RtOpsEvent       eventBeingWaitedOn;
+    list<rtOps::RtOpsEvent> incomingEvents;
+    rtOps::RtOpsEvent       eventBeingWaitedOn;
 
     public:
         /** @brief Initializes this EventManager.
@@ -63,14 +63,14 @@ private:
          * @brief Informs the loop about an incoming event message from RT Ops.
          * @param event The event that RT Ops sent.
          */
-        void eventCallback(RtOpsEvent event);
+        void eventCallback(rtOps::RtOpsEvent event);
 
         /**
          * @brief Sets the event manager to perform the associated action when
          * the specified event occurs.
          * @param event The event to watch for.
          */
-        void setEventWait(RtOpsEvent event);
+        void setEventWait(rtOps::RtOpsEvent event);
 
         /** @brief Run by Orocos to shut down the main loop.
          * @return Success.
@@ -88,3 +88,5 @@ private:
 }
 
 #endif /* EventManager_ACTIVITY_H_ */
+
+// vim: expandtab:sts=4

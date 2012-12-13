@@ -53,7 +53,7 @@ private:
     OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
     InputPort<rt_ops_event> rtOpsDataIn; //The data coming in from RT Ops
-    OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
+    OutputPort<rtOps::RtOpsState_t> rtOpsDataOut; //The data being sent to RT Ops
 
     gui_output guiOutput;
     gui_input guiInput;
@@ -86,7 +86,6 @@ private:
     bool loadStateMachine(string path);
     void handleUserCommand(UserCommand command);
     void updateGui(); //Send updated information to the GUI
-    bool eStopFlagged(boost::array<uint8_t, NUM_MEDULLAS_ON_ROBOT> statuses);
 
     // These functions are provided as operations to sub-controller start
     // scripts to help them assign unique-names to their child controllers
@@ -117,3 +116,5 @@ public:
 }
 
 #endif
+
+// vim: expandtab:sts=4

@@ -18,9 +18,6 @@ ATCSubcontrollerTest::ATCSubcontrollerTest(std::string name) :
 	->addOperation("runController", &ATCSubcontrollerTest::runController, this, ClientThread)
 	.doc("Get robot_state from RTOps and return controller output.");
 
-	this->addProperty("subcontrollerName", subcontrollerName)
-		.doc("The subcontroller's name.");
-
 	// For the GUI
 	addEventPort(guiDataIn);
 	addPort(guiDataOut);
@@ -65,7 +62,7 @@ atrias_msgs::controller_output ATCSubcontrollerTest::runController(atrias_msgs::
 
 // Don't put control code below here!
 bool ATCSubcontrollerTest::configureHook() {
-	subcontroller = this->getPeer(subcontrollerName);
+	TaskContext* subcontroller = controllerLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
 	if (subcontroller) {
 		subcontrollerOperationCaller = subcontroller->provides("springTorque")->getOperation("getTorque");
 		//subcontrollerProperty = subcontroller->properties()->getProperty("P");

@@ -8,9 +8,18 @@ loadComponent("controller", "ATCForceHopping")
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
+# And with the deployer so it can create subcontrollers
+addPeer("controller", "Deployer")
+
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
+gui_policy.name_id = "/atc_force_hopping_status"
+
+stream("controller.gui_data_out", gui_policy)
 
 gui_policy.name_id = "/atc_force_hopping_input"
 stream("controller.gui_data_in", gui_policy)

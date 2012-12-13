@@ -8,14 +8,6 @@ project(atc_force_hopping)
 
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
 rosbuild_init()
 
 #set the default path for built executables to the "bin" directory
@@ -27,6 +19,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
+
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
 
 rosbuild_find_ros_package(atrias)
 if(DEFINED atrias_PACKAGE_PATH)
@@ -45,5 +39,6 @@ endif(ATRIAS_BUILD_GUI)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(atc_force_hopping src/controller_component.cpp)
 	ros_generate_rtt_typekit(atc_force_hopping)
+	target_link_libraries(atc_force_hopping ASCLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 

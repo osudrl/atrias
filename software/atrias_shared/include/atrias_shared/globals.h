@@ -66,24 +66,28 @@ enum class ControllerManagerError: ControllerManagerError_t {
     CONTROLLER_STATE_MACHINE_EXCEPTION
 };
 
-typedef uint8_t RtOpsCommand_t;
+}
 
-/*
- * Represents the command sent to RT Ops from the controller manager
- */
-enum class RtOpsCommand: RtOpsCommand_t {
+namespace rtOps {
+
+/** @brief This holds RT Ops's state -- also used by the Controller Manager
+  * to command RT Ops into different states.
+  */
+typedef uint8_t RtOpsState_t;
+
+enum class RtOpsState: RtOpsState_t {
     NO_CONTROLLER_LOADED = 0,
-    DISABLE, //Controller is loaded but not enabled
-    ENABLE,  //Controller is both loaded and enabled
+    DISABLED, //Controller is loaded but not enabled
+    ENABLED,  //Controller is both loaded and enabled
     RESET,
     E_STOP,
     HALT
 };
 
-typedef int8_t RtOpsEvent_t;
-
 /** @brief Represents an RT Ops event.
   */
+typedef int8_t RtOpsEvent_t;
+
 enum class RtOpsEvent: RtOpsEvent_t {
     NO_EVENT = 0,             // Only used internally in the controller manager, should never be sent
     INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager
@@ -99,12 +103,9 @@ enum class RtOpsEvent: RtOpsEvent_t {
     ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
     CONTROLLER_ESTOP,         // The controller commanded an estop.
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
-    SAFETY                    // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
+    SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
+    CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
 };
-
-}
-
-namespace rtOps {
 
 /** @brief The type for RT Ops event metadata.
   */
@@ -116,13 +117,13 @@ typedef int8_t RtOpsEventMetadata_t;
   * This needs to be completed and actually implemented.
   */
 enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
-	BOOM_MEDULLA_HALT = 0,    // The boom medulla entered halt state
-	LEFT_HIP_MEDULLA_HALT,    // Likewise for left hip. The next few are similar.
-	LEFT_LEG_A_MEDULLA_HALT,
-	LEFT_LEG_B_MEDULLA_HALT,
-	RIGHT_HIP_MEDULLA_HALT,
-	RIGHT_LEG_A_MEDULLA_HALT,
-	RIGHT_LEG_B_MEDULLA_HALT
+    BOOM_MEDULLA_HALT = 0,    // The boom medulla entered halt state
+    LEFT_HIP_MEDULLA_HALT,    // Likewise for left hip. The next few are similar.
+    LEFT_LEG_A_MEDULLA_HALT,
+    LEFT_LEG_B_MEDULLA_HALT,
+    RIGHT_HIP_MEDULLA_HALT,
+    RIGHT_LEG_A_MEDULLA_HALT,
+    RIGHT_LEG_B_MEDULLA_HALT
 };
 
 /** @brief The type for robot configuration data
@@ -133,13 +134,13 @@ typedef uint8_t RobotConfiguration_t;
   * Reported by the connector.
   */
 enum class RobotConfiguration: RobotConfiguration_t {
-	DISABLE = 0,    // All safeties should be disabled. Zero so this is the
-	                // default if a Connector doesn't implement this.
-	UNKNOWN,        // Not a known configuration. All safeties enabled.
-	BIPED_FULL,     // The full biped, with hips and location data.
-	LEFT_LEG_NOHIP, // A single leg with no hip
-	LEFT_LEG_HIP,   // A single leg with a hip
-	BIPED_NOHIP,    // Two legs no hips
+    DISABLE = 0,    // All safeties should be disabled. Zero so this is the
+                    // default if a Connector doesn't implement this.
+    UNKNOWN,        // Not a known configuration. All safeties enabled.
+    BIPED_FULL,     // The full biped, with hips and location data.
+    LEFT_LEG_NOHIP, // A single leg with no hip
+    LEFT_LEG_HIP,   // A single leg with a hip
+    BIPED_NOHIP,    // Two legs no hips
 };
 
 }
@@ -147,3 +148,5 @@ enum class RobotConfiguration: RobotConfiguration_t {
 }
 
 #endif /* GLOBALS_H_ */
+
+// vim: expandtab:sts=4

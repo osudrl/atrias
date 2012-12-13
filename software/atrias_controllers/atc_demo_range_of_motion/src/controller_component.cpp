@@ -76,7 +76,7 @@ atrias_msgs::controller_output ATCDemoRangeOfMotion::runController(atrias_msgs::
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState_t)rs.rtOpsState != (rtOps::RtOpsState_t)rtOps::RtOpsState::ENABLED)
         return co;
 
     // begin control code //
@@ -329,3 +329,5 @@ ORO_CREATE_COMPONENT(ATCDemoRangeOfMotion)
 
 }
 }
+
+// vim: expandtab:sts=4

@@ -33,7 +33,7 @@ class StateMachine {
 	
 	/** @brief The current state.
 	  */
-	controllerManager::RtOpsCommand currentState;
+	RtOpsState                      currentState;
 	
 	/** @brief Protects the state from concurrent access.
 	  */
@@ -42,14 +42,14 @@ class StateMachine {
 	/** @brief Sets the state.
 	  * @param new_state The new state.
 	  */
-	void                            setState(controllerManager::RtOpsCommand new_state);
+	void                            setState(RtOpsState new_state);
 	
 	/** @brief Responds to the controller manager.
 	  * @param state The state for which to send an acknowledgement.
 	  * This sends out an event to inform the controller manager that RT Ops has
 	  * finished processing its command.
 	  */
-	void                            ackCMState(controllerManager::RtOpsCommand state);
+	void                            ackCMState(RtOpsState state);
 	
 	public:
 		/** @brief Initializes this StateMachine.
@@ -63,7 +63,7 @@ class StateMachine {
 		  * (if possible). This also sends out an RtOpsEvent with the reason for this
 		  * estop.
 		  */
-		void eStop(controllerManager::RtOpsEvent event);
+		void eStop(RtOpsEvent event);
 		
 		/** @brief Computes a new state.
 		  * @return The new desired Medulla state.
@@ -73,12 +73,12 @@ class StateMachine {
 		/** @brief Sets a new state for the state machine.
 		  * @param new_state The new state.
 		  */
-		void newCMState(controllerManager::RtOpsCommand new_state);
+		void newCMState(RtOpsState new_state);
 		
 		/** @brief Gets the current RT Ops state.
 		  * @return The current RT Ops state.
 		  */
-		controllerManager::RtOpsCommand getRtOpsState();
+		RtOpsState getRtOpsState();
 };
 
 }
@@ -86,3 +86,5 @@ class StateMachine {
 }
 
 #endif // STATEMACHINE_H
+
+// vim: noexpandtab

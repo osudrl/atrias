@@ -112,7 +112,7 @@ atrias_msgs::controller_output ATCMotorPosition::runController(atrias_msgs::robo
     co.command = medulla_state_run;
 
     // If we're enabled, inform the GUI
-    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
+    guiOut.isEnabled = ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED);
 
     // Send data to the GUI
     if (pubTimer->readyToSend())
@@ -189,3 +189,4 @@ ORO_CREATE_COMPONENT(ATCMotorPosition)
 }
 }
 
+// vim: expandtab:sts=4

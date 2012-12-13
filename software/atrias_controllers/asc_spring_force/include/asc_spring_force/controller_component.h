@@ -16,8 +16,9 @@
 // C
 #include <stdlib.h>
 
-// Datatypes
+// Our stuff
 #include <asc_spring_force/controller_log_data.h>
+#include <atrias_asc_loader/ASCLoader.hpp>
 
 using namespace RTT;
 using namespace Orocos;
@@ -31,17 +32,8 @@ class ASCSpringForce : public TaskContext {
 		// Operations
 		double getForce(double motorAAngle, double legAAngle, double motorBAngle, double legBAngle);
 		
-		// Subcontroller names
-		std::string springTorque0Name;
-		std::string springTorque1Name;
-		
-		// Subcontroller components
-		TaskContext *springTorque0;
-		TaskContext *springTorque1;
-		
-		// Service properties
-		Property<std::string> linearInterp0Name0;
-		Property<std::string> linearInterp0Name1;
+		ASCLoader springTorque0Loader;
+		ASCLoader springTorque1Loader;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> springTorque0GetTorque;
@@ -66,3 +58,5 @@ class ASCSpringForce : public TaskContext {
 }
 
 #endif
+
+// vim: noexpandtab
