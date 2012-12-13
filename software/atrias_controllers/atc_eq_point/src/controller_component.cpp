@@ -284,7 +284,7 @@ default:
 						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
-						printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
+						//printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
