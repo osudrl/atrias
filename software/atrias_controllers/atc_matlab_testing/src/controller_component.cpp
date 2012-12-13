@@ -38,7 +38,7 @@ ATCMatlabTesting::ATCMatlabTesting(std::string name):
 
 atrias_msgs::controller_output ATCMatlabTesting::runController(atrias_msgs::robot_state rs) {
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
     {
         // Do nothing
         co.lLeg.motorCurrentA = 0.0;

@@ -46,15 +46,15 @@ class RTOps : public RTT::TaskContext {
 		
 		/** @brief This is our 1 kHz logging output.
 		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle>   logCyclicOut;
+		RTT::OutputPort<atrias_msgs::rt_ops_cycle>  logCyclicOut;
 		
 		/** @brief This is our 50 Hz GUI transmission.
 		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle>   guiCyclicOut;
+		RTT::OutputPort<atrias_msgs::rt_ops_cycle>  guiCyclicOut;
 		
 		/** @brief This is the port over which events are sent.
 		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_event>   eventOut;
+		RTT::OutputPort<atrias_msgs::rt_ops_event>  eventOut;
 		
 		/** @brief Handles our timestamps for us
 		  */
@@ -148,9 +148,10 @@ class RTOps : public RTT::TaskContext {
 		Safety*            getSafety();
 		
 		/** @brief Lets Connectors report RT Ops Events.
-		  * @param event The event to be reported.
+		  * @param event    The event to be reported.
+		  * @param metadata The metadata for this event
 		  */
-		void               sendEvent(controllerManager::RtOpsEvent event);
+		void               sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata);
 
 		// Standard Orocos hooks
 		bool               configureHook();
@@ -165,3 +166,5 @@ class RTOps : public RTT::TaskContext {
 }
 
 #endif // RTOPS_H
+
+// vim: noexpandtab

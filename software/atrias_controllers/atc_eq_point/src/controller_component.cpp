@@ -76,7 +76,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	           desiredRHState;
 
 	// Only run the controller when we're enabled
-	if ((uint8_t)rs.cmState != (uint8_t) controllerManager::RtOpsCommand::ENABLE) {
+	if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
 		// Keep desired motor angles equal to the current motor angles so the
 		// motors don't jump when the controller is enabled.
 		desiredLAState.ang = rs.lLeg.halfA.motorAngle;
@@ -522,3 +522,5 @@ ORO_CREATE_COMPONENT(ATCEqPoint)
 
 }
 }
+
+// vim: noexpandtab

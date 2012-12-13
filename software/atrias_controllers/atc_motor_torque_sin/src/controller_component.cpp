@@ -40,7 +40,7 @@ atrias_msgs::controller_output ATCMotorTorqueSin::runController(atrias_msgs::rob
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
     // Check to see if this is a new motor
@@ -116,3 +116,4 @@ ORO_CREATE_COMPONENT(ATCMotorTorqueSin)
 }
 }
 
+// vim: expandtab:sts=4

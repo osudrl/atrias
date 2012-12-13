@@ -41,13 +41,13 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 	co.command = medulla_state_run;
 
 	switch (mode) {
-		case INIT:
+		case State::INIT:
 			break;
-		case FLIGHT:
+		case State::FLIGHT:
 			break;
-		case STANCE:
+		case State::STANCE:
 			break;
-		case LOCKED:
+		case State::LOCKED:
 			break;
 		default:
 			co.command = medulla_state_error;

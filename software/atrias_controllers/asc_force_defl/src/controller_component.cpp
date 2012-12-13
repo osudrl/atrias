@@ -53,7 +53,7 @@ double ASCForceDefl::getDeflectionDiff(double force, double legAngleA, double le
 
 bool ASCForceDefl::configureHook() {
 	// Connect to the subcontrollers
-	TaskContext* torqueDefl0 = torqueDefl0Loader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
+	TaskContext* torqueDefl0 = torqueDefl0Loader.load(this, "asc_spring_torque", "ASCSpringTorque");
 	if (torqueDefl0)
 		torqueDefl0GetDefl = torqueDefl0->provides("forceDeflection")->getOperation("getDeflection");
 

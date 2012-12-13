@@ -18,7 +18,7 @@
 
 // Our stuff
 #include <asc_spring_force/controller_log_data.h>
-#include <atrias_component_loader/ComponentLoader.hpp>
+#include <atrias_asc_loader/ASCLoader.hpp>
 
 using namespace RTT;
 using namespace Orocos;
@@ -32,8 +32,8 @@ class ASCSpringForce : public TaskContext {
 		// Operations
 		double getForce(double motorAAngle, double legAAngle, double motorBAngle, double legBAngle);
 		
-		ComponentLoader::ComponentLoader springTorque0Loader;
-		ComponentLoader::ComponentLoader springTorque1Loader;
+		ASCLoader springTorque0Loader;
+		ASCLoader springTorque1Loader;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> springTorque0GetTorque;

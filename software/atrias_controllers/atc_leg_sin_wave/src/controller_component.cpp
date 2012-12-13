@@ -54,7 +54,7 @@ atrias_msgs::controller_output ATCLegSinWave::runController(atrias_msgs::robot_s
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
     {
         // Get hip starting positions
         lHipStart = rs.lLeg.hip.legBodyAngle;
@@ -313,3 +313,4 @@ ORO_CREATE_COMPONENT(ATCLegSinWave)
 }
 }
 
+// vim: expandtab:sts=4

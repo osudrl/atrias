@@ -44,12 +44,15 @@ void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
 	rtOpsCycle.header     = state.header;
 }
 
-void OpsLogger::sendEvent(controllerManager::RtOpsEvent event) {
+void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
 	atrias_msgs::rt_ops_event event_msg;
-	event_msg.event = (controllerManager::RtOpsEvent_t) event;
+	event_msg.event    = (RtOpsEvent_t) event;
+	event_msg.metadata = metadata;
 	eventOut->write(event_msg);
 }
 
 }
 
 }
+
+// vim: noexpandtab

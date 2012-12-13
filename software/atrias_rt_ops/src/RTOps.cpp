@@ -92,8 +92,8 @@ Safety* RTOps::getSafety() {
 	return safety;
 }
 
-void RTOps::sendEvent(controllerManager::RtOpsEvent event) {
-	opsLogger.sendEvent(event);
+void RTOps::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
+	opsLogger.sendEvent(event, metadata);
 }
 
 bool RTOps::configureHook() {
@@ -122,7 +122,7 @@ bool RTOps::startHook() {
 
 void RTOps::updateHook() {
 	if (RTT::NewData == cManagerDataIn.read(cmIn) && stateMachine)
-		stateMachine->newCMState((controllerManager::RtOpsCommand) cmIn);
+		stateMachine->newCMState((RtOpsState) cmIn);
 	
 	return;
 }
@@ -146,3 +146,5 @@ ORO_CREATE_COMPONENT(RTOps)
 }
 
 }
+
+// vim: noexpandtab

@@ -39,5 +39,6 @@ endif(DEFINED atrias_PACKAGE_PATH)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(asc_spring_force src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_spring_force)
+	target_link_libraries(asc_spring_force ASCLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 

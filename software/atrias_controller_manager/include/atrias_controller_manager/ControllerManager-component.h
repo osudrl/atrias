@@ -53,7 +53,7 @@ private:
     OutputPort<gui_input> guiDataOut; //The data being sent to the GUI
 
     InputPort<rt_ops_event> rtOpsDataIn; //The data coming in from RT Ops
-    OutputPort<RtOpsCommand_t> rtOpsDataOut; //The data being sent to RT Ops
+    OutputPort<rtOps::RtOpsState_t> rtOpsDataOut; //The data being sent to RT Ops
 
     gui_output guiOutput;
     gui_input guiInput;
@@ -116,3 +116,5 @@ public:
 }
 
 #endif
+
+// vim: expandtab:sts=4

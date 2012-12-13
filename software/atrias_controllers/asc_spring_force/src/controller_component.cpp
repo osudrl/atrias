@@ -54,13 +54,17 @@ double ASCSpringForce::getForce(double motorAAngle, double legAAngle, double mot
 
 bool ASCSpringForce::configureHook() {
 	// Connect to the subcontrollers
-	TaskContext *springTorque0 = springTorque0Loader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
-	if (springTorque0)
-		springTorque0GetTorque = springTorque0->provides("springTorque")->getOperation("getTorque");
+	TaskContext *springTorque0 = springTorque0Loader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!springTorque0)
+		return false;
+	
+	springTorque0GetTorque = springTorque0->provides("springTorque")->getOperation("getTorque");
 
-	TaskContext *springTorque1 = springTorque1Loader.loadComponent(this, "asc_spring_torque", "ASCSpringTorque");
-	if (springTorque1)
-		springTorque1GetTorque = springTorque1->provides("springTorque")->getOperation("getTorque");
+	TaskContext *springTorque1 = springTorque1Loader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!springTorque1)
+		return false;
+	
+	springTorque1GetTorque = springTorque1->provides("springTorque")->getOperation("getTorque");
 
 	log(Info) << "[ASCSpringForce] configured!" << endlog();
 	return true;

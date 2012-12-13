@@ -50,7 +50,7 @@ atrias_msgs::controller_output ATCUmich1::runController(atrias_msgs::robot_state
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
     // begin control code //
@@ -186,3 +186,5 @@ ORO_CREATE_COMPONENT(ATCUmich1)
 
 }
 }
+
+// vim: expandtab:sts=4

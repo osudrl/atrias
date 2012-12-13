@@ -21,7 +21,7 @@ EventManager::EventManager(ControllerManager *manager) :
 void EventManager::loop() {
     while (!done) {
     	bool process = false;
-    	RtOpsEvent event;
+    	rtOps::RtOpsEvent event;
     	{
             //Make sure that eventCallback is not running
             os::MutexLock lock(incomingEventsLock);
@@ -35,23 +35,23 @@ void EventManager::loop() {
     	if (process) {
             if (event == eventBeingWaitedOn) {
                 switch (event) {
-                    case RtOpsEvent::ACK_DISABLE: {
+                    case rtOps::RtOpsEvent::ACK_DISABLE: {
                         cManager->setState(ControllerManagerState::CONTROLLER_STOPPED);
                         break;
                     }
-                    case RtOpsEvent::ACK_ENABLE: {
+                    case rtOps::RtOpsEvent::ACK_ENABLE: {
                         cManager->setState(ControllerManagerState::CONTROLLER_RUNNING);
                         break;
                     }
-                    case RtOpsEvent::ACK_E_STOP: {
+                    case rtOps::RtOpsEvent::ACK_E_STOP: {
                         cManager->setState(ControllerManagerState::CONTROLLER_ESTOPPED);
                         break;
                     }
-                    case RtOpsEvent::ACK_NO_CONTROLLER_LOADED: {
+                    case rtOps::RtOpsEvent::ACK_NO_CONTROLLER_LOADED: {
                         cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED);
                         break;
                     }
-                    case RtOpsEvent::ACK_RESET: {
+                    case rtOps::RtOpsEvent::ACK_RESET: {
                         cManager->setState(ControllerManagerState::NO_CONTROLLER_LOADED, true);
                         break;
                     }
@@ -67,15 +67,15 @@ void EventManager::loop() {
             }
             else {
                 switch (event) {
-                    case RtOpsEvent::CM_COMMAND_ESTOP: {
+                    case rtOps::RtOpsEvent::CM_COMMAND_ESTOP: {
                         cManager->throwEstop(false);
                         break;
                     }
-                    case RtOpsEvent::CONTROLLER_ESTOP: {
+                    case rtOps::RtOpsEvent::CONTROLLER_ESTOP: {
                         cManager->throwEstop(false);
                         break;
                     }
-                    case RtOpsEvent::MEDULLA_ESTOP: {
+                    case rtOps::RtOpsEvent::MEDULLA_ESTOP: {
                         cManager->throwEstop(false);
                         break;
                     }
@@ -106,14 +106,14 @@ void EventManager::loop() {
     }
 }
 
-void EventManager::eventCallback(RtOpsEvent event) {
+void EventManager::eventCallback(rtOps::RtOpsEvent event) {
     os::MutexLock lock(incomingEventsLock);
     incomingEvents.push_back(event);
     if (eventsWaitingSignal.value() == 0)
         eventsWaitingSignal.signal();
 }
 
-void EventManager::setEventWait(RtOpsEvent event) {
+void EventManager::setEventWait(rtOps::RtOpsEvent event) {
     {
         os::MutexLock lock(incomingEventsLock);
         eventBeingWaitedOn = event;
@@ -138,3 +138,5 @@ bool EventManager::initialize() {
 }
 
 }
+
+// vim: expandtab:sts=4

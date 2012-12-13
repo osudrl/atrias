@@ -60,7 +60,7 @@ class ECatConn : public RTT::TaskContext {
 		
 		/** @brief Lets us report events, such as a missed deadline.
 		  */
-		RTT::OperationCaller<void(controllerManager::RtOpsEvent event)>
+		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)>
 			sendEvent;
 		
 		/** @brief Configures this component.
@@ -96,3 +96,5 @@ class ECatConn : public RTT::TaskContext {
 }
 
 #endif // ECATCONN_H
+
+// vim: noexpandtab

@@ -45,7 +45,7 @@ ATCMotorSinWave::ATCMotorSinWave(std::string name):
 // Put control code here.
 atrias_msgs::controller_output ATCMotorSinWave::runController(atrias_msgs::robot_state rs) {
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED)
     {
         // Do nothing
         controllerOutput.lLeg.motorCurrentA = 0.0;
@@ -183,3 +183,4 @@ ORO_CREATE_COMPONENT(ATCMotorSinWave)
 }
 }
 
+// vim: expandtab:sts=4

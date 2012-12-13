@@ -20,7 +20,7 @@
 
 // Our Stuff
 #include <asc_force_defl/controller_log_data.h>
-#include <atrias_component_loader/ComponentLoader.hpp>
+#include <atrias_asc_loader/ASCLoader.hpp>
 
 using namespace RTT;
 using namespace Orocos;
@@ -35,7 +35,7 @@ class ASCForceDefl : public TaskContext {
 		double getDeflectionDiff(double tgtForce, double legAngleA, double legAngleB);
 		
 		// Subcontrollers
-		ComponentLoader::ComponentLoader torqueDefl0Loader;
+		ASCLoader torqueDefl0Loader;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> torqueDefl0GetDefl;

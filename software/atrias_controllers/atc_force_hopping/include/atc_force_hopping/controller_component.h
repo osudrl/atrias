@@ -47,7 +47,7 @@ class ATCForceHopping : public TaskContext {
 		State mode;
 
 		// This lets us send an event upon encountering an error
-		OperationCaller<void(controllerManager::RtOpsEvent, RtOpsEventMetadata_t)> sendEvent;
+		OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEvent;
 		
 		// Logging
 		OutputPort<controller_log_data>  logPort;

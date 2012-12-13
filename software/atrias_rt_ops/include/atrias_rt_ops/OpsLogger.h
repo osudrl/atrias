@@ -72,9 +72,10 @@ class OpsLogger {
 		void logClampedControllerOutput(atrias_msgs::controller_output& clamped_output);
 		
 		/** @brief Send out an RT Ops event.
-		  * @param error The specific event to be reported.
+		  * @param error    The specific event to be reported.
+		  * @param metadata The metadata associated with this event.
 		  */
-		void sendEvent(controllerManager::RtOpsEvent event);
+		void sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata=0);
 };
 
 }
@@ -82,3 +83,5 @@ class OpsLogger {
 }
 
 #endif // OPSLOGGER_H
+
+// vim: noexpandtab
