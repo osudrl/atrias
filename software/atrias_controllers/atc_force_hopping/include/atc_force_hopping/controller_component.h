@@ -64,6 +64,12 @@ class ATCForceHopping : public TaskContext {
 		ASCLoader rLegAControllerLoader;
 		ASCLoader rLegBControllerLoader;
 		ASCLoader rLegHControllerLoader;
+		ASCLoader lLegASmoothLoader;
+		ASCLoader lLegBSmoothLoader;
+		ASCLoader lLegHSmoothLoader;
+		ASCLoader rLegASmoothLoader;
+		ASCLoader rLegBSmoothLoader;
+		ASCLoader rLegHSmoothLoader;
 
 		OperationCaller<double(double, double, double, double)> lLegAController;
 		OperationCaller<double(double, double, double, double)> lLegBController;
@@ -71,6 +77,18 @@ class ATCForceHopping : public TaskContext {
 		OperationCaller<double(double, double, double, double)> rLegAController;
 		OperationCaller<double(double, double, double, double)> rLegBController;
 		OperationCaller<double(double, double, double, double)> rLegHController;
+		OperationCaller<void(double, double, double)>           lLegASmoothInit;
+		OperationCaller<MotorState(void)>                       lLegASmoothController;
+		OperationCaller<void(double, double, double)>           lLegBSmoothInit;
+		OperationCaller<MotorState(void)>                       lLegBSmoothController;
+		OperationCaller<void(double, double, double)>           lLegHSmoothInit;
+		OperationCaller<MotorState(void)>                       lLegHSmoothController;
+		OperationCaller<void(double, double, double)>           rLegASmoothInit;
+		OperationCaller<MotorState(void)>                       rLegASmoothController;
+		OperationCaller<void(double, double, double)>           rLegBSmoothInit;
+		OperationCaller<MotorState(void)>                       rLegBSmoothController;
+		OperationCaller<void(double, double, double)>           rLegHSmoothInit;
+		OperationCaller<MotorState(void)>                       rLegHSmoothController;
 		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
 
 		Property<double> lLegAP;
@@ -85,11 +103,18 @@ class ATCForceHopping : public TaskContext {
 		Property<double> rLegBD;
 		Property<double> rLegHP;
 		Property<double> rLegHD;
+		Property<bool>   lLegASmoothFinished;
+		Property<bool>   lLegBSmoothFinished;
+		Property<bool>   lLegHSmoothFinished;
+		Property<bool>   rLegASmoothFinished;
+		Property<bool>   rLegBSmoothFinished;
+		Property<bool>   rLegHSmoothFinished;
 
 		/** @brief This represents the "init" state. It's called periodically during smooth initialization.
 		  * @return The controller output for this state.
 		  */
-		atrias_msgs::controller_output stateInit();
+		atrias_msgs::controller_output stateInit(atrias_msgs::robot_state& rs);
+		void setStateInit();
 
 		/** @brief This represents the "flight" state. This is called periodically.
 		  * @return The desired robot state (angle for each motor).

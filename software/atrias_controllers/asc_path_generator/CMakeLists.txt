@@ -38,6 +38,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(sin_path_generator src/sin_path_generator.cpp)
+	orocos_component(ASCSmoothPathGenerator src/smooth_path_generator.cpp)
 	ros_generate_rtt_typekit(asc_path_generator)
 endif(ATRIAS_BUILD_CONTROLLERS)
 

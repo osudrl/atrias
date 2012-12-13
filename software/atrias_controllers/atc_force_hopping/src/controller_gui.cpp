@@ -43,22 +43,22 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	}
 
 	// Set ranges.
-	flightLegLen->set_range(.56, 0.95);
+	flightLegLen->set_range(.7, 0.95);
 	retractDiff->set_range( 0.0, .3);
-	flightP->set_range(     0.0, 2000.0);
-	flightD->set_range(     0.0, 100.0);
-	stanceP->set_range(     0.0, 7000.0);
+	flightP->set_range(     0.0, 1000.0);
+	flightD->set_range(     0.0, 50.0);
+	stanceP->set_range(     0.0, 3000.0);
 	stanceD->set_range(     0.0, 150.0);
-	hipP->set_range(        0.0, 1000.0);
+	hipP->set_range(        0.0, 300.0);
 	hipD->set_range(        0.0, 40);
 	
-	flightLegLen->set_value(0.7);
+	flightLegLen->set_value(0.9);
 	retractDiff->set_value( 0.1);
-	flightP->set_value(     1000.0);
-	flightD->set_value(     10.0);
-	stanceP->set_value(     2000.0);
-	stanceD->set_value(     15.0);
-	hipP->set_value(        600.0);
+	flightP->set_value(     600.0);
+	flightD->set_value(     20.0);
+	stanceP->set_value(     600.0);
+	stanceD->set_value(     20.0);
+	hipP->set_value(        100.0);
 	hipD->set_value(        20.0);
 
 	// We also need to deal with the combo boxes, but that's for later...

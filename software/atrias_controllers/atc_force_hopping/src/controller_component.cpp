@@ -40,15 +40,53 @@ ATCForceHopping::ATCForceHopping(std::string name) :
 	log(Info) << "[ATCFH] Constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCForceHopping::stateInit() {
+atrias_msgs::controller_output ATCForceHopping::stateInit(atrias_msgs::robot_state& rs) {
 	atrias_msgs::controller_output co;
 
 	lLegFlightGains();
 	rLegFlightGains();
 
-	setStateFlight();
+	if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
+		RobotPos tgt = stateFlight();
+		lLegASmoothInit(rs.lLeg.halfA.motorAngle, tgt.lLeg.A,   1.0);
+		lLegBSmoothInit(rs.lLeg.halfB.motorAngle, tgt.lLeg.B,   1.0);
+		lLegHSmoothInit(rs.lLeg.hip.legBodyAngle, tgt.lLeg.hip, 1.0);
+		rLegASmoothInit(rs.rLeg.halfA.motorAngle, tgt.rLeg.A,   1.0);
+		rLegBSmoothInit(rs.rLeg.halfB.motorAngle, tgt.rLeg.B,   1.0);
+		rLegHSmoothInit(rs.rLeg.hip.legBodyAngle, tgt.rLeg.hip, 1.0);
+	}
+	
+	MotorState lLegADes = lLegASmoothController();
+	MotorState lLegBDes = lLegBSmoothController();
+	MotorState lLegHDes = lLegHSmoothController();
+	MotorState rLegADes = rLegASmoothController();
+	MotorState rLegBDes = rLegBSmoothController();
+	MotorState rLegHDes = rLegHSmoothController();
+
+	co.lLeg.motorCurrentA   = lLegAController(lLegADes.ang, rs.lLeg.halfA.motorAngle, lLegADes.vel, rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB   = lLegBController(lLegBDes.ang, rs.lLeg.halfB.motorAngle, lLegBDes.vel, rs.lLeg.halfB.motorVelocity);
+	co.lLeg.motorCurrentHip = lLegHController(lLegHDes.ang, rs.lLeg.hip.legBodyAngle, lLegHDes.vel, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentA   = rLegAController(rLegADes.ang, rs.rLeg.halfA.motorAngle, rLegADes.vel, rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB   = rLegBController(rLegBDes.ang, rs.rLeg.halfB.motorAngle, rLegBDes.vel, rs.rLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentHip = rLegHController(rLegHDes.ang, rs.rLeg.hip.legBodyAngle, rLegHDes.vel, rs.rLeg.hip.legBodyVelocity);
+
+	co.command = medulla_state_run;
+
+	if (lLegASmoothFinished.get() &&
+	    lLegBSmoothFinished.get() &&
+	    lLegHSmoothFinished.get() &&
+	    rLegASmoothFinished.get() &&
+	    rLegBSmoothFinished.get() &&
+	    rLegHSmoothFinished.get()) {
+	
+		setStateFlight();
+	}
 
 	return co;
+}
+
+void ATCForceHopping::setStateInit() {
+	mode = State::INIT;
 }
 
 RobotPos ATCForceHopping::stateFlight() {
@@ -73,6 +111,9 @@ void ATCForceHopping::setStateFlight() {
 atrias_msgs::controller_output ATCForceHopping::stateLocked(atrias_msgs::robot_state& rs) {
 	atrias_msgs::controller_output co;
 
+	lLegFlightGains();
+	rLegFlightGains();
+
 	MotorAngle desLegState = legToMotorPos(M_PI/2.0, guiIn.flightLegLen);
 	RobotPos desState;
 	desState.lLeg.A   = desLegState.A;
@@ -89,6 +130,12 @@ atrias_msgs::controller_output ATCForceHopping::stateLocked(atrias_msgs::robot_s
 	co.rLeg.motorCurrentB   = rLegBController(desState.rLeg.B,   rs.rLeg.halfB.motorAngle, 0, rs.rLeg.halfB.motorVelocity);
 	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 	co.command = medulla_state_run;
+
+	if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
+		setStateInit();
+	} else if (!guiIn.lockLeg) {
+		setStateFlight();
+	}
 	
 	return co;
 }
@@ -120,9 +167,11 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 
 	switch (mode) {
 		case State::INIT:
-			co = stateInit();
+			co = stateInit(rs);
 			break;
 		case State::FLIGHT: {
+			lLegFlightGains();
+			rLegFlightGains();
 			RobotPos desState = stateFlight();
 			co.lLeg.motorCurrentA   = lLegAController(desState.lLeg.A,   rs.lLeg.halfA.motorAngle, 0, rs.lLeg.halfA.motorVelocity);
 			co.lLeg.motorCurrentB   = lLegBController(desState.lLeg.B,   rs.lLeg.halfB.motorAngle, 0, rs.lLeg.halfB.motorVelocity);
@@ -131,7 +180,9 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			co.rLeg.motorCurrentB   = rLegBController(desState.rLeg.B,   rs.rLeg.halfB.motorAngle, 0, rs.rLeg.halfB.motorVelocity);
 			co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 			co.command = medulla_state_run;
-			if (guiIn.lockLeg) {
+			if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
+				setStateInit();
+			} else if (guiIn.lockLeg) {
 				setStateLocked();
 			}
 			break;
@@ -214,6 +265,48 @@ bool ATCForceHopping::configureHook() {
 	if (!legToMotorPos.ready()) {
 		log(RTT::Error) << "[ATCFH] Could not access legToMotorPos's operation!" << endlog();
 	}
+
+	TaskContext* lLegASmooth = lLegASmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!lLegASmooth)
+		return false;
+	lLegASmoothInit       = lLegASmooth->provides("smoothPath")->getOperation("init");
+	lLegASmoothController = lLegASmooth->provides("smoothPath")->getOperation("runController");
+	lLegASmoothFinished   = lLegASmooth->properties()->getProperty("isFinished");
+
+	TaskContext* lLegBSmooth = lLegBSmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!lLegBSmooth)
+		return false;
+	lLegBSmoothInit       = lLegBSmooth->provides("smoothPath")->getOperation("init");
+	lLegBSmoothController = lLegBSmooth->provides("smoothPath")->getOperation("runController");
+	lLegBSmoothFinished   = lLegBSmooth->properties()->getProperty("isFinished");
+
+	TaskContext* lLegHSmooth = lLegHSmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!lLegHSmooth)
+		return false;
+	lLegHSmoothInit       = lLegHSmooth->provides("smoothPath")->getOperation("init");
+	lLegHSmoothController = lLegHSmooth->provides("smoothPath")->getOperation("runController");
+	lLegHSmoothFinished   = lLegHSmooth->properties()->getProperty("isFinished");
+
+	TaskContext* rLegASmooth = rLegASmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!rLegASmooth)
+		return false;
+	rLegASmoothInit       = rLegASmooth->provides("smoothPath")->getOperation("init");
+	rLegASmoothController = rLegASmooth->provides("smoothPath")->getOperation("runController");
+	rLegASmoothFinished   = rLegASmooth->properties()->getProperty("isFinished");
+
+	TaskContext* rLegBSmooth = rLegBSmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!rLegBSmooth)
+		return false;
+	rLegBSmoothInit       = rLegBSmooth->provides("smoothPath")->getOperation("init");
+	rLegBSmoothController = rLegBSmooth->provides("smoothPath")->getOperation("runController");
+	rLegBSmoothFinished   = rLegBSmooth->properties()->getProperty("isFinished");
+
+	TaskContext* rLegHSmooth = rLegHSmoothLoader.load(this, "asc_path_generator", "ASCSmoothPathGenerator");
+	if (!rLegHSmooth)
+		return false;
+	rLegHSmoothInit       = rLegHSmooth->provides("smoothPath")->getOperation("init");
+	rLegHSmoothController = rLegHSmooth->provides("smoothPath")->getOperation("runController");
+	rLegHSmoothFinished   = rLegHSmooth->properties()->getProperty("isFinished");
 
 	log(Info) << "[ATCFH] configured!" << endlog();
 	return true;
