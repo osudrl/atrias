@@ -141,6 +141,8 @@ class ATCForceHopping : public TaskContext {
 
 		void lLegFlightGains();
 		void rLegFlightGains();
+		void lLegStanceGains();
+		void rLegStanceGains();
 
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);

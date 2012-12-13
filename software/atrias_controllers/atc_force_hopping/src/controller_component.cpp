@@ -111,16 +111,26 @@ void ATCForceHopping::setStateFlight() {
 atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_state& rs) {
 	atrias_msgs::controller_output co;
 
-	lLegFlightGains();
-	rLegFlightGains();
+	double lLegForce = lLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
+	                                       rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle);
+	double rLegForce = rLegForceController(rs.rLeg.halfA.motorAngle, rs.rLeg.halfA.legAngle,
+	                                       rs.rLeg.halfB.motorAngle, rs.rLeg.halfB.legAngle);
+
+	if (lLegForce > 100.0)
+		lLegFlightGains();
+	else
+		lLegStanceGains();
+
+	if (rLegForce > 100.0)
+		rLegFlightGains();
+	else
+		rLegStanceGains();
 
 	double elapsed   = ((double) (rs.timing.controllerTime - stanceStartTime)) / SECOND_IN_NANOSECONDS;
 	double duration  = .341;
 	double amplitude = 1774.3;
-	if (elapsed > duration)
-		elapsed = duration;
 
-	double tgtForce  = amplitude * sin(M_PI * elapsed / duration);
+	double tgtForce  = amplitude * sin(M_PI * ((elapsed > duration) ? duration : elapsed) / duration);
 	double lDeflDiff = forceDefl(tgtForce / 2.0, rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
 	double rDeflDiff = forceDefl(tgtForce / 2.0, rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
 
@@ -147,12 +157,7 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 	co.command = medulla_state_run;
 
-	if (elapsed >= duration &&
-	    lLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
-	                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) < 100.0 &&
-	    rLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
-	                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) < 100.0) {
-	
+	if (elapsed >= duration && lLegForce < 100.0 && rLegForce < 100.0) {
 		setStateFlight();
 	}
 
@@ -160,6 +165,8 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	logData.tgtForce  = tgtForce;
 	logData.lDeflDiff = lDeflDiff;
 	logData.rDeflDiff = rDeflDiff;
+	logData.lLegForce = lLegForce;
+	logData.rLegForce = rLegForce;
 
 	return co;
 }
@@ -219,6 +226,24 @@ void ATCForceHopping::rLegFlightGains() {
 	rLegAD.set(guiIn.flightD);
 	rLegBP.set(guiIn.flightP);
 	rLegBD.set(guiIn.flightD);
+	rLegHP.set(guiIn.hipP);
+	rLegHD.set(guiIn.hipD);
+}
+
+void ATCForceHopping::lLegStanceGains() {
+	lLegAP.set(guiIn.stanceP);
+	lLegAD.set(guiIn.stanceD);
+	lLegBP.set(guiIn.stanceP);
+	lLegBD.set(guiIn.stanceD);
+	lLegHP.set(guiIn.hipP);
+	lLegHD.set(guiIn.hipD);
+}
+
+void ATCForceHopping::rLegStanceGains() {
+	rLegAP.set(guiIn.stanceP);
+	rLegAD.set(guiIn.stanceD);
+	rLegBP.set(guiIn.stanceP);
+	rLegBD.set(guiIn.stanceD);
 	rLegHP.set(guiIn.hipP);
 	rLegHD.set(guiIn.hipD);
 }
