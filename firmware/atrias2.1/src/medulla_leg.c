@@ -170,10 +170,12 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 
 inline void leg_enable_outputs(void) {
 	enable_amp(true);
+	limit_sw_enable_port(&limit_sw_port);
 }
 
 inline void leg_disable_outputs(void) {
 	disable_amp(true);
+	limit_sw_disable_port(&limit_sw_port);
 }
 
 void leg_update_inputs(uint8_t id) {

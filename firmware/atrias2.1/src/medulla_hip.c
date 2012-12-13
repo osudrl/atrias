@@ -147,10 +147,12 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 }
 
 inline void hip_enable_outputs(void) {
+	limit_sw_enable_port(&hip_limit_sw_port);
 	enable_amp(false);
 }
 
 inline void hip_disable_outputs(void) {
+	limit_sw_disable_port(&hip_limit_sw_port);
 	disable_amp(false);
 }
 
