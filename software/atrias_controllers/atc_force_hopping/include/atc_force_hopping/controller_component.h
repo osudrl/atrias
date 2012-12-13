@@ -48,12 +48,12 @@ class ATCForceHopping : public TaskContext {
 		OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEvent;
 		
 		// Logging
-		OutputPort<controller_log_data>  logPort;
+		controller_log_data             logData;
+		OutputPort<controller_log_data> logPort;
 		
 		// For the GUI
 		shared::GuiPublishTimer         *pubTimer;
 		controller_input                guiIn;
-		controller_status               guiOut;
 		InputPort<controller_input>     guiDataIn;
 		OutputPort<controller_status>   guiDataOut;
 
@@ -70,6 +70,9 @@ class ATCForceHopping : public TaskContext {
 		ASCLoader rLegASmoothLoader;
 		ASCLoader rLegBSmoothLoader;
 		ASCLoader rLegHSmoothLoader;
+		ASCLoader lLegForceLoader;
+		ASCLoader rLegForceLoader;
+		ASCLoader forceDeflLoader;
 
 		OperationCaller<double(double, double, double, double)> lLegAController;
 		OperationCaller<double(double, double, double, double)> lLegBController;
@@ -89,6 +92,9 @@ class ATCForceHopping : public TaskContext {
 		OperationCaller<MotorState(void)>                       rLegBSmoothController;
 		OperationCaller<void(double, double, double)>           rLegHSmoothInit;
 		OperationCaller<MotorState(void)>                       rLegHSmoothController;
+		OperationCaller<double(double, double, double, double)> lLegForceController;
+		OperationCaller<double(double, double, double, double)> rLegForceController;
+		OperationCaller<double(double, double, double)>         forceDefl;
 		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
 
 		Property<double> lLegAP;
@@ -110,6 +116,8 @@ class ATCForceHopping : public TaskContext {
 		Property<bool>   rLegBSmoothFinished;
 		Property<bool>   rLegHSmoothFinished;
 
+		RTT::os::TimeService::nsecs stanceStartTime;
+
 		/** @brief This represents the "init" state. It's called periodically during smooth initialization.
 		  * @return The controller output for this state.
 		  */
@@ -121,6 +129,11 @@ class ATCForceHopping : public TaskContext {
 		  */
 		RobotPos stateFlight();
 		void setStateFlight();
+
+		/** @brief This is called periodically during the stance state.
+		  */
+		atrias_msgs::controller_output stateStance(atrias_msgs::robot_state& rs);
+		void setStateStance(atrias_msgs::robot_state& rs);
 
 		// Our "locked leg" state
 		atrias_msgs::controller_output stateLocked(atrias_msgs::robot_state& rs);

@@ -55,7 +55,7 @@ bool ASCForceDefl::configureHook() {
 	// Connect to the subcontrollers
 	TaskContext* torqueDefl0 = torqueDefl0Loader.load(this, "asc_spring_torque", "ASCSpringTorque");
 	if (torqueDefl0)
-		torqueDefl0GetDefl = torqueDefl0->provides("forceDeflection")->getOperation("getDeflection");
+		torqueDefl0GetDefl = torqueDefl0->provides("springTorque")->getOperation("getDeflection");
 
 	log(Info) << "[ASCForceDefl] configured!" << endlog();
 	return true;

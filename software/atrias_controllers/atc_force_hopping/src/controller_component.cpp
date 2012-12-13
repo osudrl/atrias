@@ -108,6 +108,67 @@ void ATCForceHopping::setStateFlight() {
 	mode = State::FLIGHT;
 }
 
+atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_state& rs) {
+	atrias_msgs::controller_output co;
+
+	lLegFlightGains();
+	rLegFlightGains();
+
+	double elapsed   = ((double) (rs.timing.controllerTime - stanceStartTime)) / SECOND_IN_NANOSECONDS;
+	double duration  = .341;
+	double amplitude = 1774.3;
+	if (elapsed > duration)
+		elapsed = duration;
+
+	double tgtForce  = amplitude * sin(M_PI * elapsed / duration);
+	double lDeflDiff = forceDefl(tgtForce / 2.0, rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
+	double rDeflDiff = forceDefl(tgtForce / 2.0, rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
+
+	double lLegSum = rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle;
+	double rLegSum = rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle;
+	
+	RobotPos desState;
+	desState.lLeg.A   = (lLegSum + lDeflDiff + rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle) / 2.0;
+	desState.lLeg.B   = (lLegSum - lDeflDiff - rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0;
+	desState.lLeg.hip = 3.0 * M_PI / 2.0;
+	desState.rLeg.A   = (rLegSum + rDeflDiff + rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle) / 2.0;
+	desState.rLeg.B   = (rLegSum - rDeflDiff - rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0;
+	desState.rLeg.hip = 3.0 * M_PI / 2.0;
+
+	co.lLeg.motorCurrentA   = lLegAController(desState.lLeg.A,           rs.lLeg.halfA.motorAngle,
+	                                          rs.lLeg.halfA.legVelocity, rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB   = lLegBController(desState.lLeg.B,           rs.lLeg.halfB.motorAngle,
+	                                          rs.lLeg.halfB.legVelocity, rs.lLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentA   = rLegAController(desState.rLeg.A,           rs.rLeg.halfA.motorAngle,
+	                                          rs.rLeg.halfA.legVelocity, rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB   = rLegBController(desState.rLeg.B,           rs.rLeg.halfB.motorAngle,
+	                                          rs.rLeg.halfB.legVelocity, rs.rLeg.halfB.motorVelocity);
+	co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
+	co.command = medulla_state_run;
+
+	if (elapsed >= duration &&
+	    lLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
+	                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) < 100.0 &&
+	    rLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
+	                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) < 100.0) {
+	
+		setStateFlight();
+	}
+
+	logData.elapsed   = elapsed;
+	logData.tgtForce  = tgtForce;
+	logData.lDeflDiff = lDeflDiff;
+	logData.rDeflDiff = rDeflDiff;
+
+	return co;
+}
+
+void ATCForceHopping::setStateStance(atrias_msgs::robot_state& rs) {
+	stanceStartTime = rs.timing.controllerTime;
+	mode = State::STANCE;
+}
+
 atrias_msgs::controller_output ATCForceHopping::stateLocked(atrias_msgs::robot_state& rs) {
 	atrias_msgs::controller_output co;
 
@@ -185,6 +246,12 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			} else if (guiIn.lockLeg) {
 				setStateLocked();
 			}
+			if (lLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
+			                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) > 200.0 ||
+			    rLegForceController(rs.rLeg.halfA.motorAngle, rs.rLeg.halfA.legAngle,
+			                        rs.rLeg.halfB.motorAngle, rs.rLeg.halfA.legAngle) > 200.0) {
+				setStateStance(rs);
+			}
 			break;
 		}
 		case State::STANCE:
@@ -198,13 +265,11 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 	}
 
 	// Stuff the msg and push to ROS for logging
-	controller_log_data logData;
-	logData.desiredState = 0.0;
+	logData.controllerStatus.state = (State_t) mode;
 	logPort.write(logData);
 
 	if (pubTimer->readyToSend()) {
-		guiOut.state = (State_t) mode;
-		guiDataOut.write(guiOut);
+		guiDataOut.write(logData.controllerStatus);
 	}
 
 	// Output for RTOps
@@ -307,6 +372,21 @@ bool ATCForceHopping::configureHook() {
 	rLegHSmoothInit       = rLegHSmooth->provides("smoothPath")->getOperation("init");
 	rLegHSmoothController = rLegHSmooth->provides("smoothPath")->getOperation("runController");
 	rLegHSmoothFinished   = rLegHSmooth->properties()->getProperty("isFinished");
+
+	TaskContext* lLegForceInst = lLegForceLoader.load(this, "asc_spring_force", "ASCSpringForce");
+	if (!lLegForceInst)
+		return false;
+	lLegForceController = lLegForceInst->provides("springForce")->getOperation("getForce");
+
+	TaskContext* rLegForceInst = rLegForceLoader.load(this, "asc_spring_force", "ASCSpringForce");
+	if (!rLegForceInst)
+		return false;
+	rLegForceController = rLegForceInst->provides("springForce")->getOperation("getForce");
+
+	TaskContext* forceDeflInst = forceDeflLoader.load(this, "asc_force_defl", "ASCForceDefl");
+	if (!forceDeflInst)
+		return false;
+	forceDefl = forceDeflInst->provides("forceDeflection")->getOperation("getDeflectionDiff");
 
 	log(Info) << "[ATCFH] configured!" << endlog();
 	return true;
