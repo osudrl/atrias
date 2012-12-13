@@ -1,1 +1,1 @@
-bool isEnabled
+int8 state

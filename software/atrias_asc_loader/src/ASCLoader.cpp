@@ -129,8 +129,8 @@ ASCLoader::~ASCLoader() {
 	stopController = subcontroller->getOperation("stop");
 	if (!stopController.ready()) {
 		reportUnloadError("Could not acquire stop operation!");
-	} else if (!stopController()) {
-		reportUnloadError("Failed to stop subcontroller!");
+	} else {
+		stopController();
 	}
 
 	// And tell it to clean up.

@@ -9,7 +9,10 @@ loadComponent("controller", "ATCForceHopping")
 connectPeers("atrias_rt", "controller")
 
 # And with the deployer so it can create subcontrollers
-connectPeers("controller", "Deployer")
+addPeer("controller", "Deployer")
+
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
 
 # Set up the gui connection
 var ConnPolicy gui_policy

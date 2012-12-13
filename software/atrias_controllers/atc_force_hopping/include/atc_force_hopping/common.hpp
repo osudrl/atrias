@@ -18,6 +18,12 @@ enum class State: State_t {
 	LOCKED    // To let us stop bouncing w/out breaking
 };
 
+/** @brief This is the metadata for this controller's custom events
+  */
+enum class EventMetadata: rtOps::RtOpsEventMetadata_t {
+	BAD_MAIN_STATE = 1
+};
+
 }
 
 }

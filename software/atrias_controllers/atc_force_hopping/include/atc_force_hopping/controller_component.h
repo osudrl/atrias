@@ -22,10 +22,11 @@
 #include <robot_invariant_defs.h>
 
 // Datatypes
-#include "atc_force_hopping/controller_common.hpp"
+#include "atc_force_hopping/common.hpp"
 #include <atc_force_hopping/controller_input.h>
 #include <atc_force_hopping/controller_status.h>
 #include <atc_force_hopping/controller_log_data.h>
+#include <atrias_asc_loader/ASCLoader.hpp>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
@@ -41,9 +42,6 @@ namespace controller {
 
 class ATCForceHopping : public TaskContext {
 	private:
-		// This Operation is called by the RT Operations Manager.
-		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
-
 		State mode;
 
 		// This lets us send an event upon encountering an error
@@ -56,6 +54,56 @@ class ATCForceHopping : public TaskContext {
 		shared::GuiPublishTimer                         *pubTimer;
 		controller_input guiIn;
 		InputPort<controller_input>                     guiDataIn;
+
+		// Our subcontrollers
+		ASCLoader lLegAControllerLoader;
+		ASCLoader lLegBControllerLoader;
+		ASCLoader lLegHControllerLoader;
+		ASCLoader rLegAControllerLoader;
+		ASCLoader rLegBControllerLoader;
+		ASCLoader rLegHControllerLoader;
+
+		OperationCaller<double(double, double, double, double)> lLegAController;
+		OperationCaller<double(double, double, double, double)> lLegBController;
+		OperationCaller<double(double, double, double, double)> lLegHController;
+		OperationCaller<double(double, double, double, double)> rLegAController;
+		OperationCaller<double(double, double, double, double)> rLegBController;
+		OperationCaller<double(double, double, double, double)> rLegHController;
+		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
+
+		Property<double> lLegAP;
+		Property<double> lLegAD;
+		Property<double> lLegBP;
+		Property<double> lLegBD;
+		Property<double> lLegHP;
+		Property<double> lLegHD;
+		Property<double> rLegAP;
+		Property<double> rLegAD;
+		Property<double> rLegBP;
+		Property<double> rLegBD;
+		Property<double> rLegHP;
+		Property<double> rLegHD;
+
+		/** @brief This represents the "init" state. It's called periodically during smooth initialization.
+		  * @return The controller output for this state.
+		  */
+		atrias_msgs::controller_output stateInit();
+
+		/** @brief This represents the "flight" state. This is called periodically.
+		  * @return The desired robot state (angle for each motor).
+		  */
+		RobotPos stateFlight();
+		void setStateFlight();
+
+		// Our "locked leg" state
+		atrias_msgs::controller_output stateLocked(atrias_msgs::robot_state& rs);
+		void setStateLocked();
+
+		void lLegFlightGains();
+		void rLegFlightGains();
+
+		// This Operation is called by the RT Operations Manager.
+		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 		
 	public:
 		// Constructor
@@ -72,3 +120,5 @@ class ATCForceHopping : public TaskContext {
 }
 
 #endif
+
+// vim: noexpandtab
