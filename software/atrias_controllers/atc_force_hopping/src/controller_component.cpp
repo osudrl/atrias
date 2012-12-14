@@ -155,7 +155,7 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	                                          rs.rLeg.halfB.legVelocity, rs.rLeg.halfB.motorVelocity);
 	co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
-	co.command = medulla_state_run;
+	co.command = medulla_state_error;
 
 	if (elapsed >= duration && lLegForce < 100.0 && rLegForce < 100.0) {
 		setStateFlight();
@@ -274,12 +274,13 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			if (lLegForceController(rs.lLeg.halfA.motorAngle, rs.lLeg.halfA.legAngle,
 			                        rs.lLeg.halfB.motorAngle, rs.lLeg.halfB.legAngle) > 200.0 ||
 			    rLegForceController(rs.rLeg.halfA.motorAngle, rs.rLeg.halfA.legAngle,
-			                        rs.rLeg.halfB.motorAngle, rs.rLeg.halfA.legAngle) > 200.0) {
+			                        rs.rLeg.halfB.motorAngle, rs.rLeg.halfB.legAngle) > 200.0) {
 				setStateStance(rs);
 			}
 			break;
 		}
 		case State::STANCE:
+			stateStance(rs);
 			break;
 		case State::LOCKED:
 			co = stateLocked(rs);
