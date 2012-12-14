@@ -280,7 +280,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			break;
 		}
 		case State::STANCE:
-			stateStance(rs);
+			co = stateStance(rs);
 			break;
 		case State::LOCKED:
 			co = stateLocked(rs);
