@@ -35,7 +35,7 @@
   * robot's "ground".
   * Measured with a measuring tape.
   */
-#define BOOM_HEIGHT                0.915
+#define BOOM_HEIGHT                0.895
 
 /** @brief The meters of boom motion per encoder tick.
   * This is calculated from the boom's length, the number of encoder ticks per

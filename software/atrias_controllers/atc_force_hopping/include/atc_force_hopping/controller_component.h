@@ -70,8 +70,6 @@ class ATCForceHopping : public TaskContext {
 		ASCLoader rLegASmoothLoader;
 		ASCLoader rLegBSmoothLoader;
 		ASCLoader rLegHSmoothLoader;
-		ASCLoader lLegForceLoader;
-		ASCLoader rLegForceLoader;
 		ASCLoader forceDeflLoader;
 
 		OperationCaller<double(double, double, double, double)> lLegAController;
@@ -92,8 +90,6 @@ class ATCForceHopping : public TaskContext {
 		OperationCaller<MotorState(void)>                       rLegBSmoothController;
 		OperationCaller<void(double, double, double)>           rLegHSmoothInit;
 		OperationCaller<MotorState(void)>                       rLegHSmoothController;
-		OperationCaller<double(double, double, double, double)> lLegForceController;
-		OperationCaller<double(double, double, double, double)> rLegForceController;
 		OperationCaller<double(double, double, double)>         forceDefl;
 		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
 
@@ -117,6 +113,8 @@ class ATCForceHopping : public TaskContext {
 		Property<bool>   rLegHSmoothFinished;
 
 		RTT::os::TimeService::nsecs stanceStartTime;
+
+		double toeHeight(atrias_msgs::robot_state& rs, bool max);
 
 		/** @brief This represents the "init" state. It's called periodically during smooth initialization.
 		  * @return The controller output for this state.
