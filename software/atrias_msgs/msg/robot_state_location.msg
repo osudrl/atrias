@@ -16,3 +16,6 @@ float64 bodyPitch
 
 # How fast we are pitching
 float64 bodyPitchVelocity
+
+# Raw encoder counts
+int32   zEncoderRaw
