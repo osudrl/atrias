@@ -5,6 +5,13 @@
   * @brief This class decodes an encoder reading.
   */
 
+// Orocos
+#include <rtt/os/TimeService.hpp>
+
+// Our stuff
+#include <atrias_shared/globals.h>
+#include <robot_invariant_defs.h>
+
 // Standard libs
 #include <cstdint>
 
@@ -23,7 +30,7 @@ class Encoder {
 		  * @param deltaTime The time between the last \a update() and the one before it.
 		  * @return This encoder's current velocity.
 		  */
-		double getVel(double deltaTime);
+		double getVel();
 
 		/** @brief This initializes this Encoder.
 		  * @param bits         The number of "bits" in this encoder's output (for wraparound compensation).
@@ -34,10 +41,14 @@ class Encoder {
 		void init(int bits, uint32_t calibReading, double calibLoc, double scaling);
 
 		/** @brief Updates this encoder's position and velocity
-		  * @param reading This encoder's current reading
+		  * @param reading    This encoder's current reading
+		  * @param delta_time The time between this cycle and the last (just DC differences)
+		  * @param timestamp  This encoder's timestamp for this cycle.
 		  * This must be run each cycle before getPos and getVel
+		  * deltaTime is the same for every encoder on a given Medulla, timestamp is different for
+		  * each encoder.
 		  */
-		void update(uint32_t reading);
+		void update(uint32_t reading, RTT::os::TimeService::nsecs delta_time, uint16_t timestamp);
 	
 	private:
 		/** @brief This is the calibration position.
@@ -62,9 +73,19 @@ class Encoder {
 		  */
 		int32_t deltaPos;
 
+		/** @brief This is the delta time between the last two encoder readings.
+		  * This is for velocity calculations.
+		  */
+		double deltaTime;
+
 		/** @brief This encoder's last reading. Used to calculate deltaPos
 		  */
 		uint32_t lastReading;
+
+		/** @brief This is the last timestamp value.
+		  * This is used in the velocity calculation.
+		  */
+		uint16_t lastTimestamp;
 
 		/** @brief This stores the encoder's number of bits.
 		  * Used for wraparound compensation

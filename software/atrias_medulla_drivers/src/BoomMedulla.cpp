@@ -26,9 +26,8 @@ PDORegData BoomMedulla::getPDORegData() {
 };
 
 void BoomMedulla::postOpInit() {
-	xEncoderValue   = *xEncoder;
-	xTimestampValue = *xTimestamp;
-	
+	xEncoderDecoder.init(BOOM_ENCODER_BITS, *xEncoder, 0.0, BOOM_X_METERS_PER_TICK);
+
 	pitchEncoderPos = (*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE)
 	                  % (1 << BOOM_ENCODER_BITS);
 	
@@ -62,17 +61,10 @@ uint8_t BoomMedulla::getID() {
 
 void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state& robotState) {
-	// Obtain the deltas
-	int deltaPos = ((int32_t) *xEncoder) - ((int32_t) xEncoderValue);
-    xEncoderValue += deltaPos;
-	double actualDeltaTime =
-		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
-		((double) (((int16_t) *xTimestamp) - xTimestampValue))
-		/ ((double) MEDULLA_TIMER_FREQ);
 
-	robotState.position.xPosition += deltaPos * BOOM_X_METERS_PER_TICK;
-	robotState.position.xVelocity  =
-		deltaPos * BOOM_X_METERS_PER_TICK / actualDeltaTime;
+	xEncoderDecoder.update(*xEncoder, deltaTime, *xTimestamp);
+	robotState.position.xPosition = xEncoderDecoder.getPos();
+	robotState.position.xVelocity = xEncoderDecoder.getVel();
 }
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
@@ -105,7 +97,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
                                   atrias_msgs::robot_state&   robotState) {
-    //log(RTT::Info) << "Z Encoder value: " << *zEncoder << RTT::endlog();
+	//log(RTT::Info) << "Z Encoder value: " << *zEncoder << RTT::endlog();
 	// Obtain the deltas.
 	int deltaPos = ((int32_t) *zEncoder) - ((int32_t) zEncoderValue);
 	double actualDeltaTime =

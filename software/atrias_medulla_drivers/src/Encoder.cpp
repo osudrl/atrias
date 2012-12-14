@@ -8,7 +8,7 @@ double Encoder::getPos() {
 	return calibPos + scalingRatio * curPos;
 }
 
-double Encoder::getVel(double deltaTime) {
+double Encoder::getVel() {
 	return scalingRatio * deltaPos / deltaTime;
 }
 
@@ -20,13 +20,14 @@ void Encoder::init(int bits, uint32_t calibReading, double calibLoc, double scal
 	calibrated   = false;
 }
 
-void Encoder::update(uint32_t reading) {
+void Encoder::update(uint32_t reading, RTT::os::TimeService::nsecs delta_time, uint16_t timestamp) {
 	intmax_t range     = 1 << numBits;
 	intmax_t halfRange = range / 2;
 	if (!calibrated) {
 		curPos             = reading - calibValue;
 		curPos             = mod(curPos + halfRange, range) - halfRange;
 		lastReading        = reading;
+		lastTimestamp      = timestamp;
 		calibrated         = true;
 	}
 
@@ -34,6 +35,10 @@ void Encoder::update(uint32_t reading) {
 	deltaPos     = mod(deltaPos + halfRange, range) - halfRange;
 	curPos      += deltaPos;
 	lastReading += deltaPos;
+
+	deltaTime     = ((double) delta_time) / SECOND_IN_NANOSECONDS;
+	deltaTime    += ((int16_t) (timestamp - lastTimestamp)) / MEDULLA_TIMER_FREQ;
+	lastTimestamp = timestamp;
 }
 
 intmax_t Encoder::mod(intmax_t a, intmax_t b) {

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include "atrias_medulla_drivers/Encoder.h"
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
@@ -44,14 +45,10 @@ class BoomMedulla : public Medulla {
 	
 	// The following variables are used for processing
 	uint8_t   timingCounterValue;
-	
-	/** @brief The last value of the X encoder. Used to find position deltas.
+
+	/** @brief This decodes the X encoder for us.
 	  */
-	uint32_t  xEncoderValue;
-	
-	/** @brief The last value of *xTimestamp.
-	  */
-	int16_t   xTimestampValue;
+	Encoder   xEncoderDecoder;
 	
 	/** @brief The last value of the pitch encoder. Used to find position deltas.
 	  */
