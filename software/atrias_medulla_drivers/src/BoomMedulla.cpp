@@ -69,7 +69,7 @@ void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
 		((double) deltaTime) / ((double) SECOND_IN_NANOSECONDS) +
 		((double) (((int16_t) *xTimestamp) - xTimestampValue))
 		/ ((double) MEDULLA_TIMER_FREQ);
-	
+
 	robotState.position.xPosition += deltaPos * BOOM_X_METERS_PER_TICK;
 	robotState.position.xVelocity  =
 		deltaPos * BOOM_X_METERS_PER_TICK / actualDeltaTime;
@@ -77,7 +77,7 @@ void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
                                       atrias_msgs::robot_state& robotState) {
-    //log(RTT::Info) << "Boom pitch encoder counts: " << *pitchEncoder << RTT::endlog();
+	//log(RTT::Info) << "Boom pitch encoder counts: " << *pitchEncoder << RTT::endlog();
 	// Obtain the deltas
 	int deltaPos = ((int32_t) *pitchEncoder) - ((int32_t) pitchEncoderValue);
 	
@@ -146,6 +146,8 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
 	
 	zEncoderValue   = *zEncoder;
 	zTimestampValue = *zTimestamp;
+
+	robotState.position.zEncoderRaw = *zEncoder;
 }
 
 void BoomMedulla::processTransmitData(atrias_msgs::controller_output& controller_output) {
@@ -177,3 +179,5 @@ void BoomMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 }
 
 }
+
+// vim: noexpandtab

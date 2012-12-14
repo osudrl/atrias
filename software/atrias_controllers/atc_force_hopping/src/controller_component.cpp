@@ -156,7 +156,6 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	                                          rs.rLeg.halfB.legVelocity, rs.rLeg.halfB.motorVelocity);
 	co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
-	co.command = medulla_state_error;
 
 	if (elapsed >= duration && toeHeight(rs, true) > 0.02) {
 		setStateFlight();
