@@ -246,12 +246,15 @@ default:
 	{
 	case 1:
 		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance)
-		{																			// stance leg rotate to pea
+		{																								// stance leg rotate to pea
+					t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 					// asymmetry - extend right leg
-					rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
+			        rightMotorAngle = legToMotorPos(phi_rLeg,(guiIn.l_leg_st*cos(M_PI/2 - guiIn.aea))/cos(M_PI/2-phi_rLeg));
+					//##rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
 					D4.set(guiIn.d_ls);
 					P4.set(guiIn.p_ls);
-					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
+					//##co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + (1 - t) * (guiIn.l_st - 3) + 3;
 					D3.set(guiIn.d_ls);
 					P3.set(guiIn.p_ls);
 					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
@@ -270,7 +273,7 @@ default:
 		}
 		
 	//******************************************************************************************************************************************************************************************************************
-		if ((t < 1) && (!sw_flight)) 
+		if ((1.1*t < 1) && (!sw_flight)) 
         {
 			
             			//map leg angle sweep of flight leg to 0->1
@@ -281,7 +284,8 @@ default:
 						if (t>1)
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						l_swing = sin (-M_PI/2 + 2 * M_PI * 1.1*t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						//##l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
 						//printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
