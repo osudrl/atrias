@@ -28,11 +28,18 @@ ATCVelocityTuning::ATCVelocityTuning(std::string name) :
 }
 
 atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::robot_state rs) {
+	atrias_msgs::controller_output co;
 	P0.set(guiIn.Kp);
+
+	if (guiIn.relayMode == 1 && abs(rs.rLeg.halfA.rotorAngle - rs.rLeg.halfA.motorAngle) > 0.1) {
+		co.command = medulla_state_error;
+	} else {
+		co.command = medulla_state_run;
+	}
 
 	if (guiIn.relayMode == 0 || guiIn.relayMode == 1) {
 		// Set motorAngle based on the correct sensor.
-		double motorAngle = (guiIn.relayMode == 0) ? rs.lLeg.halfA.motorAngle : rs.lLeg.halfA.rotorAngle;
+		double motorAngle = (guiIn.relayMode == 0) ? rs.rLeg.halfA.motorAngle : rs.rLeg.halfA.rotorAngle;
 
 		if (motorAngle > guiIn.maxPos)
 			cur_dir = -1;
@@ -46,20 +53,15 @@ atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::rob
 		cur_dir = -1;
 	}
 	
-	atrias_msgs::controller_output co;
-	
-	co.lLeg.motorCurrentA   = pd0RunController(cur_dir * guiIn.desVel,
-	                                           (guiIn.sensor) ? rs.lLeg.halfA.rotorVelocity :
-	                                                            rs.lLeg.halfA.motorVelocity,
+	co.rLeg.motorCurrentA   = pd0RunController(cur_dir * guiIn.desVel,
+	                                           (guiIn.sensor) ? rs.rLeg.halfA.rotorVelocity :
+	                                                            rs.rLeg.halfA.motorVelocity,
 	                                           0.0, 0.0);
+	co.lLeg.motorCurrentA   = 0.0;
 	co.lLeg.motorCurrentB   = 0.0;
 	co.lLeg.motorCurrentHip = 0.0;
-	co.rLeg.motorCurrentA   = 0.0;
 	co.rLeg.motorCurrentB   = 0.0;
 	co.rLeg.motorCurrentHip = 0.0;
-
-	// Command a run state
-	co.command = medulla_state_run;
 
 	// Output for RTOps
 	return co;
