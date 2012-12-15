@@ -14,7 +14,7 @@ RTHandler::RTHandler() {
 
 void RTHandler::beginRT() {
 	if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
-		log(RTT::Error) << "[RTOps] Failed to lock memory!" << RTT::endlog();
+		log(RTT::Warning) << "[RTOps] Failed to lock memory!" << RTT::endlog();
 	}
 }
 
