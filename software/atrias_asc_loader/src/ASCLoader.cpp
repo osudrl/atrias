@@ -170,7 +170,7 @@ void ASCLoader::reportLoadError(std::string       message,
 }
 
 void ASCLoader::reportUnloadError(std::string message) {
-	log(RTT::Error) << "[ASCLoader] " << message
+	log(RTT::Warning) << "[ASCLoader] " << message
 	                << " Subcontroller name: "
 	                << subcontroller->getName() << RTT::endlog();
 }
