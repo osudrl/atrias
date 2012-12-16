@@ -130,6 +130,8 @@ void restart_robot();
 void enable_motors();
 void disable_motors();
 
+void takedown_current_controller();
+
 void switch_controllers(GtkNotebookPage *, guint);
 
 void draw_leg();

@@ -66,7 +66,6 @@ bool ControllerManager::startHook() {
 }
 
 void ControllerManager::updateHook() {
-    std::cout << "[CManager] updateHook called!" << std::endl;
     // Process all RT Ops events
     while (processRtOpsEvent());
 

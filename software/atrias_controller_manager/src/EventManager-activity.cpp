@@ -33,7 +33,10 @@ void EventManager::loop() {
             }
     	}
     	if (process) {
-            if (event == eventBeingWaitedOn) {
+			if (event == rtOps::RtOpsEvent::MISSED_DEADLINE) {
+				std::cout << "[CManager] Missed real-time deadline!" << std::endl;
+			}
+			else if (event == eventBeingWaitedOn) {
                 switch (event) {
                     case rtOps::RtOpsEvent::ACK_DISABLE: {
                         cManager->setState(ControllerManagerState::CONTROLLER_STOPPED);
@@ -83,7 +86,7 @@ void EventManager::loop() {
             }
     	}
 
-        if (eventsWaitingSignal.value() == 0 || incomingEvents.empty()) {
+        if (eventsWaitingSignal.value() == 1) { // There was only one event queued and we just handled it
             /*bool pending;
             {
                 os::MutexLock lock(cManager->commandPendingLock);
@@ -117,9 +120,9 @@ void EventManager::setEventWait(rtOps::RtOpsEvent event) {
     {
         os::MutexLock lock(incomingEventsLock);
         eventBeingWaitedOn = event;
+        if (eventsWaitingSignal.value() == 0)
+            eventsWaitingSignal.signal();
     }
-    if (eventsWaitingSignal.value() == 0)
-        eventsWaitingSignal.signal();
     os::MutexLock commandLock(cManager->commandPendingLock);
     cManager->commandPending = true;
 }

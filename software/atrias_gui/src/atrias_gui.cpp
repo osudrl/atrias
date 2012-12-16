@@ -134,8 +134,11 @@ int main (int argc, char **argv) {
 
     statusGui = new StatusGui(argv[0]);
 
-    gtk.run(*controller_window);
-    ROS_INFO("GUI: Running.");
+    gtk.run(*controller_window); //When this exits the GUI has been closed
+
+    //Now we want to disable and unload the controller before we close out
+    disable_motors();
+    takedown_current_controller();
 
     return 0;
 }
@@ -290,49 +293,42 @@ void disable_motors() {
     atrias_gui_cm_output.publish(go);
 }
 
+//! @brief Takes down the current controller and informs the controller manager
+void takedown_current_controller() {
+
+    if (controller_loaded && controllerTakedown && controllerUpdate) {
+        controllerTakedown();
+    }
+
+    // Delete currently loaded GUI parameters.
+    if (ros::param::has("/atrias_gui")) {
+        int rosparamPID = fork();
+        if (rosparamPID == 0) {   // Child process
+            execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
+            exit(127);   // Exit code 127 if command not found.
+        }
+    }
+    go.requestedController = "none";
+    go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
+    atrias_gui_cm_output.publish(go);
+
+    controller_loaded = false;
+}
+
 //! @brief Change the active controller.but this is the last night we have and we have to get the rooot
 void switch_controllers(GtkNotebookPage* page, guint page_num) {
     if (go.command != (uint8_t)UserCommand::STOP)
         controller_notebook->set_current_page(currentControllerID + 1);
     else if (page_num == CONTROLLER_LOAD_PAGE) {
         //Take down the previous controller
-        if (controller_loaded && controllerTakedown && controllerUpdate) {
-            controllerTakedown();
+    	takedown_current_controller();
 
-            // Delete currently loaded GUI parameters.
-            if (ros::param::has("/atrias_gui")) {
-                int rosparamPID = fork();
-                if (rosparamPID == 0) {   // Child process
-                    execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
-                    exit(127);   // Exit code 127 if command not found.
-                }
-            }
-        }
-        controller_loaded = false;
-        go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
-        go.requestedController = "none";
         atrias_gui_cm_output.publish(go);
         go.command = (uint8_t)UserCommand::STOP;
     }
     else {
         //Take down the previous controller
-        if (controller_loaded && controllerTakedown && controllerUpdate) {
-            controllerTakedown();
-
-            // Delete currently loaded GUI parameters.
-            if (ros::param::has("/atrias_gui")) {
-                int rosparamPID = fork();
-                if (rosparamPID == 0) {   // Child process
-                    execlp("rosparam", "rosparam", "delete", "/atrias_gui", NULL);
-                    exit(127);   // Exit code 127 if command not found.
-                }
-            }
-            go.requestedController = "none";
-            go.command = (uint8_t)UserCommand::UNLOAD_CONTROLLER;
-            atrias_gui_cm_output.publish(go);
-        }
-
-        controller_loaded = false;
+        takedown_current_controller();
 
         controllerName = controllerNames[controllerDetectedIDs[page_num - 1]];
 
