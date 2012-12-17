@@ -32,3 +32,7 @@ float64[6] motorTherms
 # Voltages
 float64 logicVoltage
 float64 motorVoltage
+
+# This half's strain gauge.
+# Don't use this for controllers -- use the one in robot_state_leg instead.
+int32   kneeForce

@@ -86,33 +86,30 @@ void EventManager::loop() {
             }
     	}
 
-        if (eventsWaitingSignal.value() == 1) { // There was only one event queued and we just handled it
-            /*bool pending;
-            {
-                os::MutexLock lock(cManager->commandPendingLock);
-                pending = cManager->commandPending;
-            }
-            if (pending) {
-                //Wait for a limited time for an event to come in
-                printf("[CManager] Going into eventsWaitingSignal wait!\n");
-                ASSERT(eventsWaitingSignal.waitUntil(
-                        os::TimeService::Instance()->secondsSince(0) +
-                        ((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS)),
-                        "ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
-                //If we made it this far we've got a message and it's time to process it
-            }
-            else*/ {
-                //Block until an event comes in
-                eventsWaitingSignal.wait();
-            }
-    	}
+        /*bool pending;
+        {
+            os::MutexLock lock(cManager->commandPendingLock);
+            pending = cManager->commandPending;
+        }
+        if (pending) {
+            //Wait for a limited time for an event to come in
+            printf("[CManager] Going into eventsWaitingSignal wait!\n");
+            ASSERT(eventsWaitingSignal.waitUntil(
+                    os::TimeService::Instance()->secondsSince(0) +
+                    ((RTT::Seconds)RT_OPS_WAIT_TIMEOUT_SECS)),
+                    "ERROR! Timed out waiting for RT Ops to acknowledge a command!\n");
+            //If we made it this far we've got a message and it's time to process it
+        }
+        else*/
+        //Block until an event comes in
+        eventsWaitingSignal.wait();
     }
 }
 
 void EventManager::eventCallback(rtOps::RtOpsEvent event) {
     os::MutexLock lock(incomingEventsLock);
     incomingEvents.push_back(event);
-    if (eventsWaitingSignal.value() == 0)
+    //if (eventsWaitingSignal.value() == 0)
         eventsWaitingSignal.signal();
 }
 
@@ -120,7 +117,7 @@ void EventManager::setEventWait(rtOps::RtOpsEvent event) {
     {
         os::MutexLock lock(incomingEventsLock);
         eventBeingWaitedOn = event;
-        if (eventsWaitingSignal.value() == 0)
+        //if (eventsWaitingSignal.value() == 0)
             eventsWaitingSignal.signal();
     }
     os::MutexLock commandLock(cManager->commandPendingLock);

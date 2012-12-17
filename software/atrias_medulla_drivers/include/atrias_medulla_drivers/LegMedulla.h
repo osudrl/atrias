@@ -60,6 +60,9 @@ class LegMedulla : public Medulla {
 	
 	int16_t*        amp1MeasuredCurrent;
 	int16_t*        amp2MeasuredCurrent;
+
+	uint16_t*       kneeForce1;
+	uint16_t*       kneeForce2;
 	
 	// Used for processing
 	int64_t         motorEncoderValue;
@@ -116,6 +119,11 @@ class LegMedulla : public Medulla {
 	  * @param reset Whether or not to reset the limit switch values.
 	  */
 	void         processLimitSwitches(atrias_msgs::robot_state& robotState, bool reset);
+
+	/** @brief Reads in and processes the strain gauge values.
+	  * @param robotState The robot_state in which to store the new values.
+	  */
+	void         processStrainGauges(atrias_msgs::robot_state&  robotState);
 	
 	/** @brief Processes the motor and logic voltages.
 	  */

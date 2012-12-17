@@ -14,3 +14,6 @@ uint16  toeSwitch
 bool    legRetractSwitch
 bool    motorRetractSwitch
 bool    legExtendSwitch
+
+# Strain gauge value
+int32   kneeForce

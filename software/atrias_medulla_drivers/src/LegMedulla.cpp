@@ -30,6 +30,8 @@ LegMedulla::LegMedulla() : Medulla() {
 	pdoEntryDatas[22] = {2, (void**) &thermistor5};
 	pdoEntryDatas[23] = {2, (void**) &amp1MeasuredCurrent};
 	pdoEntryDatas[24] = {2, (void**) &amp2MeasuredCurrent};
+	pdoEntryDatas[25] = {2, (void**) &kneeForce1};
+	pdoEntryDatas[26] = {2, (void**) &kneeForce2};
 }
 
 PDORegData LegMedulla::getPDORegData() {
@@ -170,6 +172,7 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	processLimitSwitches(robot_state, *state == medulla_state_idle);
 	processVoltages(robot_state);
 	processCurrents(robot_state);
+	processStrainGauges(robot_state);
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robot_state.lLeg.halfA.medullaState = *state;
@@ -452,6 +455,34 @@ void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState, bool
 			leg->halfB.negDeflectSwitch    = (leg->halfB.limitSwitches) & (1 << 2);
 			leg->halfB.posDeflectSwitch    = (leg->halfB.limitSwitches) & (1 << 3);
 			leg->motorRetractSwitch        = (leg->halfB.limitSwitches) & (1 << 4);
+			break;
+	}
+}
+
+void LegMedulla::processStrainGauges(atrias_msgs::robot_state& robotState) {
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID:
+			robotState.lLeg.halfA.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			break;
+		case MEDULLA_LEFT_LEG_B_ID:
+			robotState.lLeg.halfB.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			break;
+		case MEDULLA_RIGHT_LEG_A_ID:
+			robotState.rLeg.halfA.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			break;
+		case MEDULLA_RIGHT_LEG_B_ID:
+			robotState.rLeg.halfB.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			break;
+	}
+
+	switch (*id) {
+		case MEDULLA_LEFT_LEG_A_ID: // Fallthrough
+		case MEDULLA_LEFT_LEG_B_ID:
+			robotState.lLeg.kneeForce = robotState.lLeg.halfA.kneeForce + robotState.lLeg.halfB.kneeForce;
+			break;
+		case MEDULLA_RIGHT_LEG_A_ID: // Fallthrough
+		case MEDULLA_RIGHT_LEG_B_ID:
+			robotState.rLeg.kneeForce = robotState.rLeg.halfA.kneeForce + robotState.rLeg.halfB.kneeForce;
 			break;
 	}
 }
