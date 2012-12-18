@@ -1,5 +1,3 @@
-Header header
-
 # Allows the controller to control the robot's state.
 # Of type medulla_state_t
 int8    command

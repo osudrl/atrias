@@ -1,5 +1,3 @@
-Header header
-
 uint8   medullaState
 uint8   errorFlags
 # The raw limit switch values. These are latched on until a reset is commanded.

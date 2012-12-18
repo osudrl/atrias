@@ -1,5 +1,3 @@
-Header header
-
 # The controller output data for one leg.
 
 float64 motorCurrentA
