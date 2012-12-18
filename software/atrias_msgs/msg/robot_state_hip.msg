@@ -9,10 +9,6 @@ float64 legBodyVelocity
 float64 absoluteBodyAngle
 float64 motorCurrent
 
-# Limit switches
-bool    InsideLimitSwitch
-bool    OutsideLimitSwitch
-
 # Hip thermistors
 float64 motorThermA
 float64 motorThermB

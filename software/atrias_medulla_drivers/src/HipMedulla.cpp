@@ -77,8 +77,8 @@ void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip, bool res
 	if (reset)
 		hip.limitSwitches = 0;
 	hip.limitSwitches     |= *limitSwitches;
-	hip.InsideLimitSwitch  = hip.limitSwitches & (1 << 0);
-	hip.OutsideLimitSwitch = hip.limitSwitches & (1 << 1);
+	//hip.InsideLimitSwitch  = hip.limitSwitches & (1 << 0);
+	//hip.OutsideLimitSwitch = hip.limitSwitches & (1 << 1);
 }
 
 void HipMedulla::updateEncoderValues(RTT::os::TimeService::nsecs delta_time,

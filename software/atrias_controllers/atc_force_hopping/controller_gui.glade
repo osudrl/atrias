@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18"/>
+  <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkVBox" id="controller_tab">
     <property name="visible">True</property>
@@ -301,6 +301,7 @@
       <object class="GtkComboBox" id="legModeCombo">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="has_entry">True</property>
       </object>
       <packing>
         <property name="expand">True</property>
@@ -317,7 +318,7 @@
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
-        <property name="position">7</property>
+        <property name="position">8</property>
       </packing>
     </child>
     <child>
