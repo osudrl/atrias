@@ -1,4 +1,4 @@
-/*! \file controller_component.cpp
+/*! \FILE CONTROLLER_COMPONENT.CPp
  *  \author Daniel Renjewski	Nov. 5, 2012
  *  \to run with simulation
  *  \brief Orocos Component code for the atc_eq_point controller.
@@ -176,11 +176,15 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
     amp=guiIn.l_leg_st-guiIn.l_leg_fl;
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		//right leg angle
-	l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
+	logData.l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		//left leg angle
-	l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);	//left leg length
+	logData.l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);	//left leg length
 	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
 	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
+	logData.state = state;
+	logData.phi_rLeg = phi_rLeg;
+	logData.phi_lLeg = phi_lLeg;
+	
    
 switch (state)
 {
@@ -253,8 +257,7 @@ default:
 					//##rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
 					D4.set(guiIn.d_ls);
 					P4.set(guiIn.p_ls);
-					//##co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
-					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + (1 - t) * (guiIn.l_st - 7) + 7;
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
 					D3.set(guiIn.d_ls);
 					P3.set(guiIn.p_ls);
 					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
@@ -318,11 +321,11 @@ default:
 		if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 		{           // stance leg rotate to pea
 					// asymmetry - extend left leg
-					leftMotorAngle = legToMotorPos(phi_lLeg,(guiIn.l_leg_st*cos(M_PI/2 - guiIn.aea))/cos(M_PI/2-phi_lLeg));
-					//##leftMotorAngle = legToMotorPos(phi_lLeg,guiIn.l_leg_st);
+					//##leftMotorAngle = legToMotorPos(phi_lLeg,(guiIn.l_leg_st*cos(M_PI/2 - guiIn.aea))/cos(M_PI/2-phi_lLeg));
+					leftMotorAngle = legToMotorPos(phi_lLeg,guiIn.l_leg_st);
 					D1.set(guiIn.d_ls);
 					P1.set(guiIn.p_ls);
-					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + (1 - t) * (guiIn.l_st - 7) + 7;
+					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + guiIn.l_st;
 					D0.set(guiIn.d_ls);
 					P0.set(guiIn.p_ls);
 					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
@@ -535,3 +538,4 @@ ORO_CREATE_COMPONENT(ATCEqPoint)
 }
 
 // vim: noexpandtab
+
