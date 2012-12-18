@@ -254,7 +254,7 @@ default:
 					D4.set(guiIn.d_ls);
 					P4.set(guiIn.p_ls);
 					//##co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
-					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + (1 - t) * (guiIn.l_st - 5) + 5;
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + (1 - t) * (guiIn.l_st - 7) + 7;
 					D3.set(guiIn.d_ls);
 					P3.set(guiIn.p_ls);
 					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
@@ -322,7 +322,7 @@ default:
 					//##leftMotorAngle = legToMotorPos(phi_lLeg,guiIn.l_leg_st);
 					D1.set(guiIn.d_ls);
 					P1.set(guiIn.p_ls);
-					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + (1 - t) * (guiIn.l_st - 5) + 5;
+					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + (1 - t) * (guiIn.l_st - 7) + 7;
 					D0.set(guiIn.d_ls);
 					P0.set(guiIn.p_ls);
 					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
