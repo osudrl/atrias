@@ -101,8 +101,10 @@ void EventManager::loop() {
             //If we made it this far we've got a message and it's time to process it
         }
         else*/
-        //Block until an event comes in
-        eventsWaitingSignal.wait();
+        //Block until an event comes in (don't block if another event is waiting)
+    	if (eventsWaitingSignal.value() == 0 && incomingEvents.empty()) { // There was only one event queued and we just handled it
+    		eventsWaitingSignal.wait();
+    	}
     }
 }
 
@@ -118,7 +120,7 @@ void EventManager::setEventWait(rtOps::RtOpsEvent event) {
         os::MutexLock lock(incomingEventsLock);
         eventBeingWaitedOn = event;
         //if (eventsWaitingSignal.value() == 0)
-            eventsWaitingSignal.signal();
+        eventsWaitingSignal.signal();
     }
     os::MutexLock commandLock(cManager->commandPendingLock);
     cManager->commandPending = true;
