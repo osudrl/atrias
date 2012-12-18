@@ -40,17 +40,14 @@ ATCForceHopping::ATCForceHopping(std::string name) :
 	log(Info) << "[ATCFH] Constructed!" << endlog();
 }
 
-double ATCForceHopping::toeHeight(atrias_msgs::robot_state& rs, bool max) {
+double ATCForceHopping::toeHeight(atrias_msgs::robot_state& rs) {
 	double lLegLen = cos((rs.lLeg.halfB.legAngle - rs.lLeg.halfA.legAngle) / 2.0);
 	double rLegLen = cos((rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle) / 2.0);
 
 	double lLegHgt = rs.position.zPosition - lLegLen * sin((rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0);
 	double rLegHgt = rs.position.zPosition - rLegLen * sin((rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0);
 
-	if (max)
-		return std::max(lLegHgt, rLegHgt);
-	else
-		return std::min(lLegHgt, rLegHgt);
+	return std::max(lLegHgt, rLegHgt);
 }
 
 atrias_msgs::controller_output ATCForceHopping::stateInit(atrias_msgs::robot_state& rs) {
@@ -123,13 +120,15 @@ void ATCForceHopping::setStateFlight() {
 
 atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_state& rs) {
 	atrias_msgs::controller_output co;
+	co.command = medulla_state_run;
 
 	lLegStanceGains();
 	rLegStanceGains();
 
 	double elapsed   = ((double) (rs.timing.controllerTime - stanceStartTime)) / SECOND_IN_NANOSECONDS;
 	double duration  = .341;
-	double amplitude = 1774.3;
+	//double amplitude = 1774.3;
+	double amplitude = 650.0;
 
 	double tgtForce  = amplitude * sin(M_PI * ((elapsed > duration) ? duration : elapsed) / duration);
 	double lDeflDiff = forceDefl(tgtForce / 2.0, rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
@@ -157,7 +156,7 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 
-	if (elapsed >= duration && toeHeight(rs, true) > 0.02) {
+	if (elapsed >= duration && toeHeight(rs) > 0.01) {
 		setStateFlight();
 	}
 
@@ -269,7 +268,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			} else if (guiIn.lockLeg) {
 				setStateLocked();
 			}
-			if (toeHeight(rs, false) < 0.02) {
+			if (toeHeight(rs) < 0.01) {
 				setStateStance(rs);
 			}
 			break;
@@ -287,6 +286,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 
 	// Stuff the msg and push to ROS for logging
 	logData.controllerStatus.state = (State_t) mode;
+	logData.toeHeight = toeHeight(rs);
 	logPort.write(logData);
 
 	if (pubTimer->readyToSend()) {

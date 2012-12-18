@@ -114,7 +114,7 @@ class ATCForceHopping : public TaskContext {
 
 		RTT::os::TimeService::nsecs stanceStartTime;
 
-		double toeHeight(atrias_msgs::robot_state& rs, bool max);
+		double toeHeight(atrias_msgs::robot_state& rs);
 
 		/** @brief This represents the "init" state. It's called periodically during smooth initialization.
 		  * @return The controller output for this state.

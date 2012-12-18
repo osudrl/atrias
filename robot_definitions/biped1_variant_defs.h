@@ -35,7 +35,7 @@
   * robot's "ground".
   * Measured with a measuring tape.
   */
-#define BOOM_HEIGHT                0.963
+#define BOOM_HEIGHT                0.94265
 
 /** @brief The meters of boom motion per encoder tick.
   * This is calculated from the boom's length, the number of encoder ticks per
@@ -45,11 +45,11 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            2.97093794232861888
+#define BOOM_Z_CALIB_LOC            2.9549347555631867989845698899
 
 /** @brief The value of the boom encoder at the calibration location.
   */
-#define BOOM_Z_CALIB_VAL            88221
+#define BOOM_Z_CALIB_VAL            93063
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
