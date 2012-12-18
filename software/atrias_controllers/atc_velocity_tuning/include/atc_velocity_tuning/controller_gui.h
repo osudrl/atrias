@@ -26,7 +26,8 @@ Gtk::SpinButton *minPosSpnBtn,
                 *desVelSpnBtn,
                 *kpSpnBtn;
 
-Gtk::ToggleButton *sensorToggle;
+Gtk::ToggleButton *sensorToggle,
+                  *haltToggle;
 
 Gtk::RadioButton  *absEncoder,
                   *incEncoder,

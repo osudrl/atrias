@@ -5,7 +5,7 @@
   <object class="GtkTable" id="controller_tab">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="n_rows">6</property>
+    <property name="n_rows">7</property>
     <property name="n_columns">2</property>
     <child>
       <object class="GtkLabel" id="minPosLbl">
@@ -232,6 +232,32 @@
       <packing>
         <property name="top_attach">5</property>
         <property name="bottom_attach">6</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="haltLbl">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Halt at Max Pos:</property>
+      </object>
+      <packing>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="haltButton">
+        <property name="label" translatable="yes">Halt</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
       </packing>
     </child>
   </object>

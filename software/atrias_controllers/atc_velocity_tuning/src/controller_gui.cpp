@@ -20,6 +20,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("incEncoder",   incEncoder);
 	gui->get_widget("forward",      forward);
 	gui->get_widget("reverse",      reverse);
+	gui->get_widget("haltButton",   haltToggle);
 
 	if (!minPosSpnBtn ||
 	    !maxPosSpnBtn ||
@@ -29,7 +30,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	    !absEncoder   ||
 	    !incEncoder   ||
 	    !forward      ||
-	    !reverse) {
+	    !reverse      ||
+	    !haltToggle) {
 		
 		return false;
 	}
@@ -78,6 +80,7 @@ void guiUpdate() {
 	                              (incEncoder->get_active()) ? 1 :
 							(forward->get_active())    ? 2 :
 							                             3; // 3 = reverse
+	controllerDataOut.halt = haltToggle->get_active();
 	pub.publish(controllerDataOut);
 }
 

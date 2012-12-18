@@ -8,3 +8,6 @@ int8    sensor
 
 # 0 for absolute encoder, 1 for incremental, 2 for no relay, 3 for reverse (no relay)
 int8    relayMode
+
+# If true, halt the next time the motor reaches the maximum position.
+bool    halt

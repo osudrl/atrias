@@ -8,6 +8,7 @@
 
 // Orocos
 #include <rtt/os/main.h>
+#include <rtt/os/TimeService.hpp>
 #include <rtt/RTT.hpp>
 #include <rtt/Logger.hpp>
 #include <rtt/TaskContext.hpp>
@@ -37,6 +38,9 @@ class ATCVelocityTuning : public TaskContext {
 	private:
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
+		atrias_msgs::controller_output co;
+
+		RTT::os::TimeService::nsecs haltStartTime;
 		
 		// Subcontroller names
 		std::string pd0Name;
