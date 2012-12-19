@@ -34,31 +34,11 @@ void controllerCallback(const atc_hip_force_test::controller_status &status) {
 	controllerDataIn = status;
 }
 
-//! \brief Get parameters from the server and configure GUI accordingly.
-void getParameters() {
-	// Get parameters in the atrias_gui namespace.
-	nh.getParam("/atrias_gui/torque_A", torque_A_param);
-	nh.getParam("/atrias_gui/torque_B", torque_B_param);
-	nh.getParam("/atrias_gui/torque_hip", torque_hip_param);
-
-	// Configure the GUI.
-	torque_A_hscale->set_value(torque_A_param);
-	torque_B_hscale->set_value(torque_B_param);
-	torque_hip_hscale->set_value(torque_hip_param);
-}
-
-//! \brief Set parameters on server according to current GUI settings.
-void setParameters() {
-	nh.setParam("/atrias_gui/torque_A", torque_A_param);
-	nh.setParam("/atrias_gui/torque_B", torque_B_param);
-	nh.setParam("/atrias_gui/torque_hip", torque_hip_param);
-}
-
 //! \brief Update the GUI.
 void guiUpdate() {
-	controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
-	controllerDataOut.des_motor_torque_B   = torque_B_param   = torque_B_hscale->get_value();
-	controllerDataOut.des_motor_torque_hip = torque_hip_param = torque_hip_hscale->get_value();
+	controllerDataOut.des_motor_torque_A   = torque_A_hscale->get_value();
+	controllerDataOut.des_motor_torque_B   = torque_B_hscale->get_value();
+	controllerDataOut.des_motor_torque_hip = torque_hip_hscale->get_value();
 	pub.publish(controllerDataOut);
 }
 
