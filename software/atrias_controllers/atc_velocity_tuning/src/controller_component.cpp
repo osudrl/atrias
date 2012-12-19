@@ -42,6 +42,8 @@ atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::rob
 
 		if (motorAngle > guiIn.maxPos) {
 			cur_dir = -1;
+		} else if (motorAngle < guiIn.minPos) {
+			cur_dir = 1;
 
 			// And now for special code that triggers a halt for testing purposes.
 			if (guiIn.halt) {
@@ -50,17 +52,14 @@ atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::rob
 					haltStartTime = rs.timing.controllerTime;
 				}
 
-				if (rs.rLeg.halfA.rotorVelocity > guiIn.desVel + 1.0 ||
-				    rs.lLeg.halfA.rotorVelocity < -1.0) {
+				if (rs.rLeg.halfA.rotorVelocity < -guiIn.desVel - 1.0 ||
+				    rs.lLeg.halfA.rotorVelocity > 1.0) {
 					co.command = medulla_state_error;
 				} else if ((RTT::os::TimeService::nsecs) rs.timing.controllerTime > haltStartTime + 100000000) {
 					if (abs(rs.rLeg.halfA.rotorVelocity) > 0.1)
 						co.command = medulla_state_error;
 				}
 			}
-			
-		} else if (motorAngle < guiIn.minPos) {
-			cur_dir = 1;
 		}
 	} else if (guiIn.relayMode == 2) {
 		// Forward
