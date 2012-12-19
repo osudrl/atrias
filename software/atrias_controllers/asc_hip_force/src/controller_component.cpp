@@ -10,41 +10,73 @@ namespace controller {
 
 ASCHipForce::ASCHipForce(std::string name) :
 	RTT::TaskContext(name),
-	logPort(name + "_log")
+	flightP(150.0),
+	flightD(10.0),
+	stanceP(0.0),
+	stanceD(10.0),
+	toeFilterGain(0.05),
+	toeThreshold(500.0)
 {
 	this->provides("hipForce")
 	->addOperation("runController", &ASCHipForce::runController, this, ClientThread)
 	.doc("Run the controller.");
 
-	// Logging
-	// Create a port
-	addPort(logPort);
-	// Connect with buffer size 100000 so we get all data.
-	ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
-	// Transport type = ROS
-	policy.transport = 3;
-	// ROS topic name
-	policy.name_id = "/" + name + "_log";
-	// Construct the stream between the port and ROS topic
-	logPort.createStream(policy);
+	this->addProperty("flightP", flightP).doc("Flight P gain.");
+	this->addProperty("flightD", flightD).doc("Flight D gain.");
+	this->addProperty("stanceP", stanceP).doc("Stance P gain.");
+	this->addProperty("stanceD", stanceD).doc("Stance D gain.");
+	this->addProperty("toeFilterGain", toeFilterGain).doc("Toe decoder's filter gain.");
+	this->addProperty("toeThreshold",  toeThreshold ).doc("Toe decoder's detection threshold.");
 
 	log(Info) << "[ASCHipForce] Constructed!" << endlog();
 }
 
 // Put control code here.
-double ASCHipForce::runController(double exampleInput) {
-	out = exampleInput;
+double ASCHipForce::runController(uint16_t toeSwitch, int32_t kneeForce, double legBodyAngle, double legBodyVelocity) {
+	// Set the gains/thresholds for the toe decoder.
+	toeFilterGainProperty.set(toeFilterGain);
+	toeThresholdProperty.set(toeThreshold);
 
-	// Stuff the msg and push to ROS for logging
-	logData.input = exampleInput;
-	logData.output = out;
-	logPort.write(logData);
+	// Determine if we're in flight or stance.
+	bool onGround = runToeDecode(toeSwitch);
 
-	// Output for the parent controller
-	return out;
+	// Act differently depending on if we're in flight or stance.
+	if (onGround) {
+		P.set(stanceP);
+		D.set(stanceD);
+		return runPD(0.0, kneeForce, 0.0, legBodyVelocity);
+	} else {
+		P.set(flightP);
+		D.set(flightD);
+		return runPD(3.0 * M_PI / 2.0, legBodyAngle, 0.0, legBodyVelocity);
+	}
 }
 
 bool ASCHipForce::configureHook() {
+	RTT::TaskContext* toeDecodeInstance = toeLoader.load(this, "asc_toe_decode", "ASCToeDecode");
+	if (!toeDecodeInstance)
+		return false;
+	runToeDecode = toeDecodeInstance->provides("toeDecode")->getOperation("runController");
+	toeFilterGainProperty = toeDecodeInstance->properties()->getProperty("filterGain");
+	toeThresholdProperty  = toeDecodeInstance->properties()->getProperty("threshold");
+
+	RTT::TaskContext* pdInstance = pdLoader.load(this, "asc_pd", "ASCPD");
+	if (!pdInstance)
+		return false;
+	runPD = pdInstance->provides("pd")->getOperation("runController");
+	P = pdInstance->properties()->getProperty("P");
+	D = pdInstance->properties()->getProperty("D");
+
+	if (!runToeDecode.ready()          ||
+	    !toeFilterGainProperty.ready() ||
+	    !toeThresholdProperty.ready()  ||
+	    !runPD.ready()                 ||
+	    !P.ready()                     ||
+	    !D.ready()) {
+		// Something went wrong.
+		return false;
+	}
+
 	log(Info) << "[ASCHipForce] configured!" << endlog();
 	return true;
 }

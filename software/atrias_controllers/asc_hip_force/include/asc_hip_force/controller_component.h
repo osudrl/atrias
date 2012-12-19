@@ -31,13 +31,31 @@ namespace controller {
 class ASCHipForce : public TaskContext {
 	private:
 		// Operations
-		double runController(double exampleInput);
+		double runController(uint16_t toeSwitch, int32_t kneeForce, double legBodyAngle, double legBodyVelocity);
 
-		double out;
+		// Our gains
+		double flightP;
+		double flightD;
+		double stanceP;
+		double stanceD;
 
-		// Logging
-		controller_log_data logData;
-		OutputPort<controller_log_data> logPort;
+		// And gains for the toe decode controller
+		double toeFilterGain;
+		double toeThreshold;
+
+		// Properties allowing us to set the PD controller's gains.
+		Property<double> P;
+		Property<double> D;
+
+		// And the same for the toe decode controller
+		Property<double> toeFilterGainProperty;
+		Property<double> toeThresholdProperty;
+
+		ASCLoader pdLoader;
+		ASCLoader toeLoader;
+
+		OperationCaller<bool(uint16_t)> runToeDecode;
+		OperationCaller<double(double, double, double, double)> runPD;
 
 	public:
 		// Constructor

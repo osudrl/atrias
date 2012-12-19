@@ -10,11 +10,16 @@ namespace controller {
 
 ASCToeDecode::ASCToeDecode(std::string name) :
 	RTT::TaskContext(name),
+	filter_gain(0.05), // not set yet
+	threshold(500.0),  // Also not set yet
 	logPort(name + "_log")
 {
 	this->provides("toeDecode")
 	->addOperation("runController", &ASCToeDecode::runController, this, ClientThread)
 	.doc("Updates the internal state and returns whether or not the toe's on the ground.");
+
+	this->addProperty("filterGain", filter_gain).doc("The gain of the delay filter.");
+	this->addProperty("threshold", threshold).doc("The detection threshold.");
 
 	// Logging
 	// Create a port
@@ -40,9 +45,9 @@ bool ASCToeDecode::runController(uint16_t force) {
 	logData.filtered_val = filtered_force;
 
 	// Note: A higher raw force reading means a lower actual force.
-	if (onGround && force > filtered_force + THRESHOLD) {
+	if (onGround && force > filtered_force + threshold) {
 		onGround = false;
-	} else if (!onGround && force < filtered_force - THRESHOLD) {
+	} else if (!onGround && force < filtered_force - threshold) {
 		onGround = true;
 	}
 
@@ -50,7 +55,7 @@ bool ASCToeDecode::runController(uint16_t force) {
 	logPort.write(logData);
 
 	// Update the filter
-	filtered_force += FILTER_GAIN * (force - filtered_force);
+	filtered_force += filter_gain * (force - filtered_force);
 
 	// Output for the parent controller
 	return onGround;
