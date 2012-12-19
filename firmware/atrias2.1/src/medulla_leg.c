@@ -104,7 +104,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT-3); 
+	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT-5); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Leg] Initilizing limit switches\n");
@@ -235,7 +235,8 @@ void leg_update_inputs(uint8_t id) {
 
 bool leg_run_halt(uint8_t id) {
 	leg_damping_cnt += 1;
-	int32_t diff = (int32_t)(*incremental_encoder_pdo)-last_incremental;
+	static int32_t diff = 0;
+	diff = (int32_t)(*incremental_encoder_pdo)-last_incremental;
 	diff = MOD(diff + (((int32_t)1)<<15), (((int32_t)1)<<16)) - (((int32_t)1)<<15);
 	if ((diff <= 10) && (diff >= -10)) {
 		set_amp_output(0);
@@ -373,8 +374,13 @@ bool leg_check_error(uint8_t id) {
 }
 
 bool leg_check_halt(uint8_t id) {	
-	uint32_t maxCounts = 0;
-	uint32_t minCounts = 0;
+	static uint32_t maxCounts = 0;
+	static uint32_t minCounts = 0;
+	static int32_t damping_location = 0;
+	static int32_t diff = 0;
+	diff = (int32_t)(*incremental_encoder_pdo)-last_incremental;
+	diff = MOD(diff + (((int32_t)1)<<15), (((int32_t)1)<<16)) - (((int32_t)1)<<15);
+
 
 	int8_t countDirection = 1;
 
@@ -390,31 +396,37 @@ bool leg_check_halt(uint8_t id) {
 			maxCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
 			countDirection = (LEFT_TRAN_A_RAD_PER_CNT > 0) ? 1 : -1;
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(LEFT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_A_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
 			countDirection = (LEFT_TRAN_B_RAD_PER_CNT > 0) ? 1 : -1;
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(LEFT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_B_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,RIGHT_TRAN_A_CALIB_VAL,RIGHT_TRAN_A_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,RIGHT_TRAN_A_CALIB_VAL,RIGHT_TRAN_A_RAD_PER_CNT);
 			countDirection = (RIGHT_TRAN_A_RAD_PER_CNT > 0) ? 1 : -1;
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(RIGHT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_A_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,RIGHT_TRAN_B_CALIB_VAL,RIGHT_TRAN_B_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,RIGHT_TRAN_B_CALIB_VAL,RIGHT_TRAN_B_RAD_PER_CNT);
 			countDirection = (RIGHT_TRAN_B_RAD_PER_CNT > 0) ? 1 : -1;
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(RIGHT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_B_RAD_PER_CNT*24824));
 			break;
 	}
 
+	damping_location = damping_location + *motor_encoder_pdo;
+
 	if ((countDirection > 0) && 
-	    ((*motor_encoder_pdo > maxCounts) || (*motor_encoder_pdo < minCounts))) {
+	    ((damping_location > maxCounts) || (damping_location < minCounts))) {
 		return true;
 	}
 	
 	if ((countDirection < 0) && 
-	    ((*motor_encoder_pdo < maxCounts) || (*motor_encoder_pdo > minCounts))) {
+	    ((damping_location < maxCounts) || (damping_location > minCounts))) {
 		return true;
 	}
 

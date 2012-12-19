@@ -39,7 +39,8 @@
 #define DAMPING_GAIN_CONSTANT 3	// This constant scales the above gain so that it can be used on incremental encoder values and PWM values.
 #define MOD(A,B) ((((A) % (B)) + (B)) % (B))
 #define DAMPING_CURRENT_LIMIT 19900
-
+#define DAMPING_MAX_CURRENT 60
+#define DAMPING_DISTANCE_CONSTANT (1.0/24824.0)
 
 void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
 
