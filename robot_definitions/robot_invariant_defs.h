@@ -121,6 +121,9 @@ typedef enum {
 // erroneous encoder readings.
 #define MAX_ACCEPTABLE_ENCODER_CHANGE                                    5000000
 
+// Acceleration of motor output in radians/s^2/amp
+#define ACCEL_PER_AMP                                                  1.7185879
+
 /** @brief The maximum commanded amplifier value.
   * This is the maximum value sent to the
   * Medullas for the amplifier command.
