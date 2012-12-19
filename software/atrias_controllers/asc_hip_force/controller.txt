@@ -1,0 +1,1 @@
+description=This keeps the hip vertical in the air and does force control (zero force) when it's on the ground.
