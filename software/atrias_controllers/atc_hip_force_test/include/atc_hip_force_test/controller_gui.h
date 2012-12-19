@@ -24,11 +24,16 @@ atc_hip_force_test::controller_input controllerDataOut;
 atc_hip_force_test::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale *torque_A_hscale,
-*torque_B_hscale,
-*torque_hip_hscale;
+Gtk::SpinButton *flightP,
+                *flightD,
+                *stanceP,
+                *stanceD,
+                *toeFilterGain,
+                *toeThreshold,
+                *legLen,
+                *force;
 
-Gtk::CheckButton *set_position_checkbutton;
+Gtk::Label *stateLbl;
 
 void controllerCallback(const atc_hip_force_test::controller_status &status);
 
