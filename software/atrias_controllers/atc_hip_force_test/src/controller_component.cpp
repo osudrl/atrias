@@ -34,12 +34,6 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 	co.rLeg.motorCurrentB   = 0.0;
 	co.rLeg.motorCurrentHip = 0.0;
 
-	// Only run the controller when we're enabled
-	if ((uint8_t)rs.cmState != (uint8_t) controllerManager::RtOpsCommand::ENABLE)
-		return co;
-
-	// begin control code //
-
 	// Stuff the msg
 	co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
 	co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
@@ -51,7 +45,6 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 	co.command = medulla_state_run;
 
 	// Let the GUI know the controller run state
-	guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
 	// Send data to the GUI
 	if (pubTimer->readyToSend())
 		guiDataOut.write(guiOut);
