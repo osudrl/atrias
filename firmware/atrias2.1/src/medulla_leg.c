@@ -78,7 +78,7 @@ uint8_t motor_encoder_error_counter;
 uint8_t leg_encoder_error_counter;
 bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
-uint32_t prev_motor_position;
+int32_t prev_motor_position;
 uint16_t leg_knee_adc_aux4;
 
 
@@ -211,7 +211,7 @@ void leg_update_inputs(uint8_t id) {
 	sei();
 
 	// make sure our encoder data is accurate, if it is, then update, if it's not, then increment the error coutner.
-	prev_motor_position = *motor_encoder_pdo;
+	prev_motor_position = (int32_t)*motor_encoder_pdo;
 	if (biss_encoder_data_valid(&motor_encoder)) {
 		biss_encoder_process_data(&motor_encoder);
 	}
@@ -385,8 +385,8 @@ bool leg_check_halt(uint8_t id) {
 	int8_t countDirection = 1;
 
 	// First check if the encoder value is even reasonable
-	if (((*motor_encoder_pdo - prev_motor_position) > MAX_ACCEPTABLE_ENCODER_CHANGE) ||
-	    ((*motor_encoder_pdo - prev_motor_position) < (MAX_ACCEPTABLE_ENCODER_CHANGE*-1))) {
+	if ((((int32_t)(*motor_encoder_pdo) - prev_motor_position) > MAX_ACCEPTABLE_ENCODER_CHANGE) ||
+	    (((int32_t)(*motor_encoder_pdo) - prev_motor_position) < (MAX_ACCEPTABLE_ENCODER_CHANGE*-1))) {
 		// We have a bad encoder value, just ignore it and go on.
 		return false;
 	}
@@ -396,29 +396,29 @@ bool leg_check_halt(uint8_t id) {
 			maxCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,LEFT_TRAN_A_CALIB_VAL,LEFT_TRAN_A_RAD_PER_CNT);
 			countDirection = (LEFT_TRAN_A_RAD_PER_CNT > 0) ? 1 : -1;
-			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(LEFT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_A_RAD_PER_CNT*24824));
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(-1.0*LEFT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_A_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,LEFT_TRAN_B_CALIB_VAL,LEFT_TRAN_B_RAD_PER_CNT);
 			countDirection = (LEFT_TRAN_B_RAD_PER_CNT > 0) ? 1 : -1;
-			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(LEFT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_B_RAD_PER_CNT*24824));
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(-1.0*LEFT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*LEFT_TRAN_B_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,RIGHT_TRAN_A_CALIB_VAL,RIGHT_TRAN_A_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_A_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_A_CALIB_LOC,RIGHT_TRAN_A_CALIB_VAL,RIGHT_TRAN_A_RAD_PER_CNT);
 			countDirection = (RIGHT_TRAN_A_RAD_PER_CNT > 0) ? 1 : -1;
-			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(RIGHT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_A_RAD_PER_CNT*24824));
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(-1.0*RIGHT_MOTOR_A_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_A_RAD_PER_CNT*24824));
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			maxCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MAX_LOC-LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,RIGHT_TRAN_B_CALIB_VAL,RIGHT_TRAN_B_RAD_PER_CNT);
 			minCounts = LOC_TO_COUNTS(LEG_B_MOTOR_MIN_LOC+LEG_LOC_SAFETY_DISTANCE,LEG_B_CALIB_LOC,RIGHT_TRAN_B_CALIB_VAL,RIGHT_TRAN_B_RAD_PER_CNT);
 			countDirection = (RIGHT_TRAN_B_RAD_PER_CNT > 0) ? 1 : -1;
-			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(RIGHT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_B_RAD_PER_CNT*24824));
+			damping_location = diff*((diff > 0) ? diff : -1*diff)*(int32_t)(-1.0*RIGHT_MOTOR_B_DIRECTION/(DAMPING_MAX_CURRENT*ACCEL_PER_AMP*RIGHT_TRAN_B_RAD_PER_CNT*24824));
 			break;
 	}
 
-	damping_location = damping_location + *motor_encoder_pdo;
+	damping_location = damping_location + ((int32_t)(*motor_encoder_pdo));
 
 	if ((countDirection > 0) && 
 	    ((damping_location > maxCounts) || (damping_location < minCounts))) {

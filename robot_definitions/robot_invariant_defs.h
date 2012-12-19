@@ -114,12 +114,12 @@ typedef enum {
 #define LEG_LOC_DIFF_MIN                                                     0.0
 #define LEG_LOC_DIFF_MAX                                              2.650929045
 
-#define LEG_LOC_SAFETY_DISTANCE                                       0.34906585
+#define LEG_LOC_SAFETY_DISTANCE                                              0.2
 #define HIP_LOC_SAFETY_DISTANCE                                              0.2   // TODO: This is a fake value!
 
 // The maximum acceptable change in encoder value in a single cycle, for detecting
 // erroneous encoder readings.
-#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    5000000
+#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    1000000
 
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
