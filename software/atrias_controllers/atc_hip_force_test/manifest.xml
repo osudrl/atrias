@@ -1,0 +1,17 @@
+<package>
+	<description brief="atc_hip_force_test">
+		atc_hip_force_test
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/atc_hip_force_test</url>
+	<depend package="roscpp"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="atrias_asc_loader" />
+	<depend package="asc_hip_force" />
+	<depend package="asc_toe_decode" />
+</package>
+
+<!-- vim: set noexpandtab: -->
