@@ -60,6 +60,7 @@ IMU_data_t hip_imu;
 //IMU read pacing Flag
 uint8_t hip_imu_pace_flag;
 #endif
+uint8_t hip_damping_cnt;
 
 // variables for filtering thermistor and voltage values
 uint8_t hip_thermistor_counter;
@@ -74,6 +75,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	hip_motor_voltage_counter = 0;
 	hip_logic_voltage_counter = 0;
 	hip_timestamp_timer = timestamp_timer;
+	hip_damping_cnt = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing leg with ID: %04x\n",id);
@@ -197,10 +199,12 @@ void hip_update_inputs(uint8_t id) {
 }
 
 bool hip_run_halt(uint8_t id) {
-	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Run Halt\n");
-	#endif
-	return false;
+	hip_damping_cnt += 1;
+	if (hip_damping_cnt > 100)
+		return false;
+
+	set_amp_output(0);
+	return true;
 }
 
 inline void hip_update_outputs(uint8_t id) {
@@ -313,5 +317,6 @@ void hip_reset_error() {
 	hip_thermistor_counter = 0;
 	hip_motor_voltage_counter = 0;
 	hip_logic_voltage_counter = 0;
+	hip_damping_cnt = 0;
 }
 

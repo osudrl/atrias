@@ -66,6 +66,8 @@ adc_port_t adc_port_a, adc_port_b;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
 usart_adc_t knee_adc;
+uint8_t leg_damping_cnt;
+int32_t last_incremental;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
@@ -87,6 +89,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	logic_voltage_counter = 0;
 	leg_timestamp_timer = timestamp_timer;
 	*leg_error_flags_pdo = 0;
+	leg_damping_cnt = 0;
 
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
@@ -180,7 +183,7 @@ inline void leg_disable_outputs(void) {
 
 void leg_update_inputs(uint8_t id) {
 	// Since reading from the knee ADC takes so long, we start it first.
-	usart_adc_start_read(&knee_adc);
+	//usart_adc_start_read(&knee_adc);
 
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
@@ -199,9 +202,10 @@ void leg_update_inputs(uint8_t id) {
 	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
-	while (!usart_adc_read_complete(&knee_adc));
+	//while (!usart_adc_read_complete(&knee_adc));
 
 	cli();
+	last_incremental = *incremental_encoder_pdo;
 	*incremental_encoder_pdo = quadrature_encoder_get_value(&inc_encoder);
 	*incremental_encoder_timestamp_pdo = leg_timestamp_timer->CNT;
 	sei();
@@ -230,12 +234,26 @@ void leg_update_inputs(uint8_t id) {
 }
 
 bool leg_run_halt(uint8_t id) {
-	/*
-	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Run Halt\n");
-	#endif
-	*/
-	return false;
+	leg_damping_cnt += 1;
+	int32_t diff = (int32_t)(*incremental_encoder_pdo)-last_incremental;
+	diff = MOD(diff + (((int32_t)1)<<15), (((int32_t)1)<<16)) - (((int32_t)1)<<15);
+	if ((diff <= 10) && (diff >= -10)) {
+		set_amp_output(0);
+		if (leg_damping_cnt > 100)
+			return false;
+		else
+			return true;
+	}
+
+	diff = diff * DAMPING_GAIN_CONSTANT * DAMPING_GAIN;
+	if (diff > DAMPING_CURRENT_LIMIT)
+		diff = DAMPING_CURRENT_LIMIT;
+	else if (diff < (-1*DAMPING_CURRENT_LIMIT))
+		diff = -1*DAMPING_CURRENT_LIMIT;
+
+	set_amp_output(diff);
+
+	return true;
 }
 
 inline void leg_update_outputs(uint8_t id) {
@@ -411,5 +429,6 @@ void leg_reset_error() {
 	logic_voltage_counter = 0;
 	motor_encoder_error_counter = 0;
 	leg_encoder_error_counter = 0;
+	leg_damping_cnt = 0;
 }
 

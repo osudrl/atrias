@@ -45,10 +45,12 @@ hengstler_ssi_encoder_t x_encoder, pitch_encoder, z_encoder;
 
 // variables for filtering thermistor and voltage values
 uint16_t logic_voltage_counter;
+uint8_t boom_damping_cnt;
 
 void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	logic_voltage_counter = 0;
+	boom_damping_cnt = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla Boom] Initilizing boom with ID: %04x\n",id);
@@ -126,7 +128,10 @@ void boom_update_inputs(uint8_t id) {
 }
 
 bool boom_run_halt(uint8_t id) {
-	return false;
+	boom_damping_cnt += 1;
+	if (boom_damping_cnt > 100)
+		return false;
+	return true;
 }
 
 inline void boom_update_outputs(uint8_t id) {
@@ -168,5 +173,6 @@ bool boom_check_halt(uint8_t id) {
 void boom_reset_error() {
 	*boom_error_flags_pdo = 0;
 	logic_voltage_counter = 0;
+	boom_damping_cnt = 0;
 }
 
