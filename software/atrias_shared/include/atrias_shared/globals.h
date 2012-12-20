@@ -117,7 +117,7 @@ typedef int8_t RtOpsEventMetadata_t;
   * This needs to be completed and actually implemented.
   */
 enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
-    BOOM_MEDULLA_HALT = 0,    // The boom medulla entered halt state
+    BOOM_MEDULLA_HALT = 1,    // The boom medulla entered halt state
     LEFT_HIP_MEDULLA_HALT,    // Likewise for left hip. The next few are similar.
     LEFT_LEG_A_MEDULLA_HALT,
     LEFT_LEG_B_MEDULLA_HALT,

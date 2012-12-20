@@ -13,30 +13,37 @@ bool Safety::shouldHalt() {
 	
 	// Check for medullas in halt state.
 	if (robotState.boomMedullaState        == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::BOOM_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.lLeg.hipMedullaState    == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::LEFT_HIP_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.lLeg.halfA.medullaState == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::LEFT_LEG_A_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.lLeg.halfB.medullaState == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::LEFT_LEG_B_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.rLeg.hipMedullaState    == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::RIGHT_HIP_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.rLeg.halfA.medullaState == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::RIGHT_LEG_A_MEDULLA_HALT);
 		return true;
 	}
 	
 	if (robotState.rLeg.halfB.medullaState == medulla_state_halt) {
+		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::RIGHT_LEG_B_MEDULLA_HALT);
 		return true;
 	}
 	
