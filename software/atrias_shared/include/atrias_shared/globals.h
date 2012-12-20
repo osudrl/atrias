@@ -123,7 +123,19 @@ enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
     LEFT_LEG_B_MEDULLA_HALT,
     RIGHT_HIP_MEDULLA_HALT,
     RIGHT_LEG_A_MEDULLA_HALT,
-    RIGHT_LEG_B_MEDULLA_HALT
+    RIGHT_LEG_B_MEDULLA_HALT,
+    LEFT_LEG_A_TOO_SMALL,     // RT Ops's safeties have kicked in.
+    LEFT_LEG_A_TOO_LARGE,     // These signal that motors were about to hit their
+    LEFT_LEG_B_TOO_SMALL,     // min and max hard stops
+    LEFT_LEG_B_TOO_LARGE,
+    RIGHT_LEG_A_TOO_SMALL,
+    RIGHT_LEG_A_TOO_LARGE,
+    RIGHT_LEG_B_TOO_SMALL,
+    RIGHT_LEG_B_TOO_LARGE,
+    LEFT_LEG_TOO_LONG,        // These signify that the motors or legs were about to collide
+    LEFT_LEG_TOO_SHORT,       // with each other.
+    RIGHT_LEG_TOO_LONG,
+    RIGHT_LEG_TOO_SHORT
 };
 
 /** @brief The type for robot configuration data
