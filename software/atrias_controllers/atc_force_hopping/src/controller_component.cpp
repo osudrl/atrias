@@ -127,8 +127,7 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 
 	double elapsed   = ((double) (rs.timing.controllerTime - stanceStartTime)) / SECOND_IN_NANOSECONDS;
 	double duration  = .341;
-	//double amplitude = 1774.3;
-	double amplitude = 650.0;
+	double amplitude = 1774.3;
 
 	double tgtForce  = amplitude * sin(M_PI * ((elapsed > duration) ? duration : elapsed) / duration);
 	double lDeflDiff = forceDefl(tgtForce / 2.0, rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
@@ -267,8 +266,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 				setStateInit();
 			} else if (guiIn.lockLeg) {
 				setStateLocked();
-			}
-			if (toeHeight(rs) < 0.01) {
+			} else if (toeHeight(rs) < 0.01) {
 				setStateStance(rs);
 			}
 			break;
