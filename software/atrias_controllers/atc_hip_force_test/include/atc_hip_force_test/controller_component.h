@@ -24,7 +24,6 @@
 // Datatypes
 #include <atc_hip_force_test/controller_input.h>
 #include <atc_hip_force_test/controller_status.h>
-#include <atc_hip_force_test/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
@@ -43,10 +42,6 @@ class ATCHipForceTest : public TaskContext {
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 		
 		atrias_msgs::controller_output co;
-		
-		// Logging
-		controller_log_data logData;
-		OutputPort<controller_log_data>  logPort;
 		
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;

@@ -1,1 +1,1 @@
-bool isEnabled
+bool onGround

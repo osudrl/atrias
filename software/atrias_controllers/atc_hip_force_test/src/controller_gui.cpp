@@ -77,9 +77,20 @@ void controllerCallback(const atc_hip_force_test::controller_status &status) {
 
 //! \brief Update the GUI.
 void guiUpdate() {
-//	controllerDataOut.des_motor_torque_A   = torque_A_hscale->get_value();
-//	controllerDataOut.des_motor_torque_B   = torque_B_hscale->get_value();
-//	controllerDataOut.des_motor_torque_hip = torque_hip_hscale->get_value();
+	stateLbl->set_text((controllerDataIn.onGround) ? "Stance" : "Flight");
+
+	controllerDataOut.flightP       = flightP->get_value();
+	controllerDataOut.flightD       = flightP->get_value();
+	controllerDataOut.stanceP       = stanceP->get_value();
+	controllerDataOut.stanceD       = stanceD->get_value();
+	controllerDataOut.toeFilterGain = toeFilterGain->get_value();
+	controllerDataOut.toeThreshold  = toeThreshold->get_value();
+	controllerDataOut.legLen        = legLen->get_value();
+	controllerDataOut.force         = force->get_value();
+	controllerDataOut.legP          = legP->get_value();
+	controllerDataOut.legD          = legD->get_value();
+	controllerDataOut.activeLeg     = activeLeg->get_active_row_number();
+
 	pub.publish(controllerDataOut);
 }
 

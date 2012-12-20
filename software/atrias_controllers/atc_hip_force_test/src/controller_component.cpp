@@ -35,9 +35,6 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 	co.rLeg.motorCurrentHip = 0.0;
 
 	// Stuff the msg
-	co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-	co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-	co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
 
 	// end control code //
 
