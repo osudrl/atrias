@@ -25,7 +25,7 @@ int main(void) {
 	uart_connect_port(&debug_port, true);
 	
 	printf("Menial e-stop test.....\n> ");
-	PORTC.DIRSET = 0b1;
+	PORTC.DIRSET = 0b111;
 	estop_port_t estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
 	estop_enable_port(&estop_port);
 
