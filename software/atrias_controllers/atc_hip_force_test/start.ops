@@ -11,6 +11,10 @@ connectPeers("atrias_rt", "controller")
 # Connect it with the deployer so it can deploy subcontrollers
 addPeer("controller", "Deployer")
 
+# Set up leg to motor transforms service
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3

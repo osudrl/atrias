@@ -10,6 +10,8 @@ namespace controller {
 
 ASCToeDecode::ASCToeDecode(std::string name) :
 	RTT::TaskContext(name),
+	filtered_force(0.0),
+	onGround(false),
 	filter_gain(0.05), // not set yet
 	threshold(500.0),  // Also not set yet
 	logPort(name + "_log")
