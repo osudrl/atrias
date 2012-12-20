@@ -17,6 +17,7 @@
 // C
 #include <stdlib.h>
 
+#include <atrias_asc_loader/ASCLoader.hpp>
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -41,8 +42,19 @@ class ATCHipForceTest : public TaskContext {
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 		
-		atrias_msgs::controller_output co;
-		
+		ASCLoader hipForceLoader;
+		ASCLoader toeDecodeLoader;
+
+		// Properties for the hip force and toe decode subcontrollers
+		Property<double> flightP;
+		Property<double> flightD;
+		Property<double> stanceP;
+		Property<double> stanceD;
+		Property<double> hipForceToeFilter;
+		Property<double> hipForceToeThreshold;
+		Property<double> toeFilter;
+		Property<double> toeThreshold;
+
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;
 		controller_input guiIn;

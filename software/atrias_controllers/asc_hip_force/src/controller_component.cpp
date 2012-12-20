@@ -20,6 +20,8 @@ ASCHipForce::ASCHipForce(std::string name) :
 	this->provides("hipForce")
 	->addOperation("runController", &ASCHipForce::runController, this, ClientThread)
 	.doc("Run the controller.");
+	this->provides("hipForce")->addOperation("getOnGround", &ASCHipForce::getOnGround, this, ClientThread)
+	.doc("Returns whether or not this leg is touching the ground. Must be called after runController()");
 
 	this->addProperty("flightP", flightP).doc("Flight P gain.");
 	this->addProperty("flightD", flightD).doc("Flight D gain.");
@@ -38,7 +40,7 @@ double ASCHipForce::runController(uint16_t toeSwitch, int32_t kneeForce, double 
 	toeThresholdProperty.set(toeThreshold);
 
 	// Determine if we're in flight or stance.
-	bool onGround = runToeDecode(toeSwitch);
+	onGround = runToeDecode(toeSwitch);
 
 	// Act differently depending on if we're in flight or stance.
 	if (onGround) {
@@ -50,6 +52,10 @@ double ASCHipForce::runController(uint16_t toeSwitch, int32_t kneeForce, double 
 		D.set(flightD);
 		return runPD(3.0 * M_PI / 2.0, legBodyAngle, 0.0, legBodyVelocity);
 	}
+}
+
+bool ASCHipForce::getOnGround() {
+	return onGround;
 }
 
 bool ASCHipForce::configureHook() {

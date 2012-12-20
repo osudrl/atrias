@@ -32,6 +32,8 @@ class ASCHipForce : public TaskContext {
 	private:
 		// Operations
 		double runController(uint16_t toeSwitch, int32_t kneeForce, double legBodyAngle, double legBodyVelocity);
+		// This should be run after \a runController()
+		bool   getOnGround();
 
 		// Our gains
 		double flightP;
@@ -53,6 +55,9 @@ class ASCHipForce : public TaskContext {
 
 		ASCLoader pdLoader;
 		ASCLoader toeLoader;
+
+		// Whether or not we're in contact with the ground.
+		bool onGround;
 
 		OperationCaller<bool(uint16_t)> runToeDecode;
 		OperationCaller<double(double, double, double, double)> runPD;
