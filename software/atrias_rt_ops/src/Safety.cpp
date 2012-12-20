@@ -13,37 +13,30 @@ bool Safety::shouldHalt() {
 	
 	// Check for medullas in halt state.
 	if (robotState.boomMedullaState        == medulla_state_halt) {
-		log(RTT::Warning) << "Boom medulla halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.lLeg.hipMedullaState    == medulla_state_halt) {
-		log(RTT::Warning) << "L leg hip halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.lLeg.halfA.medullaState == medulla_state_halt) {
-		log(RTT::Warning) << "L leg A halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.lLeg.halfB.medullaState == medulla_state_halt) {
-		log(RTT::Warning) << "L leg B halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.rLeg.hipMedullaState    == medulla_state_halt) {
-		log(RTT::Warning) << "R leg hip halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.rLeg.halfA.medullaState == medulla_state_halt) {
-		log(RTT::Warning) << "R leg A halt" << RTT::endlog();
 		return true;
 	}
 	
 	if (robotState.rLeg.halfB.medullaState == medulla_state_halt) {
-		log(RTT::Warning) << "R leg B halt" << RTT::endlog();
 		return true;
 	}
 	
@@ -92,13 +85,15 @@ bool Safety::shouldHalt() {
 		return false;
 	}
 	
-	if (robotState.rLeg.halfA.motorAngle < LEG_A_MOTOR_MIN_LOC + LEG_LOC_SAFETY_DISTANCE) {
+	// These are removed for testing of the Medulla halt state. These will be
+	// replaced by more advanced safeties anyway.
+	/*if (robotState.rLeg.halfA.motorAngle < LEG_A_MOTOR_MIN_LOC + LEG_LOC_SAFETY_DISTANCE) {
 		return true;
 	}
 	
 	if (robotState.rLeg.halfA.motorAngle > LEG_A_MOTOR_MAX_LOC - LEG_LOC_SAFETY_DISTANCE) {
 		return true;
-	}
+	}*/
 	
 	if (robotState.rLeg.halfB.motorAngle < LEG_B_MOTOR_MIN_LOC + LEG_LOC_SAFETY_DISTANCE) {
 		return true;
