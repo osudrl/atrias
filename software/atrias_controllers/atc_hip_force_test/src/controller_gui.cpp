@@ -11,23 +11,31 @@
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-	gui->get_widget("flightP", flightP);
-	gui->get_widget("flightD", flightD);
-	gui->get_widget("stanceP", stanceP);
-	gui->get_widget("stanceD", stanceD);
+	gui->get_widget("flightP",       flightP);
+	gui->get_widget("flightD",       flightD);
+	gui->get_widget("stanceP",       stanceP);
+	gui->get_widget("stanceD",       stanceD);
 	gui->get_widget("toeFilterGain", toeFilterGain);
 	gui->get_widget("toeThreshold",  toeThreshold);
 	gui->get_widget("legLen",        legLen);
 	gui->get_widget("force",         force);
+	gui->get_widget("legP",          legP);
+	gui->get_widget("legD",          legD);
+	gui->get_widget("activeLeg",     activeLeg);
+	gui->get_widget("stateLbl",      stateLbl);
 
-	if (!flightP ||
-	    !flightD ||
-	    !stanceP ||
-	    !stanceD ||
+	if (!flightP       ||
+	    !flightD       ||
+	    !stanceP       ||
+	    !stanceD       ||
 	    !toeFilterGain ||
 	    !toeThreshold  ||
 	    !legLen        ||
-	    !force) {
+	    !force         ||
+	    !legP          ||
+	    !legD          ||
+	    !activeLeg     ||
+	    !stateLbl) {
 		// We've failed to initialize
 		return false;
 	}
@@ -41,6 +49,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	toeThreshold->set_range(0.0, 10000.0);
 	legLen->set_range(0.5, 0.99);
 	force->set_range(0.0, 2000.0);
+	legP->set_range(0.0, 5000.0);
+	legD->set_range(0.0, 70.0);
 
 	flightP->set_value(150.0);
 	flightD->set_value(10.0);
@@ -50,6 +60,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	toeThreshold->set_value(500.0);
 	legLen->set_value(0.9);
 	force->set_value(100.0);
+	legP->set_value(600.0);
+	legD->set_value(20.0);
+	activeLeg->set_active(1);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("atc_hip_force_test_status", 0, controllerCallback);

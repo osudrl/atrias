@@ -31,9 +31,12 @@ Gtk::SpinButton *flightP,
                 *toeFilterGain,
                 *toeThreshold,
                 *legLen,
-                *force;
+                *force,
+                *legP,
+                *legD;
 
-Gtk::Label *stateLbl;
+Gtk::ComboBox *activeLeg;
+Gtk::Label    *stateLbl;
 
 void controllerCallback(const atc_hip_force_test::controller_status &status);
 

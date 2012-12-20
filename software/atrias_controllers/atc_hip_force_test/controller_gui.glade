@@ -9,7 +9,7 @@
       <object class="GtkTable" id="ControlsTbl">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_rows">9</property>
+        <property name="n_rows">11</property>
         <property name="n_columns">2</property>
         <child>
           <object class="GtkLabel" id="flightPLbl">
@@ -235,7 +235,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkComboBox" id="combobox1">
+          <object class="GtkComboBox" id="activeLeg">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="model">liststore1</property>
@@ -246,12 +246,77 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
+            <property name="top_attach">10</property>
+            <property name="bottom_attach">11</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="activeLegLbl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Active Leg:</property>
+          </object>
+          <packing>
+            <property name="top_attach">10</property>
+            <property name="bottom_attach">11</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="legPLbl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Leg P:</property>
+          </object>
+          <packing>
             <property name="top_attach">8</property>
             <property name="bottom_attach">9</property>
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkLabel" id="legDLbl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Leg D:</property>
+          </object>
+          <packing>
+            <property name="top_attach">9</property>
+            <property name="bottom_attach">10</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="legP">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">8</property>
+            <property name="bottom_attach">9</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="legD">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">1</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">9</property>
+            <property name="bottom_attach">10</property>
+          </packing>
         </child>
       </object>
       <packing>
