@@ -127,12 +127,12 @@ bool Safety::shouldHalt() {
 	}
 	
 	double rLegAngleDiff = rLegBPred - rLegAPred;
-	if (rLegAngleDiff < LEG_LOC_DIFF_MIN + LEG_LOC_SAFETY_DISTANCE) {
+	if (rLegAngleDiff < LEG_LOC_DIFF_MIN) {
 		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::RIGHT_LEG_TOO_LONG);
 		return true;
 	}
 	
-	if (rLegAngleDiff > LEG_LOC_DIFF_MAX - LEG_LOC_SAFETY_DISTANCE) {
+	if (rLegAngleDiff > LEG_LOC_DIFF_MAX) {
 		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::RIGHT_LEG_TOO_SHORT);
 		return true;
 	}
