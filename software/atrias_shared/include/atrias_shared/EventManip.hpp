@@ -37,6 +37,14 @@ template<class T> atrias_msgs::rt_ops_event buildEventPtr(RtOpsEvent eventType, 
 	return event;
 }
 
+/** @brief This reads in the metadata from an event.
+  * @param event The event
+  * @return This event's metadata.
+  */
+template<class T> T readEventMetadata(atrias_msgs::rt_ops_event& event) {
+	return *((T*) event.metadata.data());
+}
+
 }
 
 }

@@ -16,5 +16,6 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
 orocos_component(NoopConn src/NoopConn.cpp)
+target_link_libraries(NoopConn EventManip-${OROCOS_TARGET})
 
 orocos_generate_package()

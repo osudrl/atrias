@@ -37,7 +37,7 @@ void NoopConn::sendControllerOutput(atrias_msgs::controller_output controller_ou
 void NoopConn::updateHook() {
 	// Check for missed deadlines.
 	if (waitingForResponse)
-		sendEvent(rtOps::RtOpsEvent::MISSED_DEADLINE, 0);
+		sendEvent(buildEvent(rtOps::RtOpsEvent::MISSED_DEADLINE));
 	waitingForResponse = true;
 	
 	RTT::os::TimeService::nsecs timestamp = RTT::os::TimeService::Instance()->getNSecs();

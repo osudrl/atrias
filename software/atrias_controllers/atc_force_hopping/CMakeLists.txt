@@ -39,6 +39,6 @@ endif(ATRIAS_BUILD_GUI)
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(atc_force_hopping src/controller_component.cpp)
 	ros_generate_rtt_typekit(atc_force_hopping)
-	target_link_libraries(atc_force_hopping ASCLoader-${OROCOS_TARGET})
+	target_link_libraries(atc_force_hopping ASCLoader-${OROCOS_TARGET} EventManip-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 

@@ -71,16 +71,10 @@ class OpsLogger {
 		  */
 		void logClampedControllerOutput(atrias_msgs::controller_output& clamped_output);
 		
-		/** @brief Send out an RT Ops event.
-		  * @param error    The specific event to be reported.
-		  * @param metadata The metadata associated with this event.
-		  */
-		void sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata=0);
-
 		/** @brief Transmit an RT Ops event.
 		  * @param event The event to be sent.
 		  */
-		void sendEvent(atrias_msgs::rt_ops_event event);
+		void sendEvent(atrias_msgs::rt_ops_event &event);
 };
 
 }

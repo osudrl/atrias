@@ -84,7 +84,7 @@ Safety* RTOps::getSafety() {
 	return safety;
 }
 
-void RTOps::sendEvent(atrias_msgs::rt_ops_event &event) {
+void RTOps::sendEvent(atrias_msgs::rt_ops_event event) {
 	opsLogger->sendEvent(event);
 }
 

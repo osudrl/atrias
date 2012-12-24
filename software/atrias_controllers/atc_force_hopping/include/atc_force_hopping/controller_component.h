@@ -30,6 +30,7 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
+#include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/globals.h>
 
 using namespace RTT;
@@ -45,7 +46,7 @@ class ATCForceHopping : public TaskContext {
 		State mode;
 
 		// This lets us send an event upon encountering an error
-		OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEvent;
+		OperationCaller<void(atrias_msgs::rt_ops_event)> sendEvent;
 		
 		// Logging
 		controller_log_data             logData;

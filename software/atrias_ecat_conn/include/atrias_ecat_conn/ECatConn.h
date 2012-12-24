@@ -60,7 +60,7 @@ class ECatConn : public RTT::TaskContext {
 		
 		/** @brief Lets us report events, such as a missed deadline.
 		  */
-		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)>
+		RTT::OperationCaller<void(atrias_msgs::rt_ops_event)>
 			sendEvent;
 		
 		/** @brief Configures this component.

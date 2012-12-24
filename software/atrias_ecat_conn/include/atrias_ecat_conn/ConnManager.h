@@ -28,6 +28,7 @@ extern "C" {
 #include "atrias_ecat_conn/ECatConn.h"
 #include <atrias_msgs/controller_output.h>
 #include <robot_invariant_defs.h>
+#include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/globals.h>
 
 #define EC_TIMEOUT_US      500

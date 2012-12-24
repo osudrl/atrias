@@ -279,7 +279,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 			break;
 		default:
 			co.command = medulla_state_error;
-			sendEvent(rtOps::RtOpsEvent::CONTROLLER_CUSTOM, (rtOps::RtOpsEventMetadata_t) EventMetadata::BAD_MAIN_STATE);
+			sendEvent(buildEventMetadata(rtOps::RtOpsEvent::CONTROLLER_CUSTOM, EventMetadata::BAD_MAIN_STATE));
 	}
 
 	// Stuff the msg and push to ROS for logging

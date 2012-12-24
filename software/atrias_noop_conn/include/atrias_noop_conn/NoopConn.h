@@ -16,7 +16,9 @@
 #include <std_msgs/Header.h>
 
 #include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/rt_ops_event.h>
 #include <atrias_msgs/controller_output.h>
+#include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/globals.h>
 
 namespace atrias {
@@ -32,7 +34,7 @@ class NoopConn : public RTT::TaskContext {
 		
 		/** @brief Lets us report events, such as a missed deadline.
 		  */
-		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)>
+		RTT::OperationCaller<void(atrias_msgs::rt_ops_event)>
 			sendEvent;
 		
 		/** @brief Holds the robot state to be passed to RT Ops.

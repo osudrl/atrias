@@ -138,7 +138,7 @@ class RTOps : public RTT::TaskContext {
 		/** @brief Allows outside components to send events.
 		  * @param event The event to be sent.
 		  */
-		void               sendEvent(atrias_msgs::rt_ops_event &event);
+		void               sendEvent(atrias_msgs::rt_ops_event event);
 		
 		// Standard Orocos hooks
 		bool               configureHook();

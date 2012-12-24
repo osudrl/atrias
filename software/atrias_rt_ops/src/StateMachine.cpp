@@ -12,7 +12,6 @@ StateMachine::StateMachine(RTOps* rt_ops) {
 
 void StateMachine::eStop(RtOpsEvent event) {
 	setState(RtOpsState::E_STOP);
-	rtOps->getOpsLogger()->sendEvent(event);
 }
 
 void StateMachine::setState(RtOpsState new_state) {
