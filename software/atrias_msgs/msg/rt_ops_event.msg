@@ -2,4 +2,4 @@
 uint8 event
 
 # The metadata for this event.
-int8  metadata
+uint8[] metadata

@@ -7,6 +7,7 @@
 
 class Safety;
 
+#include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
 #include <atrias_msgs/robot_state.h>
 

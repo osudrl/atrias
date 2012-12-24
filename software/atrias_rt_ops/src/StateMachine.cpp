@@ -31,15 +31,12 @@ void StateMachine::setState(RtOpsState new_state) {
 void StateMachine::ackCMState(RtOpsState state) {
 	switch (state) {
 		case RtOpsState::NO_CONTROLLER_LOADED:
-			rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_NO_CONTROLLER_LOADED);
 			break;
 			
 		case RtOpsState::DISABLED:
-			rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_DISABLE);
 			break;
 			
 		case RtOpsState::ENABLED:
-			rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_ENABLE);
 			break;
 			
 		case RtOpsState::RESET:
@@ -47,17 +44,14 @@ void StateMachine::ackCMState(RtOpsState state) {
 			break;
 			
 		case RtOpsState::E_STOP:
-			rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_E_STOP);
 			break;
 		
 		case RtOpsState::HALT:
-			rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_HALT);
 			break;
 			
 		default:
 			// This shouldn't happen, because this should never be called with an
 			// invalid RtOpsCommand. But the check's here anyway.
-			eStop(RtOpsEvent::ACK_INVALID);
 			break;
 	}
 }
@@ -78,7 +72,6 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 			if (resetCounter > MEDULLA_RESET_TIME_MS) {
 				resetCounter = 0;
 				setState(RtOpsState::NO_CONTROLLER_LOADED);
-				rtOps->getOpsLogger()->sendEvent(RtOpsEvent::ACK_RESET);
 			}
 			return medulla_state_reset;
 			

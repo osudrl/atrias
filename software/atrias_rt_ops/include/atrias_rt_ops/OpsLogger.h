@@ -76,6 +76,11 @@ class OpsLogger {
 		  * @param metadata The metadata associated with this event.
 		  */
 		void sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata=0);
+
+		/** @brief Transmit an RT Ops event.
+		  * @param event The event to be sent.
+		  */
+		void sendEvent(atrias_msgs::rt_ops_event &event);
 };
 
 }

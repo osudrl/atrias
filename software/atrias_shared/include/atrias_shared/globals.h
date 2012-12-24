@@ -13,6 +13,9 @@
 
 #include <stdint.h>
 
+// Our stuff
+#include <atrias_msgs/rt_ops_event.h>
+
 #define ASSERT(condition, message) do { \
 if (!(condition)) { printf((message)); } \
 assert ((condition)); } while(false)
@@ -66,6 +69,15 @@ enum class ControllerManagerError: ControllerManagerError_t {
     CONTROLLER_STATE_MACHINE_EXCEPTION
 };
 
+typedef int8_t ControllerManagerCommand_t;
+
+/** @brief Represents a command sent from the Controller Manager to RT Ops.
+  */
+enum class ControllerManagerCommand: ControllerManagerCommand_t {
+	UNLOAD_CONTROLLER = 0, // Tells RT Ops to stop calling the controller.
+	CONTROLLER_LOADED      // Informs RT Ops a controller has been loaded.
+};
+
 }
 
 namespace rtOps {
@@ -94,20 +106,15 @@ enum class RtOpsEvent: RtOpsEvent_t {
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
     CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.
-    ACK_NO_CONTROLLER_LOADED, // Acknowledges a NO_CONTROLLER_LOADED command from the CM
-    ACK_DISABLE,              // Acknowledges a DISABLE command from the CM
-    ACK_ENABLE,               // Acknowledges an ENABLE command from the CM
-    ACK_RESET,                // Acknowledges a RESET command from the CM
-    ACK_E_STOP,               // Acknowledges an E_STOP command from the CM
-    ACK_HALT,                 // Acknowledges an E_STOP command from the CM
-    ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
+	ACK_GUI,                  // Sent to acknowledge a GUI state request
+	ACK_CM,                   // Sent to acknowledge a CM command.
     CONTROLLER_ESTOP,         // The controller commanded an estop.
     MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
 };
 
-/** @brief The type for RT Ops event metadata.
+/** @brief The type for most RT Ops event metadata.
   */
 typedef int8_t RtOpsEventMetadata_t;
 
@@ -154,6 +161,23 @@ enum class RobotConfiguration: RobotConfiguration_t {
     LEFT_LEG_HIP,   // A single leg with a hip
     BIPED_NOHIP,    // Two legs no hips
 };
+
+/** @brief This creates an event of the given type and populates its metadata
+  * You may pass in a pointer to a struct if you wish for the matadata.
+  */
+template<class T> atrias_msgs::rt_ops_event buildEvent(RtOpsEvent eventType, T* metadata = nullptr) {
+	atrias_msgs::rt_ops_event event;
+	event.event = (RtOpsEvent_t) eventType;
+	// If the user doesn't want metadata, don't populate it.
+	if (!metadata)
+		return event;
+	
+	// Populate the metadata
+	for (size_t i = 0; i < sizeof(T); i++) {
+		event.metadata.push_back( ((uint8_t*) metadata)[i] );
+	}
+	return event;
+}
 
 }
 
