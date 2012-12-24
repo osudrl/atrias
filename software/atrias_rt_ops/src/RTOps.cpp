@@ -7,11 +7,7 @@ namespace rtOps {
 RTOps::RTOps(std::string name) :
        RTT::TaskContext(name),
        cManagerDataIn("controller_manager_data_in"),
-       logCyclicOut("rt_ops_log_out"),
-       guiCyclicOut("rt_ops_gui_out"),
-       eventOut("rt_ops_event_out"),
        timestampHandler(),
-       opsLogger(&logCyclicOut, &guiCyclicOut, &eventOut),
        rtHandler(),
        runController(),
        sendControllerOutput()
@@ -27,15 +23,11 @@ RTOps::RTOps(std::string name) :
 	    ->addOperation("newStateCallback", &RTOps::newStateCallback, this, RTT::ClientThread);
 	this->requires("connector")
 	    ->addOperationCaller(sendControllerOutput);
-	this->provides("rtOps")
-	    ->addOperation("sendEvent", &RTOps::sendEvent, this, RTT::ClientThread);
-	    
+
 	addEventPort(cManagerDataIn);
-	addPort(logCyclicOut);
-	addPort(guiCyclicOut);
-	addPort(eventOut);
 
 	controllerLoop    = new ControllerLoop(this);
+	opsLogger         = new OpsLogger(this);
 	stateMachine      = new StateMachine(this);
 	robotStateHandler = new RobotStateHandler(this);
 	safety            = new Safety(this);
@@ -60,12 +52,12 @@ std_msgs::Header RTOps::getROSHeader() {
 }
 
 void RTOps::newStateCallback(atrias_msgs::robot_state state) {
-	opsLogger.beginCycle();
+	opsLogger->beginCycle();
 	robotStateHandler->setRobotState(state);
 	
 	controllerLoop->cycleLoop();
 	
-	opsLogger.logRobotState(state);
+	opsLogger->logRobotState(state);
 }
 
 RobotStateHandler* RTOps::getRobotStateHandler() {
@@ -77,7 +69,7 @@ TimestampHandler* RTOps::getTimestampHandler() {
 }
 
 OpsLogger* RTOps::getOpsLogger() {
-	return &opsLogger;
+	return opsLogger;
 }
 
 ControllerLoop* RTOps::getControllerLoop() {
@@ -92,8 +84,8 @@ Safety* RTOps::getSafety() {
 	return safety;
 }
 
-void RTOps::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
-	opsLogger.sendEvent(event, metadata);
+void RTOps::sendEvent(atrias_msgs::rt_ops_event &event) {
+	opsLogger->sendEvent(event);
 }
 
 bool RTOps::configureHook() {

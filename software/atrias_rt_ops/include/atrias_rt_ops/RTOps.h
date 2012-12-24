@@ -44,18 +44,6 @@ class RTOps : public RTT::TaskContext {
 		RTT::InputPort<uint8_t>                     cManagerDataIn;
 		uint8_t                                     cmIn;
 		
-		/** @brief This is our 1 kHz logging output.
-		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle>  logCyclicOut;
-		
-		/** @brief This is our 50 Hz GUI transmission.
-		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle>  guiCyclicOut;
-		
-		/** @brief This is the port over which events are sent.
-		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_event>  eventOut;
-		
 		/** @brief Handles our timestamps for us
 		  */
 		TimestampHandler                            timestampHandler;
@@ -70,7 +58,7 @@ class RTOps : public RTT::TaskContext {
 		
 		/** @brief Does our logging for us.
 		  */
-		OpsLogger                                   opsLogger;
+		OpsLogger                                   *opsLogger;
 		
 		/** @brief Calculates our states for us.
 		  */
@@ -146,13 +134,12 @@ class RTOps : public RTT::TaskContext {
 		  * @return A pointer to the Safety
 		  */
 		Safety*            getSafety();
-		
-		/** @brief Lets Connectors report RT Ops Events.
-		  * @param event    The event to be reported.
-		  * @param metadata The metadata for this event
-		  */
-		void               sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata);
 
+		/** @brief Allows outside components to send events.
+		  * @param event The event to be sent.
+		  */
+		void               sendEvent(atrias_msgs::rt_ops_event &event);
+		
 		// Standard Orocos hooks
 		bool               configureHook();
 		bool               startHook();

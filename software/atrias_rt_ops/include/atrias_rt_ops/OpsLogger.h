@@ -5,6 +5,8 @@
   * @brief Contains the main logging infrastructure for RT Ops.
   */
 
+class OpsLogger;
+
 #include <stdint.h>
 
 // Orocos
@@ -16,40 +18,38 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_cycle.h>
 #include <atrias_msgs/rt_ops_event.h>
+#include <atrias_rt_ops/RTOps.h>
 
 namespace atrias {
 
 namespace rtOps {
 
 class OpsLogger {
-	/** @brief A pointer to the port used to log RT Ops's cyclic data.
+	/** @brief The port used to log RT Ops's cyclic data.
 	  */
-	RTT::OutputPort<atrias_msgs::rt_ops_cycle>* logCyclicOut;
+	RTT::OutputPort<atrias_msgs::rt_ops_cycle> logCyclicOut;
 	
-	/** @brief A pointer to the port used to send RT Ops's cyclic data to the GUI.
+	/** @brief The port used to send RT Ops's cyclic data to the GUI.
 	  */
-	RTT::OutputPort<atrias_msgs::rt_ops_cycle>* guiCyclicOut;
+	RTT::OutputPort<atrias_msgs::rt_ops_cycle> guiCyclicOut;
 	
-	/** @brief A pointer to the port we use to send events.
+	/** @brief The port we use to send events.
 	  */
-	RTT::OutputPort<atrias_msgs::rt_ops_event>* eventOut;
+	RTT::OutputPort<atrias_msgs::rt_ops_event> eventOut;
 	
 	/** @brief Does the timing for the 50 Hz stream.
 	  */
-	shared::GuiPublishTimer                     guiPublishTimer;
+	shared::GuiPublishTimer                    guiPublishTimer;
 	
 	/** @brief Stores this cycle's RT Ops Cycle message.
 	  */
-	atrias_msgs::rt_ops_cycle                   rtOpsCycle;
+	atrias_msgs::rt_ops_cycle                  rtOpsCycle;
 	
 	public:
 		/** @brief Initializes the OpsLogger.
-		  * @param log_robot_state_out A pointer to the robot state logging output port.
-		  * @param gui_robot_state_out A pointer to the 50Hz robot state output port.
+		  * @param rt_ops A pointer to the main RT Ops instance.
 		  */
-		OpsLogger(RTT::OutputPort<atrias_msgs::rt_ops_cycle>* log_cyclic_out,
-		          RTT::OutputPort<atrias_msgs::rt_ops_cycle>* gui_cyclic_out,
-		          RTT::OutputPort<atrias_msgs::rt_ops_event>* event_out);
+		OpsLogger(RTOps *rt_ops);
 		
 		/** @brief Begins a new cycle. This will send out the rt ops cycle message.
 		  */
