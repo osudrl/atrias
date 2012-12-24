@@ -11,7 +11,7 @@
 #include <rtt/OutputPort.hpp>
 #include <rtt/os/TimeService.hpp>
 
-#include <atrias_shared/globals.h>
+#include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_cycle.h>
@@ -80,7 +80,7 @@ class OpsLogger {
 		/** @brief Transmit an RT Ops event.
 		  * @param event The event to be sent.
 		  */
-		void sendEvent(atrias_msgs::rt_ops_event &event);
+		void sendEvent(atrias_msgs::rt_ops_event event);
 };
 
 }

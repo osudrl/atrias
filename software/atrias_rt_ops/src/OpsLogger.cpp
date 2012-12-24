@@ -45,11 +45,10 @@ void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
 }
 
 void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
-	atrias_msgs::rt_ops_event eventMsg = buildEvent(event, &metadata);
-	sendEvent(eventMsg);
+	sendEvent(buildEventMetadata(event, metadata));
 }
 
-void OpsLogger::sendEvent(atrias_msgs::rt_ops_event &event) {
+void OpsLogger::sendEvent(atrias_msgs::rt_ops_event event) {
 	eventOut->write(event);
 }
 

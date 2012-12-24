@@ -39,6 +39,9 @@ rosbuild_add_library(controller_metadata SHARED src/controller_metadata.cpp)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
+orocos_library(EventManip src/EventManip.cpp)
+
 #rosbuild_add_executable(hello src/hello.cpp)
 
 orocos_generate_package()

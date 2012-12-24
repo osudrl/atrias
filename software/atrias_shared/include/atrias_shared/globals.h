@@ -105,11 +105,16 @@ enum class RtOpsEvent: RtOpsEvent_t {
     INVALID_CM_COMMAND,       // An invalid command was received from the Controller Manager
     INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
-    CM_COMMAND_ESTOP,         // The controller manager sent an EStop command.
-	ACK_GUI,                  // Sent to acknowledge a GUI state request
+    CM_COMMAND_ESTOP,         // DEPRECATED
+    ACK_E_STOP,               // DEPRECATED
+    ACK_DISABLE,              // DEPRECATED
+    ACK_ENABLE,               // DEPRECATED
+    ACK_NO_CONTROLLER_LOADED, // DEPRECATED
+    ACK_RESET,                // DEPRECATED
+    ACK_GUI,                  // Sent to acknowledge a GUI state request
 	ACK_CM,                   // Sent to acknowledge a CM command.
-    CONTROLLER_ESTOP,         // The controller commanded an estop.
-    MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
+    CONTROLLER_ESTOP,         // DEPRECATED
+    MEDULLA_ESTOP,            // DEPRECATED
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
 };
@@ -161,23 +166,6 @@ enum class RobotConfiguration: RobotConfiguration_t {
     LEFT_LEG_HIP,   // A single leg with a hip
     BIPED_NOHIP,    // Two legs no hips
 };
-
-/** @brief This creates an event of the given type and populates its metadata
-  * You may pass in a pointer to a struct if you wish for the matadata.
-  */
-template<class T> atrias_msgs::rt_ops_event buildEvent(RtOpsEvent eventType, T* metadata = nullptr) {
-	atrias_msgs::rt_ops_event event;
-	event.event = (RtOpsEvent_t) eventType;
-	// If the user doesn't want metadata, don't populate it.
-	if (!metadata)
-		return event;
-	
-	// Populate the metadata
-	for (size_t i = 0; i < sizeof(T); i++) {
-		event.metadata.push_back( ((uint8_t*) metadata)[i] );
-	}
-	return event;
-}
 
 }
 

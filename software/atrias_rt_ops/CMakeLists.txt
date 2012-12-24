@@ -14,5 +14,6 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
 include_directories(../../robot_definitions/)
 orocos_component(RTOps src/RTOps.cpp src/TimestampHandler.cpp src/OpsLogger.cpp src/RobotStateHandler.cpp src/StateMachine.cpp src/ControllerLoop.cpp src/RTHandler.cpp src/Safety.cpp)
+target_link_libraries(RTOps EventManip-${OROCOS_TARGET})
 
 orocos_generate_package()
