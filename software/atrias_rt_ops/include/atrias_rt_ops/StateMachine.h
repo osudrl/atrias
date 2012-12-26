@@ -23,6 +23,10 @@ namespace atrias {
 namespace rtOps {
 
 class StateMachine {
+	/** @brief This is the last command from the controller
+	  */
+	RtOpsState     controllerCmd;
+
 	/** @brief Points to the main RT Ops class.
 	  */
 	RTOps*         rtOps;
@@ -37,8 +41,9 @@ class StateMachine {
 	
 	/** @brief Sets the state.
 	  * @param new_state The new state.
+	  * @param event     The event to send out with the new state info.
 	  */
-	void           setState(RtOpsState new_state);
+	void           setState(RtOpsState new_state, atrias_msgs::rt_ops_event event);
 	
 	public:
 		/** @brief Initializes this StateMachine.
@@ -47,10 +52,10 @@ class StateMachine {
 		StateMachine(RTOps* rt_ops);
 
 		/** @brief Calculates the command to be sent to the Medullas
-		  * @param controller_output The controller's output
+		  * @param controller_cmd The controller's "command"
 		  * @return The command for the medullas
 		  */
-		medulla_state_t calcMedullaCmd(atrias_msgs::controller_output &controller_output);
+		medulla_state_t calcMedullaCmd(RtOpsState controller_cmd);
 		
 		/** @brief Computes a new state.
 		  * This MUST be called from the controller thread!

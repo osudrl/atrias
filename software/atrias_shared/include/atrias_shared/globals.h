@@ -117,7 +117,8 @@ enum class RtOpsEvent: RtOpsEvent_t {
     CONTROLLER_ESTOP,         // DEPRECATED
     MEDULLA_ESTOP,            // DEPRECATED
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
-    CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
+    CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
+    RTOPS_STATE_CHG           // RT Ops changed its own state. Doesn't include safeties. Metadata: RtOpsStateChangeMetadata
 };
 
 /** @brief The type for most RT Ops event metadata.
@@ -159,6 +160,17 @@ enum class AckCmEventMetadata: RtOpsEventMetadata_t {
     UNKNOWN_CMD,             // RT Ops did not recognize the CM's command.
     NO_PEER,                 // We could not find a "controller" peer when trying to load a controller
     NO_OPERATION             // We could not find the ATC's operation when trying to load a controller
+};
+
+/** @brief The reason for RT Ops changing its own state.
+  */
+enum class RtOpsStateChgReason: RtOpsEventMetadata_t {
+    BAD_STATE = 0, // The state machine's internal state was bad.
+};
+
+struct RtOpsStateChangeMetadata {
+    RtOpsState          newState;
+    RtOpsStateChgReason reason;
 };
 
 /** @brief The type for robot configuration data

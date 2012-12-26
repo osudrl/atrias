@@ -87,10 +87,11 @@ void ControllerLoop::loop() {
 			// Run the stop controller here.
 		}
 		
-		controllerOutput.command = rtOps->getStateMachine()->calcMedullaCmd(controllerOutput);
-		
 		rtOps->getOpsLogger()->logControllerOutput(controllerOutput);
+
+		controllerOutput.command = rtOps->getStateMachine()->calcMedullaCmd((RtOpsState) controllerOutput.command);
 		controllerOutput = clampControllerOutput(controllerOutput);
+
 		rtOps->getOpsLogger()->logClampedControllerOutput(controllerOutput);
 		
 		if (controllerOutput.command != medulla_state_run) {
