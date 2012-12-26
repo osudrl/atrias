@@ -8,6 +8,7 @@ CMComms::CMComms(RTOps *rt_ops) :
 	cmInPort("controller_manager_data_in")
 {
 	rtOps = rt_ops;
+	rtOps->addEventPort(cmInPort);
 }
 
 bool CMComms::updateHook() {
