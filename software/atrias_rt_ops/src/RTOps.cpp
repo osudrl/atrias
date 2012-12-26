@@ -8,7 +8,6 @@ RTOps::RTOps(std::string name) :
        RTT::TaskContext(name),
        timestampHandler(),
        rtHandler(),
-       runController(),
        sendControllerOutput()
 {
 	this->provides("timestamps")
@@ -16,8 +15,6 @@ RTOps::RTOps(std::string name) :
 	    .doc("Get timestamp.");
 	this->provides("timestamps")
 	    ->addOperation("getROSHeader", &RTOps::getROSHeader, this, RTT::ClientThread);
-	this->requires("atc")
-	    ->addOperationCaller(runController);
 	this->provides("rtOps")
 	    ->addOperation("newStateCallback", &RTOps::newStateCallback, this, RTT::ClientThread);
 	this->requires("connector")
@@ -31,14 +28,6 @@ RTOps::RTOps(std::string name) :
 	safety            = new Safety(this);
 
 	log(RTT::Info) << "[RTOps] constructed!" << RTT::endlog();
-}
-
-void RTOps::connectToController() {
-	RTT::TaskContext *peer = this->getPeer("controller");
-	
-	if (peer) {
-		runController = peer->provides("atc")->getOperation("runController");
-	}
 }
 
 uint64_t RTOps::getTimestamp() {

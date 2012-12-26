@@ -6,18 +6,25 @@ namespace rtOps {
 
 ControllerLoop::ControllerLoop(RTOps* rt_ops) :
                 RTT::Activity(70),
-                signal(0) {
+                signal(0),
+				runController() {
 	rtOps            = rt_ops;
 	controllerLoaded = false;
+	rtOps->requires("atc")->
+		addOperationCaller(runController);
 }
 
-void ControllerLoop::setControllerLoaded() {
-	if (controllerLoaded) {
-		// The controller's already been connected to.
-		return;
-	}
-	rtOps->connectToController();
+AckCmEventMetadata ControllerLoop::loadController() {
+	RTT::TaskContext *controller = rtOps->getPeer("controller");
+	if (!controller)
+		return AckCmEventMetadata::NO_PEER;
+	
+	runController = controller->provides("atc")->getOperation("runController");
+	if (!runController.ready())
+		return AckCmEventMetadata::NO_OPERATION;
+
 	controllerLoaded = true;
+	return AckCmEventMetadata::CONTROLLER_LOADED;
 }
 
 void ControllerLoop::setControllerUnloaded() {
@@ -52,6 +59,15 @@ atrias_msgs::controller_output
 	return controller_output;
 }
 
+void ControllerLoop::zeroTorques(atrias_msgs::controller_output &controller_output) {
+	controller_output.lLeg.motorCurrentA   = 0.0;
+	controller_output.lLeg.motorCurrentB   = 0.0;
+	controller_output.lLeg.motorCurrentHip = 0.0;
+	controller_output.rLeg.motorCurrentA   = 0.0;
+	controller_output.rLeg.motorCurrentB   = 0.0;
+	controller_output.rLeg.motorCurrentHip = 0.0;
+}
+
 void ControllerLoop::loop() {
 	while (!done) {
 		rtOps->getStateMachine()->run();
@@ -59,12 +75,16 @@ void ControllerLoop::loop() {
 		rtOps->getTimestampHandler()->setTimestamp(robotState.header);
 		
 		atrias_msgs::controller_output controllerOutput;
+		zeroTorques(controllerOutput);
 		
 		{
 			RTT::os::MutexLock lock(controllerLock);
 			if (controllerLoaded) {
-				controllerOutput = rtOps->runController(robotState);
+				controllerOutput = runController(robotState);
 			}
+		}
+		if ((RtOpsState) robotState.rtOpsState == RtOpsState::STOP) {
+			// Run the stop controller here.
 		}
 		
 		controllerOutput.command = rtOps->getStateMachine()->calcMedullaCmd(controllerOutput);
@@ -75,12 +95,7 @@ void ControllerLoop::loop() {
 		
 		if (controllerOutput.command != medulla_state_run) {
 			// Robot should be disabled, so zero current commands.
-			controllerOutput.lLeg.motorCurrentA   = 0.0;
-			controllerOutput.lLeg.motorCurrentB   = 0.0;
-			controllerOutput.lLeg.motorCurrentHip = 0.0;
-			controllerOutput.rLeg.motorCurrentA   = 0.0;
-			controllerOutput.rLeg.motorCurrentB   = 0.0;
-			controllerOutput.rLeg.motorCurrentHip = 0.0;
+			zeroTorques(controllerOutput);
 		}
 		
 		rtOps->sendControllerOutput(controllerOutput);

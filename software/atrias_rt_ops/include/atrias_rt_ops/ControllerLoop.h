@@ -52,6 +52,11 @@ class ControllerLoop : public RTT::Activity {
 	/** @brief Stores whether or not a controller is loaded.
 	  */
 	volatile bool      controllerLoaded;
+
+	/** @brief Lets us run the controllers.
+	  */
+	RTT::OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state)>
+		runController;
 	
 	/** @brief Clamps the controller output.
 	  * @param controller_output The un-clamped outputs.
@@ -60,15 +65,20 @@ class ControllerLoop : public RTT::Activity {
 	atrias_msgs::controller_output
 		clampControllerOutput(atrias_msgs::controller_output controller_output);
 	
+	/** @brief Zeroes the torques in a Controller Output message
+	  * @param controller_output The controller output to zero the torques in.
+	  */
+	void zeroTorques(atrias_msgs::controller_output &controller_output);
+	
 	public:
 		/** @brief Initializes this ControllerLoop.
 		  */
 		ControllerLoop(RTOps* rt_ops);
 		
-		/** @brief Tells the controller loop a controller is loaded.
-		  * This function may be called repeatedly with no ill effects.
+		/** @brief Tells the controller loop to load a controller.
+		  * @return Success or failure -- if failure, how it failed is returned too.
 		  */
-		void setControllerLoaded();
+		AckCmEventMetadata loadController();
 		
 		/** @brief Tells the controller loop that no controller is loaded.
 		  * This function will wait until it is safe to unload the controller.

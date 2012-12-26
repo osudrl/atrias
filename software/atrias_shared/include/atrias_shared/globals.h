@@ -151,6 +151,16 @@ enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
     RIGHT_LEG_TOO_SHORT
 };
 
+/** @brief The metadata for the ACK_CM event.
+  */
+enum class AckCmEventMetadata: RtOpsEventMetadata_t {
+    CONTROLLER_UNLOADED = 0, // The controller has been unloaded.
+    CONTROLLER_LOADED,       // We have successfully connected with a controller
+    UNKNOWN_CMD,             // RT Ops did not recognize the CM's command.
+    NO_PEER,                 // We could not find a "controller" peer when trying to load a controller
+    NO_OPERATION             // We could not find the ATC's operation when trying to load a controller
+};
+
 /** @brief The type for robot configuration data
   */
 typedef uint8_t RobotConfiguration_t;
