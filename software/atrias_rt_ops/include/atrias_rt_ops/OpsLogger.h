@@ -40,6 +40,10 @@ class OpsLogger {
 	/** @brief Does the timing for the 50 Hz stream.
 	  */
 	shared::GuiPublishTimer                    guiPublishTimer;
+
+	/** @brief Lets us access the main RT Ops instance.
+	  */
+	RTOps                                      *rtOps;
 	
 	/** @brief Stores this cycle's RT Ops Cycle message.
 	  */
@@ -58,10 +62,6 @@ class OpsLogger {
 		/** @brief Ends a cycle. This records this cycle's ending timestamp.
 		  */
 		void endCycle();
-		
-		/** @brief Logs the new robot state.
-		  */
-		void logRobotState(atrias_msgs::robot_state& state);
 		
 		/** @brief Logs the commanded controller output.
 		  */

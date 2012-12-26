@@ -33,10 +33,6 @@ class RobotStateHandler {
 	  */
 	RTT::os::Mutex           robotStateLock;
 	
-	/** @brief Checks if any Medullas are in error.
-	  */
-	void                     checkForNewErrors(atrias_msgs::robot_state &state);
-	
 	public:
 		/** @brief Initializes the RobotStateHandler.
 		  * @param rt_ops A pointer to the main RT Ops class.

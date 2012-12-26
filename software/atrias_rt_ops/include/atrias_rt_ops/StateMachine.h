@@ -23,62 +23,44 @@ namespace atrias {
 namespace rtOps {
 
 class StateMachine {
-	/** @brief Counts up while a reset happens. Used to detect a failed reset.
-	  */
-	int                             resetCounter;
-	
 	/** @brief Points to the main RT Ops class.
 	  */
-	RTOps*                          rtOps;
+	RTOps*         rtOps;
 	
 	/** @brief The current state.
 	  */
-	RtOpsState                      currentState;
-	
-	/** @brief Protects the state from concurrent access.
+	RtOpsState     state;
+
+	/** @brief This protects access to the current state.
 	  */
-	RTT::os::Mutex                  currentStateLock;
+	RTT::os::Mutex stateLock;
 	
 	/** @brief Sets the state.
 	  * @param new_state The new state.
 	  */
-	void                            setState(RtOpsState new_state);
-	
-	/** @brief Responds to the controller manager.
-	  * @param state The state for which to send an acknowledgement.
-	  * This sends out an event to inform the controller manager that RT Ops has
-	  * finished processing its command.
-	  */
-	void                            ackCMState(RtOpsState state);
+	void           setState(RtOpsState new_state);
 	
 	public:
 		/** @brief Initializes this StateMachine.
 		  * @param rt_ops A pointer to the RT Ops class.
 		  */
 		StateMachine(RTOps* rt_ops);
-		
-		/** @brief Executes an EStop.
-		  * @param event The reason for this EStop.
-		  * This sets our state to ESTOP, resulting in an estop on the Medullas
-		  * (if possible). This also sends out an RtOpsEvent with the reason for this
-		  * estop.
+
+		/** @brief Calculates the command to be sent to the Medullas
+		  * @param controller_output The controller's output
+		  * @return The command for the medullas
 		  */
-		void eStop(RtOpsEvent event);
+		medulla_state_t calcMedullaCmd(atrias_msgs::controller_output &controller_output);
 		
 		/** @brief Computes a new state.
-		  * @return The new desired Medulla state.
+		  * This MUST be called from the controller thread!
 		  */
-		medulla_state_t calcState(atrias_msgs::controller_output controllerOutput);
-		
-		/** @brief Sets a new state for the state machine.
-		  * @param new_state The new state.
-		  */
-		void newCMState(RtOpsState new_state);
+		void run();
 		
 		/** @brief Gets the current RT Ops state.
 		  * @return The current RT Ops state.
 		  */
-		RtOpsState getRtOpsState();
+		RtOpsState getState();
 };
 
 }

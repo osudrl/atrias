@@ -10,6 +10,8 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 		eventOut("rt_ops_event_out"),
 		guiPublishTimer(50)
 {
+	rtOps = rt_ops;
+
 	rt_ops->provides("rtOps")
 	      ->addOperation("sendEvent", &RTOps::sendEvent, rt_ops, RTT::ClientThread);
 
@@ -20,6 +22,8 @@ OpsLogger::OpsLogger(RTOps *rt_ops) :
 
 void OpsLogger::beginCycle() {
 	RTT::os::TimeService::nsecs startTime = RTT::os::TimeService::Instance()->getNSecs();
+
+	rtOpsCycle.robotState = rtOps->getRobotStateHandler()->getRobotState();
 	
 	// Send our 1 kHz log stream.
 	logCyclicOut.write(rtOpsCycle);
@@ -42,11 +46,6 @@ void OpsLogger::logClampedControllerOutput(
 
 void OpsLogger::endCycle() {
 	rtOpsCycle.endTime = RTT::os::TimeService::Instance()->getNSecs();
-}
-
-void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
-	rtOpsCycle.robotState = state;
-	rtOpsCycle.header     = state.header;
 }
 
 void OpsLogger::sendEvent(atrias_msgs::rt_ops_event &event) {

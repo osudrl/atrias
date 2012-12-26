@@ -27,6 +27,7 @@ class RTOps;
 #include <atrias_msgs/rt_ops_event.h>
 #include <atrias_shared/globals.h>
 
+#include "atrias_rt_ops/CMComms.h"
 #include "atrias_rt_ops/TimestampHandler.h"
 #include "atrias_rt_ops/RobotStateHandler.h"
 #include "atrias_rt_ops/ControllerLoop.h"
@@ -41,36 +42,37 @@ namespace rtOps {
 
 class RTOps : public RTT::TaskContext {
 	private:
-		RTT::InputPort<uint8_t>                     cManagerDataIn;
-		uint8_t                                     cmIn;
+		/** @brief This handles communication with the Controller Manager.
+		  */
+		CMComms            *cmComms;
 		
 		/** @brief Handles our timestamps for us
 		  */
-		TimestampHandler                            timestampHandler;
+		TimestampHandler   timestampHandler;
 		
 		/** @brief Holds the robot state for us for thread-safety.
 		  */
-		RobotStateHandler*                          robotStateHandler;
+		RobotStateHandler* robotStateHandler;
 		
 		/** @brief Manages the controller loop for us.
 		  */
-		ControllerLoop*                             controllerLoop;
+		ControllerLoop*    controllerLoop;
 		
 		/** @brief Does our logging for us.
 		  */
-		OpsLogger                                   *opsLogger;
+		OpsLogger          *opsLogger;
 		
 		/** @brief Calculates our states for us.
 		  */
-		StateMachine*                               stateMachine;
+		StateMachine*      stateMachine;
 		
 		/** @brief Handles anything needed to remain realtime safe for us.
 		  */
-		RTHandler                                   rtHandler;
+		RTHandler          rtHandler;
 		
 		/** @brief Implements our safety features.
 		  */
-		Safety*                                     safety;
+		Safety*            safety;
 
 	public:
 		// Constructor

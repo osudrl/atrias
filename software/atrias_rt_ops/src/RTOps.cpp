@@ -6,7 +6,6 @@ namespace rtOps {
 
 RTOps::RTOps(std::string name) :
        RTT::TaskContext(name),
-       cManagerDataIn("controller_manager_data_in"),
        timestampHandler(),
        rtHandler(),
        runController(),
@@ -24,8 +23,7 @@ RTOps::RTOps(std::string name) :
 	this->requires("connector")
 	    ->addOperationCaller(sendControllerOutput);
 
-	addEventPort(cManagerDataIn);
-
+	cmComms           = new CMComms(this);
 	controllerLoop    = new ControllerLoop(this);
 	opsLogger         = new OpsLogger(this);
 	stateMachine      = new StateMachine(this);
@@ -52,12 +50,12 @@ std_msgs::Header RTOps::getROSHeader() {
 }
 
 void RTOps::newStateCallback(atrias_msgs::robot_state state) {
+	// Order is important here -- the OpsLogger needs to have the last
+	// cycle's robot state when it logs last cycle's data.
 	opsLogger->beginCycle();
 	robotStateHandler->setRobotState(state);
 	
 	controllerLoop->cycleLoop();
-	
-	opsLogger->logRobotState(state);
 }
 
 RobotStateHandler* RTOps::getRobotStateHandler() {
@@ -113,9 +111,7 @@ bool RTOps::startHook() {
 }
 
 void RTOps::updateHook() {
-	if (RTT::NewData == cManagerDataIn.read(cmIn) && stateMachine)
-		stateMachine->newCMState((RtOpsState) cmIn);
-	
+	cmComms->updateHook();
 	return;
 }
 

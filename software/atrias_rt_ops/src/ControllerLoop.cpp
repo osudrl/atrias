@@ -54,6 +54,7 @@ atrias_msgs::controller_output
 
 void ControllerLoop::loop() {
 	while (!done) {
+		rtOps->getStateMachine()->run();
 		atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
 		rtOps->getTimestampHandler()->setTimestamp(robotState.header);
 		
@@ -66,7 +67,7 @@ void ControllerLoop::loop() {
 			}
 		}
 		
-		controllerOutput.command = rtOps->getStateMachine()->calcState(controllerOutput);
+		controllerOutput.command = rtOps->getStateMachine()->calcMedullaCmd(controllerOutput);
 		
 		rtOps->getOpsLogger()->logControllerOutput(controllerOutput);
 		controllerOutput = clampControllerOutput(controllerOutput);

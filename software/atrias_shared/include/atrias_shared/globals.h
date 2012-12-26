@@ -88,10 +88,11 @@ namespace rtOps {
 typedef uint8_t RtOpsState_t;
 
 enum class RtOpsState: RtOpsState_t {
-    NO_CONTROLLER_LOADED = 0,
-    DISABLED, //Controller is loaded but not enabled
-    ENABLED,  //Controller is both loaded and enabled
-    RESET,
+    DISABLED = 0,
+    ENABLED,
+    SOFT_STOP,    // A controller-specific shutdown sequence is executing.
+    STOP,         // RT Ops is relaxing the hips
+    RESET,        // We are resetting the Medullas (leaving eStop)
     E_STOP,
     HALT
 };
