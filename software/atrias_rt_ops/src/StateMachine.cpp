@@ -63,7 +63,38 @@ medulla_state_t StateMachine::calcMedullaCmd(RtOpsState controller_cmd) {
 }
 
 void StateMachine::run() {
-	
+	RtOpsState guiCmd = rtOps->getGuiComms()->getGuiCmd();
+	switch (getState()) {
+		case RtOpsState::DISABLED:
+			if (guiCmd        == RtOpsState::ENABLED &&
+			    controllerCmd == RtOpsState::ENABLED)
+			{
+				setState(RtOpsState::ENABLED, buildEventMetadata(RtOpsEvent::GUI_STATE_CHG, RtOpsState::ENABLED));
+			}
+			break;
+
+		case RtOpsState::ENABLED:
+			break;
+
+		case RtOpsState::SOFT_STOP:
+			break;
+
+		case RtOpsState::STOP:
+			break;
+
+		case RtOpsState::RESET:
+			break;
+
+		case RtOpsState::E_STOP:
+			break;
+
+		case RtOpsState::HALT:
+			break;
+
+		default:
+			// Oops. Shouldn't get here... Abort! Abort!
+			break;
+	}
 }
 
 }

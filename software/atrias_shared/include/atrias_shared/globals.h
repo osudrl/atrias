@@ -118,7 +118,8 @@ enum class RtOpsEvent: RtOpsEvent_t {
     MEDULLA_ESTOP,            // DEPRECATED
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
-    RTOPS_STATE_CHG           // RT Ops changed its own state. Doesn't include safeties. Metadata: RtOpsStateChangeMetadata
+    RTOPS_STATE_CHG,          // RT Ops changed its own state. Doesn't include safeties. Metadata: RtOpsStateChangeMetadata
+    GUI_STATE_CHG             // The GUI changed RT Ops's state. Metadata: The new state.
 };
 
 /** @brief The type for most RT Ops event metadata.

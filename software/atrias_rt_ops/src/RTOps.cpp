@@ -21,6 +21,7 @@ RTOps::RTOps(std::string name) :
 	    ->addOperationCaller(sendControllerOutput);
 
 	cmComms           = new CMComms(this);
+	guiComms          = new guiComms(this);
 	controllerLoop    = new ControllerLoop(this);
 	opsLogger         = new OpsLogger(this);
 	stateMachine      = new StateMachine(this);
@@ -32,6 +33,10 @@ RTOps::RTOps(std::string name) :
 
 uint64_t RTOps::getTimestamp() {
 	return timestampHandler.getTimestamp();
+}
+
+GuiComms* getGuiComms() {
+	return guiComms;
 }
 
 std_msgs::Header RTOps::getROSHeader() {
@@ -115,6 +120,13 @@ void RTOps::stopHook() {
 }
 
 void RTOps::cleanupHook() {
+	delete(cmComms);
+	delete(guiComms);
+	delete(controllerLoop);
+	delete(opsLogger);
+	delete(stateMachine);
+	delete(robotStateHandler);
+	delete(safety);
 	log(RTT::Info) << "[RTOps] cleaned up!" << RTT::endlog();
 }
 

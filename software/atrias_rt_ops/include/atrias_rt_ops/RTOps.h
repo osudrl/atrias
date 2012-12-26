@@ -28,6 +28,7 @@ class RTOps;
 #include <atrias_shared/globals.h>
 
 #include "atrias_rt_ops/CMComms.h"
+#include "atrias_rt_ops/GuiComms.h"
 #include "atrias_rt_ops/TimestampHandler.h"
 #include "atrias_rt_ops/RobotStateHandler.h"
 #include "atrias_rt_ops/ControllerLoop.h"
@@ -45,6 +46,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief This handles communication with the Controller Manager.
 		  */
 		CMComms            *cmComms;
+
+		/** @brief This handles communication with the GUI.
+		  */
+		GuiComms           *guiComms;
 		
 		/** @brief Handles our timestamps for us
 		  */
@@ -85,6 +90,11 @@ class RTOps : public RTT::TaskContext {
 		  */
 		RTT::OperationCaller<void(atrias_msgs::controller_output)>
 			sendControllerOutput;
+
+		/** @brief Allows other classes access to the GUI's commands
+		  * @return A pointer to the Gui Comms object
+		  */
+		GuiComms*          getGuiComms();
 		
 		/** @brief Allows components to retrieve a ROS Header w/ the right timestamp.
 		  * @return A ROS header w/ the right timestamp.
