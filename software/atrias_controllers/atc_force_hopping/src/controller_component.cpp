@@ -141,13 +141,13 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 
 	double lTau  = 0.25 * force * sin(lTheta);
 	double rTau  = 0.25 * force * sin(rTheta);
-	double dlTau = .25 * (force * dlTheta * cos(lTheta) + sin(lTheta) + dforce);
-	double drTau = .25 * (force * drTheta * cos(rTheta) + sin(rTheta) + dforce);
+	double dlTau = .25 * (force * dlTheta * cos(lTheta) + sin(lTheta) * dforce);
+	double drTau = .25 * (force * drTheta * cos(rTheta) + sin(rTheta) * dforce);
 
 	double lDefl  = lGetDefl(lTau);
 	double rDefl  = rGetDefl(rTau);
-	double dlDefl = dlTau * lGetConst(lDefl);
-	double drDefl = drTau * rGetConst(rDefl);
+	double dlDefl = dlTau / lGetConst(lDefl);
+	double drDefl = drTau / rGetConst(rDefl);
 	
 	co.lLeg.motorCurrentA = lLegAController(rs.lLeg.halfA.legAngle + lDefl, rs.lLeg.halfA.rotorAngle,
 	                                        rs.lLeg.halfA.legVelocity + dlDefl, rs.lLeg.halfA.rotorVelocity)
