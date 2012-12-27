@@ -57,7 +57,7 @@ double ASCPD::runController(double targetPos, double currentPos, double targetVe
 }
 
 bool ASCPD::configureHook() {
-    RTT::TaskContext* rtOpsPeer = this->getPeer("atrias_rt");
+    RTT::TaskContext* rtOpsPeer = this->getPeer("Deployer")->getPeer("atrias_rt");
     if (rtOpsPeer) {
         getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
     }
