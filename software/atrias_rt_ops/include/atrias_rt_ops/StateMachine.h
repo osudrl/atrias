@@ -38,12 +38,17 @@ class StateMachine {
 	/** @brief This protects access to the current state.
 	  */
 	RTT::os::Mutex stateLock;
+
+	/** @brief This handles everything common to each "running" state.
+	  * @return Whether or not this has triggered a state change.
+	  */
+	bool runningCommon(RtOpsState guiCmd);
 	
 	/** @brief Sets the state.
 	  * @param new_state The new state.
 	  * @param event     The event to send out with the new state info.
 	  */
-	void           setState(RtOpsState new_state, atrias_msgs::rt_ops_event event);
+	void setState(RtOpsState new_state, atrias_msgs::rt_ops_event event);
 	
 	public:
 		/** @brief Initializes this StateMachine.

@@ -21,7 +21,7 @@ RTOps::RTOps(std::string name) :
 	    ->addOperationCaller(sendControllerOutput);
 
 	cmComms           = new CMComms(this);
-	guiComms          = new guiComms(this);
+	guiComms          = new GuiComms(this);
 	controllerLoop    = new ControllerLoop(this);
 	opsLogger         = new OpsLogger(this);
 	stateMachine      = new StateMachine(this);
@@ -35,7 +35,7 @@ uint64_t RTOps::getTimestamp() {
 	return timestampHandler.getTimestamp();
 }
 
-GuiComms* getGuiComms() {
+GuiComms* RTOps::getGuiComms() {
 	return guiComms;
 }
 

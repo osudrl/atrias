@@ -6,9 +6,9 @@
   */
 
 namespace atrias {
-	namespace rtOps {
-		class GuiComms;
-	}
+namespace rtOps {
+class GuiComms;
+}
 }
 
 // Orocos

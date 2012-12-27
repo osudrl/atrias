@@ -34,6 +34,11 @@ class Safety {
 		  * @param rt_ops A pointer to RT Ops.
 		  */
 		Safety(RTOps* rt_ops);
+
+		/** @brief Checks if we should EStop.
+		  * @return Whether or not to estop.
+		  */
+		bool shouldEStop();
 		
 		/** @brief Does the halt safety check.
 		  * @return Whether or not the robot should halt.

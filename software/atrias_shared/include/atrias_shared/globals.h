@@ -118,8 +118,9 @@ enum class RtOpsEvent: RtOpsEvent_t {
     MEDULLA_ESTOP,            // DEPRECATED
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM,        // This one may be sent by controllers -- they fill in their own metadata
-    RTOPS_STATE_CHG,          // RT Ops changed its own state. Doesn't include safeties. Metadata: RtOpsStateChangeMetadata
-    GUI_STATE_CHG             // The GUI changed RT Ops's state. Metadata: The new state.
+    RTOPS_STATE_CHG,          // RT Ops changed its own state. Metadata: RtOpsStateChangeMetadata
+    GUI_STATE_CHG,            // The GUI changed RT Ops's state. Metadata: The new state.
+    CONT_STATE_CHG,           // The controller commanded a state change. Metadata: The new state.
 };
 
 /** @brief The type for most RT Ops event metadata.
@@ -167,6 +168,10 @@ enum class AckCmEventMetadata: RtOpsEventMetadata_t {
   */
 enum class RtOpsStateChgReason: RtOpsEventMetadata_t {
     BAD_STATE = 0, // The state machine's internal state was bad.
+    SAFETIES,      // The safeties were triggered. The SAFETY event should already have been sent.
+    ESTOP,         // Rt Ops has detected a reason to estop.
+    STOP_DONE,     // This occurs once the stop controller finishes.
+    RESET_DONE,    // This occurs once a reset is complete.
 };
 
 struct RtOpsStateChangeMetadata {

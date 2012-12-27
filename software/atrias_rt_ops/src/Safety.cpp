@@ -13,6 +13,16 @@ double Safety::predictStop(double pos, double vel) {
 	return pos + vel * abs(vel) / (2.0 * ACCEL_PER_AMP * AVAIL_HALT_AMPS);
 }
 
+bool Safety::shouldEStop() {
+	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
+
+	if (robotState.medullasInError) {
+		return true;
+	}
+	
+	return false;
+}
+
 bool Safety::shouldHalt() {
 	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
 	
