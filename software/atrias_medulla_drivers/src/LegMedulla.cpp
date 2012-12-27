@@ -89,6 +89,10 @@ void LegMedulla::updatePositionOffsets() {
 void LegMedulla::checkErroneousEncoderValues() {
 	skipMotorEncoder      = false;
 	int32_t deltaMotorPos = *motorEncoder - motorEncoderValue;
+	// Check for bad readings
+	if (*motorEncoder == motorEncoderValue)
+		skipMotorEncoder = true;
+
 	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE) {
 		// Uncomment this if you want to debug issue 83
 		/*log(RTT::Warning) << "Large motor encoder jump! Old value: "
@@ -99,6 +103,9 @@ void LegMedulla::checkErroneousEncoderValues() {
 	
 	skipLegEncoder      = false;
 	int32_t deltaLegPos = *legEncoder - legEncoderValue;
+	if (*legEncoder == legEncoderValue)
+		skipLegEncoder = true;
+
 	if (abs(deltaLegPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
 		skipLegEncoder = true;
 }
@@ -521,3 +528,5 @@ uint8_t LegMedulla::getID() {
 }
 
 }
+
+// vim: noexpandtab
