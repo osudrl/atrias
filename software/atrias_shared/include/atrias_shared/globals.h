@@ -87,14 +87,16 @@ namespace rtOps {
   */
 typedef uint8_t RtOpsState_t;
 
+// These are numbered to match the old medulla_state_t - based controller command system.
+// This will eventually be remedied.
 enum class RtOpsState: RtOpsState_t {
-    DISABLED = 0,
-    ENABLED,
-    SOFT_STOP,    // A controller-specific shutdown sequence is executing.
-    STOP,         // RT Ops is relaxing the hips
-    RESET,        // We are resetting the Medullas (leaving eStop)
-    E_STOP,
-    HALT
+    STOP    = 0, // RT Ops is relaxing the hips
+    ENABLED = 2,
+    HALT    = 4,
+    E_STOP  = 5,
+    DISABLED,
+    SOFT_STOP,   // A controller-specific shutdown sequence is executing.
+    RESET,       // We are resetting the Medullas (leaving eStop)
 };
 
 /** @brief Represents an RT Ops event.
@@ -113,7 +115,7 @@ enum class RtOpsEvent: RtOpsEvent_t {
     ACK_NO_CONTROLLER_LOADED, // DEPRECATED
     ACK_RESET,                // DEPRECATED
     ACK_GUI,                  // Sent to acknowledge a GUI state request
-	ACK_CM,                   // Sent to acknowledge a CM command.
+    ACK_CM,                   // Sent to acknowledge a CM command.
     CONTROLLER_ESTOP,         // DEPRECATED
     MEDULLA_ESTOP,            // DEPRECATED
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata

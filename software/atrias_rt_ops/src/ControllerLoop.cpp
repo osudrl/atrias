@@ -84,9 +84,9 @@ void ControllerLoop::loop() {
 			}
 		}
 		if ((RtOpsState) robotState.rtOpsState == RtOpsState::STOP) {
-			// Run the stop controller here.
-			// Temp until we have a real stop controller
-			controllerOutput.command = (RtOpsState_t) RtOpsState::DISABLED;
+			controllerOutput = rtOps->getStopController()->runController(robotState);
+		} else {
+			rtOps->getStopController()->disabled();
 		}
 		
 		rtOps->getOpsLogger()->logControllerOutput(controllerOutput);

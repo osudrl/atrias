@@ -29,6 +29,7 @@ class RTOps;
 
 #include "atrias_rt_ops/CMComms.h"
 #include "atrias_rt_ops/GuiComms.h"
+#include "atrias_rt_ops/StopController.h"
 #include "atrias_rt_ops/TimestampHandler.h"
 #include "atrias_rt_ops/RobotStateHandler.h"
 #include "atrias_rt_ops/ControllerLoop.h"
@@ -50,6 +51,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief This handles communication with the GUI.
 		  */
 		GuiComms           *guiComms;
+
+		/** @brief This does hip relaxation.
+		  */
+		StopController     stopController;
 		
 		/** @brief Handles our timestamps for us
 		  */
@@ -100,6 +105,11 @@ class RTOps : public RTT::TaskContext {
 		  * @return A ROS header w/ the right timestamp.
 		  */
 		std_msgs::Header   getROSHeader();
+
+		/** @brief Allows the \a ControllerLoop to access the \a StopController
+		  * @return A pointer to the StopController.
+		  */
+		StopController*    getStopController();
 		
 		/** @brief Update the robot state and cycle the controllers.
 		  * @param newRobotState The new robot state.

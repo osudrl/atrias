@@ -43,6 +43,10 @@ std_msgs::Header RTOps::getROSHeader() {
 	return timestampHandler.getTimestampHeader();
 }
 
+StopController* RTOps::getStopController() {
+	return &stopController;
+}
+
 void RTOps::newStateCallback(atrias_msgs::robot_state state) {
 	// Order is important here -- the OpsLogger needs to have the last
 	// cycle's robot state when it logs last cycle's data.
