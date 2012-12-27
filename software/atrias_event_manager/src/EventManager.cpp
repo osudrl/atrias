@@ -5,9 +5,48 @@ namespace atrias {
 namespace eventManager {
 
 EventManager::EventManager(std::string const &name) :
-	RTT::TaskContext(name)
+	RTT::TaskContext(name),
+	cmOut("cm_events_out"),
+	eventsIn("events_in"),
+	guiOut("gui_events_out")
 {
+	this->addPort(cmOut);
+
+	// Lets make this an event port, so \a updateHook() will
+	// get called when we receive a new event.
+	this->addEventPort(eventsIn);
+	
+	this->addPort(guiOut);
+
 	return;
+}
+
+void EventManager::sendCM(atrias_msgs::rt_ops_event &event) {
+	cmOut.write(event);
+}
+
+void EventManager::sendGUI(atrias_msgs::rt_ops_event &event) {
+	guiOut.write(event);
+}
+
+void EventManager::updateHook() {
+	// Check if a new event has arrived.
+	atrias_msgs::rt_ops_event newEvent;
+	if (eventsIn.read(newEvent)) {
+		// Hey, a new event *has* arrived!
+		processEvent(newEvent);
+	}
+}
+
+void EventManager::processEvent(atrias_msgs::rt_ops_event &event) {
+	switch (event.event) {
+		default:
+			// If we don't know what it is, then we should probably send it to both,
+			// in case one of them does recognize it.
+			sendCM(event);
+			sendGUI(event);
+			break;
+	}
 }
 
 }
