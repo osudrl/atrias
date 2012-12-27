@@ -33,6 +33,7 @@ namespace controller {
 class ASCSpringTorque : public TaskContext {
 	private:
 		// Operations
+		double getConst(double defl);
 		double getTorque(double deflection);
 		double getDeflection(double Torque);
 
