@@ -1,0 +1,14 @@
+<package>
+	<description brief="Event Manager">
+		Event Manager
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes="" />
+	<url>http://ros.org/wiki/AtriasEventManager</url>
+	<depend package="rtt" />
+	<depend package="atrias_shared" />
+	<depend package="atrias_msgs" />
+</package>
+
+
