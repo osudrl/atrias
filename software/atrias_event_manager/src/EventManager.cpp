@@ -39,7 +39,12 @@ void EventManager::updateHook() {
 }
 
 void EventManager::processEvent(atrias_msgs::rt_ops_event &event) {
-	switch (event.event) {
+	switch ((rtOps::RtOpsEvent) event.event) {
+		case rtOps::RtOpsEvent::MISSED_DEADLINE:
+			log(RTT::Warning) << "[EventManager] Missed dealine event received." << RTT::endlog();
+			sendGUI(event);
+			break;
+
 		default:
 			// If we don't know what it is, then we should probably send it to both,
 			// in case one of them does recognize it.

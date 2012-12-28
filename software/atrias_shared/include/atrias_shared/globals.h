@@ -106,7 +106,7 @@ typedef int8_t RtOpsEvent_t;
 enum class RtOpsEvent: RtOpsEvent_t {
     NO_EVENT = 0,             // DEPRECATED
     INVALID_CM_COMMAND,       // DEPRECATED -- see ACK_CM metadata
-    INVALID_RT_OPS_STATE,     // The internal RT Ops state was somehow bad.
+    INVALID_RT_OPS_STATE,     // DEPRECATED -- see RTOPS_STATE_CHG metadata
     MISSED_DEADLINE,          // We missed a deadline (timing overshoot). This is just a warning.
     CM_COMMAND_ESTOP,         // DEPRECATED
     ACK_E_STOP,               // DEPRECATED

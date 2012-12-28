@@ -19,7 +19,7 @@
     <depend package="atrias_shared"/>
     <depend package="atrias_sim"/>
     <depend package="atrias_sim_conn"/>
-
+    <depend package="atrias_event_manager"/>
 </package>
 
-
+<!-- vim: set expandtab sts=4: -->
