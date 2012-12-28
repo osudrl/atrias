@@ -41,7 +41,20 @@ void EventManager::updateHook() {
 void EventManager::processEvent(atrias_msgs::rt_ops_event &event) {
 	switch ((rtOps::RtOpsEvent) event.event) {
 		case rtOps::RtOpsEvent::MISSED_DEADLINE:
-			log(RTT::Warning) << "[EventManager] Missed dealine event received." << RTT::endlog();
+			log(RTT::Warning) << "[EventManager] Missed deadline event received." << RTT::endlog();
+			sendGUI(event);
+			break;
+
+		case rtOps::RtOpsEvent::ACK_CM:
+			sendCM(event);
+			break;
+
+		case rtOps::RtOpsEvent::ACK_GUI: // These all intentionally fall through; their behavior is all the same.
+		case rtOps::RtOpsEvent::SAFETY:
+		case rtOps::RtOpsEvent::CONTROLLER_CUSTOM:
+		case rtOps::RtOpsEvent::RTOPS_STATE_CHG:
+		case rtOps::RtOpsEvent::GUI_STATE_CHG:
+		case rtOps::RtOpsEvent::CONT_STATE_CHG:
 			sendGUI(event);
 			break;
 
