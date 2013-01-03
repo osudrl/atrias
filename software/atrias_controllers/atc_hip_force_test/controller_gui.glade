@@ -15,14 +15,14 @@
           <object class="GtkLabel" id="flightPLbl">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Flight P:</property>
+            <property name="label" translatable="yes">Hip Flight P:</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="flightDLbl">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Flight D:</property>
+            <property name="label" translatable="yes">Hip Flight D:</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
@@ -33,7 +33,7 @@
           <object class="GtkLabel" id="stancePLbl">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Stance P:</property>
+            <property name="label" translatable="yes">Hip Stance P:</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
@@ -44,7 +44,7 @@
           <object class="GtkLabel" id="stanceDLbl">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Stance D:</property>
+            <property name="label" translatable="yes">Hip Stance D:</property>
           </object>
           <packing>
             <property name="top_attach">3</property>

@@ -41,19 +41,51 @@ class ATCHipForceTest : public TaskContext {
 	private:
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
-		
-		ASCLoader hipForceLoader;
-		ASCLoader toeDecodeLoader;
 
-		// Properties for the hip force and toe decode subcontrollers
+		int activeLeg;
+
+		ASCLoader hipForceLoader;
+		ASCLoader pdHLoader;
+		ASCLoader pdALoader;
+		ASCLoader pdBLoader;
+		ASCLoader smoothHLoader;
+		ASCLoader smoothALoader;
+		ASCLoader smoothBLoader;
+		ASCLoader forceDeflLoader;
+
+		// Properties for the hip force subcontroller
 		Property<double> flightP;
 		Property<double> flightD;
 		Property<double> stanceP;
 		Property<double> stanceD;
-		Property<double> hipForceToeFilter;
-		Property<double> hipForceToeThreshold;
-		Property<double> toeFilter;
+		Property<double> toeFilterGain;
 		Property<double> toeThreshold;
+
+		// More subcontroller properties
+		Property<double> HP;
+		Property<double> HD;
+		Property<double> AP;
+		Property<double> AD;
+		Property<double> BP;
+		Property<double> BD;
+		Property<bool>   smoothHDone;
+		Property<bool>   smoothADone;
+		Property<bool>   smoothBDone;
+
+		// Subcontroller operations
+		OperationCaller<double(uint16_t, int32_t, double, double)> hipForce;
+		OperationCaller<bool(void)>                                getOnGround;
+		OperationCaller<double(double, double, double, double)>    pdH;
+		OperationCaller<double(double, double, double, double)>    pdA;
+		OperationCaller<double(double, double, double, double)>    pdB;
+		OperationCaller<MotorState(void)>                          smoothHCont;
+		OperationCaller<MotorState(void)>                          smoothACont;
+		OperationCaller<MotorState(void)>                          smoothBCont;
+		OperationCaller<void(double, double, double)>              smoothHInit;
+		OperationCaller<void(double, double, double)>              smoothAInit;
+		OperationCaller<void(double, double, double)>              smoothBInit;
+		OperationCaller<double(double, double, double)>            forceDefl;
+		OperationCaller<MotorAngle(double, double)>                legToMotorPos;
 
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;

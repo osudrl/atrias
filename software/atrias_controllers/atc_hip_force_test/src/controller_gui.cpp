@@ -80,7 +80,7 @@ void guiUpdate() {
 	stateLbl->set_text((controllerDataIn.onGround) ? "Stance" : "Flight");
 
 	controllerDataOut.flightP       = flightP->get_value();
-	controllerDataOut.flightD       = flightP->get_value();
+	controllerDataOut.flightD       = flightD->get_value();
 	controllerDataOut.stanceP       = stanceP->get_value();
 	controllerDataOut.stanceD       = stanceD->get_value();
 	controllerDataOut.toeFilterGain = toeFilterGain->get_value();

@@ -41,6 +41,7 @@ double ASCHipForce::runController(uint16_t toeSwitch, int32_t kneeForce, double 
 
 	// Determine if we're in flight or stance.
 	onGround = runToeDecode(toeSwitch);
+	onGround = false;
 
 	// Act differently depending on if we're in flight or stance.
 	if (onGround) {

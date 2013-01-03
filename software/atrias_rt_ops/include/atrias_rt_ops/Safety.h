@@ -20,6 +20,13 @@ class Safety {
 	/** @brief Lets us access members of RT Ops.
 	  */
 	RTOps* rtOps;
+
+	/** @brief Predicts where a motor will stop if we halt now.
+	  * @param pos The motor's position
+	  * @param vel The motor's velocity
+	  * @return Its predicted stopping point.
+	  */
+	double predictStop(double pos, double vel);
 	
 	public:
 		/** @brief Initializes this Safety.

@@ -110,9 +110,10 @@ typedef enum {
 #define RIGHT_HIP_MOTOR_MAX_LOC                                              0.0   // TODO: Get actual value.
 
 // The minimum and maximum distance in positions between the motors. For leg length
-// protection.
-#define LEG_LOC_DIFF_MIN                                                     0.0
-#define LEG_LOC_DIFF_MAX                                              2.650929045
+// protection. Note: LEG_LOC_SAFETY_DISTANCE does not affect the safety stop position
+// for leg extension and retraction safeties.
+#define LEG_LOC_DIFF_MIN                                             0.510347687
+#define LEG_LOC_DIFF_MAX                                                     2.4
 
 #define LEG_LOC_SAFETY_DISTANCE                                              0.2
 #define HIP_LOC_SAFETY_DISTANCE                                              0.2   // TODO: This is a fake value!
@@ -123,6 +124,11 @@ typedef enum {
 
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
+
+/** @brief The minimum amps assumed available for a halt.
+  * This only affects RT Ops's safeties, not those of the Medulla firmware.
+  */
+#define AVAIL_HALT_AMPS                                                     30.0
 
 /** @brief The maximum commanded amplifier value.
   * This is the maximum value sent to the

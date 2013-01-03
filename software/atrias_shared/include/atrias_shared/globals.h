@@ -117,13 +117,25 @@ typedef int8_t RtOpsEventMetadata_t;
   * This needs to be completed and actually implemented.
   */
 enum class RtOpsEventSafetyMetadata: RtOpsEventMetadata_t {
-    BOOM_MEDULLA_HALT = 0,    // The boom medulla entered halt state
+    BOOM_MEDULLA_HALT = 1,    // The boom medulla entered halt state
     LEFT_HIP_MEDULLA_HALT,    // Likewise for left hip. The next few are similar.
     LEFT_LEG_A_MEDULLA_HALT,
     LEFT_LEG_B_MEDULLA_HALT,
     RIGHT_HIP_MEDULLA_HALT,
     RIGHT_LEG_A_MEDULLA_HALT,
-    RIGHT_LEG_B_MEDULLA_HALT
+    RIGHT_LEG_B_MEDULLA_HALT,
+    LEFT_LEG_A_TOO_SMALL,     // RT Ops's safeties have kicked in.
+    LEFT_LEG_A_TOO_LARGE,     // These signal that motors were about to hit their
+    LEFT_LEG_B_TOO_SMALL,     // min and max hard stops
+    LEFT_LEG_B_TOO_LARGE,
+    RIGHT_LEG_A_TOO_SMALL,
+    RIGHT_LEG_A_TOO_LARGE,
+    RIGHT_LEG_B_TOO_SMALL,
+    RIGHT_LEG_B_TOO_LARGE,
+    LEFT_LEG_TOO_LONG,        // These signify that the motors or legs were about to collide
+    LEFT_LEG_TOO_SHORT,       // with each other.
+    RIGHT_LEG_TOO_LONG,
+    RIGHT_LEG_TOO_SHORT
 };
 
 /** @brief The type for robot configuration data

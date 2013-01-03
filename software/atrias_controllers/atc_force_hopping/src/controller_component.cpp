@@ -57,7 +57,7 @@ atrias_msgs::controller_output ATCForceHopping::stateInit(atrias_msgs::robot_sta
 	rLegFlightGains();
 
 	if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
-		RobotPos tgt = stateFlight();
+		RobotPos tgt = stateFlight(rs);
 		lLegASmoothInit(rs.lLeg.halfA.motorAngle, tgt.lLeg.A,   1.0);
 		lLegBSmoothInit(rs.lLeg.halfB.motorAngle, tgt.lLeg.B,   1.0);
 		lLegHSmoothInit(rs.lLeg.hip.legBodyAngle, tgt.lLeg.hip, 1.0);
@@ -99,10 +99,10 @@ void ATCForceHopping::setStateInit() {
 	mode = State::INIT;
 }
 
-RobotPos ATCForceHopping::stateFlight() {
+RobotPos ATCForceHopping::stateFlight(atrias_msgs::robot_state &rs) {
 	RobotPos out;
 
-	MotorAngle desLegState = legToMotorPos(M_PI/2.0, guiIn.flightLegLen);
+	MotorAngle desLegState = legToMotorPos(-rs.position.bodyPitch, guiIn.flightLegLen);
 
 	out.lLeg.A   = desLegState.A;
 	out.lLeg.B   = desLegState.B;
@@ -127,43 +127,53 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 
 	double elapsed   = ((double) (rs.timing.controllerTime - stanceStartTime)) / SECOND_IN_NANOSECONDS;
 	double duration  = .341;
-	//double amplitude = 1774.3;
-	double amplitude = 650.0;
+	double amplitude = 1774.3;
 
-	double tgtForce  = amplitude * sin(M_PI * ((elapsed > duration) ? duration : elapsed) / duration);
-	double lDeflDiff = forceDefl(tgtForce / 2.0, rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
-	double rDeflDiff = forceDefl(tgtForce / 2.0, rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
-
-	double lLegSum = rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle;
-	double rLegSum = rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle;
+	double force  = amplitude * sin(M_PI * ((elapsed > duration) ? duration : elapsed) / duration);
+	double dforce = 0.0;
+	if (elapsed < duration)
+		dforce = amplitude * M_PI * cos(M_PI * elapsed / duration) / duration;
 	
-	RobotPos desState;
-	desState.lLeg.A   = (lLegSum + lDeflDiff + rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle) / 2.0;
-	desState.lLeg.B   = (lLegSum - lDeflDiff - rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0;
-	desState.lLeg.hip = 3.0 * M_PI / 2.0;
-	desState.rLeg.A   = (rLegSum + rDeflDiff + rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle) / 2.0;
-	desState.rLeg.B   = (rLegSum - rDeflDiff - rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0;
-	desState.rLeg.hip = 3.0 * M_PI / 2.0;
+	// Let's divide the target force by two since we're doing both legs.
+	force  *= 0.5;
+	dforce *= 0.5;
+	
+	double lTheta  = (rs.lLeg.halfB.legAngle    - rs.lLeg.halfA.legAngle) / 2.0;
+	double rTheta  = (rs.rLeg.halfB.legAngle    - rs.rLeg.halfA.legAngle) / 2.0;
+	double dlTheta = (rs.lLeg.halfB.legVelocity - rs.lLeg.halfA.legVelocity) / 2.0;
+	double drTheta = (rs.rLeg.halfB.legVelocity - rs.rLeg.halfA.legVelocity) / 2.0;
 
-	co.lLeg.motorCurrentA   = lLegAController(desState.lLeg.A,           rs.lLeg.halfA.motorAngle,
-	                                          rs.lLeg.halfA.legVelocity, rs.lLeg.halfA.motorVelocity);
-	co.lLeg.motorCurrentB   = lLegBController(desState.lLeg.B,           rs.lLeg.halfB.motorAngle,
-	                                          rs.lLeg.halfB.legVelocity, rs.lLeg.halfB.motorVelocity);
-	co.rLeg.motorCurrentA   = rLegAController(desState.rLeg.A,           rs.rLeg.halfA.motorAngle,
-	                                          rs.rLeg.halfA.legVelocity, rs.rLeg.halfA.motorVelocity);
-	co.rLeg.motorCurrentB   = rLegBController(desState.rLeg.B,           rs.rLeg.halfB.motorAngle,
-	                                          rs.rLeg.halfB.legVelocity, rs.rLeg.halfB.motorVelocity);
-	co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
-	co.rLeg.motorCurrentHip = rLegHController(desState.rLeg.hip, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
+	double lTau  = 0.25 * force * sin(lTheta);
+	double rTau  = 0.25 * force * sin(rTheta);
+	double dlTau = .25 * (force * dlTheta * cos(lTheta) + sin(lTheta) * dforce);
+	double drTau = .25 * (force * drTheta * cos(rTheta) + sin(rTheta) * dforce);
+
+	double lDefl  = lGetDefl(lTau);
+	double rDefl  = rGetDefl(rTau);
+	double dlDefl = dlTau / lGetConst(lDefl);
+	double drDefl = drTau / rGetConst(rDefl);
+	
+	co.lLeg.motorCurrentA = lLegAController(rs.lLeg.halfA.legAngle + lDefl, rs.lLeg.halfA.rotorAngle,
+	                                        rs.lLeg.halfA.legVelocity + dlDefl, rs.lLeg.halfA.rotorVelocity)
+	                                        + lTau / TORQUE_CONST;
+	co.lLeg.motorCurrentB = lLegBController(rs.lLeg.halfB.legAngle - lDefl, rs.lLeg.halfB.rotorAngle,
+	                                        rs.lLeg.halfB.legVelocity - dlDefl, rs.lLeg.halfB.rotorVelocity)
+	                                        - lTau / TORQUE_CONST;
+	co.rLeg.motorCurrentA = rLegAController(rs.rLeg.halfA.legAngle + rDefl, rs.rLeg.halfA.rotorAngle,
+	                                        rs.rLeg.halfA.legVelocity + drDefl, rs.rLeg.halfA.rotorVelocity)
+	                                        + rTau / TORQUE_CONST;
+	co.rLeg.motorCurrentB = rLegBController(rs.rLeg.halfB.legAngle - rDefl, rs.rLeg.halfB.rotorAngle,
+	                                        rs.rLeg.halfB.legVelocity - drDefl, rs.rLeg.halfB.rotorVelocity)
+	                                        - rTau / TORQUE_CONST;
+	co.lLeg.motorCurrentHip = lLegHController(1.5 * M_PI, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentHip = rLegHController(1.5 * M_PI, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 
 	if (elapsed >= duration && toeHeight(rs) > 0.01) {
 		setStateFlight();
 	}
 
 	logData.elapsed   = elapsed;
-	logData.tgtForce  = tgtForce;
-	logData.lDeflDiff = lDeflDiff;
-	logData.rDeflDiff = rDeflDiff;
+	logData.tgtForce  = force;
 
 	return co;
 }
@@ -179,7 +189,7 @@ atrias_msgs::controller_output ATCForceHopping::stateLocked(atrias_msgs::robot_s
 	lLegFlightGains();
 	rLegFlightGains();
 
-	MotorAngle desLegState = legToMotorPos(M_PI/2.0, guiIn.flightLegLen);
+	MotorAngle desLegState = legToMotorPos(-rs.position.bodyPitch, guiIn.flightLegLen);
 	RobotPos desState;
 	desState.lLeg.A   = desLegState.A;
 	desState.lLeg.B   = desLegState.B;
@@ -255,7 +265,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 		case State::FLIGHT: {
 			lLegFlightGains();
 			rLegFlightGains();
-			RobotPos desState = stateFlight();
+			RobotPos desState = stateFlight(rs);
 			co.lLeg.motorCurrentA   = lLegAController(desState.lLeg.A,   rs.lLeg.halfA.motorAngle, 0, rs.lLeg.halfA.motorVelocity);
 			co.lLeg.motorCurrentB   = lLegBController(desState.lLeg.B,   rs.lLeg.halfB.motorAngle, 0, rs.lLeg.halfB.motorVelocity);
 			co.lLeg.motorCurrentHip = lLegHController(desState.lLeg.hip, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
@@ -267,8 +277,7 @@ atrias_msgs::controller_output ATCForceHopping::runController(atrias_msgs::robot
 				setStateInit();
 			} else if (guiIn.lockLeg) {
 				setStateLocked();
-			}
-			if (toeHeight(rs) < 0.01) {
+			} else if (toeHeight(rs) < 0.01) {
 				setStateStance(rs);
 			}
 			break;
@@ -394,10 +403,17 @@ bool ATCForceHopping::configureHook() {
 	rLegHSmoothController = rLegHSmooth->provides("smoothPath")->getOperation("runController");
 	rLegHSmoothFinished   = rLegHSmooth->properties()->getProperty("isFinished");
 
-	TaskContext* forceDeflInst = forceDeflLoader.load(this, "asc_force_defl", "ASCForceDefl");
-	if (!forceDeflInst)
+	TaskContext* lSpringInst = lSpringLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!lSpringInst)
 		return false;
-	forceDefl = forceDeflInst->provides("forceDeflection")->getOperation("getDeflectionDiff");
+	lGetDefl  = lSpringInst->provides("springTorque")->getOperation("getDeflection");
+	lGetConst = lSpringInst->provides("springTorque")->getOperation("getConstant");
+
+	TaskContext* rSpringInst = rSpringLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!rSpringInst)
+		return false;
+	rGetDefl  = rSpringInst->provides("springTorque")->getOperation("getDeflection");
+	rGetConst = rSpringInst->provides("springTorque")->getOperation("getConstant");
 
 	log(Info) << "[ATCFH] configured!" << endlog();
 	return true;
