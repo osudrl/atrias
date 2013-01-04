@@ -112,9 +112,7 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 	co.command = medulla_state_run;
 
 	// Check for issues
-	if (abs(coActiveLeg->motorCurrentA) >   20.0 ||
-	    abs(coActiveLeg->motorCurrentB) >   20.0 ||
-	    abs(coActiveLeg->motorCurrentHip) > 20.0)
+	if (fabs(coActiveLeg->motorCurrentHip) > 20.0)
 	{
 		co.command = medulla_state_error;
 	}
