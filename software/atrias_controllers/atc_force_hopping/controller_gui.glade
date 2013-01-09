@@ -31,31 +31,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="retractDiffLbl">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Retraction Difference</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkHScale" id="retractDiff">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="round_digits">1</property>
-        <property name="digits">3</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkTable" id="table1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -282,31 +257,7 @@
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
-        <property name="position">4</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel" id="legModeLbl">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Leg Mode</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">5</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkComboBox" id="legModeCombo">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="has_entry">True</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">6</property>
+        <property name="position">2</property>
       </packing>
     </child>
     <child>
@@ -318,7 +269,7 @@
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
-        <property name="position">8</property>
+        <property name="position">3</property>
       </packing>
     </child>
     <child>
@@ -332,7 +283,7 @@
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
-        <property name="position">8</property>
+        <property name="position">4</property>
       </packing>
     </child>
   </object>

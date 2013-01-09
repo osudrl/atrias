@@ -12,7 +12,6 @@
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("flightLegLen",    flightLegLen);
-	gui->get_widget("retractDiff",     retractDiff);
 	gui->get_widget("flightP",         flightP);
 	gui->get_widget("flightD",         flightD);
 	gui->get_widget("stanceP",         stanceP);
@@ -21,12 +20,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("hipD",            hipD);
 	gui->get_widget("stancePSrcCombo", stancePSrc);
 	gui->get_widget("stanceDSrcCombo", stanceDSrc);
-	gui->get_widget("legModeCombo",    legMode);
 	gui->get_widget("stateLbl",        stateLbl);
 	gui->get_widget("lockLeg",         lockLeg);
 
 	if (!flightLegLen ||
-	    !retractDiff  ||
 	    !flightP      ||
 	    !stanceD      ||
 	    !flightP      ||
@@ -44,7 +41,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Set ranges.
 	flightLegLen->set_range(.7, 0.95);
-	retractDiff->set_range( 0.0, .3);
 	flightP->set_range(     0.0, 1000.0);
 	flightD->set_range(     0.0, 50.0);
 	stanceP->set_range(     0.0, 3000.0);
@@ -53,7 +49,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hipD->set_range(        0.0, 40);
 	
 	flightLegLen->set_value(0.9);
-	retractDiff->set_value( 0.1);
 	flightP->set_value(     600.0);
 	flightD->set_value(     20.0);
 	stanceP->set_value(     1500.0);
@@ -77,7 +72,6 @@ void controllerCallback(const atc_force_hopping::controller_status &status) {
 //! \brief Update the GUI.
 void guiUpdate() {
 	controllerDataOut.flightLegLen = flightLegLen->get_value();
-	controllerDataOut.retractDiff  = retractDiff->get_value();
 	controllerDataOut.flightP      = flightP->get_value();
 	controllerDataOut.flightD      = flightD->get_value();
 	controllerDataOut.stanceP      = stanceP->get_value();
