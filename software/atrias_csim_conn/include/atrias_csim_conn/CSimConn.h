@@ -1,8 +1,8 @@
-#ifndef SIMCONN_H
-#define SIMCONN_H
+#ifndef CSIMCONN_H
+#define CSIMCONN_H
 
 /** @file
-  * @brief This is the main class for the simulation connector.
+  * @brief This is the main class for the C++-based simulation connector.
   */
 
 // Orocos
@@ -18,9 +18,9 @@
 
 namespace atrias {
 
-namespace simConn {
+namespace cSimConn {
 
-class SimConn : public RTT::TaskContext {
+class CSimConn : public RTT::TaskContext {
 	private:
 	/** @brief By calling this, we cycle RT Ops.
 	  */
@@ -39,7 +39,7 @@ class SimConn : public RTT::TaskContext {
 		/** @brief Initializes the Sim Connector
 		  * @param name The name for this component.
 		  */
-		SimConn(std::string name);
+		CSimConn(std::string name);
 		
 		/** @brief Called by RT Ops w/ update controller torques.
 		  * @param controller_output The new controller output.
@@ -60,4 +60,4 @@ class SimConn : public RTT::TaskContext {
 
 }
 
-#endif // SIMCONN_H
+#endif // CSIMCONN_H
