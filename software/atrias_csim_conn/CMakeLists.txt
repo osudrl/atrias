@@ -12,6 +12,7 @@ set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/../install )
 find_package(OROCOS-RTT REQUIRED ${RTT_HINTS})
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 
+include_directories(../../robot_definitions/)
 orocos_component(CSimConn src/CSimConn.cpp)
 
 orocos_generate_package()
