@@ -15,6 +15,7 @@
 	<depend package="asc_path_generator" />
 	<depend package="asc_pd" />
 	<depend package="asc_hip_force" />
+	<depend package="asc_spring_torque" />
 </package>
 
 <!-- vim: set noexpandtab: -->

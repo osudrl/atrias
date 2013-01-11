@@ -51,6 +51,8 @@ class ATCHipForceTest : public TaskContext {
 		ASCLoader smoothHLoader;
 		ASCLoader smoothALoader;
 		ASCLoader smoothBLoader;
+		ASCLoader trqALoader;
+		ASCLoader trqBLoader;
 		ASCLoader forceDeflLoader;
 
 		// Properties for the hip force subcontroller
@@ -84,6 +86,8 @@ class ATCHipForceTest : public TaskContext {
 		OperationCaller<void(double, double, double)>              smoothHInit;
 		OperationCaller<void(double, double, double)>              smoothAInit;
 		OperationCaller<void(double, double, double)>              smoothBInit;
+		OperationCaller<double(double)>                            trqA;
+		OperationCaller<double(double)>                            trqB;
 		OperationCaller<double(double, double, double)>            forceDefl;
 		OperationCaller<MotorAngle(double, double)>                legToMotorPos;
 

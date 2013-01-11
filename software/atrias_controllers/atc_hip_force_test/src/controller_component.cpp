@@ -100,6 +100,10 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 		}
 		coActiveLeg->motorCurrentA = pdA(desPos.A, rsActiveLeg->halfA.motorAngle, 0.0, rsActiveLeg->halfA.motorVelocity);
 		coActiveLeg->motorCurrentB = pdB(desPos.B, rsActiveLeg->halfB.motorAngle, 0.0, rsActiveLeg->halfB.motorVelocity);
+
+		// Add in feedforward torques to minimize steady-state error
+		coActiveLeg->motorCurrentA += trqA(rsActiveLeg->halfA.motorAngle - rsActiveLeg->halfA.legAngle) / (50.0 * .121);
+		coActiveLeg->motorCurrentB += trqB(rsActiveLeg->halfB.motorAngle - rsActiveLeg->halfB.legAngle) / (50.0 * .121);
 	}
 
 	// Let the GUI know the controller run state
@@ -133,6 +137,16 @@ bool ATCHipForceTest::configureHook() {
 	toeThreshold  = hipForceInst->properties()->getProperty("toeThreshold");
 	hipForce      = hipForceInst->provides("hipForce")->getOperation("runController");
 	getOnGround   = hipForceInst->provides("hipForce")->getOperation("getOnGround");
+
+	RTT::TaskContext* trqAInst = trqALoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!trqAInst)
+		return false;
+	trqA = trqAInst->provides("springTorque")->getOperation("getTorque");
+
+	RTT::TaskContext* trqBInst = trqBLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!trqBInst)
+		return false;
+	trqB = trqBInst->provides("springTorque")->getOperation("getTorque");
 
 	RTT::TaskContext* pdHInst = pdHLoader.load(this, "asc_pd", "ASCPD");
 	if (!pdHInst)

@@ -104,6 +104,11 @@ bool CSimConn::configureHook() {
 }
 
 void CSimConn::updateHook() {
+	// Increment the time.
+	robotState.header.stamp.nsec += CONTROLLER_LOOP_PERIOD_NS;
+	robotState.header.stamp.sec  += robotState.header.stamp.nsec / SECOND_IN_NANOSECONDS;
+	robotState.header.stamp.nsec %= SECOND_IN_NANOSECONDS;
+
 	// Run the sim.
 	robotState.lLeg.hip   = simHip(robotState.lLeg.hip, Hip::LEFT);
 	robotState.rLeg.hip   = simHip(robotState.rLeg.hip, Hip::RIGHT);
