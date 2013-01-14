@@ -48,6 +48,8 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_incremental_encoder_pdo)),2},
                               {((void**)(&hip_incremental_encoder_timestamp_pdo)),2}};
 
+uint16_t *hip_robot_current_pdo;
+
 
 // Structs for the medulla library
 limit_sw_port_t hip_limit_sw_port;
