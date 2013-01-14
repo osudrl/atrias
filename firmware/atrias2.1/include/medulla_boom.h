@@ -8,6 +8,7 @@
 #include "robot_variant_defs.h"
 
 // Include medulla_lib headers
+#include "io_pin.h"
 #include "ethercat.h"
 #include "adc.h"
 #include "hengstler_ssi_encoder.h"
