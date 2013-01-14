@@ -7,19 +7,20 @@ F_CPU = 32000000
 
 # Output file name (without extension)
 OUTPUT = medulla
-OUTPUT_DIR = ../build
+OUTPUT_DIR = .
 
 # Source Files
 SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
+SRCDIR = src
 
 # Medulla_lib stuff
-MEDULLA_LIB_DIR = ../../../../medulla/firmware/medulla_lib
+MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 #DEBUG_LEVEL = -DDEBUG_LOW
 DEBUG_LEVEL = -DDEBUG_HIGH
 
 # Build Options
-OBJDIR = ../build
-INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../include ../../../robot_definitions
+OBJDIR = build
+INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include include ../../robot_definitions
 OPT = 2
 
 # AVR Dude options
@@ -61,18 +62,17 @@ all: $(OUTPUT).hex
 clean:
 	$(REMOVE) $(OBJS)
 	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).elf
-	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).hex
+	$(REMOVE) $(OUTPUT).hex
 
 program: all
 	$(AVRDUDE) -p $(MCU) -P $(PORT) -c $(PROGRAMMER) -U flash:w:$(OUTPUT).hex
 
 %.hex : %.elf
-	$(CREATEDIR) $(OUTPUT_DIR)
 	@echo
 	@echo Linking $<
-	$(OBJCOPY) -O ihex $(OUTPUT_DIR)/$< $(OUTPUT_DIR)/$@
+	$(OBJCOPY) -O ihex $(OBJDIR)/$< $(OUTPUT_DIR)/$@
 
-$(OBJDIR)/%.o : %.c
+$(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@echo
 	@echo Building $<
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -82,7 +82,7 @@ $(OBJDIR)/%.o : %.c
 %.elf : $(OBJS) $(MEDULLA_LIB_DIR)/lib/medulla_lib.a
 	@echo
 	@echo Linking $@
-	$(CC) $(CFLAGS) $(OBJS) --output $(OUTPUT_DIR)/$@ $(LDFLAGS) $(MEDULLA_LIB_DIR)/lib/medulla_lib.a
+	$(CC) $(CFLAGS) $(OBJS) --output $(OBJDIR)/$@ $(LDFLAGS) $(MEDULLA_LIB_DIR)/lib/medulla_lib.a
 
 # Make build directories
 $(shell mkdir $(OBJDIR) 2>/dev/null)
