@@ -150,6 +150,7 @@ inline void boom_update_outputs(uint8_t id) {
 }
 
 inline void boom_estop(void) {
+	boom_disable_outputs();
 }
 
 void boom_wait_loop(void) {
