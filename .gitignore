@@ -20,6 +20,8 @@ typekit/
 *~
 *.swp
 *.pyc
+*.hex
+*.elf
 .tb_history
 orocos.log
 gui_config.yaml
