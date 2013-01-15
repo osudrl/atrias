@@ -61,7 +61,7 @@ all: $(OUTPUT).hex
 
 clean:
 	$(REMOVE) $(OBJS)
-	$(REMOVE) $(OUTPUT_DIR)/$(OUTPUT).elf
+	$(REMOVE) $(OBJDIR)/$(OUTPUT).elf
 	$(REMOVE) $(OUTPUT).hex
 
 program: all
