@@ -93,7 +93,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, 13); 
+	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, 15); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Hip] Initilizing limit switches\n");
@@ -122,8 +122,8 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilize robot current monitoring pin\n");
 	#endif
-	adc_init_pin(&adc_port_b,1,robot_current_50_pdo);
-	adc_init_pin(&adc_port_b,2,robot_current_600_pdo);
+	adc_init_pin(&adc_port_b,0,robot_current_50_pdo);
+	adc_init_pin(&adc_port_b,1,robot_current_600_pdo);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing hip encoder\n");
