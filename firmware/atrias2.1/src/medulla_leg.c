@@ -162,7 +162,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing amplifiers\n");
 	#endif
-	initilize_amp(false, measured_current_amp1_pdo, measured_current_amp2_pdo);
+	initilize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
 	*master_watchdog = leg_counter_pdo;
 	*packet_counter = leg_medulla_counter_pdo;
@@ -266,12 +266,12 @@ inline void leg_estop(void) {
 }
 
 void leg_wait_loop() {
-	if (leg_send_current_read == true) {
-		send_current_read(false);
-		leg_send_current_read = false;
-	}
-	else
-		check_current_read(false);
+	//if (leg_send_current_read == true) {
+	//	send_current_read(true);
+	//	leg_send_current_read = false;
+	//}
+	//else
+	//	check_current_read(true);
 }
 
 bool leg_check_error(uint8_t id) {
