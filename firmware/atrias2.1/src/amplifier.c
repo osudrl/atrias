@@ -4,7 +4,7 @@
 uint16_t amp_write_command = 0xF;
 uint16_t amp_enable_command = 0x00;
 uint16_t amp_disable_command = 0x01;
-uint32_t amp_change_baud_command = 0x04;
+uint32_t amp_change_baud_command = 0x07;
 
 dzralte_message_list_t amp_message_list;
 uart_port_t amp_uart_port;
@@ -26,7 +26,7 @@ void initilize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_cur
 
 	// Generate the amplifier messages
 	dzralte_generate_message(&amp_message_list,63,AMP_GET_WRITE_ACCESS_63,dzralte_write_cmd,0x07,0x00,&amp_write_command,2);
-	dzralte_generate_message(&amp_message_list,62,AMP_GET_WRITE_ACCESS_62,dzralte_write_cmd,0x7,0x00,&amp_write_command,2);
+	dzralte_generate_message(&amp_message_list,62,AMP_GET_WRITE_ACCESS_62,dzralte_write_cmd,0x07,0x00,&amp_write_command,2);
 	dzralte_generate_message(&amp_message_list,63,AMP_ENABLE_63,dzralte_write_cmd,0x01,0x00,&amp_enable_command,2);
 	dzralte_generate_message(&amp_message_list,62,AMP_ENABLE_62,dzralte_write_cmd,0x01,0x00,&amp_enable_command,2);
 	dzralte_generate_message(&amp_message_list,63,AMP_DISABLE_63,dzralte_write_cmd,0x01,0x00,&amp_disable_command,2);
@@ -44,14 +44,14 @@ void initilize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_cur
 	_delay_ms(5);
 
 	// Change the baud rate of the amps
-	//dzralte_send_message(&amp_message_list,0,AMP_CHANGE_BAUD_63,&amp_uart_port,false);	
-	//if (second_amp)
-	//	dzralte_send_message(&amp_message_list,0,AMP_CHANGE_BAUD_62,&amp_uart_port,false);
+	dzralte_send_message(&amp_message_list,0,AMP_CHANGE_BAUD_63,&amp_uart_port,false);	
+	if (second_amp)
+		dzralte_send_message(&amp_message_list,0,AMP_CHANGE_BAUD_62,&amp_uart_port,false);
 
-	//_delay_ms(5);
+	_delay_ms(5);
 
 	// Now switch the serial baud rate to 921600 baud
-	//amp_uart_port = uart_init_port(&PORTD,&USARTD0,uart_baud_921600,amp_tx_buffer,256,amp_rx_buffer,256);
+	amp_uart_port = uart_init_port(&PORTD,&USARTD0,uart_baud_921600,amp_tx_buffer,256,amp_rx_buffer,256);
 }
 
 inline void enable_pwm() {
@@ -97,7 +97,7 @@ void set_amp_output(int32_t value) {
 }
 
 void send_current_read(bool second_amp) {
-	dzralte_send_message(&amp_message_list,0,AMP_GET_CURRENT_62,&amp_uart_port,false);
+	dzralte_send_message(&amp_message_list,0,AMP_GET_CURRENT_63,&amp_uart_port,false);
 	if (second_amp)
 		dzralte_send_message(&amp_message_list,0,AMP_GET_WRITE_ACCESS_62,&amp_uart_port,false);
 }

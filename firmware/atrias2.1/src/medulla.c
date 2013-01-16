@@ -410,7 +410,7 @@ int main(void) {
 		
 		// If there wasn't a falling DC clock signal, then all we need to do is rest the watchdog timer.
 		WATCHDOG_TIMER_RESET;
-		//wait_loop();
+		wait_loop();
 	}
 
 	return 1;
