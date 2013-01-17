@@ -1,9 +1,9 @@
-#ifndef __ASC_FORCE_DEFL_H__
-#define __ASC_FORCE_DEFL_H__
+#ifndef __ASC_FORCE_CONTROL_H__
+#define __ASC_FORCE_CONTROL_H__
 
 /*! \file controller_component.h
  *  \author Ryan Van Why
- *  \brief Orocos Component header for the asc_force_defl subcontroller.
+ *  \brief Orocos Component header for the asc_force_control subcontroller.
  */
 
 // Orocos
@@ -19,23 +19,26 @@
 #include <robot_invariant_defs.h>
 
 // Our Stuff
-#include <asc_force_defl/controller_log_data.h>
+#include <asc_force_control/controller_log_data.h>
 #include <atrias_asc_loader/ASCLoader.hpp>
+#include <atrias_msgs/robot_state_leg.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace asc_force_defl;
+using namespace asc_force_control;
+using namespace atrias_msgs;
 
 namespace atrias {
 namespace controller {
 
-class ASCForceDefl : public TaskContext {
+class ASCForceControl : public TaskContext {
 	private:
 		// Operations
-		double getDeflectionDiff(double tgtForce, double legAngleA, double legAngleB);
+		double getTgtState(atrias_msgs::robot_state_leg legState, double tgtForce, double dTgtForce);
 		
 		// Subcontrollers
-		ASCLoader torqueDefl0Loader;
+		ASCLoader torqueDeflALoader;
+		ASCLoader torqueDeflBLoader;
 		
 		// Subcontroller operations
 		OperationCaller<double(double)> torqueDefl0GetDefl;
@@ -45,7 +48,7 @@ class ASCForceDefl : public TaskContext {
 		
 	public:
 		// Constructor
-		ASCForceDefl(std::string name);
+		ASCForceControl(std::string name);
 		
 		// Standard Orocos hooks
 		bool configureHook();
