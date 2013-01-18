@@ -42,7 +42,10 @@ class ASCForceControl : public TaskContext {
 		ASCLoader torqueDeflBLoader;
 		
 		// Subcontroller operations
-		OperationCaller<double(double)> torqueDefl0GetDefl;
+		OperationCaller<double(double)> sprTrqAConstant;
+		OperationCaller<double(double)> sprTrqADefl;
+		OperationCaller<double(double)> sprTrqBConstant;
+		OperationCaller<double(double)> sprTrqBDefl;
 		
 		// Logging
 		OutputPort<controller_log_data> logPort;

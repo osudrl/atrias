@@ -50,6 +50,18 @@ LegState ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce,
 }
 
 bool ASCForceControl::configureHook() {
+	TaskContext* sprTrqA = torqueDeflALoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!sprTrqA)
+		return false;
+	sprTrqAConstant = sprTrqA->provides("springTorque")->getOperation("getConstant");
+	sprTrqADefl     = sprTrqA->provides("springTorque")->getOperation("getDeflection");
+
+	TaskContext* sprTrqB = torqueDeflBLoader.load(this, "asc_spring_torque", "ASCSpringTorque");
+	if (!sprTrqB)
+		return false;
+	sprTrqBConstant = sprTrqB->provides("springTorque")->getOperation("getConstant");
+	sprTrqBDefl     = sprTrqB->provides("springTorque")->getOperation("getDeflection");
+
 	log(Info) << "[ASCForceControl] configured!" << endlog();
 	return true;
 }
