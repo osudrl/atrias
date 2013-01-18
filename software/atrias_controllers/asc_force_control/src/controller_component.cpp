@@ -32,19 +32,21 @@ ASCForceControl::ASCForceControl(std::string name) :
 }
 
 // Put control code here.
-double ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce, double dTgtForce) {
+LegState ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce, double dTgtForce) {
 	controller_log_data logData;
+	LegState                out;
 
-	// Calculate the actual torque differential needed.
-	// This does not entirely compensate for non-linearities in the springs --
-	// it returns a perfect output if symmetrical spring controlections are desired
-	// or the springs are perfectly linear.
-
-	// Push the message to ROS for logging
+	// Stuff and push the message to ROS for logging
+	logData.tgtForce  = tgtForce;
+	logData.dTgtForce = dTgtForce;
+	logData.aPosOut   = out.A.ang;
+	logData.aVelOut   = out.A.vel;
+	logData.bPosOut   = out.B.ang;
+	logData.bVelOut   = out.B.vel;
 	logPort.write(logData);
 
 	// Output for the parent controller
-	return logData.output;
+	return out;
 }
 
 bool ASCForceControl::configureHook() {

@@ -22,6 +22,7 @@
 #include <asc_force_control/controller_log_data.h>
 #include <atrias_asc_loader/ASCLoader.hpp>
 #include <atrias_msgs/robot_state_leg.h>
+#include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
@@ -34,7 +35,7 @@ namespace controller {
 class ASCForceControl : public TaskContext {
 	private:
 		// Operations
-		double getTgtState(atrias_msgs::robot_state_leg legState, double tgtForce, double dTgtForce);
+		LegState getTgtState(atrias_msgs::robot_state_leg legState, double tgtForce, double dTgtForce);
 		
 		// Subcontrollers
 		ASCLoader torqueDeflALoader;
