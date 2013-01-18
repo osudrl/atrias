@@ -68,6 +68,20 @@ LegState ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce,
 	double dTau2  = -.5 * (dMat11 * f1 + mat11 * dF1 + dMat12 * f2 + mat12 * dF2);
 	double dTau1  = -.5 * (dMat21 * f1 + mat21 * dF1 + dMat22 * f2 + mat22 * dF2);
 
+	// Target deflections.
+	double deflA  = sprTrqADefl(tau1);
+	double deflB  = sprTrqBDefl(tau2);
+
+	// Target deflection rates.
+	double dDeflA = dTau1 / sprTrqAConstant(deflA);
+	double dDeflB = dTau2 / sprTrqBConstant(deflB);
+
+	// Set output values.
+	out.A.ang = legState.halfA.legAngle    + deflA;
+	out.A.vel = legState.halfA.legVelocity + dDeflA;
+	out.B.ang = legState.halfB.legAngle    + deflB;
+	out.B.vel = legState.halfB.legVelocity + dDeflB;
+
 	// Stuff and push the message to ROS for logging
 	logData.tgtForce  = tgtForce;
 	logData.dTgtForce = dTgtForce;
