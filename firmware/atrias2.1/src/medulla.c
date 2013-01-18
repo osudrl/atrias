@@ -406,10 +406,15 @@ int main(void) {
 					#endif
 				}
 			}
+
+			// As long as we get the DC clock we can always feed the watchdog
+			WATCHDOG_TIMER_RESET;
+
 		}
 		
-		// If there wasn't a falling DC clock signal, then all we need to do is rest the watchdog timer.
-		WATCHDOG_TIMER_RESET;
+		// We should only feed the watchdog when the DC is not running if we are in idle
+		if (*current_state == medulla_state_idle)
+			WATCHDOG_TIMER_RESET;
 		//wait_loop();
 	}
 
@@ -419,6 +424,9 @@ int main(void) {
 void main_estop() {
 	estop(); // Run the medulla specific estop function
 	estop_assert_port(&estop_port); // Then we assert the estop line
+	#ifdef ENABLE_LEDS
+	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_RED;
+	#endif
 }
 
 void amplifier_debug() {
