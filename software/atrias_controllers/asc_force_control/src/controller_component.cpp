@@ -43,10 +43,10 @@ LegState ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce,
 	double mat22  = sin(legState.halfA.legAngle - 0.5 * M_PI);
 
 	// Transform matrix derivative
-	double dMat11 = cos(legState.halfB.legAngle);
-	double dMat12 = sin(legState.halfB.legAngle);
-	double dMat21 = cos(legState.halfA.legAngle);
-	double dMat22 = sin(legState.halfA.legAngle);
+	double dMat11 = legState.halfB.legVelocity * cos(legState.halfB.legAngle);
+	double dMat12 = legState.halfB.legVelocity * sin(legState.halfB.legAngle);
+	double dMat21 = legState.halfA.legVelocity * cos(legState.halfA.legAngle);
+	double dMat22 = legState.halfA.legVelocity * sin(legState.halfA.legAngle);
 
 	// Force vector
 	double f1     = tgtForce * cos((legState.halfA.legAngle + legState.halfB.legAngle) / 2.0);
