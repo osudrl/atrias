@@ -36,6 +36,38 @@ LegState ASCForceControl::getTgtState(robot_state_leg legState, double tgtForce,
 	controller_log_data logData;
 	LegState                out;
 
+	// Transform matrix
+	double mat11  = cos(legState.halfB.legAngle - 0.5 * M_PI);
+	double mat12  = sin(legState.halfB.legAngle - 0.5 * M_PI);
+	double mat21  = cos(legState.halfA.legAngle - 0.5 * M_PI);
+	double mat22  = sin(legState.halfA.legAngle - 0.5 * M_PI);
+
+	// Transform matrix derivative
+	double dMat11 = cos(legState.halfB.legAngle);
+	double dMat12 = sin(legState.halfB.legAngle);
+	double dMat21 = cos(legState.halfA.legAngle);
+	double dMat22 = sin(legState.halfA.legAngle);
+
+	// Force vector
+	double f1     = tgtForce * cos((legState.halfA.legAngle + legState.halfB.legAngle) / 2.0);
+	double f2     = tgtForce * sin((legState.halfA.legAngle + legState.halfB.legAngle) / 2.0);
+
+	// Force vector derivative
+	double dF1    = -.5 * tgtForce * (legState.halfA.legVelocity + legState.halfB.legVelocity) *
+	                sin(0.5 * (legState.halfA.legAngle + legState.halfB.legAngle)) +
+	                dTgtForce * cos(0.5 * (legState.halfA.legAngle + legState.halfB.legAngle));
+	double dF2    = 0.5 * tgtForce * (legState.halfA.legVelocity + legState.halfB.legVelocity) *
+	                cos(0.5 * (legState.halfA.legAngle + legState.halfB.legAngle)) +
+	                dTgtForce * sin(0.5 * (legState.halfA.legAngle + legState.halfB.legAngle));
+
+	// Spring torques
+	double tau2   = -.5 * (mat11 * f1 + mat12 * f2);
+	double tau1   = -.5 * (mat21 * f1 + mat22 * f2);
+
+	// Spring torque rates
+	double dTau2  = -.5 * (dMat11 * f1 + mat11 * dF1 + dMat12 * f2 + mat12 * dF2);
+	double dTau1  = -.5 * (dMat21 * f1 + mat21 * dF1 + dMat22 * f2 + mat22 * dF2);
+
 	// Stuff and push the message to ROS for logging
 	logData.tgtForce  = tgtForce;
 	logData.dTgtForce = dTgtForce;
