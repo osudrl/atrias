@@ -13,7 +13,7 @@ double Medulla::decodeLogicVoltage(uint16_t adc_value) {
 }
 
 double Medulla::decodeMotorVoltage(uint16_t adc_value) {
-	return processADCValue(adc_value) * 30.0;
+	return (adc_value-MOTOR_VOLTAGE_C_OFFSET)*MOTOR_VOLTGE_V_CAL/(MOTOR_VOLTAGE_C_CAL-MOTOR_VOLTAGE_C_OFFSET);
 }
 
 double Medulla::processADCValue(uint16_t adc_value) {

@@ -87,6 +87,10 @@ typedef enum {
   */
 #define THERMISTOR_MAX_VAL                                                   300
 
+#define MOTOR_VOLTAGE_C_OFFSET                                            1300.0
+#define MOTOR_VOLTAGE_V_CAL                                                 60.2
+#define MOTOR_VOLTAGE_C_CAL                                               3600.0
+
 // Loop period for main RT operations
 #define CONTROLLER_LOOP_PERIOD_NS                                      1000000LL
 /** @brief The offset between the DC and our code loop.
