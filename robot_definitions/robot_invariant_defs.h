@@ -129,6 +129,9 @@ typedef enum {
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
 
+// The torque constant, including 50:1 gear reduction (in Nm/A)
+#define TRQ_CONST                                                  (50.0 * .121)
+
 /** @brief The minimum amps assumed available for a halt.
   * This only affects RT Ops's safeties, not those of the Medulla firmware.
   */
