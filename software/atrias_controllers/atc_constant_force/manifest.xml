@@ -1,0 +1,15 @@
+<package>
+  <description brief="atc_constant_force">
+
+     atc_constant_force
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_constant_force</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+
+</package>
