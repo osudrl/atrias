@@ -222,6 +222,9 @@ int main(void) {
 			// Read new commands from the ethercat slave
 			ecat_read_rx_sm(&ecat_port);
 	
+			// As long as we get the DC clock we can always feed the watchdog
+			WATCHDOG_TIMER_RESET;
+
 			// Run state machine
 			if (*current_state == medulla_state_idle) {
 				#ifdef ENABLE_LEDS
@@ -407,8 +410,6 @@ int main(void) {
 				}
 			}
 
-			// As long as we get the DC clock we can always feed the watchdog
-			WATCHDOG_TIMER_RESET;
 
 		}
 		
