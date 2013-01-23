@@ -29,6 +29,11 @@ struct RobotPosLeg {
     double B;
 };
 
+struct LegState {
+	MotorState A;
+	MotorState B;
+};
+
 struct RobotPos {
     RobotPosLeg lLeg;
     RobotPosLeg rLeg;

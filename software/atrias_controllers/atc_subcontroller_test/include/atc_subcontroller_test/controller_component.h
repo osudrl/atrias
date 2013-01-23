@@ -49,8 +49,16 @@ class ATCSubcontrollerTest : public TaskContext {
 
 		// The subcontroller -- will need modification.
 		ASCLoader  controllerLoader;
+		ASCLoader  pdALoader;
+		ASCLoader  pdBLoader;
 		Property<double> subcontrollerProperty;
-		OperationCaller<double(double)> subcontrollerOperationCaller;
+		Property<double> pdAP;
+		Property<double> pdAD;
+		Property<double> pdBP;
+		Property<double> pdBD;
+		OperationCaller<LegState(atrias_msgs::robot_state_leg, double, double)> subcontrollerOperationCaller;
+		OperationCaller<double(double, double, double, double)> pdA;
+		OperationCaller<double(double, double, double, double)> pdB;
 		
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;

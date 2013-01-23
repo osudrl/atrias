@@ -91,15 +91,25 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 			rsActiveLeg->hip.legBodyAngle, rsActiveLeg->hip.legBodyVelocity);
 
 		double lockedDeflDiff = (flightLegPos.A - rsActiveLeg->halfA.legAngle) - (flightLegPos.B - rsActiveLeg->halfB.legAngle);
-		double forceDeflDiff  = forceDefl(guiIn.force, rsActiveLeg->halfA.legAngle, rsActiveLeg->halfB.legAngle);
-		MotorAngle desPos = flightLegPos;
-		// Do force control if it would cause a shortening in the virtual motor leg.
-		if (forceDeflDiff < lockedDeflDiff) {
-			desPos.A = (M_PI + forceDeflDiff + rsActiveLeg->halfA.legAngle - rsActiveLeg->halfB.legAngle) / 2.0;
-			desPos.B = (M_PI - forceDeflDiff - rsActiveLeg->halfA.legAngle + rsActiveLeg->halfB.legAngle) / 2.0;
+
+		LegState desState = forceCtrl(*rsActiveLeg, guiIn.force, 0.0);
+		double forceDeflDiff  = (desState.A.ang - rsActiveLeg->halfA.legAngle) - (desState.B.ang - rsActiveLeg->halfB.legAngle);
+
+		// Do force control only if it would cause a shortening in the virtual motor leg.
+		if (lockedDeflDiff < forceDeflDiff) {
+			desState.A.ang = (M_PI + lockedDeflDiff + rsActiveLeg->halfA.legAngle - rsActiveLeg->halfB.legAngle) / 2.0;
+			desState.B.ang = (M_PI - lockedDeflDiff - rsActiveLeg->halfA.legAngle + rsActiveLeg->halfB.legAngle) / 2.0;
+			desState.A.vel = 0.0;
+			desState.B.vel = 0.0;
+		} else {
+			// Make sure it stays centered during force control.
+			desState.A.ang = 0.5 * M_PI + (desState.A.ang - desState.B.ang) / 2.0;
+			desState.B.ang = 0.5 * M_PI + (desState.B.ang - desState.A.ang) / 2.0;
+			desState.A.vel = (desState.A.vel - desState.B.vel) / 2.0;
+			desState.B.vel = (desState.B.vel - desState.A.vel) / 2.0;
 		}
-		coActiveLeg->motorCurrentA = pdA(desPos.A, rsActiveLeg->halfA.motorAngle, 0.0, rsActiveLeg->halfA.motorVelocity);
-		coActiveLeg->motorCurrentB = pdB(desPos.B, rsActiveLeg->halfB.motorAngle, 0.0, rsActiveLeg->halfB.motorVelocity);
+		coActiveLeg->motorCurrentA = pdA(desState.A.ang, rsActiveLeg->halfA.motorAngle, desState.A.vel, rsActiveLeg->halfA.rotorVelocity);
+		coActiveLeg->motorCurrentB = pdB(desState.B.ang, rsActiveLeg->halfB.motorAngle, desState.B.vel, rsActiveLeg->halfB.rotorVelocity);
 
 		// Add in feedforward torques to minimize steady-state error
 		coActiveLeg->motorCurrentA += trqA(rsActiveLeg->halfA.motorAngle - rsActiveLeg->halfA.legAngle) / (50.0 * .121);
@@ -190,10 +200,10 @@ bool ATCHipForceTest::configureHook() {
 	smoothBCont = smoothBInst->provides("smoothPath")->getOperation("runController");
 	smoothBInit = smoothBInst->provides("smoothPath")->getOperation("init");
 
-	RTT::TaskContext* forceDeflInst = forceDeflLoader.load(this, "asc_force_defl", "ASCForceDefl");
-	if (!forceDeflInst)
+	RTT::TaskContext* forceCtrlInst = forceCtrlLoader.load(this, "asc_force_control", "ASCForceControl");
+	if (!forceCtrlInst)
 		return false;
-	forceDefl = forceDeflInst->provides("forceDeflection")->getOperation("getDeflectionDiff");
+	forceCtrl = forceCtrlInst->provides("forceControl")->getOperation("getTgtState");
 
 	legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
 

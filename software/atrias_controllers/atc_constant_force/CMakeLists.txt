@@ -4,7 +4,7 @@
 #
 cmake_minimum_required(VERSION 2.6.3)
 
-project(asc_spring_torque)
+project(atc_constant_force)
 
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -35,29 +35,15 @@ else(DEFINED atrias_PACKAGE_PATH)
 	message(ERROR "Could not find package atrias. I'm not going to build anything!")
 endif(DEFINED atrias_PACKAGE_PATH)
 
+# Find GTK libraries and build GUI library.
+if(ATRIAS_BUILD_GUI)
+    rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
+    target_link_libraries(controller_gui ${GTK2_LIBRARIES})
+endif(ATRIAS_BUILD_GUI)
+
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(asc_spring_torque src/controller_component.cpp)
-	ros_generate_rtt_typekit(asc_spring_torque)
-	target_link_libraries(asc_spring_torque ASCLoader-${OROCOS_TARGET})
+	orocos_component(atc_constant_force src/controller_component.cpp)
+	ros_generate_rtt_typekit(atc_constant_force)
 endif(ATRIAS_BUILD_CONTROLLERS)
 
-# Run our Python data processing script to generate the header.
-add_custom_command (
-	OUTPUT  ${PROJECT_BINARY_DIR}/testerdata.txt
-	COMMAND cat
-	ARGS    ${PROJECT_SOURCE_DIR}/data/* >${PROJECT_BINARY_DIR}/testerdata.txt
-	DEPENDS ${PROJECT_SOURCE_DIR}/data/*
-)
-
-add_custom_command (
-	OUTPUT  ${PROJECT_BINARY_DIR}/processed_data.h
-	COMMAND ${PROJECT_SOURCE_DIR}/src/parse_data.py
-	ARGS    ${PROJECT_BINARY_DIR}/testerdata.txt ${PROJECT_BINARY_DIR}/processed_data.h
-	DEPENDS ${PROJECT_BINARY_DIR}/testerdata.txt ${PROJECT_SOURCE_DIR}/src/parse_data.py
-)
-set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
-
-include_directories(build/)
-
-# vim: noexpandtab
