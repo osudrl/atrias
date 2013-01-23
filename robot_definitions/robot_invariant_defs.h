@@ -91,6 +91,12 @@ typedef enum {
 #define MOTOR_VOLTAGE_V_CAL                                                 60.2
 #define MOTOR_VOLTAGE_C_CAL                                               3600.0
 
+//Robot current offset and gain
+#define ROBOT_CURRENT_50A_OFFSET                                             238
+#define ROBOT_CURRENT_600A_OFFSET                                            188
+#define ROBOT_CURRENT_50A_GAIN                                         0.0109479
+#define ROBOT_CURRENT_600A_GAIN                                        0.7536839
+
 // Loop period for main RT operations
 #define CONTROLLER_LOOP_PERIOD_NS                                      1000000LL
 /** @brief The offset between the DC and our code loop.
