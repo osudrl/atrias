@@ -249,11 +249,12 @@ default:
 	switch (state)																															//stance leg right, flight leg left
 	{
 	case 1:
+		t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+	    s = guiIn.l_fl * (1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea));
 		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance)
 		{																								// stance leg rotate to pea
-					t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 					// asymmetry - extend right leg
-			        rightMotorAngle = legToMotorPos(phi_rLeg,(guiIn.l_leg_st*cos(M_PI/2 - guiIn.aea))/cos(M_PI/2-phi_rLeg));
+			        rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
 					//##rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
 					D4.set(guiIn.d_ls);
 					P4.set(guiIn.p_ls);
@@ -280,14 +281,13 @@ default:
         {
 			
             			//map leg angle sweep of flight leg to 0->1
-						t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
-						s = guiIn.l_fl * (1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea));
+						
 						if (s>1)
                             s=1;
 						if (t>1)
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (-M_PI/2 + 2 * M_PI * 1.1*t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						l_swing = sin (-1 + 5 * 1.2*t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//##l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
@@ -310,7 +310,7 @@ default:
 			co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 			D1.set(guiIn.d_ls);
 			P1.set(guiIn.p_ls);
-			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)+2;
 			logData.flightState = 2;
 		}
 		break;
@@ -318,6 +318,8 @@ default:
 
     //********************************************************************************************************************************************************************************
 	case 2:                         // stance leg left, swing leg right
+		s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
+        t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
 		if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 		{           // stance leg rotate to pea
 					// asymmetry - extend left leg
@@ -347,15 +349,14 @@ default:
 		if ((t<1) && (!sw_flight))
         {
         				//map leg angle sweep of flight leg to 0->1
-						s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
-                        t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+						
 						//keep desired leg length -> shorten leg depending on leg position
 						if (s>1)
                             s=1;
 						if (t>1)
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (-M_PI/2 + 2 * M_PI * 1.1*t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						l_swing = sin (-1 + 5 * 1.2 * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin (M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
@@ -375,7 +376,7 @@ default:
 			co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 			D4.set(guiIn.d_ls);
 			P4.set(guiIn.p_ls);
-			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
 			logData.flightState = 4;
 		}
 		break;
