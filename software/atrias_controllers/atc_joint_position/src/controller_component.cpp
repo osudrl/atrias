@@ -53,10 +53,46 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
 
     // begin control code //
 
-    // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+
+	//++++++++++++++++++++++++++++++++++++++++++++++++++leg++++++++++++++++++++++++++++++++++++++++++++++
+	if guiIn.sync
+	{
+		leftMotorAngle = legToMotorPos(guiIn.a_ll,guiIn.l_ll);
+		rightMotorAngle = leftMotorAngle;
+	} else
+	{
+		leftMotorAngle = legToMotorPos(guiIn.a_ll,guiIn.l_ll);
+		rightMotorAngle = legToMotorPos(guiIn.a_rl,guiIn.l_rl);
+	}
+	D0.set(guiIn.d_ll);
+	P0.set(guiIn.p_ll);
+	D1.set(guiIn.d_ll);
+	P1.set(guiIn.p_ll);
+	D3.set(guiIn.d_rl);
+	P3.set(guiIn.p_rl);
+	D4.set(guiIn.d_rl);
+	P4.set(guiIn.p_rl);
+	co.lLeg.motorCurrentA=pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB=pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentA=pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB=pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+
+	//++++++++++++++++++++++++++++++++++++++++++++++++++hip++++++++++++++++++++++++++++++++++++++++++++++
+	if guiIn.vert
+	{
+		hipangle_l=0;
+		hipangle_r=0;
+	} else
+	{
+		hipangle_l=guiIn.a_hl;
+		hipangle_r=guiIn.a_hr;
+	}
+	D2.set(guiIn.d_hl);
+	P2.set(guiIn.p_hl);
+	D5.set(guiIn.d_hr);
+	P5.set(guiIn.p_hr);
+	co.lLeg.motorCurrentHip = pd2Controller(hipangle_l, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentHip = pd5Controller(hipangle_r, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 
     // end control code //
 
