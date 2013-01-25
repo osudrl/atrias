@@ -373,7 +373,11 @@ bool leg_check_error(uint8_t id) {
 
 }
 
-bool leg_check_halt(uint8_t id) {	
+bool leg_check_halt(uint8_t id) {
+	#ifndef MEDULLA_USE_HALT
+	return false;
+	#else
+
 	static uint32_t maxCounts = 0;
 	static uint32_t minCounts = 0;
 	static int32_t damping_location = 0;
@@ -383,7 +387,6 @@ bool leg_check_halt(uint8_t id) {
 
 
 	int8_t countDirection = 1;
-
 	// First check if the encoder value is even reasonable
 	if ((((int32_t)(*motor_encoder_pdo) - prev_motor_position) > MAX_ACCEPTABLE_ENCODER_CHANGE) ||
 	    (((int32_t)(*motor_encoder_pdo) - prev_motor_position) < (MAX_ACCEPTABLE_ENCODER_CHANGE*-1))) {
@@ -432,6 +435,7 @@ bool leg_check_halt(uint8_t id) {
 
 
 	return false;
+	#endif
 }
 
 void leg_reset_error() {
