@@ -55,6 +55,11 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
+	// internal variables
+
+	double hipangle_l;
+	double hipangle_r;
+
 public:
     // Constructor
     ATCJointPosition(std::string name);
