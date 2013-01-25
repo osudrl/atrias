@@ -12,9 +12,6 @@
         <property name="n_rows">5</property>
         <property name="n_columns">6</property>
         <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -172,9 +169,6 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkHSeparator" id="hseparator1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -219,7 +213,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox3">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -318,11 +312,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox4">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkSpinButton" id="p_rl_spinbutton">
+              <object class="GtkSpinButton" id="p_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -340,7 +334,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="d_rl_spinbutton">
+              <object class="GtkSpinButton" id="d_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -358,7 +352,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="a_ll_spinbutton">
+              <object class="GtkSpinButton" id="a_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -376,7 +370,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="l_ll_spinbutton">
+              <object class="GtkSpinButton" id="l_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -413,7 +407,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox5">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -429,7 +423,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">D</property>
@@ -441,7 +435,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Angle</property>
@@ -453,7 +447,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>
@@ -472,11 +466,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox6">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">P</property>
@@ -488,7 +482,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label5">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">D</property>
@@ -500,7 +494,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label6">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Angle</property>
@@ -512,7 +506,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Vertical</property>
@@ -543,7 +537,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label5">
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label8">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">L</property>
@@ -558,7 +555,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label6">
+          <object class="GtkLabel" id="label11">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">R</property>
@@ -573,7 +570,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label7">
+          <object class="GtkLabel" id="label14">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Hip</property>
@@ -587,7 +584,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label8">
+          <object class="GtkLabel" id="label15">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Knee</property>
@@ -599,6 +596,12 @@
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
