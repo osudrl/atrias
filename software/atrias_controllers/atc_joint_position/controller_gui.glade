@@ -316,7 +316,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkSpinButton" id="p_rl_spinbutton">
+              <object class="GtkSpinButton" id="p_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -334,7 +334,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="d_rl_spinbutton">
+              <object class="GtkSpinButton" id="d_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -352,7 +352,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="a_rl_spinbutton">
+              <object class="GtkSpinButton" id="a_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -370,7 +370,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="l_rl_spinbutton">
+              <object class="GtkSpinButton" id="l_lr_spinbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -596,6 +596,9 @@
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
         <child>
           <placeholder/>
