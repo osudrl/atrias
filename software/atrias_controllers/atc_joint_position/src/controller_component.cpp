@@ -1,5 +1,5 @@
 /*! \file controller_component.cpp
- *  \author Andrew Peekema
+ *  \author Daniel Renjewski 01/25/2013
  *  \brief Orocos Component code for the atc_joint_position controller.
  */
 
@@ -17,6 +17,20 @@ ATCJointPosition::ATCJointPosition(std::string name):
     this->provides("atc")
         ->addOperation("runController", &ATCJointPosition::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
+
+	 // Add properties.
+    this->addProperty("pd0Name", pd0Name)
+        .doc("Name of 0th PD subcontroller.");
+    this->addProperty("pd1Name", pd1Name)
+        .doc("Name of 1st PD subcontroller.");
+    this->addProperty("pd2Name", pd2Name)
+        .doc("Name of 2th PD subcontroller.");
+    this->addProperty("pd3Name", pd3Name)
+        .doc("Name of 3st PD subcontroller.");
+    this->addProperty("pd4Name", pd4Name)
+        .doc("Name of 4st PD subcontroller.");
+    this->addProperty("pd5Name", pd5Name)
+        .doc("Name of 5st PD subcontroller.");
 
     // For the GUI
     addEventPort(guiDataIn);

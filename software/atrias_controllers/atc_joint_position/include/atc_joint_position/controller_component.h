@@ -44,6 +44,42 @@ private:
 
     atrias_msgs::controller_output co;
 
+	// Variables for subcontrollers
+    std::string pd0Name;
+    std::string pd1Name;
+    std::string pd2Name;
+    std::string pd3Name;
+    std::string pd4Name;
+    std::string pd5Name;
+
+    TaskContext *pd0;
+    TaskContext *pd1;
+    TaskContext *pd2;
+    TaskContext *pd3;
+    TaskContext *pd4;
+    TaskContext *pd5;
+
+    Property<double> P0;
+    Property<double> D0;
+    Property<double> P1;
+    Property<double> D1;
+    Property<double> P2;
+    Property<double> D2;
+    Property<double> P3;
+    Property<double> D3;
+    Property<double> P4;
+    Property<double> D4;
+    Property<double> P5;
+    Property<double> D5;
+
+    // Subcontroller operations
+    OperationCaller<double(double, double, double, double)> pd0Controller;
+    OperationCaller<double(double, double, double, double)> pd1Controller;
+    OperationCaller<double(double, double, double, double)> pd2Controller;
+    OperationCaller<double(double, double, double, double)> pd3Controller;
+    OperationCaller<double(double, double, double, double)> pd4Controller;
+    OperationCaller<double(double, double, double, double)> pd5Controller;
+
     // Logging
     controller_log_data              logData;
     OutputPort<controller_log_data>  logPort;
@@ -59,6 +95,8 @@ private:
 
 	double hipangle_l;
 	double hipangle_r;
+	motorAngle leftMotorAngle;
+	motorAngle rightMotorAngle;
 
 public:
     // Constructor

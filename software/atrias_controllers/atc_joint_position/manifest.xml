@@ -12,10 +12,5 @@
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
   <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-  <depend package="asc_pd" />
-
+  
 </package>
