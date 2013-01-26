@@ -79,6 +79,7 @@ private:
     OperationCaller<double(double, double, double, double)> pd3Controller;
     OperationCaller<double(double, double, double, double)> pd4Controller;
     OperationCaller<double(double, double, double, double)> pd5Controller;
+	OperationCaller<MotorAngle(double, double)>             legToMotorPos;
 
     // Logging
     controller_log_data              logData;
@@ -95,8 +96,8 @@ private:
 
 	double hipangle_l;
 	double hipangle_r;
-	motorAngle leftMotorAngle;
-	motorAngle rightMotorAngle;
+	MotorAngle leftMotorAngle;
+	MotorAngle rightMotorAngle;
 
 public:
     // Constructor

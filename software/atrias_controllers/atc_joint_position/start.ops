@@ -1,6 +1,10 @@
 # Clean up the controller namespace
 atrias_cm.resetControllerNames()
 
+# For loading subcontroller scripts
+require("scripting")
+require("print")
+
 # Set up the component
 import("atc_joint_position")
 loadComponent("controller", "ATCJointPosition")
@@ -9,6 +13,9 @@ loadComponent("controller", "ATCJointPosition")
 connectPeers("atrias_rt", "controller")
 
 # Set up subcontrollers.
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
+
 import("asc_pd")
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 var string pd1Name = atrias_cm.getUniqueName("controller", "pd")

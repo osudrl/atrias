@@ -62,7 +62,7 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
-    if ((uint8_t)rs.cmState != (uint8_t)controllerManager::RtOpsCommand::ENABLE)
+    if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
     // begin control code //
@@ -114,7 +114,7 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
     co.command = medulla_state_run;
 
     // Let the GUI know the controller run state
-    guiOut.isEnabled = (rs.cmState == (controllerManager::ControllerManagerState_t)controllerManager::ControllerManagerState::CONTROLLER_RUNNING);
+    guiOut.isEnabled = ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED);
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
@@ -130,6 +130,7 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
 // Don't put control code below here!
 bool ATCJointPosition::configureHook() {
     log(Info) << "[ATCMT] configured!" << endlog();
+	legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
     return true;
 }
 
