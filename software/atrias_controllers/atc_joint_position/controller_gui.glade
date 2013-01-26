@@ -69,7 +69,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="vert_checkbutton">
+              <object class="GtkCheckButton" id="vertical_checkbutton">
                 <property name="label" translatable="yes">Vertical</property>
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
