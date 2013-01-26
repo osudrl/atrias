@@ -76,7 +76,7 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
 	} else
 	{
 		leftMotorAngle = legToMotorPos(guiIn.a_ll,guiIn.l_ll);
-		rightMotorAngle = legToMotorPos(guiIn.a_rl,guiIn.l_rl);
+		rightMotorAngle = legToMotorPos(guiIn.a_lr,guiIn.l_lr);
 	}
 	D0.set(guiIn.d_ll);
 	P0.set(guiIn.p_ll);
@@ -92,7 +92,7 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
 	co.rLeg.motorCurrentB=pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 
 	//++++++++++++++++++++++++++++++++++++++++++++++++++hip++++++++++++++++++++++++++++++++++++++++++++++
-	if (guiIn.vert)
+	if (guiIn.vertical)
 	{
 		hipangle_l=0;
 		hipangle_r=0;
