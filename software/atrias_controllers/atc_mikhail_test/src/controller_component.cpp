@@ -1,24 +1,26 @@
 /*! \file controller_component.cpp
  *  \author Andrew Peekema
- *  \brief Orocos Component code for the atc_component controller.
+ *  \brief Orocos Component code for the atc_mikhail_test controller.
  */
 
-#include <atc_component/controller_component.h>
+#include <atc_mikhail_test/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ATCComponent::ATCComponent(std::string name):
+ATCMikhailTest::ATCMikhailTest(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
     guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCComponent::runController, this, ClientThread)
+        ->addOperation("runController", &ATCMikhailTest::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
-    // Add properties
+    // Add properties.
+    this->addProperty("pd0Name", pd0Name)
+        .doc("Name of 0th PD subcontroller.");
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -40,7 +42,7 @@ ATCComponent::ATCComponent(std::string name):
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCMikhailTest::runController(atrias_msgs::robot_state rs) {
     // Do nothing unless told otherwise
     co.lLeg.motorCurrentA   = 0.0;
     co.lLeg.motorCurrentB   = 0.0;
@@ -54,6 +56,15 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
         return co;
 
     // begin control code //
+    // Set PD gains
+    P0.set(10);
+    D0.set(0);
+
+    targetPos = 1.0;
+    currentPos = rs.lLeg.halfA.motorAngle;
+    targetVel = 0.0;
+    currentVel = rs.lLeg.halfA.motorVelocity;
+    co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Stuff the msg
     co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
@@ -65,8 +76,9 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
     // Command a run state
     co.command = medulla_state_run;
 
-    // Let the GUI know the controller run state
+    // If we're enabled, inform the GUI
     guiOut.isEnabled = ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED);
+
     // Send data to the GUI
     if (pubTimer->readyToSend())
         guiDataOut.write(guiOut);
@@ -80,34 +92,38 @@ atrias_msgs::controller_output ATCComponent::runController(atrias_msgs::robot_st
 }
 
 // Don't put control code below here!
-bool ATCComponent::configureHook() {
+bool ATCMikhailTest::configureHook() {
     // Connect to the subcontrollers
-    // Service plugins
+    pd0 = this->getPeer(pd0Name);
+    if (pd0)
+        pd0Controller = pd0->provides("pd")->getOperation("runController");
 
-    // Get references to subcontroller component properties
+    // Get references to the attributes
+    P0 = pd0->properties()->getProperty("P");
+    D0 = pd0->properties()->getProperty("D");
 
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
-bool ATCComponent::startHook() {
+bool ATCMikhailTest::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCComponent::updateHook() {
+void ATCMikhailTest::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCComponent::stopHook() {
+void ATCMikhailTest::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCComponent::cleanupHook() {
+void ATCMikhailTest::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCComponent)
+ORO_CREATE_COMPONENT(ATCMikhailTest)
 
 }
 }

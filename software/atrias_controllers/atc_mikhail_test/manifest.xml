@@ -1,17 +1,16 @@
 <package>
-  <description brief="atc_joint_position">
+  <description brief="atc_mikhail_test">
 
-     atc_joint_position
+     atc_mikhail_test
 
   </description>
   <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atc_joint_position</url>
+  <url>http://ros.org/wiki/atc_mikhail_test</url>
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
-  <depend package="asc_pd" />
-  <depend package="asc_coordinate_transforms" />
-  
+  <depend package="asc_pd"/>
+
 </package>
