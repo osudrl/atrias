@@ -80,8 +80,8 @@ void getParameters() {
     nh.getParam("/atrias_gui/d_lr", controllerDataOut.d_lr);
     nh.getParam("/atrias_gui/a_lr", controllerDataOut.a_lr);
     nh.getParam("/atrias_gui/l_lr", controllerDataOut.l_lr);
-	nh.getParam("/atrias_gui/vertical", controllerDataOut.vertical);
-	nh.getParam("/atrias_gui/sync", controllerDataOut.sync);
+    //nh.getParam("/atrias_gui/vertical", controllerDataOut.vertical);
+    //nh.getParam("/atrias_gui/sync", controllerDataOut.sync);
 
     // Configure the GUI.
 	p_hl_spinbutton->set_value(controllerDataOut.p_hl);
@@ -118,8 +118,8 @@ void setParameters() {
     nh.setParam("/atrias_gui/d_lr", controllerDataOut.d_lr);
     nh.setParam("/atrias_gui/a_lr", controllerDataOut.a_lr);
     nh.setParam("/atrias_gui/l_lr", controllerDataOut.l_lr);
-	nh.setParam("/atrias_gui/vertical", controllerDataOut.vertical);
-	nh.setParam("/atrias_gui/sync", controllerDataOut.sync);
+    //nh.setParam("/atrias_gui/vertical", controllerDataOut.vertical);
+    //nh.setParam("/atrias_gui/sync", controllerDataOut.sync);
 }
 
 //! \brief Update the GUI.
