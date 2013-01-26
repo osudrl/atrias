@@ -28,11 +28,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("vertical_checkbutton", vertical_checkbutton);
 	gui->get_widget("sync_checkbutton", sync_checkbutton);
 
-    if (p_hl_spinbutton, d_hl_spinbutton, a_hl_spinbutton,
-			p_hr_spinbutton, d_hr_spinbutton, a_hr_spinbutton,
-			p_ll_spinbutton, d_ll_spinbutton, a_ll_spinbutton, l_ll_spinbutton,
-			p_lr_spinbutton, d_lr_spinbutton, a_lr_spinbutton, l_lr_spinbutton,
-			vertical_checkbutton, sync_checkbutton) {
+    if (p_hl_spinbutton && d_hl_spinbutton && a_hl_spinbutton &&
+        p_hr_spinbutton && d_hr_spinbutton && a_hr_spinbutton &&
+        p_ll_spinbutton && d_ll_spinbutton && a_ll_spinbutton && l_ll_spinbutton &&
+        p_lr_spinbutton && d_lr_spinbutton && a_lr_spinbutton && l_lr_spinbutton &&
+        vertical_checkbutton && sync_checkbutton) {
         // Set ranges.
 		// TODO: Set actual ranges.
 		p_hl_spinbutton->set_range(0, 100);
