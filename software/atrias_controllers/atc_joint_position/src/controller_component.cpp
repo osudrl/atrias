@@ -129,8 +129,46 @@ atrias_msgs::controller_output ATCJointPosition::runController(atrias_msgs::robo
 
 // Don't put control code below here!
 bool ATCJointPosition::configureHook() {
-    log(Info) << "[ATCMT] configured!" << endlog();
+	pd0 = this->getPeer(pd0Name);
+	if (pd0)
+		pd0Controller = pd0->provides("pd")->getOperation("runController");
+
+	pd1 = this->getPeer(pd1Name);
+	if (pd1)
+		pd1Controller = pd1->provides("pd")->getOperation("runController");
+
+	pd2 = this->getPeer(pd2Name);
+	if (pd2)
+		pd2Controller = pd2->provides("pd")->getOperation("runController");
+
+	pd3 = this->getPeer(pd3Name);
+	if (pd3)
+		pd3Controller = pd3->provides("pd")->getOperation("runController");
+
+	pd4 = this->getPeer(pd4Name);
+	if (pd4)
+		pd4Controller = pd4->provides("pd")->getOperation("runController");
+
+	pd5 = this->getPeer(pd5Name);
+	if (pd5)
+		pd5Controller = pd5->provides("pd")->getOperation("runController");
+
+	P0 = pd0->properties()->getProperty("P");
+	D0 = pd0->properties()->getProperty("D");
+	P1 = pd1->properties()->getProperty("P");
+	D1 = pd1->properties()->getProperty("D");
+	P2 = pd2->properties()->getProperty("P");
+	D2 = pd2->properties()->getProperty("D");
+	P3 = pd3->properties()->getProperty("P");
+	D3 = pd3->properties()->getProperty("D");
+	P4 = pd4->properties()->getProperty("P");
+	D4 = pd4->properties()->getProperty("D");
+	P5 = pd5->properties()->getProperty("P");
+	D5 = pd5->properties()->getProperty("D");
+
 	legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
+    
+    log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }
 
