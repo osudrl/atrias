@@ -71,10 +71,10 @@
             <child>
               <object class="GtkCheckButton" id="vertical_checkbutton">
                 <property name="label" translatable="yes">Vertical</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -291,10 +291,10 @@
             <child>
               <object class="GtkCheckButton" id="sync_checkbutton">
                 <property name="label" translatable="yes">Sync</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -509,7 +509,7 @@
               <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Vertical</property>
+                <property name="label" translatable="yes">Length</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -535,9 +535,6 @@
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child>
           <object class="GtkLabel" id="label8">
