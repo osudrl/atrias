@@ -34,21 +34,20 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         p_lr_spinbutton && d_lr_spinbutton && a_lr_spinbutton && l_lr_spinbutton &&
         vertical_checkbutton && sync_checkbutton) {
         // Set ranges.
-		// TODO: Set actual ranges.
-		p_hl_spinbutton->set_range(0, 100);
-		d_hl_spinbutton->set_range(0, 100);
-		a_hl_spinbutton->set_range(0, 100);
-		p_hr_spinbutton->set_range(0, 100);
-		d_hr_spinbutton->set_range(0, 100);
-		a_hr_spinbutton->set_range(0, 100);
-		p_ll_spinbutton->set_range(0, 100);
-		d_ll_spinbutton->set_range(0, 100);
-		a_ll_spinbutton->set_range(0, 100);
-		l_ll_spinbutton->set_range(0, 100);
-		p_lr_spinbutton->set_range(0, 100);
-		d_lr_spinbutton->set_range(0, 100);
-		a_lr_spinbutton->set_range(0, 100);
-		l_lr_spinbutton->set_range(0, 100);
+		p_hl_spinbutton->set_range(  0,  500);
+		d_hl_spinbutton->set_range(  0,   20);
+		a_hl_spinbutton->set_range(-10,   10);
+		p_hr_spinbutton->set_range(  0,  500);
+		d_hr_spinbutton->set_range(  0,   20);
+		a_hr_spinbutton->set_range(-10,   10);
+		p_ll_spinbutton->set_range(  0, 6000);
+		d_ll_spinbutton->set_range(  0,  200);
+		a_ll_spinbutton->set_range(  0,  6.3);
+		l_ll_spinbutton->set_range(0.2,    1);
+		p_lr_spinbutton->set_range(  0, 6000);
+		d_lr_spinbutton->set_range(  0,  200);
+		a_lr_spinbutton->set_range(  0,  6.3);
+		l_lr_spinbutton->set_range(0.2,    1);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_joint_position_status", 0, controllerCallback);
