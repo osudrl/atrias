@@ -256,8 +256,8 @@ for ascToLinkName in ${ascsToLink[@]}
 do
     ascToLinkPath=${atriasControllersPath}/${ascToLinkName}
     cd "$ascToLinkPath"
-    ascIsAComponent=$(grep "^orocos_component(" CMakeLists.txt)
-    ascIsAService=$(grep "^orocos_service(" CMakeLists.txt)
+    ascIsAComponent=$(grep "orocos_component(" CMakeLists.txt)
+    ascIsAService=$(grep "orocos_service(" CMakeLists.txt)
 
     # Get the unique name suffix
     uniqueNamePrefix=$(echo ${ascToLinkName} | sed "s|^....||; s|_\(.\)|\U\1|g")
