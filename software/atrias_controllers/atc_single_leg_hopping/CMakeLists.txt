@@ -4,7 +4,7 @@
 #
 cmake_minimum_required(VERSION 2.6.3)
 
-project(atc_mikhail_test)
+project(atc_single_leg_hopping)
 
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -43,7 +43,7 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(atc_mikhail_test src/controller_component.cpp)
-	ros_generate_rtt_typekit(atc_mikhail_test)
+	orocos_component(atc_single_leg_hopping src/controller_component.cpp)
+	ros_generate_rtt_typekit(atc_single_leg_hopping)
 endif(ATRIAS_BUILD_CONTROLLERS)
 

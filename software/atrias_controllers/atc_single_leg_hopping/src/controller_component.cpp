@@ -1,21 +1,21 @@
 /*! \file controller_component.cpp
- *  \author Andrew Peekema
- *  \brief Orocos Component code for the atc_mikhail_test controller.
+ *  \author Mikhail Jones
+ *  \brief Orocos Component code for the atc_single_leg_hopping controller.
  */
 
-#include <atc_mikhail_test/controller_component.h>
+#include <atc_single_leg_hopping/controller_component.h>
 
 namespace atrias {
 namespace controller {
 
-ATCMikhailTest::ATCMikhailTest(std::string name):
+ATCSingleLegHopping::ATCSingleLegHopping(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
     guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
     this->provides("atc")
-        ->addOperation("runController", &ATCMikhailTest::runController, this, ClientThread)
+        ->addOperation("runController", &ATCSingleLegHopping::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
     // Add properties.
@@ -42,7 +42,7 @@ ATCMikhailTest::ATCMikhailTest(std::string name):
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
-atrias_msgs::controller_output ATCMikhailTest::runController(atrias_msgs::robot_state rs) {
+atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::robot_state rs) {
     // Do nothing unless told otherwise
     co.lLeg.motorCurrentA   = 0.0;
     co.lLeg.motorCurrentB   = 0.0;
@@ -55,28 +55,62 @@ atrias_msgs::controller_output ATCMikhailTest::runController(atrias_msgs::robot_
     if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
+
+
+
+
+
+
+
+
     // begin control code //
-    // Set PD gains
-    P0.set(10);
-    D0.set(0);
 
-    targetPos = 1.0;
-    currentPos = rs.lLeg.halfA.motorAngle;
-    targetVel = 0.0;
-    currentVel = rs.lLeg.halfA.motorVelocity;
-    co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
-    // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
-    co.lLeg.motorCurrentB = guiIn.des_motor_torque_B;
-    co.lLeg.motorCurrentHip = guiIn.des_motor_torque_hip;
+    // Check if we are in flight or stance phase
+    bool isStance = true;
+
+    // Flight or Stance state machine
+    if (isStance){
+        
+        // Set gains
+        P0.set(guiIn.stance_leg_P_gain);
+        D0.set(guiIn.stance_leg_D_gain);
+
+        // Set motor torques
+        targetPos = 0.0;
+        currentPos = rs.lLeg.halfA.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfA.motorVelocity;
+        co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+
+    } else {
+
+        // Set gains
+        P0.set(guiIn.flight_leg_P_gain);
+        D0.set(guiIn.flight_leg_D_gain);
+
+        // Set motor torques
+        targetPos = 0.0;
+        currentPos = rs.lLeg.halfA.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfA.motorVelocity;
+        co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+
+    }
 
     // end control code //
+
+
+
+
+
+
+
 
     // Command a run state
     co.command = medulla_state_run;
 
-    // If we're enabled, inform the GUI
+    // Let the GUI know the controller run state
     guiOut.isEnabled = ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED);
 
     // Send data to the GUI
@@ -92,7 +126,8 @@ atrias_msgs::controller_output ATCMikhailTest::runController(atrias_msgs::robot_
 }
 
 // Don't put control code below here!
-bool ATCMikhailTest::configureHook() {
+bool ATCSingleLegHopping::configureHook() {
+
     // Connect to the subcontrollers
     pd0 = this->getPeer(pd0Name);
     if (pd0)
@@ -106,24 +141,24 @@ bool ATCMikhailTest::configureHook() {
     return true;
 }
 
-bool ATCMikhailTest::startHook() {
+bool ATCSingleLegHopping::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
 }
 
-void ATCMikhailTest::updateHook() {
+void ATCSingleLegHopping::updateHook() {
     guiDataIn.read(guiIn);
 }
 
-void ATCMikhailTest::stopHook() {
+void ATCSingleLegHopping::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
 }
 
-void ATCMikhailTest::cleanupHook() {
+void ATCSingleLegHopping::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
 }
 
-ORO_CREATE_COMPONENT(ATCMikhailTest)
+ORO_CREATE_COMPONENT(ATCSingleLegHopping)
 
 }
 }

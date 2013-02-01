@@ -1,0 +1,8 @@
+float64 flight_leg_P_gain
+float64 flight_leg_D_gain
+float64 flight_hip_P_gain
+float64 flight_hip_D_gain
+float64 stance_leg_P_gain
+float64 stance_leg_D_gain
+float64 stance_hip_P_gain
+float64 stance_hip_D_gain

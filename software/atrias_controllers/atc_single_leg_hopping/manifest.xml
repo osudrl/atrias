@@ -1,16 +1,15 @@
 <package>
-  <description brief="atc_mikhail_test">
+  <description brief="atc_single_leg_hopping">
 
-     atc_mikhail_test
+     atc_single_leg_hopping
 
   </description>
   <author>drl</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atc_mikhail_test</url>
+  <url>http://ros.org/wiki/atc_single_leg_hopping</url>
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
-  <depend package="asc_pd"/>
 
 </package>

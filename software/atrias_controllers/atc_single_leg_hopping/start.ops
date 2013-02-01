@@ -2,11 +2,16 @@
 atrias_cm.resetControllerNames()
 
 # Set up the component
-import("atc_mikhail_test")
-loadComponent("controller", "ATCMikhailTest")
+import("atc_single_leg_hopping")
+loadComponent("controller", "ATCSingleLegHopping")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
+
+
+
+
+
 
 # Set up subcontrollers.
 import("asc_pd")
@@ -19,13 +24,20 @@ addPeer("controller", pd0Name)
 # Pass the names of the subcontrollers to the controller
 controller.pd0Name = pd0Name
 
+
+
+
+
+
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
-gui_policy.name_id = "/atc_mikhail_test_status"
+
+gui_policy.name_id = "/atc_single_leg_hopping_status"
 stream("controller.gui_data_out", gui_policy)
 
-gui_policy.name_id = "/atc_mikhail_test_input"
+gui_policy.name_id = "/atc_single_leg_hopping_input"
 stream("controller.gui_data_in", gui_policy)
 
 # Configure the component

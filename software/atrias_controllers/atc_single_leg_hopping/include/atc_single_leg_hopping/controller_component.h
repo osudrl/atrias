@@ -1,9 +1,9 @@
-#ifndef __ATC_MIKHAIL_TEST_H__
-#define __ATC_MIKHAIL_TEST_H__
+#ifndef __ATC_SINGLE_LEG_HOPPING_H__
+#define __ATC_SINGLE_LEG_HOPPING_H__
 
 /*! \file controller_component.h
  *  \author Andrew Peekema
- *  \brief Orocos Component header for atc_mikhail_test controller.
+ *  \brief Orocos Component header for atc_single_leg_hopping controller.
  */
 
 // Orocos 
@@ -22,22 +22,22 @@
 #include <robot_invariant_defs.h>
 
 // Datatypes
-#include <atc_mikhail_test/controller_input.h>
-#include <atc_mikhail_test/controller_status.h>
-#include <atc_mikhail_test/controller_log_data.h>
+#include <atc_single_leg_hopping/controller_input.h>
+#include <atc_single_leg_hopping/controller_status.h>
+#include <atc_single_leg_hopping/controller_log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
-using namespace atc_mikhail_test;
+using namespace atc_single_leg_hopping;
 
 namespace atrias {
 using namespace shared;
 namespace controller {
 
-class ATCMikhailTest : public TaskContext {
+class ATCSingleLegHopping : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
@@ -55,6 +55,12 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
+
+
+
+
+
+
     // Variables for subcontrollers
     std::string pd0Name;
     TaskContext *pd0;
@@ -65,9 +71,14 @@ private:
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;
 
+
+
+
+
+
 public:
     // Constructor
-    ATCMikhailTest(std::string name);
+    ATCSingleLegHopping(std::string name);
 
     // Standard Orocos hooks
     bool configureHook();

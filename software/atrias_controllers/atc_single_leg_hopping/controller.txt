@@ -1,0 +1,2 @@
+description=A simple single leg vertical hopping controller using force control.
+author=Mikhail Jones.
