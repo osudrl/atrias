@@ -181,9 +181,9 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
 
     //Commented out until we figure out where the hip angle went in the robot state
     sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.legBodyAngle);
-    leftHipLengthDisplay->set_text(buffer);
+    leftHipAngleDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", rtCycle.robotState.rLeg.hip.legBodyAngle);
-    rightHipLengthDisplay->set_text(buffer);
+    rightHipAngleDisplay->set_text(buffer);
 
     //TODO: Fix this
     /*if (usageIndex < CPU_USAGE_AVERAGE_TICKS) {
