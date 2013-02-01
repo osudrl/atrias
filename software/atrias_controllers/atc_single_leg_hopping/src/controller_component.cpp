@@ -1,5 +1,5 @@
 /*! \file controller_component.cpp
- *  \author Andrew Peekema
+ *  \author Mikhail Jones
  *  \brief Orocos Component code for the atc_single_leg_hopping controller.
  */
 
@@ -17,6 +17,10 @@ ATCSingleLegHopping::ATCSingleLegHopping(std::string name):
     this->provides("atc")
         ->addOperation("runController", &ATCSingleLegHopping::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
+
+    // Add properties.
+    this->addProperty("pd0Name", pd0Name)
+        .doc("Name of 0th PD subcontroller.");
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -55,12 +59,49 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
 
 
+
+
+
+
     // begin control code //
 
-    // Stuff the msg
-    co.lLeg.motorCurrentA = guiIn.des_motor_torque_A;
+
+    // Check if we are in flight or stance phase
+    bool isStance = true;
+
+    // Flight or Stance state machine
+    if (isStance){
+        
+        // Set gains
+        P0.set(guiIn.stance_leg_P_gain);
+        D0.set(guiIn.stance_leg_D_gain);
+
+        // Set motor torques
+        targetPos = 0.0;
+        currentPos = rs.lLeg.halfA.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfA.motorVelocity;
+        co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+
+    } else {
+
+        // Set gains
+        P0.set(guiIn.flight_leg_P_gain);
+        D0.set(guiIn.flight_leg_D_gain);
+
+        // Set motor torques
+        targetPos = 0.0;
+        currentPos = rs.lLeg.halfA.motorAngle;
+        targetVel = 0.0;
+        currentVel = rs.lLeg.halfA.motorVelocity;
+        co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
+
+    }
 
     // end control code //
+
+
+
 
 
 
@@ -86,6 +127,16 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
 // Don't put control code below here!
 bool ATCSingleLegHopping::configureHook() {
+
+    // Connect to the subcontrollers
+    pd0 = this->getPeer(pd0Name);
+    if (pd0)
+        pd0Controller = pd0->provides("pd")->getOperation("runController");
+
+    // Get references to the attributes
+    P0 = pd0->properties()->getProperty("P");
+    D0 = pd0->properties()->getProperty("D");
+
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }

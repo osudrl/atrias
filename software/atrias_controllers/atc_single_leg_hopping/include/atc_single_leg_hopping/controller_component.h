@@ -55,6 +55,27 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
+
+
+
+
+
+
+    // Variables for subcontrollers
+    std::string pd0Name;
+    TaskContext *pd0;
+    Property<double> P0;
+    Property<double> D0;
+    OperationCaller<double(double, double, double, double)> pd0Controller;
+
+    // Math variables
+    double targetPos, currentPos, targetVel, currentVel;
+
+
+
+
+
+
 public:
     // Constructor
     ATCSingleLegHopping(std::string name);

@@ -1,5 +1,18 @@
 # Shut stuff down
 controller.stop()
+
+
+
+
+
+# Shut down subcontrollers
+unloadComponent(controller.pd0Name)
+
+
+
+
+
+
 controller.cleanup()
 unloadComponent("controller")
 atrias_cm.resetControllerNames()

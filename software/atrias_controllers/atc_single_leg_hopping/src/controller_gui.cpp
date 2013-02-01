@@ -3,19 +3,45 @@
  *
  * atc_single_leg_hopping controller
  *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
+ *  Created on: Jan 31, 2013
+ *      Author: Mikhail Jones
  */
 
 #include <atc_single_leg_hopping/controller_gui.h>
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("torque_A_hscale", torque_A_hscale);
+    gui->get_widget("flight_leg_P_gain_spinbutton", flight_leg_P_gain_spinbutton);
+    gui->get_widget("flight_leg_D_gain_spinbutton", flight_leg_D_gain_spinbutton);
+    gui->get_widget("flight_hip_P_gain_spinbutton", flight_hip_P_gain_spinbutton);
+    gui->get_widget("flight_hip_D_gain_spinbutton", flight_hip_D_gain_spinbutton);
+    gui->get_widget("stance_leg_P_gain_spinbutton", stance_leg_P_gain_spinbutton);
+    gui->get_widget("stance_leg_D_gain_spinbutton", stance_leg_D_gain_spinbutton);
+    gui->get_widget("stance_hip_P_gain_spinbutton", stance_hip_P_gain_spinbutton);
+    gui->get_widget("stance_hip_D_gain_spinbutton", stance_hip_D_gain_spinbutton);
 
-    if (torque_A_hscale) {
+    if (flight_leg_P_gain_spinbutton && flight_leg_D_gain_spinbutton) {
+
         // Set ranges.
-        torque_A_hscale->set_range(-10., 10.);
+        flight_leg_P_gain_spinbutton->set_range(0., 1000.);
+        flight_leg_D_gain_spinbutton->set_range(0., 100.);
+        flight_hip_P_gain_spinbutton->set_range(0., 1000.);
+        flight_hip_D_gain_spinbutton->set_range(0., 100.);
+        stance_leg_P_gain_spinbutton->set_range(0., 1000.);
+        stance_leg_D_gain_spinbutton->set_range(0., 100.);
+        stance_hip_P_gain_spinbutton->set_range(0., 1000.);
+        stance_hip_D_gain_spinbutton->set_range(0., 100.);
+
+        // Set default values
+        flight_leg_P_gain_spinbutton->set_value(10.);
+        flight_leg_D_gain_spinbutton->set_value(10.);
+        flight_hip_P_gain_spinbutton->set_value(10.);
+        flight_hip_D_gain_spinbutton->set_value(10.);
+        stance_leg_P_gain_spinbutton->set_value(10.);
+        stance_leg_D_gain_spinbutton->set_value(10.);
+        stance_hip_P_gain_spinbutton->set_value(10.);
+        stance_hip_D_gain_spinbutton->set_value(10.);
+
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_single_leg_hopping_status", 0, controllerCallback);
@@ -33,20 +59,48 @@ void controllerCallback(const atc_single_leg_hopping::controller_status &status)
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
     // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/torque_A", torque_A_param);
+    nh.getParam("/atrias_gui/flight_leg_P_gain", controllerDataOut.flight_leg_P_gain);
+    nh.getParam("/atrias_gui/flight_leg_D_gain", controllerDataOut.flight_leg_D_gain);
+    nh.getParam("/atrias_gui/flight_hip_P_gain", controllerDataOut.flight_hip_P_gain);
+    nh.getParam("/atrias_gui/flight_hip_D_gain", controllerDataOut.flight_hip_D_gain);
+    nh.getParam("/atrias_gui/stance_leg_P_gain", controllerDataOut.stance_leg_P_gain);
+    nh.getParam("/atrias_gui/stance_leg_D_gain", controllerDataOut.stance_leg_D_gain);
+    nh.getParam("/atrias_gui/stance_hip_P_gain", controllerDataOut.stance_hip_P_gain);
+    nh.getParam("/atrias_gui/stance_hip_D_gain", controllerDataOut.stance_hip_D_gain);
 
     // Configure the GUI.
-    torque_A_hscale->set_value(torque_A_param);
+    flight_leg_P_gain_spinbutton->set_value(controllerDataOut.flight_leg_P_gain);
+    flight_leg_D_gain_spinbutton->set_value(controllerDataOut.flight_leg_D_gain);
+    flight_hip_P_gain_spinbutton->set_value(controllerDataOut.flight_hip_P_gain);
+    flight_hip_D_gain_spinbutton->set_value(controllerDataOut.flight_hip_D_gain);
+    stance_leg_P_gain_spinbutton->set_value(controllerDataOut.stance_leg_P_gain);
+    stance_leg_D_gain_spinbutton->set_value(controllerDataOut.stance_leg_D_gain);
+    stance_hip_P_gain_spinbutton->set_value(controllerDataOut.stance_hip_P_gain);
+    stance_hip_D_gain_spinbutton->set_value(controllerDataOut.stance_hip_D_gain);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-    nh.setParam("/atrias_gui/torque_A", torque_A_param);
+    nh.setParam("/atrias_gui/flight_leg_P_gain", controllerDataOut.flight_leg_P_gain);
+    nh.setParam("/atrias_gui/flight_leg_D_gain", controllerDataOut.flight_leg_D_gain);
+    nh.setParam("/atrias_gui/flight_hip_P_gain", controllerDataOut.flight_hip_P_gain);
+    nh.setParam("/atrias_gui/flight_hip_D_gain", controllerDataOut.flight_hip_D_gain);
+    nh.setParam("/atrias_gui/stance_leg_P_gain", controllerDataOut.stance_leg_P_gain);
+    nh.setParam("/atrias_gui/stance_leg_D_gain", controllerDataOut.stance_leg_D_gain);
+    nh.setParam("/atrias_gui/stance_hip_P_gain", controllerDataOut.stance_hip_P_gain);
+    nh.setParam("/atrias_gui/stance_hip_D_gain", controllerDataOut.stance_hip_D_gain);
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
-    controllerDataOut.des_motor_torque_A   = torque_A_param   = torque_A_hscale->get_value();
+    controllerDataOut.flight_leg_P_gain = flight_leg_P_gain_spinbutton->get_value();
+    controllerDataOut.flight_leg_D_gain = flight_leg_D_gain_spinbutton->get_value();
+    controllerDataOut.flight_hip_P_gain = flight_hip_P_gain_spinbutton->get_value();
+    controllerDataOut.flight_hip_D_gain = flight_hip_D_gain_spinbutton->get_value();
+    controllerDataOut.stance_leg_P_gain = stance_leg_P_gain_spinbutton->get_value();
+    controllerDataOut.stance_leg_D_gain = stance_leg_D_gain_spinbutton->get_value();
+    controllerDataOut.stance_hip_P_gain = stance_hip_P_gain_spinbutton->get_value();
+    controllerDataOut.stance_hip_D_gain = stance_hip_D_gain_spinbutton->get_value();
     pub.publish(controllerDataOut);
 }
 

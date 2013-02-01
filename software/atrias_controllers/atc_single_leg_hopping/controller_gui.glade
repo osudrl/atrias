@@ -78,7 +78,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="flight_leg_P_gain">
+          <object class="GtkSpinButton" id="flight_leg_P_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -108,7 +108,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="flight_leg_D_gain">
+          <object class="GtkSpinButton" id="flight_leg_D_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -138,7 +138,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="flight_hip_P_gain">
+          <object class="GtkSpinButton" id="flight_hip_P_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -168,7 +168,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="flight_hip_D_gain">
+          <object class="GtkSpinButton" id="flight_hip_D_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -236,7 +236,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="stance_leg_P_gain">
+          <object class="GtkSpinButton" id="stance_leg_P_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -266,7 +266,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="stance_leg_D_gain">
+          <object class="GtkSpinButton" id="stance_leg_D_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -296,7 +296,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="stance_hip_P_gain">
+          <object class="GtkSpinButton" id="stance_hip_P_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -326,7 +326,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="stance_hip_D_gain">
+          <object class="GtkSpinButton" id="stance_hip_D_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
