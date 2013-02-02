@@ -8,27 +8,24 @@ loadComponent("controller", "ATCSingleLegHopping")
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-
-
-
-
-
 # Set up subcontrollers.
 import("asc_pd")
+
+# Leg PD Subcontroller
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd0Name, "ASCPD")
-
-# Connect this controller with its subcontrollers.
 addPeer("controller", pd0Name)
-
-# Pass the names of the subcontrollers to the controller
 controller.pd0Name = pd0Name
 
+# Hip PD Subcontroller
+var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
+loadComponent(pd1Name, "ASCPD")
+addPeer("controller", pd1Name)
+controller.pd1Name = pd1Name
 
-
-
-
-
+# Transforms
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
 
 # Set up the gui connection
 var ConnPolicy gui_policy

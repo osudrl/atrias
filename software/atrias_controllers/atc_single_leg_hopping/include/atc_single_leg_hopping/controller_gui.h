@@ -31,7 +31,15 @@ Gtk::SpinButton *flight_leg_P_gain_spinbutton,
                 *stance_leg_P_gain_spinbutton,
                 *stance_leg_D_gain_spinbutton,
                 *stance_hip_P_gain_spinbutton,
-                *stance_hip_D_gain_spinbutton;
+                *stance_hip_D_gain_spinbutton,
+                *slip_height_spinbutton,
+                *slip_mass_spinbutton,
+                *slip_spring_spinbutton;
+
+Gtk::ToggleButton *debug1_togglebutton,
+                *debug2_togglebutton,
+                *debug3_togglebutton,
+                *debug4_togglebutton;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not

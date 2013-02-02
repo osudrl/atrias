@@ -386,7 +386,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Heigth:</property>
+            <property name="label" translatable="yes">Height:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -395,7 +395,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="spinbutton1">
+          <object class="GtkSpinButton" id="slip_height_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -424,7 +424,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="spinbutton2">
+          <object class="GtkSpinButton" id="slip_mass_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -453,7 +453,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="spinbutton3">
+          <object class="GtkSpinButton" id="slip_spring_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -480,7 +480,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">Ground Contact Estimation</property>
+        <property name="label" translatable="yes">Debug</property>
         <attributes>
           <attribute name="style" value="italic"/>
           <attribute name="weight" value="bold"/>
@@ -508,20 +508,64 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <placeholder/>
+          <object class="GtkToggleButton" id="debug1_togglebutton">
+            <property name="label" translatable="yes">isStance</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkToggleButton" id="debug2_togglebutton">
+            <property name="label" translatable="yes">debug2</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkToggleButton" id="debug3_togglebutton">
+            <property name="label" translatable="yes">debug3</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkToggleButton" id="debug4_togglebutton">
+            <property name="label" translatable="yes">debug4</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
+        <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">13</property>
       </packing>
@@ -530,17 +574,7 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkHScale" id="torque_A_hscale">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="round_digits">3</property>
-        <property name="digits">3</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">15</property>
-      </packing>
+      <placeholder/>
     </child>
   </object>
 </interface>

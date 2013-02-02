@@ -2,7 +2,7 @@
 #define __ATC_SINGLE_LEG_HOPPING_H__
 
 /*! \file controller_component.h
- *  \author Andrew Peekema
+ *  \author Mikhail Jones
  *  \brief Orocos Component header for atc_single_leg_hopping controller.
  */
 
@@ -41,7 +41,6 @@ class ATCSingleLegHopping : public TaskContext {
 private:
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
-
     atrias_msgs::controller_output co;
 
     // Logging
@@ -55,26 +54,28 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
-
-
-
-
-
-
     // Variables for subcontrollers
+    // Leg PD subcontroller
     std::string pd0Name;
     TaskContext *pd0;
     Property<double> P0;
     Property<double> D0;
     OperationCaller<double(double, double, double, double)> pd0Controller;
 
+    // Hip PD subcontroller
+    std::string pd1Name;
+    TaskContext *pd1;
+    Property<double> P1;
+    Property<double> D1;
+    OperationCaller<double(double, double, double, double)> pd1Controller;
+
+    // Transforms
+    OperationCaller<MotorAngle(double, double)> legToMotorPos;
+
     // Math variables
     double targetPos, currentPos, targetVel, currentVel;
-
-
-
-
-
+    MotorAngle leftMotorAngle;
+    MotorAngle rightMotorAngle;
 
 public:
     // Constructor
