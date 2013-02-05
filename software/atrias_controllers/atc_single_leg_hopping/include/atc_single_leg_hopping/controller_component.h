@@ -73,7 +73,10 @@ private:
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
     // Math variables
-    double targetPos, currentPos, targetVel, currentVel;
+    double Fx, Fy, w, v0, g, l1, l2, k, J11, J12, J21, J22, tauA, tauB, desDeflA, desDeflB, deflA, deflB, legAng, legLen, delta; 
+    double r, dr, q, dq;
+    double rNew, drNew, qNew, dqNew;
+    double leftHipAngle, rightHipAngle;
     MotorAngle leftMotorAngle;
     MotorAngle rightMotorAngle;
 

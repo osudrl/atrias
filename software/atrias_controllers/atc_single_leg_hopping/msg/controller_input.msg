@@ -9,6 +9,8 @@ float64 stance_hip_D_gain
 float64 slip_height
 float64 slip_mass
 float64 slip_spring
+float64 slip_leg
+float64 robot_spring
 bool debug1
 bool debug2
 bool debug3

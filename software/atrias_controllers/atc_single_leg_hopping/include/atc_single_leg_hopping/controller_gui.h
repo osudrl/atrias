@@ -34,7 +34,9 @@ Gtk::SpinButton *flight_leg_P_gain_spinbutton,
                 *stance_hip_D_gain_spinbutton,
                 *slip_height_spinbutton,
                 *slip_mass_spinbutton,
-                *slip_spring_spinbutton;
+                *slip_spring_spinbutton,
+                *slip_leg_spinbutton,
+                *robot_spring_spinbutton;
 
 Gtk::ToggleButton *debug1_togglebutton,
                 *debug2_togglebutton,
