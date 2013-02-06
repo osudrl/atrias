@@ -175,9 +175,9 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	// calculate leg angle and length
 
     amp=guiIn.l_leg_st-guiIn.l_leg_fl;
-	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		//right leg angle
+	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		        //right leg angle
 	logData.l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
-	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		//left leg angle
+	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		        //left leg angle
 	logData.l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);	//left leg length
 	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
 	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
@@ -250,7 +250,7 @@ default:
 	{
 	case 1:
 		t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
-	    s = guiIn.l_fl * (1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea));
+	    s = guiIn.l_fl * t;
 		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance)
 		{																								// stance leg rotate to pea
 					// asymmetry - extend right leg
@@ -277,7 +277,7 @@ default:
 		}
 		
 	//******************************************************************************************************************************************************************************************************************
-		if ((1.1*t < 1) && (!sw_flight)) 
+		if ((t < 1) && (!sw_flight)) 
         {
 			
             			//map leg angle sweep of flight leg to 0->1
@@ -287,7 +287,7 @@ default:
 						if (t>1)
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (-1 + 5 * 1.2*t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						l_swing = sin (t*M_PI) * (-amp) + guiIn.l_leg_st;
 						//##l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
 						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
@@ -318,8 +318,8 @@ default:
 
     //********************************************************************************************************************************************************************************
 	case 2:                         // stance leg left, swing leg right
-		s = guiIn.l_fl*(1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea));
-        t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+		t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+		s = guiIn.l_fl * t;
 		if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 		{           // stance leg rotate to pea
 					// asymmetry - extend left leg
@@ -356,7 +356,7 @@ default:
 						if (t>1)
 							t=1;
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (-1 + 5 * 1.2 * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
+						l_swing = sin (t*M_PI) * (-amp) + guiIn.l_leg_st;
 						//l_swing = sin (M_PI * s) * (-amp) + guiIn.l_leg_fl;
 						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
