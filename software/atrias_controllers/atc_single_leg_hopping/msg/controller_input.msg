@@ -9,7 +9,7 @@ float64 stance_hip_P_gain
 float64 stance_hip_D_gain
 
 bool constant_force
-float64 fy
+float64 fx
 float64 fz
 
 bool slip_force

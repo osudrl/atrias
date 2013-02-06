@@ -408,7 +408,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">y-Direction Force:</property>
+            <property name="label" translatable="yes">X-Direction Force:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -417,7 +417,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="fy_spinbutton">
+          <object class="GtkSpinButton" id="fx_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -437,7 +437,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">z-Direction Force:</property>
+            <property name="label" translatable="yes">Z-Direction Force:</property>
           </object>
           <packing>
             <property name="expand">True</property>

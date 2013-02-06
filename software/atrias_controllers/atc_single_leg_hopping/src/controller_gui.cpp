@@ -22,7 +22,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("stance_hip_D_gain_spinbutton", stance_hip_D_gain_spinbutton);
 
     gui->get_widget("constant_force_togglebutton", constant_force_togglebutton);
-    gui->get_widget("fy_spinbutton", fy_spinbutton);
+    gui->get_widget("fx_spinbutton", fx_spinbutton);
     gui->get_widget("fz_spinbutton", fz_spinbutton);
 
     gui->get_widget("slip_force_togglebutton", slip_force_togglebutton);
@@ -57,7 +57,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     stance_hip_P_gain_spinbutton->set_range(0.0, 5000.0);
     stance_hip_D_gain_spinbutton->set_range(0.0, 500.0);
 
-    fy_spinbutton->set_range(-1000.0, 1000.0);
+    fx_spinbutton->set_range(-1000.0, 1000.0);
     fz_spinbutton->set_range(-1000.0, 1000.0);
 
     slip_height_spinbutton->set_range(0.0, 0.5);
@@ -74,17 +74,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     robot_motor_spinbutton->set_range(0.0, 0.5);
 
     // Set default values
-    flight_leg_P_gain_spinbutton->set_value(100.0);
-    flight_leg_D_gain_spinbutton->set_value(10.0);
-    flight_hip_P_gain_spinbutton->set_value(50.0);
-    flight_hip_D_gain_spinbutton->set_value(2.0);
+    flight_leg_P_gain_spinbutton->set_value(400.0);
+    flight_leg_D_gain_spinbutton->set_value(20.0);
+    flight_hip_P_gain_spinbutton->set_value(100.0);
+    flight_hip_D_gain_spinbutton->set_value(5.0);
 
-    stance_leg_P_gain_spinbutton->set_value(100.0);
-    stance_leg_D_gain_spinbutton->set_value(0.0);
-    stance_hip_P_gain_spinbutton->set_value(50.0);
-    stance_hip_D_gain_spinbutton->set_value(2.0);
+    stance_leg_P_gain_spinbutton->set_value(4000.0);
+    stance_leg_D_gain_spinbutton->set_value(2.0);
+    stance_hip_P_gain_spinbutton->set_value(100.0);
+    stance_hip_D_gain_spinbutton->set_value(5.0);
 
-    fy_spinbutton->set_value(0.0);
+    fx_spinbutton->set_value(0.0);
     fz_spinbutton->set_value(0.0);
 
     slip_height_spinbutton->set_value(0.05);
@@ -97,7 +97,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     left_hip_target_spinbutton->set_value(3.0*M_PI/2.0);
     right_hip_target_spinbutton->set_value(3.0*M_PI/2.0);
 
-    robot_spring_spinbutton->set_value(4100.0);
+    robot_spring_spinbutton->set_value(4118.0);
     robot_motor_spinbutton->set_value(0.0);
 
     // Set up subscriber and publisher.
@@ -125,7 +125,7 @@ void getParameters() {
     nh.getParam("/atrias_gui/stance_hip_P_gain", controllerDataOut.stance_hip_P_gain);
     nh.getParam("/atrias_gui/stance_hip_D_gain", controllerDataOut.stance_hip_D_gain);
 
-    nh.getParam("/atrias_gui/fy", controllerDataOut.fy);
+    nh.getParam("/atrias_gui/fx", controllerDataOut.fx);
     nh.getParam("/atrias_gui/fz", controllerDataOut.fz);
 
     nh.getParam("/atrias_gui/slip_height", controllerDataOut.slip_height);
@@ -152,7 +152,7 @@ void getParameters() {
     stance_hip_P_gain_spinbutton->set_value(controllerDataOut.stance_hip_P_gain);
     stance_hip_D_gain_spinbutton->set_value(controllerDataOut.stance_hip_D_gain);
 
-    fy_spinbutton->set_value(controllerDataOut.fy);
+    fx_spinbutton->set_value(controllerDataOut.fx);
     fz_spinbutton->set_value(controllerDataOut.fz);
 
     slip_height_spinbutton->set_value(controllerDataOut.slip_height);
@@ -181,7 +181,7 @@ void setParameters() {
     nh.setParam("/atrias_gui/stance_hip_P_gain", controllerDataOut.stance_hip_P_gain);
     nh.setParam("/atrias_gui/stance_hip_D_gain", controllerDataOut.stance_hip_D_gain);
 
-    nh.setParam("/atrias_gui/fy", controllerDataOut.fy);
+    nh.setParam("/atrias_gui/fx", controllerDataOut.fx);
     nh.setParam("/atrias_gui/fz", controllerDataOut.fz);
 
     nh.setParam("/atrias_gui/slip_height", controllerDataOut.slip_height);
@@ -211,7 +211,7 @@ void guiUpdate() {
     controllerDataOut.stance_hip_D_gain = stance_hip_D_gain_spinbutton->get_value();
 
     controllerDataOut.constant_force = constant_force_togglebutton->get_active();
-    controllerDataOut.fy = fy_spinbutton->get_value();
+    controllerDataOut.fx = fx_spinbutton->get_value();
     controllerDataOut.fz = fz_spinbutton->get_value();
 
     controllerDataOut.slip_force = slip_force_togglebutton->get_active();
