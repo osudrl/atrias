@@ -140,6 +140,11 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         tauA = (Fz*J11 + Fy*J21);
         tauB = (Fz*J12 + Fy*J22);
 
+        if (guiIn.debug3) {
+            printf("tauA: %f\n", tauA);
+            printf("tauB: %f\n", tauB);
+        }
+
         // Compute required spring deflection.
         desDeflA = tauA/guiIn.robot_spring;
         desDeflB = tauB/guiIn.robot_spring;
@@ -184,7 +189,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         q = M_PI/2.0;
         dq = 0.0;
 
-        if (guiIn.debug3) {
+        if (guiIn.debug4) {
             printf("r: %f\n", r);
             printf("dr: %f\n", dr);
             printf("q: %f\n", q);
@@ -223,6 +228,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         // Constant y end-effector position
         leftHipAngle = guiIn.left_hip_target;
         rightHipAngle = guiIn.right_hip_target;
+        //hip0Controller((rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 0)
+        //hip1Controller((rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle) / 2.0, rs.position.boomAngle, 1)
 
         // Set motor currents
         co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     
@@ -231,7 +238,6 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     } else {
         // Do nothing
     }
-
 
     // end control code //
 
