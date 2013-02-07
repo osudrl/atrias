@@ -186,6 +186,11 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
 
         // DEBUG STATEMENTS .......................................................................
+        if (guiIn.debug2) {
+            printf("rLeg.halfB.legAngle: %f\n", rs.rLeg.halfB.legAngle);
+            printf("position.bodyPitch: %f\n", rs.position.bodyPitch);
+            printf("beta1: %f\n", beta1);
+        }
         if (guiIn.debug3) {
             printf("beta1: %f\n", beta1);
             printf("L1: %f\n", L1);
@@ -195,8 +200,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
             printf("q7d: %f\n", q7d);
             printf("q8d: %f\n", q8d);
         }
-        // DEBUG STATEMENTS .......................................................................
-        if (guiIn.debug2) {
+        if (guiIn.debug3) {
             printf("dbeta1: %f\n", dbeta1);
             printf("dL1: %f\n", dL1);
             printf("dalpha2d: %f\n", dalpha2d);
