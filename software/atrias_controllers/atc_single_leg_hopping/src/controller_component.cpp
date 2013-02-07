@@ -126,10 +126,10 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         }
 
         // DEBUG STATEMENTS .......................................................................
-        if (guiIn.debug2) {
-            printf("Fx: %f\n", Fx);
-            printf("Fz: %f\n", Fz);
-        }
+        //if (guiIn.debug2) {
+        //    printf("Fx: %f\n", Fx);
+        //    printf("Fz: %f\n", Fz);
+        //}
 
         // Gains
         Ks = 1.6e4;
@@ -180,13 +180,32 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         Kd = guiIn.flight_leg_D_gain;
 
         // Set flight leg gains and currents
-        co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle + M_PI/2.0) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
-        co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle + M_PI/2.0) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
+        q7d = fmod(q7d + M_PI/2.0, 2.0*M_PI);
+        q8d = fmod(q8d + M_PI/2.0, 2.0*M_PI);
+        co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
+        co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
 
         // DEBUG STATEMENTS .......................................................................
+        if (guiIn.debug2) {
+            printf("rLeg.halfB.legAngle: %f\n", rs.rLeg.halfB.legAngle);
+            printf("position.bodyPitch: %f\n", rs.position.bodyPitch);
+            printf("beta1: %f\n", beta1);
+        }
         if (guiIn.debug3) {
-            printf("q7d: %f\n", q7d + M_PI/2.0);
-            printf("q8d: %f\n", q8d + M_PI/2.0);
+            printf("beta1: %f\n", beta1);
+            printf("L1: %f\n", L1);
+            printf("alpha2d: %f\n", alpha2d);
+            printf("L2d: %f\n", L2d);
+            printf("beta2d: %f\n", beta2d);
+            printf("q7d: %f\n", q7d);
+            printf("q8d: %f\n", q8d);
+        }
+        if (guiIn.debug3) {
+            printf("dbeta1: %f\n", dbeta1);
+            printf("dL1: %f\n", dL1);
+            printf("dalpha2d: %f\n", dalpha2d);
+            printf("dL2d: %f\n", dL2d);
+            printf("dbeta2d: %f\n", dbeta2d);
             printf("dq7d: %f\n", dq7d);
             printf("dq8d: %f\n", dq8d);
         }
@@ -250,8 +269,10 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         rightHipAngleComplex = - qBoom - qBodyOffset - log(-(- sqrt(2.0*pow(lBody, 2)*exp(qRightLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qRightLeg*2.0*i) - 2.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2)*exp(qRightLeg*4.0*i) + 4.0*pow(rightToeRadius, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2) + 4.0*pow(lBoom, 2)*exp(qRightLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i)*pow(cos(qRightLeg), 2) + 2.0*pow(lBody, 2)*cos(2.0*qBoom + 2.0*qBodyOffset)*exp(qRightLeg*2.0*i) + 4.0*lBoom*lBody*exp(qRightLeg*2.0*i)*cos(qBodyOffset) + 4.0*lBoom*lBody*cos(2.0*qBoom + qBodyOffset)*exp(qRightLeg*2.0*i) + 8.0*lBody*exp(qRightLeg*2.0*i)*cos(qBoom + qBodyOffset)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 8.0*lBoom*exp(qRightLeg*2.0*i)*cos(qBoom)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg))) + 2.0*exp(qRightLeg*i)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 2.0*lBody*exp(qRightLeg*i)*cos(qBoom + qBodyOffset) + 2.0*lBoom*exp(qRightLeg*i)*cos(qBoom))/(- lRightLeg + 2.0*lHip*exp(qRightLeg*i) + lRightLeg*exp(qRightLeg*2.0*i)))*i;
 
         // Only care about real part, imaginary part should be zero anyways but just in case.
-        leftHipAngle = -real(leftHipAngleComplex) + 3.0*M_PI/2.0;
-        rightHipAngle = -real(rightHipAngleComplex) + 3.0*M_PI/2.0;
+        leftHipAngle = -real(leftHipAngleComplex) + M_PI/2.0;
+        rightHipAngle = -real(rightHipAngleComplex) + M_PI/2.0;
+        leftHipAngle = fmod(leftHipAngle, 2.0*M_PI);
+        rightHipAngle = fmod(rightHipAngle, 2.0*M_PI);
 
         // DEBUG STATEMENTS .......................................................................
         if (guiIn.debug4) {
