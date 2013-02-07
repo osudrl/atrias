@@ -151,20 +151,20 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         dtauB = Fz*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity) - dFx*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - dFz*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - Fx*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity);
 
         beta1 = (rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0;
-        L1 = 2.0*l1*cos(beta1);
+        L1 = (l1 + l2)*cos(beta1);//2*l1
         alpha1 = rs.rLeg.halfB.legAngle - beta1 + rs.position.bodyPitch - M_PI;
         alpha2d = -alpha1;
         L2d = L1 * 0.8;
-        beta2d = acos(L2d/2.0/l1);
+        beta2d = acos(L2d/(l1 + l2));//2/l1
         q7d = alpha2d - rs.position.bodyPitch - M_PI/2.0 + beta2d;
         q8d = alpha2d - rs.position.bodyPitch - M_PI/2.0 - beta2d;
 
         dbeta1 = (rs.rLeg.halfB.legVelocity - rs.rLeg.halfA.legVelocity)/2.0;
-        dL1 = 2.0*l1*cos(dbeta1);
+        dL1 = (l1 + l2)*cos(dbeta1);//2*l1
         dalpha1 = rs.rLeg.halfB.legVelocity - dbeta1 + rs.position.bodyPitchVelocity;
         dalpha2d = -dalpha1;
         dL2d = dL1 * 0.8;
-        dbeta2d = -dL2d/sqrt(1.0 - pow((L2d/2.0/l1), 2));
+        dbeta2d = -dL2d/sqrt(1.0 - pow((L2d/(l1 + l2)), 2));//2/l1
         dq7d = dalpha2d - rs.position.bodyPitchVelocity + dbeta2d;
         dq8d = dalpha2d - rs.position.bodyPitchVelocity - dbeta2d;
 
@@ -176,14 +176,6 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle + M_PI/2.0) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
         co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle + M_PI/2.0) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
 
-        // DEBUG STATEMENTS .......................................................................
-        if (guiIn.debug3) {
-            printf("tauA: %f\n", tauA);
-            printf("tauB: %f\n", tauB);
-            printf("dtauA: %f\n", dtauA);
-            printf("dtauB: %f\n", dtauB);
-        }
-
     // Flight phase control -----------------------------------------------------------------------
     } else {
         
@@ -194,7 +186,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         dq = 0.0;
 
         // DEBUG STATEMENTS .......................................................................
-        if (guiIn.debug4) {
+        if (guiIn.debug3) {
             printf("r: %f\n", r);
             printf("dr: %f\n", dr);
             printf("q: %f\n", q);
@@ -226,13 +218,40 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         rightHipAngle = guiIn.hip_angle;
 
         // Set motor currents
-        co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     
+        co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
         co.rLeg.motorCurrentHip = pd1Controller(rightHipAngle, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
 
     } else if (guiIn.advanced_hip){
-        // Constant y end-effector position
-        leftHipAngle = guiIn.left_hip_target;
-        rightHipAngle = guiIn.right_hip_target;
+        i = complex<double>(0.0, 1.0);
+
+        // DEBUG STATEMENTS .......................................................................
+        //if (guiIn.debug4) {
+        //    printf("i: %f\n", i);
+        //    printf("i^2: %f\n", i*i);
+        //}
+
+        // Determine hip angles from desired toe positions.
+        lBoom = 3.0;
+        lBody = 0.5;
+        lHip = 0.2;
+        qBodyOffset = M_PI/2.0;
+        qBoom = rs.position.boomAngle;
+        lLeftLeg = (l1 + l2)*cos((rs.lLeg.halfB.legAngle - rs.lLeg.halfA.legAngle)/2.0);
+        lRightLeg = (l1 + l2)*cos((rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0);
+        qLeftLeg = (rs.lLeg.halfA.legAngle + rs.lLeg.halfA.legAngle)/2.0;
+        qRightLeg = (rs.rLeg.halfA.legAngle + rs.rLeg.halfA.legAngle)/2.0;
+        leftToeRadius = lBoom - lHip;//guiIn.left_hip_target;
+        rightToeRadius = lBoom + lHip;//guiIn.right_hip_target;
+
+        leftHipAngleComplex = - qBoom - qBodyOffset - log((- sqrt(pow(lLeftLeg, 2) - 2.0*pow(lLeftLeg, 2)*exp(qLeftLeg*2.0*i) + pow(lLeftLeg, 2)*exp(qLeftLeg*4.0*i) + 4.0*pow(leftToeRadius, 2)*exp(qLeftLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qLeftLeg*2.0*i) + 4.0*pow(lBoom, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lLeftLeg, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qLeftLeg), 2) + 4.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2)*pow(cos(qBodyOffset), 2) + 4.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*pow(sin(qBoom), 2)*pow(sin(qBodyOffset), 2) + 8.0*lBoom*exp(qLeftLeg*2.0*i)*cos(qBoom)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) + 8.0*lBoom*lBody*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2)*cos(qBodyOffset) - 8.0*lBoom*lBody*exp(qLeftLeg*2.0*i)*cos(qBoom)*sin(qBoom)*sin(qBodyOffset) + 8.0*lBody*exp(qLeftLeg*2.0*i)*cos(qBoom)*cos(qBodyOffset)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) - 8.0*lBody*exp(qLeftLeg*2.0*i)*sin(qBoom)*sin(qBodyOffset)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) - 8.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*cos(qBoom)*cos(qBodyOffset)*sin(qBoom)*sin(qBodyOffset)) + 2.0*lBoom*cos(qBoom)*(cos(qLeftLeg) + sin(qLeftLeg)*i) + 2.0*exp(qLeftLeg*i)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) + 2.0*lBody*cos(qBoom + qBodyOffset)*(cos(qLeftLeg) + sin(qLeftLeg)*i))/(lLeftLeg + 2.0*lHip*exp(qLeftLeg*i) - lLeftLeg*exp(qLeftLeg*2.0*i)))*i;
+
+        rightHipAngleComplex = - qBoom - qBodyOffset - log(-(- sqrt(2.0*pow(lBody, 2)*exp(qRightLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qRightLeg*2.0*i) - 2.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2)*exp(qRightLeg*4.0*i) + 4.0*pow(rightToeRadius, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2) + 4.0*pow(lBoom, 2)*exp(qRightLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i)*pow(cos(qRightLeg), 2) + 2.0*pow(lBody, 2)*cos(2.0*qBoom + 2.0*qBodyOffset)*exp(qRightLeg*2.0*i) + 4.0*lBoom*lBody*exp(qRightLeg*2.0*i)*cos(qBodyOffset) + 4.0*lBoom*lBody*cos(2.0*qBoom + qBodyOffset)*exp(qRightLeg*2.0*i) + 8.0*lBody*exp(qRightLeg*2.0*i)*cos(qBoom + qBodyOffset)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 8.0*lBoom*exp(qRightLeg*2.0*i)*cos(qBoom)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg))) + 2.0*exp(qRightLeg*i)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 2.0*lBody*exp(qRightLeg*i)*cos(qBoom + qBodyOffset) + 2.0*lBoom*exp(qRightLeg*i)*cos(qBoom))/(- lRightLeg + 2.0*lHip*exp(qRightLeg*i) + lRightLeg*exp(qRightLeg*2.0*i)))*i;
+
+        // Only care about real part, imaginary part should be zero anyways but jsut in case.
+        leftHipAngle = real(leftHipAngleComplex);
+        rightHipAngle = real(rightHipAngleComplex);
+        //leftHipAngle = 3.0*M_PI/2.0;
+        //rightHipAngle = 3.0*M_PI/2.0;
 
         // Set motor currents
         co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     

@@ -16,6 +16,7 @@
 
 // C
 #include <stdlib.h>
+#include <complex>
 
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
@@ -29,6 +30,7 @@
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
 
+using namespace std;
 using namespace RTT;
 using namespace Orocos;
 using namespace atc_single_leg_hopping;
@@ -73,6 +75,11 @@ private:
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
     // Math variables
+    complex<double> i;
+    complex<double> leftHipAngleComplex;
+    complex<double> rightHipAngleComplex;
+    double leftHipAngle, rightHipAngle;
+    double lBoom, lBody, lHip, qBodyOffset, qBoom, lLeftLeg, lRightLeg, qLeftLeg, qRightLeg, leftToeRadius, rightToeRadius;
     double Ks, Kg, Kp, Ki, Kd;
     double Fx, Fz, dFx, dFz;
     double beta1, L1, alpha1, alpha2d, L2d, beta2d, q7d, q8d;
@@ -85,7 +92,6 @@ private:
     double delta; 
     double r, dr, q, dq;
     double rNew, drNew, qNew, dqNew;
-    double leftHipAngle, rightHipAngle;
     MotorAngle leftMotorAngle;
     MotorAngle rightMotorAngle;
 
