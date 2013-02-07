@@ -198,7 +198,7 @@ void GazeboControllerConnector::OnUpdate()
     // Hacks for a fixed body position
     // TODO: make this reference hipLinks.center appropriately
     ciso.position.boomAngle = M_PI;
-    ciso.position.bodyPitch = 3/2*M_PI;
+    ciso.position.bodyPitch = 3.0/2.0*M_PI;
     ciso.position.bodyPitchVelocity = 0.0;
 
     // Leg position/velocity with respect to the hip
