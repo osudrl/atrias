@@ -4,7 +4,6 @@ controller.stop()
 # Shut down subcontrollers
 unloadComponent(controller.pd0Name)
 unloadComponent(controller.pd1Name)
-unloadComponent("controller")
 
 # Cleanup
 controller.cleanup()
