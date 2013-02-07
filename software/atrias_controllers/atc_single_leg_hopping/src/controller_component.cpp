@@ -180,6 +180,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         Kd = guiIn.flight_leg_D_gain;
 
         // Set flight leg gains and currents
+        q7d = fmod(q7d, 2.0*M_PI);
+        q8d = fmod(q8d, 2.0*M_PI);
         co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle + M_PI/2.0) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
         co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle + M_PI/2.0) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
 
@@ -252,6 +254,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         // Only care about real part, imaginary part should be zero anyways but just in case.
         leftHipAngle = -real(leftHipAngleComplex) + 3.0*M_PI/2.0;
         rightHipAngle = -real(rightHipAngleComplex) + 3.0*M_PI/2.0;
+        leftHipAngle = fmod(leftHipAngle, 2.0*M_PI);
+        rightHipAngle = fmod(rightHipAngle, 2.0*M_PI);
 
         // DEBUG STATEMENTS .......................................................................
         if (guiIn.debug4) {
