@@ -67,8 +67,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     hip_angle_spinbutton->set_range(M_PI, 2.0*M_PI);
 
-    left_hip_target_spinbutton->set_range(2.5, 3.5);
-    right_hip_target_spinbutton->set_range(2.5, 3.5);
+    left_hip_target_spinbutton->set_range(1.5, 2.5);
+    right_hip_target_spinbutton->set_range(1.5, 2.5);
 
     robot_spring_spinbutton->set_range(0.0, 10000.0);
     robot_motor_spinbutton->set_range(0.0, 0.5);
@@ -94,8 +94,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     hip_angle_spinbutton->set_value(3.0*M_PI/2.0);
 
-    left_hip_target_spinbutton->set_value(2.8);
-    right_hip_target_spinbutton->set_value(3.2);
+    left_hip_target_spinbutton->set_value(1.86);
+    right_hip_target_spinbutton->set_value(2.22);
 
     robot_spring_spinbutton->set_value(4118.0);
     robot_motor_spinbutton->set_value(0.0);

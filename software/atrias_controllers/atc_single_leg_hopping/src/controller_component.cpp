@@ -191,52 +191,6 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         co.lLeg.motorCurrentB = Tm3;
         co.lLeg.motorCurrentA = Tm4;
 
-        if (guiIn.debug2) {
-            printf("qs1: %f\n", qs1);
-            printf("qs2: %f\n", qs2);
-            printf("qs3: %f\n", qs3);
-            printf("qs4: %f\n", qs4);
-            printf("qs5: %f\n", qs5);
-            printf("qs6: %f\n", qs6);
-            printf("qs7: %f\n", qs7);
-            printf("qs8: %f\n", qs8);
-            printf("qs9: %f\n", qs9);
-            printf("qsdot1: %f\n", qsdot1);
-            printf("qsdot2: %f\n", qsdot2);
-            printf("qsdot3: %f\n", qsdot3);
-            printf("qsdot4: %f\n", qsdot4);
-            printf("qsdot5: %f\n", qsdot5);
-            printf("qsdot6: %f\n", qsdot6);
-            printf("qsdot7: %f\n", qsdot7);
-            printf("qsdot8: %f\n", qsdot8);
-            printf("qsdot9: %f\n", qsdot9);
-            printf("Ts_d1: %f\n", Ts_d1);
-            printf("Ts_d2: %f\n", Ts_d2);
-            printf("Tsdot_d1: %f\n", Tsdot_d1);
-            printf("Tsdot_d2: %f\n", Tsdot_d2);
-            printf("Tm1: %f\n", Tm1);
-            printf("Tm2: %f\n", Tm2);
-            printf("beta1: %f\n", beta1);
-            printf("L1: %f\n", L1);
-            printf("aplha1: %f\n", alpha1);
-            printf("alpha2d: %f\n", alpha2d);
-            printf("L2d: %f\n", L2d);
-            printf("beta2d: %f\n", beta2d);
-            printf("q7d: %f\n", q7d);
-            printf("q8d: %f\n", q8d);
-            printf("Dbeta1: %f\n", Dbeta1);
-            printf("DL1: %f\n", DL1);
-            printf("Daplha1: %f\n", Dalpha1);
-            printf("Dalpha2d: %f\n", Dalpha2d);
-            printf("DL2d: %f\n", DL2d);
-            printf("Dbeta2d: %f\n", Dbeta2d);
-            printf("Dq7d: %f\n", Dq7d);
-            printf("Dq8d: %f\n", Dq8d);
-            printf("Tm3: %f\n", Tm3);
-            printf("Tm4: %f\n", Tm4);
-        }
-
-
     // Flight phase control -----------------------------------------------------------------------
     } else {
         
@@ -278,11 +232,11 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         // Define imaginary number i.
         i = complex<double>(0.0, 1.0);
 
-        // Determine hip angles from desired toe positions.
-        lBoom = 3.0;
-        lBody = 0.5;
-        lHip = 0.1;
-        qBodyOffset = M_PI/2.0;
+        // Coordinate transforms and definitions
+        lBoom = 2.04;
+        lBody = 0.35;
+        lHip = 0.18;
+        qBodyOffset = M_PI/2.0 - 0.126;
         qBoom = rs.position.boomAngle;
         lLeftLeg = (l1 + l2)*cos((rs.lLeg.halfB.legAngle - rs.lLeg.halfA.legAngle)/2.0);
         lRightLeg = (l1 + l2)*cos((rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0);
@@ -296,16 +250,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         rightHipAngleComplex = - qBoom - qBodyOffset - log(-(- sqrt(2.0*pow(lBody, 2)*exp(qRightLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qRightLeg*2.0*i) - 2.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2)*exp(qRightLeg*4.0*i) + 4.0*pow(rightToeRadius, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2) + 4.0*pow(lBoom, 2)*exp(qRightLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i)*pow(cos(qRightLeg), 2) + 2.0*pow(lBody, 2)*cos(2.0*qBoom + 2.0*qBodyOffset)*exp(qRightLeg*2.0*i) + 4.0*lBoom*lBody*exp(qRightLeg*2.0*i)*cos(qBodyOffset) + 4.0*lBoom*lBody*cos(2.0*qBoom + qBodyOffset)*exp(qRightLeg*2.0*i) + 8.0*lBody*exp(qRightLeg*2.0*i)*cos(qBoom + qBodyOffset)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 8.0*lBoom*exp(qRightLeg*2.0*i)*cos(qBoom)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg))) + 2.0*exp(qRightLeg*i)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 2.0*lBody*exp(qRightLeg*i)*cos(qBoom + qBodyOffset) + 2.0*lBoom*exp(qRightLeg*i)*cos(qBoom))/(- lRightLeg + 2.0*lHip*exp(qRightLeg*i) + lRightLeg*exp(qRightLeg*2.0*i)))*i;
 
         // Only care about real part, imaginary part should be zero anyways but just in case.
-        leftHipAngle = -real(leftHipAngleComplex) + M_PI/2.0;
-        rightHipAngle = -real(rightHipAngleComplex) + M_PI/2.0;
-        leftHipAngle = fmod(leftHipAngle, 2.0*M_PI);
-        rightHipAngle = fmod(rightHipAngle, 2.0*M_PI);
-
-        // DEBUG STATEMENTS .......................................................................
-        if (guiIn.debug4) {
-            printf("leftHipAngle: %f\n", leftHipAngle);
-            printf("rightHipAngle: %f\n", rightHipAngle);
-        }
+        leftHipAngle = fmod(real(leftHipAngleComplex) + 4.0*M_PI, 2.0*M_PI);
+        rightHipAngle = fmod(real(rightHipAngleComplex) + 4.0*M_PI, 2.0*M_PI);
 
         // Set motor currents
         co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     
@@ -316,6 +262,71 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     }
 
     // END CONTROL CODE ---------------------------------------------------------------------------
+
+
+    if (guiIn.debug2) {
+        printf("qs1: %f\n", qs1);
+        printf("qs2: %f\n", qs2);
+        printf("qs3: %f\n", qs3);
+        printf("qs4: %f\n", qs4);
+        printf("qs5: %f\n", qs5);
+        printf("qs6: %f\n", qs6);
+        printf("qs7: %f\n", qs7);
+        printf("qs8: %f\n", qs8);
+        printf("qs9: %f\n", qs9);
+        printf("qsdot1: %f\n", qsdot1);
+        printf("qsdot2: %f\n", qsdot2);
+        printf("qsdot3: %f\n", qsdot3);
+        printf("qsdot4: %f\n", qsdot4);
+        printf("qsdot5: %f\n", qsdot5);
+        printf("qsdot6: %f\n", qsdot6);
+        printf("qsdot7: %f\n", qsdot7);
+        printf("qsdot8: %f\n", qsdot8);
+        printf("qsdot9: %f\n", qsdot9);
+        printf("Ts_d1: %f\n", Ts_d1);
+        printf("Ts_d2: %f\n", Ts_d2);
+        printf("Tsdot_d1: %f\n", Tsdot_d1);
+        printf("Tsdot_d2: %f\n", Tsdot_d2);
+        printf("Tm1: %f\n", Tm1);
+        printf("Tm2: %f\n", Tm2);
+        printf("beta1: %f\n", beta1);
+        printf("L1: %f\n", L1);
+        printf("aplha1: %f\n", alpha1);
+        printf("alpha2d: %f\n", alpha2d);
+        printf("L2d: %f\n", L2d);
+        printf("beta2d: %f\n", beta2d);
+        printf("q7d: %f\n", q7d);
+        printf("q8d: %f\n", q8d);
+        printf("Dbeta1: %f\n", Dbeta1);
+        printf("DL1: %f\n", DL1);
+        printf("Daplha1: %f\n", Dalpha1);
+        printf("Dalpha2d: %f\n", Dalpha2d);
+        printf("DL2d: %f\n", DL2d);
+        printf("Dbeta2d: %f\n", Dbeta2d);
+        printf("Dq7d: %f\n", Dq7d);
+        printf("Dq8d: %f\n", Dq8d);
+        printf("Tm3: %f\n", Tm3);
+        printf("Tm4: %f\n", Tm4);
+    }
+
+    // DEBUG STATEMENTS .......................................................................
+    if (guiIn.debug3) {
+        printf("lBoom: %f\n", lBoom);
+        printf("lBody: %f\n", lBody);
+        printf("lHip: %f\n", lHip);
+        printf("lLeftLeg: %f\n", lLeftLeg);
+        printf("lRightLeg: %f\n", lRightLeg);
+        printf("qBodyOffset: %f\n", qBodyOffset);
+        printf("qBoom: %f\n", qBoom);
+        printf("qLeftLeg: %f\n", qLeftLeg);
+        printf("qRightLeg: %f\n", qRightLeg);
+        printf("leftToeRadius: %f\n", leftToeRadius);
+        printf("rightToeRadius: %f\n", rightToeRadius);
+        printf("leftHipAngleComplex: %f + %fi\n", real(leftHipAngleComplex), imag(leftHipAngleComplex));
+        printf("rightHipAngleComplex: %f + %fi\n", real(rightHipAngleComplex), imag(rightHipAngleComplex));
+        printf("leftHipAngle: %f\n", leftHipAngle);
+        printf("rightHipAngle: %f\n", rightHipAngle);
+    }
 
     // Command a run state
     co.command = medulla_state_run;
