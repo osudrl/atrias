@@ -80,10 +80,17 @@ private:
     complex<double> rightHipAngleComplex;
     double leftHipAngle, rightHipAngle;
     double lBoom, lBody, lHip, qBodyOffset, qBoom, lLeftLeg, lRightLeg, qLeftLeg, qRightLeg, leftToeRadius, rightToeRadius;
-    double Ks, Kg, Kp, Ki, Kd;
-    double Fx, Fz, dFx, dFz;
+    double Fz, dFx, dFz;//Fx
+
+    // Benham controller vars
+    double Ts_d1, Ts_d2, Tsdot_d1, Tsdot_d2, Tm1, Tm2, Tm3, Tm4;
+    double qs1, qs2, qs3, qs4, qs5, qs6, qs7, qs8, qs9;
+    double qsdot1, qsdot2, qsdot3, qsdot4, qsdot5, qsdot6, qsdot7, qsdot8, qsdot9;
+    double Ks, Kg, Kpid1, Kpid3, Kpidf1, Kpidf3;
+    double Fx, Fy, Fxdot, Fydot;
     double beta1, L1, alpha1, alpha2d, L2d, beta2d, q7d, q8d;
-    double dbeta1, dL1, dalpha1, dalpha2d, dL2d, dbeta2d, dq7d, dq8d;
+    double Dbeta1, DL1, Dalpha1, Dalpha2d, DL2d, Dbeta2d, Dq7d, Dq8d;
+
     double g, l1, l2, k;
     double tauA, tauB, dtauA, dtauB;
     double desDeflA, desDeflB;
