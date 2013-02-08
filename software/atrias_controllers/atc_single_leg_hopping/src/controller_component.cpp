@@ -145,7 +145,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         qs7 = rs.lLeg.halfB.motorAngle - M_PI/2.0;
         qs8 = rs.lLeg.halfA.motorAngle - M_PI/2.0;
         qs9 = rs.position.bodyPitch - 3.0*M_PI/2.0;
-        qs9 = fmod(qs9, 2.0*M_PI);
+        qs9 = fmod(qs9 + 4.0*M_PI, 2.0*M_PI);
         qsdot1 = rs.rLeg.halfB.legVelocity;
         qsdot2 = rs.rLeg.halfA.legVelocity;
         qsdot3 = rs.rLeg.halfB.motorVelocity;
