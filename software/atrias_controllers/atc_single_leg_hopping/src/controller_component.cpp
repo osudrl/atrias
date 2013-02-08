@@ -132,37 +132,33 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         //}
 
         // Gains
-        Ks = 1.6e4;
         Kg = 50.0;
-        Kp = 97.3;
-        Ki = 10.0;
-        Kd = 3.3;
 
         // Compute required spring torque from desired end-effector force.
-        tauA = Fz*l2*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) + Fx*l2*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI);
-        tauB = Fz*l1*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) + Fx*l1*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI);
+        tauA = -Fx*l2*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch) + Fz*l2*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch);
+        tauB = -Fx*l1*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch) + Fz*l1*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch);
 
         // Compute required change in spring torque.
         dFx = 0.0;
         dFz = 0.0;
 
-        dtauA = Fz*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity) - dFx*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) - dFz*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) - Fx*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity);
+        dtauA = Fx*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity) - dFz*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch) - dFx*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch) - Fz*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity);
 
-        dtauB = Fz*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity) - dFx*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - dFz*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - Fx*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity);
+        dtauB = Fx*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity) - dFz*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch) - dFx*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch) - Fz*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity);
 
         beta1 = (rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0;
         L1 = (l1 + l2)*cos(beta1);
-        alpha1 = rs.rLeg.halfB.legAngle - beta1 + rs.position.bodyPitch - M_PI;
-        alpha2d = -alpha1;
+        alpha1 = rs.rLeg.halfB.legAngle - beta1 + rs.position.bodyPitch - 5.0*M_PI/2.0;//-M_PI
+        alpha2d = -alpha1;//-
         L2d = L1 * 0.8;
         beta2d = acos(L2d/(l1 + l2));
-        q7d = alpha2d - rs.position.bodyPitch - M_PI/2.0 + beta2d;
-        q8d = alpha2d - rs.position.bodyPitch - M_PI/2.0 - beta2d;
+        q7d = alpha2d - rs.position.bodyPitch + 3.0*M_PI/2.0 + beta2d;
+        q8d = alpha2d - rs.position.bodyPitch + 3.0*M_PI/2.0 - beta2d;
 
         dbeta1 = (rs.rLeg.halfB.legVelocity - rs.rLeg.halfA.legVelocity)/2.0;
         dL1 = (l1 + l2)*cos(dbeta1);
         dalpha1 = rs.rLeg.halfB.legVelocity - dbeta1 + rs.position.bodyPitchVelocity;
-        dalpha2d = -dalpha1;
+        dalpha2d = -dalpha1;//-
         dL2d = dL1 * 0.8;
         dbeta2d = -dL2d/sqrt(1.0 - pow((L2d/(l1 + l2)), 2));
         dq7d = dalpha2d - rs.position.bodyPitchVelocity + dbeta2d;
@@ -180,8 +176,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         Kd = guiIn.flight_leg_D_gain;
 
         // Set flight leg gains and currents
-        q7d = fmod(q7d + M_PI/2.0, 2.0*M_PI);
-        q8d = fmod(q8d + M_PI/2.0, 2.0*M_PI);
+        q7d = fmod(q7d, 2.0*M_PI);
+        q8d = fmod(q8d, 2.0*M_PI);
         co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
         co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
 
@@ -189,10 +185,6 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         if (guiIn.debug2) {
             printf("rLeg.halfB.legAngle: %f\n", rs.rLeg.halfB.legAngle);
             printf("position.bodyPitch: %f\n", rs.position.bodyPitch);
-            printf("beta1: %f\n", beta1);
-        }
-        if (guiIn.debug3) {
-            printf("beta1: %f\n", beta1);
             printf("L1: %f\n", L1);
             printf("alpha2d: %f\n", alpha2d);
             printf("L2d: %f\n", L2d);
@@ -200,7 +192,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
             printf("q7d: %f\n", q7d);
             printf("q8d: %f\n", q8d);
         }
-        if (guiIn.debug3) {
+        if (guiIn.debug4) {
             printf("dbeta1: %f\n", dbeta1);
             printf("dL1: %f\n", dL1);
             printf("dalpha2d: %f\n", dalpha2d);
