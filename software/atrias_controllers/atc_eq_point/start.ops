@@ -73,6 +73,14 @@ addPeer("controller", pd5Name)
 addPeer("controller", hip0Name)
 addPeer("controller", hip1Name)
 
+# Connect the pd subcontrollers to the deployer for timestamps
+connectPeers("Deployer", pd0Name)
+connectPeers("Deployer", pd1Name)
+connectPeers("Deployer", pd2Name)
+connectPeers("Deployer", pd3Name)
+connectPeers("Deployer", pd4Name)
+connectPeers("Deployer", pd5Name)
+
 # Pass the names of the subcontrollers to the controller
 controller.spg0Name = spg0Name
 controller.spg1Name = spg1Name
