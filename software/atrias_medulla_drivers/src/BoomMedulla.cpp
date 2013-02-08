@@ -82,8 +82,8 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
 	
 	pitchEncoderPos += deltaPos;
 	
-	robotState.position.bodyPitch = pitchEncoderPos * PITCH_ENCODER_RAD_PER_TICK -
-	                                M_PI / 2.0;
+	robotState.position.bodyPitch = pitchEncoderPos * PITCH_ENCODER_RAD_PER_TICK +
+	                                3.0 * M_PI / 2.0;
 	
 	robotState.position.bodyPitchVelocity =
 		deltaPos * PITCH_ENCODER_RAD_PER_TICK /
