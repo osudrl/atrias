@@ -125,90 +125,117 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
         }
 
-        // DEBUG STATEMENTS .......................................................................
-        //if (guiIn.debug2) {
-        //    printf("Fx: %f\n", Fx);
-        //    printf("Fz: %f\n", Fz);
-        //}
-
-        // Gains
-        Ks = 1.6e4;
-        Kg = 50.0;
-        Kp = 97.3;
-        Ki = 10.0;
-        Kd = 3.3;
-
-        // Compute required spring torque from desired end-effector force.
-        tauA = Fz*l2*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) + Fx*l2*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI);
-        tauB = Fz*l1*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) + Fx*l1*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI);
-
-        // Compute required change in spring torque.
-        dFx = 0.0;
-        dFz = 0.0;
-
-        dtauA = Fz*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity) - dFx*l1*sin(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) - dFz*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI) - Fx*l1*cos(rs.rLeg.halfA.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfA.legVelocity + rs.position.bodyPitchVelocity);
-
-        dtauB = Fz*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity) - dFx*l2*sin(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - dFz*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI) - Fx*l2*cos(rs.rLeg.halfB.legAngle + rs.position.bodyPitch - M_PI)*(rs.rLeg.halfB.legVelocity + rs.position.bodyPitchVelocity);
-
-        beta1 = (rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0;
-        L1 = (l1 + l2)*cos(beta1);
-        alpha1 = rs.rLeg.halfB.legAngle - beta1 + rs.position.bodyPitch - M_PI;
-        alpha2d = -alpha1;
-        L2d = L1 * 0.8;
-        beta2d = acos(L2d/(l1 + l2));
-        q7d = alpha2d - rs.position.bodyPitch - M_PI/2.0 + beta2d;
-        q8d = alpha2d - rs.position.bodyPitch - M_PI/2.0 - beta2d;
-
-        dbeta1 = (rs.rLeg.halfB.legVelocity - rs.rLeg.halfA.legVelocity)/2.0;
-        dL1 = (l1 + l2)*cos(dbeta1);
-        dalpha1 = rs.rLeg.halfB.legVelocity - dbeta1 + rs.position.bodyPitchVelocity;
-        dalpha2d = -dalpha1;
-        dL2d = dL1 * 0.8;
-        dbeta2d = -dL2d/sqrt(1.0 - pow((L2d/(l1 + l2)), 2));
-        dq7d = dalpha2d - rs.position.bodyPitchVelocity + dbeta2d;
-        dq8d = dalpha2d - rs.position.bodyPitchVelocity - dbeta2d;
-
+        // Variable conversion for Benham coordinates
+        Fx = Fx;
+        Fy = -Fz;
+        Fxdot = 0.0;
+        Fydot = 0.0;
         Ks = guiIn.robot_spring;
-        Kp = guiIn.stance_leg_P_gain;
-        Kd = guiIn.stance_leg_D_gain;
+        Kg = 50.0;        
+        Kpid1 = guiIn.stance_leg_P_gain;
+        Kpid3 = guiIn.stance_leg_D_gain;
+        Kpidf1 = guiIn.flight_leg_P_gain;
+        Kpidf3 = guiIn.flight_leg_D_gain;
+        qs1 = rs.rLeg.halfB.legAngle - M_PI/2.0;
+        qs2 = rs.rLeg.halfA.legAngle - M_PI/2.0;
+        qs3 = rs.rLeg.halfB.motorAngle - M_PI/2.0;
+        qs4 = rs.rLeg.halfA.motorAngle - M_PI/2.0;
+        qs5 = rs.lLeg.halfB.legAngle - M_PI/2.0; 
+        qs6 = rs.lLeg.halfA.legAngle - M_PI/2.0;
+        qs7 = rs.lLeg.halfB.motorAngle - M_PI/2.0;
+        qs8 = rs.lLeg.halfA.motorAngle - M_PI/2.0;
+        qs9 = rs.position.bodyPitch - 3.0*M_PI/2.0;
+        qs9 = fmod(qs9 + 4.0*M_PI, 2.0*M_PI);
+        qsdot1 = rs.rLeg.halfB.legVelocity;
+        qsdot2 = rs.rLeg.halfA.legVelocity;
+        qsdot3 = rs.rLeg.halfB.motorVelocity;
+        qsdot4 = rs.rLeg.halfA.motorVelocity;
+        qsdot5 = rs.lLeg.halfB.legVelocity; 
+        qsdot6 = rs.lLeg.halfA.legVelocity;
+        qsdot7 = rs.lLeg.halfB.motorVelocity;
+        qsdot8 = rs.lLeg.halfA.motorVelocity;
+        qsdot9 = rs.position.bodyPitchVelocity;
 
-        // Set stance leg gains and currents
-        co.rLeg.motorCurrentA = Ks*(rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle)/Kg + Kp*(tauA/Ks - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle)) + Kd*(dtauA/Ks - (rs.rLeg.halfA.motorVelocity - rs.rLeg.halfA.legVelocity));
-        co.rLeg.motorCurrentB = Ks*(rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle)/Kg + Kp*(tauB/Ks - (rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle)) + Kd*(dtauB/Ks - (rs.rLeg.halfB.motorVelocity - rs.rLeg.halfB.legVelocity));
+        Ts_d1 = -Fx*l1*cos(qs1 + qs9) - Fy*l1*sin(qs1 + qs9);
+        Ts_d2 = -Fx*l2*cos(qs2 + qs9) - Fy*l2*sin(qs2 + qs9);
 
-        Kp = guiIn.flight_leg_P_gain;
-        Kd = guiIn.flight_leg_D_gain;
+        Tsdot_d1 = Fx*l1*sin(qs1 + qs9)*(qsdot1 + qsdot9) - Fydot*l1*sin(qs1 + qs9) - Fxdot*l1*cos(qs1 + qs9) - Fy*l1*cos(qs1 + qs9)*(qsdot1 + qsdot9);
+        Tsdot_d2 = Fx*l2*sin(qs2 + qs9)*(qsdot2 + qsdot9) - Fydot*l2*sin(qs2 + qs9) - Fxdot*l2*cos(qs2 + qs9) - Fy*l2*cos(qs2 + qs9)*(qsdot2 + qsdot9);
 
-        // Set flight leg gains and currents
-        q7d = fmod(q7d + M_PI/2.0, 2.0*M_PI);
-        q8d = fmod(q8d + M_PI/2.0, 2.0*M_PI);
-        co.lLeg.motorCurrentA = Kp * (q8d - rs.lLeg.halfA.motorAngle) + Kd * (dq8d - rs.lLeg.halfA.motorVelocity);
-        co.lLeg.motorCurrentB = Kp * (q7d - rs.lLeg.halfB.motorAngle) + Kd * (dq7d - rs.lLeg.halfB.motorVelocity);
+        Tm1 = Ks*(qs3 - qs1)/Kg + Kpid1*(Ts_d1/Ks - (qs3 - qs1)) + Kpid3*(Tsdot_d1/Ks - (qsdot3 - qsdot1));
+        Tm2 = Ks*(qs4 - qs2)/Kg + Kpid1*(Ts_d2/Ks - (qs4 - qs2)) + Kpid3*(Tsdot_d2/Ks - (qsdot4 - qsdot2));
 
-        // DEBUG STATEMENTS .......................................................................
+        beta1 = (qs1 - qs2)/2.0;
+        L1 = (l1 + l2)*cos(beta1);
+        alpha1 = qs1 - beta1 + qs9;
+        alpha2d = -alpha1;
+        L2d = L1*0.8;
+        beta2d = acos(L2d/2.0/l1);
+        q7d = alpha2d - qs9 + beta2d;
+        q8d = alpha2d - qs9 - beta2d;
+
+        Dbeta1 = (qsdot1 - qsdot2)/2.0;
+        DL1 = (l1 + l2)*cos(Dbeta1);
+        Dalpha1 = qsdot1 - Dbeta1 + qsdot9;
+        Dalpha2d = -Dalpha1;
+        DL2d = DL1 * 0.8;
+        Dbeta2d = -DL2d/sqrt(1.0 - pow((L2d/2.0/l1), 2));
+        Dq7d = Dalpha2d - qsdot9 + Dbeta2d;
+        Dq8d = Dalpha2d - qsdot9 - Dbeta2d;
+
+        Tm3 = Kpidf1*(q7d - qs7) + Kpidf3*(Dq7d - qsdot7);
+        Tm4 = Kpidf1*(q8d - qs8) + Kpidf3*(Dq8d - qsdot8);
+
+        co.rLeg.motorCurrentB = Tm1;
+        co.rLeg.motorCurrentA = Tm2;
+        co.lLeg.motorCurrentB = Tm3;
+        co.lLeg.motorCurrentA = Tm4;
+
         if (guiIn.debug2) {
-            printf("rLeg.halfB.legAngle: %f\n", rs.rLeg.halfB.legAngle);
-            printf("position.bodyPitch: %f\n", rs.position.bodyPitch);
-            printf("beta1: %f\n", beta1);
-        }
-        if (guiIn.debug3) {
+            printf("qs1: %f\n", qs1);
+            printf("qs2: %f\n", qs2);
+            printf("qs3: %f\n", qs3);
+            printf("qs4: %f\n", qs4);
+            printf("qs5: %f\n", qs5);
+            printf("qs6: %f\n", qs6);
+            printf("qs7: %f\n", qs7);
+            printf("qs8: %f\n", qs8);
+            printf("qs9: %f\n", qs9);
+            printf("qsdot1: %f\n", qsdot1);
+            printf("qsdot2: %f\n", qsdot2);
+            printf("qsdot3: %f\n", qsdot3);
+            printf("qsdot4: %f\n", qsdot4);
+            printf("qsdot5: %f\n", qsdot5);
+            printf("qsdot6: %f\n", qsdot6);
+            printf("qsdot7: %f\n", qsdot7);
+            printf("qsdot8: %f\n", qsdot8);
+            printf("qsdot9: %f\n", qsdot9);
+            printf("Ts_d1: %f\n", Ts_d1);
+            printf("Ts_d2: %f\n", Ts_d2);
+            printf("Tsdot_d1: %f\n", Tsdot_d1);
+            printf("Tsdot_d2: %f\n", Tsdot_d2);
+            printf("Tm1: %f\n", Tm1);
+            printf("Tm2: %f\n", Tm2);
             printf("beta1: %f\n", beta1);
             printf("L1: %f\n", L1);
+            printf("aplha1: %f\n", alpha1);
             printf("alpha2d: %f\n", alpha2d);
             printf("L2d: %f\n", L2d);
             printf("beta2d: %f\n", beta2d);
             printf("q7d: %f\n", q7d);
             printf("q8d: %f\n", q8d);
+            printf("Dbeta1: %f\n", Dbeta1);
+            printf("DL1: %f\n", DL1);
+            printf("Daplha1: %f\n", Dalpha1);
+            printf("Dalpha2d: %f\n", Dalpha2d);
+            printf("DL2d: %f\n", DL2d);
+            printf("Dbeta2d: %f\n", Dbeta2d);
+            printf("Dq7d: %f\n", Dq7d);
+            printf("Dq8d: %f\n", Dq8d);
+            printf("Tm3: %f\n", Tm3);
+            printf("Tm4: %f\n", Tm4);
         }
-        if (guiIn.debug3) {
-            printf("dbeta1: %f\n", dbeta1);
-            printf("dL1: %f\n", dL1);
-            printf("dalpha2d: %f\n", dalpha2d);
-            printf("dL2d: %f\n", dL2d);
-            printf("dbeta2d: %f\n", dbeta2d);
-            printf("dq7d: %f\n", dq7d);
-            printf("dq8d: %f\n", dq8d);
-        }
+
 
     // Flight phase control -----------------------------------------------------------------------
     } else {
