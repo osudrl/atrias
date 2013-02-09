@@ -67,8 +67,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     hip_angle_spinbutton->set_range(M_PI, 2.0*M_PI);
 
-    left_hip_target_spinbutton->set_range(1.5, 2.5);
-    right_hip_target_spinbutton->set_range(1.5, 2.5);
+    left_hip_target_spinbutton->set_range(1.25, 2.75);
+    right_hip_target_spinbutton->set_range(1.25, 2.75);
 
     robot_spring_spinbutton->set_range(0.0, 10000.0);
     robot_motor_spinbutton->set_range(0.0, 0.5);
@@ -80,25 +80,25 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     flight_hip_D_gain_spinbutton->set_value(5.0);
 
     stance_leg_P_gain_spinbutton->set_value(4000.0);
-    stance_leg_D_gain_spinbutton->set_value(2.0);
+    stance_leg_D_gain_spinbutton->set_value(5.0);
     stance_hip_P_gain_spinbutton->set_value(100.0);
     stance_hip_D_gain_spinbutton->set_value(5.0);
 
     fx_spinbutton->set_value(0.0);
     fz_spinbutton->set_value(0.0);
 
-    slip_height_spinbutton->set_value(0.05);
+    slip_height_spinbutton->set_value(0.01);
     slip_mass_spinbutton->set_value(60.0);
-    slip_spring_spinbutton->set_value(24500.0);
+    slip_spring_spinbutton->set_value(16000.0);//24500.0
     slip_leg_spinbutton->set_value(0.85);
 
     hip_angle_spinbutton->set_value(3.0*M_PI/2.0);
 
-    left_hip_target_spinbutton->set_value(1.86);
-    right_hip_target_spinbutton->set_value(2.22);
+    left_hip_target_spinbutton->set_value(2.10);
+    right_hip_target_spinbutton->set_value(2.5);
 
     robot_spring_spinbutton->set_value(4118.0);
-    robot_motor_spinbutton->set_value(0.0);
+    robot_motor_spinbutton->set_value(0.11);
 
     // Set up subscriber and publisher.
     sub = nh.subscribe("atc_single_leg_hopping_status", 0, controllerCallback);

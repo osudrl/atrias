@@ -131,7 +131,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         Fxdot = 0.0;
         Fydot = 0.0;
         Ks = guiIn.robot_spring;
-        Kg = 50.0;        
+        Kg = 50.0;   
+        // Need to add in motor constant torque conversion ////////////////////////////////////////     
         Kpid1 = guiIn.stance_leg_P_gain;
         Kpid3 = guiIn.stance_leg_D_gain;
         Kpidf1 = guiIn.flight_leg_P_gain;
