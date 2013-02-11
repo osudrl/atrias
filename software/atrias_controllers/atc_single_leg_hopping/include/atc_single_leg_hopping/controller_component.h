@@ -16,7 +16,7 @@
 
 // C
 #include <stdlib.h>
-#include <complex>
+#include <complex.h> // DELETE
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -53,7 +53,19 @@ struct Leg {
 struct Position {
 	double bodyPitch;
 	double bodyPitchVelocity;
+	double boomAngle;
 };
+
+
+struct ToePosition {
+	double left;
+	double right;
+};
+struct HipAngle {
+	double left;
+	double right;
+};
+
 
 using namespace std;
 using namespace RTT;
@@ -101,24 +113,22 @@ private:
     // ASCLegForce
     OperationCaller<MotorCurrent(LegForce, Leg, Position)> legForceToMotorCurrent;
 
-    // Math variables
-    // Hip controller
-    complex<double> i;
-    complex<double> leftHipAngleComplex;
-    complex<double> rightHipAngleComplex;
-    double leftHipAngle, rightHipAngle;
-    double lBoom, lBody, lHip, lLeftLeg, lRightLeg;
-    double qBodyOffset, qBoom, qLeftLeg, qRightLeg;
-    double leftToeRadius, rightToeRadius;
+	// ASCHipInverseKinematics
+	OperationCaller<HipAngle(ToePosition, Leg, Leg, Position)> toePositionToHipAngle;
 
-    // Force controller
-    double Fz, dFx, dFz;//Fx
+    // ASCHipInverseKinematics
+	ToePosition toePosition;
+	Leg lLeg;
+	Leg rLeg;
+	HipAngle hipAngle;
+
+    // ASCLegForce
+    double fx, fz, dfx, dfz;
 	LegForce legForce;
-	Leg leg;
 	Position position;
 	MotorCurrent motorCurrent;
 
-    // Benham controller
+    // Benham swing leg controller
     double Ts_d1, Ts_d2, Tsdot_d1, Tsdot_d2, Tm1, Tm2, Tm3, Tm4;
     double qs1, qs2, qs3, qs4, qs5, qs6, qs7, qs8, qs9;
     double qsdot1, qsdot2, qsdot3, qsdot4, qsdot5, qsdot6, qsdot7, qsdot8, qsdot9;
@@ -130,7 +140,7 @@ private:
     // Robot parameters
     double g, l1, l2;
 
-    // SLIP force calculation variables
+    // ASCSlipModelSolver
     double delta;
     double r, dr, q, dq;
     double rNew, drNew, qNew, dqNew;

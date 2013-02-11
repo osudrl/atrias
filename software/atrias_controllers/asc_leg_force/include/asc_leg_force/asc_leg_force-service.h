@@ -5,6 +5,8 @@
 #include <rtt/plugin/ServicePlugin.hpp>
 #include <atrias_shared/controller_structs.h>
 
+// TODO - Move custom structures to controller structs.h
+
 // Declare custom structures
 struct MotorCurrent {
 	double A;
@@ -29,6 +31,7 @@ struct Leg {
 struct Position {
 	double bodyPitch;
 	double bodyPitchVelocity;
+	double boomAngle;
 };
 
 using namespace RTT;
@@ -49,10 +52,8 @@ class ASCLegForce:public Service {
     private:
     	double ks, kg, kp, kd;
 		double l1, l2;
-		double Fx, Fy, Fxdot, Fydot;
-		//double qs1, qs2, qs3, qs4, qs9;
-		//double qsdot1, qsdot2, qsdot3, qsdot4, qsdot9;
-		double tauSpringA, tauSpringB, dtauSpringA, dtauSpringB;
+		double tauSpringA, tauSpringB;
+		double dtauSpringA, dtauSpringB;
 		MotorCurrent motorCurrent;
 
 }; // class ASCLegForce

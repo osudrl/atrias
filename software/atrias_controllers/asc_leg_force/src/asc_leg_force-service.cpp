@@ -25,6 +25,9 @@
 // - co.rLeg.motorCurrentA = motorCurrent.A;
 // - co.rLeg.motorCurrentB = motorCurrent.B;
 
+// TODO - Use predefined robot state structures.
+// TODO - Make a component sub controller so gains can be modified?
+
 #include <asc_leg_force/asc_leg_force-service.h>
 
 namespace atrias {

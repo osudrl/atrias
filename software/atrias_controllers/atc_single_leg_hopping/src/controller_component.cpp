@@ -59,7 +59,23 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
+
     // BEGIN CONTROL CODE ******************************************************
+
+	// TODO - Temporary structures until I figure out how to pass the robot state to subcontrollers.
+	rLeg.halfA.legAngle = rs.rLeg.halfA.legAngle;
+	rLeg.halfB.legAngle = rs.rLeg.halfB.legAngle;
+	rLeg.halfA.motorAngle = rs.rLeg.halfA.motorAngle;
+	rLeg.halfB.motorAngle = rs.rLeg.halfB.motorAngle;
+	rLeg.halfA.legVelocity = rs.rLeg.halfA.legVelocity;
+	rLeg.halfB.legVelocity = rs.rLeg.halfB.legVelocity;
+	rLeg.halfA.motorVelocity = rs.rLeg.halfA.motorVelocity;
+	rLeg.halfB.motorVelocity = rs.rLeg.halfB.motorVelocity;
+	lLeg.halfA.legAngle = rs.lLeg.halfA.legAngle;
+	lLeg.halfB.legAngle = rs.lLeg.halfB.legAngle;
+	position.bodyPitch = rs.position.bodyPitch;
+	position.bodyPitchVelocity = rs.position.bodyPitchVelocity;
+	position.boomAngle = rs.position.boomAngle;
 
     // Define leg link lengths (thigh and shin).
     l1 = 0.5;
@@ -81,63 +97,22 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
         // Define constant force at end-effector.
         if (guiIn.constant_force) {
-            Fx = guiIn.fx;
-            Fz = guiIn.fz;
-
+            fx = guiIn.fx;
+            fz = guiIn.fz;
         // Define SLIP force trajectory at end-effector.
-        } else if (guiIn.slip_force) {
-            // Time step
-            delta = 0.001;
-
-            // SLIP model 4th orer Runge-Kutta numerical solution
-            rNew = r + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/3.0 + delta*dr/6.0 + delta*(dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass)/2.0)/3.0 + delta*(dr + delta*(-g*sin(-q - delta*(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)/2.0) + (r + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)*pow(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr), 2) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)/guiIn.slip_mass))/6.0;
-
-            drNew = dr + delta*(g*sin(q + delta*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr))) + (r + delta*(dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass)/2.0))*pow(dq - delta*(g*cos(-q - delta*(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)/2.0) + (2.0*dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass))*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr)))/(r + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0), 2) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*(dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass)/2.0))/guiIn.slip_mass)/6.0 + delta*(-g*sin(-q - delta*(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)/2.0) + (r + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)*pow(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr), 2) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)/guiIn.slip_mass)/3.0 + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/6.0 + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass)/3.0;
-
-            qNew = q + delta*dq/6.0 + delta*(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)/3.0 + delta*(dq - delta*(g*cos(-q - delta*(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)/2.0) + (2.0*dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass))*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr)))/(r + delta*(dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0))/6.0 + delta*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*(2.0*dq*dr + g*cos(q))/r/2.0)*(2.0*dr + delta*(r*dq*dq + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr))/3.0;
-
-            dqNew = dq - delta*(g*cos(-q - delta*(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)/2.0) + ((2.0*dr) + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass))*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)*((2.0*dr) + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr)))/(3.0*r + 3.0/2.0*delta*(dr + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)) - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)*((2.0*dr) + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(3.0*r + 3.0/2.0*delta*dr) - delta*(g*cos(q + delta*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)*((2.0*dr) + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr))) + ((2.0*dr) + 2.0*delta*(-g*sin(-q - delta*(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)/2.0) + (r + delta*(dr + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)*pow(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)*((2.0*dr) + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr), 2) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*(dr + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)/guiIn.slip_mass))*(dq - delta*(g*cos(-q - delta*(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)/2.0) + ((2.0*dr) + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass))*(dq - delta*(g*cos(q + delta*dq/2.0) + (dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0)*((2.0*dr) + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)))/(2.0*r + delta*dr)))/(r + delta*(dr + delta*(r*(dq*dq) + g*sin(q) + guiIn.slip_spring*(guiIn.slip_leg - r)/guiIn.slip_mass)/2.0)/2.0)))/(6.0*r + 6.0*delta*(dr + delta*(g*sin(q + delta*dq/2.0) + pow(dq - delta*((2.0*dq*dr) + g*cos(q))/r/2.0, 2)*(r + delta*dr/2.0) - guiIn.slip_spring*(r - guiIn.slip_leg + delta*dr/2.0)/guiIn.slip_mass)/2.0)) - delta*((2.0*dq*dr) + g*cos(q))/r/6.0;
-
-            // If virtual SLIP model is in flight.
-            if (r > guiIn.slip_leg) {
-                Fx = 0.0;
-                Fz = 0.0;
-
-            // If virtual SLIP model is in NOT in flight (is in stance).
-            } else {
-                // Replace last time step with next time step.
-                r = rNew;
-                dr = drNew;
-                q = qNew;
-                dq = dqNew;
-
-                // Calculate force components
-                Fx = -guiIn.slip_spring*(guiIn.slip_leg - r)*cos(q);
-                Fz = -guiIn.slip_spring*(guiIn.slip_leg - r)*sin(q);
-            }
-
+        } else if (guiIn.slip_force) {            
+			// SLIP FORCE STUFF
         } else {
-            Fx = 0.0;
-            Fz = 0.0;
-
+            fx = 0.0;
+            fz = 0.0;
         }
 
 		// Force control leg
-		legForce.fx = Fx;
-		legForce.fz = Fz;
+		legForce.fx = fx;
+		legForce.fz = fz;
 		legForce.dfx = 0.0;
 		legForce.dfz = 0.0;
-		leg.halfA.legAngle = rs.rLeg.halfA.legAngle;
-		leg.halfB.legAngle = rs.rLeg.halfB.legAngle;
-		leg.halfA.motorAngle = rs.rLeg.halfA.motorAngle;
-		leg.halfB.motorAngle = rs.rLeg.halfB.motorAngle;
-		leg.halfA.legVelocity = rs.rLeg.halfA.legVelocity;
-		leg.halfB.legVelocity = rs.rLeg.halfB.legVelocity;
-		leg.halfA.motorVelocity = rs.rLeg.halfA.motorVelocity;
-		leg.halfB.motorVelocity = rs.rLeg.halfB.motorVelocity;
-		position.bodyPitch = rs.position.bodyPitch;
-		position.bodyPitchVelocity = rs.position.bodyPitchVelocity;
-		motorCurrent = legForceToMotorCurrent(legForce, leg, position);
+		motorCurrent = legForceToMotorCurrent(legForce, rLeg, position);
         co.rLeg.motorCurrentA = motorCurrent.A;
         co.rLeg.motorCurrentB = motorCurrent.B;
 
@@ -183,7 +158,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         
         // Reset initial conditions ............................................
         r = guiIn.slip_leg;
-        dr = -sqrt(2.0*9.81*guiIn.slip_height);
+        dr = -sqrt(2.0*fabs(g)*guiIn.slip_height);
         q = M_PI/2.0;
         dq = 0.0;
 
@@ -208,109 +183,27 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     // Hip Control -------------------------------------------------------------
     if (guiIn.constant_hip) {
         // Constant angle
-        leftHipAngle = guiIn.hip_angle;
-        rightHipAngle = guiIn.hip_angle;
+        hipAngle.left = guiIn.hip_angle;
+        hipAngle.right = guiIn.hip_angle;
 
         // Set motor currents
-        co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
-        co.rLeg.motorCurrentHip = pd1Controller(rightHipAngle, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+        co.lLeg.motorCurrentHip = pd1Controller(hipAngle.left, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+        co.rLeg.motorCurrentHip = pd1Controller(hipAngle.right, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
 
     } else if (guiIn.advanced_hip){
-        // Define imaginary number i.
-        i = complex<double>(0.0, 1.0);
-
-        // Coordinate transforms and definitions
-        lBoom = 2.04;
-        lBody = 0.35;
-        lHip = 0.18;
-        qBodyOffset = M_PI/2.0 - 0.126;
-        qBoom = rs.position.boomAngle;
-        lLeftLeg = (l1 + l2)*cos((rs.lLeg.halfB.legAngle - rs.lLeg.halfA.legAngle)/2.0);
-        lRightLeg = (l1 + l2)*cos((rs.rLeg.halfB.legAngle - rs.rLeg.halfA.legAngle)/2.0);
-        qLeftLeg = (rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle)/2.0;
-        qRightLeg = (rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle)/2.0;
-        leftToeRadius = guiIn.left_hip_target;
-        rightToeRadius = guiIn.right_hip_target;
-
-        leftHipAngleComplex = - qBoom - qBodyOffset - log((- sqrt(pow(lLeftLeg, 2) - 2.0*pow(lLeftLeg, 2)*exp(qLeftLeg*2.0*i) + pow(lLeftLeg, 2)*exp(qLeftLeg*4.0*i) + 4.0*pow(leftToeRadius, 2)*exp(qLeftLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qLeftLeg*2.0*i) + 4.0*pow(lBoom, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lLeftLeg, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qLeftLeg), 2) + 4.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2)*pow(cos(qBodyOffset), 2) + 4.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*pow(sin(qBoom), 2)*pow(sin(qBodyOffset), 2) + 8.0*lBoom*exp(qLeftLeg*2.0*i)*cos(qBoom)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) + 8.0*lBoom*lBody*exp(qLeftLeg*2.0*i)*pow(cos(qBoom), 2)*cos(qBodyOffset) - 8.0*lBoom*lBody*exp(qLeftLeg*2.0*i)*cos(qBoom)*sin(qBoom)*sin(qBodyOffset) + 8.0*lBody*exp(qLeftLeg*2.0*i)*cos(qBoom)*cos(qBodyOffset)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) - 8.0*lBody*exp(qLeftLeg*2.0*i)*sin(qBoom)*sin(qBodyOffset)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) - 8.0*pow(lBody, 2)*exp(qLeftLeg*2.0*i)*cos(qBoom)*cos(qBodyOffset)*sin(qBoom)*sin(qBodyOffset)) + 2.0*lBoom*cos(qBoom)*(cos(qLeftLeg) + sin(qLeftLeg)*i) + 2.0*exp(qLeftLeg*i)*sqrt(leftToeRadius + lLeftLeg*cos(qLeftLeg))*sqrt(leftToeRadius - lLeftLeg*cos(qLeftLeg)) + 2.0*lBody*cos(qBoom + qBodyOffset)*(cos(qLeftLeg) + sin(qLeftLeg)*i))/(lLeftLeg + 2.0*lHip*exp(qLeftLeg*i) - lLeftLeg*exp(qLeftLeg*2.0*i)))*i;
-
-        rightHipAngleComplex = - qBoom - qBodyOffset - log(-(- sqrt(2.0*pow(lBody, 2)*exp(qRightLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qRightLeg*2.0*i) - 2.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2)*exp(qRightLeg*4.0*i) + 4.0*pow(rightToeRadius, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2) + 4.0*pow(lBoom, 2)*exp(qRightLeg*2.0*i)*pow(cos(qBoom), 2) - 4.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i)*pow(cos(qRightLeg), 2) + 2.0*pow(lBody, 2)*cos(2.0*qBoom + 2.0*qBodyOffset)*exp(qRightLeg*2.0*i) + 4.0*lBoom*lBody*exp(qRightLeg*2.0*i)*cos(qBodyOffset) + 4.0*lBoom*lBody*cos(2.0*qBoom + qBodyOffset)*exp(qRightLeg*2.0*i) + 8.0*lBody*exp(qRightLeg*2.0*i)*cos(qBoom + qBodyOffset)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 8.0*lBoom*exp(qRightLeg*2.0*i)*cos(qBoom)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg))) + 2.0*exp(qRightLeg*i)*sqrt(rightToeRadius + lRightLeg*cos(qRightLeg))*sqrt(rightToeRadius - lRightLeg*cos(qRightLeg)) + 2.0*lBody*exp(qRightLeg*i)*cos(qBoom + qBodyOffset) + 2.0*lBoom*exp(qRightLeg*i)*cos(qBoom))/(- lRightLeg + 2.0*lHip*exp(qRightLeg*i) + lRightLeg*exp(qRightLeg*2.0*i)))*i;
-
-        // Only care about real part, imaginary part should be zero anyways but just in case.
-        leftHipAngle = fmod(real(leftHipAngleComplex) + 4.0*M_PI, 2.0*M_PI);
-        rightHipAngle = fmod(real(rightHipAngleComplex) + 4.0*M_PI, 2.0*M_PI);
+		// HipInverseKinematics subcontroller
+		toePosition.left = guiIn.left_hip_target;
+		toePosition.right = guiIn.right_hip_target;
+		hipAngle = toePositionToHipAngle(toePosition, lLeg, rLeg, position);
 
         // Set motor currents
-        co.lLeg.motorCurrentHip = pd1Controller(leftHipAngle, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     
-        co.rLeg.motorCurrentHip = pd1Controller(rightHipAngle, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+        co.lLeg.motorCurrentHip = pd1Controller(hipAngle.left, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);     
+        co.rLeg.motorCurrentHip = pd1Controller(hipAngle.right, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
 
     } else {
         // Do nothing
     }
 
-    if (guiIn.debug2) {
-        printf("qs1: %f\n", qs1);
-        printf("qs2: %f\n", qs2);
-        printf("qs3: %f\n", qs3);
-        printf("qs4: %f\n", qs4);
-        printf("qs5: %f\n", qs5);
-        printf("qs6: %f\n", qs6);
-        printf("qs7: %f\n", qs7);
-        printf("qs8: %f\n", qs8);
-        printf("qs9: %f\n", qs9);
-        printf("qsdot1: %f\n", qsdot1);
-        printf("qsdot2: %f\n", qsdot2);
-        printf("qsdot3: %f\n", qsdot3);
-        printf("qsdot4: %f\n", qsdot4);
-        printf("qsdot5: %f\n", qsdot5);
-        printf("qsdot6: %f\n", qsdot6);
-        printf("qsdot7: %f\n", qsdot7);
-        printf("qsdot8: %f\n", qsdot8);
-        printf("qsdot9: %f\n", qsdot9);
-        printf("Ts_d1: %f\n", Ts_d1);
-        printf("Ts_d2: %f\n", Ts_d2);
-        printf("Tsdot_d1: %f\n", Tsdot_d1);
-        printf("Tsdot_d2: %f\n", Tsdot_d2);
-        printf("Tm1: %f\n", Tm1);
-        printf("Tm2: %f\n", Tm2);
-        printf("beta1: %f\n", beta1);
-        printf("L1: %f\n", L1);
-        printf("aplha1: %f\n", alpha1);
-        printf("alpha2d: %f\n", alpha2d);
-        printf("L2d: %f\n", L2d);
-        printf("beta2d: %f\n", beta2d);
-        printf("q7d: %f\n", q7d);
-        printf("q8d: %f\n", q8d);
-        printf("Dbeta1: %f\n", Dbeta1);
-        printf("DL1: %f\n", DL1);
-        printf("Daplha1: %f\n", Dalpha1);
-        printf("Dalpha2d: %f\n", Dalpha2d);
-        printf("DL2d: %f\n", DL2d);
-        printf("Dbeta2d: %f\n", Dbeta2d);
-        printf("Dq7d: %f\n", Dq7d);
-        printf("Dq8d: %f\n", Dq8d);
-        printf("Tm3: %f\n", Tm3);
-        printf("Tm4: %f\n", Tm4);
-    }
-
-    // DEBUG STATEMENTS ........................................................
-    if (guiIn.debug3) {
-        printf("lBoom: %f\n", lBoom);
-        printf("lBody: %f\n", lBody);
-        printf("lHip: %f\n", lHip);
-        printf("lLeftLeg: %f\n", lLeftLeg);
-        printf("lRightLeg: %f\n", lRightLeg);
-        printf("qBodyOffset: %f\n", qBodyOffset);
-        printf("qBoom: %f\n", qBoom);
-        printf("qLeftLeg: %f\n", qLeftLeg);
-        printf("qRightLeg: %f\n", qRightLeg);
-        printf("leftToeRadius: %f\n", leftToeRadius);
-        printf("rightToeRadius: %f\n", rightToeRadius);
-        printf("leftHipAngleComplex: %f + %fi\n", real(leftHipAngleComplex), imag(leftHipAngleComplex));
-        printf("rightHipAngleComplex: %f + %fi\n", real(rightHipAngleComplex), imag(rightHipAngleComplex));
-        printf("leftHipAngle: %f\n", leftHipAngle);
-        printf("rightHipAngle: %f\n", rightHipAngle);
-    }
 
 	// END CONTROL CODE ********************************************************
 
@@ -321,8 +214,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     guiOut.isEnabled = ((rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED);
 
     // Send data to the GUI
-    if (pubTimer->readyToSend())
-        guiDataOut.write(guiOut);
+    if (pubTimer->readyToSend()) guiDataOut.write(guiOut);
 
     // Stuff the msg and push to ROS for logging
     logData.desiredState = 0.0;
@@ -355,6 +247,9 @@ bool ATCSingleLegHopping::configureHook() {
 
 	// ASCLegForce Service
 	legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
+
+	// ASCHipInverseKinematics Service
+	toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
 
     log(Info) << "[ATCMT] configured!" << endlog();
 

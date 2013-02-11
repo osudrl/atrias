@@ -31,6 +31,10 @@ loadService("controller", "legToMotorTransforms")
 require("ascLegForce")
 loadService("controller", "ascLegForce")
 
+# ASCHipInverseKinematics
+require("ascHipInverseKinematics")
+loadService("controller", "ascHipInverseKinematics")
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3
