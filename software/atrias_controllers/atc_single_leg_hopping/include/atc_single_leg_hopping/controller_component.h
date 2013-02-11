@@ -17,7 +17,6 @@
 // C
 #include <stdlib.h>
 #include <complex>
-
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -29,6 +28,32 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/controller_structs.h>
+
+// Declare custom structures
+struct MotorCurrent {
+	double A;
+	double B;
+};
+struct LegForce {
+	double fx;
+	double fz;
+	double dfx;
+	double dfz;
+};
+struct LegHalf {
+    double legAngle;
+    double legVelocity;
+	double motorAngle;
+	double motorVelocity;
+};
+struct Leg {
+	LegHalf halfA;
+	LegHalf halfB;
+};
+struct Position {
+	double bodyPitch;
+	double bodyPitchVelocity;
+};
 
 using namespace std;
 using namespace RTT;
@@ -56,23 +81,25 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
-    // Variables for subcontrollers
-    // Leg PD subcontroller
+    // ASCPD
     std::string pd0Name;
     TaskContext *pd0;
     Property<double> P0;
     Property<double> D0;
     OperationCaller<double(double, double, double, double)> pd0Controller;
 
-    // Hip PD subcontroller
+    // ASCPD
     std::string pd1Name;
     TaskContext *pd1;
     Property<double> P1;
     Property<double> D1;
     OperationCaller<double(double, double, double, double)> pd1Controller;
 
-    // Transforms
+    // ASCLegToMotorTransforms
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
+
+    // ASCLegForce
+    OperationCaller<MotorCurrent(LegForce, Leg, Position)> legForceToMotorCurrent;
 
     // Math variables
     // Hip controller
@@ -86,6 +113,10 @@ private:
 
     // Force controller
     double Fz, dFx, dFz;//Fx
+	LegForce legForce;
+	Leg leg;
+	Position position;
+	MotorCurrent motorCurrent;
 
     // Benham controller
     double Ts_d1, Ts_d2, Tsdot_d1, Tsdot_d2, Tm1, Tm2, Tm3, Tm4;

@@ -1,0 +1,1 @@
+description=Given desired X-Z component forces at end-effector, returns required motor current.

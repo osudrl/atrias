@@ -4,7 +4,7 @@
      atc_single_leg_hopping
 
   </description>
-  <author>drl</author>
+  <author>Mikhail Jones</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/atc_single_leg_hopping</url>
@@ -13,5 +13,6 @@
   <depend package="atrias_msgs"/>
   <depend package="asc_pd"/>
   <depend package="asc_coordinate_transforms"/>
+  <depend package="asc_leg_force"/>
 
 </package>

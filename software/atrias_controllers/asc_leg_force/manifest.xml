@@ -1,0 +1,9 @@
+<package>
+    <description brief="Orocos asc_leg_force Component package">
+        This package contains the components of the asc_leg_force package
+    </description>
+    <license>BSD</license>
+    <author>drl</author>
+    <depend package="atrias_shared" />
+
+</package>

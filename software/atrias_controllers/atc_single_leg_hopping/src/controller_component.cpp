@@ -3,24 +3,22 @@
  *  \brief Orocos Component code for the atc_single_leg_hopping controller.
  */
 
+// Initialize ==================================================================
 #include <atc_single_leg_hopping/controller_component.h>
-
-// Initialize variables
 bool isStance = false;
 
 namespace atrias {
 namespace controller {
 
-// ATCSingleLegHopping ============================================================================
+// ATCSingleLegHopping =========================================================
 ATCSingleLegHopping::ATCSingleLegHopping(std::string name):
-    RTT::TaskContext(name),
-    logPort(name + "_log"),
-    guiDataOut("gui_data_out"),
+    RTT::TaskContext(name), 
+	logPort(name + "_log"), 
+	guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
-    this->provides("atc")
-        ->addOperation("runController", &ATCSingleLegHopping::runController, this, ClientThread)
-        .doc("Get robot_state from RTOps and return controller output.");
+
+    this->provides("atc")->addOperation("runController", &ATCSingleLegHopping::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
 
     // Add subcontrollers properties.
     this->addProperty("pd0Name", pd0Name).doc("Leg PD subcontroller.");
@@ -31,7 +29,7 @@ ATCSingleLegHopping::ATCSingleLegHopping(std::string name):
     addPort(guiDataOut);
     pubTimer = new GuiPublishTimer(20);
 
-    // Logging
+    // Logging -----------------------------------------------------------------
     // Create a port
     addPort(logPort);
     // Buffer port so we capture all data.
@@ -42,12 +40,11 @@ ATCSingleLegHopping::ATCSingleLegHopping(std::string name):
     policy.name_id = "/" + name + "_log";
     // Construct the stream between the port and ROS topic
     logPort.createStream(policy);
-
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
 
-// ATCSingleLegHopping::runController =============================================================
+// ATCSingleLegHopping::runController ==========================================
 atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::robot_state rs) {
 
     // Do nothing unless told otherwise
@@ -62,7 +59,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
         return co;
 
-    // BEGIN CONTROL CODE -------------------------------------------------------------------------
+    // BEGIN CONTROL CODE ******************************************************
 
     // Define leg link lengths (thigh and shin).
     l1 = 0.5;
@@ -79,7 +76,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     }
 
 
-    // Stance phase control -----------------------------------------------------------------------
+    // Stance phase control ----------------------------------------------------
     if (isStance) {
 
         // Define constant force at end-effector.
@@ -125,46 +122,37 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
         }
 
-        // Variable conversion for Benham coordinates
-        Fx = Fx;
-        Fy = -Fz;
-        Fxdot = 0.0;
-        Fydot = 0.0;
-        Ks = guiIn.robot_spring;
-        Kg = 50.0;   
-        // Need to add in motor constant torque conversion ////////////////////////////////////////     
-        Kpid1 = guiIn.stance_leg_P_gain;
-        Kpid3 = guiIn.stance_leg_D_gain;
+		// Force control leg
+		legForce.fx = Fx;
+		legForce.fz = Fz;
+		legForce.dfx = 0.0;
+		legForce.dfz = 0.0;
+		leg.halfA.legAngle = rs.rLeg.halfA.legAngle;
+		leg.halfB.legAngle = rs.rLeg.halfB.legAngle;
+		leg.halfA.motorAngle = rs.rLeg.halfA.motorAngle;
+		leg.halfB.motorAngle = rs.rLeg.halfB.motorAngle;
+		leg.halfA.legVelocity = rs.rLeg.halfA.legVelocity;
+		leg.halfB.legVelocity = rs.rLeg.halfB.legVelocity;
+		leg.halfA.motorVelocity = rs.rLeg.halfA.motorVelocity;
+		leg.halfB.motorVelocity = rs.rLeg.halfB.motorVelocity;
+		position.bodyPitch = rs.position.bodyPitch;
+		position.bodyPitchVelocity = rs.position.bodyPitchVelocity;
+		motorCurrent = legForceToMotorCurrent(legForce, leg, position);
+        co.rLeg.motorCurrentA = motorCurrent.A;
+        co.rLeg.motorCurrentB = motorCurrent.B;
+
+		// Swing leg control
         Kpidf1 = guiIn.flight_leg_P_gain;
         Kpidf3 = guiIn.flight_leg_D_gain;
         qs1 = rs.rLeg.halfB.legAngle - M_PI/2.0;
         qs2 = rs.rLeg.halfA.legAngle - M_PI/2.0;
-        qs3 = rs.rLeg.halfB.motorAngle - M_PI/2.0;
-        qs4 = rs.rLeg.halfA.motorAngle - M_PI/2.0;
-        qs5 = rs.lLeg.halfB.legAngle - M_PI/2.0; 
-        qs6 = rs.lLeg.halfA.legAngle - M_PI/2.0;
         qs7 = rs.lLeg.halfB.motorAngle - M_PI/2.0;
         qs8 = rs.lLeg.halfA.motorAngle - M_PI/2.0;
         qs9 = rs.position.bodyPitch - 3.0*M_PI/2.0;
         qs9 = fmod(qs9 + 4.0*M_PI, 2.0*M_PI);
-        qsdot1 = rs.rLeg.halfB.legVelocity;
-        qsdot2 = rs.rLeg.halfA.legVelocity;
-        qsdot3 = rs.rLeg.halfB.motorVelocity;
-        qsdot4 = rs.rLeg.halfA.motorVelocity;
-        qsdot5 = rs.lLeg.halfB.legVelocity; 
-        qsdot6 = rs.lLeg.halfA.legVelocity;
         qsdot7 = rs.lLeg.halfB.motorVelocity;
         qsdot8 = rs.lLeg.halfA.motorVelocity;
         qsdot9 = rs.position.bodyPitchVelocity;
-
-        Ts_d1 = -Fx*l1*cos(qs1 + qs9) - Fy*l1*sin(qs1 + qs9);
-        Ts_d2 = -Fx*l2*cos(qs2 + qs9) - Fy*l2*sin(qs2 + qs9);
-
-        Tsdot_d1 = Fx*l1*sin(qs1 + qs9)*(qsdot1 + qsdot9) - Fydot*l1*sin(qs1 + qs9) - Fxdot*l1*cos(qs1 + qs9) - Fy*l1*cos(qs1 + qs9)*(qsdot1 + qsdot9);
-        Tsdot_d2 = Fx*l2*sin(qs2 + qs9)*(qsdot2 + qsdot9) - Fydot*l2*sin(qs2 + qs9) - Fxdot*l2*cos(qs2 + qs9) - Fy*l2*cos(qs2 + qs9)*(qsdot2 + qsdot9);
-
-        Tm1 = Ks*(qs3 - qs1)/Kg + Kpid1*(Ts_d1/Ks - (qs3 - qs1)) + Kpid3*(Tsdot_d1/Ks - (qsdot3 - qsdot1));
-        Tm2 = Ks*(qs4 - qs2)/Kg + Kpid1*(Ts_d2/Ks - (qs4 - qs2)) + Kpid3*(Tsdot_d2/Ks - (qsdot4 - qsdot2));
 
         beta1 = (qs1 - qs2)/2.0;
         L1 = (l1 + l2)*cos(beta1);
@@ -187,15 +175,13 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         Tm3 = Kpidf1*(q7d - qs7) + Kpidf3*(Dq7d - qsdot7);
         Tm4 = Kpidf1*(q8d - qs8) + Kpidf3*(Dq8d - qsdot8);
 
-        co.rLeg.motorCurrentB = Tm1;
-        co.rLeg.motorCurrentA = Tm2;
-        co.lLeg.motorCurrentB = Tm3;
-        co.lLeg.motorCurrentA = Tm4;
+        co.lLeg.motorCurrentB = Tm3*0.0;
+        co.lLeg.motorCurrentA = Tm4*0.0;
 
-    // Flight phase control -----------------------------------------------------------------------
+    // Flight phase control ----------------------------------------------------
     } else {
         
-        // Reset initial conditions ...............................................................
+        // Reset initial conditions ............................................
         r = guiIn.slip_leg;
         dr = -sqrt(2.0*9.81*guiIn.slip_height);
         q = M_PI/2.0;
@@ -219,7 +205,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
 
     }
 
-    // Hip Control --------------------------------------------------------------------------------
+    // Hip Control -------------------------------------------------------------
     if (guiIn.constant_hip) {
         // Constant angle
         leftHipAngle = guiIn.hip_angle;
@@ -261,9 +247,6 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     } else {
         // Do nothing
     }
-
-    // END CONTROL CODE ---------------------------------------------------------------------------
-
 
     if (guiIn.debug2) {
         printf("qs1: %f\n", qs1);
@@ -310,7 +293,7 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         printf("Tm4: %f\n", Tm4);
     }
 
-    // DEBUG STATEMENTS .......................................................................
+    // DEBUG STATEMENTS ........................................................
     if (guiIn.debug3) {
         printf("lBoom: %f\n", lBoom);
         printf("lBody: %f\n", lBody);
@@ -329,6 +312,8 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
         printf("rightHipAngle: %f\n", rightHipAngle);
     }
 
+	// END CONTROL CODE ********************************************************
+
     // Command a run state
     co.command = medulla_state_run;
 
@@ -346,55 +331,58 @@ atrias_msgs::controller_output ATCSingleLegHopping::runController(atrias_msgs::r
     // Output for RTOps
     return co;
 
-}
+} // ATCSingleLegHopping::runController
 
-// Don't put control code below here!
-// configureHook ==================================================================================
+// DON'T PUT CONTROL CODE BELOW HERE! ******************************************
+
+// configureHook ===============================================================
 bool ATCSingleLegHopping::configureHook() {
 
-    // Connect to the subcontrollers
+    // ASCPD Service
     pd0 = this->getPeer(pd0Name);
-    if (pd0)
-        pd0Controller = pd0->provides("pd")->getOperation("runController");
-
-    pd1 = this->getPeer(pd1Name);
-    if (pd1)
-        pd1Controller = pd1->provides("pd")->getOperation("runController");
-
-    legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
-
-    // Get references to the attributes
+    if (pd0) pd0Controller = pd0->provides("pd")->getOperation("runController");
     P0 = pd0->properties()->getProperty("P");
     D0 = pd0->properties()->getProperty("D");
+
+	// ASCPD Service
+    pd1 = this->getPeer(pd1Name);
+    if (pd1) pd1Controller = pd1->provides("pd")->getOperation("runController");
     P1 = pd1->properties()->getProperty("P");
     D1 = pd1->properties()->getProperty("D");
 
-    log(Info) << "[ATCMT] configured!" << endlog();
-    return true;
-}
+	// ASCLegToMotorTransforms Service
+    legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
 
-// startHook ======================================================================================
+	// ASCLegForce Service
+	legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
+
+    log(Info) << "[ATCMT] configured!" << endlog();
+
+    return true;
+} // configureHook
+
+// startHook ===================================================================
 bool ATCSingleLegHopping::startHook() {
     log(Info) << "[ATCMT] started!" << endlog();
     return true;
-}
+} // startHook
 
-// updateHook =====================================================================================
+// updateHook ==================================================================
 void ATCSingleLegHopping::updateHook() {
     guiDataIn.read(guiIn);
-}
+} // updateHook
 
-// stopHook =======================================================================================
+// stopHook ====================================================================
 void ATCSingleLegHopping::stopHook() {
     log(Info) << "[ATCMT] stopped!" << endlog();
-}
+} // stopHook
 
-// cleanupHook ====================================================================================
+// cleanupHook =================================================================
 void ATCSingleLegHopping::cleanupHook() {
     log(Info) << "[ATCMT] cleaned up!" << endlog();
-}
+} // cleanupHook
 
 ORO_CREATE_COMPONENT(ATCSingleLegHopping)
 
-}
-}
+} // namespace controller
+} // namespace atrias

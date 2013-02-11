@@ -2,6 +2,7 @@
 
 namespace atrias {
 namespace controller {
+
 // Constructor
 LegToMotorTransforms::LegToMotorTransforms(TaskContext* owner)
     : Service("legToMotorTransforms", owner)

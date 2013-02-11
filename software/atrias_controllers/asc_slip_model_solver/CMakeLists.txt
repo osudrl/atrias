@@ -4,7 +4,7 @@
 #
 cmake_minimum_required(VERSION 2.6.3)
 
-project(atc_constant_force)
+project(asc_slip_model_solver)
 
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -23,11 +23,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
-
 rosbuild_find_ros_package(atrias)
 if(DEFINED atrias_PACKAGE_PATH)
 	include(${atrias_PACKAGE_PATH}/atrias.cmake)
@@ -35,15 +30,31 @@ else(DEFINED atrias_PACKAGE_PATH)
 	message(ERROR "Could not find package atrias. I'm not going to build anything!")
 endif(DEFINED atrias_PACKAGE_PATH)
 
-# Find GTK libraries and build GUI library.
-if(ATRIAS_BUILD_GUI)
-    rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
-    target_link_libraries(controller_gui ${GTK2_LIBRARIES})
-endif(ATRIAS_BUILD_GUI)
-
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(atc_constant_force src/controller_component.cpp)
-	ros_generate_rtt_typekit(atc_constant_force)
+	#
+	# Components, types and plugins.
+	#
+	# The CMake 'target' names are identical to the first argument of the
+	# macros below, except for orocos_typegen_headers, where the target is fully
+	# controlled by generated code of 'typegen'.
+	#
+
+	#
+	# Building a Service:
+	#
+	# Creates a plugin library libasc_slip_model_solver-service-<target>.so
+	# and installs in the directory lib/orocos/asc_slip_model_solver/plugins/
+	#
+	orocos_service(asc_slip_model_solver-service src/asc_slip_model_solver-service.cpp) # ...only one service per library !
+	#
+	# You may add multiple orocos_service statements.
+
+
+	#
+	# Generates and installs our package. Must be the last statement such
+	# that it can pick up all above settings.
+	#
+	orocos_generate_package()
 endif(ATRIAS_BUILD_CONTROLLERS)
 

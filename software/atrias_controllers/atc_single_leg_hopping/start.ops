@@ -11,21 +11,25 @@ connectPeers("atrias_rt", "controller")
 # Set up subcontrollers.
 import("asc_pd")
 
-# Leg PD Subcontroller
+# ASCPD (Leg)
 var string pd0Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd0Name, "ASCPD")
 addPeer("controller", pd0Name)
 controller.pd0Name = pd0Name
 
-# Hip PD Subcontroller
+# ASCPD (Hip)
 var string pd1Name = atrias_cm.getUniqueName("controller", "pd")
 loadComponent(pd1Name, "ASCPD")
 addPeer("controller", pd1Name)
 controller.pd1Name = pd1Name
 
-# Transforms
+# ASCLegToMotorTransforms
 require("legToMotorTransforms")
 loadService("controller", "legToMotorTransforms")
+
+# ASCLegForce
+require("ascLegForce")
+loadService("controller", "ascLegForce")
 
 # Set up the gui connection
 var ConnPolicy gui_policy
