@@ -2,7 +2,7 @@
 #define __ATC_FORCE_CONTROL_DEMO_H__
 
 /*! \file controller_component.h
- *  \author Andrew Peekema
+ *  \author Mikhail Jones
  *  \brief Orocos Component header for atc_force_control_demo controller.
  */
 
@@ -16,7 +16,6 @@
 
 // C
 #include <stdlib.h>
-
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -54,6 +53,28 @@ private:
     controller_status                               guiOut;
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
+    
+    // ASCLegToMotorTransforms
+    OperationCaller<MotorAngle(double, double)> legToMotorPos;
+
+    // ASCLegForce
+    OperationCaller<AB(LegForce legForce, double kp, double kd, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position)> legForceToMotorCurrent;
+
+	// ASCHipInverseKinematics
+	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location position)> toePositionToHipAngle;
+	
+	// Leg position control variables
+	MotorAngle lMotorAngle;
+	MotorAngle rMotorAngle;
+	
+	// Leg force control variables
+	LegForce legForce;
+	AB motorCurrent;
+	
+	// Hip control variables
+	LeftRight toePosition;
+	LeftRight hipAngle;
+	
 
 public:
     // Constructor
@@ -66,6 +87,7 @@ public:
     void stopHook();
     void cleanupHook();
 };
+
 }
 }
 

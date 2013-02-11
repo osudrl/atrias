@@ -31,14 +31,18 @@
 namespace atrias {
 namespace controller {
 
-// Constructor
+
+//ASCSlipModelSolver ===========================================================
 ASCSlipModelSolver::ASCSlipModelSolver(TaskContext* owner):Service("ascSlipModelSolver", owner) {
 
     this->addOperation("slipAdvanceTimeStep", &ASCSlipModelSolver::slipAdvanceTimeStep, this).doc("Given a set of initial conditions, returns 4th order Runge-Kutta numerical approximation of next time step.");
+    
 	this->addOperation("slipConditionsToForce", &ASCSlipModelSolver::slipConditionsToForce, this).doc("Given a set of initial conditions, returns X-Z component forces.");
 
 }
 
+
+// slipAdvanceTimeStep =========================================================
 SlipConditions ASCSlipModelSolver::slipAdvanceTimeStep(SlipConditions slipConditions) {
 
 	// Advance time step.

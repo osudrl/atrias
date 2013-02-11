@@ -18,7 +18,7 @@
 
 // component_controller.h
 // - // ASCHipInverseKinematics
-// - OperationCaller<HipAngle(ToePosition toePosition, Leg lLeg, Leg rLeg, Position position)> toePositionToHipAngle;
+// - OperationCaller<HipAngle(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position)> toePositionToHipAngle;
 
 // To use do something like this.
 // - hipAngle = toePositionToHipAngle(toePosition, lLeg, rLeg, position);
@@ -38,7 +38,7 @@ ASCHipInverseKinematics::ASCHipInverseKinematics(TaskContext* owner)
 
 
 // ASCHipInverseKinematics::toePositionToHipAngle ==============================
-HipAngle ASCHipInverseKinematics::toePositionToHipAngle(ToePosition toePosition, Leg lLeg, Leg rLeg, Position position) {
+LeftRight ASCHipInverseKinematics::toePositionToHipAngle(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position) {
 
     // Define imaginary number i.
     i = complex<double>(0.0, 1.0);

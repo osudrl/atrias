@@ -37,7 +37,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">Gains</property>
+        <property name="label" translatable="yes">Leg Gains</property>
         <attributes>
           <attribute name="style" value="italic"/>
           <attribute name="weight" value="bold"/>
@@ -64,12 +64,13 @@
       <object class="GtkHBox" id="gains_hbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="label1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Leg P:</property>
+            <property name="label" translatable="yes">Pos P:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -78,7 +79,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="leg_P_gain_spinbutton">
+          <object class="GtkSpinButton" id="leg_pos_p_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -100,7 +101,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Leg D:</property>
+            <property name="label" translatable="yes">Pos D:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -109,7 +110,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="leg_D_gain_spinbutton">
+          <object class="GtkSpinButton" id="leg_pos_d_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -127,11 +128,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label3">
+          <object class="GtkLabel" id="label5">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Hip P:</property>
+            <property name="label" translatable="yes">Force P:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -140,7 +141,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="hip_P_gain_spinbutton">
+          <object class="GtkSpinButton" id="leg_force_p_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -158,11 +159,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label4">
+          <object class="GtkLabel" id="label6">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Hip D:</property>
+            <property name="label" translatable="yes">Force D:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -171,7 +172,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="hip_D_gain_spinbutton">
+          <object class="GtkSpinButton" id="leg_force_d_gain_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -233,7 +234,7 @@
         <property name="draw_indicator">True</property>
       </object>
       <packing>
-        <property name="expand">True</property>
+        <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">7</property>
       </packing>
@@ -242,6 +243,7 @@
       <object class="GtkHBox" id="constant_force_hbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="fx_label">
             <property name="visible">True</property>
@@ -319,21 +321,22 @@
         <property name="draw_indicator">True</property>
       </object>
       <packing>
-        <property name="expand">True</property>
+        <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">9</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHBox" id="sinewave_x_hbox">
+      <object class="GtkHBox" id="sinewave_amp_hbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="ampx_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">X-Direction Amplitude</property>
+            <property name="label" translatable="yes">X Amplitude</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -351,6 +354,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -359,11 +363,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="freqx_label">
+          <object class="GtkLabel" id="ampz_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">X-Direction Frequency:</property>
+            <property name="label" translatable="yes">Z Amplitude:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -372,7 +376,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="freqx_spinbutton">
+          <object class="GtkSpinButton" id="ampz_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -381,6 +385,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -396,15 +401,16 @@
       </packing>
     </child>
     <child>
-      <object class="GtkHBox" id="sinewave_z_hbox">
+      <object class="GtkHBox" id="sinewave_freq_hbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
-          <object class="GtkLabel" id="ampz_label">
+          <object class="GtkLabel" id="freq_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Z-Direction Amplitude</property>
+            <property name="label" translatable="yes">X Frequency:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -413,7 +419,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="ampz_spinbutton">
+          <object class="GtkSpinButton" id="freqx_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -422,6 +428,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -434,7 +441,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Z-Direction Frequency:</property>
+            <property name="label" translatable="yes">Z Frequency:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -452,6 +459,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -464,6 +472,182 @@
         <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">11</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="sinewave_offset_hbox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkLabel" id="offsetx_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">X Offset:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="offsetx_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="offsetz_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Z Offset:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="offsetz_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">12</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="hip_gains_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">Hip Gains</property>
+        <attributes>
+          <attribute name="style" value="italic"/>
+          <attribute name="weight" value="bold"/>
+        </attributes>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">13</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHSeparator" id="hseparator1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">14</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="hip_gains_hbox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkLabel" id="label3">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Hip P:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="hip_p_gain_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">1</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label4">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Hip D:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="hip_d_gain_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">1</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">15</property>
       </packing>
     </child>
     <child>
@@ -480,7 +664,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">12</property>
+        <property name="position">16</property>
       </packing>
     </child>
     <child>
@@ -491,7 +675,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">13</property>
+        <property name="position">17</property>
       </packing>
     </child>
     <child>
@@ -504,15 +688,16 @@
         <property name="draw_indicator">True</property>
       </object>
       <packing>
-        <property name="expand">True</property>
+        <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">14</property>
+        <property name="position">18</property>
       </packing>
     </child>
     <child>
       <object class="GtkHBox" id="constant_hip_hbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="hip_angle_label">
             <property name="visible">True</property>
@@ -555,7 +740,98 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">15</property>
+        <property name="position">19</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="advanced_hip_checkbutton">
+        <property name="label" translatable="yes">Advanced Position</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="draw_indicator">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">20</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="advanced_hip_hbox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkLabel" id="label7">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Left Toe Position:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="left_toe_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">1</property>
+            <property name="digits">2</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label8">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Right Toe Position:</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="right_toe_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="climb_rate">1</property>
+            <property name="digits">2</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">21</property>
       </packing>
     </child>
     <child>
@@ -572,7 +848,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">16</property>
+        <property name="position">22</property>
       </packing>
     </child>
     <child>
@@ -583,19 +859,20 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">17</property>
+        <property name="position">23</property>
       </packing>
     </child>
     <child>
-      <object class="GtkHBox" id="robot_hbox">
+      <object class="GtkHBox" id="robot_hbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="robot_spring_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Rotational Spring Constant:</property>
+            <property name="label" translatable="yes">Spring Constant:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -614,6 +891,7 @@
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
             <property name="climb_rate">1</property>
+            <property name="digits">1</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -626,7 +904,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Motor Torque Constant:</property>
+            <property name="label" translatable="yes">Torque Constant:</property>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -652,6 +930,18 @@
             <property name="position">3</property>
           </packing>
         </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">24</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkHBox" id="robot_hbox2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="robot_gear_label">
             <property name="visible">True</property>
@@ -662,7 +952,7 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">4</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -676,19 +966,29 @@
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
             <property name="climb_rate">1</property>
+            <property name="digits">1</property>
           </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">5</property>
+            <property name="position">1</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">18</property>
+        <property name="position">25</property>
       </packing>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

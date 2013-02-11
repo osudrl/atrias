@@ -8,6 +8,38 @@
 namespace atrias {
 namespace controller {
 
+// General AB struct
+struct AB {
+    double A;
+    double B;
+};
+
+// General LeftRight struct
+struct LeftRight {
+    double left;
+    double right;
+};
+
+// Used in ASCLegForce and ASCSlipModelSolver
+struct LegForce {
+	double fx;
+	double fz;
+	double dfx;
+	double dfz;
+};
+
+// Used in ASCSlipModleSolver
+struct SlipConditions {
+	double rOld;
+	double drOld;
+	double qOld;
+	double dqOld;
+	double r;
+	double dr;
+	double q;
+	double dq;
+};
+
 struct MotorAngle {
     double A;
     double B;

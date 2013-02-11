@@ -4,31 +4,8 @@
 #include <rtt/RTT.hpp>
 #include <rtt/plugin/ServicePlugin.hpp>
 #include <atrias_shared/controller_structs.h>
+#include <atrias_msgs/robot_state.h>
 #include <complex.h>
-
-struct ToePosition {
-	double left;
-	double right;
-};
-struct HipAngle {
-	double left;
-	double right;
-};
-struct LegHalf {
-    double legAngle;
-    double legVelocity;
-	double motorAngle;
-	double motorVelocity;
-};
-struct Leg {
-	LegHalf halfA;
-	LegHalf halfB;
-};
-struct Position {
-	double bodyPitch;
-	double bodyPitchVelocity;
-	double boomAngle;
-};
 
 using namespace RTT;
 using namespace std;
@@ -43,7 +20,7 @@ class ASCHipInverseKinematics : public Service {
         ASCHipInverseKinematics(TaskContext* owner);
 
         // Operations
-        HipAngle toePositionToHipAngle(ToePosition toePosition, Leg lLeg, Leg rLeg, Position position);
+        LeftRight toePositionToHipAngle(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position);
 
     private:
     	complex<double> i;
@@ -52,7 +29,7 @@ class ASCHipInverseKinematics : public Service {
 		double l1, l2;
 		double lBoom, lBody, lHip, qBodyOffset;
 		double lLeftLeg, lRightLeg, qLeftLeg, qRightLeg;
-        HipAngle hipAngle;
+        LeftRight hipAngle;
 
 }; // class ASCHipInverseKinematics
 

@@ -6,6 +6,8 @@
 // Initialize ==================================================================
 #include <atc_force_control_demo/controller_component.h>
 
+double t = 0.0;
+
 namespace atrias {
 namespace controller {
 
@@ -54,6 +56,68 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 
     // BEGIN CONTROL CODE ******************************************************
 
+	// Increment time step
+	t = t + 0.001;
+
+	// Leg position controller .................................................
+	lMotorAngle = legToMotorPos(M_PI/2.0, 0.65);
+	rMotorAngle = legToMotorPos(M_PI/2.0, 0.85);
+	
+	// Set motor currents
+	co.lLeg.motorCurrentA = guiIn.leg_pos_p_gain*(lMotorAngle.A - rs.lLeg.halfA.motorAngle) + guiIn.leg_pos_d_gain*(0.0 - rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB = guiIn.leg_pos_p_gain*(lMotorAngle.B - rs.lLeg.halfB.motorAngle) + guiIn.leg_pos_d_gain*(0.0 - rs.lLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentA = guiIn.leg_pos_p_gain*(rMotorAngle.A - rs.rLeg.halfA.motorAngle) + guiIn.leg_pos_d_gain*(0.0 - rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB = guiIn.leg_pos_p_gain*(rMotorAngle.B - rs.rLeg.halfB.motorAngle) + guiIn.leg_pos_d_gain*(0.0 - rs.rLeg.halfB.motorVelocity);
+
+	// Force controller ........................................................
+	if (guiIn.constant_force) {	
+		// Get component forces from GUI, velocities equal zero.
+		legForce.fx = guiIn.fx;
+		legForce.fz = guiIn.fz;
+		legForce.dfx = 0.0;
+		legForce.dfz = 0.0;
+		
+		// Comute and set motor current values
+		motorCurrent = legForceToMotorCurrent(legForce, guiIn.leg_force_p_gain, guiIn.leg_force_d_gain, rs.rLeg, rs.position);
+		co.rLeg.motorCurrentA = motorCurrent.A;
+		co.rLeg.motorCurrentB = motorCurrent.B;
+		
+	} else if (guiIn.sinewave_force) {	
+		// Compute sinewave forces
+		// TODO - Generate smooth transitions between GUI changes.
+		legForce.fx = guiIn.offsetx + guiIn.ampx*sin(t*2.0*M_PI*guiIn.freqx);
+		legForce.fz = guiIn.offsetz + guiIn.ampz*sin(t*2.0*M_PI*guiIn.freqz);
+		legForce.dfx = 2.0*M_PI*guiIn.ampx*guiIn.freqx*cos(t*2.0*M_PI*guiIn.freqx);
+		legForce.dfz = 2.0*M_PI*guiIn.ampz*guiIn.freqz*cos(t*2.0*M_PI*guiIn.freqz);;
+		
+		// Comute and set motor current values
+		motorCurrent = legForceToMotorCurrent(legForce, guiIn.leg_force_p_gain, guiIn.leg_force_d_gain, rs.rLeg, rs.position);
+		co.rLeg.motorCurrentA = motorCurrent.A;
+		co.rLeg.motorCurrentB = motorCurrent.B;
+		
+	}
+	
+	// Hip controller ..........................................................
+	if (guiIn.constant_hip) {		
+		// Get hip angles from GUI
+		hipAngle.left = guiIn.hip_angle;
+		hipAngle.right = guiIn.hip_angle;
+		
+        // Set motor currents
+        co.lLeg.motorCurrentHip = guiIn.hip_p_gain*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_d_gain*(0.0 - rs.lLeg.hip.legBodyVelocity);
+        co.rLeg.motorCurrentHip = guiIn.hip_p_gain*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_d_gain*(0.0 - rs.rLeg.hip.legBodyVelocity);
+
+	} else if (guiIn.advanced_hip) {
+	
+		// Get toe positions from GUI
+		toePosition.left = guiIn.left_toe;
+		toePosition.right = guiIn.right_toe;
+		hipAngle = toePositionToHipAngle(toePosition, rs.lLeg, rs.rLeg, rs.position);
+		
+		// Set motor currents
+        co.lLeg.motorCurrentHip = guiIn.hip_p_gain*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_d_gain*(0.0 - rs.lLeg.hip.legBodyVelocity);
+        co.rLeg.motorCurrentHip = guiIn.hip_p_gain*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_d_gain*(0.0 - rs.rLeg.hip.legBodyVelocity);
+	}
 
 
     // END CONTROL CODE ********************************************************

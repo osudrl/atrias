@@ -18,10 +18,10 @@
 
 // component_controller.h
 // - // ASCLegForce
-// - OperationCaller<MotorCurrent(LegForce, Leg, Position)> legForceToMotorCurrent;
+// - OperationCaller<MotorCurrent(LegForce, doulbe, double, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
 
 // To use do something like this.
-// - motorCurrent = legForceToMotorCurrent(legForce, leg, position);
+// - motorCurrent = legForceToMotorCurrent(legForce, kp, kd, leg, position);
 // - co.rLeg.motorCurrentA = motorCurrent.A;
 // - co.rLeg.motorCurrentB = motorCurrent.B;
 
@@ -40,13 +40,13 @@ ASCLegForce::ASCLegForce(TaskContext* owner):Service("ascLegForce", owner) {
 
 
 // ASCLegForce legForce ========================================================
-MotorCurrent ASCLegForce::legForceToMotorCurrent(LegForce legForce, Leg leg, Position position) {
+AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, double kp, double kd, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
 
     // Declare gains
     ks = 4118.0;
-    kg = 50.0;
-	kp = 2000.0;
-	kd = 5.0;
+    kg = 50.0;    
+	//kp = 2000.0;
+	//kd = 5.0;
 
 	// Declare robot parameters
 	l1 = 0.50;

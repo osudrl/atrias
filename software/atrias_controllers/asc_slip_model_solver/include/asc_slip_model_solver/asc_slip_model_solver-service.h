@@ -5,26 +5,6 @@
 #include <rtt/plugin/ServicePlugin.hpp>
 #include <atrias_shared/controller_structs.h>
 
-// TODO - Move custom structures to controller structs.h
-
-// Declare custom structures
-struct SlipConditions {
-	double rOld;
-	double drOld;
-	double qOld;
-	double dqOld;
-	double r;
-	double dr;
-	double q;
-	double dq;
-};
-struct LegForce {
-	double fx;
-	double fz;
-	double dfx;
-	double dfz;
-};
-
 using namespace RTT;
 using namespace std;
 
