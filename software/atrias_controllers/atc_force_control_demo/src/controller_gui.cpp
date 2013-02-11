@@ -71,8 +71,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     offsetx_spinbutton->set_value(0.0);
     offsetz_spinbutton->set_value(0.0);
     hip_angle_spinbutton->set_value(3.0*M_PI/2.0);
-    left_toe_spinbutton->set_value(2.00);
-    right_toe_spinbutton->set_value(2.40);
+    left_toe_spinbutton->set_value(2.15);
+    right_toe_spinbutton->set_value(2.60);
     hip_p_gain_spinbutton->set_value(100.0);
     hip_d_gain_spinbutton->set_value(5.0);
     robot_spring_spinbutton->set_value(4118.0);
