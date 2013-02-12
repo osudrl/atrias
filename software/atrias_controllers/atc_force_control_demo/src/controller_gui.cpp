@@ -60,8 +60,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set default values
     leg_pos_p_gain_spinbutton->set_value(500.0);
     leg_pos_d_gain_spinbutton->set_value(50.0);
-    leg_force_p_gain_spinbutton->set_value(4000.0);
-    leg_force_d_gain_spinbutton->set_value(10.0);
+    leg_force_p_gain_spinbutton->set_value(5000.0);
+    leg_force_d_gain_spinbutton->set_value(20.0);
     fx_spinbutton->set_value(0.0);
     fz_spinbutton->set_value(0.0);
     ampx_spinbutton->set_value(0.0);
@@ -72,10 +72,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     offsetz_spinbutton->set_value(0.0);
     hip_angle_spinbutton->set_value(3.0*M_PI/2.0);
     left_toe_spinbutton->set_value(2.15);
-    right_toe_spinbutton->set_value(2.60);
+    right_toe_spinbutton->set_value(2.45);
     hip_p_gain_spinbutton->set_value(100.0);
     hip_d_gain_spinbutton->set_value(5.0);
-    robot_spring_spinbutton->set_value(4118.0);
+    robot_spring_spinbutton->set_value(3800.0);
     robot_motor_spinbutton->set_value(0.11);
     robot_gear_spinbutton->set_value(50.0);
 
