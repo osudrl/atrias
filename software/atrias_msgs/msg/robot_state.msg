@@ -15,8 +15,8 @@ bool disableSafeties
 robot_state_leg lLeg
 robot_state_leg rLeg
 
-float64 current50Amp
-float64 current600Amp
+float64 currentPositive
+float64 currentNegative
 
 robot_state_location position
 
