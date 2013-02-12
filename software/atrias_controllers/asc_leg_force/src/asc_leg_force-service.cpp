@@ -18,10 +18,10 @@
 
 // component_controller.h
 // - // ASCLegForce
-// - OperationCaller<MotorCurrent(LegForce, doulbe, double, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
+// - OperationCaller<MotorCurrent(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
 
 // To use do something like this.
-// - motorCurrent = legForceToMotorCurrent(legForce, kp, kd, leg, position);
+// - motorCurrent = legForceToMotorCurrent(legForce, gain, leg, position);
 // - co.rLeg.motorCurrentA = motorCurrent.A;
 // - co.rLeg.motorCurrentB = motorCurrent.B;
 
@@ -40,13 +40,14 @@ ASCLegForce::ASCLegForce(TaskContext* owner):Service("ascLegForce", owner) {
 
 
 // ASCLegForce legForce ========================================================
-AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, double kp, double kd, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
+AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
 
     // Declare gains
-    ks = 4118.0;
-    kg = 50.0;    
+    //ks = 4118.0;
+    //kg = 50.0;    
 	//kp = 2000.0;
 	//kd = 5.0;
+	//kt = 0.11;
 
 	// Declare robot parameters
 	l1 = 0.50;
@@ -61,8 +62,8 @@ AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, double kp, double kd, 
 	dtauSpringB = legForce.fx*l1*sin(leg.halfB.legAngle + position.bodyPitch)*(leg.halfB.legVelocity + position.bodyPitchVelocity) + legForce.dfz*l1*sin(leg.halfB.legAngle + position.bodyPitch) - legForce.dfx*l1*cos(leg.halfB.legAngle + position.bodyPitch) + legForce.fz*l1*cos(leg.halfB.legAngle + position.bodyPitch)*(leg.halfB.legVelocity + position.bodyPitchVelocity);
 
 	// Compute required motor current using PD controller with feed forward term.
-	motorCurrent.A = ks*(leg.halfA.motorAngle - leg.halfA.legAngle)/kg + kp*(tauSpringA/ks - (leg.halfA.motorAngle - leg.halfA.legAngle)) + kd*(tauSpringA/ks - (leg.halfA.motorVelocity - leg.halfA.legVelocity));
-	motorCurrent.B = ks*(leg.halfB.motorAngle - leg.halfB.legAngle)/kg + kp*(tauSpringB/ks - (leg.halfB.motorAngle - leg.halfB.legAngle)) + kd*(dtauSpringB/ks - (leg.halfB.motorVelocity - leg.halfB.legVelocity));
+	motorCurrent.A = gain.ks*(leg.halfA.motorAngle - leg.halfA.legAngle)/gain.kg + gain.kp*(tauSpringA/gain.ks - (leg.halfA.motorAngle - leg.halfA.legAngle)) + gain.kd*(tauSpringA/gain.ks - (leg.halfA.motorVelocity - leg.halfA.legVelocity));
+	motorCurrent.B = gain.ks*(leg.halfB.motorAngle - leg.halfB.legAngle)/gain.kg + gain.kp*(tauSpringB/gain.ks - (leg.halfB.motorAngle - leg.halfB.legAngle)) + gain.kd*(dtauSpringB/gain.ks - (leg.halfB.motorVelocity - leg.halfB.legVelocity));
 
 	return motorCurrent;
 

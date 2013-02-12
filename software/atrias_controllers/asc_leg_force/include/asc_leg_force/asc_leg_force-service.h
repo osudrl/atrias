@@ -19,10 +19,9 @@ class ASCLegForce:public Service {
         ASCLegForce(TaskContext* owner);
 
         // Operations
-        AB legForceToMotorCurrent(LegForce legForce, double kp, double kd, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position);
+        AB legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position);
 
     private:
-    	double ks, kg;
 		double l1, l2;
 		double tauSpringA, tauSpringB;
 		double dtauSpringA, dtauSpringB;

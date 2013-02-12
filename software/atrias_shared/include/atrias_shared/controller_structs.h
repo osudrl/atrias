@@ -28,6 +28,15 @@ struct LegForce {
 	double dfz;
 };
 
+// Used in ASCLegForce
+struct Gain {
+	double kp;
+	double kd;
+	double ks;
+	double kg;
+	double kt;
+};
+
 // Used in ASCSlipModleSolver
 struct SlipConditions {
 	double rOld;

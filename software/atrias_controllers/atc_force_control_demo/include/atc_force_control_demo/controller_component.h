@@ -58,16 +58,17 @@ private:
     OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
     // ASCLegForce
-    OperationCaller<AB(LegForce legForce, double kp, double kd, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position)> legForceToMotorCurrent;
+    OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
 
 	// ASCHipInverseKinematics
-	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location position)> toePositionToHipAngle;
+	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
 	
 	// Leg position control variables
 	MotorAngle lMotorAngle;
 	MotorAngle rMotorAngle;
 	
 	// Leg force control variables
+	Gain gain;
 	LegForce legForce;
 	AB motorCurrent;
 	

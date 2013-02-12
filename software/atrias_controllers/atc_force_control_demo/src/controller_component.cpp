@@ -70,6 +70,12 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 	co.rLeg.motorCurrentB = guiIn.leg_pos_p_gain*(rMotorAngle.B - rs.rLeg.halfB.motorAngle) + guiIn.leg_pos_d_gain*(0.0 - rs.rLeg.halfB.motorVelocity);
 
 	// Force controller ........................................................
+	gain.kp = guiIn.leg_force_p_gain;
+	gain.kd = guiIn.leg_force_d_gain;
+	gain.ks = guiIn.robot_spring;
+	gain.kg = guiIn.robot_gear;
+	gain.kt = guiIn.robot_motor;
+	
 	if (guiIn.constant_force) {	
 		// Get component forces from GUI, velocities equal zero.
 		legForce.fx = guiIn.fx;
@@ -78,7 +84,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 0.0;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, guiIn.leg_force_p_gain, guiIn.leg_force_d_gain, rs.rLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.rLeg, rs.position);
 		co.rLeg.motorCurrentA = motorCurrent.A;
 		co.rLeg.motorCurrentB = motorCurrent.B;
 		
@@ -91,7 +97,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 2.0*M_PI*guiIn.ampz*guiIn.freqz*cos(t*2.0*M_PI*guiIn.freqz);;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, guiIn.leg_force_p_gain, guiIn.leg_force_d_gain, rs.rLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.rLeg, rs.position);
 		co.rLeg.motorCurrentA = motorCurrent.A;
 		co.rLeg.motorCurrentB = motorCurrent.B;
 		
