@@ -26,6 +26,8 @@
 // - slipConditions = slipAdvanceTimeStep(slipConditions);
 // - legForce = slipConditionsToForce(slipConditions);
 
+// TODO - Move g, ks, m, and r0 to a struct so they can be changed.
+
 #include <asc_slip_model_solver/asc_slip_model_solver-service.h>
 
 namespace atrias {
@@ -85,9 +87,7 @@ SlipConditions ASCSlipModelSolver::slipAdvanceTimeStep(SlipConditions slipCondit
 LegForce ASCSlipModelSolver::slipConditionsToForce(SlipConditions slipConditions) {
 
 	// Robot parameters.
-	g = -9.81;
 	ks = 16000.0;
-	m = 60.0;
 	r0 = 0.85;
 
 	// If virtual SLIP model is in flight.
