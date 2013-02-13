@@ -28,7 +28,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("d_lf_spinbutton", d_lf_spinbutton);
 	gui->get_widget("l_fl_spinbutton", l_fl_spinbutton);
 	gui->get_widget("l_leg_st_spinbutton", l_leg_st_spinbutton);
-	gui->get_widget("p_as_spinbutton", p_as_spinbutton);
 	gui->get_widget("d_as_spinbutton", d_as_spinbutton);
 	gui->get_widget("p_ls_spinbutton", p_ls_spinbutton);
 	gui->get_widget("d_ls_spinbutton", d_ls_spinbutton);
@@ -37,20 +36,19 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	if (control_combobox && gc_l_button && gc_r_button &&
 			aea_spinbutton && pea_spinbutton &&
 			l_leg_fl_spinbutton && p_af_spinbutton && d_af_spinbutton && p_lf_spinbutton && d_lf_spinbutton && l_fl_spinbutton &&
-			l_leg_st_spinbutton && p_as_spinbutton && d_as_spinbutton && p_ls_spinbutton && d_ls_spinbutton && l_st_spinbutton) {
+			l_leg_st_spinbutton && d_as_spinbutton && p_ls_spinbutton && d_ls_spinbutton && l_st_spinbutton) {
 		// Set ranges.
-		aea_spinbutton->set_range(0.5, 1.5);
-		pea_spinbutton->set_range(1.5, 2.5);
-		l_leg_fl_spinbutton->set_range(0.7, 1.0);
+		aea_spinbutton->set_range(0.5, 1.57);
+		pea_spinbutton->set_range(1.57, 2.5);
+		l_leg_fl_spinbutton->set_range(0.5, 1.0);
 		p_af_spinbutton->set_range(0, 5000);
 		d_af_spinbutton->set_range(0, 500);
 		p_lf_spinbutton->set_range(0, 5000);
 		d_lf_spinbutton->set_range(0, 500);
-		l_fl_spinbutton->set_range(0, 60);
-		l_leg_st_spinbutton->set_range(0.7, 1.0);
-		p_as_spinbutton->set_range(0, 5000);
-		d_as_spinbutton->set_range(0, 500);
-		p_ls_spinbutton->set_range(0, 5000);
+		l_fl_spinbutton->set_range(0, 1);
+		l_leg_st_spinbutton->set_range(0.5, 1.0);
+		d_as_spinbutton->set_range(0, 0.5);
+		p_ls_spinbutton->set_range(0, 6000);
 		d_ls_spinbutton->set_range(0, 500);
 		l_st_spinbutton->set_range(-60, 60);
 
@@ -91,7 +89,6 @@ void getParameters() {
 	nh.getParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
 	nh.getParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
 	nh.getParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
-	nh.getParam("/atrias_gui/p_as", controllerDataOut.p_as);
 	nh.getParam("/atrias_gui/d_as", controllerDataOut.d_as);
 	nh.getParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
 	nh.getParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
@@ -107,7 +104,6 @@ void getParameters() {
 	d_lf_spinbutton->set_value(controllerDataOut.d_lf);
 	l_fl_spinbutton->set_value(controllerDataOut.l_fl);
 	l_leg_st_spinbutton->set_value(controllerDataOut.l_leg_st);
-	p_as_spinbutton->set_value(controllerDataOut.p_as);
 	d_as_spinbutton->set_value(controllerDataOut.d_ls);
 	p_ls_spinbutton->set_value(controllerDataOut.p_ls);
 	d_ls_spinbutton->set_value(controllerDataOut.d_ls);
@@ -125,7 +121,6 @@ void setParameters() {
 	nh.setParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
 	nh.setParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
 	nh.setParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
-	nh.setParam("/atrias_gui/p_as", controllerDataOut.p_as);
 	nh.setParam("/atrias_gui/d_as", controllerDataOut.d_as);
 	nh.setParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
 	nh.setParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
@@ -144,7 +139,6 @@ void guiUpdate() {
 	controllerDataOut.d_lf     = d_lf_spinbutton->get_value();
 	controllerDataOut.l_fl     = l_fl_spinbutton->get_value();
 	controllerDataOut.l_leg_st = l_leg_st_spinbutton->get_value();
-	controllerDataOut.p_as     = p_as_spinbutton->get_value();
 	controllerDataOut.d_as     = d_as_spinbutton->get_value();
 	controllerDataOut.p_ls     = p_ls_spinbutton->get_value();
 	controllerDataOut.d_ls     = d_ls_spinbutton->get_value();

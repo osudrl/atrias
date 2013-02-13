@@ -9,13 +9,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Constant</col>
+        <col id="0" translatable="yes">Idle</col>
       </row>
       <row>
-        <col id="0" translatable="yes">PD</col>
+        <col id="0" translatable="yes">Manual</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Asymmetry</col>
+        <col id="0" translatable="yes">Automatic</col>
       </row>
     </data>
   </object>
@@ -110,10 +110,10 @@
                     <child>
                       <object class="GtkButton" id="gc_l_button">
                         <property name="label" translatable="yes">GC_L</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -124,10 +124,10 @@
                     <child>
                       <object class="GtkButton" id="gc_r_button">
                         <property name="label" translatable="yes">GC_R</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -240,7 +240,7 @@
                       <object class="GtkLabel" id="label3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">L_leg_fl</property>
+                        <property name="label" translatable="yes">min leg length (flight)</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -285,7 +285,7 @@
                           <object class="GtkLabel" id="label4">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">P_AF</property>
+                            <property name="label" translatable="yes">n/a</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -326,7 +326,7 @@
                           <object class="GtkLabel" id="label11">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">D_AF</property>
+                            <property name="label" translatable="yes">n/a</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -378,7 +378,7 @@
                           <object class="GtkLabel" id="label5">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">P_LF</property>
+                            <property name="label" translatable="yes">flight P</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -419,7 +419,7 @@
                           <object class="GtkLabel" id="label12">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">D_LF</property>
+                            <property name="label" translatable="yes">flight D</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -467,7 +467,7 @@
                       <object class="GtkLabel" id="label6">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">L_fl</property>
+                        <property name="label" translatable="yes">protraction [% flight phase]</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -535,7 +535,7 @@
                       <object class="GtkLabel" id="label7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">L_leg_st</property>
+                        <property name="label" translatable="yes">stance leg length</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -573,45 +573,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkHBox" id="hbox17">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel" id="label8">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">P_AS</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="p_as_spinbutton">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">●</property>
-                            <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
-                            <property name="digits">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox18">
@@ -621,7 +583,7 @@
                           <object class="GtkLabel" id="label13">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">D_AS</property>
+                            <property name="label" translatable="yes">angle overshoot</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -673,7 +635,7 @@
                           <object class="GtkLabel" id="label9">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">P_LS</property>
+                            <property name="label" translatable="yes">stance P</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -714,7 +676,7 @@
                           <object class="GtkLabel" id="label14">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">D_LS</property>
+                            <property name="label" translatable="yes">stance D</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -762,7 +724,7 @@
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">L_st</property>
+                        <property name="label" translatable="yes">current offset</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>

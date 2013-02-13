@@ -176,14 +176,12 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 
     amp=guiIn.l_leg_st-guiIn.l_leg_fl;
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		        //right leg angle
-	//logData.l_rLeg = cos((rs.rLeg.halfA.motorAngle-rs.rLeg.halfB.motorAngle)/2);	//right leg length
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		        //left leg angle
-	//logData.l_lLeg = cos((rs.lLeg.halfA.motorAngle-rs.lLeg.halfB.motorAngle)/2);	//left leg length
 	phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
 	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
 	logData.state = state;
-	//logData.phi_rLeg = phi_rLeg;
-	//logData.phi_lLeg = phi_lLeg;
+	max_phi_swing = guiIn.aea-(guiIn.pea-guiIn.aea)*guiIn.d_as;
+	
 	
    
 switch (state)
@@ -206,21 +204,21 @@ case 1:
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
-        s=0;
-        t=0;
+        //s=0;
+        //t=0;
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
-        s=0;
-        t=0;
+        //s=0;
+        //t=0;
 	}
 	break;
 case 2:
   	// state machine
-	//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping 
+	//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping automatically
 	    if ((state == 2) && (t>0.99))
 	{
 		state = 1;
@@ -249,8 +247,6 @@ default:
 	switch (state)																															//stance leg right, flight leg left
 	{
 	case 1:
-		//t = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
-	    //s = guiIn.l_fl * t;
 		if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance)
 		{																								// stance leg rotate to pea
 					// asymmetry - extend right leg
@@ -279,19 +275,16 @@ default:
 	//******************************************************************************************************************************************************************************************************************
 		if ((t < 1) && (!sw_flight)) 
         {
-			
-            			//map leg angle sweep of flight leg to 0->1
-						
-						if (s>1)
-                            s=1;
-						if (t>1)
-							t=1;
+						if (t<guiIn.l_fl){
+							phi_lLeg=guiIn.pea - ((t / guiIn.l_fl) * (guiIn.pea-max_phi_swing));
+						} else {
+							phi_lLeg=max_phi_swing + ( (t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.aea - max_phi_swing));
+						}
+						//map leg angle sweep of flight leg to 0->1
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (s*M_PI) * (-amp) + guiIn.l_leg_st;
+						l_swing = sin (t*M_PI) * (-amp) + guiIn.l_leg_st;
 						//##l_swing = sin (-M_PI/2 + 2 * M_PI * t) * (-amp/2) + guiIn.l_leg_fl + (amp / 2);
-						//l_swing = sin ( M_PI * s) * (-amp) + guiIn.l_leg_fl;
-						phi_lLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
-						//printf("s: %f t: %f l_swing: %f\n",s,t,l_swing);
+						//printf("left! t: %f, phi_min: %f, swing_leg angle: %f, l_swing: %f\n",t,max_phi_swing,phi_lLeg,l_swing);
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
@@ -349,16 +342,17 @@ default:
 		if ((t<1) && (!sw_flight))
         {
         				//map leg angle sweep of flight leg to 0->1
-						
 						//keep desired leg length -> shorten leg depending on leg position
-						if (s>1)
-                            s=1;
-						if (t>1)
-							t=1;
+						if (t<guiIn.l_fl){
+							phi_rLeg=guiIn.pea - (t / guiIn.l_fl) * (guiIn.pea-max_phi_swing);
+						} else {
+							phi_rLeg=max_phi_swing + ( (t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.aea - max_phi_swing));
+						}
 						//keep desired leg length -> shorten leg depending on leg position
-						l_swing = sin (s*M_PI) * (-amp) + guiIn.l_leg_st;
+						l_swing = sin (t*M_PI) * (-amp) + guiIn.l_leg_st;
+						//printf("right! t: %f, phi_min: %f, swing_leg angle: %f, l_swing: %f\n",t,max_phi_swing,phi_lLeg,l_swing);
 						//l_swing = sin (M_PI * s) * (-amp) + guiIn.l_leg_fl;
-						phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
+						//phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
 						P3.set(guiIn.p_lf);
