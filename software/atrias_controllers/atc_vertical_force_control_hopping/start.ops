@@ -8,6 +8,18 @@ loadComponent("controller", "ATCVerticalForceControlHopping")
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
+# ASCLegToMotorTransforms
+require("legToMotorTransforms")
+loadService("controller", "legToMotorTransforms")
+
+# ASCLegForce
+require("ascLegForce")
+loadService("controller", "ascLegForce")
+
+# ASCHipInverseKinematics
+require("ascHipInverseKinematics")
+loadService("controller", "ascHipInverseKinematics")
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3

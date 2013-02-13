@@ -37,7 +37,7 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
     log(Info) << "[ATCMT] Constructed!" << endlog();
 }
 
-// ATCVerticalForceControlHopping =========================================================
+// ATCVerticalForceControlHopping ==============================================
 atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atrias_msgs::robot_state rs) {
 
     // Do nothing unless told otherwise

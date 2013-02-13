@@ -55,6 +55,28 @@ private:
     OutputPort<controller_status>                   guiDataOut;
     InputPort<controller_input>                     guiDataIn;
 
+    // ASCLegToMotorTransforms
+    OperationCaller<MotorAngle(double, double)> legToMotorPos;
+
+    // ASCLegForce
+    OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
+
+	// ASCHipInverseKinematics
+	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
+	
+	// Leg position control variables
+	MotorAngle lMotorAngle;
+	MotorAngle rMotorAngle;
+	
+	// Leg force control variables
+	Gain gain;
+	LegForce legForce;
+	AB motorCurrent;
+	
+	// Hip control variables
+	LeftRight toePosition;
+	LeftRight hipAngle;
+	
 public:
     // Constructor
     ATCVerticalForceControlHopping(std::string name);
@@ -66,7 +88,8 @@ public:
     void stopHook();
     void cleanupHook();
 };
-}
-}
+
+} // namespace controller
+} // namespace atrias
 
 #endif
