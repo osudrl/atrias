@@ -47,6 +47,13 @@ struct SlipConditions {
 	double dr;
 	double q;
 	double dq;
+	bool isFlight;
+};
+struct SlipModel {
+	double g;
+	double ks;
+	double m;
+	double r0;
 };
 
 struct MotorAngle {

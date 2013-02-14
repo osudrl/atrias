@@ -14,5 +14,6 @@
   <depend package="asc_coordinate_transforms"/>
   <depend package="asc_leg_force"/>
   <depend package="asc_hip_inverse_kinematics"/>
+  <depend package="asc_slip_model_solver"/>
 
 </package>

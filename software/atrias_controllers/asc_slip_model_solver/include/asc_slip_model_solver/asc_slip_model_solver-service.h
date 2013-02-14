@@ -18,12 +18,11 @@ class ASCSlipModelSolver : public Service {
         ASCSlipModelSolver(TaskContext* owner);
 
         // Operations
-        SlipConditions slipAdvanceTimeStep(SlipConditions slipConditions);
-		LegForce slipConditionsToForce(SlipConditions slipConditions);
+        SlipConditions slipAdvanceTimeStep(SlipModel slipModel, SlipConditions slipConditions);
+		LegForce slipConditionsToForce(SlipModel slipModel, SlipConditions slipConditions);
 
     private:
 		double delta;
-		double g, ks, m, r0;
 		LegForce legForce;
 
 }; // class ASCSlipModelSolver

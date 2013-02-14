@@ -6,8 +6,6 @@
 // Initialize ==================================================================
 #include <atc_force_control_demo/controller_component.h>
 
-double t = 0.0;
-
 namespace atrias {
 namespace controller {
 
@@ -24,6 +22,9 @@ ATCForceControlDemo::ATCForceControlDemo(std::string name):
     addEventPort(guiDataIn);
     addPort(guiDataOut);
     pubTimer = new GuiPublishTimer(20);
+    
+    // Initalize variables
+    t = 0.0;
 
     // Logging
     // Create a port
@@ -107,11 +108,11 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 
 	if (guiIn.right_leg_pos) {		
 		// Set motor angles
-		lMotorAngle = legToMotorPos(guiIn.right_leg_ang, guiIn.right_leg_len);
+		rMotorAngle = legToMotorPos(guiIn.right_leg_ang, guiIn.right_leg_len);
 
 		// Set motor currents
-		co.rLeg.motorCurrentA = guiIn.leg_pos_kp*(lMotorAngle.A - rs.rLeg.halfA.motorAngle) + guiIn.leg_pos_kd*(0.0 - rs.rLeg.halfA.motorVelocity);
-		co.rLeg.motorCurrentB = guiIn.leg_pos_kp*(lMotorAngle.B - rs.rLeg.halfB.motorAngle) + guiIn.leg_pos_kd*(0.0 - rs.rLeg.halfB.motorVelocity);
+		co.rLeg.motorCurrentA = guiIn.leg_pos_kp*(rMotorAngle.A - rs.rLeg.halfA.motorAngle) + guiIn.leg_pos_kd*(0.0 - rs.rLeg.halfA.motorVelocity);
+		co.rLeg.motorCurrentB = guiIn.leg_pos_kp*(rMotorAngle.B - rs.rLeg.halfB.motorAngle) + guiIn.leg_pos_kd*(0.0 - rs.rLeg.halfB.motorVelocity);
 
 	} else if (guiIn.right_leg_for) {
 		// Get component forces from GUI, velocities equal to zero.

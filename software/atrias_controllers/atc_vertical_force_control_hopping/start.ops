@@ -20,6 +20,10 @@ loadService("controller", "ascLegForce")
 require("ascHipInverseKinematics")
 loadService("controller", "ascHipInverseKinematics")
 
+# ASCSlipModelSolver
+require("ascSlipModelSolver")
+loadService("controller", "ascSlipModelSolver")
+
 # Set up the gui connection
 var ConnPolicy gui_policy
 gui_policy.transport = 3

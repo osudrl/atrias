@@ -63,6 +63,9 @@ private:
 	// ASCHipInverseKinematics
 	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
 	
+	// Time
+	double t;
+	
 	// Leg position control variables
 	MotorAngle lMotorAngle;
 	MotorAngle rMotorAngle;

@@ -51,7 +51,7 @@ LeftRight ASCHipInverseKinematics::toePositionToHipAngle(LeftRight toePosition, 
     lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly.
     qBodyOffset = M_PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane.
 
-	// TODO - Get leg lengths and angles from robot state?
+	// Get leg lengths and angles.
     lLeftLeg = (l1 + l2)*cos((lLeg.halfB.legAngle - lLeg.halfA.legAngle)/2.0);
     lRightLeg = (l1 + l2)*cos((rLeg.halfB.legAngle - rLeg.halfA.legAngle)/2.0);
     qLeftLeg = (lLeg.halfA.legAngle + lLeg.halfB.legAngle)/2.0;

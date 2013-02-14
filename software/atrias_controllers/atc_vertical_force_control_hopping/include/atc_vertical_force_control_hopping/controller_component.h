@@ -2,7 +2,7 @@
 #define __ATC_VERTICAL_FORCE_CONTROL_HOPPING_H__
 
 /*! \file controller_component.h
- *  \author Andrew Peekema
+ *  \author Mikhail Jones
  *  \brief Orocos Component header for atc_vertical_force_control_hopping controller.
  */
 
@@ -64,12 +64,24 @@ private:
 	// ASCHipInverseKinematics
 	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
 	
+	// ASCSlipModelSolver
+	OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
+	OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
+	
+	// Variables
+	bool isStance;
+	bool isLeftStance;
+	bool isRightStance;
+	
 	// Leg position control variables
 	MotorAngle lMotorAngle;
 	MotorAngle rMotorAngle;
+	double leftLegLen, leftLegAng, rightLegLen, rightLegAng;
 	
 	// Leg force control variables
 	Gain gain;
+	SlipConditions slipConditions;
+	SlipModel slipModel;
 	LegForce legForce;
 	AB motorCurrent;
 	
