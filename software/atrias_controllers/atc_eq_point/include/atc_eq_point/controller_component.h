@@ -146,6 +146,7 @@ class ATCEqPoint : public TaskContext {
 		double  phi_MfB;
 		double  phiAf_des;
 		double  phiBs_des;
+		double  max_phi_swing;
 
 		// For the GUI
 		shared::GuiPublishTimer     *pubTimer;
