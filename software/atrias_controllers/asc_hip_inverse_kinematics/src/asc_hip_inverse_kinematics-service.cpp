@@ -5,25 +5,29 @@
 // Usage: To use this subcontroller, add the following pieces of code to the the designated files in your controller folder.
 
 // Manifest.xml
-// - <depend package="asc_hip_inverse_kinematics"/>
+// <depend package="asc_hip_inverse_kinematics"/>
 
 // Start.ops
-// - # ASCHipInverseKinematics
-// - require("ascHipInverseKinematics")
-// - loadService("controller", "ascHipInverseKinematics")
+// # ASCHipInverseKinematics
+// require("ascHipInverseKinematics")
+// loadService("controller", "ascHipInverseKinematics")
 
 // component_controller.cpp
-// - // ASCHipInverseKinematics Service
-// - toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
+// // ASCHipInverseKinematics Service
+// toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
 
 // component_controller.h
-// - // ASCHipInverseKinematics
-// - OperationCaller<HipAngle(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position)> toePositionToHipAngle;
+// // ASCHipInverseKinematics
+// OperationCaller<HipAngle(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position)> toePositionToHipAngle;
 
 // To use do something like this.
-// - hipAngle = toePositionToHipAngle(toePosition, lLeg, rLeg, position);
+// // Define toePosition struct.
+// toePosition.left = 2.15;
+// toePosition.right = 2.45;
+//
+// // Compute and set hipAngle.
+// hipAngle = toePositionToHipAngle(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
-// TODO - Use predefined robot state structure.
 
 #include <asc_hip_inverse_kinematics/asc_hip_inverse_kinematics-service.h>
 
@@ -69,12 +73,11 @@ LeftRight ASCHipInverseKinematics::toePositionToHipAngle(LeftRight toePosition, 
 	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*M_PI, 2.0*M_PI);
 
 	// TODO - Clamp hip angles to physical limits.
-	// hipAngle.left = (hipAngle.left);
-	// hipAngle.right = (hipAngle.right);
 	
 	return hipAngle;
 
 } // ASCHipInverseKinematics
+
 
 ORO_SERVICE_NAMED_PLUGIN(ASCHipInverseKinematics, "ascHipInverseKinematics")
 

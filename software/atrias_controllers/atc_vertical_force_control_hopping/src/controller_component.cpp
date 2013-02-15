@@ -93,7 +93,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 	}
 	
     // Check and set current state
-    if (rs.position.zPosition < guiIn.slip_l0 || guiIn.debug1) { // TODO remove stance debug
+    if (rs.position.zPosition < guiIn.slip_l0) {
         isStance = true;
     } else {
         isStance = false;

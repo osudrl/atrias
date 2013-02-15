@@ -5,25 +5,40 @@
 // Usage: To use this subcontroller, add the following pieces of code to the the designated files in your controller folder.
 
 // Manifest.xml
-// - <depend package="asc_leg_force"/>
+// <depend package="asc_leg_force"/>
 
 // Start.ops
-// - # ASCLegForce
-// - require("ascLegForce")
-// - loadService("controller", "ascLegForce")
+// # ASCLegForce
+// require("ascLegForce")
+// loadService("controller", "ascLegForce")
 
 // component_controller.cpp
-// - // ASCLegForce Service
-// - legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
+// // ASCLegForce Service
+// legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
 
 // component_controller.h
-// - // ASCLegForce
-// - OperationCaller<MotorCurrent(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
+// // ASCLegForce
+// OperationCaller<MotorCurrent(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
 
 // To use do something like this.
-// - motorCurrent = legForceToMotorCurrent(legForce, gain, leg, position);
-// - co.rLeg.motorCurrentA = motorCurrent.A;
-// - co.rLeg.motorCurrentB = motorCurrent.B;
+//
+// // Define gain struct
+// gain.kp = 1000.0;
+// gain.kd = 8.0;
+// gain.ks = 4118.0;
+// gain.kg = 50.0;    
+// gain.kt = 0.0987;
+//
+// // Define legForce struct.
+// legForce.fx = 0.0;
+// legForce.fz = 0.0;
+// legForce.dfx = 0.0;
+// legForce.dfz = 0.0;
+//
+// // Compute and set required motorCurrent
+// motorCurrent = legForceToMotorCurrent(legForce, gain, rs.lLeg, rs.position);
+// co.rLeg.motorCurrentA = motorCurrent.A;
+// co.rLeg.motorCurrentB = motorCurrent.B;
 
 #include <asc_leg_force/asc_leg_force-service.h>
 
@@ -38,19 +53,6 @@ ASCLegForce::ASCLegForce(TaskContext* owner):Service("ascLegForce", owner) {
 
 // ASCLegForce legForce ========================================================
 AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
-
-    // Example gain struct.
-    //gain.ks = 3800.0;
-    //gain.kg = 50.0;    
-	//gain.kp = 4000.0;
-	//gain.kd = 20.0;
-	//gain.kt = 0.11;
-	
-	// Example legForce struct.
-	//legForce.fx = 0.0;
-	//legForce.fz = 0.0;
-	//legForce.dfx = 0.0;
-	//legForce.dfz = 0.0;
 
 	// Declare robot parameters.
 	l1 = 0.50;
@@ -68,7 +70,7 @@ AB ASCLegForce::legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs
 	motorCurrent.A = (gain.ks*(leg.halfA.motorAngle - leg.halfA.legAngle)/gain.kg + gain.kp*(tauSpringA/gain.ks - (leg.halfA.motorAngle - leg.halfA.legAngle)) + gain.kd*(dtauSpringA/gain.ks - (leg.halfA.motorVelocity - leg.halfA.legVelocity)))/gain.kt;
 	motorCurrent.B = (gain.ks*(leg.halfB.motorAngle - leg.halfB.legAngle)/gain.kg + gain.kp*(tauSpringB/gain.ks - (leg.halfB.motorAngle - leg.halfB.legAngle)) + gain.kd*(dtauSpringB/gain.ks - (leg.halfB.motorVelocity - leg.halfB.legVelocity)))/gain.kt;
 
-	// Debug statements.
+	// DEBUG STATEMENTS (Not real-time safe)
 	//printf("tauA: %f\n", tauSpringA);
 	//printf("taub: %f\n", tauSpringB);
 	//printf("dtauA: %f\n", dtauSpringA);

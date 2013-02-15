@@ -5,28 +5,42 @@
 // Usage: To use this subcontroller, add the following pieces of code to the the designated files in your controller folder.
 
 // Manifest.xml
-// - <depend package="asc_slip_model_solver"/>
+// <depend package="asc_slip_model_solver"/>
 
 // Start.ops
-// - # ASCSlipModelSolver
-// - require("ascSlipModelSolver")
-// - loadService("controller", "ascSlipModelSolver")
+// # ASCSlipModelSolver
+// require("ascSlipModelSolver")
+// loadService("controller", "ascSlipModelSolver")
 
 // component_controller.cpp
-// - // ASCSlipModelSolver Service
-// - slipAdvanceTimeStep = this->provides("ascSlipModelSolver")->getOperation("slipAdvanceTimeStep");
-// - slipConditionsToForce = this->provides("ascSlipModelSolver")->getOperation("slipConditionsToForce");
+// // ASCSlipModelSolver Service
+// slipAdvanceTimeStep = this->provides("ascSlipModelSolver")->getOperation("slipAdvanceTimeStep");
+// slipConditionsToForce = this->provides("ascSlipModelSolver")->getOperation("slipConditionsToForce");
 
 // component_controller.h
-// - // ASCSlipModelSolver
-// - OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
-// - OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
+// // ASCSlipModelSolver
+// OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
+// OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
 
 // To use do something like this.
-// - slipConditions = slipAdvanceTimeStep(slipModel, slipConditions);
-// - legForce = slipConditionsToForce(slipModel, slipConditions);
+// // Define slipModel struct.
+// slipModel.g = -9.81;
+// slipModel.ks = 16000.0;
+// slipModel.m = 60.0;
+// slipModel.r0 = 0.85;
+//
+// // Define slipConditions struct.
+// slipConditions.r = 0.85;
+// slipConditions.dr = -sqrt(2.0*9.81*0.05);
+// slipConditions.q = M_PI/2.0;
+// slipConditions.dq = 0.0;
+//
+// // Compute and set legForce.
+// slipConditions = slipAdvanceTimeStep(slipModel, slipConditions);
+// legForce = slipConditionsToForce(slipModel, slipConditions);
 
 // TODO - Add error catch incase structs are empty.
+
 
 #include <asc_slip_model_solver/asc_slip_model_solver-service.h>
 
@@ -47,12 +61,6 @@ ASCSlipModelSolver::ASCSlipModelSolver(TaskContext* owner):Service("ascSlipModel
 // slipAdvanceTimeStep =========================================================
 SlipConditions ASCSlipModelSolver::slipAdvanceTimeStep(SlipModel slipModel, SlipConditions slipConditions) {
 
-	// Example slipModel struct.
-	//slipModel.g = -9.81;
-	//slipModel.ks = 16000.0;
-	//slipModel.m = 60.0;
-	//slipModel.r0 = 0.85;
-	
 	// Advance time step.
 	slipConditions.rOld = slipConditions.r;
 	slipConditions.drOld = slipConditions.dr;
@@ -82,7 +90,7 @@ SlipConditions ASCSlipModelSolver::slipAdvanceTimeStep(SlipModel slipModel, Slip
 
 	}
 	
-	// Debug statements.
+	// DEBUG STATEMENTS (Not real-time safe).
 	//printf("r: %f\n", slipConditions.r);
 	//printf("dr: %f\n", slipConditions.dr);
 	//printf("q: %f\n", slipConditions.q);
@@ -113,7 +121,7 @@ LegForce ASCSlipModelSolver::slipConditionsToForce(SlipModel slipModel, SlipCond
 		legForce.dfz = slipModel.ks*(slipConditions.dr - 0.0)*sin(slipConditions.q);
 	}
 
-	// Debug statements.
+	// DEBUG STATEMENTS (Not real-time safe).
 	//printf("fx: %f\n", legForce.fx);
 	//printf("fz: %f\n", legForce.fz);
 	//printf("dfx: %f\n", legForce.dfx);
@@ -122,6 +130,7 @@ LegForce ASCSlipModelSolver::slipConditionsToForce(SlipModel slipModel, SlipCond
 	return legForce;
 
 } // slipConditionsToForce
+
 
 ORO_SERVICE_NAMED_PLUGIN(ASCSlipModelSolver, "ascSlipModelSolver")
 
