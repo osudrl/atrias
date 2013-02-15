@@ -64,12 +64,10 @@ SlipConditions ASCSlipModelSolver::slipAdvanceTimeStep(SlipModel slipModel, Slip
 
 	if (slipConditions.r > slipModel.r0) {
 		// Do nothing because we are not in stance.
-		printf("SLIP: DO NOTHING!\n");
 		slipConditions.isFlight = true;
 		
 	} else {
 		// We are in stance.
-		printf("SLIP: NEXT TIME STEP!\n");
 		slipConditions.isFlight = false;
 		
 		// Advance to next timestep because we are in stance.

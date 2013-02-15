@@ -52,10 +52,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("right_leg_wave_for_radiobutton", right_leg_wave_for_radiobutton);
     
 	// Set ranges.
-    leg_pos_kp_spinbutton->set_range(0.0, 7500.0);
-    leg_pos_kd_spinbutton->set_range(0.0, 150.0);
-    leg_for_kp_spinbutton->set_range(0.0, 7500.0);
-    leg_for_kd_spinbutton->set_range(0.0, 150.0);
+    leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
+    leg_pos_kd_spinbutton->set_range(0.0, 100.0);
+    leg_for_kp_spinbutton->set_range(0.0, 1500.0);
+    leg_for_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kp_spinbutton->set_range(0.0, 250.0);
     hip_pos_kd_spinbutton->set_range(0.0, 25.0);
     robot_ks_spinbutton->set_range(0.0, 10000.0);
@@ -89,10 +89,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set default values
     leg_pos_kp_spinbutton->set_value(500.0);
     leg_pos_kd_spinbutton->set_value(25.0);
-    leg_for_kp_spinbutton->set_value(5000.0);
-    leg_for_kd_spinbutton->set_value(25.0);
-    hip_pos_kp_spinbutton->set_value(100.0);
-    hip_pos_kd_spinbutton->set_value(5.0);
+    leg_for_kp_spinbutton->set_value(1000.0);
+    leg_for_kd_spinbutton->set_value(8.0);
+    hip_pos_kp_spinbutton->set_value(150.0);
+    hip_pos_kd_spinbutton->set_value(8.0);
     robot_ks_spinbutton->set_value(4118.0);
     robot_kt_spinbutton->set_value(0.0987);
     robot_kg_spinbutton->set_value(50.0);

@@ -39,8 +39,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set ranges.
     leg_pos_kp_spinbutton->set_range(0.0, 1000.0);
     leg_pos_kd_spinbutton->set_range(0.0, 100.0);
-    leg_for_kp_spinbutton->set_range(0.0, 5000.0);
-    leg_for_kd_spinbutton->set_range(0.0, 100.0);
+    leg_for_kp_spinbutton->set_range(0.0, 1500.0);
+    leg_for_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kp_spinbutton->set_range(0.0, 250.0);
     hip_pos_kd_spinbutton->set_range(0.0, 25.0);
     robot_ks_spinbutton->set_range(0.0, 10000.0);
@@ -60,22 +60,22 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     // Set values
     leg_pos_kp_spinbutton->set_value(500.0);
     leg_pos_kd_spinbutton->set_value(25.0);
-    leg_for_kp_spinbutton->set_value(5000.0);
-    leg_for_kd_spinbutton->set_value(25.0);
-    hip_pos_kp_spinbutton->set_value(100.0);
-    hip_pos_kd_spinbutton->set_value(7.5);
-    robot_ks_spinbutton->set_value(4118.0);//4118.0
+    leg_for_kp_spinbutton->set_value(1000.0);
+    leg_for_kd_spinbutton->set_value(8.0);
+    hip_pos_kp_spinbutton->set_value(150.0);
+    hip_pos_kd_spinbutton->set_value(8.0);
+    robot_ks_spinbutton->set_value(4118.0);
     robot_kt_spinbutton->set_value(0.0987);
     robot_kg_spinbutton->set_value(50.0);
     left_toe_pos_spinbutton->set_value(2.15);
     right_toe_pos_spinbutton->set_value(2.45);
-    left_leg_len_spinbutton->set_value(0.85);
-    right_leg_len_spinbutton->set_value(0.85);
+    left_leg_len_spinbutton->set_value(0.875);
+    right_leg_len_spinbutton->set_value(0.875);
     left_leg_ang_spinbutton->set_value(M_PI/2.0);
     right_leg_ang_spinbutton->set_value(M_PI/2.0);
     slip_h_spinbutton->set_value(0.05);
-    slip_l0_spinbutton->set_value(0.85);
-    slip_m_spinbutton->set_value(60.0);
+    slip_l0_spinbutton->set_value(0.825);
+    slip_m_spinbutton->set_value(70.0);
     slip_k_spinbutton->set_value(16000.0);
 
 	// Set up subscriber and publisher.
