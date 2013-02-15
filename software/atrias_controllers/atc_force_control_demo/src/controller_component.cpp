@@ -49,7 +49,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
     co.lLeg.motorCurrentHip = 0.0;
     co.rLeg.motorCurrentA   = 0.0;
     co.rLeg.motorCurrentB   = 0.0;
-    co.rLeg.motorCurrentHip = 0.0;
+    co.rLeg.motorCurrentHip = 0.0; 
 
     // Only run the controller when we're enabled
     if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED)
@@ -57,15 +57,20 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 
     // BEGIN CONTROL CODE ******************************************************
 
-	// Increment time step
-	t = t + 0.001;
-
-	// Set force control gains
-	gain.kp = guiIn.leg_for_kp;
+    // Initialize variables
+    legForce.fx = 0.0;
+    legForce.fz = 0.0;
+    legForce.dfx = 0.0;
+    legForce.dfz = 0.0;
+    gain.kp = guiIn.leg_for_kp;
 	gain.kd = guiIn.leg_for_kd;
 	gain.ks = guiIn.robot_ks;
 	gain.kg = guiIn.robot_kg;
 	gain.kt = guiIn.robot_kt;
+
+	// Increment time step
+	t = t + 0.001;
+
 
 	// Left leg controller -----------------------------------------------------
 
@@ -178,7 +183,11 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
     if (pubTimer->readyToSend()) guiDataOut.write(guiOut);
 
     // Stuff the msg and push to ROS for logging
-    logData.desiredState = 0.0;
+	logData.header = getROSHeader();
+	logData.fx = legForce.fx;
+	logData.fz = legForce.fz;
+	logData.dfx = legForce.dfx;
+	logData.dfz = legForce.dfz;
     logPort.write(logData);
 
     // Output for RTOps
@@ -200,6 +209,15 @@ bool ATCForceControlDemo::configureHook() {
 	// ASCHipInverseKinematics Service
 	toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
 
+	// Log controller data
+    RTT::TaskContext* rtOpsPeer = this->getPeer("Deployer")->getPeer("atrias_rt");
+    if (rtOpsPeer) {
+        getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
+    }
+    else {
+        log(Warning) << "[ATCMT] Can't connect to the Deployer" << endlog();
+    }
+       
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 

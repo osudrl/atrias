@@ -252,7 +252,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
     if (pubTimer->readyToSend()) guiDataOut.write(guiOut);
 
     // Stuff the msg and push to ROS for logging
-    logData.desiredState = 0.0;
+    logData.header = getROSHeader();
     logPort.write(logData);
 
     // Output for RTOps
@@ -278,7 +278,17 @@ bool ATCVerticalForceControlHopping::configureHook() {
 	slipAdvanceTimeStep = this->provides("ascSlipModelSolver")->getOperation("slipAdvanceTimeStep");
 	slipConditionsToForce = this->provides("ascSlipModelSolver")->getOperation("slipConditionsToForce");
 
+	// Log controller data
+    RTT::TaskContext* rtOpsPeer = this->getPeer("Deployer")->getPeer("atrias_rt");
+    if (rtOpsPeer) {
+        getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
+    }
+    else {
+        log(Warning) << "[ATCMT] Can't connect to the Deployer" << endlog();
+    }
+    
     log(Info) << "[ATCMT] configured!" << endlog();
+    
     return true;
 
 } // configureHook

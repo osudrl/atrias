@@ -92,6 +92,9 @@ private:
 public:
     // Constructor
     ATCVerticalForceControlHopping(std::string name);
+    
+    // Log controller data
+    RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
     // Standard Orocos hooks
     bool configureHook();
