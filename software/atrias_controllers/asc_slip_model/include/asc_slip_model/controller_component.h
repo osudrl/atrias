@@ -24,13 +24,13 @@
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_slip_model;
+using namespace std; // might not need
 
 namespace atrias {
 namespace controller {
 
 // ASCSlipModel ================================================================
 class ASCSlipModel : public TaskContext {
-
 	private:
 	    // Operations
     	SlipConditions slipAdvance(SlipModel slipModel, SlipConditions slipConditions);
@@ -48,8 +48,7 @@ class ASCSlipModel : public TaskContext {
     	// Constructor
     	ASCSlipModel(std::string name);
     	
-    	/** @brief Get ROS header from RTOps.
-     	*/
+    	// Get ROS header from RTOps.
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
     	// Standard Orocos hooks

@@ -27,7 +27,7 @@
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_hip_boom_kinematics;
-using namespace std;
+using namespace std; // might not need
 
 namespace atrias {
 namespace controller {
@@ -56,8 +56,7 @@ class ASCHipBoomKinematics : public TaskContext {
     	// Constructor
     	ASCHipBoomKinematics(std::string name);
     	
-    	/** @brief Get ROS header from RTOps.
-     	*/
+    	// Get ROS header from RTOps.
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
 	    // Standard Orocos hooks

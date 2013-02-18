@@ -19,7 +19,13 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
     this->provides("atc")->addOperation("runController", &ATCVerticalForceControlHopping::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
     
     // ASCHipBoomKinematics
-    this->addProperty("hip0Name", hip0Name);
+    this->addProperty("ascHipBoomKinematics0Name", ascHipBoomKinematics0Name);
+    
+	// ASCLegForceControl
+	this->addProperty("ascLegForceControl0Name", ascLegForceControl0Name);
+
+	// ASCSlipModel
+	this->addProperty("ascSlipModel0Name", ascSlipModel0Name);
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -120,8 +126,8 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 		if (isStance) {
 			
 	       	// Compute SLIP force profile
-        	slipConditions = slipAdvanceTimeStep(slipModel, slipConditions);
-			legForce = slipConditionsToForce(slipModel, slipConditions);
+        	slipConditions = slipAdvance0(slipModel, slipConditions);
+			legForce = slipForce0(slipModel, slipConditions);
 				
 			// If we are two leg hopping each leg takes half the load.
 			if (guiIn.two_leg_hop) {
@@ -148,7 +154,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
     				leftLegAng = (rs.lLeg.halfA.legAngle + rs.lLeg.halfB.legAngle)/2.0;
 					
       				// Compute and set motor current values
-					motorCurrent = legForceToMotorCurrent(legForce, gain, rs.lLeg, rs.position);
+					motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.lLeg, rs.position);
 					co.lLeg.motorCurrentA = motorCurrent.A;
 					co.lLeg.motorCurrentB = motorCurrent.B;
 				}
@@ -179,7 +185,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
     				rightLegAng = (rs.rLeg.halfA.legAngle + rs.rLeg.halfB.legAngle)/2.0;
 					
       				// Compute and set motor current values
-					motorCurrent = legForceToMotorCurrent(legForce, gain, rs.rLeg, rs.position);
+					motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.rLeg, rs.position);
 					co.rLeg.motorCurrentA = motorCurrent.A;
 					co.rLeg.motorCurrentB = motorCurrent.B;
 				}
@@ -233,7 +239,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 		toePosition.right = guiIn.right_toe_pos;
 		
 		// Compute inverse kinematics
-		hipAngle = hip0inverseKinematics(toePosition, rs.lLeg, rs.rLeg, rs.position);
+		hipAngle = inverseKinematics0(toePosition, rs.lLeg, rs.rLeg, rs.position);
 		
         // Set motor currents
         co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
@@ -266,27 +272,26 @@ bool ATCVerticalForceControlHopping::configureHook() {
 
 	// ASCLegToMotorTransforms Service
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
-
-	// ASCLegForce Service
-	legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
-
+		
 	// ASCHipInverseKinematics Service
-	toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
-	
-	// ASCSlipModelSolver Service
-	slipAdvanceTimeStep = this->provides("ascSlipModelSolver")->getOperation("slipAdvanceTimeStep");
-	slipConditionsToForce = this->provides("ascSlipModelSolver")->getOperation("slipConditionsToForce");
-	
-	
-	
-	// ASCHipInverseKinematics Service
-	hip0 = this->getPeer(hip0Name);
-	if (hip0) {
-		hip0inverseKinematics = hip0->provides("ascHipBoomKinematics")->getOperation("inverseKinematics");
+	ascHipBoomKinematics0 = this->getPeer(ascHipBoomKinematics0Name);
+	if (ascHipBoomKinematics0) {
+		inverseKinematics0 = ascHipBoomKinematics0->provides("ascHipBoomKinematics")->getOperation("inverseKinematics");
 	}
 	
+	// ASCLegForceControl Service
+	ascLegForceControl0 = this->getPeer(ascLegForceControl0Name);
+	if (ascLegForceControl0) {
+		legForceToMotorCurrent0 = ascLegForceControl0->provides("ascLegForceControl")->getOperation("legForceToMotorCurrent");
+	}
 	
-
+	// ASCSlipModel Service
+	ascSlipModel0 = this->getPeer(ascSlipModel0Name);
+	if (ascSlipModel0) {
+		slipAdvance0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+		slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipForce");
+	}
+	
 	// Log controller data  
     log(Info) << "[ATCMT] configured!" << endlog();
     

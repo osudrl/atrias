@@ -15,18 +15,21 @@
 
 // C
 #include <stdlib.h>
-
 #include <robot_invariant_defs.h>
 
 // Datatypes
 #include <asc_leg_force_control/controller_log_data.h>
+#include <atrias_msgs/robot_state.h>
+#include <atrias_shared/controller_structs.h>
 
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_leg_force_control;
+using namespace std; // might not need
 
 namespace atrias {
 namespace controller {
+
 
 // ASCLegForceControl ==========================================================
 class ASCLegForceControl : public TaskContext {
@@ -48,8 +51,7 @@ class ASCLegForceControl : public TaskContext {
     	// Constructor
     	ASCLegForceControl(std::string name);
     	
-    	/** @brief Get ROS header from RTOps.
-     	*/
+    	// Get ROS header from RTOps.
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
     	// Standard Orocos hooks

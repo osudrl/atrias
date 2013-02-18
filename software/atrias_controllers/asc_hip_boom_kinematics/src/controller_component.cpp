@@ -18,7 +18,7 @@
 
 // Stop.ops
 // # ASCHipBoomKinematics
-//unloadComponent(controller.ascHipBoomKinematics0Name)
+// unloadComponent(controller.ascHipBoomKinematics0Name)
 
 // component_controller.cpp
 // In the first constructor function (has the same name as your controller)
@@ -35,7 +35,7 @@
 // // ASCHipBoomKinematics
 // std::string ascHipBoomKinematics0Name;
 // TaskContext *ascHipBoomKinematics0;
-// OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> hip0inverseKinematics;
+// OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> inverseKinematics0;
 
 // To use do something like this.
 // // Define toePosition struct.

@@ -57,22 +57,22 @@ class ATCVerticalForceControlHopping : public TaskContext {
 
 		// ASCLegToMotorTransforms
 		OperationCaller<MotorAngle(double, double)> legToMotorPos;
-
-		// ASCLegForce
-		OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
-
-		// ASCHipInverseKinematics
-		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
-	
+		
 		// ASCHipBoomKinematics
-		std::string hip0Name;
-		TaskContext *hip0;
-		//Property<double> P0;
-		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> hip0inverseKinematics;
-	
-		// ASCSlipModelSolver
-		OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
-		OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
+		std::string ascHipBoomKinematics0Name;
+		TaskContext *ascHipBoomKinematics0;
+		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> inverseKinematics0;
+		
+		// ASCLegForceControl
+		std::string ascLegForceControl0Name;
+		TaskContext *ascLegForceControl0;
+		OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent0;
+
+		// ASCSlipModel
+		std::string ascSlipModel0Name;
+		TaskContext *ascSlipModel0;
+		OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvance0;
+		OperationCaller<LegForce(SlipModel, SlipConditions)> slipForce0;
 	
 		// Variables
 		bool isStance;

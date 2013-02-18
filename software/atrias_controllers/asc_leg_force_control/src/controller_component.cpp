@@ -9,16 +9,33 @@
 
 // Start.ops
 // # ASCLegForceControl
-// require("ascLegForceControl")
-// loadService("controller", "ascLegForceControl")
+// import("asc_leg_force_control")
+// var string ascLegForceControl0Name = atrias_cm.getUniqueName("controller", "ascLegForceControl")
+// loadComponent(ascLegForceControl0Name, "ASCLegForceControl")
+// addPeer("controller", ascLegForceControl0Name)
+// connectPeers("Deployer", ascLegForceControl0Name)
+// controller.ascLegForceControl0Name = ascLegForceControl0Name
+
+// Stop.ops
+// # ASCLegForceControl
+// unloadComponent(controller.ascLegForceControl0Name)
 
 // component_controller.cpp
+// In the first constructor function (has the same name as your controller)
+// // ASCLegForceControl
+// this->addProperty("ascLegForceControl0Name", ascLegForceControl0Name);
+// In the configure hook function
 // // ASCLegForceControl Service
-// legForceToMotorCurrent = this->provides("ascLegForceControl")->getOperation("legForceToMotorCurrent");
+// ascLegForceControl0 = this->getPeer(ascLegForceControl0Name);
+// if (ascLegForceControl0) {
+// 	legForceToMotorCurrent0 = ascLegForceControl0->provides("ascLegForceControl")->getOperation("legForceToMotorCurrent");
+// }
 
 // component_controller.h
 // // ASCLegForceControl
-// OperationCaller<MotorCurrent(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
+// std::string ascLegForceControl0Name;
+// TaskContext *ascLegForceControl0;
+// OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent0;
 
 // To use do something like this.
 //
@@ -53,7 +70,7 @@ ASCLegForceControl::ASCLegForceControl(std::string name):
     logPort(name + "_log") {
     
     // Add operations
-    this->addOperation("legForceToMotorCurrent", &ASCLegForceControl::legForceToMotorCurrent, this).doc("Given a desired X-Z component force, returns the required motor current.");
+    this->provides("ascLegForceControl")->addOperation("legForceToMotorCurrent", &ASCLegForceControl::legForceToMotorCurrent, this).doc("Given a desired X-Z component force, returns the required motor current.");
     
     // Add properties
     //this->addProperty("P", P).doc("P gain");

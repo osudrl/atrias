@@ -2,7 +2,13 @@
 controller.stop()
 
 # ASCHipBoomKinematics
-unloadComponent(controller.hip0Name)
+unloadComponent(controller.ascHipBoomKinematics0Name)
+
+# ASCLegForceControl
+unloadComponent(controller.ascLegForceControl0Name)
+
+# ASCSlipModel
+unloadComponent(controller.ascSlipModel0Name)
 
 controller.cleanup()
 unloadComponent("controller")

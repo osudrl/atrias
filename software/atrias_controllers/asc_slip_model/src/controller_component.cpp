@@ -9,18 +9,35 @@
 
 // Start.ops
 // # ASCSlipModel
-// require("ascSlipModel")
-// loadService("controller", "ascSlipModel")
+// import("asc_slip_model")
+// var string ascSlipModel0Name = atrias_cm.getUniqueName("controller", "ascSlipModel")
+// loadComponent(ascSlipModel0Name, "ASCSlipModel")
+// addPeer("controller", ascSlipModel0Name)
+// connectPeers("Deployer", ascSlipModel0Name)
+// controller.ascSlipModel0Name = ascSlipModel0Name
+
+// Stop.ops
+// # ASCSlipModel
+// unloadComponent(controller.ascSlipModel0Name)
 
 // component_controller.cpp
+// In the first constructor function (has the same name as your controller)
+// // ASCSlipModel
+// this->addProperty("ascSlipModel0Name", ascSlipModel0Name);
+// In the configure hook function
 // // ASCSlipModel Service
-// slipAdvance = this->provides("ascSlipModel")->getOperation("slipAdvance");
-// slipForce = this->provides("ascSlipModel")->getOperation("slipForce");
+// ascSlipModel0 = this->getPeer(ascSlipModel0Name);
+// if (ascSlipModel0) {
+// 	slipAdvance0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+// 	slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+// }
 
 // component_controller.h
 // // ASCSlipModel
-// OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvance;
-// OperationCaller<LegForce(SlipModel, SlipConditions)> slipForce;
+// std::string ascSlipModel0Name;
+// TaskContext *ascSlipModel0;
+// OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvance0;
+// OperationCaller<LegForce(SlipModel, SlipConditions)> slipForce0;
 
 // To use do something like this.
 // // Define slipModel struct.
@@ -36,8 +53,8 @@
 // slipConditions.dq = 0.0;
 //
 // // Compute and set legForce.
-// slipConditions = slipAdvance(slipModel, slipConditions);
-// legForce = slipForce(slipModel, slipConditions);
+// slipConditions = slipAdvance0(slipModel, slipConditions);
+// legForce = slipForce0(slipModel, slipConditions);
 
 // TODO - Add data logging.
 // TODO - Add error catch incase structs are empty.
@@ -55,9 +72,9 @@ ASCSlipModel::ASCSlipModel(std::string name):
 	logPort(name + "_log") {
 
 	// Add operations
-	this->addOperation("slipAdvance", &ASCSlipModel::slipAdvance, this).doc("Given a set of initial conditions, returns 4th order Runge-Kutta numerical approximation of next time step.");
+	this->provides("ascSlipModel")->addOperation("slipAdvance", &ASCSlipModel::slipAdvance, this).doc("Given a set of initial conditions, returns 4th order Runge-Kutta numerical approximation of next time step.");
     
-	this->addOperation("slipForce", &ASCSlipModel::slipForce, this).doc("Given a set of SLIP model conditions, returns X-Z component forces.");
+	this->provides("ascSlipModel")->addOperation("slipForce", &ASCSlipModel::slipForce, this).doc("Given a set of SLIP model conditions, returns X-Z component forces.");
 
 	// Add properties
     //this->addProperty("P", P).doc("P gain");
