@@ -17,6 +17,12 @@ ATCForceControlDemo::ATCForceControlDemo(std::string name):
     guiDataIn("gui_data_in")
 {
     this->provides("atc")->addOperation("runController", &ATCForceControlDemo::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
+    
+    // ASCHipBoomKinematics
+    this->addProperty("ascHipBoomKinematics0Name", ascHipBoomKinematics0Name);
+    
+	// ASCLegForceControl
+	this->addProperty("ascLegForceControl0Name", ascLegForceControl0Name);
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -90,7 +96,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 0.0;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.lLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.lLeg, rs.position);
 		co.lLeg.motorCurrentA = motorCurrent.A;
 		co.lLeg.motorCurrentB = motorCurrent.B;
 		
@@ -102,7 +108,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 2.0*M_PI*guiIn.left_ampz*guiIn.left_freqz*cos(t*2.0*M_PI*guiIn.left_freqz);;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.lLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.lLeg, rs.position);
 		co.lLeg.motorCurrentA = motorCurrent.A;
 		co.lLeg.motorCurrentB = motorCurrent.B;
 		
@@ -127,7 +133,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 0.0;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.rLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.rLeg, rs.position);
 		co.rLeg.motorCurrentA = motorCurrent.A;
 		co.rLeg.motorCurrentB = motorCurrent.B;
 		
@@ -139,7 +145,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		legForce.dfz = 2.0*M_PI*guiIn.right_ampz*guiIn.right_freqz*cos(t*2.0*M_PI*guiIn.right_freqz);;
 		
 		// Comute and set motor current values
-		motorCurrent = legForceToMotorCurrent(legForce, gain, rs.rLeg, rs.position);
+		motorCurrent = legForceToMotorCurrent0(legForce, gain, rs.rLeg, rs.position);
 		co.rLeg.motorCurrentA = motorCurrent.A;
 		co.rLeg.motorCurrentB = motorCurrent.B;
 		
@@ -162,7 +168,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		toePosition.right = guiIn.right_toe_pos;
 		
 		// Compute inverse kinematics
-		hipAngle = toePositionToHipAngle(toePosition, rs.lLeg, rs.rLeg, rs.position);
+		hipAngle = inverseKinematics0(toePosition, rs.lLeg, rs.rLeg, rs.position);
 		
         // Set motor currents
         co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
@@ -182,14 +188,6 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
     // Send data to the GUI
     if (pubTimer->readyToSend()) guiDataOut.write(guiOut);
 
-    // Stuff the msg and push to ROS for logging
-	logData.header = getROSHeader();
-	logData.fx = legForce.fx;
-	logData.fz = legForce.fz;
-	logData.dfx = legForce.dfx;
-	logData.dfz = legForce.dfz;
-    logPort.write(logData);
-
     // Output for RTOps
     return co;
 
@@ -203,22 +201,20 @@ bool ATCForceControlDemo::configureHook() {
 	// ASCLegToMotorTransforms Service
     legToMotorPos = this->provides("legToMotorTransforms")->getOperation("posTransform");
 
-	// ASCLegForce Service
-	legForceToMotorCurrent = this->provides("ascLegForce")->getOperation("legForceToMotorCurrent");
-
 	// ASCHipInverseKinematics Service
-	toePositionToHipAngle = this->provides("ascHipInverseKinematics")->getOperation("toePositionToHipAngle");
-
-	// Log controller data
-    RTT::TaskContext* rtOpsPeer = this->getPeer("Deployer")->getPeer("atrias_rt");
-    if (rtOpsPeer) {
-        getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
-    }
-    else {
-        log(Warning) << "[ATCMT] Can't connect to the Deployer" << endlog();
-    }
-       
+	ascHipBoomKinematics0 = this->getPeer(ascHipBoomKinematics0Name);
+	if (ascHipBoomKinematics0) {
+		inverseKinematics0 = ascHipBoomKinematics0->provides("ascHipBoomKinematics")->getOperation("inverseKinematics");
+	}
+	
+	// ASCLegForceControl Service
+	ascLegForceControl0 = this->getPeer(ascLegForceControl0Name);
+	if (ascLegForceControl0) {
+		legForceToMotorCurrent0 = ascLegForceControl0->provides("ascLegForceControl")->getOperation("legForceToMotorCurrent");
+	}
+      
     log(Info) << "[ATCMT] configured!" << endlog();
+    
     return true;
 
 } // configureHook

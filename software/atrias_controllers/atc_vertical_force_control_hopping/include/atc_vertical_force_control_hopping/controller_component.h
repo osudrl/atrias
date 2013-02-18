@@ -16,7 +16,6 @@
 
 // C
 #include <stdlib.h>
-
 #include <atrias_shared/GuiPublishTimer.h>
 #include <atrias_shared/globals.h>
 #include <robot_invariant_defs.h>
@@ -98,6 +97,9 @@ class ATCVerticalForceControlHopping : public TaskContext {
 	public:
 		// Constructor
 		ATCVerticalForceControlHopping(std::string name);
+		
+	    // Log controller data
+	    RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
 		// Standard Orocos hooks
 		bool configureHook();

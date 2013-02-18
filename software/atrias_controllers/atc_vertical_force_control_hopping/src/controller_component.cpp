@@ -9,7 +9,7 @@
 namespace atrias {
 namespace controller {
 
-// ATCVerticalForceControlHopping =========================================================
+// ATCVerticalForceControlHopping ==============================================
 ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
@@ -292,7 +292,6 @@ bool ATCVerticalForceControlHopping::configureHook() {
 		slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipForce");
 	}
 	
-	// Log controller data  
     log(Info) << "[ATCMT] configured!" << endlog();
     
     return true;

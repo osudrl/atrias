@@ -1,5 +1,12 @@
 # Shut stuff down
 controller.stop()
+
+# ASCHipBoomKinematics
+unloadComponent(controller.ascHipBoomKinematics0Name)
+
+# ASCLegForceControl
+unloadComponent(controller.ascLegForceControl0Name)
+
 controller.cleanup()
 unloadComponent("controller")
 atrias_cm.resetControllerNames()
