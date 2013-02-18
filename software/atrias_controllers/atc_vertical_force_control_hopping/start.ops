@@ -20,6 +20,14 @@ loadService("controller", "ascLegForce")
 require("ascHipInverseKinematics")
 loadService("controller", "ascHipInverseKinematics")
 
+# ASCHipBoomKinematics
+import("asc_hip_boom_kinematics")
+var string hip0Name = atrias_cm.getUniqueName("controller", "ascHipBoomKinematics")
+loadComponent(hip0Name, "ASCHipBoomKinematics")
+addPeer("controller", hip0Name)
+connectPeers("Deployer", hip0Name)
+controller.hip0Name = hip0Name
+
 # ASCSlipModelSolver
 require("ascSlipModelSolver")
 loadService("controller", "ascSlipModelSolver")

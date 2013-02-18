@@ -17,6 +17,9 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
     guiDataIn("gui_data_in")
 {
     this->provides("atc")->addOperation("runController", &ATCVerticalForceControlHopping::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
+    
+    // ASCHipBoomKinematics
+    this->addProperty("hip0Name", hip0Name);
 
     // For the GUI
     addEventPort(guiDataIn);
@@ -230,7 +233,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 		toePosition.right = guiIn.right_toe_pos;
 		
 		// Compute inverse kinematics
-		hipAngle = toePositionToHipAngle(toePosition, rs.lLeg, rs.rLeg, rs.position);
+		hipAngle = hip0inverseKinematics(toePosition, rs.lLeg, rs.rLeg, rs.position);
 		
         // Set motor currents
         co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
@@ -250,10 +253,6 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 
     // Send data to the GUI
     if (pubTimer->readyToSend()) guiDataOut.write(guiOut);
-
-    // Stuff the msg and push to ROS for logging
-    logData.header = getROSHeader();
-    logPort.write(logData);
 
     // Output for RTOps
     return co;
@@ -277,16 +276,18 @@ bool ATCVerticalForceControlHopping::configureHook() {
 	// ASCSlipModelSolver Service
 	slipAdvanceTimeStep = this->provides("ascSlipModelSolver")->getOperation("slipAdvanceTimeStep");
 	slipConditionsToForce = this->provides("ascSlipModelSolver")->getOperation("slipConditionsToForce");
+	
+	
+	
+	// ASCHipInverseKinematics Service
+	hip0 = this->getPeer(hip0Name);
+	if (hip0) {
+		hip0inverseKinematics = hip0->provides("ascHipBoomKinematics")->getOperation("inverseKinematics");
+	}
+	
+	
 
-	// Log controller data
-    RTT::TaskContext* rtOpsPeer = this->getPeer("Deployer")->getPeer("atrias_rt");
-    if (rtOpsPeer) {
-        getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
-    }
-    else {
-        log(Warning) << "[ATCMT] Can't connect to the Deployer" << endlog();
-    }
-    
+	// Log controller data  
     log(Info) << "[ATCMT] configured!" << endlog();
     
     return true;

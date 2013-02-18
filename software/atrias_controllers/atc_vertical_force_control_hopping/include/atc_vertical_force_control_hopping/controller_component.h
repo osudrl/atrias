@@ -38,71 +38,75 @@ using namespace shared;
 namespace controller {
 
 class ATCVerticalForceControlHopping : public TaskContext {
-private:
-    // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
+	private:
+		// This Operation is called by the RT Operations Manager.
+		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
-    atrias_msgs::controller_output co;
+		atrias_msgs::controller_output co;
 
-    // Logging
-    controller_log_data              logData;
-    OutputPort<controller_log_data>  logPort;
+		// Logging
+		controller_log_data              logData;
+		OutputPort<controller_log_data>  logPort;
 
-    // For the GUI
-    shared::GuiPublishTimer                         *pubTimer;
-    controller_input                                guiIn;
-    controller_status                               guiOut;
-    OutputPort<controller_status>                   guiDataOut;
-    InputPort<controller_input>                     guiDataIn;
+		// For the GUI
+		shared::GuiPublishTimer                         *pubTimer;
+		controller_input                                guiIn;
+		controller_status                               guiOut;
+		OutputPort<controller_status>                   guiDataOut;
+		InputPort<controller_input>                     guiDataIn;
 
-    // ASCLegToMotorTransforms
-    OperationCaller<MotorAngle(double, double)> legToMotorPos;
+		// ASCLegToMotorTransforms
+		OperationCaller<MotorAngle(double, double)> legToMotorPos;
 
-    // ASCLegForce
-    OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
+		// ASCLegForce
+		OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
 
-	// ASCHipInverseKinematics
-	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
+		// ASCHipInverseKinematics
+		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
 	
-	// ASCSlipModelSolver
-	OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
-	OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
+		// ASCHipBoomKinematics
+		std::string hip0Name;
+		TaskContext *hip0;
+		//Property<double> P0;
+		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> hip0inverseKinematics;
 	
-	// Variables
-	bool isStance;
-	bool isLeftStance;
-	bool isRightStance;
+		// ASCSlipModelSolver
+		OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvanceTimeStep;
+		OperationCaller<LegForce(SlipModel, SlipConditions)> slipConditionsToForce;
 	
-	// Leg position control variables
-	MotorAngle lMotorAngle;
-	MotorAngle rMotorAngle;
-	double leftLegLen, leftLegAng, rightLegLen, rightLegAng;
+		// Variables
+		bool isStance;
+		bool isLeftStance;
+		bool isRightStance;
 	
-	// Leg force control variables
-	Gain gain;
-	SlipConditions slipConditions;
-	SlipModel slipModel;
-	LegForce legForce;
-	AB motorCurrent;
+		// Leg position control variables
+		MotorAngle lMotorAngle;
+		MotorAngle rMotorAngle;
+		double leftLegLen, leftLegAng, rightLegLen, rightLegAng;
 	
-	// Hip control variables
-	LeftRight toePosition;
-	LeftRight hipAngle;
+		// Leg force control variables
+		Gain gain;
+		SlipConditions slipConditions;
+		SlipModel slipModel;
+		LegForce legForce;
+		AB motorCurrent;
 	
-public:
-    // Constructor
-    ATCVerticalForceControlHopping(std::string name);
-    
-    // Log controller data
-    RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
+		// Hip control variables
+		LeftRight toePosition;
+		LeftRight hipAngle;
+	
+	public:
+		// Constructor
+		ATCVerticalForceControlHopping(std::string name);
 
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
-};
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
+
+}; // class ATCVerticalForceControlHopping
 
 } // namespace controller
 } // namespace atrias
