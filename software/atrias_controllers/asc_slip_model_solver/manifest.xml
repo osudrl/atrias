@@ -1,9 +1,0 @@
-<package>
-    <description brief="Orocos asc_slip_model_solver Component package">
-        This package contains the components of the asc_slip_model_solver package
-    </description>
-    <license>BSD</license>
-    <author>drl</author>
-    <depend package="atrias_shared" />
-
-</package>
