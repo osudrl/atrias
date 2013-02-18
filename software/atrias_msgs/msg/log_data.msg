@@ -5,8 +5,10 @@
 # These should correspond directly to robot_state values, unless
 # indicated otherwise
 
-float32 current50Amp
-float32 current600Amp
+Header header
+
+float32 currentPositive
+float32 currentNegative
 
 int32 lKneeForce
 int32 rKneeForce
