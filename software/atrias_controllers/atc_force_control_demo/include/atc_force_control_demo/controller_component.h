@@ -37,59 +37,69 @@ using namespace shared;
 namespace controller {
 
 class ATCForceControlDemo : public TaskContext {
-private:
-    // This Operation is called by the RT Operations Manager.
-    atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
+	private:
+		// This Operation is called by the RT Operations Manager.
+		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
-    atrias_msgs::controller_output co;
+		atrias_msgs::controller_output co;
 
-    // Logging
-    controller_log_data              logData;
-    OutputPort<controller_log_data>  logPort;
+		// Logging
+		controller_log_data              logData;
+		OutputPort<controller_log_data>  logPort;
 
-    // For the GUI
-    shared::GuiPublishTimer                         *pubTimer;
-    controller_input                                guiIn;
-    controller_status                               guiOut;
-    OutputPort<controller_status>                   guiDataOut;
-    InputPort<controller_input>                     guiDataIn;
+		// For the GUI
+		shared::GuiPublishTimer                         *pubTimer;
+		controller_input                                guiIn;
+		controller_status                               guiOut;
+		OutputPort<controller_status>                   guiDataOut;
+		InputPort<controller_input>                     guiDataIn;
+		
+		// ASCLegToMotorTransforms
+		OperationCaller<MotorAngle(double, double)> legToMotorPos;
+
+		// ASCHipBoomKinematics
+		std::string ascHipBoomKinematics0Name;
+		TaskContext *ascHipBoomKinematics0;
+		OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> inverseKinematics0;
+	
+		// ASCLegForceControl
+		std::string ascLegForceControl0Name;
+		TaskContext *ascLegForceControl0;
+		OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent0;
+	
+		// Time
+		double t;
+	
+		// Leg position control variables
+		MotorAngle lMotorAngle;
+		MotorAngle rMotorAngle;
+	
+		// Leg force control variables
+		Gain gain;
+		LegForce legForce;
+		AB motorCurrent;
+	
+		// Hip control variables
+		LeftRight toePosition;
+		LeftRight hipAngle;	
+
+	public:
+		// Constructor
+		ATCForceControlDemo(std::string name);
+
+		// Log controller data
+		RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
+		
+		// Standard Orocos hooks
+		bool configureHook();
+		bool startHook();
+		void updateHook();
+		void stopHook();
+		void cleanupHook();
     
-    // ASCLegToMotorTransforms
-    OperationCaller<MotorAngle(double, double)> legToMotorPos;
+}; // class ATCForceControlDemo
 
-    // ASCLegForce
-    OperationCaller<AB(LegForce, Gain, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> legForceToMotorCurrent;
-
-	// ASCHipInverseKinematics
-	OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> toePositionToHipAngle;
-	
-	// Leg position control variables
-	MotorAngle lMotorAngle;
-	MotorAngle rMotorAngle;
-	
-	// Leg force control variables
-	Gain gain;
-	LegForce legForce;
-	AB motorCurrent;
-	
-	// Hip control variables
-	LeftRight toePosition;
-	LeftRight hipAngle;
-	
-
-public:
-    // Constructor
-    ATCForceControlDemo(std::string name);
-
-    // Standard Orocos hooks
-    bool configureHook();
-    bool startHook();
-    void updateHook();
-    void stopHook();
-    void cleanupHook();
-};
-
-}
-}
+} // namespace controller
+} // namespace atrias
 
 #endif

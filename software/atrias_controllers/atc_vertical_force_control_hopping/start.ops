@@ -12,13 +12,29 @@ connectPeers("atrias_rt", "controller")
 require("legToMotorTransforms")
 loadService("controller", "legToMotorTransforms")
 
-# ASCLegForce
-require("ascLegForce")
-loadService("controller", "ascLegForce")
+# ASCHipBoomKinematics
+import("asc_hip_boom_kinematics")
+var string ascHipBoomKinematics0Name = atrias_cm.getUniqueName("controller", "ascHipBoomKinematics")
+loadComponent(ascHipBoomKinematics0Name, "ASCHipBoomKinematics")
+addPeer("controller", ascHipBoomKinematics0Name)
+connectPeers("Deployer", ascHipBoomKinematics0Name)
+controller.ascHipBoomKinematics0Name = ascHipBoomKinematics0Name
 
-# ASCHipInverseKinematics
-require("ascHipInverseKinematics")
-loadService("controller", "ascHipInverseKinematics")
+# ASCLegForceControl
+import("asc_leg_force_control")
+var string ascLegForceControl0Name = atrias_cm.getUniqueName("controller", "ascLegForceControl")
+loadComponent(ascLegForceControl0Name, "ASCLegForceControl")
+addPeer("controller", ascLegForceControl0Name)
+connectPeers("Deployer", ascLegForceControl0Name)
+controller.ascLegForceControl0Name = ascLegForceControl0Name
+
+# ASCSlipModel
+import("asc_slip_model")
+var string ascSlipModel0Name = atrias_cm.getUniqueName("controller", "ascSlipModel")
+loadComponent(ascSlipModel0Name, "ASCSlipModel")
+addPeer("controller", ascSlipModel0Name)
+connectPeers("Deployer", ascSlipModel0Name)
+controller.ascSlipModel0Name = ascSlipModel0Name
 
 # Set up the gui connection
 var ConnPolicy gui_policy

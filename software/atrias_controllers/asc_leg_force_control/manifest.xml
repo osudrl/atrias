@@ -1,0 +1,15 @@
+<package>
+  <description brief="asc_leg_force_control">
+
+     asc_leg_force_control
+
+  </description>
+  <author>Mikhail Jones</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/asc_leg_force_control</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+
+</package>

@@ -52,17 +52,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("right_leg_wave_for_radiobutton", right_leg_wave_for_radiobutton);
     
 	// Set ranges.
-    leg_pos_kp_spinbutton->set_range(0.0, 1000.0);
+    leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
     leg_pos_kd_spinbutton->set_range(0.0, 100.0);
-    leg_for_kp_spinbutton->set_range(0.0, 5000.0);
-    leg_for_kd_spinbutton->set_range(0.0, 100.0);
+    leg_for_kp_spinbutton->set_range(0.0, 1500.0);
+    leg_for_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kp_spinbutton->set_range(0.0, 250.0);
     hip_pos_kd_spinbutton->set_range(0.0, 25.0);
     robot_ks_spinbutton->set_range(0.0, 10000.0);
     robot_kt_spinbutton->set_range(0.0, 1.0);
     robot_kg_spinbutton->set_range(50.0, 50.0);
-    left_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.2, 3.0*M_PI/2.0 + 0.2);
-    right_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.2, 3.0*M_PI/2.0 + 0.2);
+    left_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.3, 3.0*M_PI/2.0 + 0.3);
+    right_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.3, 3.0*M_PI/2.0 + 0.3);
     left_toe_pos_spinbutton->set_range(2.0, 2.3);
     right_toe_pos_spinbutton->set_range(2.3, 2.6);
     left_leg_len_spinbutton->set_range(0.45, 0.90);
@@ -89,16 +89,16 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set default values
     leg_pos_kp_spinbutton->set_value(500.0);
     leg_pos_kd_spinbutton->set_value(25.0);
-    leg_for_kp_spinbutton->set_value(5000.0);
-    leg_for_kd_spinbutton->set_value(25.0);
-    hip_pos_kp_spinbutton->set_value(100.0);
-    hip_pos_kd_spinbutton->set_value(5.0);
-    robot_ks_spinbutton->set_value(3800.0);
-    robot_kt_spinbutton->set_value(0.0);
+    leg_for_kp_spinbutton->set_value(1000.0);
+    leg_for_kd_spinbutton->set_value(8.0);
+    hip_pos_kp_spinbutton->set_value(150.0);
+    hip_pos_kd_spinbutton->set_value(8.0);
+    robot_ks_spinbutton->set_value(4118.0);
+    robot_kt_spinbutton->set_value(0.0987);
     robot_kg_spinbutton->set_value(50.0);
     left_hip_ang_spinbutton->set_value(3.0*M_PI/2.0);
     right_hip_ang_spinbutton->set_value(3.0*M_PI/2.0);
-    left_toe_pos_spinbutton->set_value(2.05);
+    left_toe_pos_spinbutton->set_value(2.15);
     right_toe_pos_spinbutton->set_value(2.45);
     left_leg_len_spinbutton->set_value(0.85);
     right_leg_len_spinbutton->set_value(0.85);

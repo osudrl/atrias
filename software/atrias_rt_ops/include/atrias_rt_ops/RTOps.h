@@ -23,6 +23,7 @@ class RTOps;
 // ROS
 #include <std_msgs/Header.h>
 
+#include <atrias_msgs/log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_event.h>
 #include <atrias_shared/globals.h>
@@ -46,7 +47,7 @@ class RTOps : public RTT::TaskContext {
 		
 		/** @brief This is our 1 kHz logging output.
 		  */
-		RTT::OutputPort<atrias_msgs::rt_ops_cycle>  logCyclicOut;
+		RTT::OutputPort<atrias_msgs::log_data>      logCyclicOut;
 		
 		/** @brief This is our 50 Hz GUI transmission.
 		  */
