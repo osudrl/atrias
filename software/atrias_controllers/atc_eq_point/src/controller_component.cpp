@@ -204,16 +204,16 @@ case 1:
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
-        //s=0;
-        //t=0;
+        s=0;
+        t=0;
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
-        //s=0;
-        //t=0;
+        s=0;
+        t=0;
 	}
 	break;
 case 2:
@@ -243,7 +243,7 @@ default:
 
 
 // command legs ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//*****************************************************************************************************************************************************************************************************************************
+	//************************************************************stance control right leg***************************************************************************************************************************
 	switch (state)																															//stance leg right, flight leg left
 	{
 	case 1:
@@ -272,13 +272,18 @@ default:
 			//logData.currState = 2;
 		}
 		
-	//******************************************************************************************************************************************************************************************************************
+	//****************************************************************flight control left leg*************************************************************************************************************
 		if ((t < 1) && (!sw_flight)) 
         {
 						if (t<guiIn.l_fl){
 							phi_lLeg=guiIn.pea - ((t / guiIn.l_fl) * (guiIn.pea-max_phi_swing));
+							P0.set(guiIn.p_lf);
+							P1.set(guiIn.p_lf);
 						} else {
 							phi_lLeg=max_phi_swing + ( (t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.aea - max_phi_swing));
+							P0.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
+							P1.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
+							//printf("left!! P0: %f t: %f\n",guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)),t);
 						}
 						//map leg angle sweep of flight leg to 0->1
 						//keep desired leg length -> shorten leg depending on leg position
@@ -288,10 +293,10 @@ default:
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
                         //printf("s: %f l_des: %f phi_des: %f phi_rB: %f\n",s,l_swing,leftMotorAngle.A,rs.rLeg.halfB.motorAngle);
 						D0.set(guiIn.d_lf);
-						P0.set(guiIn.p_lf);
+						//P0.set(guiIn.p_lf);
 						co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 						D1.set(guiIn.d_lf);
-						P1.set(guiIn.p_lf);
+						//P1.set(guiIn.p_lf);
 						co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 						//logData.flightState = 1;
 		} else 
@@ -345,8 +350,13 @@ default:
 						//keep desired leg length -> shorten leg depending on leg position
 						if (t<guiIn.l_fl){
 							phi_rLeg=guiIn.pea - (t / guiIn.l_fl) * (guiIn.pea-max_phi_swing);
+							P3.set(guiIn.p_lf);
+							P4.set(guiIn.p_lf);
 						} else {
 							phi_rLeg=max_phi_swing + ( (t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.aea - max_phi_swing));
+							P3.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
+							P4.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
+							//printf("P0: %f\n",guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
 						}
 						//keep desired leg length -> shorten leg depending on leg position
 						l_swing = sin (t*M_PI) * (-amp) + guiIn.l_leg_st;
@@ -355,10 +365,10 @@ default:
 						//phi_rLeg=guiIn.pea-s*(guiIn.pea-guiIn.aea);
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 						D3.set(guiIn.d_lf);
-						P3.set(guiIn.p_lf);
+						//P3.set(guiIn.p_lf);
 						co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 						D4.set(guiIn.d_lf);
-						P4.set(guiIn.p_lf);
+						//P4.set(guiIn.p_lf);
 						co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 						//logData.flightState = 3;
 		} else 
