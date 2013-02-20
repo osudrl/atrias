@@ -42,6 +42,7 @@ void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
 	packLogData(state, log_data);
 	logCyclicOut->write(log_data);
 	rtOpsCycle.header     = state.header;
+	rtOpsCycle.robotState = state;
 }
 
 void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
