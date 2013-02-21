@@ -4,9 +4,9 @@ namespace atrias {
 
 namespace rtOps {
 
-OpsLogger::OpsLogger(RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  log_cyclic_out,
-                     RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  gui_cyclic_out,
-                     RTT::OutputPort<atrias_msgs::rt_ops_event>* event_out) :
+OpsLogger::OpsLogger(RTT::OutputPort<atrias_msgs::log_data>     *log_cyclic_out,
+                     RTT::OutputPort<atrias_msgs::rt_ops_cycle> *gui_cyclic_out,
+                     RTT::OutputPort<atrias_msgs::rt_ops_event> *event_out) :
                      guiPublishTimer(50) {
 	logCyclicOut = log_cyclic_out;
 	guiCyclicOut = gui_cyclic_out;
@@ -16,8 +16,6 @@ OpsLogger::OpsLogger(RTT::OutputPort<atrias_msgs::rt_ops_cycle>*  log_cyclic_out
 void OpsLogger::beginCycle() {
 	RTT::os::TimeService::nsecs startTime = RTT::os::TimeService::Instance()->getNSecs();
 	
-	// Send our 1 kHz log stream.
-	logCyclicOut->write(rtOpsCycle);
 	if (guiPublishTimer.readyToSend()) {
 		// Time to send on the 50 Hz port.
 		guiCyclicOut->write(rtOpsCycle);
@@ -40,8 +38,11 @@ void OpsLogger::endCycle() {
 }
 
 void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
-	rtOpsCycle.robotState = state;
+	atrias_msgs::log_data log_data;
+	packLogData(state, log_data);
+	logCyclicOut->write(log_data);
 	rtOpsCycle.header     = state.header;
+	rtOpsCycle.robotState = state;
 }
 
 void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
@@ -49,6 +50,101 @@ void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
 	event_msg.event    = (RtOpsEvent_t) event;
 	event_msg.metadata = metadata;
 	eventOut->write(event_msg);
+}
+
+void OpsLogger::packLogData(atrias_msgs::robot_state &rs, atrias_msgs::log_data &ld) {
+	ld.header           = rs.header;
+
+	ld.currentPositive  = rs.currentPositive;
+	ld.currentNegative  = rs.currentNegative;
+
+	ld.lKneeForce       = rs.lLeg.kneeForce;
+	ld.rKneeForce       = rs.rLeg.kneeForce;
+
+	ld.lALegAngle       = rs.lLeg.halfA.legAngle;
+	ld.lBLegAngle       = rs.lLeg.halfB.legAngle;
+	ld.rALegAngle       = rs.rLeg.halfA.legAngle;
+	ld.rBLegAngle       = rs.rLeg.halfB.legAngle;
+
+	ld.lALegVelocity    = rs.lLeg.halfA.legVelocity;
+	ld.lBLegVelocity    = rs.lLeg.halfB.legVelocity;
+	ld.rALegVelocity    = rs.rLeg.halfA.legVelocity;
+	ld.rBLegVelocity    = rs.rLeg.halfB.legVelocity;
+
+	ld.lAMotorAngle     = rs.lLeg.halfA.motorAngle;
+	ld.lBMotorAngle     = rs.lLeg.halfB.motorAngle;
+	ld.rAMotorAngle     = rs.rLeg.halfA.motorAngle;
+	ld.rBMotorAngle     = rs.rLeg.halfB.motorAngle;
+
+	ld.lAMotorVelocity  = rs.lLeg.halfA.motorVelocity;
+	ld.lBMotorVelocity  = rs.lLeg.halfB.motorVelocity;
+	ld.rAMotorVelocity  = rs.rLeg.halfA.motorVelocity;
+	ld.rBMotorVelocity  = rs.rLeg.halfB.motorVelocity;
+
+	ld.lARotorAngle     = rs.lLeg.halfA.rotorAngle;
+	ld.lBRotorAngle     = rs.lLeg.halfB.rotorAngle;
+	ld.rARotorAngle     = rs.rLeg.halfA.rotorAngle;
+	ld.rBRotorAngle     = rs.rLeg.halfB.rotorAngle;
+
+	ld.lARotorVelocity  = rs.lLeg.halfA.rotorVelocity;
+	ld.lBRotorVelocity  = rs.lLeg.halfB.rotorVelocity;
+	ld.rARotorVelocity  = rs.rLeg.halfA.rotorVelocity;
+	ld.rBRotorVelocity  = rs.rLeg.halfB.rotorVelocity;
+
+	ld.lLegBodyAngle    = rs.lLeg.hip.legBodyAngle;
+	ld.rLegBodyAngle    = rs.rLeg.hip.legBodyAngle;
+
+	ld.lLegBodyVelocity = rs.lLeg.hip.legBodyVelocity;
+	ld.rLegBodyVelocity = rs.lLeg.hip.legBodyVelocity;
+
+	ld.xPosition        = rs.position.xPosition;
+	ld.xVelocity        = rs.position.xVelocity;
+	ld.zPosition        = rs.position.zPosition;
+	ld.zVelocity        = rs.position.zVelocity;
+
+	ld.lToeSwitch       = rs.lLeg.toeSwitch;
+	ld.rToeSwitch       = rs.rLeg.toeSwitch;
+
+	ld.rtOpsState       = rs.rtOpsState;
+
+	ld.controllerTime   = rs.timing.controllerTime;
+
+	ld.lAMotorTherm0    = rs.lLeg.halfA.motorTherms[0];
+	ld.lAMotorTherm1    = rs.lLeg.halfA.motorTherms[1];
+	ld.lAMotorTherm2    = rs.lLeg.halfA.motorTherms[2];
+	ld.lAMotorTherm3    = rs.lLeg.halfA.motorTherms[3];
+	ld.lAMotorTherm4    = rs.lLeg.halfA.motorTherms[4];
+	ld.lAMotorTherm5    = rs.lLeg.halfA.motorTherms[5];
+	ld.lBMotorTherm0    = rs.lLeg.halfB.motorTherms[0];
+	ld.lBMotorTherm1    = rs.lLeg.halfB.motorTherms[1];
+	ld.lBMotorTherm2    = rs.lLeg.halfB.motorTherms[2];
+	ld.lBMotorTherm3    = rs.lLeg.halfB.motorTherms[3];
+	ld.lBMotorTherm4    = rs.lLeg.halfB.motorTherms[4];
+	ld.lBMotorTherm5    = rs.lLeg.halfB.motorTherms[5];
+	ld.rAMotorTherm0    = rs.rLeg.halfA.motorTherms[0];
+	ld.rAMotorTherm1    = rs.rLeg.halfA.motorTherms[1];
+	ld.rAMotorTherm2    = rs.rLeg.halfA.motorTherms[2];
+	ld.rAMotorTherm3    = rs.rLeg.halfA.motorTherms[3];
+	ld.rAMotorTherm4    = rs.rLeg.halfA.motorTherms[4];
+	ld.rAMotorTherm5    = rs.rLeg.halfA.motorTherms[5];
+	ld.rBMotorTherm0    = rs.rLeg.halfB.motorTherms[0];
+	ld.rBMotorTherm1    = rs.rLeg.halfB.motorTherms[1];
+	ld.rBMotorTherm2    = rs.rLeg.halfB.motorTherms[2];
+	ld.rBMotorTherm3    = rs.rLeg.halfB.motorTherms[3];
+	ld.rBMotorTherm4    = rs.rLeg.halfB.motorTherms[4];
+	ld.rBMotorTherm5    = rs.rLeg.halfB.motorTherms[5];
+
+	ld.lAMotorVoltage   = rs.lLeg.halfA.motorVoltage;
+	ld.lBMotorVoltage   = rs.lLeg.halfB.motorVoltage;
+	ld.lHipMotorVoltage = rs.lLeg.hip.motorVoltage;
+	ld.rAMotorVoltage   = rs.rLeg.halfA.motorVoltage;
+	ld.rBMotorVoltage   = rs.rLeg.halfB.motorVoltage;
+	ld.rHipMotorVoltage = rs.rLeg.hip.motorVoltage;
+
+	ld.lAMotorCurrent   = rs.lLeg.halfA.motorCurrent;
+	ld.lBMotorCurrent   = rs.lLeg.halfB.motorCurrent;
+	ld.rAMotorCurrent   = rs.rLeg.halfA.motorCurrent;
+	ld.rBMotorCurrent   = rs.rLeg.halfB.motorCurrent;
 }
 
 }
