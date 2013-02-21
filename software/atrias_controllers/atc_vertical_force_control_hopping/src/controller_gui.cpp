@@ -69,14 +69,14 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     robot_kg_spinbutton->set_value(50.0);
     left_toe_pos_spinbutton->set_value(2.15);
     right_toe_pos_spinbutton->set_value(2.45);
-    left_leg_len_spinbutton->set_value(0.875);
-    right_leg_len_spinbutton->set_value(0.875);
+    left_leg_len_spinbutton->set_value(0.9);
+    right_leg_len_spinbutton->set_value(0.9);
     left_leg_ang_spinbutton->set_value(M_PI/2.0);
     right_leg_ang_spinbutton->set_value(M_PI/2.0);
     slip_h_spinbutton->set_value(0.05);
-    slip_l0_spinbutton->set_value(0.825);
-    slip_m_spinbutton->set_value(70.0);
-    slip_k_spinbutton->set_value(16000.0);
+    slip_l0_spinbutton->set_value(0.85);
+    slip_m_spinbutton->set_value(61.93);
+    slip_k_spinbutton->set_value(15630.0);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("atc_vertical_force_control_hopping_status", 0, controllerCallback);

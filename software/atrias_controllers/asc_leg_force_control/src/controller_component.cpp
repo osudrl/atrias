@@ -71,9 +71,6 @@ ASCLegForceControl::ASCLegForceControl(std::string name):
     
     // Add operations
     this->provides("ascLegForceControl")->addOperation("legForceToMotorCurrent", &ASCLegForceControl::legForceToMotorCurrent, this).doc("Given a desired X-Z component force, returns the required motor current.");
-    
-    // Add properties
-    //this->addProperty("P", P).doc("P gain");
 
     // LOGGING
     // Create a port
@@ -118,6 +115,8 @@ AB ASCLegForceControl::legForceToMotorCurrent(LegForce legForce, Gain gain, atri
 
     // Stuff the msg and push to ROS for logging
 	logData.header = getROSHeader();
+	logData.fx = legForce.fx;
+	logData.fz = legForce.fz;
 	logData.tauSpringA = tauSpringA;
 	logData.tauSpringB = tauSpringB;
 	logData.dtauSpringA = dtauSpringA;

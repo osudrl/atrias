@@ -56,7 +56,6 @@
 // slipConditions = slipAdvance0(slipModel, slipConditions);
 // legForce = slipForce0(slipModel, slipConditions);
 
-// TODO - Add data logging.
 // TODO - Add error catch incase structs are empty.
 
 
@@ -75,9 +74,6 @@ ASCSlipModel::ASCSlipModel(std::string name):
 	this->provides("ascSlipModel")->addOperation("slipAdvance", &ASCSlipModel::slipAdvance, this).doc("Given a set of initial conditions, returns 4th order Runge-Kutta numerical approximation of next time step.");
     
 	this->provides("ascSlipModel")->addOperation("slipForce", &ASCSlipModel::slipForce, this).doc("Given a set of SLIP model conditions, returns X-Z component forces.");
-
-	// Add properties
-    //this->addProperty("P", P).doc("P gain");
     
     // Logging
     // Create a port
@@ -114,6 +110,9 @@ SlipConditions ASCSlipModel::slipAdvance(SlipModel slipModel, SlipConditions sli
 	} else {
 		// We are in stance.
 		slipConditions.isFlight = false;
+		
+		// Nonlinear ATRIAS spring constant dependent on leg length.
+		//slipModel.ks = 2.0*slipModel.ks/sqrt(1.0 - pow(slipConditions.r, 2.0));
 		
 		// Advance to next timestep because we are in stance.
 		// SLIP model 4th order Runge-Kutta numerical solution.
@@ -158,6 +157,9 @@ LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipConditions slipConditi
 
 	// If virtual SLIP model is in NOT in flight (is in stance).
 	} else {
+		// Nonlinear ATRIAS spring constant dependent on leg length.
+		//slipModel.ks = 2.0*slipModel.ks/sqrt(1.0 - pow(slipConditions.r, 2.0));
+	
 		// Define component forces.
 		legForce.fx = slipModel.ks*(slipConditions.r - slipModel.r0)*cos(slipConditions.q);
 		legForce.fz = slipModel.ks*(slipConditions.r - slipModel.r0)*sin(slipConditions.q);

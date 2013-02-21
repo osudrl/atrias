@@ -61,10 +61,7 @@ ASCHipBoomKinematics::ASCHipBoomKinematics(std::string name):
 	this->provides("ascHipBoomKinematics")
 		->addOperation("inverseKinematics",&ASCHipBoomKinematics::inverseKinematics, this, ClientThread)
 		.doc("Given a boom angle, leg angles, and desired toe positions, returns required hip angles");
-
-	// Add properties
-    //this->addProperty("P", P).doc("P gain");
-        
+       
     // LOGGING
     // Create a port
     addPort(logPort); 
@@ -87,10 +84,9 @@ LeftRight ASCHipBoomKinematics::inverseKinematics(LeftRight toePosition, atrias_
     // Define imaginary number i.
     i = complex<double>(0.0, 1.0);
 
-	// TODO - set these as parameters
 	// Define robot parameters.
-	l1 = 0.50;
-	l2 = 0.50;
+	l1 = 0.50; // Leg thigh segment length.
+	l2 = 0.50; // Leg shin segment length.
     lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis.
     lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis.
     lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly.
@@ -107,7 +103,7 @@ LeftRight ASCHipBoomKinematics::inverseKinematics(LeftRight toePosition, atrias_
 
     complexHipAngleRight = - position.boomAngle - qBodyOffset - log(-(- sqrt(2.0*pow(lBody, 2)*exp(qRightLeg*2.0*i) - 4.0*pow(lHip, 2)*exp(qRightLeg*2.0*i) - 2.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2)*exp(qRightLeg*4.0*i) + 4.0*pow(toePosition.right, 2)*exp(qRightLeg*2.0*i) + pow(lRightLeg, 2) + 4.0*pow(lBoom, 2)*exp(qRightLeg*2.0*i)*pow(cos(position.boomAngle), 2) - 4.0*pow(lRightLeg, 2)*exp(qRightLeg*2.0*i)*pow(cos(qRightLeg), 2) + 2.0*pow(lBody, 2)*cos(2.0*position.boomAngle + 2.0*qBodyOffset)*exp(qRightLeg*2.0*i) + 4.0*lBoom*lBody*exp(qRightLeg*2.0*i)*cos(qBodyOffset) + 4.0*lBoom*lBody*cos(2.0*position.boomAngle + qBodyOffset)*exp(qRightLeg*2.0*i) + 8.0*lBody*exp(qRightLeg*2.0*i)*cos(position.boomAngle + qBodyOffset)*sqrt(toePosition.right + lRightLeg*cos(qRightLeg))*sqrt(toePosition.right - lRightLeg*cos(qRightLeg)) + 8.0*lBoom*exp(qRightLeg*2.0*i)*cos(position.boomAngle)*sqrt(toePosition.right + lRightLeg*cos(qRightLeg))*sqrt(toePosition.right - lRightLeg*cos(qRightLeg))) + 2.0*exp(qRightLeg*i)*sqrt(toePosition.right + lRightLeg*cos(qRightLeg))*sqrt(toePosition.right - lRightLeg*cos(qRightLeg)) + 2.0*lBody*exp(qRightLeg*i)*cos(position.boomAngle + qBodyOffset) + 2.0*lBoom*exp(qRightLeg*i)*cos(position.boomAngle))/(- lRightLeg + 2.0*lHip*exp(qRightLeg*i) + lRightLeg*exp(qRightLeg*2.0*i)))*i;
 
-	// TODO - Could add velocity terms but probably not worth the effort.
+	// TODO - Add velocity terms
 
 	// We only care about the real part, the imaginary part should be zero.
 	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*M_PI, 2.0*M_PI);
