@@ -40,11 +40,19 @@ double ASCSpringForce::getForce(double motorAAngle, double legAAngle, double mot
 	logData.motorBAngle = motorBAngle;
 	logData.legBAngle   = legBAngle;
 	
-	// Compensates for changing leg geometry affecting torque->force relation
-	double csc_theta = 1.0 / sin((legBAngle - legAAngle) / 2.0);
-	logData.force    = 2.0 * csc_theta *
-	                   (springTorque0GetTorque(motorAAngle - legAAngle) -
-	                    springTorque1GetTorque(motorBAngle - legBAngle));
+	// Calculate the torques.
+	double t_1 = springTorque0GetTorque(motorAAngle - legAAngle);
+	double t_2 = springTorque1GetTorque(motorBAngle - legBAngle);
+
+	// Calculate force vector
+	double f_x = 2 * (cos(legBAngle) * t_1 - cos(legAAngle) * t_2) / sin(legAAngle - legBAngle);
+	double f_z = 2 * (sin(legAAngle) * t_2 - sin(legBAngle) * t_1) / sin(legAAngle - legBAngle);
+
+	// Calculate lengthwise component of force.
+	double theta = (legAAngle + legBAngle) / 2.0;
+	double b_x = -cos(theta);
+	double b_z = sin(theta);
+	logData.force = f_x * b_x + f_z * b_z;
 
 	logPort.write(logData);
 
