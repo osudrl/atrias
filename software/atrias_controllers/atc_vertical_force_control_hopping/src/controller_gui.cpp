@@ -76,7 +76,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     slip_h_spinbutton->set_value(0.05);
     slip_l0_spinbutton->set_value(0.85);
     slip_m_spinbutton->set_value(61.93);
-    slip_k_spinbutton->set_value(15630.0);
+    slip_k_spinbutton->set_value(4118.0);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("atc_vertical_force_control_hopping_status", 0, controllerCallback);

@@ -54,8 +54,8 @@
 //
 // // Compute and set required motorCurrent
 // motorCurrent = legForceToMotorCurrent(legForce, gain, rs.lLeg, rs.position);
-// co.rLeg.motorCurrentA = motorCurrent.A;
-// co.rLeg.motorCurrentB = motorCurrent.B;
+// co.lLeg.motorCurrentA = motorCurrent.A;
+// co.lLeg.motorCurrentB = motorCurrent.B;
 
 
 #include <asc_leg_force_control/controller_component.h>
@@ -106,12 +106,6 @@ AB ASCLegForceControl::legForceToMotorCurrent(LegForce legForce, Gain gain, atri
 	// Compute required motor current using PD controller with feed forward term.
 	motorCurrent.A = (gain.ks*(leg.halfA.motorAngle - leg.halfA.legAngle)/gain.kg + gain.kp*(tauSpringA/gain.ks - (leg.halfA.motorAngle - leg.halfA.legAngle)) + gain.kd*(dtauSpringA/gain.ks - (leg.halfA.motorVelocity - leg.halfA.legVelocity)))/gain.kt;
 	motorCurrent.B = (gain.ks*(leg.halfB.motorAngle - leg.halfB.legAngle)/gain.kg + gain.kp*(tauSpringB/gain.ks - (leg.halfB.motorAngle - leg.halfB.legAngle)) + gain.kd*(dtauSpringB/gain.ks - (leg.halfB.motorVelocity - leg.halfB.legVelocity)))/gain.kt;
-
-	// DEBUG STATEMENTS (Not real-time safe)
-	//printf("tauA: %f\n", tauSpringA);
-	//printf("taub: %f\n", tauSpringB);
-	//printf("dtauA: %f\n", dtauSpringA);
-	//printf("dtaub: %f\n", dtauSpringB);
 
     // Stuff the msg and push to ROS for logging
 	logData.header = getROSHeader();

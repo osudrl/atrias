@@ -42,8 +42,8 @@
 // To use do something like this.
 // // Define slipModel struct.
 // slipModel.g = -9.81;
-// slipModel.ks = 16000.0;
-// slipModel.m = 60.0;
+// slipModel.ks = 4118.0; // This is not the virtual leg spring but the actual rotational spring.
+// slipModel.m = 607.5/9.81;
 // slipModel.r0 = 0.85;
 //
 // // Define slipConditions struct.
@@ -94,16 +94,17 @@ ASCSlipModel::ASCSlipModel(std::string name):
 // slipAdvance =================================================================
 SlipConditions ASCSlipModel::slipAdvance(SlipModel slipModel, SlipConditions slipConditions) {
 
-	// Advance time step.
-	slipConditions.rOld = slipConditions.r;
-	slipConditions.drOld = slipConditions.dr;
-	slipConditions.qOld = slipConditions.q;
-	slipConditions.dqOld = slipConditions.dq;
+    // Unpack parameters
+    r = slipConditions.r;
+    dr = slipConditions.dr;
+    q = slipConditions.q;
+    dq = slipConditions.dq;
+    ks = slipModel.ks;
+    g = slipModel.g;
+    r0 = slipModel.r0;
+    m = slipModel.m;
 
-	// Time step.
-	delta = 0.001;
-
-	if (slipConditions.r > slipModel.r0) {
+	if (r > r0) {
 		// Do nothing because we are not in stance.
 		slipConditions.isFlight = true;
 		
@@ -111,32 +112,38 @@ SlipConditions ASCSlipModel::slipAdvance(SlipModel slipModel, SlipConditions sli
 		// We are in stance.
 		slipConditions.isFlight = false;
 		
-		// Nonlinear ATRIAS spring constant dependent on leg length.
-		//slipModel.ks = 2.0*slipModel.ks/sqrt(1.0 - pow(slipConditions.r, 2.0));
+		// Time step.
+		delta = 0.001;
+		
+        // Nonlinear ATRIAS spring constant dependent on leg length.
+        l1 = 0.5;
+        l2 = 0.5;
+        ks = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
 		
 		// Advance to next timestep because we are in stance.
 		// SLIP model 4th order Runge-Kutta numerical solution.
-		slipConditions.r = slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/3.0 + delta*slipConditions.drOld/6.0 + delta*(slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m)/2.0)/3.0 + delta*(slipConditions.drOld + delta*(-slipModel.g*sin(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + (slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)*pow(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld), 2) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)/slipModel.m))/6.0;
-
-		slipConditions.dr = slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld))) + (slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m)/2.0))*pow(slipConditions.dqOld - delta*(slipModel.g*cos(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + (2.0*slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m))*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld)))/(slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0), 2) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*(slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m)/2.0))/slipModel.m)/6.0 + delta*(-slipModel.g*sin(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + (slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)*pow(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld), 2) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)/slipModel.m)/3.0 + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/6.0 + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m)/3.0;
-
-		slipConditions.q = slipConditions.qOld + delta*slipConditions.dqOld/6.0 + delta*(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/3.0 + delta*(slipConditions.dqOld - delta*(slipModel.g*cos(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + (2.0*slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m))*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld)))/(slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0))/6.0 + delta*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*(2.0*slipConditions.dqOld*slipConditions.drOld + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*(2.0*slipConditions.drOld + delta*(slipConditions.rOld*slipConditions.dqOld*slipConditions.dqOld + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld))/3.0;
-
-		slipConditions.dq = slipConditions.dqOld - delta*(slipModel.g*cos(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + ((2.0*slipConditions.drOld) + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m))*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*((2.0*slipConditions.drOld) + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld)))/(3.0*slipConditions.rOld + 3.0/2.0*delta*(slipConditions.drOld + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)) - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*((2.0*slipConditions.drOld) + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(3.0*slipConditions.rOld + 3.0/2.0*delta*slipConditions.drOld) - delta*(slipModel.g*cos(slipConditions.qOld + delta*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*((2.0*slipConditions.drOld) + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld))) + ((2.0*slipConditions.drOld) + 2.0*delta*(-slipModel.g*sin(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + (slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)*pow(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*((2.0*slipConditions.drOld) + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld), 2) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*(slipConditions.drOld + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)/slipModel.m))*(slipConditions.dqOld - delta*(slipModel.g*cos(-slipConditions.qOld - delta*(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)/2.0) + ((2.0*slipConditions.drOld) + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m))*(slipConditions.dqOld - delta*(slipModel.g*cos(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + (slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0)*((2.0*slipConditions.drOld) + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)))/(2.0*slipConditions.rOld + delta*slipConditions.drOld)))/(slipConditions.rOld + delta*(slipConditions.drOld + delta*(slipConditions.rOld*(slipConditions.dqOld*slipConditions.dqOld) + slipModel.g*sin(slipConditions.qOld) + slipModel.ks*(slipModel.r0 - slipConditions.rOld)/slipModel.m)/2.0)/2.0)))/(6.0*slipConditions.rOld + 6.0*delta*(slipConditions.drOld + delta*(slipModel.g*sin(slipConditions.qOld + delta*slipConditions.dqOld/2.0) + pow(slipConditions.dqOld - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/2.0, 2)*(slipConditions.rOld + delta*slipConditions.drOld/2.0) - slipModel.ks*(slipConditions.rOld - slipModel.r0 + delta*slipConditions.drOld/2.0)/slipModel.m)/2.0)) - delta*((2.0*slipConditions.dqOld*slipConditions.drOld) + slipModel.g*cos(slipConditions.qOld))/slipConditions.rOld/6.0;
+		slipConditions.r = r + (delta*(dr + delta*(g*sin(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) + (r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)*pow((dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0))), 2) - (ks*(r - r0 + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0))/m)))/6.0 + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/3.0 + (delta*dr)/6.0 + (delta*(dr + (delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))/2.0))/3.0;
+		
+		slipConditions.dr = dr + (delta*(g*sin(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) + (r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)*pow((dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0))), 2) - (ks*(r - r0 + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0))/m))/3.0 + (delta*(g*sin(q + delta*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))) + (r + delta*(dr + (delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))/2.0))*pow((dq + (delta*(g*cos(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) - (2.0*dr + delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))))/(r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)), 2) - (ks*(r - r0 + delta*(dr + (delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))/2.0)))/m))/6.0 + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/6.0 + (delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))/3.0;
+		
+		slipConditions.q = q + (delta*dq)/6.0 + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/3.0 + (delta*(dq + (delta*(g*cos(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) - (2.0*dr + delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))))/(r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)))/6.0 + (delta*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0))))/3.0;
+		
+		slipConditions.dq = dq + (delta*(g*cos(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) - (2.0*dr + delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))))/(3.0*(r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)) + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(3.0*(r + (delta*dr)/2.0)) + (delta*(g*cos(q + delta*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))) - (2.0*dr + 2.0*delta*(g*sin(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) + (r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0)*pow((dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0))), 2) - (ks*(r - r0 + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0))/m))*(dq + (delta*(g*cos(q + (delta*(dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)))/2.0) - (2.0*dr + delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))*(dq + (delta*(g*cos(q + (delta*dq)/2.0) - (dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r))*(2.0*dr + delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))))/(2.0*(r + (delta*dr)/2.0)))))/(r + (delta*(dr + (delta*(r*pow(dq, 2) + g*sin(q) - (ks*(r - r0))/m))/2.0))/2.0))))/(6.0*(r + delta*(dr + (delta*(g*sin(q + (delta*dq)/2.0) + pow((dq - (delta*(2.0*dq*dr - g*cos(q)))/(2.0*r)), 2)*(r + (delta*dr)/2.0) - (ks*(r - r0 + (delta*dr)/2.0))/m))/2.0))) - (delta*(2.0*dq*dr - g*cos(q)))/(6.0*r);
+		
+		// Advance time step.
+        slipConditions.rOld = r;
+        slipConditions.drOld = dr;
+        slipConditions.qOld = q;
+        slipConditions.dqOld = dq;
 
 	}
-	
-	// DEBUG STATEMENTS (Not real-time safe).
-	//printf("r: %f\n", slipConditions.r);
-	//printf("dr: %f\n", slipConditions.dr);
-	//printf("q: %f\n", slipConditions.q);
-	//printf("dq: %f\n", slipConditions.dq);
 
     // Stuff the msg and push to ROS for logging
     logData.r = slipConditions.r;
     logData.dr = slipConditions.dr;
     logData.q = slipConditions.q;
     logData.dq = slipConditions.dq;
+    logData.ks = ks;
     logPort.write(logData);
 
     return slipConditions;
@@ -146,6 +153,13 @@ SlipConditions ASCSlipModel::slipAdvance(SlipModel slipModel, SlipConditions sli
 
 // slipForce ===================================================================
 LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipConditions slipConditions) {
+
+    // Unpack parameters
+    r = slipConditions.r;
+    dr = slipConditions.dr;
+    q = slipConditions.q;
+    ks = slipModel.ks;
+    r0 = slipModel.r0;
 
 	// If virtual SLIP model is in flight.
 	if (slipConditions.isFlight) {
@@ -158,7 +172,9 @@ LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipConditions slipConditi
 	// If virtual SLIP model is in NOT in flight (is in stance).
 	} else {
 		// Nonlinear ATRIAS spring constant dependent on leg length.
-		//slipModel.ks = 2.0*slipModel.ks/sqrt(1.0 - pow(slipConditions.r, 2.0));
+        l1 = 0.5;
+        l2 = 0.5;
+        ks = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
 	
 		// Define component forces.
 		legForce.fx = slipModel.ks*(slipConditions.r - slipModel.r0)*cos(slipConditions.q);
@@ -167,17 +183,12 @@ LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipConditions slipConditi
 		legForce.dfz = slipModel.ks*(slipConditions.dr - 0.0)*sin(slipConditions.q);
 	}
 
-	// DEBUG STATEMENTS (Not real-time safe).
-	//printf("fx: %f\n", legForce.fx);
-	//printf("fz: %f\n", legForce.fz);
-	//printf("dfx: %f\n", legForce.dfx);
-	//printf("dfz: %f\n", legForce.dfz);
-
     // Stuff the msg and push to ROS for logging
     logData.fx = legForce.fx;
     logData.fz = legForce.fz;
     logData.dfx = legForce.dfx;
     logData.dfz = legForce.dfz;
+    logData.ks = ks;
     logPort.write(logData);
     
 	return legForce;

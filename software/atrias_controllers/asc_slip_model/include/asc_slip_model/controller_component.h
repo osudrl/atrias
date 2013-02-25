@@ -24,7 +24,6 @@
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_slip_model;
-using namespace std; // might not need
 
 namespace atrias {
 namespace controller {
@@ -38,6 +37,7 @@ class ASCSlipModel : public TaskContext {
 		
 		// Function variables
 		double delta;
+		double r, dr, q, dq, ks, g, r0, m, l1, l2;
 		LegForce legForce;
 
     	// Logging
