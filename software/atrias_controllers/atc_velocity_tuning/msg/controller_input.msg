@@ -11,3 +11,7 @@ int8    relayMode
 
 # If true, halt the next time the motor reaches the maximum position.
 bool    halt
+
+# Set automated direction switching frequency
+int16   autoFrequency
+

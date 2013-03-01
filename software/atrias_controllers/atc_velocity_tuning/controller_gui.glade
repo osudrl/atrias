@@ -5,7 +5,7 @@
   <object class="GtkTable" id="controller_tab">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="n_rows">7</property>
+    <property name="n_rows">8</property>
     <property name="n_columns">2</property>
     <child>
       <object class="GtkLabel" id="minPosLbl">
@@ -54,23 +54,23 @@
         <property name="label" translatable="yes">Feedback sensor:</property>
       </object>
       <packing>
-        <property name="top_attach">4</property>
-        <property name="bottom_attach">5</property>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
       </packing>
     </child>
     <child>
       <object class="GtkToggleButton" id="sensorButton">
         <property name="label" translatable="yes">Use Rotor Encoder</property>
+        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="use_action_appearance">False</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">4</property>
-        <property name="bottom_attach">5</property>
+        <property name="top_attach">5</property>
+        <property name="bottom_attach">6</property>
       </packing>
     </child>
     <child>
@@ -150,10 +150,10 @@
         <child>
           <object class="GtkRadioButton" id="absEncoder">
             <property name="label" translatable="yes">Absolute</property>
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="use_action_appearance">False</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <property name="group">radiobutton1</property>
@@ -167,10 +167,10 @@
         <child>
           <object class="GtkRadioButton" id="incEncoder">
             <property name="label" translatable="yes">Incremental</property>
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="use_action_appearance">False</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <property name="group">radiobutton1</property>
@@ -184,10 +184,10 @@
         <child>
           <object class="GtkRadioButton" id="forward">
             <property name="label" translatable="yes">Forward</property>
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="use_action_appearance">False</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <property name="group">radiobutton1</property>
@@ -201,10 +201,10 @@
         <child>
           <object class="GtkRadioButton" id="reverse">
             <property name="label" translatable="yes">Reverse</property>
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="use_action_appearance">False</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <property name="group">radiobutton1</property>
@@ -215,12 +215,28 @@
             <property name="position">3</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkRadioButton" id="automatic">
+            <property name="label" translatable="yes">Automatic</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+            <property name="group">radiobutton1</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">5</property>
-        <property name="bottom_attach">6</property>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
       </packing>
     </child>
     <child>
@@ -230,8 +246,8 @@
         <property name="label" translatable="yes">Relay type:</property>
       </object>
       <packing>
-        <property name="top_attach">5</property>
-        <property name="bottom_attach">6</property>
+        <property name="top_attach">6</property>
+        <property name="bottom_attach">7</property>
       </packing>
     </child>
     <child>
@@ -241,32 +257,62 @@
         <property name="label" translatable="yes">Halt at Max Pos:</property>
       </object>
       <packing>
-        <property name="top_attach">6</property>
-        <property name="bottom_attach">7</property>
+        <property name="top_attach">7</property>
+        <property name="bottom_attach">8</property>
       </packing>
     </child>
     <child>
       <object class="GtkToggleButton" id="haltButton">
         <property name="label" translatable="yes">Halt</property>
+        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="use_action_appearance">False</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
         <property name="right_attach">2</property>
-        <property name="top_attach">6</property>
-        <property name="bottom_attach">7</property>
+        <property name="top_attach">7</property>
+        <property name="bottom_attach">8</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="freqLbl">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Auto Freq:</property>
+      </object>
+      <packing>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="freqBox">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">•</property>
+        <property name="invisible_char_set">True</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="digits">1</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="top_attach">4</property>
+        <property name="bottom_attach">5</property>
       </packing>
     </child>
   </object>
   <object class="GtkRadioButton" id="radiobutton1">
     <property name="label" translatable="yes">radiobutton</property>
+    <property name="use_action_appearance">False</property>
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="receives_default">False</property>
-    <property name="use_action_appearance">False</property>
     <property name="active">True</property>
     <property name="draw_indicator">True</property>
   </object>
