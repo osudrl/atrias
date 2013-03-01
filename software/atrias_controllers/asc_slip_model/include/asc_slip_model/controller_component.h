@@ -30,28 +30,43 @@ namespace controller {
 
 // ASCSlipModel ================================================================
 class ASCSlipModel : public TaskContext {
+
 	private:
-	    // Operations
-    	SlipConditions slipAdvance(SlipModel slipModel, SlipConditions slipConditions);
-		LegForce slipForce(SlipModel slipModel, SlipConditions slipConditions);
+	    // Operations ----------------------------------------------------------
+    	SlipState slipAdvance(SlipModel slipModel, SlipState slipState);
+		LegForce slipForce(SlipModel slipModel, SlipState slipState);
 		
-		// Function variables
-		double delta;
-		double r, dr, q, dq, ks, g, r0, m, l1, l2;
+		
+		// Variables -----------------------------------------------------------
+		// Timestep
+		double h;
+		
+		// State-space
+		double r, dr, q, dq;
+		
+		// SLIP model parameters
+		double k, g, r0, m;
+		
+		// ATRIAS parameters
+		double l1, l2;
+		
+		// Leg forces
 		LegForce legForce;
 
-    	// Logging
+
+    	// Logging -------------------------------------------------------------
     	controller_log_data logData;
     	OutputPort<controller_log_data> logPort;
 
+
 	public:
-    	// Constructor
+    	// Constructor ---------------------------------------------------------
     	ASCSlipModel(std::string name);
-    	
-    	// Get ROS header from RTOps.
+    	    	
+    	// Get ROS header from RTOps -------------------------------------------
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
-    	// Standard Orocos hooks
+    	// Standard Orocos hooks -----------------------------------------------
     	bool configureHook();
     	bool startHook();
     	void updateHook();

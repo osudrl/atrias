@@ -33,28 +33,47 @@ namespace controller {
 
 // ASCLegForceControl ==========================================================
 class ASCLegForceControl : public TaskContext {
+
 	private:
-        // Operations
+        // Operations ----------------------------------------------------------
         AB legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position);
 
-		// Function variables
+
+		// Variables -----------------------------------------------------------
+		// Robot parameters
 		double l1, l2;
-		double tauSpringA, tauSpringB;
-		double dtauSpringA, dtauSpringB;
+		
+		// Forces
+		double fx, fz, dfx, dfz;
+		
+		// Angular positions
+		double qlA, qlB, qmA, qmB, qb;
+		
+		// Angular velocities
+		double dqlA, dqlB, dqmA, dqmB, dqb;
+		
+		// Gains
+		double kp, kd, ks, kg, kt;
+		
+		// Torques
+		double tausA, tausB, dtausA, dtausB;
+
+		// Motor current
 		AB motorCurrent;
 		
-    	// Logging
+    	// Logging -------------------------------------------------------------
     	controller_log_data logData;
     	OutputPort<controller_log_data> logPort;
 
+
 	public:
-    	// Constructor
+    	// Constructor ---------------------------------------------------------
     	ASCLegForceControl(std::string name);
     	
-    	// Get ROS header from RTOps.
+    	// Get ROS header from RTOps -------------------------------------------
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
-    	// Standard Orocos hooks
+    	// Standard Orocos hooks -----------------------------------------------
     	bool configureHook();
     	bool startHook();
     	void updateHook();

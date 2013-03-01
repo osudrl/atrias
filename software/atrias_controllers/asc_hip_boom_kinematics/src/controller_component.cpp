@@ -38,11 +38,11 @@
 // OperationCaller<LeftRight(LeftRight, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location)> inverseKinematics0;
 
 // To use do something like this.
-// // Define toePosition struct.
+// // Define toePosition struct
 // toePosition.left = 2.15;
 // toePosition.right = 2.45;
 //
-// // Compute and set hipAngle.
+// // Compute and set hipAngle
 // hipAngle = inverseKinematics0(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
 
@@ -57,12 +57,17 @@ ASCHipBoomKinematics::ASCHipBoomKinematics(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log") {
     
-    // Add operations
+    // Operations --------------------------------------------------------------
 	this->provides("ascHipBoomKinematics")
 		->addOperation("inverseKinematics",&ASCHipBoomKinematics::inverseKinematics, this, ClientThread)
 		.doc("Given a boom angle, leg angles, and desired toe positions, returns required hip angles");
+		
+		
+	// Variables ---------------------------------------------------------------
        
-    // LOGGING
+       
+       
+    // Logging -----------------------------------------------------------------
     // Create a port
     addPort(logPort); 
     // Connect with buffer size 100000 so we get all data.
@@ -81,18 +86,21 @@ ASCHipBoomKinematics::ASCHipBoomKinematics(std::string name):
 // ASCHipBoomKinematics::inverseKinematics =====================================
 LeftRight ASCHipBoomKinematics::inverseKinematics(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position) {
 
-    // Define imaginary number i.
+	// Unpack parameters -------------------------------------------------------
+
+
+    // Define imaginary number i
     i = complex<double>(0.0, 1.0);
 
-	// Define robot parameters.
-	l1 = 0.50; // Leg thigh segment length.
-	l2 = 0.50; // Leg shin segment length.
-    lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis.
-    lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis.
-    lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly.
-    qBodyOffset = M_PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane.
+	// Define robot parameters
+	l1 = 0.50; // Leg thigh segment length
+	l2 = 0.50; // Leg shin segment length
+    lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
+    lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis
+    lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly
+    qBodyOffset = M_PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane
 
-	// Get leg lengths and angles.
+	// Get leg lengths and angles
     lLeftLeg = (l1 + l2)*cos((lLeg.halfB.legAngle - lLeg.halfA.legAngle)/2.0);
     lRightLeg = (l1 + l2)*cos((rLeg.halfB.legAngle - rLeg.halfA.legAngle)/2.0);
     qLeftLeg = (lLeg.halfA.legAngle + lLeg.halfB.legAngle)/2.0;
@@ -105,13 +113,13 @@ LeftRight ASCHipBoomKinematics::inverseKinematics(LeftRight toePosition, atrias_
 
 	// TODO - Add velocity terms
 
-	// We only care about the real part, the imaginary part should be zero.
+	// We only care about the real part, the imaginary part should be zero
 	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*M_PI, 2.0*M_PI);
 	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*M_PI, 2.0*M_PI);
 
-	// TODO - Clamp hip angles to physical limits.
+	// TODO - Clamp hip angles to physical limits
 	
-	// Stuff the msg and push to ROS for logging
+	// Stuff the msg and push to ROS for logging -------------------------------
 	logData.header = getROSHeader();
     logData.leftHipAngle = hipAngle.left;
     logData.rightHipAngle = hipAngle.right;

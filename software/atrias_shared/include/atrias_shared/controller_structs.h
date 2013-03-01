@@ -20,7 +20,7 @@ struct LeftRight {
     double right;
 };
 
-// Used in ASCLegForce and ASCSlipModelSolver
+// Used in ASCLegForce and ASCSlipModel
 struct LegForce {
 	double fx;
 	double fz;
@@ -30,30 +30,32 @@ struct LegForce {
 
 // Used in ASCLegForce
 struct Gain {
-	double kp;
-	double kd;
-	double ks;
-	double kg;
-	double kt;
+	double kp; // Proportional gain
+	double kd; // Derivative gain
+	double ks; // Spring constant
+	double kg; // Gear ratio
+	double kt; // Torque constant
 };
 
-// Used in ASCSlipModleSolver
-struct SlipConditions {
-	double rOld;
-	double drOld;
-	double qOld;
-	double dqOld;
-	double r;
-	double dr;
-	double q;
-	double dq;
+// Used in ASCSlipModel
+struct SlipState {
 	bool isFlight;
+	double r; // Leg length
+	double dr; // Change in leg length
+	double q; // Leg angle
+	double dq; // Change in leg angle
+	double rOld; // Leg length at (n-1) timestep
+	double drOld; // Change in leg length at (n-1) timestep
+	double qOld; // Leg angle at (n-1) timestep
+	double dqOld; // Change in leg angle at (n-1) timestep
 };
+
+// Used in ASCSlipModel
 struct SlipModel {
-	double g;
-	double ks;
-	double m;
-	double r0;
+	double g; // Gravity
+	double k; // Rotational spring constant
+	double m; // Mass
+	double r0; // Initial leg length
 };
 
 struct MotorAngle {

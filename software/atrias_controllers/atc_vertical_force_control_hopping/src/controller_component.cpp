@@ -16,6 +16,7 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
     guiDataOut("gui_data_out"),
     guiDataIn("gui_data_in")
 {
+	// Operations --------------------------------------------------------------
     this->provides("atc")->addOperation("runController", &ATCVerticalForceControlHopping::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
     
     // ASCHipBoomKinematics
@@ -32,12 +33,14 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
     addPort(guiDataOut);
     pubTimer = new GuiPublishTimer(20);
     
-    // Initalize variables
+    
+    // Variables ---------------------------------------------------------------
     isStance = false;
     isLeftStance = false;
     isRightStance = false;
 
-    // Logging
+
+    // Logging -----------------------------------------------------------------
     // Create a port
     addPort(logPort);
     // Buffer port so we capture all data.
@@ -96,9 +99,9 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 	
 	// If we are two leg hoppign the spring stiffness is twice as large.
 	if (guiIn.two_leg_hop) {
-		slipModel.ks = guiIn.slip_k*2.0;
+		slipModel.k = guiIn.slip_k*2.0;
 	} else {
-		slipModel.ks = guiIn.slip_k;
+		slipModel.k = guiIn.slip_k;
 	}
 	
     // Check and set current state
@@ -126,8 +129,8 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 		if (isStance) {
 			
 	       	// Compute SLIP force profile
-        	slipConditions = slipAdvance0(slipModel, slipConditions);
-			legForce = slipForce0(slipModel, slipConditions);
+        	slipState = slipAdvance0(slipModel, slipState);
+			legForce = slipForce0(slipModel, slipState);
 				
 			// If we are two leg hopping each leg takes half the load.
 			if (guiIn.two_leg_hop) {
@@ -140,7 +143,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 			if (isLeftStance) {
 				// If we think we should be in flight use position control.
 				// If we think we are still in stance use force control.
-				if (slipConditions.isFlight) {
+				if (slipState.isFlight) {
 					// Set motor angles
 					lMotorAngle = legToMotorPos(leftLegAng, leftLegLen);
 
@@ -171,7 +174,7 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 			if (isRightStance) {	        	
 				// If we think we should be in flight use position control.
 				// If we think we are still in stance use force control.
-				if (slipConditions.isFlight) {
+				if (slipState.isFlight) {
 					// Set motor angles
 					rMotorAngle = legToMotorPos(rightLegAng, rightLegLen);
 
@@ -204,10 +207,10 @@ atrias_msgs::controller_output ATCVerticalForceControlHopping::runController(atr
 		} else {
 
 		  	// Redefine slip initial conditions incase we go into stance next.
-        	slipConditions.r = guiIn.slip_l0;
-        	slipConditions.dr = -sqrt(2.0*9.81*guiIn.slip_h);
-        	slipConditions.q = M_PI/2.0;
-        	slipConditions.dq = 0.0;
+        	slipState.r = guiIn.slip_l0;
+        	slipState.dr = -sqrt(2.0*9.81*guiIn.slip_h);
+        	slipState.q = M_PI/2.0;
+        	slipState.dq = 0.0;
 			
 			if (isLeftStance) {
 				lMotorAngle = legToMotorPos(M_PI/2.0, guiIn.slip_l0);

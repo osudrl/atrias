@@ -10,7 +10,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">Force Control Demo - By Mikhail Jones</property>
+        <property name="label" translatable="yes">Vertical Hopping - By Mikhail Jones</property>
         <attributes>
           <attribute name="weight" value="bold"/>
         </attributes>
@@ -961,6 +961,15 @@
         <property name="fill">True</property>
         <property name="position">25</property>
       </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

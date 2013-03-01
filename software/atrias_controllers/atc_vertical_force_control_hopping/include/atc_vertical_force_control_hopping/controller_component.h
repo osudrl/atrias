@@ -37,10 +37,11 @@ using namespace shared;
 namespace controller {
 
 class ATCVerticalForceControlHopping : public TaskContext {
+
 	private:
+		// Operations ----------------------------------------------------------
 		// This Operation is called by the RT Operations Manager.
 		atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
-
 		atrias_msgs::controller_output co;
 
 		// Logging
@@ -70,10 +71,10 @@ class ATCVerticalForceControlHopping : public TaskContext {
 		// ASCSlipModel
 		std::string ascSlipModel0Name;
 		TaskContext *ascSlipModel0;
-		OperationCaller<SlipConditions(SlipModel, SlipConditions)> slipAdvance0;
-		OperationCaller<LegForce(SlipModel, SlipConditions)> slipForce0;
+		OperationCaller<SlipState(SlipModel, SlipState)> slipAdvance0;
+		OperationCaller<LegForce(SlipModel, SlipState)> slipForce0;
 	
-		// Variables
+		// Variables -----------------------------------------------------------
 		bool isStance;
 		bool isLeftStance;
 		bool isRightStance;
@@ -85,7 +86,7 @@ class ATCVerticalForceControlHopping : public TaskContext {
 	
 		// Leg force control variables
 		Gain gain;
-		SlipConditions slipConditions;
+		SlipState slipState;
 		SlipModel slipModel;
 		LegForce legForce;
 		AB motorCurrent;
@@ -94,14 +95,15 @@ class ATCVerticalForceControlHopping : public TaskContext {
 		LeftRight toePosition;
 		LeftRight hipAngle;
 	
-	public:
-		// Constructor
+	
+	public:	
+		// Constructor ---------------------------------------------------------
 		ATCVerticalForceControlHopping(std::string name);
 		
-	    // Log controller data
+	    // Log controller data -------------------------------------------------
 	    RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
-		// Standard Orocos hooks
+		// Standard Orocos hooks -----------------------------------------------
 		bool configureHook();
 		bool startHook();
 		void updateHook();

@@ -46,7 +46,7 @@
 // gain.kg = 50.0;    
 // gain.kt = 0.0987;
 //
-// // Define legForce struct.
+// // Define legForce struct
 // legForce.fx = 0.0;
 // legForce.fz = 0.0;
 // legForce.dfx = 0.0;
@@ -69,10 +69,14 @@ ASCLegForceControl::ASCLegForceControl(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log") {
     
-    // Add operations
+    // Operations --------------------------------------------------------------
     this->provides("ascLegForceControl")->addOperation("legForceToMotorCurrent", &ASCLegForceControl::legForceToMotorCurrent, this).doc("Given a desired X-Z component force, returns the required motor current.");
+    
+    // Variables ---------------------------------------------------------------
+    
+    
 
-    // LOGGING
+    // Logging -----------------------------------------------------------------
     // Create a port
     addPort(logPort); 
     // Connect with buffer size 100000 so we get all data.
@@ -91,30 +95,52 @@ ASCLegForceControl::ASCLegForceControl(std::string name):
 // legForceToMotorCurrent ======================================================
 AB ASCLegForceControl::legForceToMotorCurrent(LegForce legForce, Gain gain, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
 
-	// Declare robot parameters.
+	// Unpack parameters -------------------------------------------------------
+	fx = legForce.fx;
+	fz = legForce.fz;
+	dfx = legForce.dfx;
+	dfz = legForce.dfz;
+	qlA = leg.halfA.legAngle;
+	qlB = leg.halfB.legAngle;
+	qmA = leg.halfA.motorAngle;
+	qmB = leg.halfB.motorAngle;
+	qb = position.bodyPitch;
+	dqlA = leg.halfA.legVelocity;
+	dqlB = leg.halfB.legVelocity;
+	dqmA = leg.halfA.motorVelocity;
+	dqmB = leg.halfB.motorVelocity;
+	dqb = position.bodyPitchVelocity;
+	kp = gain.kp;
+	kd = gain.kd;
+	ks = gain.ks;
+	kg = gain.kg;
+	kt = gain.kt;	
+
+	// Robot parameters
 	l1 = 0.50;
 	l2 = 0.50;
 
-	// Compute required joint torque using Jacobian.
-	tauSpringA = -legForce.fx*l2*cos(leg.halfA.legAngle + position.bodyPitch) + legForce.fz*l2*sin(leg.halfA.legAngle + position.bodyPitch);
-	tauSpringB = -legForce.fx*l1*cos(leg.halfB.legAngle + position.bodyPitch) + legForce.fz*l1*sin(leg.halfB.legAngle + position.bodyPitch);
+	// Convert force to motor current ------------------------------------------
+	// Compute required joint torque using Jacobian
+	tausA = -fx*l2*cos(qlA + qb) + fz*l2*sin(qlA + qb);
+	tausB = -fx*l1*cos(qlB + qb) + fz*l1*sin(qlB + qb);
 
-	// Compute required differential joint torque.
-	dtauSpringA = legForce.fx*l2*sin(leg.halfA.legAngle + position.bodyPitch)*(leg.halfA.legVelocity + position.bodyPitchVelocity) + legForce.dfz*l2*sin(leg.halfA.legAngle + position.bodyPitch) - legForce.dfx*l2*cos(leg.halfA.legAngle + position.bodyPitch) + legForce.fz*l2*cos(leg.halfA.legAngle + position.bodyPitch)*(leg.halfA.legVelocity + position.bodyPitchVelocity);
-	dtauSpringB = legForce.fx*l1*sin(leg.halfB.legAngle + position.bodyPitch)*(leg.halfB.legVelocity + position.bodyPitchVelocity) + legForce.dfz*l1*sin(leg.halfB.legAngle + position.bodyPitch) - legForce.dfx*l1*cos(leg.halfB.legAngle + position.bodyPitch) + legForce.fz*l1*cos(leg.halfB.legAngle + position.bodyPitch)*(leg.halfB.legVelocity + position.bodyPitchVelocity);
+	// Compute required differential joint torque
+	dtausA = fx*l2*sin(qlA + qb)*(dqlA + dqb) + dfz*l2*sin(qlA + qb) - dfx*l2*cos(qlA + qb) + fz*l2*cos(qlA + qb)*(dqlA + dqb);
+	dtausB = fx*l1*sin(qlB + qb)*(dqlB + dqb) + dfz*l1*sin(qlB + qb) - dfx*l1*cos(qlB + qb) + fz*l1*cos(qlB + qb)*(dqlB + dqb);
 
-	// Compute required motor current using PD controller with feed forward term.
-	motorCurrent.A = (gain.ks*(leg.halfA.motorAngle - leg.halfA.legAngle)/gain.kg + gain.kp*(tauSpringA/gain.ks - (leg.halfA.motorAngle - leg.halfA.legAngle)) + gain.kd*(dtauSpringA/gain.ks - (leg.halfA.motorVelocity - leg.halfA.legVelocity)))/gain.kt;
-	motorCurrent.B = (gain.ks*(leg.halfB.motorAngle - leg.halfB.legAngle)/gain.kg + gain.kp*(tauSpringB/gain.ks - (leg.halfB.motorAngle - leg.halfB.legAngle)) + gain.kd*(dtauSpringB/gain.ks - (leg.halfB.motorVelocity - leg.halfB.legVelocity)))/gain.kt;
+	// Compute required motor current using PD controller with feed forward term
+	motorCurrent.A = (ks*(qmA - qlA)/kg + kp*(tausA/ks - (qmA - qlA)) + kd*(dtausA/ks - (dqmA - dqlA)))/kt;
+	motorCurrent.B = (ks*(qmB - qlB)/kg + kp*(tausB/ks - (qmB - qlB)) + kd*(dtausB/ks - (dqmB - dqlB)))/kt;
 
-    // Stuff the msg and push to ROS for logging
+    // Stuff the msg and push to ROS for logging -------------------------------
 	logData.header = getROSHeader();
 	logData.fx = legForce.fx;
 	logData.fz = legForce.fz;
-	logData.tauSpringA = tauSpringA;
-	logData.tauSpringB = tauSpringB;
-	logData.dtauSpringA = dtauSpringA;
-	logData.dtauSpringB = dtauSpringB;
+	logData.tausA = tausA;
+	logData.tausB = tausB;
+	logData.dtausA = dtausA;
+	logData.dtausB = dtausB;
     logPort.write(logData);
 
 	return motorCurrent;

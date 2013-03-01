@@ -27,7 +27,7 @@
 using namespace RTT;
 using namespace Orocos;
 using namespace asc_hip_boom_kinematics;
-using namespace std; // might not need
+using namespace std;
 
 namespace atrias {
 namespace controller {
@@ -35,31 +35,43 @@ namespace controller {
 
 // ASCHipBoomKinematics ========================================================
 class ASCHipBoomKinematics : public TaskContext {
+
 	private:
-    	// Operations
+    	// Operations ----------------------------------------------------------
     	LeftRight inverseKinematics(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position);
 
-    	// Function Variables
+    	// Variables -----------------------------------------------------------
+    	// Imaginary number
        	complex<double> i;
-    	complex<double> complexHipAngleLeft;
-    	complex<double> complexHipAngleRight;
+       	
+       	// Hip angles
+    	complex<double> complexHipAngleLeft, complexHipAngleRight;
+    	
+    	// Robot parameters
 		double l1, l2;
+		
+		// Boom parameters
 		double lBoom, lBody, lHip, qBodyOffset;
+		
+		// Desired position
 		double lLeftLeg, lRightLeg, qLeftLeg, qRightLeg;
+		
+		// Hip angles
         LeftRight hipAngle;
 
-    	// Logging
+    	// Logging -------------------------------------------------------------
     	controller_log_data logData;
     	OutputPort<controller_log_data> logPort;
+    	
 
 	public:
-    	// Constructor
+    	// Constructor ---------------------------------------------------------
     	ASCHipBoomKinematics(std::string name);
     	
-    	// Get ROS header from RTOps.
+    	// Get ROS header from RTOps -------------------------------------------
     	RTT::OperationCaller<std_msgs::Header(void)> getROSHeader;
 
-	    // Standard Orocos hooks
+	    // Standard Orocos hooks -----------------------------------------------
     	bool configureHook();
     	bool startHook();
     	void updateHook();
