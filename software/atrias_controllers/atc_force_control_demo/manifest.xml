@@ -1,0 +1,18 @@
+<package>
+  <description brief="atc_force_control_demo">
+
+     atc_force_control_demo
+
+  </description>
+  <author>drl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_force_control_demo</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="asc_coordinate_transforms"/>
+  <depend package="asc_leg_force_control"/>
+  <depend package="asc_hip_boom_kinematics"/>
+
+</package>

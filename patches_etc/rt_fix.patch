@@ -1,0 +1,53 @@
+--- src/nicdrv.c	2013-01-02 09:01:50.822269368 -0800
++++ src/nicdrv.c	2013-01-02 09:18:33.743242595 -0800
+@@ -191,6 +191,32 @@
+ pthread_mutex_t ec_rx_mutex;
+ #endif
+ 
++/** @brief This is a realtime-safe alternative to gettimeofday
++  * This does not handle timezone effects and therefore only has one parameter.
++  * @param tv A pointer to the timeval struct into which to stuff the current time.
++  * @return 0 for success, -1 for failure
++  */
++int rt_gettimeofday(struct timeval *tv) {
++	/* We'll stuff the current time into here with clock_gettime() */
++	struct timespec curTime;
++
++	/* We use the CLOCK_REALTIME clock since that one corresponds with what gettimeofday() returns. */
++	if (clock_gettime(CLOCK_REALTIME, &curTime)) {
++		/* If we're in here, clock_gettime has returned with an error.
++		 * Return a failure ourselves */
++		return -1;
++	}
++
++	/* A timespec's sec field is the same as a timeval's */
++	tv->tv_sec  = curTime.tv_sec;
++
++	/* However, for the microseconds field, we need to convert from nanoseconds */
++	tv->tv_usec = curTime.tv_nsec / 1000;
++
++	/* A 0 return value means success */
++	return 0;
++}
++
+ /** Basic setup to connect NIC to socket.
+  * @param[in] ifname	    = Name of NIC device, f.e. "eth0"
+  * @param[in] secondary		= if >0 then use secondary stack instead of primary
+@@ -574,7 +600,7 @@
+ 			if (wkc2 <= EC_NOFRAME)
+ 				wkc2 = ec_inframe(idx, 1);
+ 		}	
+-		gettimeofday(&tv1, 0);
++		rt_gettimeofday(&tv1);
+ 	/* wait for both frames to arrive or timeout */	
+ 	} while (((wkc <= EC_NOFRAME) || (wkc2 <= EC_NOFRAME)) && (timercmp(&tv1, &tvs, <)));
+ 	/* only do redundant functions when in redundant mode */
+@@ -644,7 +670,7 @@
+ 	int wkc;
+ 	struct timeval tv1, tv2, tve;
+ 	
+-	gettimeofday(&tv1, 0);
++	rt_gettimeofday(&tv1);
+ 	tv2.tv_sec = 0;
+ 	tv2.tv_usec = timeout;
+ 	timeradd(&tv1, &tv2, &tve);

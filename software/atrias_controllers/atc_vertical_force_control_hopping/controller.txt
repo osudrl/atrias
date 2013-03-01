@@ -1,0 +1,1 @@
+description=A vertical hopping controller using realtime generated force profiles from the SLIP model.

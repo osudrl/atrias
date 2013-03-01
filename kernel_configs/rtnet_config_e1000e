@@ -1,0 +1,74 @@
+#
+# Automatically generated make config: don't edit
+# RTnet version: 0.9.13
+# Fri Feb 15 16:32:12 2013
+#
+CONFIG_RTNET_VERSION="0.9.13"
+
+#
+# Real-Time Extension
+#
+# CONFIG_RTNET_RTEXT_CLASSIC is not set
+CONFIG_RTNET_RTEXT_INKERNEL=y
+CONFIG_RTNET_LINUX_DIR="/lib/modules/`uname -r`/build"
+
+#
+# RTnet Parameters
+#
+CONFIG_RTNET_INSTALLDIR="/usr/local/rtnet"
+# CONFIG_RTNET_CHECKED is not set
+
+#
+# Protocol Stack
+#
+
+#
+# Stack parameters
+#
+CONFIG_RTNET_RX_FIFO_SIZE=32
+# CONFIG_RTNET_ETH_P_ALL is not set
+# CONFIG_RTNET_RTWLAN is not set
+
+#
+# Protocols
+#
+# CONFIG_RTNET_RTIPV4 is not set
+CONFIG_RTNET_RTPACKET=y
+# CONFIG_RTNET_RTMAC is not set
+# CONFIG_RTNET_RTCFG is not set
+
+#
+# Drivers
+#
+
+#
+# Common PCI Drivers
+#
+# CONFIG_RTNET_DRV_PCNET32 is not set
+# CONFIG_RTNET_DRV_TULIP is not set
+# CONFIG_RTNET_DRV_EEPRO100 is not set
+# CONFIG_RTNET_DRV_E1000 is not set
+CONFIG_RTNET_DRV_E1000E=y
+# CONFIG_RTNET_DRV_NATSEMI is not set
+# CONFIG_RTNET_DRV_8139 is not set
+# CONFIG_RTNET_DRV_VIA_RHINE is not set
+# CONFIG_RTNET_DRV_IGB is not set
+# CONFIG_RTNET_DRV_R8169 is not set
+
+#
+# Misc Drivers
+#
+# CONFIG_RTNET_DRV_LOOPBACK is not set
+# CONFIG_RTNET_DRV_SMC91111 is not set
+# CONFIG_RTNET_DRV_ETH1394 is not set
+# CONFIG_RTNET_EXP_DRIVERS is not set
+
+#
+# Add-Ons
+#
+# CONFIG_RTNET_ADDON_RTCAP is not set
+
+#
+# Examples
+#
+# CONFIG_RTNET_EXAMPLES is not set

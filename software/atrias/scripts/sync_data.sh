@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROBOT="drl-robot"
+ROBOT="i1000a-1"
 GUI_COMPUTER="drl-guilaptop"
 
 if [ $HOSTNAME == $GUI_COMPUTER ]; then

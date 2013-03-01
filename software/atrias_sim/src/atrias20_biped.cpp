@@ -195,6 +195,11 @@ void GazeboControllerConnector::OnUpdate()
     ciso.position.xVelocity = this->hipLinks.center->GetWorldLinearVel().x;
     ciso.position.yVelocity = this->hipLinks.center->GetWorldLinearVel().y;
     ciso.position.zVelocity = this->hipLinks.center->GetWorldLinearVel().z;
+    // Hacks for a fixed body position
+    // TODO: make this reference hipLinks.center appropriately
+    ciso.position.boomAngle = M_PI;
+    ciso.position.bodyPitch = 3.0/2.0*M_PI;
+    ciso.position.bodyPitchVelocity = 0.0;
 
     // Leg position/velocity with respect to the hip
     hipRot = this->hipLinks.body->GetWorldPose().rot;
