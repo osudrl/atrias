@@ -12,8 +12,8 @@ from numpy.linalg import lstsq
 outfile = open(sys.argv[2], 'w')
 
 datapairs   = [line.split() for line in open(sys.argv[1])]
-torques     = [[float(pair[0])]    for pair in datapairs]
-deflections = [[float(pair[1])]    for pair in datapairs]
+torques     = [[float(pair[0])] for pair in datapairs]
+deflections = [[float(pair[1])] for pair in datapairs]
 
 outfile.write('''
 #ifndef PROCESSEDDATA_H
@@ -25,6 +25,8 @@ outfile.write('#define NUM_TORQUE_SAMPLES 2\n')
 # The indexes pull the exact value we need from the regression function's output
 outfile.write('#define TORQUE_SAMPLES     {0.0, ' + str(lstsq(deflections, torques)[0][0][0] * max(deflections)[0]) + '}\n')
 outfile.write('#define MAX_DEFLECTION     ' + str(max(deflections)[0]) + '\n')
+
+outfile.write('#define SPRING_CONSTANT    ' + str(lstsq(deflections, torques)[0][0][0]) + '\n')
 
 outfile.write('#define NUM_DEFL_SAMPLES   2\n')
 outfile.write('#define DEFL_SAMPLES       {0.0, ' + str(lstsq(torques, deflections)[0][0][0] * max(torques)[0])     + '}\n')

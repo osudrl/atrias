@@ -1,6 +1,4 @@
 controller_status controllerStatus
 float64 elapsed
 float64 tgtForce
-float64 lDeflDiff
-float64 rDeflDiff
 float64 toeHeight

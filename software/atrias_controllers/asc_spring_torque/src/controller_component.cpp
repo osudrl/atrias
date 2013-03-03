@@ -13,6 +13,9 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 	logPort(name + "_log")
 {
 	this->provides("springTorque")
+	->addOperation("getConstant", &ASCSpringTorque::getConst, this, ClientThread)
+	.doc("Gets the equivalent spring constant at a given deflection.");
+	this->provides("springTorque")
 	->addOperation("getTorque", &ASCSpringTorque::getTorque, this, ClientThread)
 	.doc("Calculates the torque from spring deflection");
 	this->provides("springTorque")
@@ -32,6 +35,10 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 	logPort.createStream(policy);
 
 	log(Info) << "[ASCSpringTorque] Constructed!" << endlog();
+}
+
+double ASCSpringTorque::getConst(double defl) {
+	return SPRING_CONSTANT;
 }
 
 // Put control code here.

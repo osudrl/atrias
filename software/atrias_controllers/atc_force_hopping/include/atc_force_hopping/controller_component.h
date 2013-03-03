@@ -33,6 +33,8 @@
 #include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/globals.h>
 
+#define TORQUE_CONST (50.0 * .121)
+
 using namespace RTT;
 using namespace Orocos;
 using namespace atc_force_hopping;
@@ -71,7 +73,8 @@ class ATCForceHopping : public TaskContext {
 		ASCLoader rLegASmoothLoader;
 		ASCLoader rLegBSmoothLoader;
 		ASCLoader rLegHSmoothLoader;
-		ASCLoader forceDeflLoader;
+		ASCLoader lSpringLoader;
+		ASCLoader rSpringLoader;
 
 		OperationCaller<double(double, double, double, double)> lLegAController;
 		OperationCaller<double(double, double, double, double)> lLegBController;
@@ -91,8 +94,11 @@ class ATCForceHopping : public TaskContext {
 		OperationCaller<MotorState(void)>                       rLegBSmoothController;
 		OperationCaller<void(double, double, double)>           rLegHSmoothInit;
 		OperationCaller<MotorState(void)>                       rLegHSmoothController;
-		OperationCaller<double(double, double, double)>         forceDefl;
 		OperationCaller<MotorAngle(double, double)>             legToMotorPos;
+		OperationCaller<double(double)>                         lGetDefl;
+		OperationCaller<double(double)>                         lGetConst;
+		OperationCaller<double(double)>                         rGetDefl;
+		OperationCaller<double(double)>                         rGetConst;
 
 		Property<double> lLegAP;
 		Property<double> lLegAD;
@@ -126,7 +132,7 @@ class ATCForceHopping : public TaskContext {
 		/** @brief This represents the "flight" state. This is called periodically.
 		  * @return The desired robot state (angle for each motor).
 		  */
-		RobotPos stateFlight();
+		RobotPos stateFlight(atrias_msgs::robot_state &rs);
 		void setStateFlight();
 
 		/** @brief This is called periodically during the stance state.
