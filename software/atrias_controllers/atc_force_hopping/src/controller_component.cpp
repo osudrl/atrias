@@ -134,6 +134,10 @@ atrias_msgs::controller_output ATCForceHopping::stateStance(atrias_msgs::robot_s
 	if (elapsed < duration)
 		dforce = amplitude * M_PI * cos(M_PI * elapsed / duration) / duration;
 	
+	// Let's divide the target force by two since we're doing both legs.
+	force  *= 0.5;
+	dforce *= 0.5;
+	
 	double lTheta  = (rs.lLeg.halfB.legAngle    - rs.lLeg.halfA.legAngle) / 2.0;
 	double rTheta  = (rs.rLeg.halfB.legAngle    - rs.rLeg.halfA.legAngle) / 2.0;
 	double dlTheta = (rs.lLeg.halfB.legVelocity - rs.lLeg.halfA.legVelocity) / 2.0;
