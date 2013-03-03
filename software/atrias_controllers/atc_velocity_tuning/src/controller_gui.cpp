@@ -41,13 +41,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	maxPosSpnBtn->set_range(0.0, 1.5);
 	desVelSpnBtn->set_range(0.0, 10.0);
 	kpSpnBtn->set_range(0.0, 300.0);
-	freqSpnBtn->set_range(0.0, 200.0);
 	
 	minPosSpnBtn->set_value(.2);
 	maxPosSpnBtn->set_value(.4);
 	desVelSpnBtn->set_value(1.0);
 	kpSpnBtn->set_value(10.0);
-	freqSpnBtn->set_value(0.0);
 
 	absEncoder->set_active(true);
 
