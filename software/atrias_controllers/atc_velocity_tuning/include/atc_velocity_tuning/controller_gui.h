@@ -24,8 +24,7 @@ atc_velocity_tuning::controller_input controllerDataOut;
 Gtk::SpinButton *minPosSpnBtn,
                 *maxPosSpnBtn,
                 *desVelSpnBtn,
-                *kpSpnBtn,
-                *freqSpnBtn;
+                *kpSpnBtn;
 
 Gtk::ToggleButton *sensorToggle,
                   *haltToggle;
@@ -33,8 +32,7 @@ Gtk::ToggleButton *sensorToggle,
 Gtk::RadioButton  *absEncoder,
                   *incEncoder,
 			   *forward,
-			   *reverse,
-			   *automatic;
+			   *reverse;
 
 #endif /* CONTROLLER_GUI_H_ */
 
