@@ -7,7 +7,7 @@ F_CPU = 32000000
 
 # Output file name (without extension)
 OUTPUT = medulla
-OUTPUT_DIR = .
+OUTPUT_DIR = ../build
 
 # Source Files
 SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
@@ -18,7 +18,7 @@ MEDULLA_LIB_DIR = ../../../../medulla/firmware/medulla_lib
 DEBUG_LEVEL = -DDEBUG_HIGH
 
 # Build Options
-OBJDIR = .
+OBJDIR = ../build
 INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../include ../../../robot_definitions
 OPT = 2
 
@@ -51,6 +51,7 @@ NM = avr-nm
 AVRDUDE = avrdude
 REMOVE = rm -f
 REMOVEDIR = rm -rf
+CREATEDIR = mkdir -p
 COPY = cp
 
 # Define rules
@@ -66,6 +67,7 @@ program: all
 	$(AVRDUDE) -p $(MCU) -P $(PORT) -c $(PROGRAMMER) -U flash:w:$(OUTPUT).hex
 
 %.hex : %.elf
+	$(CREATEDIR) $(OUTPUT_DIR)
 	@echo
 	@echo Linking $<
 	$(OBJCOPY) -O ihex $(OUTPUT_DIR)/$< $(OUTPUT_DIR)/$@

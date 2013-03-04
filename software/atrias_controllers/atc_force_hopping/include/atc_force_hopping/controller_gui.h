@@ -27,8 +27,7 @@ atc_force_hopping::controller_input controllerDataOut;
 atc_force_hopping::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::HScale       *flightLegLen,
-                  *retractDiff;
+Gtk::HScale       *flightLegLen;
 
 Gtk::SpinButton   *flightP,
                   *flightD,
@@ -38,8 +37,7 @@ Gtk::SpinButton   *flightP,
                   *hipD;
 
 Gtk::ComboBox     *stancePSrc,
-                  *stanceDSrc,
-                  *legMode;
+                  *stanceDSrc;
 
 Gtk::Label        *stateLbl;
 

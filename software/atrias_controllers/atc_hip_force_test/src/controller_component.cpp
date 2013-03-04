@@ -110,6 +110,12 @@ atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot
 	}
 
 	co.command = medulla_state_run;
+
+	// Check for issues
+	if (fabs(coActiveLeg->motorCurrentHip) > 20.0)
+	{
+		co.command = medulla_state_error;
+	}
 	// Output for RTOps
 	return co;
 }

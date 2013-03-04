@@ -57,9 +57,6 @@ bool ConnManager::initialize() {
 	// Send the EtherCAT slaves into OP
 	ec_slave[0].state = EC_STATE_OPERATIONAL;
 	
-	// This might not even be necessary... should test.
-	cycleECat();
-	
 	ec_writestate(0);
 	ec_statecheck(0, EC_STATE_OPERATIONAL,  EC_TIMEOUTSTATE);
 	
