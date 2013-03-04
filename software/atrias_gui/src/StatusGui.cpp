@@ -180,12 +180,10 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     rightLegAngleDisplay->set_text(buffer);
 
     //Commented out until we figure out where the hip angle went in the robot state
-    /*sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.motorAngle);
-    leftHipLengthDisplay->set_text(buffer);
-    sprintf(buffer, "%0.4f", rtCycle.robotState.rLeg.hip.motorAngle);
-    rightHipLengthDisplay->set_text(buffer);*/
-    leftHipAngleDisplay->set_text("0.0");
-    rightHipAngleDisplay->set_text("0.0");
+    sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.legBodyAngle);
+    leftHipAngleDisplay->set_text(buffer);
+    sprintf(buffer, "%0.4f", rtCycle.robotState.rLeg.hip.legBodyAngle);
+    rightHipAngleDisplay->set_text(buffer);
 
     //TODO: Fix this
     /*if (usageIndex < CPU_USAGE_AVERAGE_TICKS) {

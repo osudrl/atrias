@@ -1,0 +1,32 @@
+diff --git a/soem_core/CMakeLists.txt b/soem_core/CMakeLists.txt
+index 658c576..c070f6e 100644
+--- a/soem_core/CMakeLists.txt
++++ b/soem_core/CMakeLists.txt
+@@ -43,3 +43,14 @@ include_directories(${PROJECT_SOURCE_DIR}/build/soem_core/src)
+ #rosbuild_link_boost(${PROJECT_NAME} thread)
+ rosbuild_add_executable(slaveinfo build/soem_core/src/slaveinfo.c)
+ target_link_libraries(slaveinfo ${PROJECT_NAME})
++
++# Under xenomai, clock_gettime is provided by the POSIX skin. When not linking for Xenomai,
++# we should link with the rt library to get the same functionality.
++# Also, we need slaveinfo to link with libnative if we're running under Xenomai
++if (NOT XENO_CFLAGS)
++  message("Linking for non-Xenomai environment.")
++  target_link_libraries(${PROJECT_NAME} rt)
++else()
++  message("Linking for Xenomai environment.")
++  target_link_libraries(slaveinfo native)
++endif()
+diff --git a/soem_core/Makefile b/soem_core/Makefile
+index 2e2b306..798ac92 100644
+--- a/soem_core/Makefile
++++ b/soem_core/Makefile
+@@ -4,7 +4,7 @@ SOURCE_DIR = build/soem_core
+ INITIAL_DIR = build/SOEM1.2.5
+ UNPACK_CMD = tar xjf
+ MD5SUM_FILE = SOEM1.2.5.tar.bz2.md5sum
+-TARBALL_PATCH=rtnet.patch
++TARBALL_PATCH := rtnet.patch rt_fix.patch
+ 
+ all: $(SOURCE_DIR)/unpacked
+ 

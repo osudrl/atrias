@@ -29,6 +29,9 @@ uint8_t *hip_imu_data_pdo;
 uint16_t *hip_incremental_encoder_pdo;
 uint16_t *hip_incremental_encoder_timestamp_pdo;
 
+uint16_t *robot_current_50_pdo;
+uint16_t *robot_current_600_pdo;
+
 ecat_pdo_entry_t hip_rx_pdos[] = {{((void**)(&hip_command_state_pdo)),1},
                               {((void**)(&hip_counter_pdo)),2},
                               {((void**)(&hip_motor_current_pdo)),4}};
@@ -46,8 +49,9 @@ ecat_pdo_entry_t hip_tx_pdos[] = {{((void**)(&hip_medulla_id_pdo)),1},
                               {((void**)(&hip_measured_current_pdo)),2},
 //							  {((void**)(&hip_imu_data_pdo)),64},
                               {((void**)(&hip_incremental_encoder_pdo)),2},
-                              {((void**)(&hip_incremental_encoder_timestamp_pdo)),2}};
-
+                              {((void**)(&hip_incremental_encoder_timestamp_pdo)),2},
+                              {((void**)(&robot_current_50_pdo)),2},
+                              {((void**)(&robot_current_600_pdo)),2}};
 
 // Structs for the medulla library
 limit_sw_port_t hip_limit_sw_port;
@@ -89,7 +93,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing PDO entries\n");
 	#endif
-	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, 13); 
+	ecat_configure_pdo_entries(ecat_slave, hip_rx_pdos, MEDULLA_HIP_RX_PDO_COUNT, hip_tx_pdos, 15); 
 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Hip] Initilizing limit switches\n");
@@ -114,6 +118,12 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	adc_init_pin(&adc_port_b,6,hip_logic_voltage_pdo);
 	adc_init_pin(&adc_port_b,7,hip_motor_voltage_pdo);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Hip] Initilize robot current monitoring pin\n");
+	#endif
+	adc_init_pin(&adc_port_b,0,robot_current_50_pdo);
+	adc_init_pin(&adc_port_b,1,robot_current_600_pdo);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing hip encoder\n");

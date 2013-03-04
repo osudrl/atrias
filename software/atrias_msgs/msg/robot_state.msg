@@ -15,6 +15,9 @@ bool disableSafeties
 robot_state_leg lLeg
 robot_state_leg rLeg
 
+float64 currentPositive
+float64 currentNegative
+
 robot_state_location position
 
 uint8   boomMedullaState

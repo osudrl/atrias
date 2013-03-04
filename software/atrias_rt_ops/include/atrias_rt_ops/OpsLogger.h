@@ -15,6 +15,7 @@ class OpsLogger;
 
 #include <atrias_shared/EventManip.hpp>
 #include <atrias_shared/GuiPublishTimer.h>
+#include <atrias_msgs/log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_cycle.h>
 #include <atrias_msgs/rt_ops_event.h>
@@ -27,7 +28,7 @@ namespace rtOps {
 class OpsLogger {
 	/** @brief The port used to log RT Ops's cyclic data.
 	  */
-	RTT::OutputPort<atrias_msgs::rt_ops_cycle> logCyclicOut;
+	RTT::OutputPort<atrias_msgs::log_data>*     logCyclicOut;
 	
 	/** @brief The port used to send RT Ops's cyclic data to the GUI.
 	  */
@@ -47,13 +48,25 @@ class OpsLogger {
 	
 	/** @brief Stores this cycle's RT Ops Cycle message.
 	  */
-	atrias_msgs::rt_ops_cycle                  rtOpsCycle;
+	atrias_msgs::rt_ops_cycle                   rtOpsCycle;
+
+	/**
+	  * @brief Stuffs the robot state data into a log_data message.
+	  * The messages are passed by reference to avoid copies
+	  * (to improve performance).
+	  * @param robot_state The robot state.
+	  * @param log_data    The log data into which to stuff the data.
+	  */
+	void packLogData(atrias_msgs::robot_state &robot_state,
+	                 atrias_msgs::log_data    &log_data);
 	
 	public:
 		/** @brief Initializes the OpsLogger.
 		  * @param rt_ops A pointer to the main RT Ops instance.
 		  */
-		OpsLogger(RTOps *rt_ops);
+		OpsLogger(RTT::OutputPort<atrias_msgs::log_data>     *log_cyclic_out,
+		          RTT::OutputPort<atrias_msgs::rt_ops_cycle> *gui_cyclic_out,
+		          RTT::OutputPort<atrias_msgs::rt_ops_event> *event_out);
 		
 		/** @brief Begins a new cycle. This will send out the rt ops cycle message.
 		  */

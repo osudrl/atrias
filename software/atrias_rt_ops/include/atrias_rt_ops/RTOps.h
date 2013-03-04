@@ -23,6 +23,7 @@ class RTOps;
 // ROS
 #include <std_msgs/Header.h>
 
+#include <atrias_msgs/log_data.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/rt_ops_event.h>
 #include <atrias_shared/globals.h>
@@ -49,6 +50,10 @@ class RTOps : public RTT::TaskContext {
 		CMComms            *cmComms;
 
 		/** @brief This handles communication with the GUI.
+		 */
+		RTT::OutputPort<atrias_msgs::log_data>      logCyclicOut;
+		
+		/** @brief This is our 50 Hz GUI transmission.
 		  */
 		GuiComms           *guiComms;
 

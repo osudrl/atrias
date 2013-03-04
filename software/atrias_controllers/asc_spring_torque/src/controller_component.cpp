@@ -38,7 +38,7 @@ ASCSpringTorque::ASCSpringTorque(std::string name) :
 }
 
 double ASCSpringTorque::getConst(double defl) {
-	return SPRING_CONSTANT;
+	return deflToConst(defl);
 }
 
 // Put control code here.
@@ -50,7 +50,7 @@ double ASCSpringTorque::getTorque(double deflection) {
 	double norm = fabs(deflection);
 	double sign = (deflection >= 0.0) ? 1.0 : -1.0;
 
-	logData.torque = sign * linearInterp0GetValue(norm);
+	logData.torque = sign * deflToTorque(norm);
 
 	logPort.write(logData);
 
@@ -66,7 +66,7 @@ double ASCSpringTorque::getDeflection(double torque) {
 	double norm = fabs(torque);
 	double sign = (torque >= 0.0) ? 1.0 : -1.0;
 
-	logData.deflection = sign * linearInterp1GetValue(norm);
+	logData.deflection = sign * trqToDefl(norm);
 
 	logPort.write(logData);
 
@@ -74,27 +74,6 @@ double ASCSpringTorque::getDeflection(double torque) {
 }
 
 bool ASCSpringTorque::configureHook() {
-	// Connect to the subcontrollers
-	linearInterp0 = linearInterp0SubCont.load(this, "asc_linear_interp", "ASCLinearInterp");
-	if (linearInterp0) {
-		linearInterp0InputPoints = linearInterp0->provides("interp")->getOperation("inputPoints");
-		linearInterp0GetValue    = linearInterp0->provides("interp")->getOperation("getValue");
-
-		// Input the actual data.
-		double torques[NUM_TORQUE_SAMPLES] = TORQUE_SAMPLES;
-		linearInterp0InputPoints(torques, NUM_TORQUE_SAMPLES, 0.0, MAX_DEFLECTION, true);
-	}
-
-	linearInterp1 = linearInterp1SubCont.load(this, "asc_linear_interp", "ASCLinearInterp");;
-	if (linearInterp1) {
-		linearInterp1InputPoints = linearInterp1->provides("interp")->getOperation("inputPoints");
-		linearInterp1GetValue    = linearInterp1->provides("interp")->getOperation("getValue");
-
-		// Input our data.
-		double deflections[NUM_DEFL_SAMPLES] = DEFL_SAMPLES;
-		linearInterp1InputPoints(deflections, NUM_DEFL_SAMPLES, 0.0, MAX_TORQUE, true);
-	}
-
 	log(Info) << "[ASCSpringTorque] configured!" << endlog();
 	return true;
 }

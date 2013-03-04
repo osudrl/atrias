@@ -61,6 +61,9 @@ bool ASCPD::configureHook() {
     if (rtOpsPeer) {
         getROSHeader = rtOpsPeer->provides("timestamps")->getOperation("getROSHeader");
     }
+    else {
+        log(Warning) << "[ASCPD] Can't connect to the Deployer" << endlog();
+    }
 
     log(Info) << "[ASCPD] configured!" << endlog();
     return true;

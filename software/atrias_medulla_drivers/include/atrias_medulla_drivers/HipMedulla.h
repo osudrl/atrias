@@ -62,6 +62,9 @@ class HipMedulla : public Medulla {
 	
 	uint16_t* incrementalEncoder;
 	uint16_t* incrementalEncoderTimestamp;
+
+	uint16_t* currentPositive;
+	uint16_t* currentNegative;
 	
 	
 	uint8_t   timingCounterValue;

@@ -51,7 +51,9 @@ class ATCHipForceTest : public TaskContext {
 		ASCLoader smoothHLoader;
 		ASCLoader smoothALoader;
 		ASCLoader smoothBLoader;
-		ASCLoader forceDeflLoader;
+		ASCLoader trqALoader;
+		ASCLoader trqBLoader;
+		ASCLoader forceCtrlLoader;
 
 		// Properties for the hip force subcontroller
 		Property<double> flightP;
@@ -84,8 +86,10 @@ class ATCHipForceTest : public TaskContext {
 		OperationCaller<void(double, double, double)>              smoothHInit;
 		OperationCaller<void(double, double, double)>              smoothAInit;
 		OperationCaller<void(double, double, double)>              smoothBInit;
-		OperationCaller<double(double, double, double)>            forceDefl;
+		OperationCaller<double(double)>                            trqA;
+		OperationCaller<double(double)>                            trqB;
 		OperationCaller<MotorAngle(double, double)>                legToMotorPos;
+		OperationCaller<LegState(atrias_msgs::robot_state_leg, double, double)> forceCtrl;
 
 		// For the GUI
 		shared::GuiPublishTimer                         *pubTimer;

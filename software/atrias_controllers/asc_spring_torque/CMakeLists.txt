@@ -47,13 +47,14 @@ add_custom_command (
 	OUTPUT  ${PROJECT_BINARY_DIR}/testerdata.txt
 	COMMAND cat
 	ARGS    ${PROJECT_SOURCE_DIR}/data/* >${PROJECT_BINARY_DIR}/testerdata.txt
+	DEPENDS ${PROJECT_SOURCE_DIR}/data/*
 )
 
 add_custom_command (
 	OUTPUT  ${PROJECT_BINARY_DIR}/processed_data.h
 	COMMAND ${PROJECT_SOURCE_DIR}/src/parse_data.py
 	ARGS    ${PROJECT_BINARY_DIR}/testerdata.txt ${PROJECT_BINARY_DIR}/processed_data.h
-	DEPENDS ${PROJECT_BINARY_DIR}/testerdata.txt
+	DEPENDS ${PROJECT_BINARY_DIR}/testerdata.txt ${PROJECT_SOURCE_DIR}/src/parse_data.py
 )
 set_property(SOURCE src/controller_component.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/processed_data.h)
 

@@ -24,7 +24,7 @@ typedef enum {
 // Total size of process data in each direction for each Medulla type
 #define MEDULLA_LEG_INPUTS_SIZE                                               47
 #define MEDULLA_LEG_OUTPUTS_SIZE                                               7
-#define MEDULLA_HIP_INPUTS_SIZE                                               27
+#define MEDULLA_HIP_INPUTS_SIZE                                               31
 #define MEDULLA_HIP_OUTPUTS_SIZE                                               7
 #define MEDULLA_BOOM_INPUTS_SIZE                                              24
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
@@ -33,7 +33,7 @@ typedef enum {
 #define MEDULLA_LEG_TX_PDO_COUNT                                              24
 #define MEDULLA_LEG_RX_PDO_COUNT                                               3
 //#define MEDULLA_HIP_TX_PDO_COUNT                                              31
-#define MEDULLA_HIP_TX_PDO_COUNT                                              15
+#define MEDULLA_HIP_TX_PDO_COUNT                                              17
 #define MEDULLA_HIP_RX_PDO_COUNT                                               3
 #define MEDULLA_BOOM_TX_PDO_COUNT                                             11
 #define MEDULLA_BOOM_RX_PDO_COUNT                                              2
@@ -87,6 +87,16 @@ typedef enum {
   */
 #define THERMISTOR_MAX_VAL                                                   300
 
+#define MOTOR_VOLTAGE_C_OFFSET                                            1300.0
+#define MOTOR_VOLTAGE_V_CAL                                                 60.2
+#define MOTOR_VOLTAGE_C_CAL                                               3600.0
+
+//Robot current offset and gain
+#define ROBOT_CURRENT_50A_OFFSET                                             238
+#define ROBOT_CURRENT_600A_OFFSET                                            188
+#define ROBOT_CURRENT_50A_GAIN                                         0.0109479
+#define ROBOT_CURRENT_600A_GAIN                                        0.7536839
+
 // Loop period for main RT operations
 #define CONTROLLER_LOOP_PERIOD_NS                                      1000000LL
 /** @brief The offset between the DC and our code loop.
@@ -124,6 +134,9 @@ typedef enum {
 
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
+
+// The torque constant, including 50:1 gear reduction (in Nm/A)
+#define TRQ_CONST                                                  (50.0 * .121)
 
 /** @brief The minimum amps assumed available for a halt.
   * This only affects RT Ops's safeties, not those of the Medulla firmware.

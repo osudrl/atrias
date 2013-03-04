@@ -41,6 +41,8 @@ HipMedulla::HipMedulla() : Medulla() {
 	pdoEntryDatas[31] = {4, (void**) &timer};*/
 	pdoEntryDatas[/*32*/16] = {2, (void**) &incrementalEncoder};
 	pdoEntryDatas[/*33*/17] = {2, (void**) &incrementalEncoderTimestamp};
+	pdoEntryDatas[18] = {2, (void**) &currentPositive};
+	pdoEntryDatas[19] = {2, (void**) &currentNegative};
 }
 
 PDORegData HipMedulla::getPDORegData() {
@@ -147,6 +149,8 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	switch(*id) {
 		case MEDULLA_LEFT_HIP_ID:
 			hip_ptr = &(robot_state.lLeg.hip);
+			robot_state.currentPositive = ((double)(*currentPositive - ROBOT_CURRENT_50A_OFFSET))*ROBOT_CURRENT_50A_GAIN;
+			robot_state.currentNegative = -1.0*((double)(*currentNegative - ROBOT_CURRENT_50A_OFFSET))*ROBOT_CURRENT_50A_GAIN;
 			break;
 		case MEDULLA_RIGHT_HIP_ID:
 			hip_ptr = &(robot_state.rLeg.hip);

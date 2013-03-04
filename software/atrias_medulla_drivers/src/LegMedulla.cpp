@@ -392,7 +392,6 @@ void LegMedulla::processThermistors(atrias_msgs::robot_state& robotState) {
 void LegMedulla::processCurrents(atrias_msgs::robot_state& robotState) {
 	double current1 = processAmplifierCurrent(*amp1MeasuredCurrent);
 	double current2 = processAmplifierCurrent(*amp2MeasuredCurrent);
-	
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			robotState.lLeg.halfA.amp1Current  = current1;
@@ -497,19 +496,19 @@ void LegMedulla::processStrainGauges(atrias_msgs::robot_state& robotState) {
 void LegMedulla::processVoltages(atrias_msgs::robot_state& robotState) {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			robotState.lLeg.halfA.motorVoltage = processADCValue(*motorVoltage) * 30.0;
+			robotState.lLeg.halfA.motorVoltage = decodeMotorVoltage(*motorVoltage);
 			robotState.lLeg.halfA.logicVoltage = processADCValue(*logicVoltage) *  6.0;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
-			robotState.lLeg.halfB.motorVoltage = processADCValue(*motorVoltage) * 30.0;
+			robotState.lLeg.halfB.motorVoltage = decodeMotorVoltage(*motorVoltage);
 			robotState.lLeg.halfB.logicVoltage = processADCValue(*logicVoltage) *  6.0;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
-			robotState.rLeg.halfA.motorVoltage = processADCValue(*motorVoltage) * 30.0;
+			robotState.rLeg.halfA.motorVoltage = decodeMotorVoltage(*motorVoltage);
 			robotState.rLeg.halfA.logicVoltage = processADCValue(*logicVoltage) *  6.0;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
-			robotState.rLeg.halfB.motorVoltage = processADCValue(*motorVoltage) * 30.0;
+			robotState.rLeg.halfB.motorVoltage = decodeMotorVoltage(*motorVoltage);
 			robotState.rLeg.halfB.logicVoltage = processADCValue(*logicVoltage) *  6.0;
 			break;
 	}

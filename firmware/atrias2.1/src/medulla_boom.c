@@ -42,6 +42,7 @@ ecat_pdo_entry_t boom_tx_pdos[] = {{((void**)(&boom_medulla_id_pdo)),1},
 // Structs for the medulla library
 adc_port_t adc_port_b;
 hengstler_ssi_encoder_t x_encoder, pitch_encoder, z_encoder;
+io_pin_t sync_pin;
 
 // variables for filtering thermistor and voltage values
 uint16_t logic_voltage_counter;
@@ -90,6 +91,13 @@ void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla Boom] Initilizing Z encoder\n");
 	#endif
 	z_encoder = hengstler_ssi_encoder_init(&PORTF,&SPIF,timestamp_timer,z_encoder_pdo,z_encoder_timestamp_pdo);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Boom] Initilizing force plate sync output");
+	#endif
+	sync_pin = io_init_pin(&PORTB,0);
+	io_set_direction(sync_pin, io_input);
+	io_set_output(sync_pin, io_low);
 	
 	*master_watchdog = boom_counter_pdo;
 	*packet_counter = boom_medulla_counter_pdo;
@@ -99,9 +107,13 @@ void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 }
 
 inline void boom_enable_outputs(void) {
+	// Pull sync pin low
+	io_set_direction(sync_pin,io_output);
 }
 
 inline void boom_disable_outputs(void) {
+	// Pull sync pin high
+	io_set_direction(sync_pin,io_input);
 }
 
 void boom_update_inputs(uint8_t id) {
@@ -138,6 +150,7 @@ inline void boom_update_outputs(uint8_t id) {
 }
 
 inline void boom_estop(void) {
+	boom_disable_outputs();
 }
 
 void boom_wait_loop(void) {
