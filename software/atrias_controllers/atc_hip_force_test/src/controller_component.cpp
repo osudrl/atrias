@@ -28,6 +28,19 @@ ATCHipForceTest::ATCHipForceTest(std::string name) :
 atrias_msgs::controller_output ATCHipForceTest::runController(atrias_msgs::robot_state rs) {
 	atrias_msgs::controller_output co;
 
+	flightP.set(guiIn.flightP);
+	flightD.set(guiIn.flightD);
+	stanceP.set(guiIn.stanceP);
+	stanceD.set(guiIn.stanceD);
+	toeFilterGain.set(guiIn.toeFilterGain);
+	toeThreshold.set(guiIn.toeThreshold);
+	HP.set(guiIn.flightP);
+	HD.set(guiIn.flightD);
+	AP.set(guiIn.legP);
+	AD.set(guiIn.legD);
+	BP.set(guiIn.legP);
+	BD.set(guiIn.legD);
+
 	MotorAngle flightLegPos = legToMotorPos(M_PI / 2.0, guiIn.legLen);
 	
 	if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
