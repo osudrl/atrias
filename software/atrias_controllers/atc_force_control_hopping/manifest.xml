@@ -11,5 +11,9 @@
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
+  <depend package="asc_coordinate_transforms"/>
+  <depend package="asc_hip_boom_kinematics"/>
+  <depend package="asc_leg_force_control"/>
+  <depend package="asc_slip_model"/>
 
 </package>

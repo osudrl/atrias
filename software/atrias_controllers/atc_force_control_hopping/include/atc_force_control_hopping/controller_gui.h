@@ -1,8 +1,5 @@
-/*
- * controller_gui.h
- *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
+/*! \file controller_gui.cpp
+ *  \author Mikhail Jones
  */
 
 #ifndef CONTROLLER_GUI_H_
@@ -14,29 +11,47 @@
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
 
-// ROS
+// ROS -------------------------------------------------------------------------
 ros::NodeHandle nh;
 ros::Subscriber sub;
 ros::Publisher pub;
 
-// Data
+// Data ------------------------------------------------------------------------
 atc_force_control_hopping::controller_input controllerDataOut;
 atc_force_control_hopping::controller_status controllerDataIn;
 
-// GUI elements
-Gtk::HScale *torque_A_hscale,
-        *torque_B_hscale,
-        *torque_hip_hscale;
+// GUI elements ----------------------------------------------------------------
+Gtk::RadioButton *appex_radiobutton,
+	*terrain_radiobutton,
+	*two_leg_radiobutton,
+	*alt_leg_radiobutton,
+	*left_leg_radiobutton,
+	*right_leg_radiobutton,
+	*stand_radiobutton,
+	*hop_radiobutton;
 
-Gtk::CheckButton *set_position_checkbutton;
+Gtk::CheckButton *hip_checkbutton;
 
-// Parameters
+Gtk::SpinButton *left_toe_spinbutton,
+	*right_toe_spinbutton,
+	*slip_h_spinbutton,
+	*stand_r0_spinbutton,
+	*slip_r0_spinbutton,
+	*slip_m_spinbutton,
+	*leg_pos_kp_spinbutton,
+	*leg_for_kp_spinbutton,
+	*leg_pos_kd_spinbutton,
+	*leg_for_kd_spinbutton,
+	*hip_kp_spinbutton,
+	*hip_kd_spinbutton,
+	*robot_ks_spinbutton,
+	*robot_kt_spinbutton,
+	*robot_kg_spinbutton;
+
+// Parameters ------------------------------------------------------------------
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
 //     arise when both C and python nodes access the same parameter. See:
 //     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-double torque_A_param;
-double torque_B_param;
-double torque_hip_param;
 
 void controllerCallback(const atc_force_control_hopping::controller_status &status);
 

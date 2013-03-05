@@ -17,8 +17,8 @@
         </attributes>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">0</property>
       </packing>
     </child>
@@ -47,7 +47,7 @@
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Stance Force Tracking Method</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
@@ -66,6 +66,7 @@
             <property name="draw_indicator">True</property>
           </object>
           <packing>
+            <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
@@ -77,27 +78,20 @@
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
             <property name="use_action_appearance">False</property>
-            <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <property name="group">appex_radiobutton</property>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
+            <property name="left_attach">2</property>
+            <property name="right_attach">4</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
         </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">2</property>
       </packing>
     </child>
@@ -115,7 +109,7 @@
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Hop Type</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
@@ -191,8 +185,8 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">3</property>
       </packing>
     </child>
@@ -200,8 +194,8 @@
       <object class="GtkTable" id="table4">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_rows">2</property>
-        <property name="n_columns">5</property>
+        <property name="n_rows">3</property>
+        <property name="n_columns">4</property>
         <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="label4">
@@ -210,12 +204,12 @@
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Hip Controller</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
           <packing>
-            <property name="right_attach">5</property>
+            <property name="right_attach">4</property>
           </packing>
         </child>
         <child>
@@ -228,6 +222,7 @@
             <property name="draw_indicator">True</property>
           </object>
           <packing>
+            <property name="right_attach">4</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
@@ -245,10 +240,10 @@
             <property name="digits">2</property>
           </object>
           <packing>
-            <property name="left_attach">2</property>
-            <property name="right_attach">3</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
           </packing>
         </child>
         <child>
@@ -264,42 +259,42 @@
             <property name="digits">2</property>
           </object>
           <packing>
-            <property name="left_attach">4</property>
-            <property name="right_attach">5</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label5">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Left Toe Position:</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
+            <property name="left_attach">3</property>
+            <property name="right_attach">4</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label6">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Right Toe Position:</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Right Toe Pos:</property>
           </object>
           <packing>
-            <property name="left_attach">3</property>
-            <property name="right_attach">4</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label5">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Left Toe Pos:</property>
+          </object>
+          <packing>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
           </packing>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">4</property>
       </packing>
     </child>
@@ -317,7 +312,7 @@
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Leg Controller</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
@@ -381,6 +376,7 @@
           <object class="GtkLabel" id="label11">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Hop Height:</property>
           </object>
           <packing>
@@ -411,6 +407,7 @@
           <object class="GtkLabel" id="label10">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Leg Length:</property>
           </object>
           <packing>
@@ -432,8 +429,8 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">5</property>
       </packing>
     </child>
@@ -467,6 +464,7 @@
               <object class="GtkLabel" id="label13">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Initial Leg Length:</property>
               </object>
             </child>
@@ -491,6 +489,7 @@
               <object class="GtkLabel" id="label15">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Mass:</property>
               </object>
               <packing>
@@ -506,15 +505,15 @@
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">SLIP Model Parameters</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">6</property>
       </packing>
     </child>
@@ -562,6 +561,7 @@
               <object class="GtkLabel" id="label20">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kp:</property>
               </object>
               <packing>
@@ -573,6 +573,7 @@
               <object class="GtkLabel" id="label21">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kp:</property>
               </object>
               <packing>
@@ -586,6 +587,7 @@
               <object class="GtkLabel" id="label22">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kd:</property>
               </object>
               <packing>
@@ -597,6 +599,7 @@
               <object class="GtkLabel" id="label23">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kd:</property>
               </object>
               <packing>
@@ -682,15 +685,15 @@
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Leg Gains</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">7</property>
       </packing>
     </child>
@@ -738,6 +741,7 @@
               <object class="GtkLabel" id="label25">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kp:</property>
               </object>
             </child>
@@ -745,6 +749,7 @@
               <object class="GtkLabel" id="label26">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Kd:</property>
               </object>
               <packing>
@@ -760,15 +765,15 @@
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Hip Gains</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">8</property>
       </packing>
     </child>
@@ -837,6 +842,7 @@
               <object class="GtkLabel" id="label28">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Spring Constant:</property>
               </object>
             </child>
@@ -844,6 +850,7 @@
               <object class="GtkLabel" id="label29">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Torque Constant:</property>
               </object>
               <packing>
@@ -855,6 +862,7 @@
               <object class="GtkLabel" id="label30">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="xalign">1</property>
                 <property name="label" translatable="yes">Gear Ratio:</property>
               </object>
               <packing>
@@ -876,15 +884,15 @@
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Robot Parameters</property>
             <attributes>
-              <attribute name="weight" value="bold"/>
+              <attribute name="weight" value="normal"/>
               <attribute name="underline" value="True"/>
             </attributes>
           </object>
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">9</property>
       </packing>
     </child>
