@@ -23,7 +23,6 @@ ATCVelocityTuning::ATCVelocityTuning(std::string name) :
 	addEventPort(guiDataIn);
 	
 	cur_dir = 1;
-	dirCounter = 0;
 	
 	log(Info) << "[ATCMT] Constructed!" << endlog();
 }
@@ -65,24 +64,9 @@ atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::rob
 	} else if (guiIn.relayMode == 2) {
 		// Forward
 		cur_dir = 1;
-	} else if (guiIn.relayMode == 3) {
+	} else {
 		// Reverse
 		cur_dir = -1;
-	} else {
-		// Automatically switch directions at frequency input.
-		// Forward
-		if (cur_dir == 1) {
-			if (dirCounter-- < 0) {
-				cur_dir = -1;   // Switch to reverse.
-			}
-		}
-
-		// Reverse
-		else {
-			if (dirCounter++ > (uint16_t) (1000/guiIn.autoFrequency)) {
-				cur_dir = 1;   // Switch to forward.
-			}
-		}
 	}
 	
 	co.rLeg.motorCurrentA   = pd0RunController(cur_dir * guiIn.desVel,
