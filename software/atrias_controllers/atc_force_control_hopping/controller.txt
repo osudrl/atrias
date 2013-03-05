@@ -1,0 +1,1 @@
+description=Hopping controller based on passive SLIP model force profiles.

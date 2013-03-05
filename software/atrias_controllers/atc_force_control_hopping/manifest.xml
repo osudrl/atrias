@@ -1,0 +1,15 @@
+<package>
+  <description brief="atc_force_control_hopping">
+
+     atc_force_control_hopping
+
+  </description>
+  <author>Mikhail Jones</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_force_control_hopping</url>
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+
+</package>
