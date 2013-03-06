@@ -36,7 +36,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("alt_leg_hop_radiobutton", alt_leg_hop_radiobutton);
     gui->get_widget("debug1_checkbutton", debug1_checkbutton);
     
-	// Set ranges.
+	// Set ranges
     leg_pos_kp_spinbutton->set_range(0.0, 1000.0);
     leg_pos_kd_spinbutton->set_range(0.0, 100.0);
     leg_for_kp_spinbutton->set_range(0.0, 1500.0);

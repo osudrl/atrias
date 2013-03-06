@@ -56,7 +56,6 @@ class ATCVelocityTuning : public TaskContext {
 		OperationCaller<double(double, double, double, double)> pd0RunController;
 		
 		int cur_dir;
-		uint16_t dirCounter;   // Counter used for automatically switching motor direction.
 		
 		// For the GUI
 		controller_input guiIn;
