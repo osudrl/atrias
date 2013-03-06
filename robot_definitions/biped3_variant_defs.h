@@ -53,19 +53,19 @@
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          4592
+#define LEFT_HIP_CALIB_VAL          4535
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         1526
+#define RIGHT_HIP_CALIB_VAL         5744
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           4.5955
+#define LEFT_HIP_CALIB_POS           ((31.0*M_PI)/20.0)
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          4.8538
+#define RIGHT_HIP_CALIB_POS          4.883
 
 /** @brief Maximum motor torque for scaling
   */
