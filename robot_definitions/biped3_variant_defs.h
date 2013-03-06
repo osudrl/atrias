@@ -53,7 +53,7 @@
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          4535
+#define LEFT_HIP_CALIB_VAL          4518
 
 /** @brief The encoder value of the right hip at calibration.
   */
@@ -61,7 +61,7 @@
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           ((31.0*M_PI)/20.0)
+#define LEFT_HIP_CALIB_POS           (4.555309)
 
 /** @brief The right hip's calibration position.
   */
