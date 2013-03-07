@@ -16,8 +16,8 @@
 #define LEG5_TRAN_A_RAD_PER_CNT  9.8039216e-09
 #define LEG5_TRAN_B_RAD_PER_CNT  9.8039216e-09
 
-#define LEG5_MOTOR_A_DIRECTION            -1.0
-#define LEG5_MOTOR_B_DIRECTION             1.0
+#define LEG5_MOTOR_A_DIRECTION             1.0
+#define LEG5_MOTOR_B_DIRECTION            -1.0
 
 
 
