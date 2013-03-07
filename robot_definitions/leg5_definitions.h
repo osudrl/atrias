@@ -4,13 +4,13 @@
 /*------------------------------------------*/
 /*------ Calibration Values for Leg 1 ------*/
 /*------------------------------------------*/
-#define LEG5_LEG_A_CALIB_VAL       263539656LL
+#define LEG5_LEG_A_CALIB_VAL       197602659LL
 #define LEG5_LEG_B_CALIB_VAL       198300537LL
 
 #define LEG5_LEG_A_RAD_PER_CNT   9.8039216e-09
 #define LEG5_LEG_B_RAD_PER_CNT  -9.8039216e-09
 
-#define LEG5_TRAN_A_CALIB_VAL      197602659LL
+#define LEG5_TRAN_A_CALIB_VAL      263539656LL
 #define LEG5_TRAN_B_CALIB_VAL      172621095LL
 
 #define LEG5_TRAN_A_RAD_PER_CNT  9.8039216e-09
