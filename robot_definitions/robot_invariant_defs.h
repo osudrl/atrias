@@ -123,7 +123,7 @@ typedef enum {
 // protection. Note: LEG_LOC_SAFETY_DISTANCE does not affect the safety stop position
 // for leg extension and retraction safeties.
 #define LEG_LOC_DIFF_MIN                                             0.510347687
-#define LEG_LOC_DIFF_MAX                                                     2.4
+#define LEG_LOC_DIFF_MAX                                                     2.0
 
 #define LEG_LOC_SAFETY_DISTANCE                                              0.2
 #define HIP_LOC_SAFETY_DISTANCE                                              0.2   // TODO: This is a fake value!
