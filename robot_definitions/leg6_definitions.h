@@ -16,8 +16,8 @@
 #define LEG6_TRAN_A_RAD_PER_CNT  9.8039216e-09
 #define LEG6_TRAN_B_RAD_PER_CNT -9.8039216e-09
 
-#define LEG6_MOTOR_A_DIRECTION             1.0
-#define LEG6_MOTOR_B_DIRECTION            -1.0
+#define LEG6_MOTOR_A_DIRECTION            -1.0
+#define LEG6_MOTOR_B_DIRECTION             1.0
 
 
 
