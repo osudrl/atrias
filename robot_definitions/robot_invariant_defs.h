@@ -157,6 +157,7 @@ typedef enum {
   * This is used for scaling the ADC values.
   */
 #define MEDULLA_ADC_MAX_VOLTS                                               2.70
+#define MEDULLA_ADC_OFFSET_COUNTS                                            172
 
 /** @brief The amount of time RT Ops should wait for the Medullas to enter idle after a reset.
   */
