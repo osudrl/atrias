@@ -85,7 +85,7 @@ typedef enum {
   * This is a minimum ADC value, but it
   * relates to the maximum temp.
   */
-#define THERMISTOR_MAX_VAL                                                   300
+#define THERMISTOR_MAX_VAL                                                  1866
 
 #define MOTOR_VOLTAGE_C_OFFSET                                            1300.0
 #define MOTOR_VOLTAGE_V_CAL                                                 60.2
