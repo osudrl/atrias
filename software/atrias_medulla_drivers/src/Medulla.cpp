@@ -17,7 +17,7 @@ double Medulla::decodeMotorVoltage(uint16_t adc_value) {
 }
 
 double Medulla::processADCValue(uint16_t adc_value) {
-	return ((double) adc_value) * (MEDULLA_ADC_MAX_VOLTS/(4095.0));
+	return ((double) adc_value - MEDULLA_ADC_OFFSET_COUNTS) * (MEDULLA_ADC_MAX_VOLTS/(4095.0));
 }
 
 double Medulla::processThermistorValue(uint16_t adc_value) {

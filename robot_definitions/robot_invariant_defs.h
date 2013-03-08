@@ -123,7 +123,7 @@ typedef enum {
 // protection. Note: LEG_LOC_SAFETY_DISTANCE does not affect the safety stop position
 // for leg extension and retraction safeties.
 #define LEG_LOC_DIFF_MIN                                             0.510347687
-#define LEG_LOC_DIFF_MAX                                                     2.4
+#define LEG_LOC_DIFF_MAX                                                     2.0
 
 #define LEG_LOC_SAFETY_DISTANCE                                              0.2
 #define HIP_LOC_SAFETY_DISTANCE                                              0.2   // TODO: This is a fake value!
@@ -157,6 +157,7 @@ typedef enum {
   * This is used for scaling the ADC values.
   */
 #define MEDULLA_ADC_MAX_VOLTS                                               2.70
+#define MEDULLA_ADC_OFFSET_COUNTS                                            172
 
 /** @brief The amount of time RT Ops should wait for the Medullas to enter idle after a reset.
   */
