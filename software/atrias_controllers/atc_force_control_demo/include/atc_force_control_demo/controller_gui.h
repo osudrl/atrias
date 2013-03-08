@@ -64,6 +64,8 @@ Gtk::RadioButton *constant_hip_radiobutton,
 	*right_leg_for_radiobutton,
 	*left_leg_wave_for_radiobutton,
 	*right_leg_wave_for_radiobutton;
+	
+Gtk::ComboBox *force_combobox;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not

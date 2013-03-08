@@ -22,3 +22,5 @@ float64 hip_kd
 float64 robot_ks
 float64 robot_kt
 float64 robot_kg
+
+bool deinit

@@ -50,6 +50,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("right_leg_for_radiobutton", right_leg_for_radiobutton);
     gui->get_widget("left_leg_wave_for_radiobutton", left_leg_wave_for_radiobutton);
     gui->get_widget("right_leg_wave_for_radiobutton", right_leg_wave_for_radiobutton);
+    gui->get_widget("force_combobox", force_combobox);
     
 	// Set ranges.
     leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
@@ -293,6 +294,7 @@ void guiUpdate() {
     controllerDataOut.right_leg_for = right_leg_for_radiobutton->get_active();
     controllerDataOut.left_leg_wave_for = left_leg_wave_for_radiobutton->get_active();
     controllerDataOut.right_leg_wave_for = right_leg_wave_for_radiobutton->get_active();
+    controllerDataOut.force = (uint8_t)force_combobox->get_active_row_number();
 
     pub.publish(controllerDataOut);
 

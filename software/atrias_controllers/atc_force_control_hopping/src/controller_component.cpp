@@ -37,6 +37,12 @@ ATCForceControlHopping::ATCForceControlHopping(std::string name):
 	isStance = false;
     isLeftStance = false;
     isRightStance = false;
+    
+    isInitialize = true;
+    isDeinitialize = true;
+    isFinished = false;
+    duration = 5.0;
+    t = 0.0;
 
     // Logging -----------------------------------------------------------------
     // Create a port
@@ -57,11 +63,11 @@ ATCForceControlHopping::ATCForceControlHopping(std::string name):
 atrias_msgs::controller_output ATCForceControlHopping::runController(atrias_msgs::robot_state rs) {
 
     // Do nothing unless told otherwise
-    co.lLeg.motorCurrentA   = 0.0;
-    co.lLeg.motorCurrentB   = 0.0;
+    co.lLeg.motorCurrentA = 0.0;
+    co.lLeg.motorCurrentB = 0.0;
     co.lLeg.motorCurrentHip = 0.0;
-    co.rLeg.motorCurrentA   = 0.0;
-    co.rLeg.motorCurrentB   = 0.0;
+    co.rLeg.motorCurrentA = 0.0;
+    co.rLeg.motorCurrentB = 0.0;
     co.rLeg.motorCurrentHip = 0.0;
 
     // Only run the controller when we're enabled
@@ -69,7 +75,6 @@ atrias_msgs::controller_output ATCForceControlHopping::runController(atrias_msgs
         return co;
 
     // BEGIN CONTROL CODE ******************************************************
-
 
 	// Set force control gains
 	gain.kp = guiIn.leg_for_kp;
@@ -258,6 +263,48 @@ atrias_msgs::controller_output ATCForceControlHopping::runController(atrias_msgs
         
 	} // hip controller
 
+
+
+	// TODO - Turn into state machine and break out sections of code into functions
+	// When first starting, slowly ramp up commanded motor currents
+	if (isInitialize) {
+		t = t + 0.001;
+    	co.lLeg.motorCurrentA = co.lLeg.motorCurrentA*t/duration;
+    	co.lLeg.motorCurrentB = co.lLeg.motorCurrentB*t/duration;
+    	co.lLeg.motorCurrentHip = co.lLeg.motorCurrentHip*t/duration;
+    	co.rLeg.motorCurrentA = co.rLeg.motorCurrentA*t/duration;
+    	co.rLeg.motorCurrentB = co.rLeg.motorCurrentB*t/duration;
+    	co.rLeg.motorCurrentHip = co.rLeg.motorCurrentHip*t/duration;	
+		if (t > duration) {
+			isInitialize = false;
+			t = 0.0;
+		} 	
+	}
+	
+	if (isDeinitialize && guiIn.deinit) {
+		t = t + 0.001;
+    	co.lLeg.motorCurrentA = co.lLeg.motorCurrentA*(1.0 - t/duration);
+    	co.lLeg.motorCurrentB = co.lLeg.motorCurrentB*(1.0 - t/duration);
+    	co.lLeg.motorCurrentHip = co.lLeg.motorCurrentHip*(1.0 - t/duration);
+    	co.rLeg.motorCurrentA = co.rLeg.motorCurrentA*(1.0 - t/duration);
+    	co.rLeg.motorCurrentB = co.rLeg.motorCurrentB*(1.0 - t/duration);
+    	co.rLeg.motorCurrentHip = co.rLeg.motorCurrentHip*(1.0 - t/duration);	
+		if (t > duration) {
+			isDeinitialize = false;
+			isFinished = true;
+			t = 0.0;
+		} 	
+	}
+	
+	if (isFinished) {
+	    co.lLeg.motorCurrentA = 0.0;
+		co.lLeg.motorCurrentB = 0.0;
+		co.lLeg.motorCurrentHip = 0.0;
+		co.rLeg.motorCurrentA = 0.0;
+		co.rLeg.motorCurrentB = 0.0;
+		co.rLeg.motorCurrentHip = 0.0;
+    }
+	
 
     // END CONTROL CODE ********************************************************
 

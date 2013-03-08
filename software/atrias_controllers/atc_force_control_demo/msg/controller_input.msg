@@ -40,3 +40,5 @@ bool left_leg_for
 bool right_leg_for
 bool left_leg_wave_for
 bool right_leg_wave_for
+
+uint8 force
