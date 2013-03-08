@@ -1460,5 +1460,46 @@
         <property name="position">31</property>
       </packing>
     </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkComboBox" id="force_combobox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="model">liststore1</property>
+        <property name="active">0</property>
+        <property name="has_entry">True</property>
+        <property name="entry_text_column">0</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">33</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name gchararray1 -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Entry 1</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Entry 2</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Entry 3</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Entry 4</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Entry 5</col>
+      </row>
+    </data>
   </object>
 </interface>

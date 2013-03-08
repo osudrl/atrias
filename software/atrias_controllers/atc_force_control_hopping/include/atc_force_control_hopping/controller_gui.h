@@ -30,7 +30,8 @@ Gtk::RadioButton *appex_radiobutton,
 	*stand_radiobutton,
 	*hop_radiobutton;
 
-Gtk::CheckButton *hip_checkbutton;
+Gtk::CheckButton *hip_checkbutton,
+	*deinit_checkbutton;
 
 Gtk::SpinButton *left_toe_spinbutton,
 	*right_toe_spinbutton,

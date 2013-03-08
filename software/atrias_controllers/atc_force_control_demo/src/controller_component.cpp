@@ -62,7 +62,7 @@ atrias_msgs::controller_output ATCForceControlDemo::runController(atrias_msgs::r
 		return co;
 
     // BEGIN CONTROL CODE ******************************************************
-
+	
     // Initialize variables
     legForce.fx = 0.0;
     legForce.fz = 0.0;

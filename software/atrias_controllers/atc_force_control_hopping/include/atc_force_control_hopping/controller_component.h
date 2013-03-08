@@ -79,6 +79,8 @@ class ATCForceControlHopping : public TaskContext {
 		bool isStance;
 		bool isLeftStance;
 		bool isRightStance;
+		bool isInitialize, isDeinitialize, isFinished;// MARKED
+		double t, duration;// MARKED
 		
 		// Leg position control variables
 		MotorAngle lMotorAngle;

@@ -32,6 +32,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("robot_ks_spinbutton", robot_ks_spinbutton);
 	gui->get_widget("robot_kt_spinbutton", robot_kt_spinbutton);
 	gui->get_widget("robot_kg_spinbutton", robot_kg_spinbutton);
+	gui->get_widget("deinit_checkbutton", deinit_checkbutton);
     
 	// Set ranges --------------------------------------------------------------
 	left_toe_spinbutton->set_range(2.0, 2.3);
@@ -166,6 +167,7 @@ void guiUpdate() {
 	controllerDataOut.robot_ks = robot_ks_spinbutton->get_value();
 	controllerDataOut.robot_kt = robot_kt_spinbutton->get_value();
 	controllerDataOut.robot_kg = robot_kg_spinbutton->get_value();
+	controllerDataOut.deinit = deinit_checkbutton->get_active();
     
     pub.publish(controllerDataOut);
     
