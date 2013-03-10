@@ -42,8 +42,7 @@ private:
     InputPort<controller_input>      guiDataIn;
 
     // Current limiter variables
-    float curLimit;
-    uint16_t td, dd;
+    float curLimit, td;
     bool foldbackTriggered;
 
     // This Operation is called by the RT Operations Manager.

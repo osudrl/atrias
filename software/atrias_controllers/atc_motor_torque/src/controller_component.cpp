@@ -40,7 +40,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     // Do we think the AMC amplifiers are in foldback mode?
     if (co.rLeg.motorCurrentA > AMC_IC) {
         if (td < 12000) {
-            td++;   // Increment td if under 12s.
+            td += 1.0;   // Increment td if under 12s.
         }
         if (td > 2000) {
             foldbackTriggered = true;   // Enable foldback if current peaks for 2s.
@@ -48,8 +48,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     }
     else {
         if (td > 0) {
-            dd = (dd+1) % 2;
-            td -= dd;   // Count down every other loop so A2 = 2*A1 (see datasheet)
+            td -= AMC_IC/AMC_IP;   // Count down such that A2 = 2*A1 (see datasheet)
         }
         else {
             foldbackTriggered = false;   // Reset foldback if A2 has been filled.
