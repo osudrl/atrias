@@ -38,7 +38,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     co.command = medulla_state_run;
 
     // Do we think the AMC amplifiers are in foldback mode?
-    if (co.rLeg.motorCurrentA > IC) {
+    if (co.rLeg.motorCurrentA > AMC_IC) {
         if (td < 12000) {
             td++;   // Increment td if under 12s.
         }
