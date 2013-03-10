@@ -47,7 +47,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     }
     else {
         if (td > 0) {
-            td -= AMC_IC/AMC_IP;   // Count down such that A2 = 2*A1 (see datasheet)
+            td -= (AMC_IC-co.rLeg.motorCurrentA)/AMC_IP;   // Count down such that A2 = 2*A1 (see datasheet)
         }
         else {
             foldbackTriggered = false;   // Reset foldback if A2 has been filled.
