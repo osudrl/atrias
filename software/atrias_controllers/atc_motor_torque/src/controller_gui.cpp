@@ -24,12 +24,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         //torque_left_A_hscale->set_range(MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
         //torque_left_B_hscale->set_range(MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
         //torque_left_hip_hscale->set_range(MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
-        torque_left_A_hscale->set_range(-10., 10.);
-        torque_left_B_hscale->set_range(-10., 10.);
-        torque_left_hip_hscale->set_range(-10., 10.);
-        torque_right_A_hscale->set_range(-10., 10.);
-        torque_right_B_hscale->set_range(-10., 10.);
-        torque_right_hip_hscale->set_range(-10., 10.);
+        torque_left_A_hscale->set_range(-60., 60.);
+        torque_left_B_hscale->set_range(-60., 60.);
+        torque_left_hip_hscale->set_range(-60., 60.);
+        torque_right_A_hscale->set_range(-60., 60.);
+        torque_right_B_hscale->set_range(-60., 60.);
+        torque_right_hip_hscale->set_range(-60., 60.);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_torque_status", 0, controllerCallback);
