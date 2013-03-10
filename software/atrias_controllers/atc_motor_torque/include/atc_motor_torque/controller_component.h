@@ -22,8 +22,10 @@
 #include <atrias_msgs/controller_output.h>
 #include <atc_motor_torque/controller_input.h>
 
-#define AMC_IP 60.0
-#define AMC_IC 30.0
+#define AMC_IP 1.0
+#define AMC_IC 0.5
+#define AMC_PEAK_TIME 2.0
+#define AMC_FOLDBACK_TIME 10.0
 
 using namespace RTT;
 using namespace Orocos;
