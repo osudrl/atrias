@@ -19,8 +19,7 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
     addEventPort(guiDataIn);
 
     curLimit = AMC_IP;
-    td = 0;
-    dd = 0;
+    td = 0.0;
     foldbackTriggered = false;
 
     log(Info) << "[ATCMT] Motor torque controller constructed!" << endlog();
@@ -71,6 +70,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             co.rLeg.motorCurrentA = curLimit;
         }
     }
+
+    log(Info) << "[ATCMT] td: " << td << "  fT: " << foldbackTriggered << "  cL: " << curLimit << endlog();
 
     // Output for RTOps
     return co;
