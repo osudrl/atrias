@@ -24,8 +24,8 @@
 
 #define AMC_IP 1.0
 #define AMC_IC 0.5
-#define AMC_PEAK_TIME 2.0
-#define AMC_FOLDBACK_TIME 10.0
+#define AMC_PEAK_TIME 2000.0   // In ms.
+#define AMC_FOLDBACK_TIME 10000.0   // In ms.
 
 using namespace RTT;
 using namespace Orocos;

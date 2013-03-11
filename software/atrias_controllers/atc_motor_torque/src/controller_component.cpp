@@ -42,7 +42,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             td += 1.0;   // Increment td if under 12s.
         }
         if (td > AMC_PEAK_TIME) {
-            foldbackTriggered = true;   // We're in foldback period if counter is past peak current duration.
+            foldbackTriggered = true;   // We're in foldback period if counter is past peak current duration. TODO: does this stay triggered too long for peak time at end?
         }
     }
     else {
@@ -59,8 +59,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         }
     }
     else {
-        if (curLimit < AMC_IC) {
-            curLimit += (AMC_IP-AMC_IC)/(td-AMC_PEAK_TIME);   // Otherwise, increase current fast enough to leave peak time at the end.
+        if (curLimit < AMC_IP) {
+            curLimit += (AMC_IP - curLimit) / (td * AMC_IP/AMC_IC - AMC_PEAK_TIME);   // Otherwise, increase current fast enough to leave peak time at the end.
 	  }
     }
 
