@@ -18,6 +18,11 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 
     addEventPort(guiDataIn);
 
+    curLimit = AMC_IP;
+    td = 0;
+    dd = 0;
+    foldbackTriggered = false;
+
     log(Info) << "[ATCMT] Motor torque controller constructed!" << endlog();
 }
 
@@ -31,6 +36,42 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     co.rLeg.motorCurrentB = guiIn.des_motor_torque_right_B;
     co.rLeg.motorCurrentHip = guiIn.des_motor_torque_right_hip;
     co.command = medulla_state_run;
+
+    // Do we think the AMC amplifiers are in foldback mode?
+    if (co.rLeg.motorCurrentA > IC) {
+        if (td < 12000) {
+            td++;   // Increment td if under 12s.
+        }
+        if (td > 2000) {
+            foldbackTriggered = true;   // Enable foldback if current peaks for 2s.
+        }
+    }
+    else {
+        if (td > 0) {
+            dd = (dd+1) % 2;
+            td -= dd;   // Count down every other loop so A2 = 2*A1 (see datasheet)
+        }
+        else {
+            foldbackTriggered = false;   // Reset foldback if A2 has been filled.
+        }
+    }
+
+    // Estimate current limit
+    if (foldbackTriggered) {
+        if (curLimit > AMC_IC) {
+            curLimit -= (AMC_IP-AMC_IC)/10000;   // In foldback period, decrease current limit to AMC_IC over the course of 10s.
+        }
+    }
+    else {
+        curLimit = AMC_IP;   // Otherwise, reset current limit to max.
+    }
+
+    // Set current limit if GUI says so
+    if (guiIn.limitCurrent) {
+        if (co.rLeg.motorCurrentA > curLimit) {
+            co.rLeg.motorCurrentA = curLimit;
+        }
+    }
 
     // Output for RTOps
     return co;

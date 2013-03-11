@@ -22,6 +22,9 @@
 #include <atrias_msgs/controller_output.h>
 #include <atc_motor_torque/controller_input.h>
 
+#define AMC_IP 60.0
+#define AMC_IC 30.0
+
 using namespace RTT;
 using namespace Orocos;
 using namespace atc_motor_torque;
@@ -37,6 +40,11 @@ private:
     controller_input                 guiIn;
 
     InputPort<controller_input>      guiDataIn;
+
+    // Current limiter variables
+    float curLimit;
+    uint16_t td, dd;
+    bool foldbackTriggered;
 
     // This Operation is called by the RT Operations Manager.
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);

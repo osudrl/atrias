@@ -5,3 +5,5 @@ float64 des_motor_torque_right_A
 float64 des_motor_torque_right_B
 float64 des_motor_torque_right_hip
 
+bool limitCurrent
+
