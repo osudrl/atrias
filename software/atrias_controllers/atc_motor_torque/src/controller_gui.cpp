@@ -80,6 +80,7 @@ void guiUpdate() {
     controllerDataOut.des_motor_torque_right_A   = torque_right_A_param   = torque_right_A_hscale->get_value();
     controllerDataOut.des_motor_torque_right_B   = torque_right_B_param   = torque_right_B_hscale->get_value();
     controllerDataOut.des_motor_torque_right_hip = torque_right_hip_param = torque_right_hip_hscale->get_value();
+    controllerDataOut.limitCurrent = cur_lim_togglebutton->get_active();
     pub.publish(controllerDataOut);
 }
 
