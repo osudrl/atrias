@@ -9,7 +9,7 @@ namespace atrias {
 namespace ecatConn {
 
 ConnManager::ConnManager(ECatConn* ecat_conn) :
-             RTT::Activity(80) {
+             RTT::Activity(80, 0, "EtherCAT") {
 	eCatConn = ecat_conn;
 	signal(SIGXCPU, sig_handler);
 }
