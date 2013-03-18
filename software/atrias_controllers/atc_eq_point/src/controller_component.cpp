@@ -190,20 +190,20 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 switch (state)
 {
     case 1:
-        s = 1 - (guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+        time = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
 		break;
     case 2:
-        s =1 - (guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+        time = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
         break;
     default:
         break;
 }
-time++;
-t = time / guiIn.p_af;
-if (t > 1)
+if (time>t)		//unidirectional progression of t;
 {
-	t=1;
+	t=time;
 }
+
+
 
 switch (guiIn.control)
 {
@@ -230,31 +230,31 @@ case 1:
 case 2:
   	// state machine
 	//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping automatically
-	    if ((state == 2) && (s>0.99))
+	    if ((state == 2) && (t>0.99))
 	{
 		state = 1;
 		sw_stance = false;
 		sw_flight = false;
         s=0;
         t=0;
-		time=0;
+		//time=0;
 	}
 	//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
-    if ((state == 1) && (s>0.99))
+    if ((state == 1) && (t>0.99))
 	{
 		state = 2;
 		sw_stance = false;
 		sw_flight = false;
         s=0;
         t=0;
-		time=0;
+		//time=0;
 	}
 	break;
 default:
 	break;
 }
 
-printf("s: %f t: %f time: %i \n",s,t,time);
+printf("s: %f t: %f \n",s,t);
 // command legs ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//************************************************************stance control right leg***************************************************************************************************************************
 	switch (state)																															//stance leg right, flight leg left
