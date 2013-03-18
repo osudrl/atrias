@@ -12,7 +12,7 @@ namespace atrias {
 namespace controllerManager {
 
 EventManager::EventManager(ControllerManager *manager) :
-                Activity(),
+                Activity(0, "EventManager"),
                 eventsWaitingSignal(0) {
     cManager = manager;
     done = false;

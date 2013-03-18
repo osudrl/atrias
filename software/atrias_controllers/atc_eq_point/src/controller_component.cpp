@@ -183,18 +183,27 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	max_phi_swing = guiIn.aea-(guiIn.pea-guiIn.aea)*guiIn.d_as;
 	
 	
+
+// s - stance leg status
+// t - flight leg timing
    
 switch (state)
 {
     case 1:
-        t =1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
-        break;
+        time = 1-(guiIn.pea-phi_rLeg) / (guiIn.pea - guiIn.aea);
+		break;
     case 2:
-        t =1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
+        time = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
         break;
     default:
         break;
 }
+if (time>t)		//unidirectional progression of t;
+{
+	t=time;
+}
+
+
 
 switch (guiIn.control)
 {
@@ -206,6 +215,7 @@ case 1:
 		sw_flight = false;
         s=0;
         t=0;
+		time=0;
 	}
 	if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
 	{
@@ -214,6 +224,7 @@ case 1:
 		sw_flight = false;
         s=0;
         t=0;
+		time=0;
 	}
 	break;
 case 2:
@@ -226,6 +237,7 @@ case 2:
 		sw_flight = false;
         s=0;
         t=0;
+		//time=0;
 	}
 	//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
     if ((state == 1) && (t>0.99))
@@ -235,13 +247,14 @@ case 2:
 		sw_flight = false;
         s=0;
         t=0;
+		//time=0;
 	}
 	break;
 default:
 	break;
 }
 
-
+printf("s: %f t: %f \n",s,t);
 // command legs ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//************************************************************stance control right leg***************************************************************************************************************************
 	switch (state)																															//stance leg right, flight leg left
@@ -283,7 +296,6 @@ default:
 							phi_lLeg=max_phi_swing + ( (t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.aea - max_phi_swing));
 							P0.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
 							P1.set(guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)));
-							//printf("left!! P0: %f t: %f\n",guiIn.p_lf + ((t-guiIn.l_fl)/(1-guiIn.l_fl) * (guiIn.p_ls - guiIn.p_lf)),t);
 						}
 						//map leg angle sweep of flight leg to 0->1
 						//keep desired leg length -> shorten leg depending on leg position
@@ -316,8 +328,6 @@ default:
 
     //********************************************************************************************************************************************************************************
 	case 2:                         // stance leg left, swing leg right
-		//t = 1-(guiIn.pea-phi_lLeg) / (guiIn.pea - guiIn.aea);
-		//s = guiIn.l_fl * t;
 		if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 		{           // stance leg rotate to pea
 					// asymmetry - extend left leg

@@ -5,7 +5,7 @@ namespace atrias {
 namespace rtOps {
 
 ControllerLoop::ControllerLoop(RTOps* rt_ops) :
-                RTT::Activity(70),
+                RTT::Activity(70, 0, "ControllerLoop"),
                 signal(0) {
 	rtOps            = rt_ops;
 	controllerLoaded = false;
