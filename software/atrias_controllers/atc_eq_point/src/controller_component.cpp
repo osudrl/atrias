@@ -237,6 +237,7 @@ case 2:
 		sw_flight = false;
         s=0;
         t=0;
+		time=0;
 	}
 	//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
     if ((state == 1) && (s>0.99))
@@ -246,6 +247,7 @@ case 2:
 		sw_flight = false;
         s=0;
         t=0;
+		time=0;
 	}
 	break;
 default:
