@@ -19,8 +19,9 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
     addEventPort(guiDataIn);
 
     curLimit = AMC_IP;
-    td = 0.0;
-    foldbackTriggered = false;
+    curCounter = COUNTER_MAX;
+    timeSinceFB = 0.0;
+    inFoldback = false;
 
     log(Info) << "[ATCMT] Motor torque controller constructed!" << endlog();
 }
@@ -36,33 +37,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     co.rLeg.motorCurrentHip = guiIn.des_motor_torque_right_hip;
     co.command = medulla_state_run;
 
-    // Do we think the AMC amplifiers are in foldback mode?
-    if (co.rLeg.motorCurrentA > AMC_IC) {
-        if (td < (AMC_PEAK_TIME + AMC_FOLDBACK_TIME)) {
-            td += 1.0;   // Increment td if under 12s.
-        }
-        if (td > AMC_PEAK_TIME) {
-            foldbackTriggered = true;   // We're in foldback period if counter is past peak current duration. TODO: does this stay triggered too long for peak time at end?
-        }
-    }
-    else {
-        if (td > 0) {
-            td -= (AMC_IC-co.rLeg.motorCurrentA)/(AMC_IP-AMC_IC)/2.0;   // Count down such that A2 = 2*A1 (see datasheet)
-        }
-        foldbackTriggered = false;   // Disable foldback.
-    }
-
-    // Estimate current limit
-    if (foldbackTriggered) {
-        if (curLimit > AMC_IC) {
-            curLimit -= (AMC_IP-AMC_IC)/AMC_FOLDBACK_TIME;   // In foldback period, gradually decrease current limit to AMC_IC.
-        }
-    }
-    else {
-        if (curLimit < AMC_IP) {
-            curLimit += (AMC_IP - curLimit) / (td * AMC_IP/AMC_IC - AMC_PEAK_TIME);   // Otherwise, increase current fast enough to leave peak time at the end.
-	  }
-    }
+    // Run current limit estimator.
+    estimateCurrentLimit();
 
     // Set current limit if GUI says so
     if (guiIn.limitCurrent) {
@@ -78,6 +54,50 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 }
 
 // Don't put control code below here!
+
+void estimateCurrentLimit()
+{
+    if (!inFoldback && co.rLeg.motorCurrentA > AMC_IC) {
+        inFoldback = true;
+
+        // Reset counter to current limit.
+        curCounter = curLimit;
+
+        // Reset time since foldback.
+        timeSinceFB = 0.0;
+    }
+    else if (inFoldback && co.rLeg.motorCurrentA <= AMC_IC) {
+        inFoldback = false;
+    }
+
+    // Update counter.
+    if (inFoldback) {
+        // Decrement counter at constant slope regardless of target current.
+        if (curCounter > AMC_IC) {
+            curCounter -= M_FB;
+        }
+        else {
+            curCounter = AMC_IC;
+        }
+    }
+    else {
+        // Increment counter based on target current.
+        if (curCounter < COUNTER_MAX) {
+            curCounter += M_FB * (AMC_IC-co.rLeg.motorCurrentA) / (AMC_IP-AMC_IC) / 2;
+        }
+        else {
+            curCounter = COUNTER_MAX;
+        }
+
+        // Set current limit to minimum among counter, recovery rate cap, and
+        // peak current limit.
+        curLimit = MIN(curCounter, MIN(AMC_IC+M_FB, AMC_IP));
+
+        // Increment timer.
+        timeSinceFB += 0.001;
+    }
+}
+
 bool ATCMotorTorque::configureHook() {
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
