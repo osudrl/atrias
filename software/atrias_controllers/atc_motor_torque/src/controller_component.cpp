@@ -98,13 +98,15 @@ void ATCMotorTorque::estimateCurrentLimit()
             curCounter = COUNTER_MAX;
         }
 
-        // Set current limit to minimum among counter, recovery rate cap, and
-        // peak current limit.
-        curLimit = MIN(curCounter, MIN(AMC_IC+M_FB*timeSinceFB, AMC_IP));
-
         // Increment timer.
-        timeSinceFB += 0.001;
+        if (timeSinceFB < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
+            timeSinceFB += 0.001;
+        }
     }
+
+    // Set current limit to minimum among counter, recovery rate cap, and
+    // peak current limit.
+    curLimit = MIN(curCounter, MIN(AMC_IC+M_FB*timeSinceFB, AMC_IP));
 }
 
 bool ATCMotorTorque::configureHook() {
