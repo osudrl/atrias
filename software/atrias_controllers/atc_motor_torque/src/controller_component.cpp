@@ -91,7 +91,7 @@ void ATCMotorTorque::estimateCurrentLimit()
 
         // Set current limit to minimum among counter, recovery rate cap, and
         // peak current limit.
-        curLimit = MIN(curCounter, MIN(AMC_IC+M_FB, AMC_IP));
+        curLimit = MIN(curCounter, MIN(AMC_IC+M_FB*timeSinceFB, AMC_IP));
 
         // Increment timer.
         timeSinceFB += 0.001;
