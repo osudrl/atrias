@@ -259,7 +259,10 @@ default:
 	switch (state)																															//stance leg right, flight leg left
 	{
 	case 1:
-		t = 1 - (guiIn.pea - phi_rLeg) / (guiIn.pea - guiIn.aea);
+		s = 1 - (guiIn.pea - phi_rLeg) / (guiIn.pea - guiIn.aea);
+		if (s > t)
+		{	t=s;
+		}
 		D3.set(guiIn.d_ls);
 		P3.set(guiIn.p_ls);
 		D4.set(guiIn.d_ls);
@@ -315,7 +318,10 @@ default:
 
     //********************************************************************************************************************************************************************************
 	case 2:                         // stance leg left, swing leg right
-		t = 1 - (guiIn.pea - phi_lLeg) / (guiIn.pea - guiIn.aea);
+		s = 1 - (guiIn.pea - phi_lLeg) / (guiIn.pea - guiIn.aea);
+		if (s > t)
+		{	t=s;
+		}
 		D0.set(guiIn.d_ls);
 		P0.set(guiIn.p_ls);
 		D1.set(guiIn.d_ls);
