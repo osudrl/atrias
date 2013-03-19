@@ -20,7 +20,7 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 
     curLimit = AMC_IP;
     curCounter = COUNTER_MAX;
-    timeSinceFB = 0.0;
+    timeSinceFB = AMC_PEAK_TIME + AMC_FOLDBACK_TIME;   // Timer counter
     inFoldback = false;
 
     log(Info) << "[ATCMT] Motor torque controller constructed!" << endlog();
@@ -83,6 +83,11 @@ void ATCMotorTorque::estimateCurrentLimit()
         }
         else {
             curCounter = AMC_IC;
+        }
+
+        // Decrement timer.
+        if (timeSinceFB > 0) {
+            timeSinceFB -= 0.001;
         }
     }
     else {
