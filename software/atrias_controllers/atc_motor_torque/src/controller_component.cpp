@@ -47,7 +47,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         }
     }
 
-    log(Info) << "[ATCMT] td: " << td << "  fT: " << foldbackTriggered << "  cL: " << curLimit << endlog();
+    log(Info) << "[ATCMT] timeSinceFB: " << timeSinceFB << "  In Foldback: " << inFoldback << "  curCounter: " << curCounter << "  cL: " << curLimit << endlog();
 
     // Output for RTOps
     return co;
@@ -55,7 +55,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
 // Don't put control code below here!
 
-void estimateCurrentLimit()
+void ATCMotorTorque::estimateCurrentLimit()
 {
     if (!inFoldback && co.rLeg.motorCurrentA > AMC_IC) {
         inFoldback = true;
