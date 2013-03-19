@@ -66,10 +66,9 @@ void ATCMotorTorque::estimateCurrentLimit()
         inFoldback = true;
 
         // Reset counter to current limit.
-        curCounter = curLimit;
-
-        // Reset time since foldback.
-        timeSinceFB = 0.0;
+        if (timeSinceFB < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
+            curCounter = curLimit;
+        }
     }
     else if (inFoldback && co.rLeg.motorCurrentA <= AMC_IC) {
         inFoldback = false;
