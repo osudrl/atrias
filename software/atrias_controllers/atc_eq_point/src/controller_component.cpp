@@ -178,7 +178,7 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	phi_rLeg = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2;		        //right leg angle
 	phi_lLeg = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2;		        //left leg angle
 	//phiAf_des = guiIn.aea - acos (guiIn.l_leg_st);							//desired motor position for flight MOTOR A
-	//phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
+	phiBs_des = guiIn.pea + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
 	//logData.state = state;
 	//max_phi_swing = guiIn.aea-(guiIn.pea-guiIn.aea)*guiIn.d_as;
 	
@@ -315,6 +315,7 @@ default:
 
     //********************************************************************************************************************************************************************************
 	case 2:                         // stance leg left, swing leg right
+		t = 1 - (guiIn.pea - phi_lLeg) / (guiIn.pea - guiIn.aea);
 		D0.set(guiIn.d_ls);
 		P0.set(guiIn.p_ls);
 		D1.set(guiIn.d_ls);
