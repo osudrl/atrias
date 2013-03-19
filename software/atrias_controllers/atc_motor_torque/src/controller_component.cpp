@@ -20,7 +20,7 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 
     curLimit = AMC_IP;
     curCounter = COUNTER_MAX;
-    timeSinceFB = AMC_PEAK_TIME + AMC_FOLDBACK_TIME;   // Timer counter
+    fbCounter = AMC_PEAK_TIME + AMC_FOLDBACK_TIME;
     inFoldback = false;
 
     log(Info) << "[ATCMT] Motor torque controller constructed!" << endlog();
@@ -51,7 +51,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     n = (n+1) % 100;
 
     if (n == 0) {
-        log(Info) << "[ATCMT] timeSinceFB: " << timeSinceFB << "  In Foldback: " << inFoldback << "  curCounter: " << curCounter << "  cL: " << curLimit << endlog();
+        log(Info) << "[ATCMT] fbCounter: " << fbCounter << "  curCounter: " << curCounter << "  current limit: " << curLimit << endlog();
     }
 
     // Output for RTOps
@@ -66,7 +66,7 @@ void ATCMotorTorque::estimateCurrentLimit()
         inFoldback = true;
 
         // Reset counter to current limit.
-        if (timeSinceFB < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
+        if (fbCounter < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
             curCounter = curLimit;
         }
     }
@@ -74,7 +74,7 @@ void ATCMotorTorque::estimateCurrentLimit()
         inFoldback = false;
     }
 
-    // Update counter.
+    // Update counters.
     if (inFoldback) {
         // Decrement counter at constant slope regardless of target current.
         if (curCounter > AMC_IC) {
@@ -85,8 +85,8 @@ void ATCMotorTorque::estimateCurrentLimit()
         }
 
         // Decrement timer.
-        if (timeSinceFB > 0) {
-            timeSinceFB -= 0.001;
+        if (fbCounter > 0) {
+            fbCounter -= 0.001;
         }
     }
     else {
@@ -99,14 +99,14 @@ void ATCMotorTorque::estimateCurrentLimit()
         }
 
         // Increment timer.
-        if (timeSinceFB < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
-            timeSinceFB += 0.001;
+        if (fbCounter < AMC_PEAK_TIME+AMC_FOLDBACK_TIME) {
+            fbCounter += 0.001;
         }
     }
 
     // Set current limit to minimum among counter, recovery rate cap, and
     // peak current limit.
-    curLimit = MIN(curCounter, MIN(AMC_IC+M_FB*timeSinceFB, AMC_IP));
+    curLimit = MIN(curCounter, MIN(AMC_IC+M_FB*fbCounter, AMC_IP));
 }
 
 bool ATCMotorTorque::configureHook() {

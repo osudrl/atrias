@@ -51,7 +51,7 @@ private:
 
     // Current limiter variables
     double curCounter, curLimit;   // In amps
-    double timeSinceFB;   // In seconds
+    double fbCounter;   // In seconds
     bool inFoldback;
 
     // This Operation is called by the RT Operations Manager.
