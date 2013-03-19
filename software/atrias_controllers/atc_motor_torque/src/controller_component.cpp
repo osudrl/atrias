@@ -47,7 +47,12 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         }
     }
 
-    log(Info) << "[ATCMT] timeSinceFB: " << timeSinceFB << "  In Foldback: " << inFoldback << "  curCounter: " << curCounter << "  cL: " << curLimit << endlog();
+    static uint16_t n = 0;
+    n = (n+1) % 100;
+
+    if (n == 0) {
+        log(Info) << "[ATCMT] timeSinceFB: " << timeSinceFB << "  In Foldback: " << inFoldback << "  curCounter: " << curCounter << "  cL: " << curLimit << endlog();
+    }
 
     // Output for RTOps
     return co;
