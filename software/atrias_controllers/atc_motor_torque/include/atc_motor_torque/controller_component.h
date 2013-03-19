@@ -25,13 +25,13 @@
 #include <atrias_msgs/controller_output.h>
 #include <atc_motor_torque/controller_input.h>
 
-const double AMC_IP = 1.0;
-const double AMC_IC = 0.5;
+const double AMC_IP = 1.0;   // In amps
+const double AMC_IC = 0.8;   // In amps
 const double AMC_PEAK_TIME = 4.0;   // In seconds
 const double AMC_FOLDBACK_TIME = 2.0;   // In seconds
 
-const double COUNTER_MAX = (AMC_IC + (AMC_IP-AMC_IC) * (AMC_PEAK_TIME+AMC_FOLDBACK_TIME) / AMC_FOLDBACK_TIME);
-const double M_FB = (0.001 * (COUNTER_MAX-AMC_IC) / (AMC_PEAK_TIME+AMC_FOLDBACK_TIME));   // Foldback slope.
+const double COUNTER_MAX = (AMC_IC + (AMC_IP-AMC_IC) * (AMC_PEAK_TIME+AMC_FOLDBACK_TIME) / AMC_FOLDBACK_TIME);   // In amps
+const double M_FB = (COUNTER_MAX-AMC_IC) / (AMC_PEAK_TIME+AMC_FOLDBACK_TIME);   // Foldback slope in amps/second
 
 using namespace RTT;
 using namespace Orocos;

@@ -74,7 +74,7 @@ void ATCMotorTorque::estimateCurrentLimit()
     if (inFoldback) {
         // Decrement counter at constant slope regardless of target current.
         if (curCounter > AMC_IC) {
-            curCounter -= M_FB;
+            curCounter -= M_FB / 1000;
         }
         else {
             curCounter = AMC_IC;
@@ -83,7 +83,7 @@ void ATCMotorTorque::estimateCurrentLimit()
     else {
         // Increment counter based on target current.
         if (curCounter < COUNTER_MAX) {
-            curCounter += M_FB * (AMC_IC-co.rLeg.motorCurrentA) / (AMC_IP-AMC_IC) / 2;
+            curCounter += M_FB * (AMC_IC-co.rLeg.motorCurrentA) / (AMC_IP-AMC_IC) / 2 / 1000;
         }
         else {
             curCounter = COUNTER_MAX;
