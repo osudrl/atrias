@@ -149,6 +149,9 @@ class ATCEqPoint : public TaskContext {
 		double  max_phi_swing;
 		double  time;
 
+		// Whether we are in idle mode (so the robot can't re-enable)
+		bool idle_mode;
+
 		// For the GUI
 		shared::GuiPublishTimer     *pubTimer;
 		controller_input            guiIn;

@@ -75,6 +75,31 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	           desiredRBState,
 	           desiredRHState;
 
+	// Handle idle mode
+	if ((atrias::rtOps::RtOpsState) rs.rtOpsState == atrias::rtOps::RtOpsState::DISABLED) {
+		// We're disabled... leave idle mode
+		idle_mode = false;
+	}
+	if (guiIn.control == 0) {
+		// GUI is commanding idle mode
+		idle_mode = true;
+	}
+
+	// Run the idle mode controller
+	if (idle_mode) {
+		// Set the hip controller P gains to 0 for a gentle relaxation.
+		P2.set(0.0);
+		P5.set(0.0);
+		co.lLeg.motorCurrentHip = pd2Controller(0.0, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentHip = pd5Controller(0.0, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+
+		return co;
+	} else {
+		// Revert the hip gains
+		P2.set(hipP);
+		P5.set(hipP);
+	}
+
 	// Only run the controller when we're enabled
 	if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
 		// Keep desired motor angles equal to the current motor angles so the
@@ -203,7 +228,6 @@ if (time>t)		//unidirectional progression of t;
 	t=time;
 }
 */
-
 
 switch (guiIn.control)
 {
