@@ -39,7 +39,7 @@ void OpsLogger::endCycle() {
 
 void OpsLogger::logRobotState(atrias_msgs::robot_state& state) {
 	atrias_msgs::log_data log_data;
-	packLogData(state, log_data);
+	packLogData(log_data);
 	logCyclicOut->write(log_data);
 	rtOpsCycle.header     = state.header;
 	rtOpsCycle.robotState = state;
@@ -52,11 +52,20 @@ void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
 	eventOut->write(event_msg);
 }
 
-void OpsLogger::packLogData(atrias_msgs::robot_state &rs, atrias_msgs::log_data &ld) {
+void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
+	atrias_msgs::robot_state &rs = this->rtOpsCycle.robotState;
+
 	ld.header           = rs.header;
 
 	ld.currentPositive  = rs.currentPositive;
 	ld.currentNegative  = rs.currentNegative;
+
+	ld.lAClampedCmd     = rtOpsCycle.commandedOutput.lLeg.motorCurrentA;
+	ld.lBClampedCmd     = rtOpsCycle.commandedOutput.lLeg.motorCurrentB;
+	ld.lHipClampedCmd   = rtOpsCycle.commandedOutput.lLeg.motorCurrentHip;
+	ld.rAClampedCmd     = rtOpsCycle.commandedOutput.rLeg.motorCurrentA;
+	ld.rBClampedCmd     = rtOpsCycle.commandedOutput.rLeg.motorCurrentB;
+	ld.rHipClampedCmd   = rtOpsCycle.commandedOutput.rLeg.motorCurrentHip;
 
 	ld.lKneeForce       = rs.lLeg.kneeForce;
 	ld.rKneeForce       = rs.rLeg.kneeForce;
