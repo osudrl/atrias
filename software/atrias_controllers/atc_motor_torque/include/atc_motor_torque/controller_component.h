@@ -16,6 +16,7 @@
 
 #include <atrias_shared/GuiPublishTimer.h>
 #include <robot_invariant_defs.h>
+#include <atrias_shared/globals.h>
 
 // ATRIAS
 #include <atrias_shared/drl_math.h>
@@ -25,10 +26,10 @@
 #include <atrias_msgs/controller_output.h>
 #include <atc_motor_torque/controller_input.h>
 
-const double AMC_IP = 1.0;   // In amps
-const double AMC_IC = 0.8;   // In amps
-const double AMC_PEAK_TIME = 4.0;   // In seconds
-const double AMC_FOLDBACK_TIME = 2.0;   // In seconds
+const double AMC_IP = 60.0;   // In amps
+const double AMC_IC = 30.0;   // In amps
+const double AMC_PEAK_TIME = 2.0;   // In seconds
+const double AMC_FOLDBACK_TIME = 10.0;   // In seconds
 
 const double COUNTER_MAX = (AMC_IC + (AMC_IP-AMC_IC) * (AMC_PEAK_TIME+AMC_FOLDBACK_TIME) / AMC_FOLDBACK_TIME);   // In amps
 const double M_FB = (COUNTER_MAX-AMC_IC) / (AMC_PEAK_TIME+AMC_FOLDBACK_TIME);   // Foldback slope in amps/second
@@ -61,7 +62,7 @@ private:
     atrias_msgs::controller_output runController(atrias_msgs::robot_state rs);
 
     // Estimate current limit of AMC amplifiers. Run this every loop.
-    void estimateCurrentLimit();
+    void estimateCurrentLimit(atrias_msgs::robot_state rs);
 
 public:
     // Constructor

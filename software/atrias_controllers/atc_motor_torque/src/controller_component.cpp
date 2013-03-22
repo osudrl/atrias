@@ -57,7 +57,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     }
 
     // Run current limit estimator.
-    estimateCurrentLimit();
+    estimateCurrentLimit(rs);
 
     // Set current limit if GUI says so
     if (guiIn.limitCurrent) {
@@ -82,7 +82,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
 // Don't put control code below here!
 
-void ATCMotorTorque::estimateCurrentLimit()
+void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
 {
     if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
         // Amps aren't in foldback if controller isn't enabled.
