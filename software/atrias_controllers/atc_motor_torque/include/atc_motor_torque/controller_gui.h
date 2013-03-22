@@ -31,7 +31,13 @@ Gtk::HScale *torque_left_A_hscale,
         *torque_right_B_hscale,
         *torque_right_hip_hscale;
 
-Gtk::ToggleButton *cur_lim_togglebutton;
+Gtk::SpinButton *ip_spinbutton,
+        *ic_spinbutton,
+        *tp_spinbutton,
+        *tc_spinbutton;
+
+Gtk::ToggleButton *dc_test_togglebutton,
+        *cur_lim_togglebutton;
 
 Gtk::CheckButton *set_position_checkbutton;
 

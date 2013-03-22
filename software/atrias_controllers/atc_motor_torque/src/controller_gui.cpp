@@ -16,17 +16,27 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("torque_right_A_hscale",   torque_right_A_hscale);
     gui->get_widget("torque_right_B_hscale",   torque_right_B_hscale);
     gui->get_widget("torque_right_hip_hscale", torque_right_hip_hscale);
+    gui->get_widget("ip_spinbutton",           ip_spinbutton);
+    gui->get_widget("ic_spinbutton",           ic_spinbutton);
+    gui->get_widget("tp_spinbutton",           tp_spinbutton);
+    gui->get_widget("tc_spinbutton",           tc_spinbutton);
+    gui->get_widget("dc_test_togglebutton",    dc_test_togglebutton);
     gui->get_widget("cur_lim_togglebutton",    cur_lim_togglebutton);
 
     if (torque_left_A_hscale && torque_left_B_hscale && torque_left_hip_hscale &&
         torque_right_A_hscale && torque_right_B_hscale && torque_right_hip_hscale &&
-        cur_lim_togglebutton) {
+        ip_spinbutton && ic_spinbutton && tp_spinbutton && tc_spinbutton &&
+        dc_test_togglebutton && cur_lim_togglebutton) {
         torque_left_A_hscale->set_range(-30, 30);
         torque_left_B_hscale->set_range(-30, 30);
         torque_left_hip_hscale->set_range(-30, 30);
         torque_right_A_hscale->set_range(-60, 60);
         torque_right_B_hscale->set_range(-30, 30);
         torque_right_hip_hscale->set_range(-30, 30);
+        ip_spinbutton->set_range(0.0, 60.0);
+        ic_spinbutton->set_range(0.0, 60.0);
+        tp_spinbutton->set_range(0.0, 10.0);
+        tc_spinbutton->set_range(0.0, 20.0);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_torque_status", 0, controllerCallback);
@@ -77,6 +87,13 @@ void guiUpdate() {
     controllerDataOut.des_motor_torque_right_A   = torque_right_A_param   = torque_right_A_hscale->get_value();
     controllerDataOut.des_motor_torque_right_B   = torque_right_B_param   = torque_right_B_hscale->get_value();
     controllerDataOut.des_motor_torque_right_hip = torque_right_hip_param = torque_right_hip_hscale->get_value();
+
+    controllerDataOut.dc_ip = ip_spinbutton->get_value();
+    controllerDataOut.dc_ic = ic_spinbutton->get_value();
+    controllerDataOut.dc_tp = tp_spinbutton->get_value();
+    controllerDataOut.dc_tc = tc_spinbutton->get_value();
+
+    controllerDataOut.dutyCycleTest = dc_test_togglebutton->get_active();
     controllerDataOut.limitCurrent = cur_lim_togglebutton->get_active();
     pub.publish(controllerDataOut);
 }

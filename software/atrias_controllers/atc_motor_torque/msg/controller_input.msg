@@ -6,10 +6,10 @@ float64 des_motor_torque_right_B
 float64 des_motor_torque_right_hip
 
 bool dutyCycleTest
-float64 dc_peak_current
-float64 dc_cont_current
-float64 dc_peak_time
-float64 dc_cont_time
+float64 dc_ip
+float64 dc_ic
+float64 dc_tp
+float64 dc_tc
 
 bool limitCurrent
 

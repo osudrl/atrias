@@ -41,11 +41,11 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This is temporary stuff.
     if (guiIn.dutyCycleTest) {
-        if (dcCounter < guiIn.dc_peak_time) {
-            co.rLeg.motorCurrentA = guiIn.dc_peak_current;
+        if (dcCounter < guiIn.dc_tp) {
+            co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
         }
-        else if (dcCounter < (guiIn.dc_peak_time + guiIn.dc_cont_time)) {
-            co.rLeg.motorCurrentA = guiIn.dc_cont_current;
+        else if (dcCounter < (guiIn.dc_tp + guiIn.dc_tc)) {
+            co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
         }
         else {
             dcCounter = 0;
