@@ -49,6 +49,9 @@ private:
 
     InputPort<controller_input>      guiDataIn;
 
+    // Duty cycle tester variables
+    uint32_t dcCounter;
+
     // Current limiter variables
     double curCounter, curLimit;   // In amps
     double fbCounter;   // In seconds

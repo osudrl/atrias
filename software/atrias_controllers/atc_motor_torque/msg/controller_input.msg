@@ -5,5 +5,11 @@ float64 des_motor_torque_right_A
 float64 des_motor_torque_right_B
 float64 des_motor_torque_right_hip
 
+bool dutyCycleTest
+float64 dc_peak_current
+float64 dc_cont_current
+float64 dc_peak_time
+float64 dc_cont_time
+
 bool limitCurrent
 

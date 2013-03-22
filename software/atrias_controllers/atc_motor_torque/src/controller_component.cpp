@@ -18,6 +18,8 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 
     addEventPort(guiDataIn);
 
+    dcCounter = 0;
+
     curLimit = AMC_IP;
     curCounter = COUNTER_MAX;
     fbCounter = AMC_PEAK_TIME + AMC_FOLDBACK_TIME;
@@ -36,6 +38,20 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     co.rLeg.motorCurrentB = guiIn.des_motor_torque_right_B;
     co.rLeg.motorCurrentHip = guiIn.des_motor_torque_right_hip;
     co.command = medulla_state_run;
+
+    // Duty cycle test. This is temporary stuff.
+    if (guiIn.dutyCycleTest) {
+        if (dcCounter < guiIn.dc_peak_time) {
+            co.rLeg.motorCurrentA = guiIn.dc_peak_current;
+        }
+        else if (dcCounter < (guiIn.dc_peak_time + guiIn.dc_cont_time)) {
+            co.rLeg.motorCurrentA = guiIn.dc_cont_current;
+        }
+        else {
+            dcCounter = 0;
+        }
+        dcCounter++;
+    }
 
     // Run current limit estimator.
     estimateCurrentLimit();
