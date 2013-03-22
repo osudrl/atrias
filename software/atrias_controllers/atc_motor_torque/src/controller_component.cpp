@@ -45,6 +45,9 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         if (co.rLeg.motorCurrentA > curLimit) {
             co.rLeg.motorCurrentA = curLimit;
         }
+        else if (co.rLeg.motorCurrentA < -curLimit) {
+            co.rLeg.motorCurrentA = -curLimit;
+        }
     }
 
     static uint16_t n = 0;
@@ -62,7 +65,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
 void ATCMotorTorque::estimateCurrentLimit()
 {
-    if (!inFoldback && co.rLeg.motorCurrentA > AMC_IC) {
+    if (!inFoldback && ABS(co.rLeg.motorCurrentA) > AMC_IC) {
         inFoldback = true;
 
         // Reset counter to current limit.
@@ -70,7 +73,7 @@ void ATCMotorTorque::estimateCurrentLimit()
             curCounter = curLimit;
         }
     }
-    else if (inFoldback && co.rLeg.motorCurrentA <= AMC_IC) {
+    else if (inFoldback && ABS(co.rLeg.motorCurrentA) <= AMC_IC) {
         inFoldback = false;
     }
 
