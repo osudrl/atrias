@@ -52,6 +52,9 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         }
         dcCounter++;
     }
+    else {
+        dcCounter = 0;
+    }
 
     // Run current limit estimator.
     estimateCurrentLimit();
