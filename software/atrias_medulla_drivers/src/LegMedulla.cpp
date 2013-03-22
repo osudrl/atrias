@@ -61,22 +61,22 @@ void LegMedulla::updatePositionOffsets() {
 		case MEDULLA_LEFT_LEG_A_ID:
 			legPositionOffset = robotState.lLeg.halfA.motorAngle -
 			                    robotState.lLeg.halfA.legAngle;
-			incrementalEncoderStart = robotState.lLeg.halfA.motorAngle;
+			incrementalEncoderStart = robotState.lLeg.halfA.motorAngle = 0.0;
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			legPositionOffset = robotState.lLeg.halfB.motorAngle -
 			                    robotState.lLeg.halfB.legAngle;
-			incrementalEncoderStart = robotState.lLeg.halfB.motorAngle;
+			incrementalEncoderStart = robotState.lLeg.halfB.motorAngle = 0.0;
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			legPositionOffset = robotState.rLeg.halfA.motorAngle -
 			                    robotState.rLeg.halfA.legAngle;
-			incrementalEncoderStart = robotState.rLeg.halfA.motorAngle;
+			incrementalEncoderStart = robotState.rLeg.halfA.motorAngle = 0.0;
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			legPositionOffset = robotState.rLeg.halfB.motorAngle -
 			                    robotState.rLeg.halfB.legAngle;
-			incrementalEncoderStart = robotState.rLeg.halfB.motorAngle;
+			incrementalEncoderStart = robotState.rLeg.halfB.motorAngle = 0.0;
 			break;
 	}
 	if (fabs(legPositionOffset) > MAX_LEG_POS_ADJUSTMENT) {

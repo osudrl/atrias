@@ -30,9 +30,7 @@ ATCVelocityTuning::ATCVelocityTuning(std::string name) :
 atrias_msgs::controller_output ATCVelocityTuning::runController(atrias_msgs::robot_state rs) {
 	P0.set(guiIn.Kp);
 
-	if (guiIn.relayMode == 1 && abs(rs.rLeg.halfA.rotorAngle - rs.rLeg.halfA.motorAngle) > 0.1) {
-		co.command = medulla_state_error;
-	} else if (!guiIn.halt) {
+	if (!guiIn.halt) {
 		co.command = medulla_state_run;
 	}
 
