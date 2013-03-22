@@ -84,7 +84,11 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
 void ATCMotorTorque::estimateCurrentLimit()
 {
-    if (!inFoldback && ABS(co.rLeg.motorCurrentA) > AMC_IC) {
+    if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
+        // Amps aren't in foldback if controller isn't enabled.
+        inFoldback = false;
+    }
+    else if (!inFoldback && ABS(co.rLeg.motorCurrentA) > AMC_IC) {
         inFoldback = true;
 
         // Reset counter to current limit.
