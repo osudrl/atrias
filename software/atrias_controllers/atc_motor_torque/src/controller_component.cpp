@@ -84,11 +84,14 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
 void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
 {
+    double curTarget = co.rLeg.motorCurrentA;
+
     if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
         // Amps aren't in foldback if controller isn't enabled.
         inFoldback = false;
+        curTarget = 0.0;
     }
-    else if (!inFoldback && ABS(co.rLeg.motorCurrentA) > AMC_IC) {
+    else if (!inFoldback && ABS(curTarget) > AMC_IC) {
         inFoldback = true;
 
         // Reset counter to current limit.
@@ -96,7 +99,7 @@ void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
             curCounter = curLimit;
         }
     }
-    else if (inFoldback && ABS(co.rLeg.motorCurrentA) <= AMC_IC) {
+    else if (inFoldback && ABS(curTarget) <= AMC_IC) {
         inFoldback = false;
     }
 
@@ -118,7 +121,7 @@ void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
     else {
         // Increment counter based on target current.
         if (curCounter < COUNTER_MAX) {
-            curCounter += M_FB * (AMC_IC-co.rLeg.motorCurrentA) / (AMC_IP-AMC_IC) / 2 / 1000;
+            curCounter += M_FB * (AMC_IC-curTarget) / (AMC_IP-AMC_IC) / 2 / 1000;
         }
         else {
             curCounter = COUNTER_MAX;
