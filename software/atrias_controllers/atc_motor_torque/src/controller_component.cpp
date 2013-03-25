@@ -68,6 +68,13 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             // Sine wave
             co.rLeg.motorCurrentA = guiIn.dc_tp * sin(2*PI*dcCounter/1000*guiIn.dc_freq);
         }
+
+        if (guiIn.dc_oscillate) {
+            // Oscillate motor direction to keep applied current at maximum
+            // (i.e., don't let the motor reach high velocity).
+            co.rLeg.motorCurrentA *= (dcCounter % (1000/guiIn.dc_oscillate_freq)) % 2;
+        }
+
         dcCounter++;
     }
     else {
