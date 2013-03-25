@@ -31,7 +31,9 @@ Gtk::HScale *torque_left_A_hscale,
         *torque_right_B_hscale,
         *torque_right_hip_hscale;
 
-Gtk::SpinButton *ip_spinbutton,
+Gtk::SpinButton *dc_oscillate_frequency_spinbutton,
+        *dc_signal_frequency_spinbutton,
+        *ip_spinbutton,
         *ic_spinbutton,
         *tp_spinbutton,
         *tc_spinbutton;
@@ -39,7 +41,11 @@ Gtk::SpinButton *ip_spinbutton,
 Gtk::ToggleButton *dc_test_togglebutton,
         *cur_lim_togglebutton;
 
-Gtk::CheckButton *set_position_checkbutton;
+Gtk::RadioButton *dc_square_wave_radiobutton,
+        *dc_sine_wave_radiobutton;
+
+Gtk::CheckButton *dc_oscillate_enable_checkbutton,
+        *set_position_checkbutton;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
