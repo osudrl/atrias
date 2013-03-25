@@ -16,7 +16,12 @@ namespace controller {
  */
 static float find_ratio_sine(float T, float Tp)
 {
-    return (AMC_IP-AMC_IC)*(T/2*(pi-2*asin(AMC_IC/Tp)))/(AMC_IC*T/2+integral(AMC_IC-Tp*sin(2*pi*t/T),t,0,asin(AMC_IC/Tp)))
+    static double a2integral = 0;
+    for (int t=0; t<asin(AMC_IC/Tp); t++) {
+        a2integral += (AMC_IC - Tp*sin(2*PI*t/T)) / 1000;
+    }
+
+    return (AMC_IP-AMC_IC)*(T/2*(PI-2*asin(AMC_IC/Tp)))/(AMC_IC*T/2+a2integral);
 }
 
 ATCMotorTorque::ATCMotorTorque(std::string name):
@@ -72,7 +77,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         if (guiIn.dc_oscillate) {
             // Oscillate motor direction to keep applied current at maximum
             // (i.e., don't let the motor reach high velocity).
-            co.rLeg.motorCurrentA *= (dcCounter % (1000/guiIn.dc_oscillate_freq)) % 2;
+            co.rLeg.motorCurrentA *= (dcCounter % ((int) (1000/guiIn.dc_oscillate_freq))) % 2;
+
         }
 
         dcCounter++;
@@ -98,7 +104,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     n = (n+1) % 100;
 
     if (n == 0) {
-        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine(guiIn.dc_tp endlog();
+        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine(1/guiIn.dc_freq, ABS(co.rLeg.motorCurrentA)) << endlog();
     }
 
     // Output for RTOps

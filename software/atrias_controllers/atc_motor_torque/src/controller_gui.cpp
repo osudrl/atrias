@@ -16,7 +16,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("torque_right_A_hscale",   torque_right_A_hscale);
     gui->get_widget("torque_right_B_hscale",   torque_right_B_hscale);
     gui->get_widget("torque_right_hip_hscale", torque_right_hip_hscale);
-    gui->get_widget("dc_oscillate_frequency_spinbutton" dc_oscillate_frequency_spinbutton);
+    gui->get_widget("dc_oscillate_frequency_spinbutton", dc_oscillate_frequency_spinbutton);
     gui->get_widget("dc_oscillate_enable_checkbutton", dc_oscillate_enable_checkbutton);
     gui->get_widget("dc_square_wave_radiobutton", dc_square_wave_radiobutton);
     gui->get_widget("dc_sine_wave_radiobutton", dc_sine_wave_radiobutton);
