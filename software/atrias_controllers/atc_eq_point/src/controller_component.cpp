@@ -315,12 +315,15 @@ default:
 						if (t < 0.1){
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_lLeg = guiIn.pea;
+							logData.state=11;
 						} else if (t<guiIn.l_fl){
 							phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+							logData.state=12;
 						} else {
 							phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 							l_swing = guiIn.l_leg_st;
+							logData.state=13;
 						}
 						//map leg angle sweep of flight leg to 0->1
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
@@ -336,6 +339,7 @@ default:
 			D1.set(guiIn.d_ls);
 			P1.set(guiIn.p_ls);
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)+2;
+			logData.state=14;
 		}
 		break;
 
@@ -374,12 +378,15 @@ default:
 						if (t < 0.1){
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_rLeg = guiIn.pea;
+							logData.state=21;
 						} else if (t<guiIn.l_fl){
 							phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+							logData.state=22;
 						} else {
 							phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 							l_swing = guiIn.l_leg_st;
+							logData.state=23;
 						}
 						//map leg angle sweep of flight leg to 0->1
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
@@ -395,6 +402,7 @@ default:
 			D4.set(guiIn.d_ls);
 			P4.set(guiIn.p_ls);
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
+			logData.state=24;
 		}
 		break;
 
