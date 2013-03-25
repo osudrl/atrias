@@ -8,6 +8,17 @@
 namespace atrias {
 namespace controller {
 
+/**
+ * Find A1/A2 ratio of sine wave.
+ *
+ * @param T Period in seconds
+ * @param Tp Peak target current
+ */
+static float find_ratio_sine(float T, float Tp)
+{
+    return (AMC_IP-AMC_IC)*(T/2*(pi-2*asin(AMC_IC/Tp)))/(AMC_IC*T/2+integral(AMC_IC-Tp*sin(2*pi*t/T),t,0,asin(AMC_IC/Tp)))
+}
+
 ATCMotorTorque::ATCMotorTorque(std::string name):
     RTT::TaskContext(name),
     guiDataIn("gui_data_in")
@@ -41,14 +52,21 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This is temporary stuff.
     if (guiIn.dutyCycleTest) {
-        if (dcCounter < guiIn.dc_tp*1000) {
-            co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
+        if (guiIn.dc_mode == 0) {
+            // Square wave
+            if (dcCounter < guiIn.dc_tp*1000) {
+                co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
+            }
+            else if (dcCounter < (guiIn.dc_tp + guiIn.dc_tc)*1000) {
+                co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
+            }
+            else {
+                dcCounter = 0;
+            }
         }
-        else if (dcCounter < (guiIn.dc_tp + guiIn.dc_tc)*1000) {
-            co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
-        }
-        else {
-            dcCounter = 0;
+        else if (guiIn.dc_mode == 1) {
+            // Sine wave
+            co.rLeg.motorCurrentA = guiIn.dc_tp * sin(2*PI*dcCounter/1000*guiIn.dc_freq);
         }
         dcCounter++;
     }
@@ -73,7 +91,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     n = (n+1) % 100;
 
     if (n == 0) {
-        log(Info) << "[ATCMT] fbCounter: " << fbCounter << "  curCounter: " << curCounter << "  current limit: " << curLimit << endlog();
+        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine(guiIn.dc_tp endlog();
     }
 
     // Output for RTOps
