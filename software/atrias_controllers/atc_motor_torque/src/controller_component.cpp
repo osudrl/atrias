@@ -17,7 +17,7 @@ namespace controller {
 static float find_ratio_sine(float T, float Tp)
 {
     static double a2integral = 0;
-    for (int t=0; t<asin(AMC_IC/Tp); t++) {
+    for (int t=0; t<asin(AMC_IC/Tp); t+=0.001) {
         a2integral += (AMC_IC - Tp*sin(2*PI*t/T)) / 1000;
     }
 
@@ -77,7 +77,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         if (guiIn.dc_oscillate) {
             // Oscillate motor direction to keep applied current at maximum
             // (i.e., don't let the motor reach high velocity).
-            co.rLeg.motorCurrentA *= (dcCounter % ((int) (1000/guiIn.dc_oscillate_freq))) % 2;
+            co.rLeg.motorCurrentA *= ((int) (dcCounter * guiIn.dc_oscillate_freq / 1000)) % 2;
 
         }
 
