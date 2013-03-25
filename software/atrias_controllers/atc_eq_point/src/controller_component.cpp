@@ -414,6 +414,7 @@ default:
 	co.command = medulla_state_run;
 
 	// Stuff the msg and push to ROS for logging
+	logData.header = rs.header;
 	logPort.write(logData);
 
 	// Output for RTOps
