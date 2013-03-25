@@ -14,11 +14,16 @@ namespace controller {
  * @param T Period in seconds
  * @param Tp Peak target current
  */
-static float find_ratio_sine(float T, float Tp)
+static double find_ratio_sine(double T, double Tp)
 {
-    static double a2integral = 0;
-    for (int t=0; t<asin(AMC_IC/Tp); t+=0.001) {
-        a2integral += (AMC_IC - Tp*sin(2*PI*t/T)) / 1000;
+    double a2integral = 0;
+    if (Tp >= AMC_IC) {
+        for (int t=0; t<asin(AMC_IC/Tp); t+=0.001) {
+            a2integral += (AMC_IC - Tp*sin(2*PI*t/T)) / 1000;
+        }
+    }
+    else {
+        return 9001;   // OVER 9000!
     }
 
     return (AMC_IP-AMC_IC)*(T/2*(PI-2*asin(AMC_IC/Tp)))/(AMC_IC*T/2+a2integral);
