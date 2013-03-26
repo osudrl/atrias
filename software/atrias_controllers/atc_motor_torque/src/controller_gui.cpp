@@ -36,6 +36,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dc_sine_wave_radiobutton &&
         ip_spinbutton && ic_spinbutton && tp_spinbutton && tc_spinbutton &&
         dc_signal_frequency_spinbutton &&
+        dc_signal_duty_cycle_spinbutton &&
         dc_test_togglebutton && cur_lim_togglebutton) {
         torque_left_A_hscale->set_range(-30, 30);
         torque_left_B_hscale->set_range(-30, 30);
@@ -49,6 +50,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         tp_spinbutton->set_range(0.0, 10.0);
         tc_spinbutton->set_range(0.0, 20.0);
         dc_signal_frequency_spinbutton->set_range(0.0, 10.0);
+        dc_signal_duty_cycle_spinbutton->set_range(0.0, 1.0);
 
         // Set up subscriber and publisher.
         sub = nh.subscribe("atc_motor_torque_status", 0, controllerCallback);
@@ -103,6 +105,7 @@ void guiUpdate() {
     // Duty cycle tester values
     controllerDataOut.dc_mode = (dc_square_wave_radiobutton->get_active()) ? 0 : 1;
     controllerDataOut.dc_freq = dc_signal_frequency_spinbutton->get_value();
+    controllerDataOut.dc_dc   = dc_signal_duty_cycle_spinbutton->get_value();
     controllerDataOut.dc_oscillate = (dc_oscillate_enable_checkbutton->get_active()) ? true : false;
     controllerDataOut.dc_oscillate_freq = dc_oscillate_frequency_spinbutton->get_value();
 
