@@ -62,14 +62,14 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This is temporary stuff.
     if (guiIn.dutyCycleTest) {
-        if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc/(1+guiIn.dc_dc)) {
+        if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) {
             if (guiIn.dc_mode == 0) {
                 // Square wave
                 co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
             }
             else if (guiIn.dc_mode == 1) {
                 // Half sine wave
-                co.rLeg.motorCurrentA = guiIn.dc_tp * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq);
+                co.rLeg.motorCurrentA = guiIn.dc_ip * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq);
             }
         }
         else {
@@ -109,7 +109,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     n = (n+1) % 100;
 
     if (n == 0) {
-        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine((1-guiIn.dc_dc)/guiIn.dc_dc, ABS(co.rLeg.motorCurrentA)) << endlog();
+        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << endlog();
     }
 
     // Output for RTOps
