@@ -25,6 +25,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("tp_spinbutton",           tp_spinbutton);
     gui->get_widget("tc_spinbutton",           tc_spinbutton);
     gui->get_widget("dc_signal_frequency_spinbutton", dc_signal_frequency_spinbutton);
+    gui->get_widget("dc_signal_duty_cycle_spinbutton", dc_signal_duty_cycle_spinbutton);
     gui->get_widget("dc_test_togglebutton",    dc_test_togglebutton);
     gui->get_widget("cur_lim_togglebutton",    cur_lim_togglebutton);
 
