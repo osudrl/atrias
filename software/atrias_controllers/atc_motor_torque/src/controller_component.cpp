@@ -14,19 +14,19 @@ namespace controller {
  * @param T Period in seconds
  * @param Tp Peak target current
  */
-static double find_ratio_sine(double T, double Tp)
+static double find_ratio_sine(double R, double Tp)
 {
     double a2integral = 0;
     if (Tp >= AMC_IC) {
-        for (int t=0; t<asin(AMC_IC/Tp); t+=0.001) {
-            a2integral += (AMC_IC - Tp*sin(2*PI*t/T)) / 1000;
+        for (int t=0; t<asin(AMC_IC/Tp)/PI; t+=0.001) {
+            a2integral += (AMC_IC - Tp*sin(PI*t)) / 1000;
         }
     }
     else {
         return 9001;   // OVER 9000!
     }
 
-    return (AMC_IP-AMC_IC)*(T/2*(PI-2*asin(AMC_IC/Tp)))/(AMC_IC*T/2+a2integral);
+    return (AMC_IP-AMC_IC)*(1-2/PI*asin(AMC_IC/Tp))/(R*AMC_IC + a2integral);
 }
 
 ATCMotorTorque::ATCMotorTorque(std::string name):
@@ -76,7 +76,16 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         }
         else if (guiIn.dc_mode == 1) {
             // Half sine wave
-            co.rLeg.motorCurrentA = MAX(guiIn.dc_tp * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq), 0);
+            if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc/(1+guiIn.dc_dc)) {
+                co.rLeg.motorCurrentA = guiIn.dc_tp * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq);
+            }
+            else {
+                co.rLeg.motorCurrentA = 0;
+
+                if (dcCounter >= 1000/guiIn.dc_freq) {
+                    dcCounter = 0;
+                }
+            }
         }
 
         if (guiIn.dc_oscillate) {
@@ -108,7 +117,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     n = (n+1) % 100;
 
     if (n == 0) {
-        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine(1/guiIn.dc_freq, ABS(co.rLeg.motorCurrentA)) << endlog();
+        log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << "  A1/A2: " << find_ratio_sine((1-guiIn.dc_dc)/guiIn.dc_dc, ABS(co.rLeg.motorCurrentA)) << endlog();
     }
 
     // Output for RTOps
