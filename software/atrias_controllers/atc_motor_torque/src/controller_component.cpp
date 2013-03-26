@@ -69,7 +69,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             }
             else if (guiIn.dc_mode == 1) {
                 // Half sine wave
-                co.rLeg.motorCurrentA = guiIn.dc_ip * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq);
+                co.rLeg.motorCurrentA = guiIn.dc_ip * sin(PI/guiIn.dc_dc*dcCounter/1000.0*guiIn.dc_freq);
             }
         }
         else {
