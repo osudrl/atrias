@@ -75,6 +75,31 @@ atrias_msgs::controller_output ATCEqPoint::runController(atrias_msgs::robot_stat
 	           desiredRBState,
 	           desiredRHState;
 
+	// Handle idle mode
+	if ((atrias::rtOps::RtOpsState) rs.rtOpsState == atrias::rtOps::RtOpsState::DISABLED) {
+		// We're disabled... leave idle mode
+		idle_mode = false;
+	}
+	if (guiIn.control == 0) {
+		// GUI is commanding idle mode
+		idle_mode = true;
+	}
+
+	// Run the idle mode controller
+	if (idle_mode) {
+		// Set the hip controller P gains to 0 for a gentle relaxation.
+		P2.set(0.0);
+		P5.set(0.0);
+		co.lLeg.motorCurrentHip = pd2Controller(0.0, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentHip = pd5Controller(0.0, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+
+		return co;
+	} else {
+		// Revert the hip gains
+		P2.set(hipP);
+		P5.set(hipP);
+	}
+
 	// Only run the controller when we're enabled
 	if ((rtOps::RtOpsState)rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
 		// Keep desired motor angles equal to the current motor angles so the
@@ -204,7 +229,6 @@ if (time>t)		//unidirectional progression of t;
 }
 */
 
-
 switch (guiIn.control)
 {
 case 1:
@@ -291,12 +315,15 @@ default:
 						if (t < 0.1){
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_lLeg = guiIn.pea;
+							logData.state=11;
 						} else if (t<guiIn.l_fl){
 							phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+							logData.state=12;
 						} else {
 							phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 							l_swing = guiIn.l_leg_st;
+							logData.state=13;
 						}
 						//map leg angle sweep of flight leg to 0->1
                         leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
@@ -312,6 +339,7 @@ default:
 			D1.set(guiIn.d_ls);
 			P1.set(guiIn.p_ls);
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)+2;
+			logData.state=14;
 		}
 		break;
 
@@ -350,12 +378,15 @@ default:
 						if (t < 0.1){
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_rLeg = guiIn.pea;
+							logData.state=21;
 						} else if (t<guiIn.l_fl){
 							phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+							logData.state=22;
 						} else {
 							phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 							l_swing = guiIn.l_leg_st;
+							logData.state=23;
 						}
 						//map leg angle sweep of flight leg to 0->1
                         rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
@@ -371,6 +402,7 @@ default:
 			D4.set(guiIn.d_ls);
 			P4.set(guiIn.p_ls);
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
+			logData.state=24;
 		}
 		break;
 
@@ -390,6 +422,7 @@ default:
 	co.command = medulla_state_run;
 
 	// Stuff the msg and push to ROS for logging
+	logData.header = rs.header;
 	logPort.write(logData);
 
 	// Output for RTOps

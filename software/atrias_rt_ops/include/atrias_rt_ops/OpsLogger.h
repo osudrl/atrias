@@ -47,11 +47,9 @@ class OpsLogger {
 	  * @brief Stuffs the robot state data into a log_data message.
 	  * The messages are passed by reference to avoid copies
 	  * (to improve performance).
-	  * @param robot_state The robot state.
 	  * @param log_data    The log data into which to stuff the data.
 	  */
-	void packLogData(atrias_msgs::robot_state &robot_state,
-	                 atrias_msgs::log_data    &log_data);
+	void packLogData(atrias_msgs::log_data &log_data);
 	
 	public:
 		/** @brief Initializes the OpsLogger.

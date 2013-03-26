@@ -10,6 +10,13 @@ Header header
 float32 currentPositive
 float32 currentNegative
 
+float32 lAClampedCmd
+float32 lBClampedCmd
+float32 lHipClampedCmd
+float32 rAClampedCmd
+float32 rBClampedCmd
+float32 rHipClampedCmd
+
 int32 lKneeForce
 int32 rKneeForce
 
