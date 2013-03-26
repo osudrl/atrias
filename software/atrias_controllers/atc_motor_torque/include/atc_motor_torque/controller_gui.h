@@ -33,6 +33,7 @@ Gtk::HScale *torque_left_A_hscale,
 
 Gtk::SpinButton *dc_oscillate_frequency_spinbutton,
         *dc_signal_frequency_spinbutton,
+        *dc_signal_duty_cycle_spinbutton,
         *ip_spinbutton,
         *ic_spinbutton,
         *tp_spinbutton,
