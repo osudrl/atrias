@@ -9,6 +9,7 @@ bool dutyCycleTest
 
 uint8   dc_mode
 float64 dc_freq
+float64 dc_dc
 bool    dc_oscillate
 float64 dc_oscillate_freq
 
