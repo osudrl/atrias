@@ -83,7 +83,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         if (guiIn.dc_oscillate) {
             // Oscillate motor direction to keep applied current at maximum
             // (i.e., don't let the motor reach high velocity).
-            co.rLeg.motorCurrentA *= (((int) (dcCounter * guiIn.dc_oscillate_freq / 500)) % 2) ? 1 : -1;
+            co.rLeg.motorCurrentA *= (((int) (dcCounter * guiIn.dc_oscillate_freq / 250)) % 2) ? 1 : -1;
         }
 
         dcCounter++;
