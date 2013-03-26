@@ -62,29 +62,21 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This is temporary stuff.
     if (guiIn.dutyCycleTest) {
-        if (guiIn.dc_mode == 0) {
-            // Square wave
-            if (dcCounter < guiIn.dc_tp*1000) {
+        if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc/(1+guiIn.dc_dc)) {
+            if (guiIn.dc_mode == 0) {
+                // Square wave
                 co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
             }
-            else if (dcCounter < (guiIn.dc_tp + guiIn.dc_tc)*1000) {
-                co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
-            }
-            else {
-                dcCounter = 0;
-            }
-        }
-        else if (guiIn.dc_mode == 1) {
-            // Half sine wave
-            if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc/(1+guiIn.dc_dc)) {
+            else if (guiIn.dc_mode == 1) {
+                // Half sine wave
                 co.rLeg.motorCurrentA = guiIn.dc_tp * sin(2*PI*dcCounter/1000.0*guiIn.dc_freq);
             }
-            else {
-                co.rLeg.motorCurrentA = 0;
+        }
+        else {
+            co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
 
-                if (dcCounter >= 1000/guiIn.dc_freq) {
-                    dcCounter = 0;
-                }
+            if (dcCounter >= 1000/guiIn.dc_freq) {
+                dcCounter = 0;
             }
         }
 
