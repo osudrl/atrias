@@ -39,18 +39,20 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     co.rLeg.motorCurrentHip = guiIn.des_motor_torque_right_hip;
     co.command = medulla_state_run;
 
-    // Duty cycle test. This is temporary stuff.
+    // Duty cycle test. This might get moved to a separate test controller.
     if (guiIn.dutyCycleTest) {
+        // On
         if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) {
+            // Square wave
             if (guiIn.dc_mode == 0) {
-                // Square wave
                 co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
             }
+            // Half sine wave
             else if (guiIn.dc_mode == 1) {
-                // Half sine wave
                 co.rLeg.motorCurrentA = guiIn.dc_ip * sin(PI/guiIn.dc_dc*dcCounter/1000.0*guiIn.dc_freq);
             }
         }
+        // Off
         else {
             co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
 
@@ -59,9 +61,9 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             }
         }
 
+        // Oscillate motor direction to keep applied current at maximum (i.e.,
+        // don't let the motor reach high velocity).
         if (guiIn.dc_oscillate) {
-            // Oscillate motor direction to keep applied current at maximum
-            // (i.e., don't let the motor reach high velocity).
             co.rLeg.motorCurrentA *= (((int) (dcCounter * guiIn.dc_oscillate_freq / 500)) % 2) ? 1 : -1;
         }
 
@@ -101,8 +103,8 @@ void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
 {
     double curTarget = co.rLeg.motorCurrentA;
 
+    // Amps aren't in foldback if controller isn't enabled.
     if ((rtOps::RtOpsState) rs.rtOpsState != rtOps::RtOpsState::ENABLED) {
-        // Amps aren't in foldback if controller isn't enabled.
         inFoldback = false;
         curTarget = 0.0;
     }
