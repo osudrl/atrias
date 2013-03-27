@@ -8,27 +8,6 @@
 namespace atrias {
 namespace controller {
 
-/**
- * Find A1/A2 ratio of sine wave.
- *
- * @param T Period in seconds
- * @param Tp Peak target current
- */
-static double find_ratio_sine(double R, double Tp)
-{
-    double a2integral = 0;
-    if (Tp >= AMC_IC) {
-        for (int t=0; t<asin(AMC_IC/Tp)/PI; t+=0.001) {
-            a2integral += (AMC_IC - Tp*sin(PI*t)) / 1000;
-        }
-    }
-    else {
-        return 9001;   // OVER 9000!
-    }
-
-    return (AMC_IP-AMC_IC)*(1-2/PI*asin(AMC_IC/Tp))/(R*AMC_IC + a2integral);
-}
-
 ATCMotorTorque::ATCMotorTorque(std::string name):
     RTT::TaskContext(name),
     guiDataIn("gui_data_in")
