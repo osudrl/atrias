@@ -4,3 +4,5 @@ int8    command
 
 controller_output_leg lLeg
 controller_output_leg rLeg
+
+float64 curLimitEst

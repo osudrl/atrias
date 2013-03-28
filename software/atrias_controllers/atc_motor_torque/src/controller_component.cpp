@@ -129,6 +129,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Run current limit estimator.
     estimateCurrentLimit(rs);
+    co.curLimitEst = curLimit;
 
     // Set current limit if GUI says so
     if (guiIn.limitCurrent) {
