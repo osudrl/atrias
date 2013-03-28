@@ -85,8 +85,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState = slipAdvance0(slipModel, slipState);
                 LegForce legForce = slipForce0(slipModel, slipState);
 
-                if (dcStanceEndTime == 0) {
-                    dcStanceEndTime = dcCounter;
+                if (dcFlightEndTime == 0) {
+                    dcFlightEndTime = dcCounter + sqrt(2.8*guiIn.dc_hop_height/9.81);
                 }
 
                 // Compute required joint torque using Jacobian.
@@ -108,9 +108,9 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 }
             }
             else if (guiIn.dc_mode == 2) {
-                if (dcStanceEndTime + sqrt(2.8*guiIn.dc_hop_height/9.81)) {
+                if (dcCounter >= dcFlightEndTime) {
                     dcCounter = 0;
-                    dcStanceEndTime = 0;
+                    dcFlightEndTime = 0;
                 }
             }
         }
