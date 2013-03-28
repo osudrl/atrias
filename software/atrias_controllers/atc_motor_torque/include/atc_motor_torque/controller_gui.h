@@ -31,9 +31,13 @@ Gtk::HScale *torque_left_A_hscale,
         *torque_right_B_hscale,
         *torque_right_hip_hscale;
 
+Gtk::ComboBox *dc_controller_combobox;
+
 Gtk::SpinButton *dc_oscillate_frequency_spinbutton,
         *dc_signal_frequency_spinbutton,
         *dc_signal_duty_cycle_spinbutton,
+        *dc_spring_stiffness_spinbutton,
+        *dc_hop_height_spinbutton,
         *ip_spinbutton,
         *ic_spinbutton,
         *tp_spinbutton,
@@ -41,9 +45,6 @@ Gtk::SpinButton *dc_oscillate_frequency_spinbutton,
 
 Gtk::ToggleButton *dc_test_togglebutton,
         *cur_lim_togglebutton;
-
-Gtk::RadioButton *dc_square_wave_radiobutton,
-        *dc_sine_wave_radiobutton;
 
 Gtk::CheckButton *dc_oscillate_enable_checkbutton,
         *set_position_checkbutton;
