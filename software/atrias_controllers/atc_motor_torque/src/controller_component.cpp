@@ -52,11 +52,8 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             dcInStance = (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) ? true : false;
         }
         else if (guiIn.dc_mode == 2) {
-            // Use slipState struct to determine phase.
-            dcInStance = !slipState.isFlight;
-
             // Reset slipModel and slipState if at beginning of cycle.
-            if (dcCounter == 0) {
+            if (dcCounter == 1) {   // TODO: This is a hack. Should be 0.
                 slipModel.g = -9.81;
                 slipModel.k = guiIn.dc_spring_stiffness;
                 slipModel.m = 607.5/9.81;
@@ -65,7 +62,11 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState.dr = -sqrt(2.8*9.81*guiIn.dc_hop_height);
                 slipState.q = M_PI/2.0;
                 slipState.dq = 0.0;
+		    slipState.isFlight = false;
             }
+
+            // Use slipState struct to determine phase.
+            dcInStance = !slipState.isFlight;
         }
         else {
             dcInStance = false;
@@ -85,7 +86,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState = slipAdvance0(slipModel, slipState);
                 LegForce legForce = slipForce0(slipModel, slipState);
 
-               // Compute required joint torque using Jacobian.
+                // Compute required joint torque using Jacobian.
                 double legAngle = slipState.q - acos(slipState.r);
                 double tauSpring = -legForce.fx * l2 * cos(legAngle + bodyPitch) + legForce.fz * l2 * sin(legAngle + bodyPitch);
 
@@ -104,7 +105,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 }
             }
             else if (guiIn.dc_mode == 2) {
-                if (dcFlightEndTime == 0) {
+                if (dcFlightEndTime == 0 && dcCounter > 10) {
                     dcFlightEndTime = dcCounter + 1000*sqrt(2.8*guiIn.dc_hop_height/9.81);
                 }
 
