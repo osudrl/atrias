@@ -11,5 +11,6 @@
   <depend package="roscpp"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
+  <depend package="asc_slip_model"/>
 
 </package>

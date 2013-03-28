@@ -50,8 +50,30 @@ private:
 
     InputPort<controller_input>      guiDataIn;
 
+    // ASCSlipModel
+    std::string ascSlipModel0Name;
+    TaskContext *ascSlipModel0;
+    OperationCaller<SlipConditions(SlipModel, SlipState)> slipAdvance0;
+    OperationCaller<LegForce(SlipModel, SlipState)> slipForce0;
+
+    struct {
+        double g;
+        double k;
+        double m;
+        double r0;
+    } slipModel;
+
+    struct {
+        double r;
+        double dr;
+        double q;
+        double dq;
+        bool isFlight;
+    } slipState;
+
     // Duty cycle tester variables
     uint32_t dcCounter;
+    bool dcInStance;
 
     // Current limiter variables
     double curCounter, curLimit;   // In amps

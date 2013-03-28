@@ -16,7 +16,12 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
         ->addOperation("runController", &ATCMotorTorque::runController, this, ClientThread)
         .doc("Get robot_state from RTOps and return controller output.");
 
+    // ASCSlipModel
+    this->addProperty("ascSlipModel0Name", ascSlipModel0Name);
+
     addEventPort(guiDataIn);
+
+    slipState.isFlight = false;
 
     dcCounter = 0;
 
@@ -49,6 +54,18 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
         else if (guiIn.dc_mode == 2) {
             // Use slipState struct to determine phase.
             dcInStance = !slipState.isFlight;
+
+            // Reset slipModel and slipState if at beginning of cycle.
+            if (dcCounter == 0) {
+                slipModel.g = -9.81;
+                slipModel.k = guiIn.dc_spring_stiffness;
+                slipModel.m = 607.5/9.81;
+                slipModel.r0 = 0.85;
+                slipState.r = 0.85;
+                slipState.dr = -sqrt(2.8*9.81*guiIn.dc_hop_height);
+                slipState.q = M_PI/2.0;
+                slipState.dq = 0.0;
+            }
         }
         else {
             dcInStance = false;
@@ -65,13 +82,17 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 co.rLeg.motorCurrentA = guiIn.dc_ip * sin(PI/guiIn.dc_dc*dcCounter/1000.0*guiIn.dc_freq);
             }
             else if (guiIn.dc_mode == 2) {
-                co.rLeg.motorCurrentA = guiIn.des_motor_torque_right_A;   // TODO: Replace this with SLIP model controller
+                slipState = slipAdvance0(slipModel, slipState);
+                legForce = slipForce0(slipModel, slipState);
+
+                // TODO: Convert legForce to motor current.
             }
         }
         // Flight phase
         else {
             co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
 
+            // End of flight phase
             if (dcCounter >= 1000/guiIn.dc_freq) {
                 dcCounter = 0;
             }
@@ -172,6 +193,13 @@ void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
 }
 
 bool ATCMotorTorque::configureHook() {
+    // ASCSlipModel Service
+    ascSlipModel0 = this->getPeer(ascSlipModel0Name);
+    if (ascSlipModel0) {
+        slipAdvance0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+        slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+    }
+
     log(Info) << "[ATCMT] configured!" << endlog();
     return true;
 }

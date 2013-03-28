@@ -1,3 +1,6 @@
+# ASCSlipModel
+unloadComponent(controller.ascSlipModel0Name)
+
 # Shut stuff down
 controller.stop();
 controller.cleanup();
