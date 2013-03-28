@@ -39,9 +39,7 @@ Gtk::SpinButton *dc_oscillate_frequency_spinbutton,
         *dc_spring_stiffness_spinbutton,
         *dc_hop_height_spinbutton,
         *ip_spinbutton,
-        *ic_spinbutton,
-        *tp_spinbutton,
-        *tc_spinbutton;
+        *ic_spinbutton;
 
 Gtk::ToggleButton *dc_test_togglebutton,
         *cur_lim_togglebutton;

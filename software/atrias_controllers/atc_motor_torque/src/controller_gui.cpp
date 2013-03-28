@@ -21,8 +21,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("dc_controller_combobox",  dc_controller_combobox);
     gui->get_widget("ip_spinbutton",           ip_spinbutton);
     gui->get_widget("ic_spinbutton",           ic_spinbutton);
-    gui->get_widget("tp_spinbutton",           tp_spinbutton);
-    gui->get_widget("tc_spinbutton",           tc_spinbutton);
     gui->get_widget("dc_signal_frequency_spinbutton", dc_signal_frequency_spinbutton);
     gui->get_widget("dc_signal_duty_cycle_spinbutton", dc_signal_duty_cycle_spinbutton);
     gui->get_widget("dc_spring_stiffness_spinbutton", dc_spring_stiffness_spinbutton);
@@ -35,7 +33,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dc_oscillate_frequency_spinbutton &&
         dc_oscillate_enable_checkbutton &&
         dc_controller_combobox &&
-        ip_spinbutton && ic_spinbutton && tp_spinbutton && tc_spinbutton &&
+        ip_spinbutton && ic_spinbutton &&
         dc_signal_frequency_spinbutton &&
         dc_signal_duty_cycle_spinbutton &&
         dc_spring_stiffness_spinbutton &&
@@ -50,8 +48,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         dc_oscillate_frequency_spinbutton->set_range(0.0, 10.0);
         ip_spinbutton->set_range(0.0, 120.0);
         ic_spinbutton->set_range(0.0, 120.0);
-        tp_spinbutton->set_range(0.0, 10.0);
-        tc_spinbutton->set_range(0.0, 20.0);
         dc_signal_frequency_spinbutton->set_range(0.0, 10.0);
         dc_signal_duty_cycle_spinbutton->set_range(0.0, 1.0);
         dc_spring_stiffness_spinbutton->set_range(0.0, 100.0);
@@ -118,8 +114,6 @@ void guiUpdate() {
 
     controllerDataOut.dc_ip = ip_spinbutton->get_value();
     controllerDataOut.dc_ic = ic_spinbutton->get_value();
-    controllerDataOut.dc_tp = tp_spinbutton->get_value();
-    controllerDataOut.dc_tc = tc_spinbutton->get_value();
 
     controllerDataOut.dutyCycleTest = dc_test_togglebutton->get_active();
     controllerDataOut.limitCurrent = cur_lim_togglebutton->get_active();
