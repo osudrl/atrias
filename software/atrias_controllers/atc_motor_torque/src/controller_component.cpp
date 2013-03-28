@@ -85,7 +85,12 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState = slipAdvance0(slipModel, slipState);
                 LegForce legForce = slipForce0(slipModel, slipState);
 
-                // TODO: Convert legForce to motor current.
+                // Compute required joint torque using Jacobian.
+                double legAngle = slipState.q - acos(slipState.r);
+                double tauSpring = -legForce.fx * l2 * cos(legAngle + bodyPitch) + legForce.fz * l2 * sin(legAngle + bodyPitch);
+
+                // Motor current
+                co.rLeg.motorCurrentA = tauSpringA/kg/kt;
             }
         }
         // Flight phase

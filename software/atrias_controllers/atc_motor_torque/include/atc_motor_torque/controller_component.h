@@ -35,6 +35,13 @@ const double AMC_FOLDBACK_TIME = 10.0;   // In seconds
 const double COUNTER_MAX = (AMC_IC + (AMC_IP-AMC_IC) * (AMC_PEAK_TIME+AMC_FOLDBACK_TIME) / AMC_FOLDBACK_TIME);   // In amps
 const double M_FB = (COUNTER_MAX-AMC_IC) / (AMC_PEAK_TIME+AMC_FOLDBACK_TIME);   // Foldback slope in amps/second
 
+// ASCSlipModel
+const double l1 = 0.5;
+const double l2 = 0.5;
+const double bodyPitch = 3*M_PI/2.0;
+const double kg = 50;
+const double kt = 0.0987;
+
 using namespace RTT;
 using namespace Orocos;
 using namespace atc_motor_torque;
