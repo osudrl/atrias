@@ -51,6 +51,9 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             else if (guiIn.dc_mode == 1) {
                 co.rLeg.motorCurrentA = guiIn.dc_ip * sin(PI/guiIn.dc_dc*dcCounter/1000.0*guiIn.dc_freq);
             }
+            else if (guiIn.dc_mode == 2) {
+                co.rLeg.motorCurrentA = guiIn.des_motor_torque_right_A;   // TODO: Replace this with SLIP model controller
+            }
         }
         // Off
         else {

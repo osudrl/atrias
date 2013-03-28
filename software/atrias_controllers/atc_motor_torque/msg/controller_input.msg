@@ -10,6 +10,8 @@ bool dutyCycleTest
 uint8   dc_mode
 float64 dc_freq
 float64 dc_dc
+float64 dc_spring_stiffness
+float64 dc_hop_height
 bool    dc_oscillate
 float64 dc_oscillate_freq
 
