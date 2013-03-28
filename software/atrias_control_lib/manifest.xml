@@ -1,6 +1,6 @@
 <package>
-	<description brief="atrias_lib_control">
-		atrias_lib_control
+	<description brief="atrias_control_lib">
+		atrias_control_lib
 	</description>
 	<author>Ryan Van Why</author>
 	<license>BSD</license>

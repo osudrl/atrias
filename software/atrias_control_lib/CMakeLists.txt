@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(atrias_lib_control)
+project(atrias_control_lib)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
@@ -15,6 +15,6 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 # C++11 support
 add_definitions(-std=c++0x)
 
-orocos_library(LibControl src/AtriasController.cpp src/ATC.cpp)
+orocos_library(ControlLib src/AtriasController.cpp src/ATC.cpp)
 
 orocos_generate_package()

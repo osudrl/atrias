@@ -36,7 +36,7 @@ class AtriasController {
 		  * @return The name of this controller.
 		  * This name includes the full hierarchy, not just the name passed in.
 		  */
-		std::string getName() const;
+		const std::string& getName() const;
 
 	private:
 		/**
@@ -49,7 +49,7 @@ class AtriasController {
 		std::string name;
 
 		// A reference to the top-level controller
-		RTT::TaskContext &tlc;
+		RTT::TaskContext &tc;
 };
 
 }
