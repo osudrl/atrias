@@ -85,11 +85,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState = slipAdvance0(slipModel, slipState);
                 LegForce legForce = slipForce0(slipModel, slipState);
 
-                if (dcFlightEndTime == 0) {
-                    dcFlightEndTime = dcCounter + sqrt(2.8*guiIn.dc_hop_height/9.81);
-                }
-
-                // Compute required joint torque using Jacobian.
+               // Compute required joint torque using Jacobian.
                 double legAngle = slipState.q - acos(slipState.r);
                 double tauSpring = -legForce.fx * l2 * cos(legAngle + bodyPitch) + legForce.fz * l2 * sin(legAngle + bodyPitch);
 
@@ -108,6 +104,10 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 }
             }
             else if (guiIn.dc_mode == 2) {
+                if (dcFlightEndTime == 0) {
+                    dcFlightEndTime = dcCounter + 1000*sqrt(2.8*guiIn.dc_hop_height/9.81);
+                }
+
                 if (dcCounter >= dcFlightEndTime) {
                     dcCounter = 0;
                     dcFlightEndTime = 0;
