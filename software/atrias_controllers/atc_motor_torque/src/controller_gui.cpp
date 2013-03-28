@@ -45,12 +45,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torque_right_A_hscale->set_range(-120, 120);
         torque_right_B_hscale->set_range(-30, 30);
         torque_right_hip_hscale->set_range(-30, 30);
-        dc_oscillate_frequency_spinbutton->set_range(0.0, 10.0);
+        dc_oscillate_frequency_spinbutton->set_range(0.0, 20.0);
         ip_spinbutton->set_range(0.0, 120.0);
         ic_spinbutton->set_range(0.0, 120.0);
         dc_signal_frequency_spinbutton->set_range(0.0, 10.0);
         dc_signal_duty_cycle_spinbutton->set_range(0.0, 1.0);
-        dc_spring_stiffness_spinbutton->set_range(0.0, 5000.0);
+        dc_spring_stiffness_spinbutton->set_range(0.0, 6000.0);
         dc_hop_height_spinbutton->set_range(0.0, 0.5);
 
         // Set up subscriber and publisher.
