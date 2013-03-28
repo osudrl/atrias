@@ -90,7 +90,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 double tauSpring = -legForce.fx * l2 * cos(legAngle + bodyPitch) + legForce.fz * l2 * sin(legAngle + bodyPitch);
 
                 // Motor current
-                co.rLeg.motorCurrentA = tauSpringA/kg/kt;
+                co.rLeg.motorCurrentA = tauSpring/kg/kt;
             }
         }
         // Flight phase
