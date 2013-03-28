@@ -41,8 +41,21 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This might get moved to a separate test controller.
     if (guiIn.dutyCycleTest) {
-        // On
-        if (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) {
+        // Are we in stance phase?
+        if (guiIn.dc_mode == 0 || guiIn.dc_mode == 1) {
+            // Use frequency and duty cycle inputs to determine phase.
+            dcInStance = (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) ? true : false;
+        }
+        else if (guiIn.dc_mode == 2) {
+            // Use slipState struct to determine phase.
+            dcInStance = !slipState.isFlight;
+        }
+        else {
+            dcInStance = false;
+        }
+
+        // Stance phase
+        if (dcInStance) {
             // Square wave
             if (guiIn.dc_mode == 0) {
                 co.rLeg.motorCurrentA = guiIn.dc_ip;   // Apply peak current.
@@ -55,7 +68,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 co.rLeg.motorCurrentA = guiIn.des_motor_torque_right_A;   // TODO: Replace this with SLIP model controller
             }
         }
-        // Off
+        // Flight phase
         else {
             co.rLeg.motorCurrentA = guiIn.dc_ic;   // Apply continuous current.
 
