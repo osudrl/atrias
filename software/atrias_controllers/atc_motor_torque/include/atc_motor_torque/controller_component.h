@@ -69,6 +69,7 @@ private:
 
     // Duty cycle tester variables
     uint32_t dcCounter;
+    uint32_t dcStanceEndTime;
     bool dcInStance;
 
     // Current limiter variables
