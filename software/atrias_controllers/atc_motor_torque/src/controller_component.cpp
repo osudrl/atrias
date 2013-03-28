@@ -202,7 +202,7 @@ bool ATCMotorTorque::configureHook() {
     ascSlipModel0 = this->getPeer(ascSlipModel0Name);
     if (ascSlipModel0) {
         slipAdvance0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
-        slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+        slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipForce");
     }
 
     log(Info) << "[ATCMT] configured!" << endlog();
