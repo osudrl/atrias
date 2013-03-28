@@ -83,7 +83,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
             }
             else if (guiIn.dc_mode == 2) {
                 slipState = slipAdvance0(slipModel, slipState);
-                legForce = slipForce0(slipModel, slipState);
+                LegForce legForce = slipForce0(slipModel, slipState);
 
                 // TODO: Convert legForce to motor current.
             }
