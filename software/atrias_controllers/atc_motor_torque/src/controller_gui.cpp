@@ -50,7 +50,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         ic_spinbutton->set_range(0.0, 120.0);
         dc_signal_frequency_spinbutton->set_range(0.0, 10.0);
         dc_signal_duty_cycle_spinbutton->set_range(0.0, 1.0);
-        dc_spring_stiffness_spinbutton->set_range(0.0, 100.0);
+        dc_spring_stiffness_spinbutton->set_range(0.0, 5000.0);
         dc_hop_height_spinbutton->set_range(0.0, 0.5);
 
         // Set up subscriber and publisher.
