@@ -1,0 +1,18 @@
+<package>
+	<description brief="atrias_lib_control">
+		atrias_lib_control
+	</description>
+	<author>Ryan Van Why</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://code.google.com/p/atrias/</url>
+	<!-- This package uses C++11, and other packages including this
+	     need to also. -->
+	<export>
+		<cpp cflags="-std=c++0x -I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" />
+	</export>
+     <depend package="rtt"/>
+     <depend package="atrias_msgs"/>
+</package>
+
+<!-- vim: set noexpandtab: -->
