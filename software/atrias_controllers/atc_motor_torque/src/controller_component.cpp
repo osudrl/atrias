@@ -18,10 +18,9 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
 
     // ASCSlipModel
     this->addProperty("ascSlipModel0Name", ascSlipModel0Name);
+    slipState.isFlight = false;
 
     addEventPort(guiDataIn);
-
-    slipState.isFlight = false;
 
     dcCounter = 0;
 
@@ -46,14 +45,14 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
 
     // Duty cycle test. This might get moved to a separate test controller.
     if (guiIn.dutyCycleTest) {
-        // Are we in stance phase?
+        // Determine phase
         if (guiIn.dc_mode == 0 || guiIn.dc_mode == 1) {
             // Use frequency and duty cycle inputs to determine phase.
             dcInStance = (dcCounter < 1000/guiIn.dc_freq * guiIn.dc_dc) ? true : false;
         }
         else if (guiIn.dc_mode == 2) {
             // Reset slipModel and slipState if at beginning of cycle.
-            if (dcCounter == 1) {   // TODO: This is a hack. Should be 0.
+            if (dcCounter == 0) {
                 slipModel.g = -9.81;
                 slipModel.k = guiIn.dc_spring_stiffness;
                 slipModel.m = 607.5/9.81;
@@ -62,7 +61,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 slipState.dr = -sqrt(2.8*9.81*guiIn.dc_hop_height);
                 slipState.q = M_PI/2.0;
                 slipState.dq = 0.0;
-		    slipState.isFlight = false;
+                slipState.isFlight = false;
             }
 
             // Use slipState struct to determine phase.
@@ -110,7 +109,7 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
                 }
 
                 if (dcCounter >= dcFlightEndTime) {
-                    dcCounter = 0;
+                    dcCounter = -1;   // This will be incremented shortly.
                     dcFlightEndTime = 0;
                 }
             }
