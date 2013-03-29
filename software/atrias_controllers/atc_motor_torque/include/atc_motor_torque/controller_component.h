@@ -25,6 +25,7 @@
 #include <atrias_msgs/robot_state.h>
 #include <atrias_msgs/controller_output.h>
 #include <atc_motor_torque/controller_input.h>
+#include <atc_motor_torque/controller_log_data.h>
 #include <asc_slip_model/controller_component.h>
 
 const double AMC_IP = 60.0;   // In amps
@@ -55,8 +56,10 @@ private:
     atrias_msgs::controller_output   co;
 
     controller_input                 guiIn;
+    atc_motor_torque::controller_log_data              logData;
 
     InputPort<controller_input>      guiDataIn;
+    OutputPort<atc_motor_torque::controller_log_data>  logPort;
 
     // ASCSlipModel
     std::string ascSlipModel0Name;

@@ -10,7 +10,8 @@ namespace controller {
 
 ATCMotorTorque::ATCMotorTorque(std::string name):
     RTT::TaskContext(name),
-    guiDataIn("gui_data_in")
+    guiDataIn("gui_data_in"),
+    logPort(name + "_log")
 {
     this->provides("atc")
         ->addOperation("runController", &ATCMotorTorque::runController, this, ClientThread)
@@ -21,6 +22,18 @@ ATCMotorTorque::ATCMotorTorque(std::string name):
     slipState.isFlight = false;
 
     addEventPort(guiDataIn);
+
+    // Logging
+    // Create a port
+    addPort(logPort);
+    // Buffer port so we capture all data.
+    ConnPolicy policy = RTT::ConnPolicy::buffer(100000);
+    // Transport type = ROS
+    policy.transport = 3;
+    // ROS topic name
+    policy.name_id = "/" + name + "_log";
+    // Construct the stream between the port and ROS topic
+    logPort.createStream(policy);
 
     dcCounter = 0;
 
@@ -146,6 +159,10 @@ atrias_msgs::controller_output ATCMotorTorque::runController(atrias_msgs::robot_
     if (n == 0) {
         log(Info) << "[ATCMT] fbC: " << fbCounter << "  curC: " << curCounter << "  cur lim: " << curLimit << endlog();
     }
+
+    // Stuff the msg and push to ROS for logging
+    logData.curLimitEst = curLimit;
+    logPort.write(logData);
 
     // Output for RTOps
     return co;
