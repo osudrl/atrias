@@ -35,7 +35,7 @@ class ASCRateLimit : public AtriasController {
 		  * @param parent The instantiating, "parent" controller.
 		  * @param name   The name for this controller (such as "rateLimLA")
 		  */
-		ASCRateLimit(AtriasController &parent, string name);
+		ASCRateLimit(AtriasController *parent, string name);
 
 		/**
 		  * @brief The main function for this controller.
@@ -67,7 +67,7 @@ class ASCRateLimit : public AtriasController {
 		  * @brief This is our logging port.
 		  * You may have as many of these as you'd like of various types.
 		  */
-		LogPort<controller_log_data> log_out;
+		LogPort<asc_rate_limit::controller_log_data> log_out;
 };
 
 // End namespaces

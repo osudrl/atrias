@@ -6,7 +6,19 @@ namespace controller {
 
 // This constructor call is much simpler.
 ATCMP::ATCMP(string name) :
-	ATC(name)
+	ATC(name),
+	pdLA(this, "pdLA"),
+	pdLB(this, "pdLB"),
+	pdLH(this, "pdLHip"),
+	pdRA(this, "pdRA"),
+	pdRB(this, "pdRB"),
+	pdRH(this, "pdRHip"),
+	rateLimLA(this, "rateLimLA"),
+	rateLimLB(this, "rateLimLB"),
+	rateLimLH(this, "rateLimLHip"),
+	rateLimRA(this, "rateLimRA"),
+	rateLimRB(this, "rateLimRB"),
+	rateLimRH(this, "rateLimRHip")
 {
 	// We don't need to do much here, just call the ATC() constructor above.
 }
@@ -22,12 +34,12 @@ void ATCMP::controller() {
 	 * controller_log_data. guiIn, similarly, is of type
 	 * gui_to_controller
 	 */
-	logOut.lATgt = rateLimLA(guiIn.des_motor_ang_left_A,    1.0);
-	logOut.lBTgt = rateLimLB(guiIn.des_motor_ang_left_B,    1.0);
-	logOut.lHTgt = rateLimLH(guiIn.des_motor_ang_left_hip,  1.0);
-	logOut.rATgt = rateLimRA(guiIn.des_motor_ang_right_A,   1.0);
-	logOut.rBTgt = rateLimRB(guiIn.des_motor_ang_right_B,   1.0);
-	logOut.rHTgt = rateLimRH(guiIn.des_motor_ang_right_hip, 1.0);
+	logOut.lATgt = rateLimLA(guiIn.des_motor_ang_left_A,    rate);
+	logOut.lBTgt = rateLimLB(guiIn.des_motor_ang_left_B,    rate);
+	logOut.lHTgt = rateLimLH(guiIn.des_motor_ang_left_hip,  rate);
+	logOut.rATgt = rateLimRA(guiIn.des_motor_ang_right_A,   rate);
+	logOut.rBTgt = rateLimRB(guiIn.des_motor_ang_right_B,   rate);
+	logOut.rHTgt = rateLimRH(guiIn.des_motor_ang_right_hip, rate);
 
 	// Set gains
 	// Legs
@@ -70,7 +82,7 @@ void ATCMP::controller() {
 }
 
 // We need to make top-level controllers components
-ORO_CREATE_COMPONENT(ATCMP);
+ORO_CREATE_COMPONENT(ATCMP)
 
 }
 }

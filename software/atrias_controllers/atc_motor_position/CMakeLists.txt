@@ -43,7 +43,8 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(motor_position_controller src/controller_component.cpp)
+	orocos_component(ATCMP src/ATCMP.cpp)
+#	target_link_libraries(ATCMP ASCPD-${OROCOS_TARGET})
+	target_link_libraries(ATCMP ASCPD-${OROCOS_TARGET} ControlLib-${OROCOS_TARGET})
 	ros_generate_rtt_typekit(atc_motor_position)
 endif(ATRIAS_BUILD_CONTROLLERS)
-

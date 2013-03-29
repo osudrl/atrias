@@ -6,9 +6,9 @@
 	<license>BSD</license>
 	<review status="unreviewed" notes=""/>
 	<url>http://ros.org/wiki/atc_motor_position</url>
-	<depend package="roscpp"/>
 	<depend package="atrias_shared"/>
 	<depend package="atrias_msgs"/>
+	<depend package="atrias_control_lib"/>
 	<depend package="asc_pd" />
 	<depend package="asc_rate_limit" />
 </package>

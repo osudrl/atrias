@@ -14,6 +14,10 @@
 // Orocos includes
 #include <rtt/TaskContext.hpp> // We're a component aka TaskContext
 
+// Robot state and controller output
+#include <atrias_msgs/controller_output.h>
+#include <atrias_msgs/robot_state.h>
+
 // We subclass this, so let's include it
 #include "atrias_control_lib/AtriasController.hpp"
 
@@ -33,14 +37,25 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * The name should be passed directly -- it's not the controller's
 		  * choice.
 		  */
-		ATC(const std::string &name);
+		ATC(const std::string &name) :
+			RTT::TaskContext(name),
+			AtriasController(name)
+		{
+			// The magic is done above
+		}
 
 	protected:
 		// These member variables should be set/read from by
 		// the controllers themselves.
-		logType    logData;
+		logType    logOut;
 		guiInType  guiIn;
 		guiOutType guiOut;
+
+		// Here is the robot state
+		atrias_msgs::robot_state rs;
+
+		// And the controller output
+		atrias_msgs::controller_output co;
 
 	private:
 		/**
@@ -53,7 +68,9 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @brief This allows subcontrollers to access the TaskContext
 		  * @return A reference to the TaskContext.
 		  */
-		RTT::TaskContext& getTaskContext() const;
+		RTT::TaskContext& getTaskContext() const {
+			return *((RTT::TaskContext*) this);
+		}
 };
 
 }

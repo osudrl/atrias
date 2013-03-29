@@ -1,10 +1,6 @@
-# For loading subcontroller scripts
-require("scripting")
-require("print")
-
 # Set up the top controller
 import("atc_motor_position")
-loadComponent("controller", "ATCMotorPosition")
+loadComponent("controller", "ATCMP")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")

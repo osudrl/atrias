@@ -3,10 +3,10 @@
 namespace atrias {
 namespace controller {
 
-AtriasController::AtriasController(const AtriasController &parent,
-                                   const std::string      &name) :
-	name(std::string(parent.getName()) + "_" + name),
-	tlc(parent.getTLC())
+AtriasController::AtriasController(const AtriasController * const parent,
+                                   const std::string              &name) :
+	name(std::string(parent->getName()) + "_" + name),
+	tlc(parent->getTLC())
 {
 	// All the magic happens above.
 }

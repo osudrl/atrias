@@ -31,7 +31,7 @@ class ASCPD : public AtriasController {
 		  * @param parent The instantiating, "parent" controller.
 		  * @param name   The name for this controller (such as "pdLeftA")
 		  */
-		ASCPD(AtriasController &parent, string name);
+		ASCPD(AtriasController *parent, string name);
 
 		/**
 		  * @brief The main function for this controller.

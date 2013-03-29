@@ -10,7 +10,7 @@ namespace controller {
  * is the name for this log port, which controls how it appears in the
  * bagfiles.
  */
-ASCRateLimit::ASCRateLimit(AtriasController &parent, string name) :
+ASCRateLimit::ASCRateLimit(AtriasController *parent, string name) :
 	AtriasController(parent, name),
 	log_out(this, "log")
 {

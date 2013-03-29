@@ -28,7 +28,7 @@ class AtriasController {
 		  * @param name   This controller's name.
 		  * This is the constructor that subcontrollers should use.
 		  */
-		AtriasController(const AtriasController &parent, const std::string &name);
+		AtriasController(const AtriasController * const parent, const std::string &name);
 
 		/**
 		  * @brief The ATC constructor for this class.
