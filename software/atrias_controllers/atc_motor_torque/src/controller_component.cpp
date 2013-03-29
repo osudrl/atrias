@@ -209,7 +209,7 @@ void ATCMotorTorque::estimateCurrentLimit(atrias_msgs::robot_state rs)
     else {
         // Increment counter based on target current.
         if (curCounter < COUNTER_MAX) {
-            curCounter += M_FB * (AMC_IC-curTarget) / (AMC_IP-AMC_IC) / 2 / 1000;
+            curCounter += M_FB * (AMC_IC-ABS(curTarget)) / (AMC_IP-AMC_IC) / 2 / 1000;
         }
         else {
             curCounter = COUNTER_MAX;
