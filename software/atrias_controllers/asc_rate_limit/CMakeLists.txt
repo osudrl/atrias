@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(asc_pd)
+project(asc_rate_limit)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
@@ -22,13 +22,9 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	# Build old-style controller for backwards compatibility
-	orocos_component(pd_controller src/controller_component.cpp)
-
-	# ... and the new-style controller
-	orocos_library(ASCPD src/ASCPD.cpp)
-	target_link_libraries(ASCPD ControlLib-${OROCOS_TARGET})
+	orocos_library(ASCRateLimit src/ASCRateLimit.cpp)
+	target_link_libraries(ASCRateLimit ControlLib-${OROCOS_TARGET})
 
 	# Build typekits
-	ros_generate_rtt_typekit(asc_pd)
+	ros_generate_rtt_typekit(asc_rate_limit)
 endif(ATRIAS_BUILD_CONTROLLERS)

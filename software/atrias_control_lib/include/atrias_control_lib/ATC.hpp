@@ -15,7 +15,7 @@
 #include <rtt/TaskContext.hpp> // We're a component aka TaskContext
 
 // We subclass this, so let's include it
-#include "atrias_lib_control/AtriasController.hpp"
+#include "atrias_control_lib/AtriasController.hpp"
 
 // Our namespaces
 namespace atrias {
@@ -25,7 +25,7 @@ namespace controller {
 // as a controller, this subclasses AtriasController
 // Also, we're a template...
 template <typename logType, typename guiInType, typename guiOutType>
-class ATC : public AtriasController, public RTT::TaskContext {
+class ATC : public RTT::TaskContext, public AtriasController {
 	public:
 		/**
 		  * @brief The constructor for this class.
@@ -47,7 +47,13 @@ class ATC : public AtriasController, public RTT::TaskContext {
 		  * @brief This is the actual controller function.
 		  * This should be overloaded by the actual controller.
 		  */
-		void controller();
+		virtual void controller() = 0;
+
+		/**
+		  * @brief This allows subcontrollers to access the TaskContext
+		  * @return A reference to the TaskContext.
+		  */
+		RTT::TaskContext& getTaskContext() const;
 };
 
 }

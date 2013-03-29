@@ -1,14 +1,21 @@
-#include "atrias_lib_control/AtriasController.hpp"
+#include "atrias_control_lib/AtriasController.hpp"
 
 namespace atrias {
 namespace controller {
 
 AtriasController::AtriasController(const AtriasController &parent,
                                    const std::string      &name) :
-	name(std::string(parent.getName()).append(name)),
-	tc(parent.getTaskContext())
+	name(std::string(parent.getName()) + "_" + name),
+	tlc(parent.getTLC())
 {
 	// All the magic happens above.
+}
+
+AtriasController::AtriasController(const std::string &name) :
+	name(name),
+	tlc(*this)
+{
+	// This space intentionally left blank
 }
 
 const std::string& AtriasController::getName() const {
@@ -16,7 +23,13 @@ const std::string& AtriasController::getName() const {
 }
 
 RTT::TaskContext& AtriasController::getTaskContext() const {
-	return this->tc;
+	// The ATC class overrides this function, so this is not actually
+	// recursive.
+	return tlc.getTaskContext();
+}
+
+AtriasController& AtriasController::getTLC() const {
+	return this->tlc;
 }
 
 }

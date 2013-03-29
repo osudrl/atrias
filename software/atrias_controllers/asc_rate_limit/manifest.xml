@@ -1,13 +1,11 @@
 <package>
-	<description brief="asc_pd">
-		asc_pd
+	<description brief="asc_rate_limit">
+		asc_rate_limit
 	</description>
-	<author>drl</author>
+	<author>Ryan Van Why</author>
 	<license>BSD</license>
 	<review status="unreviewed" notes=""/>
-	<url>http://ros.org/wiki/asc_pd</url>
-	<depend package="roscpp"/>
+	<url>http://code.google.com/p/atrias/</url>
 	<depend package="atrias_shared"/>
-	<depend package="atrias_msgs"/>
 	<depend package="atrias_control_lib"/>
 </package>
