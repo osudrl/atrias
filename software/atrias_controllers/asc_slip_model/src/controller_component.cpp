@@ -29,7 +29,7 @@
 // ascSlipModel0 = this->getPeer(ascSlipModel0Name);
 // if (ascSlipModel0) {
 // 	slipAdvance0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
-// 	slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipAdvance");
+// 	slipForce0 = ascSlipModel0->provides("ascSlipModel")->getOperation("slipForce");
 // }
 
 // component_controller.h
@@ -57,6 +57,7 @@
 // legForce = slipForce0(slipModel, slipState);
 
 // TODO - Add error catch incase structs are empty.
+// TODO - Add backup RK4 approximation
 
 
 #include <asc_slip_model/controller_component.h>
@@ -65,7 +66,7 @@ namespace atrias {
 namespace controller {
 
 
-//ASCSlipModel =================================================================
+// ASCSlipModel ================================================================
 ASCSlipModel::ASCSlipModel(std::string name):
 	RTT::TaskContext(name),
 	logPort(name + "_log") {
@@ -77,6 +78,7 @@ ASCSlipModel::ASCSlipModel(std::string name):
     
     
     // Variables ---------------------------------------------------------------
+    
     
     
     // Logging -----------------------------------------------------------------
@@ -97,32 +99,30 @@ ASCSlipModel::ASCSlipModel(std::string name):
 // slipAdvance =================================================================
 SlipState ASCSlipModel::slipAdvance(SlipModel slipModel, SlipState slipState) {
 
-    // Unpack parameters -------------------------------------------------------
-    r = slipState.r;
-    dr = slipState.dr;
-    q = slipState.q;
-    dq = slipState.dq;
-    k = slipModel.k;
-    g = slipModel.g;
-    r0 = slipModel.r0;
-    m = slipModel.m;
+	// Unpack parameters -------------------------------------------------------
+	r = slipState.r;
+	dr = slipState.dr;
+	q = slipState.q;
+	dq = slipState.dq;
+	k = slipModel.k;
+	r0 = slipModel.r0;
+	m = slipModel.m;
+	g = -g; // TODO - flip sign in RK5 equations
 
 	// Check phase -------------------------------------------------------------
 	if (r > r0) {
 		// Do nothing because we are not in stance
 		slipState.isFlight = true;
+		slipState.isStance = false;
 		
 	} else {
 		// Advance to next timestep because we are in stance
 		slipState.isFlight = false;
+		slipState.isStance = true;
 		
-		// Time step.
-		h = 0.001;
-		
-        // Compute non-linear ATRIAS leg length stiffness
-        l1 = 0.5;
-        l2 = 0.5;
-        k = k*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
+		// TODO - Use ASCCommonToolkit::legStiffness
+		// Compute non-linear ATRIAS leg length stiffness
+		k = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
 		
 		// Runges's 5th order Runge-Kutta numerical method
 		slipState.r = r + dr*h*(2.3E1/1.92E2) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(1.25E2/1.92E2) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/4.0) - h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*3.0 + h*(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0)) + (r + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(4.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0) + dr*h*(1.0/4.0) - h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*3.0)*pow(dq + (h*(g*cos(q + dq*h*(4.0/2.5E1) + h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)) - (dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(8.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))*(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r))*(1.5E1/4.0))/(r + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1)) - (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*3.0)/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(1.0/4.0))/r, 2) - (k*(r - r0 + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(4.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0) + dr*h*(1.0/4.0) - h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*3.0))/m)*(8.0/7.5E1) + h*(g*sin(q + dq*h*(4.0/2.5E1) + h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)) + (r + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r, 2) - (k*(r - r0 + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(2.0/1.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))*(1.25E2/1.92E2) - h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/2.7E1) + h*(g*sin(q + dq*h*(1.0/4.0) - h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*3.0 + h*(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0)) + (r + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(4.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0) + dr*h*(1.0/4.0) - h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*3.0)*pow(dq + (h*(g*cos(q + dq*h*(4.0/2.5E1) + h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)) - (dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(8.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))*(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r))*(1.5E1/4.0))/(r + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1)) - (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*3.0)/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(1.0/4.0))/r, 2) - (k*(r - r0 + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(4.0/2.5E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0) + dr*h*(1.0/4.0) - h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*3.0))/m)*(8.0/8.1E1) - h*(g*sin(q + dq*h*(4.0/2.5E1) + h*(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)) + (r + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(dq + (h*(g*cos(q + dq*h*(1.0/3.0)) - (dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r)*(dr*2.0 + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r + dr*h*(1.0/3.0)) - (h*(dq*dr*2.0 - g*cos(q))*(4.0/2.5E1))/r, 2) - (k*(r - r0 + dr*h*(4.0/2.5E1) + h*(dr + h*((dq*dq)*r + g*sin(q) - (k*(r - r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(5.0E1/8.1E1) + h*(g*sin(q + dq*h*(1.0/3.0)) + pow(dq - (h*(dq*dr*2.0 - g*cos(q))*(1.0/3.0))/r, 2)*(r + dr*h*(1.0/3.0)) - (k*(r - r0 + dr*h*(1.0/3.0)))/m)*(1.0E1/9.0))*(2.7E1/6.4E1);
@@ -142,11 +142,11 @@ SlipState ASCSlipModel::slipAdvance(SlipModel slipModel, SlipState slipState) {
 	}
 
     // Stuff the msg and push to ROS for logging -------------------------------
+    logData.header = getROSHeader();
     logData.r = slipState.r;
     logData.dr = slipState.dr;
     logData.q = slipState.q;
     logData.dq = slipState.dq;
-    logData.k = k;
     logPort.write(logData);
 
     return slipState;
@@ -174,11 +174,10 @@ LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipState slipState) {
 
 	// If virtual SLIP model is in NOT in flight (is in stance)
 	} else {	
-        // Compute non-linear ATRIAS leg length stiffness.
-        l1 = 0.5;
-        l2 = 0.5;
-        k = k*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
-	
+		// TODO - Use ASCCommonToolkit::legStiffness
+		// Compute non-linear ATRIAS leg length stiffness 
+		k = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
+
 		// Define component forces.
 		legForce.fx = k*(r - r0)*cos(q);
 		legForce.fz = k*(r - r0)*sin(q);
@@ -187,11 +186,11 @@ LegForce ASCSlipModel::slipForce(SlipModel slipModel, SlipState slipState) {
 	}
 
     // Stuff the msg and push to ROS for logging -------------------------------
+    logData.header = getROSHeader();
     logData.fx = legForce.fx;
     logData.fz = legForce.fz;
     logData.dfx = legForce.dfx;
     logData.dfz = legForce.dfz;
-    logData.k = k;
     logPort.write(logData);
     
 	return legForce;
@@ -211,6 +210,7 @@ bool ASCSlipModel::configureHook() {
     
     log(Info) << "[ASCSlipModel] configured!" << endlog();
     return true;
+    
 } // configure Hook
 
 
@@ -218,23 +218,27 @@ bool ASCSlipModel::configureHook() {
 bool ASCSlipModel::startHook() {
     log(Info) << "[ASCSlipModel] started!" << endlog();
     return true;
+    
 } // startHook
 
 
 // updateHook ==================================================================
 void ASCSlipModel::updateHook() {
+
 } // updateHook
 
 
 // stopHook ====================================================================
 void ASCSlipModel::stopHook() {
     log(Info) << "[ASCSlipModel] stopped!" << endlog();
+    
 } // stopHook
 
 
 // cleanupHook =================================================================
 void ASCSlipModel::cleanupHook() {
     log(Info) << "[ASCSlipModel] cleaned up!" << endlog();
+    
 } // cleanupHook
 
 
