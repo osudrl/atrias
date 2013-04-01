@@ -14,6 +14,7 @@
 // Orocos includes
 #include <rtt/InputPort.hpp>   // So we can receive data.
 #include <rtt/TaskContext.hpp> // We're a component aka TaskContext
+#include <rtt/Component.hpp>   // We need this too since we're a component.
 
 // Robot state and controller output
 #include <atrias_msgs/controller_output.h>
@@ -24,6 +25,8 @@
 
 // For the medulla state enum
 #include <../../robot_definitions/robot_invariant_defs.h>
+// And to check RT Ops's state
+#include <atrias_shared/globals.h>
 
 // We subclass this, so let's include it
 #include "atrias_control_lib/AtriasController.hpp"
@@ -47,6 +50,12 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		ATC(const std::string &name);
 
 	protected:
+		/**
+		  * @brief Returns whether or not the robot is enabled.
+		  * @return True if the robot is enabled, false otherwise.
+		  */
+		bool isEnabled() const;
+
 		// These member variables should be set/read from by
 		// the controllers themselves.
 		logType    logOut;
@@ -100,8 +109,31 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		.doc("Run the controller. Takes in the robot state and returns a controller output.");
 
 	// Set up the event port for incoming GUI data (if there is incoming GUI data)
-	if (atrias::shared::notNullPtr<guiInType>())
-		this->addEventPort("Gui Input", guiInPort, boost::bind(&ATC<logType, guiInType, guiOutType>::guiInCallback, this, _1));
+	if (atrias::shared::notNullPtr<guiInType>()) {
+		log(RTT::Info) << "[" << this->AtriasController::getName()
+		               << "] Setting up gui input port." << RTT::endlog();
+
+		this->addEventPort("guiInput", guiInPort, boost::bind(&ATC<logType, guiInType, guiOutType>::guiInCallback, this, _1));
+		//this->addEventPort("guiInput", guiInPort);
+
+		// We need to use a ConnPolicy to connect this port.
+		RTT::ConnPolicy policy = RTT::ConnPolicy();
+
+		// 3 signals that this is a ROS transport
+		policy.transport = 3;
+
+		// Set the name
+		policy.name_id = std::string("/") + this->AtriasController::getName() + "_input";
+		log(RTT::Info) << "[" << this->AtriasController::getName()
+		               << "] Connecting gui input to topic " << policy.name_id << RTT::endlog();
+
+		this->guiInPort.createStream(policy);
+	}
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+bool ATC<logType, guiInType, guiOutType>::isEnabled() const {
+	return (rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED;
 }
 
 template <typename logType, typename guiInType, typename guiOutType>

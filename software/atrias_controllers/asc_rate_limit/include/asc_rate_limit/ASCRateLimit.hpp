@@ -62,6 +62,13 @@ class ASCRateLimit : public AtriasController {
 		  */
 		double operator()(double tgt, double posRate, double negRate);
 
+		/**
+		  * @brief Resets the output to a specified value.
+		  * @param new_value The new output value.
+		  * @return The new value, for convenience (if desired).
+		  */
+		double reset(double new_value);
+
 	private:
 		/** 
 		  * @brief This is our logging port.

@@ -30,6 +30,18 @@ void ATCMP::controller() {
 	// The maximum rate of motion
 	double rate = 1.0;
 
+	// Reset the rate limiters if we're disabled. If not, disabling,
+	// moving the robot or the setpoints, then enabling produces
+	// a jump.
+	if (!isEnabled()) {
+		rateLimLA.reset(rs.lLeg.halfA.rotorAngle);
+		rateLimLB.reset(rs.lLeg.halfB.rotorAngle);
+		rateLimLH.reset(rs.lLeg.hip.legBodyAngle);
+		rateLimRA.reset(rs.rLeg.halfA.rotorAngle);
+		rateLimRB.reset(rs.rLeg.halfB.rotorAngle);
+		rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
+	}
+
 	/* The logOut class is an inherited member from ATC, and is of type
 	 * controller_log_data. guiIn, similarly, is of type
 	 * gui_to_controller

@@ -42,6 +42,10 @@ double ASCRateLimit::operator()(double tgt, double posRate, double negRate) {
 	return log_out.data.out;
 }
 
+double ASCRateLimit::reset(double new_value) {
+	return log_out.data.out = new_value;
+};
+
 }
 }
 
