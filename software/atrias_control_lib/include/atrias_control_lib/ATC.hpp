@@ -12,11 +12,12 @@
 #include <cstddef> // nullptr_t
 
 // Orocos includes
-#include <rtt/Component.hpp>   // We need this since we're a component.
-#include <rtt/ConnPolicy.hpp>  // Allows us to establish ROS connections.
-#include <rtt/InputPort.hpp>   // So we can receive data.
-#include <rtt/OutputPort.hpp>  // So we can send data.
-#include <rtt/TaskContext.hpp> // We're a component aka TaskContext
+#include <rtt/Component.hpp>       // We need this since we're a component.
+#include <rtt/ConnPolicy.hpp>      // Allows us to establish ROS connections.
+#include <rtt/InputPort.hpp>       // So we can receive data.
+#include <rtt/OperationCaller.hpp> // Lets us send events and call other operations
+#include <rtt/OutputPort.hpp>      // So we can send data.
+#include <rtt/TaskContext.hpp>     // We're a component aka TaskContext
 
 // Robot state and controller output
 #include <atrias_msgs/controller_output.h>
@@ -68,6 +69,16 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 	protected:
 		/**
+		  * @brief This may be used by controller to command an EStop
+		  */
+		void commandEStop();
+
+		/**
+		  * @brief This may be used by controller to command a halt
+		  */
+		void commandHalt();
+
+		/**
 		  * @brief Returns whether or not the robot is enabled.
 		  * @return True if the robot is enabled, false otherwise.
 		  */
@@ -84,6 +95,13 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 		// And the controller output
 		atrias_msgs::controller_output co;
+
+		/**
+		  * @brief This allows controllers to send an event
+		  * @param metadata The metadata for this event
+		  * This only allows transmission of CONTROLLER_CUSTOM events
+		  */
+		void sendEvent(rtOps::RtOpsEventMetadata_t metadata = 0);
 
 	private:
 		/**
@@ -122,6 +140,9 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @return           The new controller output.
 		  */
 		atrias_msgs::controller_output& runController(atrias_msgs::robot_state& robotState);
+
+		// This lets us send RT Ops events
+		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEventOp;
 };
 
 template <typename logType, typename guiInType, typename guiOutType>
@@ -134,6 +155,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	this->provides("atc")
 		->addOperation("runController", &ATC<logType, guiInType, guiOutType>::runController, this, RTT::ClientThread)
 		.doc("Run the controller. Takes in the robot state and returns a controller output.");
+
+	// Connect with the sendEvent operation
+	this->requires("atrias_rt")->addOperationCaller(this->sendEventOp);
 
 	// Set up the event port for incoming GUI data (if there is incoming GUI data)
 	if (atrias::shared::notNullPtr<guiInType>()) {
@@ -209,6 +233,20 @@ const std_msgs::Header& ATC<logType, guiInType, guiOutType>::getROSHeader() cons
 }
 
 template <typename logType, typename guiInType, typename guiOutType>
+void ATC<logType, guiInType, guiOutType>::commandEStop() {
+	this->co.command = medulla_state_error;
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+void ATC<logType, guiInType, guiOutType>::commandHalt() {
+	// Ignore the command if an EStop has already been commanded
+	if (co.command == medulla_state_error)
+		return;
+
+	this->co.command = medulla_state_halt;
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
 bool ATC<logType, guiInType, guiOutType>::isEnabled() const {
 	return (rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED;
 }
@@ -216,6 +254,11 @@ bool ATC<logType, guiInType, guiOutType>::isEnabled() const {
 template <typename logType, typename guiInType, typename guiOutType>
 RTT::TaskContext& ATC<logType, guiInType, guiOutType>::getTaskContext() const {
 	return *((RTT::TaskContext*) this);
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+void ATC<logType, guiInType, guiOutType>::sendEvent(rtOps::RtOpsEventMetadata_t metadata) {
+	this->sendEventOp(rtOps::RtOpsEvent::CONTROLLER_CUSTOM, metadata);
 }
 
 template <typename logType, typename guiInType, typename guiOutType>
@@ -227,6 +270,10 @@ template <typename logType, typename guiInType, typename guiOutType>
 atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state& robotState) {
 	// Save the robot state so the controller (and this class) can access it.
 	this->rs = robotState;
+
+	// Default to run -- this is changed if the
+	// controller commands a change
+	this->co.command = medulla_state_run;
 
 	// Run the controller
 	this->controller();
@@ -250,9 +297,6 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 		// And actually send it out
 		this->logOutPort.write(this->logOut);
 	}
-
-	// Set the command
-	this->co.command = medulla_state_run;
 
 	// Finally, return the controller output
 	return this->co;
