@@ -15,6 +15,9 @@
 // Orocos
 #include <rtt/TaskContext.hpp> // We're not a TaskContext, but we need to reference one.
 
+// ROS
+#include <std_msgs/Header.h> // So we can pass around ROS headers for logging.
+
 // Our namespaces
 namespace atrias {
 namespace controller {
@@ -65,7 +68,12 @@ class AtriasController {
 		  */
 		const std::string& getName() const;
 
-	private:
+		/**
+		  * @brief Returns a ROS header with the current timestamp.
+		  * @return A ROS header for logging purposes.
+		  */
+		virtual const std_msgs::Header& getROSHeader() const;
+
 		/**
 		  * @brief This returns the TaskContext
 		  * @return A reference to the TaskContext.
@@ -73,6 +81,7 @@ class AtriasController {
 		  */
 		virtual RTT::TaskContext& getTaskContext() const;
 
+	private:
 		/**
 		  * @brief This returns the TLC as an AtriasController
 		  * @return A reference to the top-level controller.

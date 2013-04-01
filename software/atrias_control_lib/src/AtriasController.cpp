@@ -22,6 +22,11 @@ const std::string& AtriasController::getName() const {
 	return this->name;
 }
 
+const std_msgs::Header& AtriasController::getROSHeader() const {
+	// This is overridden by the ATC class, preventing recursion.
+	return tlc.getROSHeader();
+}
+
 RTT::TaskContext& AtriasController::getTaskContext() const {
 	// The ATC class overrides this function, so this is not actually
 	// recursive.

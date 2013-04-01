@@ -12,9 +12,10 @@
 #include <cstddef> // nullptr_t
 
 // Orocos includes
+#include <rtt/Component.hpp>   // We need this since we're a component.
+#include <rtt/ConnPolicy.hpp>  // Allows us to establish ROS connections.
 #include <rtt/InputPort.hpp>   // So we can receive data.
 #include <rtt/TaskContext.hpp> // We're a component aka TaskContext
-#include <rtt/Component.hpp>   // We need this too since we're a component.
 
 // Robot state and controller output
 #include <atrias_msgs/controller_output.h>
@@ -49,6 +50,19 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  */
 		ATC(const std::string &name);
 
+		/**
+		  * @brief Returns a ROS header with the current timestamp.
+		  * @return A ROS header for logging purposes.
+		  */
+		const std_msgs::Header& getROSHeader() const;
+
+		/**
+		  * @brief This returns the TaskContext
+		  * @return A reference to the TaskContext.
+		  * This should only be overridden by the ATC class
+		  */
+		RTT::TaskContext& getTaskContext() const;
+
 	protected:
 		/**
 		  * @brief Returns whether or not the robot is enabled.
@@ -79,7 +93,7 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @brief This allows subcontrollers to access the TaskContext
 		  * @return A reference to the TaskContext.
 		  */
-		RTT::TaskContext& getTaskContext() const;
+		//RTT::TaskContext& getTaskContext() const;
 
 		// Port for input data from the GUI
 		RTT::InputPort<guiInType> guiInPort;
@@ -129,6 +143,11 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 
 		this->guiInPort.createStream(policy);
 	}
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+const std_msgs::Header& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
+	return this->rs.header;
 }
 
 template <typename logType, typename guiInType, typename guiOutType>

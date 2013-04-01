@@ -12,7 +12,7 @@ namespace controller {
  */
 ASCPD::ASCPD(AtriasController *parent, string name) :
         AtriasController(parent, name),
-        log_out(this, "log")
+        log_out(this)
 {
         // Initialize our gains to something safe.
         P = 0.0;

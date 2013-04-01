@@ -18,13 +18,13 @@ namespace shared {
   * @brief Returns true if this is not of type nullptr_t, false if it is.
   */
 template <typename T>
-bool notNullPtr() {
+inline bool notNullPtr() {
 	return true;
 }
 
 // Utilize template specialization to detect the difference
 template <>
-bool notNullPtr<std::nullptr_t>() {
+inline bool notNullPtr<std::nullptr_t>() {
 	return false;
 }
 
