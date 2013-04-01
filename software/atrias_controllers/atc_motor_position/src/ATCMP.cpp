@@ -77,6 +77,7 @@ void ATCMP::controller() {
 	 *     float64 posA
 	 *     float64 posB
 	 */
+	guiOut.isEnabled             = isEnabled();
 	guiOut.motorPositionLeftA    = rs.lLeg.halfA.rotorAngle;
 	guiOut.motorPositionLeftB    = rs.lLeg.halfB.rotorAngle;
 	guiOut.motorPositionRightA   = rs.rLeg.halfA.rotorAngle;

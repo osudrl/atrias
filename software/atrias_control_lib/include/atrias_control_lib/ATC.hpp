@@ -15,6 +15,7 @@
 #include <rtt/Component.hpp>   // We need this since we're a component.
 #include <rtt/ConnPolicy.hpp>  // Allows us to establish ROS connections.
 #include <rtt/InputPort.hpp>   // So we can receive data.
+#include <rtt/OutputPort.hpp>  // So we can send data.
 #include <rtt/TaskContext.hpp> // We're a component aka TaskContext
 
 // Robot state and controller output
@@ -28,6 +29,8 @@
 #include <../../robot_definitions/robot_invariant_defs.h>
 // And to check RT Ops's state
 #include <atrias_shared/globals.h>
+// For our publishing timer
+#include <atrias_shared/GuiPublishTimer.h>
 
 // We subclass this, so let's include it
 #include "atrias_control_lib/AtriasController.hpp"
@@ -98,10 +101,16 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		// Port for input data from the GUI
 		RTT::InputPort<guiInType> guiInPort;
 
+		// Port to send data to the GUI
+		RTT::OutputPort<guiOutType> guiOutPort;
+
 		/**
 		  * @brief This callback is executed when data is received from the GUI
 		  */
 		void guiInCallback(RTT::base::PortInterface* portInterface);
+
+		// This times our publishing to the GUI for is
+		atrias::shared::GuiPublishTimer publishTimer;
 
 		/**
 		  * @brief This is the operation called cyclically by RT Ops
@@ -115,7 +124,8 @@ class ATC : public RTT::TaskContext, public AtriasController {
 template <typename logType, typename guiInType, typename guiOutType>
 ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	RTT::TaskContext(name),
-	AtriasController(name)
+	AtriasController(name),
+	publishTimer(50) // The parameter is the transmit rate in Hz
 {
 	// Register the operation runController()
 	this->provides("atc")
@@ -125,10 +135,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	// Set up the event port for incoming GUI data (if there is incoming GUI data)
 	if (atrias::shared::notNullPtr<guiInType>()) {
 		log(RTT::Info) << "[" << this->AtriasController::getName()
-		               << "] Setting up gui input port." << RTT::endlog();
+		               << "] Setting up GUI input port." << RTT::endlog();
 
 		this->addEventPort("guiInput", guiInPort, boost::bind(&ATC<logType, guiInType, guiOutType>::guiInCallback, this, _1));
-		//this->addEventPort("guiInput", guiInPort);
 
 		// We need to use a ConnPolicy to connect this port.
 		RTT::ConnPolicy policy = RTT::ConnPolicy();
@@ -139,9 +148,32 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		// Set the name
 		policy.name_id = std::string("/") + this->AtriasController::getName() + "_input";
 		log(RTT::Info) << "[" << this->AtriasController::getName()
-		               << "] Connecting gui input to topic " << policy.name_id << RTT::endlog();
+		               << "] Connecting GUI input to topic " << policy.name_id << RTT::endlog();
 
 		this->guiInPort.createStream(policy);
+	}
+
+	// Set up the port for outgoing GUI data (it it exists)
+	if (atrias::shared::notNullPtr<guiOutType>()) {
+		log(RTT::Info) << "/" << this->AtriasController::getName()
+		               << "] Setting up GUI output port." << RTT::endlog();
+
+		this->addPort("guiOutput", guiOutPort);
+
+		// Let's connect this port to ROS
+		// No buffer necessary, since this is going to the GUI
+		RTT::ConnPolicy policy = RTT::ConnPolicy();
+
+		// 3 == ROS transport
+		policy.transport = 3;
+
+		// Set the name
+		policy.name_id = std::string("/") + this->AtriasController::getName() + "_status";
+		log(RTT::Info) << "[" << this->AtriasController::getName()
+		               << "] Connecting GUI output to topic " << policy.name_id << RTT::endlog();
+
+		// Set the port's policy
+		this->guiOutPort.createStream(policy);
 	}
 }
 
@@ -167,9 +199,27 @@ void ATC<logType, guiInType, guiOutType>::guiInCallback(RTT::base::PortInterface
 
 template <typename logType, typename guiInType, typename guiOutType>
 atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state& robotState) {
+	// Save the robot state so the controller (and this class) can access it.
 	this->rs = robotState;
+
+	// Run the controller
 	this->controller();
+
+	// Transmit the status to the GUI, if it's time.
+	if (atrias::shared::notNullPtr<guiOutType>()) {
+		if (publishTimer.readyToSend()) {
+			// Set the header (for timestamping)
+			this->guiOut.header = this->getROSHeader();
+
+			// Send the status
+			this->guiOutPort.write(this->guiOut);
+		}
+	}
+
+	// Set the command
 	this->co.command = medulla_state_run;
+
+	// Finally, return the controller output
 	return this->co;
 }
 
