@@ -99,10 +99,13 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		//RTT::TaskContext& getTaskContext() const;
 
 		// Port for input data from the GUI
-		RTT::InputPort<guiInType> guiInPort;
+		RTT::InputPort<guiInType>   guiInPort;
 
 		// Port to send data to the GUI
 		RTT::OutputPort<guiOutType> guiOutPort;
+
+		// Port for logging controller data
+		RTT::OutputPort<logType>    logOutPort;
 
 		/**
 		  * @brief This callback is executed when data is received from the GUI
@@ -125,7 +128,7 @@ template <typename logType, typename guiInType, typename guiOutType>
 ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	RTT::TaskContext(name),
 	AtriasController(name),
-	publishTimer(50) // The parameter is the transmit rate in Hz
+	publishTimer(50) // The parameter is the transmit period in ms
 {
 	// Register the operation runController()
 	this->provides("atc")
@@ -168,12 +171,35 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		policy.transport = 3;
 
 		// Set the name
-		policy.name_id = std::string("/") + this->AtriasController::getName() + "_status";
+		policy.name_id = "/" + this->AtriasController::getName() + "_status";
 		log(RTT::Info) << "[" << this->AtriasController::getName()
 		               << "] Connecting GUI output to topic " << policy.name_id << RTT::endlog();
 
 		// Set the port's policy
 		this->guiOutPort.createStream(policy);
+	}
+
+	// Initialize the logging port (if necessary)
+	if (atrias::shared::notNullPtr<logType>()) {
+		log(RTT::Info) << "/" << this->AtriasController::getName()
+		               << "] Setting up logging port." << RTT::endlog();
+		
+		this->addPort("log", logOutPort);
+
+		// Let's connect this port to ROS
+		// Buffer 10 seconds worth of data, since this is for logging
+		RTT::ConnPolicy policy = RTT::ConnPolicy::buffer(10000);
+
+		// Set the transport to ROS
+		policy.transport = 3;
+
+		// Set the topic's name
+		policy.name_id = "/" + this->AtriasController::getName() + "_log";
+		log(RTT::Info) << "[" << this->AtriasController::getName()
+		               << "] Connecting logging output to topic " << policy.name_id << RTT::endlog();
+
+		// Set the policy
+		this->logOutPort.createStream(policy);
 	}
 }
 
@@ -214,6 +240,15 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 			// Send the status
 			this->guiOutPort.write(this->guiOut);
 		}
+	}
+
+	// Send the controller's logging data
+	if (atrias::shared::notNullPtr<logType>()) {
+		// Set the header
+		this->logOut.header = this->getROSHeader();
+
+		// And actually send it out
+		this->logOutPort.write(this->logOut);
 	}
 
 	// Set the command
