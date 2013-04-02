@@ -58,8 +58,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         set_hip_motor_position_checkbutton->set_active(false);
 
         // Set up subscriber and publisher.
-        sub = nh.subscribe("atc_motor_position_status", 0, controllerCallback);
-        pub = nh.advertise<atc_motor_position::controller_input>("atc_motor_position_input", 0);
+        sub = nh.subscribe("controller_status", 0, controllerCallback);
+        pub = nh.advertise<atc_motor_position::controller_input>("controller_input", 0);
 
         return true;
     }

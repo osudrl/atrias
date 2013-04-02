@@ -54,6 +54,7 @@ void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
 
 void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
 	atrias_msgs::robot_state &rs = this->rtOpsCycle.robotState;
+	atrias_msgs::controller_output &co = this->rtOpsCycle.controllerOutput;
 
 	ld.header           = rs.header;
 
@@ -150,10 +151,10 @@ void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
 	ld.rBMotorVoltage   = rs.rLeg.halfB.motorVoltage;
 	ld.rHipMotorVoltage = rs.rLeg.hip.motorVoltage;
 
-	ld.lAMotorCurrent   = rs.lLeg.halfA.motorCurrent;
-	ld.lBMotorCurrent   = rs.lLeg.halfB.motorCurrent;
-	ld.rAMotorCurrent   = rs.rLeg.halfA.motorCurrent;
-	ld.rBMotorCurrent   = rs.rLeg.halfB.motorCurrent;
+	ld.lAMotorCurrent   = co.lLeg.motorCurrentA;
+	ld.lBMotorCurrent   = co.lLeg.motorCurrentB;
+	ld.rAMotorCurrent   = co.rLeg.motorCurrentA;
+	ld.rBMotorCurrent   = co.rLeg.motorCurrentB;
 }
 
 }

@@ -8,6 +8,7 @@
 namespace atrias {
 namespace controller {
 
+// General structures ----------------------------------------------------------
 // General AB struct
 struct AB {
     double A;
@@ -20,6 +21,8 @@ struct LeftRight {
     double right;
 };
 
+
+// Controller specific structures ----------------------------------------------
 // Used in ASCLegForce and ASCSlipModel
 struct LegForce {
 	double fx;
@@ -31,15 +34,17 @@ struct LegForce {
 // Used in ASCLegForce
 struct Gain {
 	double kp; // Proportional gain
+	double ki; // Integral gain
 	double kd; // Derivative gain
-	double ks; // Spring constant
-	double kg; // Gear ratio
-	double kt; // Torque constant
+	double ks; // Spring constant // TODO REMOVE
+	double kg; // Gear ratio // TODO REMOVE
+	double kt; // Torque constant // TODO REMOVE
 };
 
 // Used in ASCSlipModel
 struct SlipState {
 	bool isFlight;
+	bool isStance;
 	double r; // Leg length
 	double dr; // Change in leg length
 	double q; // Leg angle
@@ -52,12 +57,14 @@ struct SlipState {
 
 // Used in ASCSlipModel
 struct SlipModel {
-	double g; // Gravity
-	double k; // Rotational spring constant
+	double g; // Gravity // TODO REMOVE
+	double k; // Spring constant
 	double m; // Mass
 	double r0; // Initial leg length
 };
 
+
+// Robot state structures ------------------------------------------------------
 struct MotorAngle {
     double A;
     double B;
@@ -68,40 +75,40 @@ struct MotorVelocity {
     double B;
 };
 
-struct MotorState {
+struct MotorState { // TODO REMOVE - People should just use robot state struct
     double ang;
     double vel;
 };
 
-struct RobotPosLeg {
+struct RobotPosLeg { // TODO REMOVE - People should just use robot state struct
     double hip;
     double A;
     double B;
 };
 
-struct LegState {
+struct LegState { // TODO REMOVE - People should just use robot state struct
 	MotorState A;
 	MotorState B;
 };
 
-struct RobotPos {
+struct RobotPos { // TODO REMOVE - People should just use robot state struct
     RobotPosLeg lLeg;
     RobotPosLeg rLeg;
 };
 
-struct RobotLeg {
+struct RobotLeg { // TODO REMOVE - People should just use robot state struct
     double ang;
     double angVel;
     double len;
     double lenVel;
 };
 
-struct RobotSide {
+struct RobotSide { // TODO REMOVE - People should just use robot state struct
     RobotLeg leg;
     MotorState hip;
 };
 
-struct DesiredRobotState {
+struct DesiredRobotState { // TODO REMOVE - People should just use robot state struct
     RobotSide left;
     RobotSide right;
 };

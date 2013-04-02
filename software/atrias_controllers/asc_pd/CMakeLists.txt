@@ -1,21 +1,6 @@
-#
-# The find_package macro for Orocos-RTT works best with
-# cmake >= 2.6.3
-#
 cmake_minimum_required(VERSION 2.6.3)
-
 project(asc_pd)
-
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
 rosbuild_init()
 
 #set the default path for built executables to the "bin" directory
@@ -37,7 +22,13 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(pd_controller src/controller_component.cpp)
+	# Build old-style controller for backwards compatibility
+	#orocos_component(pd_controller src/controller_component.cpp)
+
+	# ... and the new-style controller
+	orocos_library(ASCPD src/ASCPD.cpp)
+	target_link_libraries(ASCPD ControlLib-${OROCOS_TARGET})
+
+	# Build typekits
 	ros_generate_rtt_typekit(asc_pd)
 endif(ATRIAS_BUILD_CONTROLLERS)
-

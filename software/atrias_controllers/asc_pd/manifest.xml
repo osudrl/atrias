@@ -1,15 +1,13 @@
 <package>
-  <description brief="asc_pd">
-
-     asc_pd
-
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/asc_pd</url>
-  <depend package="roscpp"/>
-  <depend package="atrias_shared"/>
-  <depend package="atrias_msgs"/>
-
+	<description brief="asc_pd">
+		asc_pd
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/asc_pd</url>
+	<depend package="roscpp"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="atrias_control_lib"/>
 </package>

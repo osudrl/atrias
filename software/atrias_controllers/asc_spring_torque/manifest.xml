@@ -6,7 +6,7 @@
 	<license>BSD</license>
 	<review status="unreviewed" notes=""/>
 	<url>http://ros.org/wiki/asc_spring_torque</url>
-	<depend package="roscpp"/>
+	<depend package="atrias_control_lib"/>
 	<depend package="atrias_shared"/>
 	<depend package="atrias_msgs"/>
 	<depend package="atrias_asc_loader" />

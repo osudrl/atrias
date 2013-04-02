@@ -98,7 +98,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEUBG_HIGH
 	printf("[Medulla Hip] Initilizing limit switches\n");
 	#endif
-	hip_limit_sw_port = limit_sw_init_port(&PORTK,1,&TCF0,hip_estop);
+	hip_limit_sw_port = limit_sw_init_port(&PORTK,0,&TCF0,hip_estop);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing ADC ports\n");
