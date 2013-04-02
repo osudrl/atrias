@@ -1,3 +1,7 @@
+Header header
+
 uint16  force
-float64 filtered_val
-bool    output
+float32 filtered_val
+float32 filter_gain
+float32 threshold
+bool    onGround

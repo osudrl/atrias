@@ -53,7 +53,7 @@ bool ASCToeDecode::runController(uint16_t force) {
 		onGround = true;
 	}
 
-	logData.output = onGround;
+	logData.onGround = onGround;
 	logPort.write(logData);
 
 	// Update the filter
