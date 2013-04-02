@@ -20,7 +20,7 @@ ATCMP::ATCMP(string name) :
 	rateLimRB(this, "rateLimRB"),
 	rateLimRH(this, "rateLimRHip")
 {
-	// We don't need to do much here, just call the ATC() constructor above.
+	// Nothing to see here.
 }
 
 void ATCMP::controller() {

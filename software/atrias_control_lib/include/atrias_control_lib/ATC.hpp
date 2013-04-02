@@ -28,6 +28,8 @@
 
 // For the medulla state enum
 #include <../../robot_definitions/robot_invariant_defs.h>
+// For the maximum and minimum torques, used by the startup controller
+#include <../../robot_definitions/robot_variant_defs.h>
 // And to check RT Ops's state
 #include <atrias_shared/globals.h>
 // For our publishing timer
@@ -83,6 +85,19 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @return True if the robot is enabled, false otherwise.
 		  */
 		bool isEnabled() const;
+
+		/**
+		  * @brief This enables or disables the default startup controller
+		  * @param enable Whether or not to enable the default startup controller
+		  * @return Whether or not the default startup controller has been enabled
+		  */
+		bool setStartupEnabled(bool enable);
+
+		/**
+		  * @brief Returns whether or not the startup controller is running
+		  * @return True if the startup controller is running, false otherwise
+		  */
+		bool isStarting() const;
 
 		// These member variables should be set/read from by
 		// the controllers themselves.
@@ -143,6 +158,28 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 		// This lets us send RT Ops events
 		RTT::OperationCaller<void(rtOps::RtOpsEvent, rtOps::RtOpsEventMetadata_t)> sendEventOp;
+
+		/**
+		  * @brief This is the state enum for the startup/shutdown state machine.
+		  */
+		enum class State : int8_t {
+			RUN = 0, // Normal operation
+			STARTUP  // Running the default startup controller
+		};
+
+		// The state we are currently in
+		State mode;
+
+		/**
+		  * @brief This runs the startup controller
+		  */
+		void startupController();
+
+		// Whether or not the startup controller is enabled
+		bool startupEnabled;
+
+		// Remaining time for startup controller
+		double startupTimeRem;
 };
 
 template <typename logType, typename guiInType, typename guiOutType>
@@ -151,6 +188,12 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	AtriasController(name),
 	publishTimer(50) // The parameter is the transmit period in ms
 {
+	// We initialize to run mode
+	this->mode = State::RUN;
+
+	// By default, the startup controller is disabled
+	this->startupEnabled = false;
+
 	// Register the operation runController()
 	this->provides("atc")
 		->addOperation("runController", &ATC<logType, guiInType, guiOutType>::runController, this, RTT::ClientThread)
@@ -268,6 +311,16 @@ void ATC<logType, guiInType, guiOutType>::guiInCallback(RTT::base::PortInterface
 
 template <typename logType, typename guiInType, typename guiOutType>
 atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state& robotState) {
+	// Check for change in state (to trigger the change to startup mode).
+	if (this->startupEnabled                         &&
+	    this->rs.rtOpsState != robotState.rtOpsState &&
+	    (rtOps::RtOpsState) robotState.rtOpsState == rtOps::RtOpsState::ENABLED)
+	{
+		// We should switch to startup mode.
+		this->mode           = State::STARTUP;
+		this->startupTimeRem = STARTUP_TIME;
+	}
+
 	// Save the robot state so the controller (and this class) can access it.
 	this->rs = robotState;
 
@@ -307,8 +360,50 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 		this->logOutPort.write(this->logOut);
 	}
 
+	// Run the startup controller, if in the startup state
+	if (this->mode == State::STARTUP)
+		this->startupController();
+
 	// Finally, return the controller output
 	return this->co;
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+void ATC<logType, guiInType, guiOutType>::startupController() {
+
+	// Clamp the controller outputs
+	this->co.lLeg.motorCurrentA   = clamp(this->co.lLeg.motorCurrentA,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
+	this->co.lLeg.motorCurrentB   = clamp(this->co.lLeg.motorCurrentB,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
+	this->co.lLeg.motorCurrentHip = clamp(this->co.lLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+	this->co.rLeg.motorCurrentA   = clamp(this->co.rLeg.motorCurrentA,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
+	this->co.rLeg.motorCurrentB   = clamp(this->co.rLeg.motorCurrentB,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
+	this->co.rLeg.motorCurrentHip = clamp(this->co.rLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+
+	// Determine the scaling value
+	double scale = (STARTUP_TIME - startupTimeRem) / STARTUP_TIME;
+
+	// Scale the outputs
+	this->co.lLeg.motorCurrentA   *= scale;
+	this->co.lLeg.motorCurrentB   *= scale;
+	this->co.lLeg.motorCurrentHip *= scale;
+	this->co.rLeg.motorCurrentA   *= scale;
+	this->co.rLeg.motorCurrentB   *= scale;
+	this->co.rLeg.motorCurrentHip *= scale;
+
+	// End the controller after the specified amount of time
+	this->startupTimeRem -= ((double) CONTROLLER_LOOP_PERIOD_NS) / ((double) SECOND_IN_NANOSECONDS);
+	if (this->startupTimeRem <= 0.0)
+		this->mode = State::RUN;
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+bool ATC<logType, guiInType, guiOutType>::setStartupEnabled(bool enable) {
+	return this->startupEnabled = enable;
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+bool ATC<logType, guiInType, guiOutType>::isStarting() const {
+	return (this->mode == State::STARTUP);
 }
 
 }

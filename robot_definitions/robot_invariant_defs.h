@@ -201,4 +201,8 @@ typedef enum {
   */
 #define HIP_ABS_ENCODER_RAD_PER_TICK                  0.000766990393942820614859
 
+/** @brief The amount of time the startup controller runs for, in seconds
+  */
+#define STARTUP_TIME                                                         4.0
+
 #endif // ROBOT_INVARIANT_DEFS_H
