@@ -53,20 +53,28 @@ void OpsLogger::sendEvent(RtOpsEvent event, RtOpsEventMetadata_t metadata) {
 }
 
 void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
-	atrias_msgs::robot_state &rs = this->rtOpsCycle.robotState;
-	atrias_msgs::controller_output &co = this->rtOpsCycle.controllerOutput;
+	atrias_msgs::robot_state &rs               = this->rtOpsCycle.robotState;
+	atrias_msgs::controller_output &co_raw     = this->rtOpsCycle.controllerOutput;
+	atrias_msgs::controller_output &co_clamped = this->rtOpsCycle.commandedOutput;
 
 	ld.header           = rs.header;
 
 	ld.currentPositive  = rs.currentPositive;
 	ld.currentNegative  = rs.currentNegative;
 
-	ld.lAClampedCmd     = rtOpsCycle.commandedOutput.lLeg.motorCurrentA;
-	ld.lBClampedCmd     = rtOpsCycle.commandedOutput.lLeg.motorCurrentB;
-	ld.lHipClampedCmd   = rtOpsCycle.commandedOutput.lLeg.motorCurrentHip;
-	ld.rAClampedCmd     = rtOpsCycle.commandedOutput.rLeg.motorCurrentA;
-	ld.rBClampedCmd     = rtOpsCycle.commandedOutput.rLeg.motorCurrentB;
-	ld.rHipClampedCmd   = rtOpsCycle.commandedOutput.rLeg.motorCurrentHip;
+	ld.lAClampedCmd     = co_clamped.lLeg.motorCurrentA;
+	ld.lBClampedCmd     = co_clamped.lLeg.motorCurrentB;
+	ld.lHipClampedCmd   = co_clamped.lLeg.motorCurrentHip;
+	ld.rAClampedCmd     = co_clamped.rLeg.motorCurrentA;
+	ld.rBClampedCmd     = co_clamped.rLeg.motorCurrentB;
+	ld.rHipClampedCmd   = co_clamped.rLeg.motorCurrentHip;
+
+	ld.lARawCmd         = co_raw.lLeg.motorCurrentA;
+	ld.lBRawCmd         = co_raw.lLeg.motorCurrentB;
+	ld.lHipRawCmd       = co_raw.lLeg.motorCurrentHip;
+	ld.rARawCmd         = co_raw.rLeg.motorCurrentA;
+	ld.rBRawCmd         = co_raw.rLeg.motorCurrentB;
+	ld.rHipRawCmd       = co_raw.rLeg.motorCurrentHip;
 
 	ld.lKneeForce       = rs.lLeg.kneeForce;
 	ld.rKneeForce       = rs.rLeg.kneeForce;
@@ -150,11 +158,6 @@ void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
 	ld.rAMotorVoltage   = rs.rLeg.halfA.motorVoltage;
 	ld.rBMotorVoltage   = rs.rLeg.halfB.motorVoltage;
 	ld.rHipMotorVoltage = rs.rLeg.hip.motorVoltage;
-
-	ld.lAMotorCurrent   = co.lLeg.motorCurrentA;
-	ld.lBMotorCurrent   = co.lLeg.motorCurrentB;
-	ld.rAMotorCurrent   = co.rLeg.motorCurrentA;
-	ld.rBMotorCurrent   = co.rLeg.motorCurrentB;
 }
 
 }

@@ -17,6 +17,13 @@ float32 rAClampedCmd
 float32 rBClampedCmd
 float32 rHipClampedCmd
 
+float32 lARawCmd
+float32 lBRawCmd
+float32 lHipRawCmd
+float32 rARawCmd
+float32 rBRawCmd
+float32 rHipRawCmd
+
 int32 lKneeForce
 int32 rKneeForce
 
@@ -99,8 +106,3 @@ float32 lHipMotorVoltage
 float32 rAMotorVoltage
 float32 rBMotorVoltage
 float32 rHipMotorVoltage
-
-float32 lAMotorCurrent
-float32 lBMotorCurrent
-float32 rAMotorCurrent
-float32 rBMotorCurrent
