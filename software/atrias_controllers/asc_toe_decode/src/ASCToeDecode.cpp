@@ -14,7 +14,7 @@ ASCToeDecode::ASCToeDecode(AtriasController *parent, string name) :
 	this->log_out.data.onGround     = false;
 }
 
-double ASCToeDecode::operator()(double force) {
+double ASCToeDecode::operator()(uint16_t force) {
 	// Log our input data
 	this->log_out.data.filter_gain = this->filter_gain;
 	this->log_out.data.threshold   = this->threshold;

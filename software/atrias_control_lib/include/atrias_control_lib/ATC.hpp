@@ -275,6 +275,15 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 	// controller commands a change
 	this->co.command = medulla_state_run;
 
+	// And zero torques, in case the controller doesn't
+	// set them (intentionally or otherwise)
+	co.lLeg.motorCurrentA   = 0.0;
+	co.lLeg.motorCurrentB   = 0.0;
+	co.lLeg.motorCurrentHip = 0.0;
+	co.rLeg.motorCurrentA   = 0.0;
+	co.rLeg.motorCurrentB   = 0.0;
+	co.rLeg.motorCurrentHip = 0.0;
+
 	// Run the controller
 	this->controller();
 
