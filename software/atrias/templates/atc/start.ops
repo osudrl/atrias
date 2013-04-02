@@ -1,0 +1,15 @@
+# Clean up the controller namespace
+atrias_cm.resetControllerNames()
+
+# Set up the component
+import("atc_component")
+loadComponent("controller", "ATCComponent")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "controller")
+
+# Configure the component
+controller.configure()
+
+# Start the component
+controller.start()

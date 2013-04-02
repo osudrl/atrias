@@ -9,13 +9,14 @@
 namespace atrias {
 namespace controller {
 
+
 // ATCVerticalForceControlHopping ==============================================
 ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name):
     RTT::TaskContext(name),
     logPort(name + "_log"),
     guiDataOut("gui_data_out"),
-    guiDataIn("gui_data_in")
-{
+    guiDataIn("gui_data_in") {
+    
 	// Operations --------------------------------------------------------------
     this->provides("atc")->addOperation("runController", &ATCVerticalForceControlHopping::runController, this, ClientThread).doc("Get robot_state from RTOps and return controller output.");
     
@@ -28,7 +29,7 @@ ATCVerticalForceControlHopping::ATCVerticalForceControlHopping(std::string name)
 	// ASCSlipModel
 	this->addProperty("ascSlipModel0Name", ascSlipModel0Name);
 
-    // For the GUI
+    // GUI ---------------------------------------------------------------------
     addEventPort(guiDataIn);
     addPort(guiDataOut);
     pubTimer = new GuiPublishTimer(20);

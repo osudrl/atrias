@@ -37,6 +37,8 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
+	orocos_library(ASCSpringTorque ASCSpringTorque.cpp)
+
 	orocos_component(asc_spring_torque src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_spring_torque)
 	target_link_libraries(asc_spring_torque ASCLoader-${OROCOS_TARGET})

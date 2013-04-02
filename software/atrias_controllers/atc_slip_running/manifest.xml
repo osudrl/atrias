@@ -1,0 +1,14 @@
+<package>
+
+  <description brief="atc_slip_running">atc_slip_running</description>
+  <author>Mikhail Jones</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/atc_slip_running</url>
+  
+  <depend package="roscpp"/>
+  <depend package="atrias_shared"/>
+  <depend package="atrias_msgs"/>
+  <depend package="asc_common_toolkit"/>
+
+</package>

@@ -69,7 +69,7 @@
 
 /** @brief Maximum motor torque for scaling
   */
-#define MTR_MAX_TORQUE                                                      60.0
+#define MTR_MAX_TORQUE                                                     120.0
 #define MTR_HIP_MAX_TORQUE                                                  60.0
 
 /** @brief Main motor torque limits. These are not used for scaling, just as limits.

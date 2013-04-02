@@ -20,6 +20,7 @@
 // Datatypes
 #include <asc_slip_model/controller_log_data.h>
 #include <atrias_shared/controller_structs.h>
+#include <atrias_shared/atrias_parameters.h>
 
 using namespace RTT;
 using namespace Orocos;
@@ -27,6 +28,7 @@ using namespace asc_slip_model;
 
 namespace atrias {
 namespace controller {
+
 
 // ASCSlipModel ================================================================
 class ASCSlipModel : public TaskContext {
@@ -37,18 +39,12 @@ class ASCSlipModel : public TaskContext {
 		LegForce slipForce(SlipModel slipModel, SlipState slipState);
 		
 		
-		// Variables -----------------------------------------------------------
-		// Timestep
-		double h;
-		
+		// Variables -----------------------------------------------------------		
 		// State-space
 		double r, dr, q, dq;
 		
 		// SLIP model parameters
-		double k, g, r0, m;
-		
-		// ATRIAS parameters
-		double l1, l2;
+		double k, r0, m;
 		
 		// Leg forces
 		LegForce legForce;

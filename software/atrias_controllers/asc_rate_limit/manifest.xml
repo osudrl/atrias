@@ -1,0 +1,11 @@
+<package>
+	<description brief="asc_rate_limit">
+		asc_rate_limit
+	</description>
+	<author>Ryan Van Why</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://code.google.com/p/atrias/</url>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_control_lib"/>
+</package>
