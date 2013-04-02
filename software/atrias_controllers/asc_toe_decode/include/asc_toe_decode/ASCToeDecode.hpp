@@ -39,7 +39,7 @@ class ASCToeDecode : public AtriasController {
 		  *
 		  * Call this function every millisecond with new data.
 		  */
-		double operator()(double force);
+		double operator()(uint16_t force);
 
 		/**
 		  * @brief This returns true if the toe is contacting the ground.
