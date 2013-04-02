@@ -7,7 +7,7 @@
  *      Author: Michael Anderson
  */
 
-#include </controller_gui.h>
+#include <atc_slip_walking/controller_gui.h>
 
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("position_left_A_hscale",    position_left_A_hscale);

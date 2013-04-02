@@ -43,38 +43,38 @@ namespace controller {
  * Here, we don't need any log data, but we do communicate both ways w/ the GUI
  */
 class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, controller_input, controller_status> {
-	public:
-		/**
-		  * @brief The constructor for this controller.
-		  * @param name The name of this component.
-		  * Every top-level controller will have this name parameter,
-		  * just like current controllers.
-		  */
-		ATCSlipWalking(string name);
-	
-	private:
-		/**
-		  * @brief This is the main function for the top-level controller.
-		  * The ATC class automatically handles startup and shutdown,
-		  * if they are not disabled.
-		  */
-		void controller();
+    public:
+        /**
+          * @brief The constructor for this controller.
+          * @param name The name of this component.
+          * Every top-level controller will have this name parameter,
+          * just like current controllers.
+          */
+        ATCSlipWalking(string name);
+    
+    private:
+        /**
+          * @brief This is the main function for the top-level controller.
+          * The ATC class automatically handles startup and shutdown,
+          * if they are not disabled.
+          */
+        void controller();
 
-		// PD controllers for each motor
-		ASCPD pdLA; // Left  A
-		ASCPD pdLB; // Left  B
-		ASCPD pdLH; // Left  Hip
-		ASCPD pdRA; // Right A
-		ASCPD pdRB; // Right B
-		ASCPD pdRH; // Right Hip
+        // PD controllers for each motor
+        ASCPD pdLA; // Left  A
+        ASCPD pdLB; // Left  B
+        ASCPD pdLH; // Left  Hip
+        ASCPD pdRA; // Right A
+        ASCPD pdRB; // Right B
+        ASCPD pdRH; // Right Hip
 
-		// Rate limiters for each motor
-		ASCRateLimit rateLimLA; // Left  A
-		ASCRateLimit rateLimLB; // Left  B
-		ASCRateLimit rateLimLH; // Left  Hip
-		ASCRateLimit rateLimRA; // Right A
-		ASCRateLimit rateLimRB; // Right B
-		ASCRateLimit rateLimRH; // Right Hip
+        // Rate limiters for each motor
+        ASCRateLimit rateLimLA; // Left  A
+        ASCRateLimit rateLimLB; // Left  B
+        ASCRateLimit rateLimLH; // Left  Hip
+        ASCRateLimit rateLimRA; // Right A
+        ASCRateLimit rateLimRB; // Right B
+        ASCRateLimit rateLimRH; // Right Hip
 };
 
 }
@@ -82,4 +82,4 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
 #endif // ATCSlipWalking_HPP
 
-// vim: noexpandtab
+// vim: expandtab
