@@ -4,7 +4,7 @@
 #
 cmake_minimum_required(VERSION 2.6.3)
 
-project(asc_motor_position)
+project(atc_component)
 
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
@@ -43,8 +43,14 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(ATCMP src/ATCMP.cpp)
-#	target_link_libraries(ATCMP ASCPD-${OROCOS_TARGET})
-	target_link_libraries(ATCMP ASCPD-${OROCOS_TARGET} ControlLib-${OROCOS_TARGET})
-	ros_generate_rtt_typekit(atc_motor_position)
+	orocos_component(ATC src/atc.cpp)
+	# Here we link with the subcontroller called "ASCPD". Repeat this line
+	# for additional subcontroller types
+	target_link_libraries(ATC ASCPD-${OROCOS_TARGET})
+
+	# Also, we need to link with the Control Library
+	target_link_libraries(ATC ControlLib-${OROCOS_TARGET})
+
+	ros_generate_rtt_typekit(atc_component)
 endif(ATRIAS_BUILD_CONTROLLERS)
+
