@@ -1,0 +1,16 @@
+<package>
+	<description brief="atc_slip_walking">
+		atc_slip_walking
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/atc_slip_walking</url>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="atrias_control_lib"/>
+	<depend package="asc_pd" />
+	<depend package="asc_rate_limit" />
+</package>
+
+<!-- vim: set noexpandtab: -->

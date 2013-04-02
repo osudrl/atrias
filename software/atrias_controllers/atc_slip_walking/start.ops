@@ -1,0 +1,10 @@
+# Set up the top controller
+import("atc_slip_walking")
+loadComponent("controller", "ATCSlipWalking")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "controller")
+
+# Start components
+controller.configure()
+controller.start()
