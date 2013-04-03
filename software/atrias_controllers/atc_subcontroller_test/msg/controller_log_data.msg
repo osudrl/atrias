@@ -1,2 +1,0 @@
-controller_input input
-controller_status output
