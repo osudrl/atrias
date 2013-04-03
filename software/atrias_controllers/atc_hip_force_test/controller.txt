@@ -1,1 +1,0 @@
-description=Allows testing and tuning of the toe decode and hip force controllers.
