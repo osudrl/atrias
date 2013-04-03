@@ -1,14 +1,10 @@
 <package>
-  <description brief="asc_common_toolkit">
-
-     asc_common_toolkit
-
-  </description>
-  <author>drl</author>
+  <description brief="asc_common_toolkit">asc_common_toolkit</description>
+  <author>mikhailjones</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/asc_common_toolkit</url>
-  <depend package="roscpp"/>
+  <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
 
