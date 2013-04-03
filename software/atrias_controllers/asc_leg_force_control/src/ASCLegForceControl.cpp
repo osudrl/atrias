@@ -35,7 +35,7 @@ ASCLegForceControl::ASCLegForceControl(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-
+	// No init required for this controller
 }
 
 // legForceToMotorCurrent

@@ -11,8 +11,6 @@
 // TODO cartLegPos2MotorPos
 // TODO cartLegVel2MotorVel
 // TODO inverse of all conversions
-// TODO rad2Deg
-// TODO deg2Rad
 // TODO interp
 
 #include "asc_common_toolkit/ASCCommonToolkit.hpp"
@@ -31,7 +29,7 @@ ASCCommonToolkit::ASCCommonToolkit(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-
+	// No init required for this controller
 }
 
 // legStiffness
@@ -41,10 +39,10 @@ double ASCCommonToolkit::legStiffness(double r, double r0) {
 	k = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*l1*l2*pow(sin(acos(r)), 3));
 	
     // Set the log data
-    //log_out.data.k = k;
+    log_out.data.k = k;
 
     // Transmit the log data
-    //log_out.send();
+    log_out.send();
 
 	return k;
 	
@@ -85,6 +83,28 @@ std::tuple<double, double> ASCCommonToolkit::polLegVel2MotorVel(double ql, doubl
 	return std::make_tuple(dqmA, dqmB);
 	
 } // polLegVel2MotorVel
+
+// rad2deg
+double ASCCommonToolkit::rad2deg(double rad) {
+
+	// Compute motor velocities
+    deg = rad/PI*180.0;
+	
+	// Return computed degrees
+	return deg;
+	
+} // rad2deg
+
+// deg2rad
+double ASCCommonToolkit::deg2rad(double deg) {
+
+	// Compute motor velocities
+    rad = deg/180.0*PI;
+	
+	// Return computed radians
+	return rad;
+	
+} // deg2rad
 
 }
 }

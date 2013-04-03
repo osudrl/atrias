@@ -77,6 +77,22 @@ class ASCCommonToolkit : public AtriasController {
                   */
 				std::tuple<double, double> polLegVel2MotorVel(double ql, double dql, double drl);
 				double dqmA, dqmB;
+				
+				/**
+                  * @brief The radian to degree conversion function.
+                  * @param rad The current angle in radians.
+                  * @return deg The computed angle in degrees.
+                  */
+				double rad2deg(double rad);
+				double deg;
+				
+				/**
+                  * @brief The degree to radian conversion function.
+                  * @param deg The current angle in degrees.
+                  * @return rad The computed angle in radians.
+                  */
+				double deg2rad(double deg);
+				double rad;
 
        
         private:

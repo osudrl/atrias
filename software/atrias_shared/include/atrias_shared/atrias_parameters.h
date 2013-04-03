@@ -30,6 +30,9 @@ double m = 61.93;
 // Gravity [m/sec^2]
 double g = 9.81;
 
+// Pi constant
+double PI = 3.14159265;
+
 } // namespace controller
 } // namespace atrias
 

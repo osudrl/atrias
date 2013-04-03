@@ -1,15 +1,10 @@
 <package>
-  <description brief="asc_slip_model">
-
-     asc_slip_model
-
-  </description>
+  <description brief="asc_slip_model">asc_slip_model</description>
   <author>Mikhail Jones</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/asc_slip_model</url>
-  <depend package="roscpp"/>
+  <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
-
 </package>

@@ -43,7 +43,14 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(atc_slip_running src/controller_component.cpp)
+	# Build old-style controller
+	#orocos_component(atc_slip_running src/controller_component.cpp)
+	
+	# Build new-style controller
+    orocos_component(ATCSlipRunning src/ATCSlipRunning.cpp)
+    target_link_libraries(ATCSlipRunning ControlLib-${OROCOS_TARGET})
+     
+	# Build type-kits
 	ros_generate_rtt_typekit(atc_slip_running)
 endif(ATRIAS_BUILD_CONTROLLERS)
 

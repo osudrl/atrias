@@ -1,32 +1,10 @@
-# Clean up the controller namespace
-atrias_cm.resetControllerNames()
-
-# Set up the component
+# Set up the top controller
 import("atc_slip_running")
 loadComponent("controller", "ATCSlipRunning")
 
 # Connect RTOps with this controller (so they can see each other's operations)
 connectPeers("atrias_rt", "controller")
 
-# ASCCommonToolkit
-import("asc_common_toolkit")
-var string ascCommonToolkit0Name = atrias_cm.getUniqueName("controller", "ascCommonToolkit")
-loadComponent(ascCommonToolkit0Name, "ASCCommonToolkit")
-addPeer("controller", ascCommonToolkit0Name)
-connectPeers("Deployer", ascCommonToolkit0Name)
-controller.ascCommonToolkit0Name = ascCommonToolkit0Name
-
-# Set up the gui connection
-var ConnPolicy gui_policy
-gui_policy.transport = 3
-gui_policy.name_id = "/atc_slip_running_status"
-stream("controller.gui_data_out", gui_policy)
-
-gui_policy.name_id = "/atc_slip_running_input"
-stream("controller.gui_data_in", gui_policy)
-
-# Configure the component
+# Start components
 controller.configure()
-
-# Start the component
 controller.start()

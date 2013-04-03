@@ -7,5 +7,4 @@
   <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
-
 </package>

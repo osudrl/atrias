@@ -1,9 +1,5 @@
 # Shut stuff down
 controller.stop()
-
-# ASCCommonToolkit
-unloadComponent(controller.ascCommonToolkit0Name)
-
 controller.cleanup()
 unloadComponent("controller")
 atrias_cm.resetControllerNames()
