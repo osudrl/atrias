@@ -81,13 +81,13 @@ class AtriasController {
 		  */
 		virtual RTT::TaskContext& getTaskContext() const;
 
-	private:
 		/**
 		  * @brief This returns the TLC as an AtriasController
 		  * @return A reference to the top-level controller.
 		  */
 		AtriasController &getTLC() const;
 
+	private:
 		// This controller's (full) name
 		std::string name;
 
