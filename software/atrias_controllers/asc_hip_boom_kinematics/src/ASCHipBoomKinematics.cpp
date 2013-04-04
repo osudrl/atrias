@@ -29,24 +29,22 @@ ASCHipBoomKinematics::ASCHipBoomKinematics(AtriasController *parent, string name
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// No init required for this controller
+	// Initialize
+    lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
+    lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis
+    lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly
+    qBodyOffset = PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane
 }
 
 // inverseKinematics
-std::tuple<double, double> ASCHipBoomKinematics::inverseKinematics(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position) {
+std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position) {
 
     // Define imaginary number i
     i = complex<double>(0.0, 1.0);
 
-	// Define robot parameters
-    lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
-    lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis
-    lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly
-    qBodyOffset = M_PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane
-
 	// Get leg lengths and angles
-    lLeftLeg = (l1 + l2)*cos((lLeg.halfB.legAngle - lLeg.halfA.legAngle)/2.0);
-    lRightLeg = (l1 + l2)*cos((rLeg.halfB.legAngle - rLeg.halfA.legAngle)/2.0);
+    lLeftLeg = (L1 + L2)*cos((lLeg.halfB.legAngle - lLeg.halfA.legAngle)/2.0);
+    lRightLeg = (L1 + L2)*cos((rLeg.halfB.legAngle - rLeg.halfA.legAngle)/2.0);
     qLeftLeg = (lLeg.halfA.legAngle + lLeg.halfB.legAngle)/2.0;
     qRightLeg = (rLeg.halfA.legAngle + rLeg.halfB.legAngle)/2.0;
 
@@ -58,8 +56,8 @@ std::tuple<double, double> ASCHipBoomKinematics::inverseKinematics(LeftRight toe
 	// TODO - Add velocity terms
 
 	// We only care about the real part, the imaginary part should be zero
-	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*M_PI, 2.0*M_PI);
-	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*M_PI, 2.0*M_PI);
+	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*PI, 2.0*PI);
+	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*PI, 2.0*PI);
 
 	// TODO - Clamp hip angles to physical limits
 	

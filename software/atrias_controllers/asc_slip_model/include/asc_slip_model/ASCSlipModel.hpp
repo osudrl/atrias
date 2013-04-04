@@ -37,28 +37,27 @@ class ASCSlipModel : public AtriasController {
                   * @param name The name for this controller.
                   */                  
                 ASCSlipModel(AtriasController *parent, string name);
+                
+               	// SLIP model parameters
+				double k, r0, m;
 
                 /**
-                  * @brief The fixed timestep numerical integrator function.
-                  * @param slipModel
+                  * @brief Advances the fixed timestep numerical integrator.
                   * @param slipState
                   * @return slipState
                   */
-				SlipState slipAdvance(SlipModel slipModel, SlipState slipState);
+				SlipState advance(SlipState slipState);
 				
 				// State-space
 				double r, dr, q, dq;
-		
-				// SLIP model parameters
-				double k, r0, m;
+				double rNew, drNew, qNew, dqNew;
 				
                 /**
-                  * @brief The leg force function.
-                  * @param slipModel
+                  * @brief Computes the leg force.
                   * @param slipState
                   * @return legForce
                   */				
-				LegForce slipForce(SlipModel slipModel, SlipState slipState);
+				LegForce force(SlipState slipState);
 		
 				// Leg forces
 				LegForce legForce;

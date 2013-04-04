@@ -1,5 +1,5 @@
 <package>
-  <description brief="asc_leg_force_control">asc_leg_force_control</description>
+  <description brief="asc_leg_force">asc_leg_force</description>
   <author>Mikhail Jones</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
@@ -7,5 +7,4 @@
   <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
-
 </package>

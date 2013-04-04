@@ -41,6 +41,9 @@ class ASCHipBoomKinematics : public AtriasController {
 		          * @param name The name for this controller.
 		          */                  
 		        ASCHipBoomKinematics(AtriasController *parent, string name);
+	
+				// Boom parameters
+				double lBoom, lBody, lHip, qBodyOffset;
 
 		        /**
 		          * @brief The inverse kinematics function.
@@ -50,19 +53,13 @@ class ASCHipBoomKinematics : public AtriasController {
 		          * @param position
 		          * @return hipangle The computed hip angles.
 		          */
-				std::tuple<double, double> inverseKinematics(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position);
+				std::tuple<double, double> iKine(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position);
 
 				// Imaginary number
 			   	complex<double> i;
 			   	
 			   	// Hip angles
 				complex<double> complexHipAngleLeft, complexHipAngleRight;
-		
-				// Robot parameters
-				double l1, l2;
-	
-				// Boom parameters
-				double lBoom, lBody, lHip, qBodyOffset;
 	
 				// Desired position
 				double lLeftLeg, lRightLeg, qLeftLeg, qRightLeg;

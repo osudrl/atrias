@@ -38,7 +38,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	# Build old-style controller
-	orocos_component(asc_slip_model src/controller_component.cpp)
+	#orocos_component(asc_slip_model src/controller_component.cpp)
 	
 	# Build new-style controller
 	orocos_library(ASCSlipModel src/ASCSlipModel.cpp)

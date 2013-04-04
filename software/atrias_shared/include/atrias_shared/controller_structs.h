@@ -31,16 +31,6 @@ struct LegForce {
 	double dfz;
 };
 
-// Used in ASCLegForce
-struct Gain {
-	double kp; // Proportional gain
-	double ki; // Integral gain
-	double kd; // Derivative gain
-	double ks; // Spring constant // TODO REMOVE
-	double kg; // Gear ratio // TODO REMOVE
-	double kt; // Torque constant // TODO REMOVE
-};
-
 // Used in ASCSlipModel
 struct SlipState {
 	bool isFlight;
@@ -49,18 +39,6 @@ struct SlipState {
 	double dr; // Change in leg length
 	double q; // Leg angle
 	double dq; // Change in leg angle
-	double rOld; // Leg length at (n-1) timestep
-	double drOld; // Change in leg length at (n-1) timestep
-	double qOld; // Leg angle at (n-1) timestep
-	double dqOld; // Change in leg angle at (n-1) timestep
-};
-
-// Used in ASCSlipModel
-struct SlipModel {
-	double g; // Gravity // TODO REMOVE
-	double k; // Spring constant
-	double m; // Mass
-	double r0; // Initial leg length
 };
 
 
