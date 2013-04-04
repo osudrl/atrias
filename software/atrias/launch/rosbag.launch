@@ -5,6 +5,6 @@
           type   = "record"
           args   = "--output-prefix=$(find atrias)/bagfiles/atrias
                     -a
-                    -x '/rosout|/rosout_agg|/diagnostics|/gui_input|/log_rt_ops_out_cm_in|/gui_output|/gui_robot_state_in|/atrias_log_request' " />
+                    -x '/rosout|/rosout_agg|/diagnostics|/gui_input|/log_rt_ops_out_cm_in|/gui_output|/atrias_log_request' " />
 </launch>
 
