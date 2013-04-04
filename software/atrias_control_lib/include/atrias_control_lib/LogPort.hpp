@@ -51,7 +51,7 @@ class LogPort {
 template <typename logType>
 LogPort<logType>::LogPort(const AtriasController* const controller, const std::string name) :
 	port(controller->getName() + "_" + name),
-	tlc(*controller)
+	tlc(controller->getTLC())
 {
 	// Setup our port
 	this->tlc.getTaskContext().addPort(this->port);
