@@ -1,1 +1,0 @@
-description=Executes a 1-variable linear interpolation between equidistant points over an interval.

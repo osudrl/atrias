@@ -1,1 +1,0 @@
-description=Determines the leg force in the extension/retraction direction from leg geometry.
