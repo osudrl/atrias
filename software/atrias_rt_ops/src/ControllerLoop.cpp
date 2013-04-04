@@ -36,18 +36,18 @@ atrias_msgs::controller_output
 	atrias_msgs::controller_output controller_output) {
 	
 	controller_output.lLeg.motorCurrentA =
-		CLAMP(controller_output.lLeg.motorCurrentA, MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
+		CLAMP(controller_output.lLeg.motorCurrentA, MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
 	controller_output.lLeg.motorCurrentB =
-		CLAMP(controller_output.lLeg.motorCurrentB, MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
+		CLAMP(controller_output.lLeg.motorCurrentB, MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
 	controller_output.lLeg.motorCurrentHip =
-		CLAMP(controller_output.lLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+		CLAMP(controller_output.lLeg.motorCurrentHip, MIN_HIP_MTR_CURRENT_CMD, MAX_HIP_MTR_CURRENT_CMD);
 	
 	controller_output.rLeg.motorCurrentA =
-		CLAMP(controller_output.rLeg.motorCurrentA, MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
+		CLAMP(controller_output.rLeg.motorCurrentA, MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
 	controller_output.rLeg.motorCurrentB =
-		CLAMP(controller_output.rLeg.motorCurrentB, MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
+		CLAMP(controller_output.rLeg.motorCurrentB, MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
 	controller_output.rLeg.motorCurrentHip =
-		CLAMP(controller_output.rLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+		CLAMP(controller_output.rLeg.motorCurrentHip, MIN_HIP_MTR_CURRENT_CMD, MAX_HIP_MTR_CURRENT_CMD);
 	
 	return controller_output;
 }

@@ -112,9 +112,9 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.lLeg.motorCurrentHip);
     torqueLeftHipDisplay->set_text(buffer);
 
-    motor_torqueLeftA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentA), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueLeftB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentB), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueLeftHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentHip), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueLeftA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentA), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
+    motor_torqueLeftB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentB), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
+    motor_torqueLeftHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.lLeg.motorCurrentHip), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
 
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.rLeg.motorCurrentA);
     torqueRightADisplay->set_text(buffer);
@@ -123,9 +123,9 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     sprintf(buffer, "%0.4f", rtCycle.commandedOutput.rLeg.motorCurrentHip);
     torqueRightHipDisplay->set_text(buffer);
 
-    motor_torqueRightA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentA), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueRightB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentB), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
-    motor_torqueRightHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentHip), MAX_MTR_TRQ_CMD ) / MAX_MTR_TRQ_CMD );
+    motor_torqueRightA_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentA), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
+    motor_torqueRightB_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentB), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
+    motor_torqueRightHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentHip), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
 
     // Update spring deflection displays.
     sprintf(buffer, "%0.8f", rtCycle.robotState.lLeg.halfA.motorAngle - rtCycle.robotState.lLeg.halfA.legAngle);

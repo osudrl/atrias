@@ -224,7 +224,7 @@ int32_t LegMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
 			break;
 	}
 	
-	return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_MAX_TORQUE);
+	return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_MAX_CURRENT);
 }
 
 inline double LegMedulla::encTicksToRad(uint32_t ticks, uint32_t calib_val, double rad_per_tick, double calib_val_rad) {

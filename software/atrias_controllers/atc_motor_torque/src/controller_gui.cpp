@@ -19,9 +19,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     if (torque_left_A_hscale && torque_left_B_hscale && torque_left_hip_hscale &&
         torque_right_A_hscale && torque_right_B_hscale && torque_right_hip_hscale) {
-        //torque_left_A_hscale->set_range(MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
-        //torque_left_B_hscale->set_range(MIN_MTR_TRQ_CMD, MAX_MTR_TRQ_CMD);
-        //torque_left_hip_hscale->set_range(MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+        //torque_left_A_hscale->set_range(MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
+        //torque_left_B_hscale->set_range(MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD);
+        //torque_left_hip_hscale->set_range(MIN_HIP_MTR_CURRENT_CMD, MAX_HIP_MTR_CURRENT_CMD);
         torque_left_A_hscale->set_range(-10., 10.);
         torque_left_B_hscale->set_range(-10., 10.);
         torque_left_hip_hscale->set_range(-10., 10.);

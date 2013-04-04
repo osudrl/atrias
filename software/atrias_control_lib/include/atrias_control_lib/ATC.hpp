@@ -372,12 +372,12 @@ template <typename logType, typename guiInType, typename guiOutType>
 void ATC<logType, guiInType, guiOutType>::startupController() {
 
 	// Clamp the controller outputs
-	this->co.lLeg.motorCurrentA   = clamp(this->co.lLeg.motorCurrentA,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
-	this->co.lLeg.motorCurrentB   = clamp(this->co.lLeg.motorCurrentB,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
-	this->co.lLeg.motorCurrentHip = clamp(this->co.lLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
-	this->co.rLeg.motorCurrentA   = clamp(this->co.rLeg.motorCurrentA,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
-	this->co.rLeg.motorCurrentB   = clamp(this->co.rLeg.motorCurrentB,   MIN_MTR_TRQ_CMD,     MAX_MTR_TRQ_CMD);
-	this->co.rLeg.motorCurrentHip = clamp(this->co.rLeg.motorCurrentHip, MIN_HIP_MTR_TRQ_CMD, MAX_HIP_MTR_TRQ_CMD);
+	this->co.lLeg.motorCurrentA   = clamp(this->co.lLeg.motorCurrentA,   MIN_MTR_CURRENT_CMD,     MAX_MTR_CURRENT_CMD);
+	this->co.lLeg.motorCurrentB   = clamp(this->co.lLeg.motorCurrentB,   MIN_MTR_CURRENT_CMD,     MAX_MTR_CURRENT_CMD);
+	this->co.lLeg.motorCurrentHip = clamp(this->co.lLeg.motorCurrentHip, MIN_HIP_MTR_CURRENT_CMD, MAX_HIP_MTR_CURRENT_CMD);
+	this->co.rLeg.motorCurrentA   = clamp(this->co.rLeg.motorCurrentA,   MIN_MTR_CURRENT_CMD,     MAX_MTR_CURRENT_CMD);
+	this->co.rLeg.motorCurrentB   = clamp(this->co.rLeg.motorCurrentB,   MIN_MTR_CURRENT_CMD,     MAX_MTR_CURRENT_CMD);
+	this->co.rLeg.motorCurrentHip = clamp(this->co.rLeg.motorCurrentHip, MIN_HIP_MTR_CURRENT_CMD, MAX_HIP_MTR_CURRENT_CMD);
 
 	// Determine the scaling value
 	double scale = (STARTUP_TIME - startupTimeRem) / STARTUP_TIME;
