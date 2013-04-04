@@ -72,7 +72,7 @@ int32_t HipMedulla::calcMotorCurrentOut(atrias_msgs::controller_output& controll
                         break;
         }
         
-        return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_HIP_MAX_TORQUE);
+        return (int32_t) (((double) MTR_MAX_COUNT) * torqueCmd / MTR_HIP_MAX_CURRENT);
 }
 
 void HipMedulla::updateLimitSwitches(atrias_msgs::robot_state_hip& hip, bool reset) {
