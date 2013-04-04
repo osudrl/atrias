@@ -70,12 +70,12 @@ std::tuple<double, double> ASCCommonToolkit::legPos2MotorPos(double ql, double r
 	
 } // legPos2MotorPos
 
-// motorVel2LegVel // TODO - Finish
+// motorVel2LegVel
 std::tuple<double, double> ASCCommonToolkit::motorVel2legVel(double qmA, double qmB, double dqmA, double dqmB) {
 	
-	// Compute leg velocities 
-	dql = 0.0;
-	drl = 0.0;
+	// Compute leg velocities
+	dql = (dqmA + dqmB)/2.0;
+	drl = -(sin((qmA - qmB)/2.0)*(dqmA - dqmB))/2.0;
 	
 	// Return motor velocities
 	return std::make_tuple(dql, drl);

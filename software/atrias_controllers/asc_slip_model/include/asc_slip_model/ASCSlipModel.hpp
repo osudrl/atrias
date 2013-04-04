@@ -41,21 +41,31 @@ class ASCSlipModel : public AtriasController {
                	// SLIP model parameters
 				double k, r0, m;
 
+
                 /**
-                  * @brief Advances the fixed timestep numerical integrator.
-                  * @param slipState
-                  * @return slipState
+                  * @brief Advances the RK4 fixed timestep numerical integrator.
+                  * @param slipState The current state-space parameters.
+                  * @return slipState The computed next step state-space parameters.
                   */
-				SlipState advance(SlipState slipState);
+				SlipState rk4Advance(SlipState slipState);
 				
 				// State-space
 				double r, dr, q, dq;
 				double rNew, drNew, qNew, dqNew;
 				
+				
+				/**
+                  * @brief Advances the RK5 fixed timestep numerical integrator.
+                  * @param slipState The current state-space parameters.
+                  * @return slipState The computed next step state-space parameters.
+                  */
+				SlipState rk5Advance(SlipState slipState);
+				
+				
                 /**
                   * @brief Computes the leg force.
-                  * @param slipState
-                  * @return legForce
+                  * @param slipState The current state-space parameters.
+                  * @return legForce The computed component forces at the toe.
                   */				
 				LegForce force(SlipState slipState);
 		

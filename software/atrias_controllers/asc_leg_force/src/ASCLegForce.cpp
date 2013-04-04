@@ -68,6 +68,7 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dtausA = fx*L2*sin(qlA + qb)*(dqlA + dqb) + dfz*L2*sin(qlA + qb) - dfx*L2*cos(qlA + qb) + fz*L2*cos(qlA + qb)*(dqlA + dqb);
 	dtausB = fx*L1*sin(qlB + qb)*(dqlB + dqb) + dfz*L1*sin(qlB + qb) - dfx*L1*cos(qlB + qb) + fz*L1*cos(qlB + qb)*(dqlB + dqb);
 
+
 	// Compute required motor current using PD controller with feed forward term
 	curA = (KS*(qmA - qlA)/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
 	curB = (KS*(qmB - qlB)/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
@@ -95,18 +96,27 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 	qmA = leg.halfA.motorAngle;
 	qmB = leg.halfB.motorAngle;
 	qb = position.bodyPitch;
+	dqlA = leg.halfA.legVelocity;
+	dqlB = leg.halfB.legVelocity;
+	dqmA = leg.halfA.motorVelocity;
+	dqmB = leg.halfB.motorVelocity;
+	dqb = position.bodyPitchVelocity;
 	
 	// Compute the spring torques
-	tausA = 0.0;
-	tausB = 0.0;
+	tausA = KS*(qmA - qlA);
+	tausB = KS*(qmB - qlB);
+	
+	// Compute the derivative of the spring torques
+	dtausA = KS*(dqmA - dqlA);
+	dtausB = KS*(dqmB - dqlB);
 	
 	// Compute the leg forces
 	legForce.fx = -(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))/(L1*L2*sin(qlA - qlB));
 	legForce.fz = -(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))/(L1*L2*sin(qlA - qlB));
 	
 	// Compute the derivative of the leg forces
-	legForce.dfx = 0.0; // TODO
-	legForce.dfz = 0.0; // TODO
+	legForce.dfx = -(L2*dtausB*sin(qb + qlA) - L1*dtausA*sin(qb + qlB) + L2*tausB*cos(qb + qlA)*(dqb + dqlA) - L1*tausA*cos(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)*1.0/pow(sin(qlA - qlB), 2)*(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))*(dqlA - dqlB))/(L1*L2);
+	legForce.dfz = -(L2*dtausB*cos(qb + qlA) - L1*dtausA*cos(qb + qlB) - L2*tausB*sin(qb + qlA)*(dqb + dqlA) + L1*tausA*sin(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)*1.0/pow(sin(qlA - qlB), 2)*(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))*(dqlA - dqlB))/(L1*L2);
 
     // Set the log data
 	log_out.data.fx = legForce.fx;

@@ -59,7 +59,7 @@ std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, at
 	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*PI, 2.0*PI);
 	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*PI, 2.0*PI);
 
-	// TODO - Clamp hip angles to physical limits
+	// TODO -Clamp hip angles to physical limits
 	
 	// Set the log data
     log_out.data.leftHipAngle = hipAngle.left;

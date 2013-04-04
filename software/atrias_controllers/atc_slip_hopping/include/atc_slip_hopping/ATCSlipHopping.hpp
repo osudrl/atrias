@@ -1,8 +1,8 @@
-#ifndef ATC_SLIP_RUNNING_HPP
-#define ATC_SLIP_RUNNING_HPP
+#ifndef ATC_SLIP_HOPPING_HPP
+#define ATC_SLIP_HOPPING_HPP
 
 /**
-  * @file ATC_SLIP_RUNNING.hpp
+  * @file ATC_SLIP_HOPPING.hpp
   * @author Mikhail Jones
   * @brief This implements a SLIP based template controller.
   */
@@ -15,13 +15,13 @@
 // No logging helper is needed -- one log port is automatically produced.
 
 // Our logging data type.
-#include "atc_slip_running/controller_log_data.h"
+#include "atc_slip_hopping/controller_log_data.h"
 
 // The type transmitted from the GUI to the controller
-#include "atc_slip_running/controller_input.h"
+#include "atc_slip_hopping/controller_input.h"
 
 // The type transmitted from the controller to the GUI
-#include "atc_slip_running/controller_status.h"
+#include "atc_slip_hopping/controller_status.h"
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
@@ -36,7 +36,7 @@
 
 // Namespaces we're using
 using namespace std;
-using namespace atc_slip_running;
+using namespace atc_slip_hopping;
 
 // Our namespaces
 namespace atrias {
@@ -51,7 +51,7 @@ namespace controller {
  *
  * Here, we don't need any log data, but we do communicate both ways w/ the GUI
  */
-class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, controller_input, controller_status> {
+class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, controller_input, controller_status> {
 	public:
 		/**
 		  * @brief The constructor for this controller.
@@ -59,7 +59,7 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		  * Every top-level controller will have this name parameter,
 		  * just like current controllers.
 		  */
-		ATCSlipRunning(string name);
+		ATCSlipHopping(string name);
 	
 	private:
 		/**
@@ -68,8 +68,11 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		  * if they are not disabled.
 		  */
 		void controller();
+		
+		// States
 		int controllerState, runningState;
 		double k;
+	
 	
 		/**
 		  * @brief These are function within the top-level controller.
@@ -81,14 +84,14 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-		//ASCCommonToolkit commonToolkit;
-		//ASCSlipModel slipModel;
-		//ASCLegForce legForce;
-		//ASCHipBoomKinematics hipBoomKinematics;
+		ASCCommonToolkit ascCommonToolkit;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForce;
+		ASCHipBoomKinematics ascHipBoomKinematics;
 
 };
 
 }
 }
 
-#endif // ATC_SLIP_RUNNING_HPP
+#endif // ATC_SLIP_HOPPING_HPP

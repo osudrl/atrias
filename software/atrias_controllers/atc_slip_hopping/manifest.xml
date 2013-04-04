@@ -1,10 +1,10 @@
 <package>
 
-  <description brief="atc_slip_running">atc_slip_running</description>
+  <description brief="atc_slip_hopping">atc_slip_hopping</description>
   <author>Mikhail Jones</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atc_slip_running</url>  
+  <url>http://ros.org/wiki/atc_slip_hopping</url>  
   <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>

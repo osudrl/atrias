@@ -1,18 +1,19 @@
 /**
-  * @file ATC_SLIP_RUNNING.cpp
+  * @file ATC_SLIP_HOPPING.cpp
   * @author Mikhail Jones
   * @brief This implements a SLIP based template controller.
   */
   
-#include "atc_slip_running/ATCSlipRunning.hpp"
+#include "atc_slip_hopping/ATCSlipHopping.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
 // This constructor call is much simpler.
-ATCSlipRunning::ATCSlipRunning(string name) :
-	ATC(name)
+ATCSlipHopping::ATCSlipHopping(string name) :
+	ATC(name),
+	ascSlipModel(this, "ascSlipModel")
 {
 	// Nothing to see here.
 }
@@ -21,7 +22,7 @@ ATCSlipRunning::ATCSlipRunning(string name) :
  * @param rs The robot state is an inherited member.
  * @param co The controller output is an inhereted member.
  */
-void ATCSlipRunning::controller() {
+void ATCSlipHopping::controller() {
 	
 	/* Additionally, the following functions are available to command the robot state:
 	 * commandHalt();    // Trigger a Halt
@@ -62,49 +63,30 @@ void ATCSlipRunning::controller() {
 
 	// Copy over positions to the GUI output data
 	guiOut.isEnabled = isEnabled();
-	
-	//Stand
-	//Run
-		//Right leg stance
-			//Right leg force control
-			//Left leg mirror angle
-		//Left leg flight
-			//Until appex
-				//Left leg smoothly moves from current pos to appex egb angle
-				//Right leg mirrors angle and shortens 15%
-			//Until touchdown
-				//Left leg tracks egb angle
-				//Right leg mirrors angle and shortens 15%
-		//Left leg stance
-			
-		//Right leg flight
 	 
 }
 
 // passiveStanceControl
-void ATCSlipRunning::passiveStanceControl() {
-
+void ATCSlipHopping::passiveStanceControl() {
 
 	
 }
 
 
 // forceStanceControl
-void ATCSlipRunning::forceStanceControl() {
-
+void ATCSlipHopping::forceStanceControl() {
 
 
 }
 
 // egbFlightControl
-void ATCSlipRunning::egbFlightControl() {
-
+void ATCSlipHopping::egbFlightControl() {
 
 
 }
 
 // We need to make top-level controllers components
-ORO_CREATE_COMPONENT(ATCSlipRunning)
+ORO_CREATE_COMPONENT(ATCSlipHopping)
 
 }
 }

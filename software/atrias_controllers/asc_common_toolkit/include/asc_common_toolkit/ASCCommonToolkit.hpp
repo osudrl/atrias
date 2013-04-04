@@ -41,6 +41,7 @@ class ASCCommonToolkit : public AtriasController {
                 // Robot parameters
                 double ks;
 
+
                 /**
                   * @brief Computes the current axial leg stiffness.
                   * @param r The current leg length.
@@ -49,6 +50,7 @@ class ASCCommonToolkit : public AtriasController {
                   */
 				double legStiffness(double r, double r0);
 				double k;
+				
 				
                 /**
                   * @brief Converts motor position to leg position.
@@ -60,6 +62,7 @@ class ASCCommonToolkit : public AtriasController {
 				std::tuple<double, double> motorPos2LegPos(double qmA, double qmB);
 				double ql, rl;
 				
+				
                 /**
                   * @brief Converts leg position to motor position.
                   * @param ql The current leg angle.
@@ -69,6 +72,7 @@ class ASCCommonToolkit : public AtriasController {
                   */
 				std::tuple<double, double> legPos2MotorPos(double ql, double rl);
 				double qmA, qmB;
+				
 				
 				/**
                   * @brief Converts motor velocity to leg velocity.
@@ -82,6 +86,7 @@ class ASCCommonToolkit : public AtriasController {
 				std::tuple<double, double> motorVel2legVel(double qmA, double qmB, double dqmA, double dqmB);
 				double drl, dql;
 				
+				
                 /**
                   * @brief Converts leg velocity to motor velocity.
                   * @param ql The current leg angle.
@@ -93,6 +98,7 @@ class ASCCommonToolkit : public AtriasController {
 				std::tuple<double, double> legVel2MotorVel(double ql, double dql, double drl);
 				double dqmA, dqmB;
 				
+				
 				/**
                   * @brief Converts radians to degrees.
                   * @param rad The current angle in radians.
@@ -101,6 +107,7 @@ class ASCCommonToolkit : public AtriasController {
 				double rad2deg(double rad);
 				double deg;
 				
+				
 				/**
                   * @brief Converts degrees to radians.
                   * @param deg The current angle in degrees.
@@ -108,6 +115,7 @@ class ASCCommonToolkit : public AtriasController {
                   */
 				double deg2rad(double deg);
 				double rad;
+				
 				
 				/**
                   * @brief Converts cartesian coordiantes to polar coordinates.
@@ -118,6 +126,7 @@ class ASCCommonToolkit : public AtriasController {
                   */
 				std::tuple<double, double> cart2pol(double x, double z);
 				double q, r;
+				
 				
 				/**
                   * @brief Converts polar coordiantes to cartesian coordinates.
