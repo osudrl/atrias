@@ -17,7 +17,7 @@
 // legForce.dfz = 0.0;
 //
 // // Compute and set required motorCurrent
-// std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ASCLegForce.control(legForce, gain, rs.lLeg, rs.position);
+// std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(legForce, rs.lLeg, rs.position);
 
 #include "asc_leg_force/ASCLegForce.hpp"
 

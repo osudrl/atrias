@@ -43,7 +43,14 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(atc_force_control_demo src/controller_component.cpp)
+	# Build old-style controller
+	#orocos_component(atc_force_control_demo src/controller_component.cpp)
+	
+	# Build new-style controller
+    orocos_component(ATCForceControlDemo src/ATCForceControlDemo.cpp)
+    target_link_libraries(ATCForceControlDemo ControlLib-${OROCOS_TARGET})
+     
+	# Build type-kits
 	ros_generate_rtt_typekit(atc_force_control_demo)
 endif(ATRIAS_BUILD_CONTROLLERS)
 
