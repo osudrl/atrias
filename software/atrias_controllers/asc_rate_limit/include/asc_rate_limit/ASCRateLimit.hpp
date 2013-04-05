@@ -14,7 +14,7 @@
 
 // These are for the delta time calculation
 #include <atrias_shared/globals.h>
-#include <../../../robot_definitions/robot_invariant_defs.h>
+#include <robot_invariant_defs.h>
 
 // Our log data
 #include "asc_rate_limit/controller_log_data.h"

@@ -27,9 +27,9 @@
 #include <atrias_shared/notNullPtr.hpp>
 
 // For the medulla state enum
-#include <../../robot_definitions/robot_invariant_defs.h>
+#include <robot_invariant_defs.h>
 // For the maximum and minimum torques, used by the startup controller
-#include <../../robot_definitions/robot_variant_defs.h>
+#include <robot_variant_defs.h>
 // And to check RT Ops's state
 #include <atrias_shared/globals.h>
 // For our publishing timer
