@@ -71,7 +71,7 @@ std::tuple<double, double> ASCCommonToolkit::legPos2MotorPos(double ql, double r
 } // legPos2MotorPos
 
 // motorVel2LegVel
-std::tuple<double, double> ASCCommonToolkit::motorVel2legVel(double qmA, double qmB, double dqmA, double dqmB) {
+std::tuple<double, double> ASCCommonToolkit::motorVel2LegVel(double qmA, double qmB, double dqmA, double dqmB) {
 	
 	// Compute leg velocities
 	dql = (dqmA + dqmB)/2.0;
@@ -80,7 +80,7 @@ std::tuple<double, double> ASCCommonToolkit::motorVel2legVel(double qmA, double 
 	// Return motor velocities
 	return std::make_tuple(dql, drl);
 	
-} // legVel2MotorVel
+} // motorVel2LegVel
 
 // legVel2MotorVel
 std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double ql, double dql, double drl) {
@@ -94,8 +94,8 @@ std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double ql, double d
 	
 } // legVel2MotorVel
 
-// rad2deg
-double ASCCommonToolkit::rad2deg(double rad) {
+// rad2Deg
+double ASCCommonToolkit::rad2Deg(double rad) {
 
 	// Compute degrees
     deg = rad/PI*180.0;
@@ -103,10 +103,10 @@ double ASCCommonToolkit::rad2deg(double rad) {
 	// Return degrees
 	return deg;
 	
-} // rad2deg
+} // rad2Deg
 
-// deg2rad
-double ASCCommonToolkit::deg2rad(double deg) {
+// deg2Rad
+double ASCCommonToolkit::deg2Rad(double deg) {
 
 	// Compute radians
     rad = deg/180.0*PI;
@@ -114,10 +114,10 @@ double ASCCommonToolkit::deg2rad(double deg) {
 	// Return radians
 	return rad;
 	
-} // deg2rad
+} // deg2Rad
 
-// cart2pol
-std::tuple<double, double> ASCCommonToolkit::cart2pol(double x, double z) {
+// cart2Pol
+std::tuple<double, double> ASCCommonToolkit::cart2Pol(double x, double z) {
 
 	// Compute polar coordinates
     q = atan2(z, x);
@@ -126,10 +126,10 @@ std::tuple<double, double> ASCCommonToolkit::cart2pol(double x, double z) {
 	// Return polar coordinates
 	return std::make_tuple(q, r);
 	
-} // cart2pol
+} // cart2Pol
 
-// pol2cart
-std::tuple<double, double> ASCCommonToolkit::pol2cart(double q, double r) {
+// pol2Cart
+std::tuple<double, double> ASCCommonToolkit::pol2Cart(double q, double r) {
 
 	// Compute polar coordinates
     x = r*cos(q);
@@ -138,7 +138,7 @@ std::tuple<double, double> ASCCommonToolkit::pol2cart(double q, double r) {
 	// Return polar coordinates
 	return std::make_tuple(x, z);
 	
-} // pol2cart
+} // pol2Cart
 
 }
 }

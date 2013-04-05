@@ -123,8 +123,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     right_offz_spinbutton->set_value(0.0);
 
 	// Set up subscriber and publisher.
-	sub = nh.subscribe("atc_force_control_demo_status", 0, controllerCallback);
-	pub = nh.advertise<atc_force_control_demo::controller_input>("atc_force_control_demo_input", 0);
+	sub = nh.subscribe("controller_status", 0, controllerCallback);
+	pub = nh.advertise<atc_force_control_demo::controller_input>("controller_input", 0);
 
 	return true;
 

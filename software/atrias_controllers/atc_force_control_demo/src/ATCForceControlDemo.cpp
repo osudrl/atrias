@@ -18,8 +18,8 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	ascLegForce(this, "ascLegForce"),
 	ascHipBoomKinematics(this, "ascHipBoomKinematics")
 {
-	// Initalize
-	 0.0;
+	// Initialize
+	t = 0.0;
 }
 
 /* @brief This is the main function for the top-level controller.
@@ -37,7 +37,7 @@ void ATCForceControlDemo::controller() {
 	 */
 	
 	// Startup is handled by the ATC class.
-	setStartupEnabled(true);
+	// setStartupEnabled(true);
 
 	// Initialize variables
 	legForce.fx = 0.0;
@@ -51,8 +51,7 @@ void ATCForceControlDemo::controller() {
 	t = t + 0.001;
 
 
-	// Left leg controller -----------------------------------------------------
-
+	// Left leg controller
 	if (guiIn.left_leg_pos) {		
 		// Set motor angles
 		std::tie(lMotorAngle.A, lMotorAngle.B) = ascCommonToolkit.legPos2MotorPos(guiIn.left_leg_ang, guiIn.left_leg_len);
@@ -84,8 +83,7 @@ void ATCForceControlDemo::controller() {
 	}
 
 
-	// Right leg controller ----------------------------------------------------
-
+	// Right leg controller
 	if (guiIn.right_leg_pos) {		
 		// Set motor angles
 		std::tie(rMotorAngle.A, rMotorAngle.B) = ascCommonToolkit.legPos2MotorPos(guiIn.right_leg_ang, guiIn.right_leg_len);
@@ -117,7 +115,7 @@ void ATCForceControlDemo::controller() {
 	}
 
 	
-	// Hip controller ----------------------------------------------------------
+	// Hip controller
 	if (guiIn.constant_hip) {		
 		// Get hip angles from GUI
 		hipAngle.left = guiIn.left_hip_ang;

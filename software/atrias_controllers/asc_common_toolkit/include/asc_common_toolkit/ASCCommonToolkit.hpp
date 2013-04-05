@@ -83,7 +83,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return drl The computed leg length velocity.
 		  * @return dql The computed leg angle velocity.
 		  */
-		std::tuple<double, double> motorVel2legVel(double qmA, double qmB, double dqmA, double dqmB);
+		std::tuple<double, double> motorVel2LegVel(double qmA, double qmB, double dqmA, double dqmB);
 		double drl, dql;
 
 
@@ -104,7 +104,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @param rad The current angle in radians.
 		  * @return deg The computed angle in degrees.
 		  */
-		double rad2deg(double rad);
+		double rad2Deg(double rad);
 		double deg;
 
 
@@ -113,7 +113,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @param deg The current angle in degrees.
 		  * @return rad The computed angle in radians.
 		  */
-		double deg2rad(double deg);
+		double deg2Rad(double deg);
 		double rad;
 
 
@@ -124,7 +124,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return q The q polar coordinate.
 		  * @return r The r polar coordinate.
 		  */
-		std::tuple<double, double> cart2pol(double x, double z);
+		std::tuple<double, double> cart2Pol(double x, double z);
 		double q, r;
 
 
@@ -135,7 +135,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return x The x cartesian coordinate.
 		  * @return z The z cartesian coordinate.
 		  */
-		std::tuple<double, double> pol2cart(double q, double r);
+		std::tuple<double, double> pol2Cart(double q, double r);
 		double x, z;
 
 

@@ -30,6 +30,7 @@
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 
 // Datatypes
+#include <robot_invariant_defs.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
@@ -68,6 +69,9 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		  * if they are not disabled.
 		  */
 		void controller();
+
+		//TEMP
+		double test1, test2;
 
 		// Time
 		double t;
