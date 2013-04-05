@@ -8,7 +8,6 @@
 #include <atc_slip_hopping/controller_input.h>
 #include <atc_slip_hopping/controller_status.h>
 #include <atrias_shared/gui_library.h>
-#include <robot_invariant_defs.h>
 #include <ros/ros.h>
 
 // ROS -------------------------------------------------------------------------

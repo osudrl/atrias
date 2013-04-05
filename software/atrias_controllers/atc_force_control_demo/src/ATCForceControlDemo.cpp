@@ -19,7 +19,7 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	ascHipBoomKinematics(this, "ascHipBoomKinematics")
 {
 	// Initalize
-    t = 0.0;
+	 0.0;
 }
 
 /* @brief This is the main function for the top-level controller.
@@ -35,17 +35,17 @@ void ATCForceControlDemo::controller() {
 	 * setStartupEnabled(true/false) // Enable or disable the default startup controller
 	 * setShutdownEnabled(true/false) // Enable or disable the shutdown controller
 	 */
-	 
-    // Startup is handled by the ATC class.
-    setStartupEnabled(true);
+	
+	// Startup is handled by the ATC class.
+	setStartupEnabled(true);
 
-    // Initialize variables
-    legForce.fx = 0.0;
-    legForce.fz = 0.0;
-    legForce.dfx = 0.0;
-    legForce.dfz = 0.0;
-    ascLegForce.kp = guiIn.leg_for_kp;
-    ascLegForce.kd = guiIn.leg_for_kd;
+	// Initialize variables
+	legForce.fx = 0.0;
+	legForce.fz = 0.0;
+	legForce.dfx = 0.0;
+	legForce.dfz = 0.0;
+	ascLegForce.kp = guiIn.leg_for_kp;
+	ascLegForce.kd = guiIn.leg_for_kd;
 
 	// Increment time step
 	t = t + 0.001;
@@ -123,9 +123,9 @@ void ATCForceControlDemo::controller() {
 		hipAngle.left = guiIn.left_hip_ang;
 		hipAngle.right = guiIn.right_hip_ang;
 		
-        // Set motor currents
-        co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
-        co.rLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.rLeg.hip.legBodyVelocity);
+		// Set motor currents
+		co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.rLeg.hip.legBodyVelocity);
 
 	} else if (guiIn.constant_toe) {	
 		// Get toe positions from GUI
@@ -135,15 +135,15 @@ void ATCForceControlDemo::controller() {
 		// Compute inverse kinematics
 		std::tie(hipAngle.left, hipAngle.right) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 		
-        // Set motor currents
-        co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
-        co.rLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.rLeg.hip.legBodyVelocity);
-        
+		// Set motor currents
+		co.lLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.left - rs.lLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentHip = guiIn.hip_pos_kp*(hipAngle.right - rs.rLeg.hip.legBodyAngle) + guiIn.hip_pos_kd*(0.0 - rs.rLeg.hip.legBodyVelocity);
+
 	}
 
 	// Copy over positions to the GUI output data
 	guiOut.isEnabled = isEnabled();
-	 
+	
 }
 
 
