@@ -15,6 +15,9 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 # C++11 support
 add_definitions(-std=c++0x)
 
+# Include robot_variant and robot_invariant defs
+include_directories(../../robot_definitions/)
+
 orocos_library(ControlLib src/AtriasController.cpp)
 
 orocos_generate_package()
