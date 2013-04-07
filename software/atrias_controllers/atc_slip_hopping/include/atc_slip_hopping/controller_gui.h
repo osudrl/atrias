@@ -10,17 +10,32 @@
 #include <atrias_shared/gui_library.h>
 #include <ros/ros.h>
 
-// ROS -------------------------------------------------------------------------
+// ROS
 ros::NodeHandle nh;
 ros::Subscriber sub;
 ros::Publisher pub;
 
-// Data ------------------------------------------------------------------------
+// Data
 atc_slip_hopping::controller_input controllerDataOut;
 atc_slip_hopping::controller_status controllerDataIn;
 
-// GUI elements ----------------------------------------------------------------
-//Gtk::SpinButton *example_spinbutton;
+// GUI elements
+Gtk::SpinButton *slip_spring_spinbutton,
+	*standing_leg_spinbutton,
+	*hop_height_spinbutton,
+	*slip_leg_spinbutton,
+	*leg_pos_kp_spinbutton,
+	*leg_for_kp_spinbutton,
+	*leg_pos_kd_spinbutton,
+	*leg_for_kd_spinbutton,
+	*hip_pos_kp_spinbutton,
+	*hip_pos_kd_spinbutton;
+	
+Gtk::ComboBox *main_controller_combobox,
+	*spring_type_combobox,
+	*force_type_combobox,
+	*stance_controller_combobox,
+	*hop_type_combobox;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not

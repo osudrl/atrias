@@ -47,7 +47,7 @@ class ASCSlipModel : public AtriasController {
                   * @param slipState The current state-space parameters.
                   * @return slipState The computed next step state-space parameters.
                   */
-				SlipState rk4Advance(SlipState slipState);
+				SlipState advanceRK4(SlipState slipState);
 				
 				// State-space
 				double r, dr, q, dq;
@@ -59,7 +59,7 @@ class ASCSlipModel : public AtriasController {
                   * @param slipState The current state-space parameters.
                   * @return slipState The computed next step state-space parameters.
                   */
-				SlipState rk5Advance(SlipState slipState);
+				SlipState advanceRK5(SlipState slipState);
 				
 				
                 /**

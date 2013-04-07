@@ -37,9 +37,6 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	# Build old-style controller
-	#orocos_component(asc_common_toolkit src/controller_component.cpp)
-	
 	# Build new-style controller
 	orocos_library(ASCCommonToolkit src/ASCCommonToolkit.cpp)
     target_link_libraries(ASCCommonToolkit ControlLib-${OROCOS_TARGET})

@@ -5,11 +5,6 @@
   */
 
 // To use do something like this.
-//
-// // Define gain struct
-// gain.kp = 1000.0;
-// gain.kd = 8.0;
-//
 // // Define legForce struct
 // legForce.fx = 0.0;
 // legForce.fz = 0.0;
@@ -78,6 +73,8 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	log_out.data.tausB = tausB;
 	log_out.data.dtausA = dtausA;
 	log_out.data.dtausB = dtausB;
+	log_out.data.curA = curA;
+	log_out.data.curA = curA;
 
     // Transmit the log data
     log_out.send();
@@ -115,8 +112,8 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 	legForce.fz = -(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))/(L1*L2*sin(qlA - qlB));
 	
 	// Compute the derivative of the leg forces
-	legForce.dfx = -(L2*dtausB*sin(qb + qlA) - L1*dtausA*sin(qb + qlB) + L2*tausB*cos(qb + qlA)*(dqb + dqlA) - L1*tausA*cos(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)*1.0/pow(sin(qlA - qlB), 2)*(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))*(dqlA - dqlB))/(L1*L2);
-	legForce.dfz = -(L2*dtausB*cos(qb + qlA) - L1*dtausA*cos(qb + qlB) - L2*tausB*sin(qb + qlA)*(dqb + dqlA) + L1*tausA*sin(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)*1.0/pow(sin(qlA - qlB), 2)*(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))*(dqlA - dqlB))/(L1*L2);
+	legForce.dfx = -(L2*dtausB*sin(qb + qlA) - L1*dtausA*sin(qb + qlB) + L2*tausB*cos(qb + qlA)*(dqb + dqlA) - L1*tausA*cos(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)/pow(sin(qlA - qlB), 2)*(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))*(dqlA - dqlB))/(L1*L2);
+	legForce.dfz = -(L2*dtausB*cos(qb + qlA) - L1*dtausA*cos(qb + qlB) - L2*tausB*sin(qb + qlA)*(dqb + dqlA) + L1*tausA*sin(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)/pow(sin(qlA - qlB), 2)*(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))*(dqlA - dqlB))/(L1*L2);
 
     // Set the log data
 	log_out.data.fx = legForce.fx;

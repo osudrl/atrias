@@ -12,9 +12,9 @@
 // slipState.dq = 0.0;
 //
 // // Compute and set legForce
-// ASCSlipModel.k = ASCCommonToolkit.legStiffness(r, r0);
-// slipState = ASCSlipModel.advance(slipState);
-// legForce = ASCSlipModel.force(slipState);
+// ascSlipModel.k = ascCommonToolkit.legStiffness(r, r0);
+// slipState = ascSlipModel.advanceRK5(slipState);
+// legForce = ascSlipModel.force(slipState);
 
 #include "asc_slip_model/ASCSlipModel.hpp"
 
@@ -39,7 +39,7 @@ ASCSlipModel::ASCSlipModel(AtriasController *parent, string name) :
 }
 
 // rk4Advance
-SlipState ASCSlipModel::rk4Advance(SlipState slipState) {
+SlipState ASCSlipModel::advanceRK4(SlipState slipState) {
 
 	// Unpack parameters
 	r = slipState.r;
@@ -91,7 +91,7 @@ SlipState ASCSlipModel::rk4Advance(SlipState slipState) {
 
 
 // rk5Advance
-SlipState ASCSlipModel::rk5Advance(SlipState slipState) {
+SlipState ASCSlipModel::advanceRK5(SlipState slipState) {
 
 	// Unpack parameters
 	r = slipState.r;

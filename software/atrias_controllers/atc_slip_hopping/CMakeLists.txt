@@ -43,9 +43,6 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	# Build old-style controller
-	#orocos_component(atc_slip_hopping src/controller_component.cpp)
-	
 	# Build new-style controller
     orocos_component(ATCSlipHopping src/ATCSlipHopping.cpp)
     target_link_libraries(ATCSlipHopping ControlLib-${OROCOS_TARGET})
