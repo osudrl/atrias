@@ -9,7 +9,7 @@
       <object class="GtkTable" id="table1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_rows">5</property>
+        <property name="n_rows">7</property>
         <property name="n_columns">6</property>
         <child>
           <object class="GtkVBox" id="vbox1">
@@ -69,8 +69,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="vertical_checkbutton">
-                <property name="label" translatable="yes">Vertical</property>
+              <object class="GtkCheckButton" id="hip_inv_kine_chkbox">
+                <property name="label" translatable="yes">Hip Inverse Kinematics</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -290,7 +290,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="sync_checkbutton">
-                <property name="label" translatable="yes">Sync</property>
+                <property name="label" translatable="yes">Sync Legs</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -592,6 +592,98 @@
           <packing>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="smoothLegMotionChkBtn">
+            <property name="label" translatable="yes">Smooth Leg Motion</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">4</property>
+            <property name="right_attach">6</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="maxLegSpdLbl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Max Leg Speed (rad/s):</property>
+          </object>
+          <packing>
+            <property name="right_attach">3</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="maxLegSpd">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">1</property>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="right_attach">4</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="maxHipSpdLbl">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Max Hip Speed(rad/s):</property>
+          </object>
+          <packing>
+            <property name="right_attach">3</property>
+            <property name="top_attach">6</property>
+            <property name="bottom_attach">7</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="maxHipSpd">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="right_attach">4</property>
+            <property name="top_attach">6</property>
+            <property name="bottom_attach">7</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="smoothHipMotionChkBtn">
+            <property name="label" translatable="yes">Smooth Hip Motion</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">4</property>
+            <property name="right_attach">6</property>
+            <property name="top_attach">6</property>
+            <property name="bottom_attach">7</property>
           </packing>
         </child>
         <child>
