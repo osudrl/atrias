@@ -45,7 +45,7 @@ endif(ATRIAS_BUILD_GUI)
 if(ATRIAS_BUILD_CONTROLLERS)
 	# Build new-style controller
     orocos_component(ATCForceControlDemo src/ATCForceControlDemo.cpp)
-    target_link_libraries(ATCForceControlDemo ControlLib-${OROCOS_TARGET})
+    target_link_libraries(ATCForceControlDemo ControlLib-${OROCOS_TARGET} ASCHipBoomKinematics-${OROCOS_TARGET})
      
 	# Build type-kits
 	ros_generate_rtt_typekit(atc_force_control_demo)
