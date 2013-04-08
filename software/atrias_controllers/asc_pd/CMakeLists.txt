@@ -23,7 +23,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	# Build old-style controller for backwards compatibility
-	#orocos_component(pd_controller src/controller_component.cpp)
+	orocos_component(pd_controller src/controller_component.cpp)
 
 	# ... and the new-style controller
 	orocos_library(ASCPD src/ASCPD.cpp)
