@@ -16,12 +16,10 @@
 
 // ROS
 ros::NodeHandle nh;
-ros::Subscriber sub;
 ros::Publisher pub;
 
 // Data
 atc_joint_position::controller_input controllerDataOut;
-atc_joint_position::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::SpinButton *p_hl_spinbutton,
@@ -37,10 +35,14 @@ Gtk::SpinButton *p_hl_spinbutton,
                 *p_lr_spinbutton,
                 *d_lr_spinbutton,
                 *a_lr_spinbutton,
-                *l_lr_spinbutton;
+                *l_lr_spinbutton,
+                *max_leg_spd_spinbutton,
+                *max_hip_spd_spinbutton;
 
 Gtk::CheckButton *vertical_checkbutton,
-                 *sync_checkbutton;
+                 *sync_checkbutton,
+                 *smooth_leg_motion_checkbutton,
+                 *smooth_hip_motion_checkbutton;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
