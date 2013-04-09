@@ -3,6 +3,13 @@
 # Abort upon encountering an error
 set -e
 
+# Confirm we're in the right directory
+if [ `basename $PWD` != atrias_controllers ]
+then
+	echo "This script must be run from the atrias_controllers directory. Exiting."
+	exit 4
+fi
+
 # Read in the desired package name from the user
 echo -n "Please input the desired package name, such as asc_pd or atc_motor_torque: "
 read PACKAGE_NAME
