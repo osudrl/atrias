@@ -4,13 +4,6 @@ float64 leg_for_kp
 float64 leg_for_kd
 float64 hip_pos_kp
 float64 hip_pos_kd
-float64 robot_ks
-float64 robot_kt
-float64 robot_kg
-float64 left_hip_ang
-float64 right_hip_ang
-float64 left_toe_pos
-float64 right_toe_pos
 float64 left_leg_len
 float64 right_leg_len
 float64 left_leg_ang
@@ -32,13 +25,5 @@ float64 right_offx
 float64 left_offz
 float64 right_offz
 
-bool constant_hip
-bool constant_toe
-bool left_leg_pos
-bool right_leg_pos
-bool left_leg_for
-bool right_leg_for
-bool left_leg_wave_for
-bool right_leg_wave_for
-
-uint8 force
+uint8 left_controller
+uint8 right_controller

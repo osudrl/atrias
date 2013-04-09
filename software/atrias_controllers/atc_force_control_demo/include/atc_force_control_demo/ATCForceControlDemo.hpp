@@ -25,9 +25,9 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
-#include <asc_slip_model/ASCSlipModel.hpp>
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+#include <asc_pd/ASCPD.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -70,37 +70,43 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		  */
 		void controller();
 
-		//TEMP
-		double test1, test2;
-
-		// Time
-		double t;
-	
-		// Leg position control variables
-		MotorAngle lMotorAngle;
-		MotorAngle rMotorAngle;
-	
-		// Leg force control variables
-		LegForce legForce;
-		AB motorCurrent;
-	
-		// Hip control variables
-		LeftRight toePosition;
-		LeftRight hipAngle;	
+		// Time counters
+		double lt, rt;
 		
+		// Leg and motor positions
+		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
+		
+		// Leg forces
+		LegForce fl, fr;
 	
+
 		/**
 		  * @brief These are function within the top-level controller.
-		  */	
-
+		  */		  
+		void updateState();
+		int lLegControllerState, rLegControllerState;
 		
+		void hipControl();
+		double qlh, qrh;
+		LeftRight toePosition;
+		
+		LegForce automateForceTest(double t);
+		LegForce legForce;
+		double duration;
+		
+			
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
 		ASCCommonToolkit ascCommonToolkit;
-		ASCSlipModel ascSlipModel;
 		ASCLegForce ascLegForce;
 		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDlA;
+		ASCPD ascPDlB;
+		ASCPD ascPDrA;
+		ASCPD ascPDrB;
+		ASCPD ascPDlh;
+		ASCPD ascPDrh;
 
 };
 
