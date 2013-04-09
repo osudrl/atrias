@@ -1,21 +1,6 @@
-#
-# The find_package macro for Orocos-RTT works best with
-# cmake >= 2.6.3
-#
 cmake_minimum_required(VERSION 2.6.3)
-
-project(atc_component)
-
+project(ToSubstitutePackageName)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
 rosbuild_init()
 
 #set the default path for built executables to the "bin" directory
@@ -37,20 +22,12 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find GTK libraries and build GUI library.
 if(ATRIAS_BUILD_GUI)
-    rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
-    target_link_libraries(controller_gui ${GTK2_LIBRARIES})
+	rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
+	target_link_libraries(controller_gui ${GTK2_LIBRARIES})
 endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(ATC src/atc.cpp)
-	# Here we link with the subcontroller called "ASCPD". Repeat this line
-	# for additional subcontroller types
-	target_link_libraries(ATC ASCPD-${OROCOS_TARGET})
-
-	# Also, we need to link with the Control Library
-	target_link_libraries(ATC ControlLib-${OROCOS_TARGET})
-
-	ros_generate_rtt_typekit(atc_component)
+	orocos_component(ToSubstituteClassName src/ToSubstituteClassName.cpp)
+	ros_generate_rtt_typekit(ToSubstitutePackageName)
 endif(ATRIAS_BUILD_CONTROLLERS)
-

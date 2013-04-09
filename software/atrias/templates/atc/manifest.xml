@@ -1,15 +1,12 @@
 <package>
-  <description brief="atc_component">
-
-     atc_component
-
-  </description>
-  <author>drl</author>
-  <license>BSD</license>
-  <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/atc_component</url>
-  <depend package="atrias_control_lib"/>
-  <depend package="atrias_shared"/>
-  <depend package="atrias_msgs"/>
-
+	<description brief="ToSubstitutePackageName">
+		ToSubstitutePackageName
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://atrias.googlecode.com/</url>
+	<depend package="atrias_control_lib"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
 </package>

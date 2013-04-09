@@ -24,4 +24,6 @@ endif(DEFINED atrias_PACKAGE_PATH)
 if(ATRIAS_BUILD_CONTROLLERS)
 	# Build a new-style subcontroller
 	orocos_library(ToSubstituteClassName src/ToSubstituteClassName.cpp)
+
+	ros_generate_rtt_typekit(ToSubstitutePackageName)
 endif(ATRIAS_BUILD_CONTROLLERS)

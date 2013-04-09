@@ -13,8 +13,6 @@ PACKAGE_TYPE=${PACKAGE_NAME:0:3}
 if [ "$PACKAGE_TYPE" == "atc" ]
 then
 	echo "Generating top-level controller."
-	echo "This is not yet implemented! Exiting."
-	exit 3
 elif [ "$PACKAGE_TYPE" == "asc" ]
 then
 	echo "Generating subcontroller."
@@ -41,7 +39,7 @@ cd $PACKAGE_NAME
 mv include/ToSubstitutePackageName include/$PACKAGE_NAME
 
 # Ask the user for the name of the main class
-echo -n "Please input the desired class name, such as ASCPD or ASCMotorTorque: "
+echo -n "Please input the desired class name, such as ASCPD or ATCMotorTorque: "
 read CLASS_NAME
 
 # Rename the class files
@@ -56,10 +54,10 @@ mv src/ToSubstituteClassName.cpp src/$CLASS_NAME.cpp
 sed "s/ToSubstitutePackageName/$PACKAGE_NAME/g" -i `find . -type f`
 sed "s/ToSubstituteClassName/$CLASS_NAME/g" -i `find . -type f`
 
-# Generate the controller.txt file
+# Substitute in the description
 echo "Please enter a description of this controller:"
 read DESCRIPTION
-echo "description=$DESCRIPTION" > controller.txt
+sed "s/ToSubstituteDescription/$DESCRIPTION/g" -i `find . -type f`
 
 echo "Controller creation complete."
 
