@@ -91,19 +91,19 @@ void getParameters() {
     nh.getParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
     nh.getParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
 	int main_controller;
-    nh.getParam("/atrias_gui/main_controller",main_controller);
+    nh.getParam("/atrias_gui/main_controller", main_controller);
     controllerDataOut.main_controller = (uint8_t)main_controller;
     int spring_type;
-    nh.getParam("/atrias_gui/spring_type",spring_type);
+    nh.getParam("/atrias_gui/spring_type", spring_type);
     controllerDataOut.spring_type = (uint8_t)spring_type;
     int force_type;
-    nh.getParam("/atrias_gui/force_type",force_type);
+    nh.getParam("/atrias_gui/force_type", force_type);
     controllerDataOut.force_type = (uint8_t)force_type;
     int stance_controller;
-    nh.getParam("/atrias_gui/stance_controller",stance_controller);
+    nh.getParam("/atrias_gui/stance_controller", stance_controller);
     controllerDataOut.stance_controller = (uint8_t)stance_controller;
     int hop_type;
-    nh.getParam("/atrias_gui/hop_type",hop_type);
+    nh.getParam("/atrias_gui/hop_type", hop_type);
     controllerDataOut.hop_type = (uint8_t)hop_type;
 
     // Configure the GUI
@@ -174,6 +174,6 @@ void guiUpdate() {
 
 // guiTakedown
 void guiTakedown() {
-
+	// Stuff
 } // guiTakedown
 

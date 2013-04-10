@@ -1,1 +1,2 @@
-bool isEnabled
+# For timestamps
+Header header

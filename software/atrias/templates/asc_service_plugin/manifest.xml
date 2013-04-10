@@ -1,9 +1,0 @@
-<package>
-    <description brief="Orocos asc_service_plugin Component package">
-        This package contains the components of the asc_service_plugin package
-    </description>
-    <license>BSD</license>
-    <author>drl</author>
-    <depend package="atrias_shared" />
-
-</package>

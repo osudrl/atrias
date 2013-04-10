@@ -1,7 +1,0 @@
-# Shut stuff down
-# TODO: Implement subcontroller naming
-# TODO: Figure out where/when to call this
-var string controllerName
-controllerName.stop()
-controllerName.cleanup()
-unloadComponent(controllerName)

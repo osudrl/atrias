@@ -12,4 +12,5 @@
   <depend package="asc_slip_model"/>
   <depend package="asc_leg_force"/>
   <depend package="asc_hip_boom_kinematics"/>
+  <depend package="asc_pd"/>
 </package>

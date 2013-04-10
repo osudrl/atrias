@@ -8,9 +8,6 @@
   * This provides interfaces to make writing controllers easier.
   */
 
-// Standard library
-#include <cstddef> // nullptr_t
-
 // Orocos includes
 #include <rtt/Component.hpp>       // We need this since we're a component.
 #include <rtt/ConnPolicy.hpp>      // Allows us to establish ROS connections.
@@ -22,9 +19,6 @@
 // Robot state and controller output
 #include <atrias_msgs/controller_output.h>
 #include <atrias_msgs/robot_state.h>
-
-// This lets us check whether to create/check ports
-#include <atrias_shared/notNullPtr.hpp>
 
 // For the medulla state enum
 #include <robot_invariant_defs.h>
@@ -42,10 +36,32 @@
 namespace atrias {
 namespace controller {
 
+/**
+  * @brief This indicates that a port is not needed.
+  */
+struct Unused {
+	std_msgs::Header header;
+};
+
+/**
+  * @brief This detected if a type is not equal to Unused.
+  * @return False if this is of type Unused, true otherwise
+  */
+template <typename T>
+inline bool notUnused() {
+	return true;
+}
+
+// Utilize template specialization to detect the difference
+template <>
+inline bool notUnused<Unused>() {
+	return false;
+}
+
 // This is a component, so we subclass TaskContext;
 // as a controller, this subclasses AtriasController
 // Also, we're a template...
-template <typename logType = std::nullptr_t, typename guiInType = std::nullptr_t, typename guiOutType = std::nullptr_t>
+template <typename logType = Unused, typename guiInType = Unused, typename guiOutType = Unused>
 class ATC : public RTT::TaskContext, public AtriasController {
 	public:
 		/**
@@ -203,7 +219,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	this->requires("atrias_rt")->addOperationCaller(this->sendEventOp);
 
 	// Set up the event port for incoming GUI data (if there is incoming GUI data)
-	if (atrias::shared::notNullPtr<guiInType>()) {
+	if (notUnused<guiInType>()) {
 		log(RTT::Info) << "[" << this->AtriasController::getName()
 		               << "] Setting up GUI input port." << RTT::endlog();
 
@@ -224,7 +240,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	}
 
 	// Set up the port for outgoing GUI data (it it exists)
-	if (atrias::shared::notNullPtr<guiOutType>()) {
+	if (notUnused<guiOutType>()) {
 		log(RTT::Info) << "/" << this->AtriasController::getName()
 		               << "] Setting up GUI output port." << RTT::endlog();
 
@@ -247,7 +263,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	}
 
 	// Initialize the logging port (if necessary)
-	if (atrias::shared::notNullPtr<logType>()) {
+	if (notUnused<logType>()) {
 		log(RTT::Info) << "/" << this->AtriasController::getName()
 		               << "] Setting up logging port." << RTT::endlog();
 		
@@ -341,7 +357,7 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 	this->controller();
 
 	// Transmit the status to the GUI, if it's time.
-	if (atrias::shared::notNullPtr<guiOutType>()) {
+	if (notUnused<guiOutType>()) {
 		if (publishTimer.readyToSend()) {
 			// Set the header (for timestamping)
 			this->guiOut.header = this->getROSHeader();
@@ -352,7 +368,7 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 	}
 
 	// Send the controller's logging data
-	if (atrias::shared::notNullPtr<logType>()) {
+	if (notUnused<logType>()) {
 		// Set the header
 		this->logOut.header = this->getROSHeader();
 

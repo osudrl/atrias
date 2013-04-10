@@ -5,7 +5,7 @@
 
 #include <atc_force_control_demo/controller_gui.h>
 
-// guiInit =====================================================================
+// guiInit
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Get widgets
@@ -15,13 +15,6 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
     gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
-    gui->get_widget("robot_ks_spinbutton", robot_ks_spinbutton);
-    gui->get_widget("robot_kt_spinbutton", robot_kt_spinbutton);
-    gui->get_widget("robot_kg_spinbutton", robot_kg_spinbutton);
-    gui->get_widget("left_hip_ang_spinbutton", left_hip_ang_spinbutton);
-    gui->get_widget("right_hip_ang_spinbutton", right_hip_ang_spinbutton);
-    gui->get_widget("left_toe_pos_spinbutton", left_toe_pos_spinbutton);
-    gui->get_widget("right_toe_pos_spinbutton", right_toe_pos_spinbutton);
     gui->get_widget("left_leg_len_spinbutton", left_leg_len_spinbutton);
     gui->get_widget("right_leg_len_spinbutton", right_leg_len_spinbutton);
     gui->get_widget("left_leg_ang_spinbutton", left_leg_ang_spinbutton);
@@ -42,30 +35,16 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("right_offx_spinbutton", right_offx_spinbutton);
     gui->get_widget("left_offz_spinbutton", left_offz_spinbutton);
     gui->get_widget("right_offz_spinbutton", right_offz_spinbutton);
-    gui->get_widget("constant_hip_radiobutton", constant_hip_radiobutton);
-    gui->get_widget("constant_toe_radiobutton", constant_toe_radiobutton);
-    gui->get_widget("left_leg_pos_radiobutton", left_leg_pos_radiobutton);
-    gui->get_widget("right_leg_pos_radiobutton", right_leg_pos_radiobutton);
-    gui->get_widget("left_leg_for_radiobutton", left_leg_for_radiobutton);
-    gui->get_widget("right_leg_for_radiobutton", right_leg_for_radiobutton);
-    gui->get_widget("left_leg_wave_for_radiobutton", left_leg_wave_for_radiobutton);
-    gui->get_widget("right_leg_wave_for_radiobutton", right_leg_wave_for_radiobutton);
-    gui->get_widget("force_combobox", force_combobox);
+    gui->get_widget("left_controller_combobox", left_controller_combobox);
+    gui->get_widget("right_controller_combobox", right_controller_combobox);
     
-	// Set ranges.
+	// Set ranges
     leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
     leg_pos_kd_spinbutton->set_range(0.0, 100.0);
     leg_for_kp_spinbutton->set_range(0.0, 1500.0);
     leg_for_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kp_spinbutton->set_range(0.0, 250.0);
     hip_pos_kd_spinbutton->set_range(0.0, 25.0);
-    robot_ks_spinbutton->set_range(0.0, 10000.0);
-    robot_kt_spinbutton->set_range(0.0, 1.0);
-    robot_kg_spinbutton->set_range(50.0, 50.0);
-    left_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.3, 3.0*M_PI/2.0 + 0.3);
-    right_hip_ang_spinbutton->set_range(3.0*M_PI/2.0 - 0.3, 3.0*M_PI/2.0 + 0.3);
-    left_toe_pos_spinbutton->set_range(2.0, 2.3);
-    right_toe_pos_spinbutton->set_range(2.3, 2.6);
     left_leg_len_spinbutton->set_range(0.45, 0.90);
     right_leg_len_spinbutton->set_range(0.45, 0.90);
     left_leg_ang_spinbutton->set_range(M_PI/4.0, 3.0*M_PI/4.0);
@@ -88,19 +67,40 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     right_offz_spinbutton->set_range(-500.0, 500.0);
 	
 	// Set default values
+    leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
+    leg_pos_kd_spinbutton->set_increments(1.0, 0.0);
+    leg_for_kp_spinbutton->set_increments(10.0, 0.0);
+    leg_for_kd_spinbutton->set_increments(1.0, 0.0);
+    hip_pos_kp_spinbutton->set_increments(10.0, 0.0);
+    hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
+    left_leg_len_spinbutton->set_increments(0.01, 0.0);
+    right_leg_len_spinbutton->set_increments(0.01, 0.0);
+    left_leg_ang_spinbutton->set_increments(0.01, 0.0);
+    right_leg_ang_spinbutton->set_increments(0.01, 0.0);
+    left_fx_spinbutton->set_increments(1.0, 0.0);
+    right_fx_spinbutton->set_increments(1.0, 0.0);
+    left_fz_spinbutton->set_increments(1.0, 0.0);
+    right_fz_spinbutton->set_increments(1.0, 0.0);
+    left_ampx_spinbutton->set_increments(1.0, 0.0);
+    right_ampx_spinbutton->set_increments(1.0, 0.0);
+    left_ampz_spinbutton->set_increments(1.0, 0.0);
+    right_ampz_spinbutton->set_increments(1.0, 0.0);
+    left_freqx_spinbutton->set_increments(0.1, 0.0);
+    right_freqx_spinbutton->set_increments(0.1, 0.0);
+    left_freqz_spinbutton->set_increments(0.1, 0.0);
+    right_freqz_spinbutton->set_increments(0.1, 0.0);
+    left_offx_spinbutton->set_increments(1.0, 0.0);
+    right_offx_spinbutton->set_increments(1.0, 0.0);
+    left_offz_spinbutton->set_increments(1.0, 0.0);
+    right_offz_spinbutton->set_increments(1.0, 0.0);
+	
+	// Set values
     leg_pos_kp_spinbutton->set_value(500.0);
     leg_pos_kd_spinbutton->set_value(25.0);
     leg_for_kp_spinbutton->set_value(1000.0);
     leg_for_kd_spinbutton->set_value(8.0);
     hip_pos_kp_spinbutton->set_value(150.0);
     hip_pos_kd_spinbutton->set_value(8.0);
-    robot_ks_spinbutton->set_value(4118.0);
-    robot_kt_spinbutton->set_value(0.0987);
-    robot_kg_spinbutton->set_value(50.0);
-    left_hip_ang_spinbutton->set_value(3.0*M_PI/2.0);
-    right_hip_ang_spinbutton->set_value(3.0*M_PI/2.0);
-    left_toe_pos_spinbutton->set_value(2.15);
-    right_toe_pos_spinbutton->set_value(2.45);
     left_leg_len_spinbutton->set_value(0.85);
     right_leg_len_spinbutton->set_value(0.85);
     left_leg_ang_spinbutton->set_value(M_PI/2.0);
@@ -130,14 +130,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 } // guiInit
 
-// controllerCallback ==========================================================
+
+// controllerCallback
 void controllerCallback(const atc_force_control_demo::controller_status &status) {
+
     controllerDataIn = status;
 
 } // controllerCallback
 
-// getParameters ===============================================================
+
+// getParameters
 void getParameters() {
+
     // Get parameters in the atrias_gui namespace.
     nh.getParam("/atrias_gui/leg_pos_kp", controllerDataOut.leg_pos_kp);
     nh.getParam("/atrias_gui/leg_pos_kd", controllerDataOut.leg_pos_kd);
@@ -145,13 +149,6 @@ void getParameters() {
     nh.getParam("/atrias_gui/leg_for_kd", controllerDataOut.leg_for_kd);
     nh.getParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
     nh.getParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
-    nh.getParam("/atrias_gui/robot_ks", controllerDataOut.robot_ks);
-    nh.getParam("/atrias_gui/robot_kt", controllerDataOut.robot_kt);
-    nh.getParam("/atrias_gui/robot_kg", controllerDataOut.robot_kg);
-    nh.getParam("/atrias_gui/left_hip_ang", controllerDataOut.left_hip_ang);
-    nh.getParam("/atrias_gui/right_hip_ang", controllerDataOut.right_hip_ang);
-    nh.getParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
-    nh.getParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
     nh.getParam("/atrias_gui/left_leg_len", controllerDataOut.left_leg_len);
     nh.getParam("/atrias_gui/right_leg_len", controllerDataOut.right_leg_len);
     nh.getParam("/atrias_gui/left_leg_ang", controllerDataOut.left_leg_ang);
@@ -172,6 +169,12 @@ void getParameters() {
     nh.getParam("/atrias_gui/right_offx", controllerDataOut.right_offx);
     nh.getParam("/atrias_gui/left_offz", controllerDataOut.left_offz);
     nh.getParam("/atrias_gui/right_offz", controllerDataOut.right_offz);
+    int left_controller;
+    nh.getParam("/atrias_gui/left_controller", left_controller);
+    controllerDataOut.left_controller = (uint8_t)left_controller;
+    int right_controller;
+    nh.getParam("/atrias_gui/right_controller", right_controller);
+    controllerDataOut.right_controller = (uint8_t)right_controller;
 
     // Configure the GUI.
     leg_pos_kp_spinbutton->set_value(controllerDataOut.leg_pos_kp);
@@ -180,13 +183,6 @@ void getParameters() {
     leg_for_kd_spinbutton->set_value(controllerDataOut.leg_for_kd);
     hip_pos_kp_spinbutton->set_value(controllerDataOut.hip_pos_kp);
     hip_pos_kd_spinbutton->set_value(controllerDataOut.hip_pos_kd);
-    robot_ks_spinbutton->set_value(controllerDataOut.robot_ks);
-    robot_kt_spinbutton->set_value(controllerDataOut.robot_kt);
-    robot_kg_spinbutton->set_value(controllerDataOut.robot_kg);
-    left_hip_ang_spinbutton->set_value(controllerDataOut.left_hip_ang);
-    right_hip_ang_spinbutton->set_value(controllerDataOut.right_hip_ang);
-    left_toe_pos_spinbutton->set_value(controllerDataOut.left_toe_pos);
-    right_toe_pos_spinbutton->set_value(controllerDataOut.right_toe_pos);
     left_leg_len_spinbutton->set_value(controllerDataOut.left_leg_len);
     right_leg_len_spinbutton->set_value(controllerDataOut.right_leg_len);
     left_leg_ang_spinbutton->set_value(controllerDataOut.left_leg_ang);
@@ -206,14 +202,16 @@ void getParameters() {
     left_offx_spinbutton->set_value(controllerDataOut.left_offx);
     right_offx_spinbutton->set_value(controllerDataOut.right_offx);
     left_offz_spinbutton->set_value(controllerDataOut.left_offz);
-    right_offz_spinbutton->set_value(controllerDataOut.right_offz);
-    
-    
+    right_offz_spinbutton->set_value(controllerDataOut.right_offz); 
+    left_controller_combobox->set_active(controllerDataOut.left_controller);
+    right_controller_combobox->set_active(controllerDataOut.right_controller);  
 
 } // getParameters
 
-// setParameters ===============================================================
+
+// setParameters
 void setParameters() {
+
 	// Set parameters in the atrias_gui namespace.
     nh.setParam("/atrias_gui/leg_pos_kp", controllerDataOut.leg_pos_kp);
     nh.setParam("/atrias_gui/leg_pos_kd", controllerDataOut.leg_pos_kd);
@@ -221,13 +219,6 @@ void setParameters() {
     nh.setParam("/atrias_gui/leg_for_kd", controllerDataOut.leg_for_kd);
     nh.setParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
     nh.setParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
-    nh.setParam("/atrias_gui/robot_ks", controllerDataOut.robot_ks);
-    nh.setParam("/atrias_gui/robot_kt", controllerDataOut.robot_kt);
-    nh.setParam("/atrias_gui/robot_kg", controllerDataOut.robot_kg);
-    nh.setParam("/atrias_gui/left_hip_ang", controllerDataOut.left_hip_ang);
-    nh.setParam("/atrias_gui/right_hip_ang", controllerDataOut.right_hip_ang);
-    nh.setParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
-    nh.setParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
     nh.setParam("/atrias_gui/left_leg_len", controllerDataOut.left_leg_len);
     nh.setParam("/atrias_gui/right_leg_len", controllerDataOut.right_leg_len);
     nh.setParam("/atrias_gui/left_leg_ang", controllerDataOut.left_leg_ang);
@@ -248,24 +239,21 @@ void setParameters() {
     nh.setParam("/atrias_gui/right_offx", controllerDataOut.right_offx);
     nh.setParam("/atrias_gui/left_offz", controllerDataOut.left_offz);
     nh.setParam("/atrias_gui/right_offz", controllerDataOut.right_offz);
+    nh.setParam("/atrias_gui/left_controller", controllerDataOut.left_controller);
+    nh.setParam("/atrias_gui/right_controller", controllerDataOut.right_controller);
 
 } // setParameters
 
-// guiUpdate ===================================================================
+
+// guiUpdate
 void guiUpdate() {
+
     controllerDataOut.leg_pos_kp = leg_pos_kp_spinbutton->get_value();
     controllerDataOut.leg_pos_kd = leg_pos_kd_spinbutton->get_value();
     controllerDataOut.leg_for_kp = leg_for_kp_spinbutton->get_value();
     controllerDataOut.leg_for_kd = leg_for_kd_spinbutton->get_value();
     controllerDataOut.hip_pos_kp = hip_pos_kp_spinbutton->get_value();
     controllerDataOut.hip_pos_kd = hip_pos_kd_spinbutton->get_value();
-    controllerDataOut.robot_ks = robot_ks_spinbutton->get_value();
-    controllerDataOut.robot_kt = robot_kt_spinbutton->get_value();
-    controllerDataOut.robot_kg = robot_kg_spinbutton->get_value();
-    controllerDataOut.left_hip_ang = left_hip_ang_spinbutton->get_value();
-    controllerDataOut.right_hip_ang = right_hip_ang_spinbutton->get_value();
-    controllerDataOut.left_toe_pos = left_toe_pos_spinbutton->get_value();
-    controllerDataOut.right_toe_pos = right_toe_pos_spinbutton->get_value();
     controllerDataOut.left_leg_len = left_leg_len_spinbutton->get_value();
     controllerDataOut.right_leg_len = right_leg_len_spinbutton->get_value();
     controllerDataOut.left_leg_ang = left_leg_ang_spinbutton->get_value();
@@ -286,21 +274,15 @@ void guiUpdate() {
     controllerDataOut.right_offx = right_offx_spinbutton->get_value();
     controllerDataOut.left_offz = left_offz_spinbutton->get_value();
     controllerDataOut.right_offz = right_offz_spinbutton->get_value();
-    controllerDataOut.constant_hip = constant_hip_radiobutton->get_active();
-    controllerDataOut.constant_toe = constant_toe_radiobutton->get_active();
-    controllerDataOut.left_leg_pos = left_leg_pos_radiobutton->get_active();
-    controllerDataOut.right_leg_pos = right_leg_pos_radiobutton->get_active();
-    controllerDataOut.left_leg_for = left_leg_for_radiobutton->get_active();
-    controllerDataOut.right_leg_for = right_leg_for_radiobutton->get_active();
-    controllerDataOut.left_leg_wave_for = left_leg_wave_for_radiobutton->get_active();
-    controllerDataOut.right_leg_wave_for = right_leg_wave_for_radiobutton->get_active();
-    controllerDataOut.force = (uint8_t)force_combobox->get_active_row_number();
+    controllerDataOut.left_controller = (uint8_t)left_controller_combobox->get_active_row_number();
+    controllerDataOut.right_controller = (uint8_t)right_controller_combobox->get_active_row_number();
 
     pub.publish(controllerDataOut);
 
 } // guiUpdate
 
-// guiTakedown =================================================================
+
+// guiTakedown
 void guiTakedown() {
 	// Stuff
 } // guiTakedown

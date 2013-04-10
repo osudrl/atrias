@@ -12,7 +12,9 @@ float64 p_lr
 float64 d_lr
 float64 a_lr
 float64 l_lr
+float64 maxLegSpd
+float64 maxHipSpd
 
 bool vertical
-bool sync
-
+bool smoothLegMotion
+bool smoothHipMotion

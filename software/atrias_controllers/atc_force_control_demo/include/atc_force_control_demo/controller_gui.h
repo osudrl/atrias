@@ -27,13 +27,6 @@ Gtk::SpinButton *leg_pos_kp_spinbutton,
     *leg_for_kd_spinbutton,
     *hip_pos_kp_spinbutton,
     *hip_pos_kd_spinbutton,
-    *robot_ks_spinbutton,
-    *robot_kt_spinbutton,
-    *robot_kg_spinbutton,
-    *left_hip_ang_spinbutton,
-    *right_hip_ang_spinbutton,
-    *left_toe_pos_spinbutton,
-    *right_toe_pos_spinbutton,
     *left_leg_len_spinbutton,
     *right_leg_len_spinbutton,
     *left_leg_ang_spinbutton,
@@ -54,17 +47,9 @@ Gtk::SpinButton *leg_pos_kp_spinbutton,
     *right_offx_spinbutton,
     *left_offz_spinbutton,
     *right_offz_spinbutton;
-
-Gtk::RadioButton *constant_hip_radiobutton,
-	*constant_toe_radiobutton,
-	*left_leg_pos_radiobutton,
-	*right_leg_pos_radiobutton,
-	*left_leg_for_radiobutton,
-	*right_leg_for_radiobutton,
-	*left_leg_wave_for_radiobutton,
-	*right_leg_wave_for_radiobutton;
 	
-Gtk::ComboBox *force_combobox;
+Gtk::ComboBox *left_controller_combobox,
+	*right_controller_combobox;
 
 // Parameters
 //     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not

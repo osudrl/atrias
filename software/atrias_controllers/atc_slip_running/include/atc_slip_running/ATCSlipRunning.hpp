@@ -28,8 +28,10 @@
 #include <asc_slip_model/ASCSlipModel.hpp>
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+#include <asc_pd/ASCPD.hpp>
 
 // Datatypes
+#include <robot_invariant_defs.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
@@ -68,23 +70,45 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		  * if they are not disabled.
 		  */
 		void controller();
-		int controllerState, runningState;
-		double k;
-	
-		/**
-		  * @brief These are function within the top-level controller.
-		  */	
-		void passiveStanceControl();
-		void forceStanceControl();
-		void egbFlightControl();
-		
+
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-		//ASCCommonToolkit commonToolkit;
-		//ASCSlipModel slipModel;
-		//ASCLegForce legForce;
-		//ASCHipBoomKinematics hipBoomKinematics;
+		ASCCommonToolkit ascCommonToolkit;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForce;
+		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDlA;
+		ASCPD ascPDlB;
+		ASCPD ascPDrA;
+		ASCPD ascPDrB;
+		ASCPD ascPDlh;
+		ASCPD ascPDrh;
+		
+	
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void updateState();
+		int controllerState, runningState;
+		int stanceControlType, runningType, forceControlType, springType;
+		bool isLeftStance, isRightStance;
+		
+		void hipControl();
+		double qlh, qrh;
+		LeftRight toePosition;
+				
+		void standingControl();
+		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
+		
+		void forceStancePhaseControl();
+		double ql, rl, h;
+		SlipState slipState;
+		LegForce legForce;
+		
+		void passiveStancePhaseControl();
+		
+		void flightPhaseControl();
 
 };
 
