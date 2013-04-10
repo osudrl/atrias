@@ -9,7 +9,9 @@
     <depend package="atrias_shared"/>
     <depend package="atrias_msgs"/>
     <depend package="atrias_control_lib"/>
+    <depend package="asc_common_toolkit" />
     <depend package="asc_pd" />
+    <depend package="asc_hip_boom_kinematics" />
 </package>
 
 <!-- vim: set expandtab: -->

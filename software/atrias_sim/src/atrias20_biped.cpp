@@ -197,7 +197,7 @@ void GazeboControllerConnector::OnUpdate()
     ciso.position.zVelocity = this->hipLinks.center->GetWorldLinearVel().z;
     // Hacks for a fixed body position
     // TODO: make this reference hipLinks.center appropriately
-    ciso.position.boomAngle = M_PI;
+    ciso.position.boomAngle = 3.05;
     ciso.position.bodyPitch = 3.0/2.0*M_PI;
     ciso.position.bodyPitchVelocity = 0.0;
 

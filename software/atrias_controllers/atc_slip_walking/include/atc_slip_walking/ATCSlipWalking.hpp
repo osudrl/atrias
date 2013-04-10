@@ -3,7 +3,7 @@
 
 /**
   * @file ATCSlipWalking.hpp
-  * @author Ryan Van Why, modified by Andrew Peekema
+  * @author Outline by Ryan Van Why, control code by Andrew Peekema
   * @brief A spring loaded inverted pendulum based walking controller
   */
 
@@ -22,7 +22,12 @@
 #include "atc_slip_walking/controller_status.h"
 
 // Our subcontroller types
+#include <asc_common_toolkit/ASCCommonToolkit.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+
+// Datatypes
+#include <atrias_shared/controller_structs.h>
 
 // Namespaces we're using
 using namespace std;
@@ -40,8 +45,23 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         void controller();
 
         // PD controllers
-        ASCPD pdLeg;
+        ASCCommonToolkit commonToolkit;
         ASCPD pdHip;
+        ASCPD pdLegStance;
+        ASCPD pdLegFlight;
+        ASCHipBoomKinematics hipBoomKinematics;
+
+        // Previous GUI state
+        uint8_t prevMode;
+        // Event Angles
+        double qE;  // Extension
+        double qTD; // TouchDown
+        double qS1; // Enter single support
+        double qS2; // Exit single support
+        double qTO; // TakeOff
+        // Hip calculations
+        double qlh, qrh;
+        LeftRight toePosition;
 };
 
 }
