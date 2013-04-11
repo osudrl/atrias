@@ -13,7 +13,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 {
     // Initially ramp up the current over several seconds
     setStartupEnabled(true);
-    // Initial mode is 0
+    // Start standing
     prevMode = 0;
     // An initial touchdown angle guess
     qTD = 70.0*M_PI/180.0;
@@ -22,7 +22,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
     toePosition.right = 2.45;
     // Hip gains
     pdHip.P = 100;
-    pdHip.D = 2;//10;
+    pdHip.D = 2;  // 2 for simulation, 10 for implementation
 }
 
 void ATCSlipWalking::controller() {
@@ -30,63 +30,73 @@ void ATCSlipWalking::controller() {
     // Robot state: rs
     // Controller output: co
 
-    //double testVar = commonToolkit.rad2Deg(0.8);
-
     // Do nothing if disabled
     if (!isEnabled())
         return;
 
-    // Leg gains
-    pdLegStance.P = guiIn.leg_motor_p_gain;
-    pdLegStance.D = guiIn.leg_motor_d_gain;
-    pdLegFlight.P = guiIn.leg_motor_p_gain;
-    pdLegFlight.D = guiIn.leg_motor_d_gain;
+    // Setup
+    guiCommunication();
+    hipControl();
 
+    // Gui State Machine (initial mode is 0)
+    if ((guiIn.mode == 0) && (prevMode == 0)) {
+        standingControl();
+    } else if ((guiIn.mode == 1) && (prevMode != 2)) {
+        walkingControl();
+        prevMode = 1;
+    } else {
+        shutdownControl();
+        prevMode = 2;
+    }
+
+    // Logging
+    logOut.dummy = 0.0;
+}
+
+
+void ATCSlipWalking::hipControl() {
     // Hold the hips so the legs walk along a circle
     std::tie(qlh, qrh) = hipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
     co.lLeg.motorCurrentHip = pdHip(qlh, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
     co.rLeg.motorCurrentHip = pdHip(qrh, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
+}
 
-    // Initialize legs (gui radio button, default)
-    /*
-    if ((guiIn.mode == 0) && (prevMode == 0))
-    {
-        // Right leg points to qS1
-        // Left leg points to qS2
-        // SLIP force control
+void ATCSlipWalking::standingControl() {
+    //double testVar = commonToolkit.rad2Deg(0.8);
 
-        // The current mode
-        prevMode = 0;
-    }
-    // Walk (gui radio button)
-    else if ((guiIn.mode == 1) && (prevMode != 2))
-    {
-        // right stance + left swing
-        // right swing  + left stance
+    // Right leg points to qS1
+    // Left leg points to qS2
+    // SLIP force control
 
-        // The current mode
-        prevMode = 1;
-    }
-    // Stop walking (gui radio button)
-    else if (guiIn.mode == 2)
-    {
-        // Damping hip control
-        co.lLeg.motorCurrentHip = pdHip(0, 0, 0, rs.lLeg.hip.legBodyVelocity);
-        co.rLeg.motorCurrentHip = pdHip(0, 0, 0, rs.rLeg.hip.legBodyVelocity);
-
-        // The current mode
-        prevMode = 2;
-    }
-    */
-
-
-    // Controller output
     /*
     co.lLeg.motorCurrentA   = pdLegStance(0, rs.lLeg.halfA.rotorAngle, 0, rs.lLeg.halfA.rotorVelocity);
     co.lLeg.motorCurrentB   = pdLegStance(0, rs.lLeg.halfB.rotorAngle, 0, rs.lLeg.halfB.rotorVelocity);
     co.rLeg.motorCurrentA   = pdLegStance(0, rs.rLeg.halfA.rotorAngle, 0, rs.rLeg.halfA.rotorVelocity);
     co.rLeg.motorCurrentB   = pdLegStance(0, rs.rLeg.halfB.rotorAngle, 0, rs.rLeg.halfB.rotorVelocity);
     */
+}
+
+void ATCSlipWalking::walkingControl() {
+    // right stance + left swing
+    // right swing  + left stance
+}
+
+void ATCSlipWalking::shutdownControl() {
+    // Damping
+    co.lLeg.motorCurrentHip = pdHip(0, 0, 0, rs.lLeg.hip.legBodyVelocity);
+    co.rLeg.motorCurrentHip = pdHip(0, 0, 0, rs.rLeg.hip.legBodyVelocity);
+    co.lLeg.motorCurrentA   = pdLegStance(0, 0, 0, rs.lLeg.halfA.rotorVelocity);
+    co.lLeg.motorCurrentB   = pdLegStance(0, 0, 0, rs.lLeg.halfB.rotorVelocity);
+    co.rLeg.motorCurrentA   = pdLegStance(0, 0, 0, rs.rLeg.halfA.rotorVelocity);
+    co.rLeg.motorCurrentB   = pdLegStance(0, 0, 0, rs.rLeg.halfB.rotorVelocity);
+}
+
+void ATCSlipWalking::guiCommunication() {
+    // Leg gains
+    pdLegStance.P = guiIn.leg_motor_p_gain;
+    pdLegStance.D = guiIn.leg_motor_d_gain;
+    pdLegFlight.P = guiIn.leg_motor_p_gain;
+    pdLegFlight.D = guiIn.leg_motor_d_gain;
 
     // GUI Output
     guiOut.isEnabled             = isEnabled();
@@ -96,9 +106,6 @@ void ATCSlipWalking::controller() {
     guiOut.motorPositionRightB   = rs.rLeg.halfB.rotorAngle;
     guiOut.motorPositionLeftHip  = rs.lLeg.hip.legBodyAngle;
     guiOut.motorPositionRightHip = rs.rLeg.hip.legBodyAngle;
-
-    // Logging
-    logOut.dummy = 0.0;
 }
 
 // The OROCOS component object

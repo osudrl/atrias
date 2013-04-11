@@ -44,13 +44,15 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
     private:
         void controller();
 
-        // PD controllers
+        // Sub controllers
         ASCCommonToolkit commonToolkit;
         ASCPD pdHip;
         ASCPD pdLegStance;
         ASCPD pdLegFlight;
         ASCHipBoomKinematics hipBoomKinematics;
 
+        // Control setup
+        void guiCommunication();
         // Previous GUI state
         uint8_t prevMode;
         // Event Angles
@@ -59,9 +61,24 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         double qS1; // Enter single support
         double qS2; // Exit single support
         double qTO; // TakeOff
-        // Hip calculations
+
+        // Hip control
+        void hipControl();
         double qlh, qrh;
         LeftRight toePosition;
+
+        // Standing
+        void standingControl();
+
+        // Walking
+        void walkingControl();
+        // Stance control
+
+        // Flight control
+
+        // Shutdown
+        void shutdownControl();
+
 };
 
 }
