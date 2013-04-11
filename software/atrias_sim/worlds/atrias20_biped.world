@@ -80,14 +80,10 @@
         <!--
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
-            <linkName>atrias20_left_leg::body_link</linkName>
-        </plugin>
-        <plugin name="freeze_pose" filename="libfreeze_pose.so">
-            <modelName>atrias20</modelName>
-            <linkName>atrias20_right_leg::body_link</linkName>
+            <linkName>atrias21_hip::body_link</linkName>
         </plugin>
         -->
-        <plugin name="freeze_pose" filename="libfreeze_pose.so">
+        <plugin name="planar_constraint" filename="libplanar_constraint.so">
             <modelName>atrias20</modelName>
             <linkName>atrias21_hip::body_link</linkName>
         </plugin>
