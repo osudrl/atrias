@@ -44,8 +44,6 @@ endif(ATRIAS_BUILD_GUI)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(ATCJointPosition src/ATCJointPosition.cpp)
-	target_link_libraries(ATCJointPosition ControlLib-${OROCOS_TARGET} ASCCommonToolkit-${OROCOS_TARGET})
-	target_link_libraries(ATCJointPosition ASCPD-${OROCOS_TARGET} ASCRateLimit-${OROCOS_TARGET} ASCHipBoomKinematics-${OROCOS_TARGET})
 
 	ros_generate_rtt_typekit(atc_joint_position)
 endif(ATRIAS_BUILD_CONTROLLERS)
