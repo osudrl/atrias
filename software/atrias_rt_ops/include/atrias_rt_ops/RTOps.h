@@ -94,7 +94,7 @@ class RTOps : public RTT::TaskContext {
 		
 		/** @brief Lets us run the controllers.
 		  */
-		RTT::OperationCaller<atrias_msgs::controller_output(atrias_msgs::robot_state)>
+		RTT::OperationCaller<atrias_msgs::controller_output&(atrias_msgs::robot_state&)>
 			runController;
 		
 		/** @brief Lets us send the new controller outputs to the Connector.
@@ -105,6 +105,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief Connects \a runController w/ the top level controller.
 		  */
 		void connectToController();
+
+		/** @brief Disconnects from a controller.
+		  */
+		void disconnectController();
 		
 		/** @brief Allows components to retrieve a ROS Header w/ the right timestamp.
 		  * @return A ROS header w/ the right timestamp.

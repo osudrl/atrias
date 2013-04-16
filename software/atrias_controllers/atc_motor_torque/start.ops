@@ -1,12 +1,12 @@
 # Set up the component
 import("atc_motor_torque");
-loadComponent("controller", "ATCMotorTorque");
+loadComponent("ATCMotorTorque", "ATCMotorTorque");
 
-# Connect RTOps with this controller (so they can see each other's operations)
-connectPeers("atrias_rt", "controller");
+# Connect RTOps with this ATCMotorTorque (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCMotorTorque");
 
 # Configure the component
-controller.configure();
+ATCMotorTorque.configure();
 
 # Start the component
-controller.start();
+ATCMotorTorque.start();
