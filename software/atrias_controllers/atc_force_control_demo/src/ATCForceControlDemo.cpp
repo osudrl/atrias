@@ -25,7 +25,7 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 {
 	// Initialize
 	lt = rt = 0.0;
-	duration = 3.0;
+	duration = 6.0;
 }
 
 /* @brief This is the main function for the top-level controller.

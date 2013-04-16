@@ -78,7 +78,6 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		
 		// Leg forces
 		LegForce fl, fr, tempLegForce;
-	
 
 		/**
 		  * @brief These are function within the top-level controller.
