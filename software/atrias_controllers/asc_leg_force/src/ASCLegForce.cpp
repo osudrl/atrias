@@ -74,7 +74,7 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	log_out.data.dtausA = dtausA;
 	log_out.data.dtausB = dtausB;
 	log_out.data.curA = curA;
-	log_out.data.curA = curA;
+	log_out.data.curB = curB;
 
     // Transmit the log data
     log_out.send();
