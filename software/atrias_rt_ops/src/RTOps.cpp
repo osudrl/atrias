@@ -13,7 +13,7 @@ RTOps::RTOps(std::string name) :
        timestampHandler(),
        opsLogger(&logCyclicOut, &guiCyclicOut, &eventOut),
        rtHandler(),
-       runController(),
+       runController("runController"),
        sendControllerOutput()
 {
 	this->provides("timestamps")
@@ -45,10 +45,24 @@ RTOps::RTOps(std::string name) :
 
 void RTOps::connectToController() {
 	RTT::TaskContext *peer = this->getPeer("controller");
+	if (peer)
+		this->connectServices(peer);
 	
-	if (peer) {
-		runController = peer->provides("atc")->getOperation("runController");
+	// Connection is done automatically by Orocos... just check to see if it succeeded
+	if (this->requires("atc")->ready()) {
+		log(RTT::Info) << "Service ATC ready" << RTT::endlog();
+	} else {
+		log(RTT::Warning) << "Service ATC Not ready!" << RTT::endlog();
 	}
+
+	if (this->runController.ready())
+		log(RTT::Info) << "runController ready." << RTT::endlog();
+	else
+		log(RTT::Warning) << "runController not ready!" << RTT::endlog();
+}
+
+void RTOps::disconnectController() {
+	runController.disconnect();
 }
 
 uint64_t RTOps::getTimestamp() {

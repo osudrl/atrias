@@ -63,18 +63,21 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dtausA = fx*L2*sin(qlA + qb)*(dqlA + dqb) + dfz*L2*sin(qlA + qb) - dfx*L2*cos(qlA + qb) + fz*L2*cos(qlA + qb)*(dqlA + dqb);
 	dtausB = fx*L1*sin(qlB + qb)*(dqlB + dqb) + dfz*L1*sin(qlB + qb) - dfx*L1*cos(qlB + qb) + fz*L1*cos(qlB + qb)*(dqlB + dqb);
 
-
 	// Compute required motor current using PD controller with feed forward term
 	curA = (KS*(qmA - qlA)/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
 	curB = (KS*(qmB - qlB)/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
   
     // Set the log data
-	log_out.data.tausA = tausA;
-	log_out.data.tausB = tausB;
-	log_out.data.dtausA = dtausA;
-	log_out.data.dtausB = dtausB;
-	log_out.data.curA = curA;
-	log_out.data.curA = curA;
+    log_out.data.control_fx = legForce.fx;
+	log_out.data.control_fz = legForce.fz;
+	log_out.data.control_dfx = legForce.dfx;
+	log_out.data.control_dfz = legForce.dfz;
+	log_out.data.control_tausA = tausA;
+	log_out.data.control_tausB = tausB;
+	log_out.data.control_dtausA = dtausA;
+	log_out.data.control_dtausB = dtausB;
+	log_out.data.control_curA = curA;
+	log_out.data.control_curB = curB;
 
     // Transmit the log data
     log_out.send();
@@ -116,10 +119,14 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 	legForce.dfz = -(L2*dtausB*cos(qb + qlA) - L1*dtausA*cos(qb + qlB) - L2*tausB*sin(qb + qlA)*(dqb + dqlA) + L1*tausA*sin(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)/pow(sin(qlA - qlB), 2)*(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))*(dqlA - dqlB))/(L1*L2);
 
     // Set the log data
-	log_out.data.fx = legForce.fx;
-	log_out.data.fz = legForce.fz;
-	log_out.data.dfx = legForce.dfx;
-	log_out.data.dfz = legForce.dfz;
+    log_out.data.compute_tausA = tausA;
+	log_out.data.compute_tausB = tausB;
+	log_out.data.compute_dtausA = dtausA;
+	log_out.data.compute_dtausB = dtausB;
+	log_out.data.compute_fx = legForce.fx;
+	log_out.data.compute_fz = legForce.fz;
+	log_out.data.compute_dfx = legForce.dfx;
+	log_out.data.compute_dfz = legForce.dfz;
 
     // Transmit the log data
     log_out.send();

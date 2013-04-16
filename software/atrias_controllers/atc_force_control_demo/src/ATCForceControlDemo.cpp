@@ -73,6 +73,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
@@ -85,6 +88,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
@@ -93,7 +99,10 @@ void ATCForceControlDemo::controller() {
 			fl = automateForceTest(lt);
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);		
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);		
 			break;
 			
 	}
@@ -120,6 +129,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
@@ -132,6 +144,9 @@ void ATCForceControlDemo::controller() {
 		
 			// Compute and set motor current values
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fr, rs.lLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
@@ -140,7 +155,10 @@ void ATCForceControlDemo::controller() {
 			fr = automateForceTest(rt);
 		
 			// Compute and set motor current values
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);	
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
+			
+			// Compute and log computed leg forces
+			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
 			break;
 			
 	}

@@ -30,7 +30,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
         torque_right_hip_hscale->set_range(-10., 10.);
 
         // Set up subscriber and publisher.
-        pub = nh.advertise<atc_motor_torque::controller_input>("controller_input", 0);
+        pub = nh.advertise<atc_motor_torque::controller_input>("ATCMotorTorque_input", 0);
         return true;
     }
     return false;

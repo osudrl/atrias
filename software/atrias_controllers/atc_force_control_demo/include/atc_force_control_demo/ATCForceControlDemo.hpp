@@ -77,7 +77,7 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
 		
 		// Leg forces
-		LegForce fl, fr;
+		LegForce fl, fr, tempLegForce;
 	
 
 		/**
