@@ -196,13 +196,19 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 		// Remaining time for startup controller
 		double startupTimeRem;
+
+		/**
+		  * @brief This connects to RT Ops, so it can call this controller.
+		  */
+		bool configureHook();
 };
 
 template <typename logType, typename guiInType, typename guiOutType>
 ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	RTT::TaskContext(name),
 	AtriasController(name),
-	publishTimer(50) // The parameter is the transmit period in ms
+	publishTimer(50), // The parameter is the transmit period in ms
+	sendEventOp("sendEvent")
 {
 	// We initialize to run mode
 	this->mode = State::RUN;
@@ -216,7 +222,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		.doc("Run the controller. Takes in the robot state and returns a controller output.");
 
 	// Connect with the sendEvent operation
-	this->requires("atrias_rt")->addOperationCaller(this->sendEventOp);
+	this->requires("rtOps")->addOperationCaller(this->sendEventOp);
 
 	// Set up the event port for incoming GUI data (if there is incoming GUI data)
 	if (notUnused<guiInType>()) {
@@ -326,7 +332,7 @@ void ATC<logType, guiInType, guiOutType>::guiInCallback(RTT::base::PortInterface
 }
 
 template <typename logType, typename guiInType, typename guiOutType>
-atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state& robotState) {
+atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state &robotState) {
 	// Check for change in state (to trigger the change to startup mode).
 	if (this->startupEnabled                         &&
 	    this->rs.rtOpsState != robotState.rtOpsState &&
@@ -420,6 +426,13 @@ bool ATC<logType, guiInType, guiOutType>::setStartupEnabled(bool enable) {
 template <typename logType, typename guiInType, typename guiOutType>
 bool ATC<logType, guiInType, guiOutType>::isStarting() const {
 	return (this->mode == State::STARTUP);
+}
+
+template <typename logType, typename guiInType, typename guiOutType>
+bool ATC<logType, guiInType, guiOutType>::configureHook() {
+	// Connect services with RT Ops so it can see our "atc" service
+	this->connectServices(this->getPeer("atrias_rt"));
+	return true;
 }
 
 }

@@ -29,6 +29,7 @@ void ControllerLoop::setControllerUnloaded() {
 	// The mutex prevents concurrency issues here (see loop() ).
 	controllerLoaded = false;
 	RTT::os::MutexLock lock(controllerLock);
+	rtOps->disconnectController();
 }
 
 atrias_msgs::controller_output
