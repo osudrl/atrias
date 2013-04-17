@@ -17,7 +17,6 @@
 
 // Namespaces we're using
 using namespace std;
-using namespace asc_pd;
 
 // Our namespaces
 namespace atrias {
@@ -61,7 +60,7 @@ class ASCPD : public AtriasController {
 		  * @brief This is our logging port.
 		  * You may have as many of these as you'd like of various types.
 		  */
-		LogPort<controller_log_data> log_out;
+		LogPort<asc_pd::controller_log_data> log_out;
 };
 
 // End namespaces
