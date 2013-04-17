@@ -43,7 +43,8 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(atc_eq_point src/controller_component.cpp)
+	orocos_component(ATCEqPoint src/ATCEqPoint.cpp)
+
 	ros_generate_rtt_typekit(atc_eq_point)
 endif(ATRIAS_BUILD_CONTROLLERS)
 
