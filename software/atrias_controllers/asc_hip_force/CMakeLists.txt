@@ -25,11 +25,8 @@ endif(DEFINED atrias_PACKAGE_PATH)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_library(ASCHipForce src/ASCHipForce.cpp)
-	target_link_libraries(ASCHipForce ControlLib-${OROCOS_TARGET} ASCToeDecode-${OROCOS_TARGET} ASCPD-${OROCOS_TARGET})
 
-	orocos_component(asc_hip_force src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_hip_force)
-	target_link_libraries(asc_hip_force ASCLoader-${OROCOS_TARGET})
 endif(ATRIAS_BUILD_CONTROLLERS)
 
 # vim: noexpandtab
