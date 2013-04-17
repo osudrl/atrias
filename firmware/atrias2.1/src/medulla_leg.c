@@ -80,7 +80,7 @@ bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
 int32_t prev_motor_position;
 uint16_t leg_knee_adc_aux4;
-
+uint16_t leg_therm_prev_val[6];
 
 void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
@@ -164,6 +164,21 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	initilize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
+
+	// Start reading the ADCs
+	adc_start_read(&adc_port_a);
+	adc_start_read(&adc_port_b);
+
+	while (!adc_read_complete(&adc_port_a));
+	while (!adc_read_complete(&adc_port_b));
+
+	leg_therm_prev_val[0] = thermistor_pdo[0];
+	leg_therm_prev_val[1] = thermistor_pdo[1];
+	leg_therm_prev_val[2] = thermistor_pdo[2];
+	leg_therm_prev_val[3] = thermistor_pdo[3];
+	leg_therm_prev_val[4] = thermistor_pdo[4];
+	leg_therm_prev_val[5] = thermistor_pdo[5];
+
 	*master_watchdog = leg_counter_pdo;
 	*packet_counter = leg_medulla_counter_pdo;
 	*leg_medulla_id_pdo = id;
@@ -228,9 +243,35 @@ void leg_update_inputs(uint8_t id) {
 		leg_encoder_error_counter++;
 	}
 
-	usart_adc_process_data(&knee_adc);
+	//usart_adc_process_data(&knee_adc);
 
-	leg_send_current_read = true;
+	
+
+	if (((leg_therm_prev_val[0]>thermistor_pdo[0]) && (leg_therm_prev_val[0]-thermistor_pdo[0] < 50)) ||
+	    ((leg_therm_prev_val[0]<thermistor_pdo[0]) && (thermistor_pdo[0]-leg_therm_prev_val[0] < 50)))
+		leg_therm_prev_val[0] = thermistor_pdo[0];
+
+	if (((leg_therm_prev_val[1]>thermistor_pdo[1]) && (leg_therm_prev_val[1]-thermistor_pdo[1] < 50)) ||
+	    ((leg_therm_prev_val[1]<thermistor_pdo[1]) && (thermistor_pdo[1]-leg_therm_prev_val[1] < 50)))
+		leg_therm_prev_val[1] = thermistor_pdo[1];
+
+	if (((leg_therm_prev_val[2]>thermistor_pdo[2]) && (leg_therm_prev_val[2]-thermistor_pdo[2] < 50)) ||
+	    ((leg_therm_prev_val[2]<thermistor_pdo[2]) && (thermistor_pdo[2]-leg_therm_prev_val[2] < 50)))
+		leg_therm_prev_val[2] = thermistor_pdo[2];
+
+	if (((leg_therm_prev_val[3]>thermistor_pdo[3]) && (leg_therm_prev_val[3]-thermistor_pdo[3] < 1000)) ||
+	    ((leg_therm_prev_val[3]<thermistor_pdo[3]) && (thermistor_pdo[3]-leg_therm_prev_val[3] < 1000)))
+		leg_therm_prev_val[3] = thermistor_pdo[3];
+
+	if (((leg_therm_prev_val[4]>thermistor_pdo[4]) && (leg_therm_prev_val[4]-thermistor_pdo[4] < 50)) ||
+	    ((leg_therm_prev_val[4]<thermistor_pdo[4]) && (thermistor_pdo[4]-leg_therm_prev_val[4] < 50)))
+		leg_therm_prev_val[4] = thermistor_pdo[4];
+
+	if (((leg_therm_prev_val[5]>thermistor_pdo[5]) && (leg_therm_prev_val[5]-thermistor_pdo[5] < 50)) ||
+	    ((leg_therm_prev_val[5]<thermistor_pdo[5]) && (thermistor_pdo[5]-leg_therm_prev_val[5] < 50)))
+		leg_therm_prev_val[5] = thermistor_pdo[5];
+
+	//leg_send_current_read = true;
 }
 
 bool leg_run_halt(uint8_t id) {
@@ -292,18 +333,17 @@ bool leg_check_error(uint8_t id) {
 	#endif
 
 	#ifdef ERROR_CHECK_THERMISTORS
-	// Do filtering on thermistor values
-	if ((thermistor_pdo[0] < THERMISTOR_MAX_VAL) ||
-        (thermistor_pdo[1] < THERMISTOR_MAX_VAL) ||
-        (thermistor_pdo[2] < THERMISTOR_MAX_VAL) ||
-        (thermistor_pdo[3] < THERMISTOR_MAX_VAL) ||
-        (thermistor_pdo[4] < THERMISTOR_MAX_VAL) ||
-        (thermistor_pdo[5] < THERMISTOR_MAX_VAL))
+	// Do filtering on thermistor values 
+	if ((leg_therm_prev_val[0] < THERMISTOR_MAX_VAL) ||
+        (leg_therm_prev_val[1] < THERMISTOR_MAX_VAL) ||
+        (leg_therm_prev_val[2] < THERMISTOR_MAX_VAL) ||
+        (leg_therm_prev_val[3] < THERMISTOR_MAX_VAL) ||
+        (leg_therm_prev_val[4] < THERMISTOR_MAX_VAL) ||
+        (leg_therm_prev_val[5] < THERMISTOR_MAX_VAL)) {
 		thermistor_counter++;
+	}
 	else if (thermistor_counter > 0)
 		thermistor_counter--;
-
-	// Check thermistor values
 	if (thermistor_counter > 100) {
 		#if defined DEBUG_LOW || DEBUG_HIGH	
 		printf("[Medulla Leg] Thermistor error.\n");
