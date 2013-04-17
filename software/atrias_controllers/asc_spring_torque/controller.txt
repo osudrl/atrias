@@ -1,1 +1,0 @@
-description=Converts spring deflections into torques and vice-versa.
