@@ -176,6 +176,13 @@ void ATCSlipHopping::standingControl() {
 	std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
 	std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
 
+	// Limit motor velocity
+	rateLim = (1.0)*0.001;
+	qlmA = clamp(qlmA, rs.lLeg.halfA.motorAngle - rateLim, rs.lLeg.halfA.motorAngle + rateLim);
+	qlmB = clamp(qlmB, rs.lLeg.halfB.motorAngle - rateLim, rs.lLeg.halfB.motorAngle + rateLim);
+	qrmA = clamp(qrmA, rs.rLeg.halfA.motorAngle - rateLim, rs.rLeg.halfA.motorAngle + rateLim);
+	qrmB = clamp(qrmB, rs.rLeg.halfB.motorAngle - rateLim, rs.rLeg.halfB.motorAngle + rateLim);
+
 	// Compute and set motor currents
 	co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);

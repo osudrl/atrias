@@ -17,6 +17,8 @@
 #include "asc_slip_model/controller_log_data.h"
 
 // Datatypes
+#include <atrias_shared/globals.h>
+#include <robot_invariant_defs.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
 
@@ -40,6 +42,7 @@ class ASCSlipModel : public AtriasController {
                 
                	// SLIP model parameters
 				double k, r0, m;
+				double h;
 
 
                 /**

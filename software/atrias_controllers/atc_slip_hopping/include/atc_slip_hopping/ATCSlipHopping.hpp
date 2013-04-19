@@ -62,7 +62,7 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  * just like current controllers.
 		  */
 		ATCSlipHopping(string name);
-	
+
 	private:
 		/**
 		  * @brief This is the main function for the top-level controller.
@@ -84,8 +84,8 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		ASCPD ascPDrB;
 		ASCPD ascPDlh;
 		ASCPD ascPDrh;
-		
-	
+
+
 		/**
 		  * @brief These are function within the top-level controller.
 		  */
@@ -93,21 +93,22 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		int controllerState, hoppingState;
 		int stanceControlType, hoppingType, forceControlType, springType;
 		bool isLeftStance, isRightStance;
-		
+
 		void hipControl();
 		double qlh, qrh;
 		LeftRight toePosition;
-				
+
 		void standingControl();
 		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
-		
+		double rateLim;
+
 		void forceStancePhaseControl();
 		double ql, rl, h;
 		SlipState slipState;
 		LegForce legForce;
-		
+
 		void passiveStancePhaseControl();
-		
+
 		void flightPhaseControl();
 
 };
