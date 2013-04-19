@@ -312,15 +312,17 @@ default:
 		D0.set(guiIn.d_lf);
 		P1.set(guiIn.p_lf);
 		D1.set(guiIn.d_lf);
-						if (t < 0.1){
+						if (t < 0.1){						// leg lift off
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
-							phi_lLeg = guiIn.pea;
+							leftMotorAngle.A=rs.lLeg.halfA.legAngle;
+							leftMotorAngle.B=rs.lLeg.halfA.legAngle + 2 * acos (l_swing);
+							max_phi_swing = (leftMotorAngle.B + leftMotorAngle.A) / 2;
 							logData.state=11;
-						} else if (t<guiIn.l_fl){
-							phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+						} else if (t<guiIn.l_fl){			// forward swing
+							phi_lLeg=max_phi_swing - (t - 0.1) / (guiIn.l_fl - 0.1) * (max_phi_swing - guiIn.aea) * (1 + guiIn.d_as);
 							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
 							logData.state=12;
-						} else {
+						} else {						    // retraction towards touch-down	
 							phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 							l_swing = guiIn.l_leg_st;
 							logData.state=13;
