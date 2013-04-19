@@ -373,13 +373,13 @@
     <plugin name="shin_spring" filename="libspring.so">
         <link1Name>shin_motor_link</link1Name>
         <link2Name>shin_link</link2Name>
-        <rotationalStiffness>1200</rotationalStiffness>
+        <rotationalStiffness>4118</rotationalStiffness>
     </plugin>
 
     <plugin name="thigh_spring" filename="libspring.so">
         <link1Name>thigh_motor_link</link1Name>
         <link2Name>thigh_link</link2Name>
-        <rotationalStiffness>1200</rotationalStiffness>
+        <rotationalStiffness>4118</rotationalStiffness>
     </plugin>
 
 </model>

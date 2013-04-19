@@ -91,8 +91,6 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		  */
 		void updateState();
 		int controllerState, runningState;
-		int stanceControlType, runningType, forceControlType, springType;
-		bool isLeftStance, isRightStance;
 		
 		void hipControl();
 		double qlh, qrh;
@@ -101,15 +99,16 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		void standingControl();
 		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
 		
-		void forceStancePhaseControl();
 		double ql, rl, h;
 		SlipState slipState;
 		LegForce legForce;
 		
-		void passiveStancePhaseControl();
-		
-		void flightPhaseControl();
-
+		void rightLegFlightFalling();
+		void rightLegStance();
+		void leftLegFlightRising();
+		void leftLegFlightFalling();
+		void leftLegStance();
+		void rightLegFlightRising();
 };
 
 }
