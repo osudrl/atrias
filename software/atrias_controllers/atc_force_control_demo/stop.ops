@@ -1,5 +1,5 @@
 # Shut stuff down
-controller.stop()
-controller.cleanup()
-unloadComponent("controller")
+ATCForceControlDemo.stop()
+ATCForceControlDemo.cleanup()
+unloadComponent("ATCForceControlDemo")
 atrias_cm.resetControllerNames()

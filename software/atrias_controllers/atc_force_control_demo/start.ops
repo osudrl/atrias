@@ -1,10 +1,10 @@
 # Set up the top controller
 import("atc_force_control_demo")
-loadComponent("controller", "ATCForceControlDemo")
+loadComponent("ATCForceControlDemo", "ATCForceControlDemo")
 
-# Connect RTOps with this controller (so they can see each other's operations)
-connectPeers("atrias_rt", "controller")
+# Connect RTOps with this ATCForceControlDemo (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCForceControlDemo")
 
 # Start components
-controller.configure()
-controller.start()
+ATCForceControlDemo.configure()
+ATCForceControlDemo.start()
