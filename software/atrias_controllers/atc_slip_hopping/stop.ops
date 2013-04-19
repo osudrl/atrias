@@ -1,5 +1,5 @@
 # Shut stuff down
-controller.stop()
-controller.cleanup()
-unloadComponent("controller")
+ATCSlipHopping.stop()
+ATCSlipHopping.cleanup()
+unloadComponent("ATCSlipHopping")
 atrias_cm.resetControllerNames()
