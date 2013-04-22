@@ -74,8 +74,8 @@
 
 /** @brief Main motor torque limits. These are not used for scaling, just as limits.
   */
-#define MAX_MTR_CURRENT_CMD                                                 60.0
-#define MIN_MTR_CURRENT_CMD                                                -60.0
+#define MAX_MTR_CURRENT_CMD                                                120.0
+#define MIN_MTR_CURRENT_CMD                                               -120.0
 #define MAX_HIP_MTR_CURRENT_CMD                                             60.0
 #define MIN_HIP_MTR_CURRENT_CMD                                            -60.0
 
