@@ -42,11 +42,11 @@ void ATCSlipHopping::controller() {
 	 * setShutdownEnabled(true/false) // Enable or disable the shutdown controller
 	 */
 
-    // Startup is handled by the ATC class
-    setStartupEnabled(true);
+	// Startup is handled by the ATC class
+	setStartupEnabled(true);
 
-    // Update current robot state
-    updateState();
+	// Update current robot state
+	updateState();
 
 	// Run hip controller
 	hipControl();
@@ -115,14 +115,18 @@ void ATCSlipHopping::updateState() {
 	ascLegForcel.ki = ascLegForcer.ki = 0.0;
 	ascLegForcel.kd = ascLegForcer.kd = guiIn.leg_for_kd;
 
-    // Check for stance phase and set hopping state
-    if (rs.position.zPosition < ascSlipModel.r0) {
-    	// Stance phase
-        hoppingState = 0;
-    } else {
-        // Flight phase
-        hoppingState = 1;
-    }
+	// Compute actual leg force from spring deflection
+	tempLegForce = ascLegForcel.compute(rs.lLeg, rs.position);
+	tempLegForce = ascLegForcer.compute(rs.rLeg, rs.position);
+    	
+	// Check for stance phase and set hopping state
+	if (rs.position.zPosition < ascSlipModel.r0) {
+    		// Stance phase
+		hoppingState = 0;
+	} else {
+		// Flight phase
+		hoppingState = 1;
+	}
 
 	// Check hopping type and set stance leg(s)
 	switch (hoppingType) {
@@ -227,9 +231,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 			// Compute and set motor currents
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForcel.control(legForce, rs.lLeg, rs.position);
 			
-			// Compute actual leg force from spring deflection
-			tempLegForce = ascLegForcel.compute(rs.lLeg, rs.position);
-			
 		}
 
 	} else {
@@ -258,9 +259,6 @@ void ATCSlipHopping::forceStancePhaseControl() {
 
 			// Compute and set motor currents
 			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForcer.control(legForce, rs.rLeg, rs.position);
-
-			// Compute actual leg force from spring deflection
-			tempLegForce = ascLegForcer.compute(rs.rLeg, rs.position);
 
 		}
 
@@ -294,8 +292,8 @@ void ATCSlipHopping::passiveStancePhaseControl() {
 	} else {
 		// Set motor angles
 		std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
-	}
-	
+	}	
+
 	// Compute and set motor currents
 	co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
