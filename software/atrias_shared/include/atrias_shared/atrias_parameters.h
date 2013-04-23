@@ -25,7 +25,7 @@ namespace controller {
 #define KG 50.0
 
 // ATRIAS mass [kg]
-#define M 58.8
+#define M 58.06
 
 // Gravity [m/sec^2]
 #define G 9.81

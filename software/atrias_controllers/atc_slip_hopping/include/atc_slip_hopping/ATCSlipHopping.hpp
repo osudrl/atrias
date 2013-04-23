@@ -76,7 +76,8 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  */
 		ASCCommonToolkit ascCommonToolkit;
 		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForce;
+		ASCLegForce ascLegForcel;
+		ASCLegForce ascLegForcer;
 		ASCHipBoomKinematics ascHipBoomKinematics;
 		ASCPD ascPDlA;
 		ASCPD ascPDlB;
@@ -100,12 +101,12 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 
 		void standingControl();
 		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
-		double rateLim;
+		//double rateLim;
 
 		void forceStancePhaseControl();
 		double ql, rl, h;
 		SlipState slipState;
-		LegForce legForce;
+		LegForce legForce, tempLegForce;
 
 		void passiveStancePhaseControl();
 
