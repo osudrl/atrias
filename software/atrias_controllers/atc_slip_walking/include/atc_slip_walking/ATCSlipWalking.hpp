@@ -53,8 +53,8 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
         // Control setup
         void guiCommunication();
-        // Previous GUI state
-        uint8_t prevMode;
+        int controllerState, prevState;
+
         // Event Angles
         double qE;  // Extension
         double qTD; // TouchDown
@@ -69,6 +69,8 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
         // Standing
         void standingControl();
+        double qrl, qll, rrl, rll;      // SLIP model
+        double qrmA, qrmB, qlmA, qlmB;  // ATRIAS motors
 
         // Walking
         void walkingControl();

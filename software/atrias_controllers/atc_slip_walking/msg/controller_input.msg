@@ -1,13 +1,19 @@
-uint8 mode
+Header header
 
-float64 leg_motor_p_gain
-float64 leg_motor_d_gain
-float64 hip_motor_p_gain
-float64 hip_motor_d_gain
+uint8 main_controller
+uint8 stance_controller
+uint8 spring_type
 
-float64 des_motor_ang_left_A
-float64 des_motor_ang_left_B
-float64 des_motor_ang_left_hip
-float64 des_motor_ang_right_A
-float64 des_motor_ang_right_B
-float64 des_motor_ang_right_hip
+float64 standing_leg_length
+
+float64 slip_spring_constant
+float64 slip_leg_length
+float64 touchdown_angle
+float64 takeoff_angle
+
+float64 leg_stance_kp
+float64 leg_stance_kd
+float64 leg_flight_kp
+float64 leg_flight_kd
+float64 hip_kp
+float64 hip_kd
