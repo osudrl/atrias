@@ -28,6 +28,7 @@
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -71,13 +72,14 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		void controller();
 
 		// Time counters
-		double lt, rt;
+		double tL, tR;
 		
 		// Leg and motor positions
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
+		double qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
 		
 		// Leg forces
-		LegForce fl, fr, tempLegForce;
+		LegForce fL, fR, fTemp;
 
 		/**
 		  * @brief These are function within the top-level controller.
@@ -85,27 +87,34 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		void updateState();
 		int lLegControllerState, rLegControllerState;
 		
-		void hipControl();
-		double qlh, qrh;
+		void hipController();
+		double qLh, qRh;
 		LeftRight toePosition;
 		
-		LegForce automateForceTest(double t);
+		LegForce automateForceSequence(double t);
 		LegForce legForce;
 		double duration;
+		
+		void shutdownController();
 		
 			
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
 		ASCCommonToolkit ascCommonToolkit;
-		ASCLegForce ascLegForce;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
 
 };
 

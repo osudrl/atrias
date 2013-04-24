@@ -3,6 +3,8 @@
   * @author Mikhail Jones
   * @brief This implements a SLIP template based vertical hopping controller.
   */
+  
+// TODO - Add flight and stance gains for both force and position control.
 
 #include "atc_slip_hopping/ATCSlipHopping.hpp"
 
@@ -29,7 +31,7 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 	ascRateLimitRmA(this, "ascRateLimitRmA"),
 	ascRateLimitRmB(this, "ascRateLimitRmB")
 {
-	// Initialize variables
+	// Initialize
 	legRateLimit = 1.0;
 	toePosition.left = 2.15;
 	toePosition.right = 2.45;
@@ -137,8 +139,8 @@ void ATCSlipHopping::updateState() {
 	ascLegForceLl.kd = ascLegForceRl.kd = guiIn.leg_for_kd;
 
 	// Compute actual leg force from spring deflection
-	tempLegForce = ascLegForceLl.compute(rs.lLeg, rs.position);
-	tempLegForce = ascLegForceRl.compute(rs.rLeg, rs.position);
+	fTemp = ascLegForceLl.compute(rs.lLeg, rs.position);
+	fTemp = ascLegForceRl.compute(rs.rLeg, rs.position);
 
 	// Check for stance phase and set hopping state
 	if (rs.position.zPosition < ascSlipModel.r0) {
@@ -218,8 +220,10 @@ void ATCSlipHopping::shutdownController() {
 	// Compute and set motor currents (applies virtual dampers to all actuators)
 	co.lLeg.motorCurrentA = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
+	co.lLeg.motorCurrentHip = ascPDLh(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentA = ascPDRmA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
 	co.rLeg.motorCurrentB = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
 
 }
 

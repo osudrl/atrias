@@ -111,7 +111,7 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		void forceStancePhaseController();
 		double h;
 		SlipState slipState;
-		LegForce legForce, tempLegForce;
+		LegForce legForce, fTemp;
 
 		void passiveStancePhaseController();
 
