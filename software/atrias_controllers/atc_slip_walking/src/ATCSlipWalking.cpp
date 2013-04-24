@@ -58,10 +58,12 @@ void ATCSlipWalking::guiCommunication() {
     controllerState = guiIn.main_controller;
 
     // PD Gains
-    pdLegStance.P = pdLegFlight.P = guiIn.leg_kp;
-    pdLegStance.D = pdLegFlight.D = guiIn.leg_kd;
-    pdHip.P                       = guiIn.hip_kp; // default 100
-    pdHip.D                       = guiIn.hip_kd; // default 10
+    pdLegStance.P = guiIn.leg_stance_kp;
+    pdLegStance.D = guiIn.leg_stance_kd;
+    pdLegFlight.P = guiIn.leg_flight_kp;
+    pdLegFlight.D = guiIn.leg_flight_kd;
+    pdHip.P       = guiIn.hip_kp;
+    pdHip.D       = guiIn.hip_kd;
 
     // Copy over positions to the GUI output data
     guiOut.isEnabled = isEnabled();
@@ -84,8 +86,8 @@ void ATCSlipWalking::standingControl() {
     rrl = rll = guiIn.standing_leg_length;
 
     // Compute motor angles
-    std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
-    std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(qll, rrl);
+    std::tie(qlmA, qlmB) = commonToolkit.legPos2MotorPos(qll, rrl);
+    std::tie(qrmA, qrmB) = commonToolkit.legPos2MotorPos(qll, rrl);
 
     co.lLeg.motorCurrentA = pdLegStance(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
     co.lLeg.motorCurrentB = pdLegStance(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);

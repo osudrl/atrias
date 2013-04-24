@@ -1,15 +1,8 @@
-Header header
-
-uint8 main_controller
-uint8 stance_controller
-uint8 spring_type
-
 float64 standing_leg_length
-
-float64 slip_spring_constant
-float64 slip_leg_length
 float64 touchdown_angle
 float64 takeoff_angle
+float64 slip_leg_length
+float64 linear_spring_constant
 
 float64 leg_stance_kp
 float64 leg_stance_kd
@@ -17,3 +10,7 @@ float64 leg_flight_kp
 float64 leg_flight_kd
 float64 hip_kp
 float64 hip_kd
+
+uint8 main_controller
+uint8 spring_type
+uint8 stance_controller

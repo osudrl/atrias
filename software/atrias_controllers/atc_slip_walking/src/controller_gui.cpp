@@ -1,142 +1,144 @@
-/*
- * controller_gui.cpp
- *
- * Motor Torque Controller
- *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
- */
-
 #include <atc_slip_walking/controller_gui.h>
 
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("position_left_A_hscale",    position_left_A_hscale);
-    gui->get_widget("position_left_B_hscale",    position_left_B_hscale);
-    gui->get_widget("position_left_hip_hscale",  position_left_hip_hscale);
-    gui->get_widget("position_right_A_hscale",   position_right_A_hscale);
-    gui->get_widget("position_right_B_hscale",   position_right_B_hscale);
-    gui->get_widget("position_right_hip_hscale", position_right_hip_hscale);
-    gui->get_widget("position_leg_motor_p_spinbutton", position_leg_motor_p_spinbutton);
-    gui->get_widget("position_leg_motor_d_spinbutton", position_leg_motor_d_spinbutton);
-    gui->get_widget("position_hip_motor_p_spinbutton", position_hip_motor_p_spinbutton);
-    gui->get_widget("position_hip_motor_d_spinbutton", position_hip_motor_d_spinbutton);
-    gui->get_widget("set_leg_motor_position_checkbutton", set_leg_motor_position_checkbutton);
-    gui->get_widget("set_hip_motor_position_checkbutton", set_hip_motor_position_checkbutton);
+    gui->get_widget("standing_leg_length_spinbutton", standing_leg_length_spinbutton);
+    gui->get_widget("touchdown_angle_spinbutton", touchdown_angle_spinbutton);
+    gui->get_widget("takeoff_angle_spinbutton", takeoff_angle_spinbutton);
+    gui->get_widget("slip_leg_length_spinbutton", slip_leg_length_spinbutton);
+    gui->get_widget("linear_spring_constant_spinbutton", linear_spring_constant_spinbutton);
+    gui->get_widget("leg_stance_kp_spinbutton", leg_stance_kp_spinbutton);
+    gui->get_widget("leg_stance_kd_spinbutton", leg_stance_kd_spinbutton);
+    gui->get_widget("leg_flight_kp_spinbutton", leg_flight_kp_spinbutton);
+    gui->get_widget("leg_flight_kd_spinbutton", leg_flight_kd_spinbutton);
+    gui->get_widget("hip_kp_spinbutton", hip_kp_spinbutton);
+    gui->get_widget("hip_kd_spinbutton", hip_kd_spinbutton);
+    gui->get_widget("main_controller_combobox", main_controller_combobox);
+    gui->get_widget("spring_type_combobox", spring_type_combobox);
+    gui->get_widget("stance_controller_combobox", stance_controller_combobox);
 
-    if (position_left_A_hscale && position_left_B_hscale && position_left_hip_hscale &&
-        position_right_A_hscale && position_right_B_hscale && position_right_hip_hscale &&
-        position_leg_motor_p_spinbutton && position_leg_motor_d_spinbutton &&
-        position_hip_motor_p_spinbutton && position_hip_motor_d_spinbutton &&
-        set_leg_motor_position_checkbutton && set_hip_motor_position_checkbutton) {
-        // Set ranges.
-        hipIn = (M_PI/180.0)*9.0;  // design is 10.0 degrees
-        hipOut = (M_PI/180.0)*19.0; // design is 20.0 degrees
-        hipCenter = (3.0*M_PI/2.0);
-        position_left_A_hscale->set_range(-1. * (M_PI / 4.), M_PI);
-        position_left_B_hscale->set_range(0, (5. * M_PI) / 4.);
-        position_left_hip_hscale->set_range(-1.0 * hipIn + hipCenter, hipOut + hipCenter);
-        position_right_A_hscale->set_range(-1. * (M_PI / 4.), M_PI);
-        position_right_B_hscale->set_range(0, (5. * M_PI) / 4.);
-        position_right_hip_hscale->set_range(-1.0 * hipOut + hipCenter, hipIn + hipCenter);
-        position_leg_motor_p_spinbutton->set_range(0., 10000.);
-        position_leg_motor_d_spinbutton->set_range(0., 500.);
-        position_hip_motor_p_spinbutton->set_range(0., 100);
-        position_hip_motor_d_spinbutton->set_range(0., 10);
+    // Ranges
+    standing_leg_length_spinbutton->set_range(0.5, 0.95);
+    touchdown_angle_spinbutton->set_range(M_PI/8.0, M_PI/2.0);
+    takeoff_angle_spinbutton->set_range(M_PI/2.0, M_PI*7.0/8.0);
+    slip_leg_length_spinbutton->set_range(0.5, 0.95);
+    linear_spring_constant_spinbutton->set_range(0.0, 50000.0);
+    leg_stance_kp_spinbutton->set_range(0.0, 2000.0);
+    leg_flight_kp_spinbutton->set_range(0.0, 2000.0);
+    leg_stance_kd_spinbutton->set_range(0.0, 50.0);
+    leg_flight_kd_spinbutton->set_range(0.0, 50.0);
+    hip_kp_spinbutton->set_range(0.0, 250.0);
+    hip_kd_spinbutton->set_range(0.0, 25.0);
 
-        // Set default values
-        position_left_A_hscale->set_value(M_PI/4.0);
-        position_left_B_hscale->set_value(3.0*M_PI/4.0);
-        position_left_hip_hscale->set_value(hipCenter);
-        position_right_A_hscale->set_value(M_PI/4.0);
-        position_right_B_hscale->set_value(3.0*M_PI/4.0);
-        position_right_hip_hscale->set_value(hipCenter);
-        position_leg_motor_p_spinbutton->set_value(600.0);
-        position_leg_motor_d_spinbutton->set_value(20.0);
-        position_hip_motor_p_spinbutton->set_value(0.0);
-        position_hip_motor_d_spinbutton->set_value(0.0);
-        set_leg_motor_position_checkbutton->set_active(false);
-        set_hip_motor_position_checkbutton->set_active(false);
+    // Increments
+    standing_leg_length_spinbutton->set_increments(0.01, 0.0);
+    touchdown_angle_spinbutton->set_increments(M_PI/32.0, 0.0);
+    takeoff_angle_spinbutton->set_increments(M_PI/32.0, 0.0);
+    slip_leg_length_spinbutton->set_increments(0.01, 0.0);
+    linear_spring_constant_spinbutton->set_increments(100.0, 0.0);
+    leg_stance_kp_spinbutton->set_increments(10.0, 0.0);
+    leg_flight_kp_spinbutton->set_increments(10.0, 0.0);
+    leg_stance_kd_spinbutton->set_increments(1.0, 0.0);
+    leg_flight_kd_spinbutton->set_increments(1.0, 0.0);
+    hip_kp_spinbutton->set_increments(10.0, 0.0);
+    hip_kd_spinbutton->set_increments(1.0, 0.0);
 
-        // Set up subscriber and publisher.
-        sub = nh.subscribe("controller_status", 0, controllerCallback);
-        pub = nh.advertise<atc_slip_walking::controller_input>("controller_input", 0);
+    // Set default values
+    standing_leg_length_spinbutton->set_value(0.90);
+    touchdown_angle_spinbutton->set_value(M_PI/4.0);
+    takeoff_angle_spinbutton->set_value(M_PI*3.0/4.0);
+    slip_leg_length_spinbutton->set_value(0.85);
+    linear_spring_constant_spinbutton->set_value(28000.0);
+    leg_stance_kp_spinbutton->set_value(1000.0);
+    leg_flight_kp_spinbutton->set_value(500.0);
+    leg_stance_kd_spinbutton->set_value(25.0);
+    leg_flight_kd_spinbutton->set_value(8.0);
+    hip_kp_spinbutton->set_value(100.0);
+    hip_kd_spinbutton->set_value(8.0);
 
-        return true;
-    }
-
-    return false;
+    // Set up subscriber and publisher
+    sub = nh.subscribe("ATCSlipWalking_status", 0, controllerCallback);
+    pub = nh.advertise<atc_slip_walking::controller_input>("ATCSlipWalking_input", 0);
+    return true;
 }
 
 void controllerCallback(const atc_slip_walking::controller_status &status) {
     controllerDataIn = status;
 }
 
-//! \brief Get parameters from the server and configure GUI accordingly.
+// Get parameters from the server and configure GUI accordingly
 void getParameters() {
-    // Get parameters in the atrias_gui namespace.
-    nh.getParam("/atrias_gui/des_motor_ang_left_A", controllerDataOut.des_motor_ang_left_A);
-    nh.getParam("/atrias_gui/des_motor_ang_left_B", controllerDataOut.des_motor_ang_left_B);
-    nh.getParam("/atrias_gui/des_motor_ang_left_hip", controllerDataOut.des_motor_ang_left_hip);
-    nh.getParam("/atrias_gui/des_motor_ang_right_A", controllerDataOut.des_motor_ang_right_A);
-    nh.getParam("/atrias_gui/des_motor_ang_right_B", controllerDataOut.des_motor_ang_right_B);
-    nh.getParam("/atrias_gui/des_motor_ang_right_hip", controllerDataOut.des_motor_ang_right_hip);
-    nh.getParam("/atrias_gui/leg_motor_p_gain", controllerDataOut.leg_motor_p_gain);
-    nh.getParam("/atrias_gui/leg_motor_d_gain", controllerDataOut.leg_motor_d_gain);
-    nh.getParam("/atrias_gui/hip_motor_p_gain", controllerDataOut.hip_motor_p_gain);
-    nh.getParam("/atrias_gui/hip_motor_d_gain", controllerDataOut.hip_motor_d_gain);
+    // Get parameters in the atrias_gui namespace
+    nh.getParam("/atrias_gui/standing_leg_length", controllerDataOut.standing_leg_length);
+    nh.getParam("/atrias_gui/touchdown_angle", controllerDataOut.touchdown_angle);
+    nh.getParam("/atrias_gui/takeoff_angle", controllerDataOut.takeoff_angle);
+    nh.getParam("/atrias_gui/slip_leg_length", controllerDataOut.slip_leg_length);
+    nh.getParam("/atrias_gui/linear_spring_constant", controllerDataOut.linear_spring_constant);
+    nh.getParam("/atrias_gui/leg_stance_kp", controllerDataOut.leg_stance_kp);
+    nh.getParam("/atrias_gui/leg_stance_kd", controllerDataOut.leg_stance_kd);
+    nh.getParam("/atrias_gui/leg_flight_kp", controllerDataOut.leg_flight_kp);
+    nh.getParam("/atrias_gui/leg_flight_kd", controllerDataOut.leg_flight_kd);
+    nh.getParam("/atrias_gui/hip_kp", controllerDataOut.hip_kp);
+    nh.getParam("/atrias_gui/hip_kd", controllerDataOut.hip_kd);
+    int main_controller;
+    nh.getParam("/atrias_gui/main_controller", main_controller);
+    controllerDataOut.main_controller = (uint8_t)main_controller;
+    int spring_type;
+    nh.getParam("/atrias_gui/spring_type", spring_type);
+    controllerDataOut.spring_type = (uint8_t)spring_type;
+    int stance_controller;
+    nh.getParam("/atrias_gui/stance_controller", stance_controller);
+    controllerDataOut.stance_controller = (uint8_t)stance_controller;
 
-    // Configure the GUI.
-    position_left_A_hscale->set_value(controllerDataOut.des_motor_ang_left_A);
-    position_left_B_hscale->set_value(controllerDataOut.des_motor_ang_left_B);
-    position_left_hip_hscale->set_value(controllerDataOut.des_motor_ang_left_hip);
-    position_right_A_hscale->set_value(controllerDataOut.des_motor_ang_right_A);
-    position_right_B_hscale->set_value(controllerDataOut.des_motor_ang_right_B);
-    position_right_hip_hscale->set_value(controllerDataOut.des_motor_ang_right_hip);
-    position_leg_motor_p_spinbutton->set_value(controllerDataOut.leg_motor_p_gain);
-    position_leg_motor_d_spinbutton->set_value(controllerDataOut.leg_motor_d_gain);
-    position_hip_motor_p_spinbutton->set_value(controllerDataOut.hip_motor_p_gain);
-    position_hip_motor_d_spinbutton->set_value(controllerDataOut.hip_motor_d_gain);
+    // Configure the GUI
+    standing_leg_length_spinbutton->set_value(controllerDataOut.standing_leg_length);
+    touchdown_angle_spinbutton->set_value(controllerDataOut.touchdown_angle);
+    takeoff_angle_spinbutton->set_value(controllerDataOut.takeoff_angle);
+    slip_leg_length_spinbutton->set_value(controllerDataOut.slip_leg_length);
+    linear_spring_constant_spinbutton->set_value(controllerDataOut.linear_spring_constant);
+    leg_stance_kp_spinbutton->set_value(controllerDataOut.leg_stance_kp);
+    leg_stance_kd_spinbutton->set_value(controllerDataOut.leg_stance_kd);
+    leg_flight_kp_spinbutton->set_value(controllerDataOut.leg_flight_kp);
+    leg_flight_kd_spinbutton->set_value(controllerDataOut.leg_flight_kd);
+    hip_kp_spinbutton->set_value(controllerDataOut.hip_kp);
+    hip_kd_spinbutton->set_value(controllerDataOut.hip_kd);
+    main_controller_combobox->set_active(controllerDataOut.main_controller);
+    spring_type_combobox->set_active(controllerDataOut.spring_type);
+    stance_controller_combobox->set_active(controllerDataOut.stance_controller);
 }
 
-//! \brief Set parameters on server according to current GUI settings.
+// Set parameters on the ROS server according to current GUI settings
 void setParameters() {
-    nh.setParam("/atrias_gui/des_motor_ang_left_A", controllerDataOut.des_motor_ang_left_A);
-    nh.setParam("/atrias_gui/des_motor_ang_left_B", controllerDataOut.des_motor_ang_left_B);
-    nh.setParam("/atrias_gui/des_motor_ang_left_hip", controllerDataOut.des_motor_ang_left_hip);
-    nh.setParam("/atrias_gui/des_motor_ang_right_A", controllerDataOut.des_motor_ang_right_A);
-    nh.setParam("/atrias_gui/des_motor_ang_right_B", controllerDataOut.des_motor_ang_right_B);
-    nh.setParam("/atrias_gui/des_motor_ang_right_hip", controllerDataOut.des_motor_ang_right_hip);
-    nh.setParam("/atrias_gui/leg_motor_p_gain", controllerDataOut.leg_motor_p_gain);
-    nh.setParam("/atrias_gui/leg_motor_d_gain", controllerDataOut.leg_motor_d_gain);
-    nh.setParam("/atrias_gui/hip_motor_p_gain", controllerDataOut.hip_motor_p_gain);
-    nh.setParam("/atrias_gui/hip_motor_d_gain", controllerDataOut.hip_motor_d_gain);
+    nh.setParam("/atrias_gui/standing_leg_length", controllerDataOut.standing_leg_length);
+    nh.setParam("/atrias_gui/touchdown_angle", controllerDataOut.touchdown_angle);
+    nh.setParam("/atrias_gui/takeoff_angle", controllerDataOut.takeoff_angle);
+    nh.setParam("/atrias_gui/slip_leg_length", controllerDataOut.slip_leg_length);
+    nh.setParam("/atrias_gui/linear_spring_constant", controllerDataOut.linear_spring_constant);
+    nh.setParam("/atrias_gui/leg_stance_kp", controllerDataOut.leg_stance_kp);
+    nh.setParam("/atrias_gui/leg_stance_kd", controllerDataOut.leg_stance_kd);
+    nh.setParam("/atrias_gui/leg_flight_kp", controllerDataOut.leg_flight_kp);
+    nh.setParam("/atrias_gui/leg_flight_kd", controllerDataOut.leg_flight_kd);
+    nh.setParam("/atrias_gui/hip_kp", controllerDataOut.hip_kp);
+    nh.setParam("/atrias_gui/hip_kd", controllerDataOut.hip_kd);
+    nh.setParam("/atrias_gui/main_controller", controllerDataOut.main_controller);
+    nh.setParam("/atrias_gui/spring_type", controllerDataOut.spring_type);
+    nh.setParam("/atrias_gui/stance_controller", controllerDataOut.stance_controller);
 }
 
 void guiUpdate() {
-    if ((!controllerDataIn.isEnabled) && set_leg_motor_position_checkbutton->get_active()) {
-        //We want to update the sliders with the current position
-        position_left_A_hscale->set_value(controllerDataIn.motorPositionLeftA);
-        position_left_B_hscale->set_value(controllerDataIn.motorPositionLeftB);
-        position_right_A_hscale->set_value(controllerDataIn.motorPositionRightA);
-        position_right_B_hscale->set_value(controllerDataIn.motorPositionRightB);
-    }
-
-    if ((!controllerDataIn.isEnabled) && set_hip_motor_position_checkbutton->get_active()) {
-        //We want to update the sliders with the current position
-        position_left_hip_hscale->set_value(controllerDataIn.motorPositionLeftHip);
-        position_right_hip_hscale->set_value(controllerDataIn.motorPositionRightHip);
-    }
-
-    controllerDataOut.des_motor_ang_left_A    = position_left_A_hscale->get_value();
-    controllerDataOut.des_motor_ang_left_B    = position_left_B_hscale->get_value();
-    controllerDataOut.des_motor_ang_left_hip  = position_left_hip_hscale->get_value();
-    controllerDataOut.des_motor_ang_right_A   = position_right_A_hscale->get_value();
-    controllerDataOut.des_motor_ang_right_B   = position_right_B_hscale->get_value();
-    controllerDataOut.des_motor_ang_right_hip = position_right_hip_hscale->get_value();
-    controllerDataOut.leg_motor_p_gain        = position_leg_motor_p_spinbutton->get_value();
-    controllerDataOut.leg_motor_d_gain        = position_leg_motor_d_spinbutton->get_value();
-    controllerDataOut.hip_motor_p_gain        = position_hip_motor_p_spinbutton->get_value();
-    controllerDataOut.hip_motor_d_gain        = position_hip_motor_d_spinbutton->get_value();
+    controllerDataOut.standing_leg_length = standing_leg_length_spinbutton->get_value();
+    controllerDataOut.touchdown_angle = touchdown_angle_spinbutton->get_value();
+    controllerDataOut.takeoff_angle = takeoff_angle_spinbutton->get_value();
+    controllerDataOut.slip_leg_length = slip_leg_length_spinbutton->get_value();
+    controllerDataOut.linear_spring_constant = linear_spring_constant_spinbutton->get_value();
+    controllerDataOut.leg_stance_kp = leg_stance_kp_spinbutton->get_value();
+    controllerDataOut.leg_stance_kd = leg_stance_kd_spinbutton->get_value();
+    controllerDataOut.leg_flight_kp = leg_flight_kp_spinbutton->get_value();
+    controllerDataOut.leg_flight_kd = leg_flight_kd_spinbutton->get_value();
+    controllerDataOut.hip_kp = hip_kp_spinbutton->get_value();
+    controllerDataOut.hip_kd = hip_kd_spinbutton->get_value();
+    controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
+    controllerDataOut.spring_type = (uint8_t)spring_type_combobox->get_active_row_number();
+    controllerDataOut.stance_controller = (uint8_t)stance_controller_combobox->get_active_row_number();
 
     pub.publish(controllerDataOut);
 }

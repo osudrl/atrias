@@ -78,7 +78,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="standing_leg_spinbutton">
+          <object class="GtkSpinButton" id="standing_leg_length_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -95,21 +95,6 @@
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child>
           <object class="GtkSpinButton" id="touchdown_angle_spinbutton">
@@ -174,6 +159,21 @@
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -261,7 +261,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="slip_leg_length_spinbutton">
+          <object class="GtkSpinButton" id="linear_spring_constant_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -270,25 +270,10 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
-            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">3</property>
             <property name="right_attach">4</property>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="leg_length_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">SLIP Leg Length</property>
-          </object>
-          <packing>
-            <property name="left_attach">2</property>
-            <property name="right_attach">3</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
           </packing>
@@ -301,12 +286,14 @@
             <property name="label" translatable="yes">Linear Spring Constant</property>
           </object>
           <packing>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="slip_spring_constant_spinbutton">
+          <object class="GtkSpinButton" id="slip_leg_length_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -315,10 +302,23 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="leg_length_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">SLIP Leg Length</property>
+          </object>
+          <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
           </packing>
