@@ -79,7 +79,6 @@ void ATCSlipWalking::hipControl() {
 
 
 void ATCSlipWalking::standingControl() {
-    printf("standingControl\n");
     // Leg angles
     qrl = guiIn.touchdown_angle;
     qll = guiIn.takeoff_angle;
@@ -87,8 +86,8 @@ void ATCSlipWalking::standingControl() {
     rrl = rll = guiIn.standing_leg_length;
 
     // Compute motor angles
-    std::tie(qlmA, qlmB) = commonToolkit.legPos2MotorPos(qll, rrl);
-    std::tie(qrmA, qrmB) = commonToolkit.legPos2MotorPos(qll, rrl);
+    std::tie(qlmA, qlmB) = commonToolkit.legPos2MotorPos(qll, rll);
+    std::tie(qrmA, qrmB) = commonToolkit.legPos2MotorPos(qrl, rrl);
 
     co.lLeg.motorCurrentA = pdLegStance(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
     co.lLeg.motorCurrentB = pdLegStance(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
@@ -98,7 +97,6 @@ void ATCSlipWalking::standingControl() {
 
 
 void ATCSlipWalking::walkingControl() {
-    printf("walkingControl\n");
     // Uses the control concept from atc_eq_point
     // right stance + left swing
     // right swing  + left stance
@@ -120,7 +118,6 @@ void ATCSlipWalking::walkingControl() {
 }
 
 void ATCSlipWalking::shutdownControl() {
-    printf("shutdownControl\n");
     // Damping
     co.lLeg.motorCurrentHip = pdHip(0, 0, 0, rs.lLeg.hip.legBodyVelocity);
     co.rLeg.motorCurrentHip = pdHip(0, 0, 0, rs.rLeg.hip.legBodyVelocity);

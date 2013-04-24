@@ -31,8 +31,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     // Increments
     standing_leg_length_spinbutton->set_increments(0.01, 0.0);
-    touchdown_angle_spinbutton->set_increments(M_PI/32.0, 0.0);
-    takeoff_angle_spinbutton->set_increments(M_PI/32.0, 0.0);
+    touchdown_angle_spinbutton->set_increments(0.05, 0.0);
+    takeoff_angle_spinbutton->set_increments(0.05, 0.0);
     slip_leg_length_spinbutton->set_increments(0.01, 0.0);
     linear_spring_constant_spinbutton->set_increments(100.0, 0.0);
     leg_stance_kp_spinbutton->set_increments(10.0, 0.0);
@@ -44,8 +44,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     // Set default values
     standing_leg_length_spinbutton->set_value(0.90);
-    touchdown_angle_spinbutton->set_value(M_PI/4.0);
-    takeoff_angle_spinbutton->set_value(M_PI*3.0/4.0);
+    touchdown_angle_spinbutton->set_value(M_PI/4.0+0.25);
+    takeoff_angle_spinbutton->set_value(M_PI*3.0/4.0-0.25);
     slip_leg_length_spinbutton->set_value(0.85);
     linear_spring_constant_spinbutton->set_value(28000.0);
     leg_stance_kp_spinbutton->set_value(1000.0);
