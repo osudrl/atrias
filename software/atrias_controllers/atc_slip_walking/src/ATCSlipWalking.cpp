@@ -79,6 +79,7 @@ void ATCSlipWalking::hipControl() {
 
 
 void ATCSlipWalking::standingControl() {
+    printf("standingControl\n");
     // Leg angles
     qrl = guiIn.touchdown_angle;
     qll = guiIn.takeoff_angle;
@@ -97,6 +98,7 @@ void ATCSlipWalking::standingControl() {
 
 
 void ATCSlipWalking::walkingControl() {
+    printf("walkingControl\n");
     // Uses the control concept from atc_eq_point
     // right stance + left swing
     // right swing  + left stance
@@ -118,6 +120,7 @@ void ATCSlipWalking::walkingControl() {
 }
 
 void ATCSlipWalking::shutdownControl() {
+    printf("shutdownControl\n");
     // Damping
     co.lLeg.motorCurrentHip = pdHip(0, 0, 0, rs.lLeg.hip.legBodyVelocity);
     co.rLeg.motorCurrentHip = pdHip(0, 0, 0, rs.rLeg.hip.legBodyVelocity);

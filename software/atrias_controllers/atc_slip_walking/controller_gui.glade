@@ -598,8 +598,7 @@
         <col id="0" translatable="yes">Stand</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Walk
-</col>
+        <col id="0" translatable="yes">Walk</col>
       </row>
       <row>
         <col id="0" translatable="yes">Shutdown</col>

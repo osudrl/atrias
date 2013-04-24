@@ -44,6 +44,6 @@ endif(ATRIAS_BUILD_GUI)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(ATCSlipWalking src/ATCSlipWalking.cpp)
-	target_link_libraries(ATCSlipWalking ASCCommonToolkit-${OROCOS_TARGET} ASCHipBoomKinematics-${OROCOS_TARGET} ASCPD-${OROCOS_TARGET} ControlLib-${OROCOS_TARGET})
+	target_link_libraries(ATCSlipWalking ControlLib-${OROCOS_TARGET})
 	ros_generate_rtt_typekit(atc_slip_walking)
 endif(ATRIAS_BUILD_CONTROLLERS)
