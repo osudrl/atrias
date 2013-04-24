@@ -29,12 +29,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     standing_leg_spinbutton->set_range(0.5, 0.95);
     hop_height_spinbutton->set_range(0.0, 0.25);
     slip_leg_spinbutton->set_range(0.5, 0.95);
-    leg_pos_kp_spinbutton->set_range(0.0, 2000.0);
-    leg_for_kp_spinbutton->set_range(0.0, 2000.0);
-    leg_for_kd_spinbutton->set_range(0.0, 50.0);
-    leg_pos_kd_spinbutton->set_range(0.0, 50.0);
-    hip_pos_kp_spinbutton->set_range(0.0, 250.0);
-    hip_pos_kd_spinbutton->set_range(0.0, 25.0);
+    leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
+    leg_for_kp_spinbutton->set_range(0.0, 5000.0);
+    leg_for_kd_spinbutton->set_range(0.0, 250.0);
+    leg_pos_kd_spinbutton->set_range(0.0, 250.0);
+    hip_pos_kp_spinbutton->set_range(0.0, 500.0);
+    hip_pos_kd_spinbutton->set_range(0.0, 50.0);
 
 	// Set increments
     slip_spring_spinbutton->set_increments(100.0, 0.0);
@@ -53,12 +53,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     standing_leg_spinbutton->set_value(0.90);
     hop_height_spinbutton->set_value(0.05);
     slip_leg_spinbutton->set_value(0.85);
-    leg_pos_kp_spinbutton->set_value(500.0);
+    leg_pos_kp_spinbutton->set_value(1000.0);
     leg_for_kp_spinbutton->set_value(1000.0);
     leg_for_kd_spinbutton->set_value(8.0);
     leg_pos_kd_spinbutton->set_value(25.0);
-    hip_pos_kp_spinbutton->set_value(100.0);
-    hip_pos_kd_spinbutton->set_value(8.0);
+    hip_pos_kp_spinbutton->set_value(250.0);
+    hip_pos_kd_spinbutton->set_value(10.0);
     
 	// Set up subscriber and publisher.
     sub = nh.subscribe("ATCSlipHopping_status", 0, controllerCallback);
