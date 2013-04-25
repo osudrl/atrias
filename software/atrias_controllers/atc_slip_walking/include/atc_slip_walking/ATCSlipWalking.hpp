@@ -53,7 +53,7 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
         // Control setup
         void guiCommunication();
-        int controllerState, prevState;
+        int prevState;
 
         // Event Angles
         double qE;  // Extension

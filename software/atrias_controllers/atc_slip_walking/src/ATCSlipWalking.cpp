@@ -35,7 +35,7 @@ void ATCSlipWalking::controller() {
     hipControl();
 
     // Main state machine
-    switch (controllerState) {
+    switch (guiIn.main_controller) {
         case 0:
             standingControl();
             break;
@@ -46,7 +46,6 @@ void ATCSlipWalking::controller() {
 
         default:
             shutdownControl();
-            break;
     }
 
     // Logging
@@ -54,9 +53,6 @@ void ATCSlipWalking::controller() {
 }
 
 void ATCSlipWalking::guiCommunication() {
-    // GUI values
-    controllerState = guiIn.main_controller;
-
     // PD Gains
     pdLegStance.P = guiIn.leg_stance_kp;
     pdLegStance.D = guiIn.leg_stance_kd;
@@ -73,8 +69,8 @@ void ATCSlipWalking::guiCommunication() {
 void ATCSlipWalking::hipControl() {
     // Hold the hips so the legs walk along a circle
     std::tie(qlh, qrh) = hipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
-    co.lLeg.motorCurrentHip = pdHip(qlh, rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
-    co.rLeg.motorCurrentHip = pdHip(qrh, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
+    co.lLeg.motorCurrentHip = pdHip(qlh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+    co.rLeg.motorCurrentHip = pdHip(qrh, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
 }
 
 
@@ -97,12 +93,18 @@ void ATCSlipWalking::standingControl() {
 
 
 void ATCSlipWalking::walkingControl() {
-    // Uses the control concept from atc_eq_point
-    // right stance + left swing
-    // right swing  + left stance
+    switch (guiIn.walking_controller) {
+        case 0:
+            eqPointWalking(); // To get moving
+            break;
 
-    // Uses the control concept from atc_slip_hopping
+        case 1:
+            slipWalking();
+            break;
 
+        default: // This shouldn't happen
+            shutdownControl();
+    }
     /*
     // Gui State Machine (initial mode is 0)
     if ((guiIn.mode == 0) && (prevState == 0)) {
@@ -117,14 +119,64 @@ void ATCSlipWalking::walkingControl() {
     */
 }
 
+// Control concepts from atc_eq_point
+void ATCSlipWalking::eqPointWalking() {
+    // Desired position for stance motor B
+    qmB_des = guiIn.pea + acos(guiIn.leg_length_stance);
+    // Amplitude between stance and flight leg lengths
+    amp = guiIn.leg_length_stance - guiIn.leg_length_flight;
+
+    switch (guiIn.ground_contact_method) {
+        case 0: // Manual
+            rGC = guiIn.r_gc;
+            lGC = guiIn.l_gc;
+            break;
+        default: // Don't use ground contact
+            rGC = true;
+            lGC = true;
+    }
+
+    // Switching conditions
+    if (t>0.99 && rGC) {
+        stanceLeg = rs.rLeg;
+        flightLeg = rs.lLeg;
+        sw_stance = false;
+        sw_flight = false;
+        t=0;
+    } else if (t>0.99 && lGC) {
+        stanceLeg = rs.lLeg;
+        flightLeg = rs.rLeg;
+        sw_stance = false;
+        sw_flight = false;
+        t=0;
+    }
+
+    // Virtual leg angles
+    qsl = (stanceLeg.halfA.motorAngle+stanceLeg.halfB.motorAngle)/2.0;
+    qfl = (flightLeg.halfA.motorAngle+flightLeg.halfB.motorAngle)/2.0;
+
+    // Stance mapping variable (from 0 to 1)
+    s = (qsl-qTouchDown) / (qTakeoff-qTouchDown);
+    // Ratchet t along with s
+    if (s > t)
+        t=s;
+    // TODO: Continue from line 238 in atc_eq_point
+
+}
+
+void ATCSlipWalking::slipWalking() {
+    // Uses the control concept from atc_slip_hopping
+
+}
+
 void ATCSlipWalking::shutdownControl() {
     // Damping
-    co.lLeg.motorCurrentHip = pdHip(0, 0, 0, rs.lLeg.hip.legBodyVelocity);
-    co.rLeg.motorCurrentHip = pdHip(0, 0, 0, rs.rLeg.hip.legBodyVelocity);
-    co.lLeg.motorCurrentA   = pdLegStance(0, 0, 0, rs.lLeg.halfA.motorVelocity);
-    co.lLeg.motorCurrentB   = pdLegStance(0, 0, 0, rs.lLeg.halfB.motorVelocity);
-    co.rLeg.motorCurrentA   = pdLegStance(0, 0, 0, rs.rLeg.halfA.motorVelocity);
-    co.rLeg.motorCurrentB   = pdLegStance(0, 0, 0, rs.rLeg.halfB.motorVelocity);
+    co.lLeg.motorCurrentHip = pdHip(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
+    co.rLeg.motorCurrentHip = pdHip(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
+    co.lLeg.motorCurrentA   = pdLegStance(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
+    co.lLeg.motorCurrentB   = pdLegStance(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
+    co.rLeg.motorCurrentA   = pdLegStance(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
+    co.rLeg.motorCurrentB   = pdLegStance(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
 }
 
 
