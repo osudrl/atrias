@@ -303,6 +303,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -320,6 +321,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -341,15 +343,6 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkSpinButton" id="t_swing_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -358,6 +351,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -379,7 +373,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="t_stance_spinbutton">
+          <object class="GtkSpinButton" id="t_extension_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">●</property>
@@ -387,6 +381,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">3</property>
@@ -396,11 +391,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="t_stance_label">
+          <object class="GtkLabel" id="t_extension_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">t stance</property>
+            <property name="label" translatable="yes">t extension</property>
           </object>
           <packing>
             <property name="left_attach">2</property>
@@ -408,6 +403,15 @@
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -435,7 +439,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="stance_controller_labe">
+          <object class="GtkLabel" id="stance_controller_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>

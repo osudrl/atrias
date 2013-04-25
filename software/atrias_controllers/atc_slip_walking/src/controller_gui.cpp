@@ -21,8 +21,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("stance_current_offset_spinbutton", stance_current_offset_spinbutton);
     gui->get_widget("t_swing_spinbutton", t_swing_spinbutton);
     gui->get_widget("t_extension_spinbutton", t_extension_spinbutton);
-    gui->get_widget("right_ground_contact", right_ground_contact_button);
-    gui->get_widget("left_ground_contact", left_ground_contact_button);
+    gui->get_widget("right_ground_contact_button", right_ground_contact_button);
+    gui->get_widget("left_ground_contact_button", left_ground_contact_button);
     gui->get_widget("main_controller_combobox", main_controller_combobox);
     gui->get_widget("spring_type_combobox", spring_type_combobox);
     gui->get_widget("stance_controller_combobox", stance_controller_combobox);
@@ -43,7 +43,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     hip_kd_spinbutton->set_range(0.0, 25.0);
     min_flight_leg_length_spinbutton->set_range(0.5, 0.95);
     stance_current_offset_spinbutton->set_range(-5.0, 5.0);
-    t_swing_spinbutton->set_range(5.0, 1.0);
+    t_swing_spinbutton->set_range(0.5, 1.0);
     t_extension_spinbutton->set_range(0.0, 0.5);
 
     // Increments
@@ -82,9 +82,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     // Connect buttons to functions
     right_ground_contact_button->signal_pressed().connect(sigc::ptr_fun((void(*)())right_ground_contact_pressed));
-    right_ground_contact_button->signal_pressed().connect(sigc::ptr_fun((void(*)())right_ground_contact_pressed));
-    left_ground_contact_button->signal_pressed().connect(sigc::ptr_fun((void(*)())right_ground_contact_pressed));
-    left_ground_contact_button->signal_pressed().connect(sigc::ptr_fun((void(*)())right_ground_contact_pressed));
+    right_ground_contact_button->signal_released().connect(sigc::ptr_fun((void(*)())right_ground_contact_released));
+    left_ground_contact_button->signal_pressed().connect(sigc::ptr_fun((void(*)())left_ground_contact_pressed));
+    left_ground_contact_button->signal_released().connect(sigc::ptr_fun((void(*)())left_ground_contact_released));
 
 
     // Set up subscriber and publisher
