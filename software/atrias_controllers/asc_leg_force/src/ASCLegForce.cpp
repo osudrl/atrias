@@ -67,11 +67,13 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dtausB = fx*L1*sin(qlB + qb)*(dqlB + dqb) + dfz*L1*sin(qlB + qb) - dfx*L1*cos(qlB + qb) + fz*L1*cos(qlB + qb)*(dqlB + dqb);
 
 	// Compute required motor current using PD controller with feed forward term
-	curA = (KS*(qmA - qlA)/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
-	curB = (KS*(qmB - qlB)/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
-
-    	// Set the log data
-    	log_out.data.control_fx = legForce.fx;
+	//curA = (KS*(qmA - qlA)/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
+	//curB = (KS*(qmB - qlB)/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
+	curA = (tausA/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
+	curB = (tausB/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
+    	
+	// Set the log data
+    log_out.data.control_fx = legForce.fx;
 	log_out.data.control_fz = legForce.fz;
 	log_out.data.control_dfx = legForce.dfx;
 	log_out.data.control_dfz = legForce.dfz;
@@ -82,8 +84,8 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	log_out.data.control_curA = curA;
 	log_out.data.control_curB = curB;
 
-    	// Transmit the log data
-    	log_out.send();
+	// Transmit the log data
+	log_out.send();
 
 	// Return the motor current
 	return std::make_tuple(curA, curB);

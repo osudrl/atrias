@@ -3,7 +3,9 @@
   * @author Mikhail Jones
   * @brief This implements a demo force controller
   */
-   
+
+// TODO - Add flight and stance gains for both force and position control.
+
 #include "atc_force_control_demo/ATCForceControlDemo.hpp"
 
 // The namespaces this controller resides in
@@ -14,18 +16,26 @@ namespace controller {
 ATCForceControlDemo::ATCForceControlDemo(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
-	ascLegForce(this, "ascLegForce"),
+	ascLegForceLl(this, "ascLegForceLl"),
+	ascLegForceRl(this, "ascLegForceRl"),
 	ascHipBoomKinematics(this, "ascHipBoomKinematics"),
-	ascPDlA(this, "ascPDlA"),
-	ascPDlB(this, "ascPDlB"),
-	ascPDrA(this, "ascPDrA"),
-	ascPDrB(this, "ascPDrB"),
-	ascPDlh(this, "ascPDlh"),
-	ascPDrh(this, "ascPDrh")
+	ascPDLmA(this, "ascPDLmA"),
+	ascPDLmB(this, "ascPDLmB"),
+	ascPDRmA(this, "ascPDRmA"),
+	ascPDRmB(this, "ascPDRmB"),
+	ascPDLh(this, "ascPDLh"),
+	ascPDRh(this, "ascPDRh"),
+	ascRateLimitLmA(this, "ascRateLimitLmA"),
+	ascRateLimitLmB(this, "ascRateLimitLmB"),
+	ascRateLimitRmA(this, "ascRateLimitRmA"),
+	ascRateLimitRmB(this, "ascRateLimitRmB")
 {
 	// Initialize
-	lt = rt = 0.0;
-	duration = 10.0;
+	legRateLimit = 1.0;
+	toePosition.left = 2.15;
+	toePosition.right = 2.45;
+	tL = tR = 0.0;
+	duration = 2.5;
 }
 
 /* @brief This is the main function for the top-level controller
@@ -49,60 +59,55 @@ void ATCForceControlDemo::controller() {
     updateState();
 
 	// Run hip controller
-	hipControl();
+	hipController();
 
 	// Left leg controller selection
 	switch (lLegControllerState) {
 		// Position control
 		case 0:
 			// Set motor angles
-			std::tie(qlmA, qlmB) = ascCommonToolkit.legPos2MotorPos(guiIn.left_leg_ang, guiIn.left_leg_len);
+			std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(guiIn.left_leg_ang, guiIn.left_leg_len);
+
+			// Rate limit motor velocities
+			qLmA = ascRateLimitLmA(qLmA, legRateLimit);
+			qLmB = ascRateLimitLmB(qLmB, legRateLimit);
 
 			// Compute and set motor currents
-			co.lLeg.motorCurrentA = ascPDlA(qlmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-			co.lLeg.motorCurrentB = ascPDlB(qlmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
+			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
 		case 1:
 			// Get component forces
-			fl.fx = guiIn.left_fx;
-			fl.fz = guiIn.left_fz;
-			fl.dfx = 0.0;
-			fl.dfz = 0.0;
+			fL.fx = guiIn.left_fx;
+			fL.fz = guiIn.left_fz;
+			fL.dfx = 0.0;
+			fL.dfz = 0.0;
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(fL, rs.lLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
 		case 2:
 			// Compute forces
-			fl.fx = guiIn.left_offx + guiIn.left_ampx*sin(lt*2.0*PI*guiIn.left_freqx);
-			fl.fz = guiIn.left_offz + guiIn.left_ampz*sin(lt*2.0*PI*guiIn.left_freqz);
-			fl.dfx = 2.0*PI*guiIn.left_ampx*guiIn.left_freqx*cos(lt*2.0*PI*guiIn.left_freqx);
-			fl.dfz = 2.0*PI*guiIn.left_ampz*guiIn.left_freqz*cos(lt*2.0*PI*guiIn.left_freqz);
+			fL.fx = guiIn.left_offx + guiIn.left_ampx*sin(tL*2.0*PI*guiIn.left_freqx);
+			fL.fz = guiIn.left_offz + guiIn.left_ampz*sin(tL*2.0*PI*guiIn.left_freqz);
+			fL.dfx = 2.0*PI*guiIn.left_ampx*guiIn.left_freqx*cos(tL*2.0*PI*guiIn.left_freqx);
+			fL.dfz = 2.0*PI*guiIn.left_ampz*guiIn.left_freqz*cos(tL*2.0*PI*guiIn.left_freqz);
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(fL, rs.lLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
 		case 3:
 			// Compute forces
-			fl = automateForceTest(lt);
+			fL = automateForceSequence(tL);
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fl, rs.lLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.lLeg, rs.position);		
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(fL, rs.lLeg, rs.position);		
 			break;
 			
 	}
@@ -112,53 +117,48 @@ void ATCForceControlDemo::controller() {
 		// Position control
 		case 0:	
 			// Set motor angles
-			std::tie(qrmA, qrmB) = ascCommonToolkit.legPos2MotorPos(guiIn.right_leg_ang, guiIn.right_leg_len);
+			std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(guiIn.right_leg_ang, guiIn.right_leg_len);
 
+			// Rate limit motor velocities
+			qRmA = ascRateLimitRmA(qRmA, legRateLimit);
+			qRmB = ascRateLimitRmB(qRmB, legRateLimit);
+			
 			// Compute and set motor currents
-			co.rLeg.motorCurrentA = ascPDlA(qrmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-			co.rLeg.motorCurrentB = ascPDlB(qrmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = ascPDLmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = ascPDLmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
 		case 1:
 			// Get component forces
-			fr.fx = guiIn.right_fx;
-			fr.fz = guiIn.right_fz;
-			fr.dfx = 0.0;
-			fr.dfz = 0.0;
+			fR.fx = guiIn.right_fx;
+			fR.fz = guiIn.right_fz;
+			fR.dfx = 0.0;
+			fR.dfz = 0.0;
 		
 			// Compute and set motor current values
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(fR, rs.rLeg, rs.position);
 			break;
 			
 		// Force control - sinewave
 		case 2:
 			// Compute forces
-			fr.fx = guiIn.left_offx + guiIn.left_ampx*sin(rt*2.0*PI*guiIn.left_freqx);
-			fr.fz = guiIn.left_offz + guiIn.left_ampz*sin(rt*2.0*PI*guiIn.left_freqz);
-			fr.dfx = 2.0*PI*guiIn.left_ampx*guiIn.left_freqx*cos(rt*2.0*PI*guiIn.left_freqx);
-			fr.dfz = 2.0*PI*guiIn.left_ampz*guiIn.left_freqz*cos(rt*2.0*PI*guiIn.left_freqz);;
+			fR.fx = guiIn.left_offx + guiIn.left_ampx*sin(tR*2.0*PI*guiIn.left_freqx);
+			fR.fz = guiIn.left_offz + guiIn.left_ampz*sin(tR*2.0*PI*guiIn.left_freqz);
+			fR.dfx = 2.0*PI*guiIn.left_ampx*guiIn.left_freqx*cos(tR*2.0*PI*guiIn.left_freqx);
+			fR.dfz = 2.0*PI*guiIn.left_ampz*guiIn.left_freqz*cos(tR*2.0*PI*guiIn.left_freqz);;
 		
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(fr, rs.lLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceRl.control(fR, rs.lLeg, rs.position);
 			break;
 			
 		// Force control - automated sequence
 		case 3:
 			// Compute forces
-			fr = automateForceTest(rt);
+			fR = automateForceSequence(tR);
 		
 			// Compute and set motor current values
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForce.control(fr, rs.rLeg, rs.position);
-			
-			// Compute and log computed leg forces
-			tempLegForce = ascLegForce.compute(rs.rLeg, rs.position);
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(fR, rs.rLeg, rs.position);
 			break;
 			
 	}
@@ -167,14 +167,14 @@ void ATCForceControlDemo::controller() {
 	guiOut.isEnabled = isEnabled();
 
 	// Log data
-	logOut.left_fx = fl.fx;
-	logOut.left_fz = fl.fz;
-	logOut.left_dfx = fl.dfx;
-	logOut.left_dfz = fl.dfz;
-	logOut.right_fx = fr.fx;
-	logOut.right_fz = fr.fz;
-	logOut.right_dfx = fr.dfx;
-	logOut.right_dfz = fr.dfz;
+	logOut.left_fx = fL.fx;
+	logOut.left_fz = fL.fz;
+	logOut.left_dfx = fL.dfx;
+	logOut.left_dfz = fL.dfz;
+	logOut.right_fx = fR.fx;
+	logOut.right_fz = fR.fz;
+	logOut.right_dfx = fR.dfx;
+	logOut.right_dfz = fR.dfz;
 	
 	
 }
@@ -183,22 +183,30 @@ void ATCForceControlDemo::controller() {
 // updateState
 void ATCForceControlDemo::updateState() {
 
+	// If we are disabled then reset rate limiters
+	if (!isEnabled()) {
+		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
+		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
+		ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
+		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
+	}
+
 	// Safety: If nothing else forces will be zero
-	fl.fx = fr.fx = 0.0;
-	fl.fz = fr.fz = 0.0;
-	fl.dfx = fr.dfx = 0.0;
-	fl.dfz = fr.dfz = 0.0;
+	fL.fx = fR.fx = 0.0;
+	fL.fz = fR.fz = 0.0;
+	fL.dfx = fR.dfx = 0.0;
+	fL.dfz = fR.dfz = 0.0;
 
 	// Reset time count if controller is switched
 	if (lLegControllerState != guiIn.left_controller) {
-		lt = 0.0;
+		tL = 0.0;
 	} else {
-		lt += 0.001;
+		tL += 0.001;
 	}
 	if (rLegControllerState != guiIn.right_controller) {
-		rt = 0.0;
+		tR = 0.0;
 	} else {
-		rt += 0.001;
+		tR += 0.001;
 	}
 
 	// Get GUI values
@@ -206,40 +214,54 @@ void ATCForceControlDemo::updateState() {
 	rLegControllerState = guiIn.right_controller;	
 
 	// Set leg motor position control PD gains
-	ascPDlA.P = ascPDlB.P = ascPDrA.P = ascPDrB.P = guiIn.leg_pos_kp;
-	ascPDlA.D = ascPDlB.D = ascPDrA.D = ascPDrB.D = guiIn.leg_pos_kd;
+	ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
+	ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = guiIn.leg_pos_kd;
 	
 	// Set hip motors position control PD gains
-	ascPDlh.P = ascPDrh.P = guiIn.hip_pos_kp;
-	ascPDlh.D = ascPDrh.D = guiIn.hip_pos_kd;
+	ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
+	ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 	
 	// Set leg motor force control PID gains
-	ascLegForce.kp = guiIn.leg_for_kp;
-	ascLegForce.ki = 0.0;
-	ascLegForce.kd = guiIn.leg_for_kd;	
+	ascLegForceLl.kp = ascLegForceRl.kp = guiIn.leg_for_kp;
+	ascLegForceLl.ki = ascLegForceRl.ki = 0.0;
+	ascLegForceLl.kd = ascLegForceRl.kd = guiIn.leg_for_kd;	
+	
+	// Compute actual leg force from spring deflection
+	fTemp = ascLegForceLl.compute(rs.lLeg, rs.position);
+	fTemp = ascLegForceRl.compute(rs.rLeg, rs.position);
 
 }
 
 
-// hipControl
-void ATCForceControlDemo::hipControl() {
-
-	// Set toe positions
-	toePosition.left = 2.15;
-	toePosition.right = 2.45;
+// hipController
+void ATCForceControlDemo::hipController() {
 
 	// Compute inverse kinematics
-	std::tie(qlh, qrh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
+	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 	
 	// Compute and set motor currents
-	co.lLeg.motorCurrentHip = ascPDlh(qlh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
-	co.rLeg.motorCurrentHip = ascPDrh(qrh, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+	co.lLeg.motorCurrentHip = ascPDLh(qLh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentHip = ascPDRh(qRh, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
         
 }
 
 
-// automateForceTest
-LegForce ATCForceControlDemo::automateForceTest(double t) {
+// shutdownController
+void ATCForceControlDemo::shutdownController() {
+
+	// Compute and set motor currents (applies virtual dampers to all actuators)
+	co.lLeg.motorCurrentA = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
+	co.lLeg.motorCurrentHip = ascPDLh(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
+	co.rLeg.motorCurrentA = ascPDRmA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
+
+}
+
+
+// automateForceSequence
+LegForce ATCForceControlDemo::automateForceSequence(double t) {
 
 	// Safety: If nothing else forces will be zero
 	legForce.fx = 0.0; 

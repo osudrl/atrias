@@ -39,14 +39,14 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("right_controller_combobox", right_controller_combobox);
     
 	// Set ranges
-    leg_pos_kp_spinbutton->set_range(0.0, 5000.0);
-    leg_pos_kd_spinbutton->set_range(0.0, 100.0);
-    leg_for_kp_spinbutton->set_range(0.0, 1500.0);
-    leg_for_kd_spinbutton->set_range(0.0, 50.0);
-    hip_pos_kp_spinbutton->set_range(0.0, 250.0);
-    hip_pos_kd_spinbutton->set_range(0.0, 25.0);
-    left_leg_len_spinbutton->set_range(0.45, 0.90);
-    right_leg_len_spinbutton->set_range(0.45, 0.90);
+    leg_pos_kp_spinbutton->set_range(0.0, 7500.0);
+    leg_pos_kd_spinbutton->set_range(0.0, 500.0);
+    leg_for_kp_spinbutton->set_range(0.0, 7500.0);
+    leg_for_kd_spinbutton->set_range(0.0, 500.0);
+    hip_pos_kp_spinbutton->set_range(0.0, 500.0);
+    hip_pos_kd_spinbutton->set_range(0.0, 50.0);
+    left_leg_len_spinbutton->set_range(0.5, 0.95);
+    right_leg_len_spinbutton->set_range(0.5, 0.95);
     left_leg_ang_spinbutton->set_range(M_PI/4.0, 3.0*M_PI/4.0);
     right_leg_ang_spinbutton->set_range(M_PI/4.0, 3.0*M_PI/4.0);
     left_fx_spinbutton->set_range(-1000.0, 1000.0);

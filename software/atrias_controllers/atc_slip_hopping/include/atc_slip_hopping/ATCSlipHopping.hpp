@@ -29,6 +29,7 @@
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -76,15 +77,19 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  */
 		ASCCommonToolkit ascCommonToolkit;
 		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForcel;
-		ASCLegForce ascLegForcer;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
 
 
 		/**
@@ -95,22 +100,24 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		int stanceControlType, hoppingType, forceControlType, springType;
 		bool isLeftStance, isRightStance;
 
-		void hipControl();
-		double qlh, qrh;
+		void hipController();
+		double qLh, qRh;
 		LeftRight toePosition;
 
-		void standingControl();
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
-		//double rateLim;
+		void standingController();
+		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
 
-		void forceStancePhaseControl();
-		double ql, rl, h;
+		void forceStancePhaseController();
+		double h;
 		SlipState slipState;
-		LegForce legForce, tempLegForce;
+		LegForce legForce, fTemp;
 
-		void passiveStancePhaseControl();
+		void passiveStancePhaseController();
 
-		void flightPhaseControl();
+		void flightPhaseController();
+		
+		void shutdownController();
 
 };
 
