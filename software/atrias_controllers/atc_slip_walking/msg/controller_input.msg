@@ -1,8 +1,15 @@
-float64 standing_leg_length
+float64 stance_leg_length
 float64 touchdown_angle
 float64 takeoff_angle
 float64 slip_leg_length
 float64 linear_spring_constant
+
+bool right_ground_contact
+bool left_ground_contact
+float64 min_flight_leg_length
+float64 stance_current_offset
+float64 t_swing
+float64 t_extension
 
 float64 leg_stance_kp
 float64 leg_stance_kd
@@ -14,3 +21,5 @@ float64 hip_kd
 uint8 main_controller
 uint8 spring_type
 uint8 stance_controller
+uint8 walking_controller
+uint8 ground_contact_method

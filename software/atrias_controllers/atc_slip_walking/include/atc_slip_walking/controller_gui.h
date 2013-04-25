@@ -16,7 +16,7 @@ atc_slip_walking::controller_input controllerDataOut;
 atc_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::SpinButton *standing_leg_length_spinbutton,
+Gtk::SpinButton *stance_leg_length_spinbutton,
     *touchdown_angle_spinbutton,
     *takeoff_angle_spinbutton,
     *slip_leg_length_spinbutton,

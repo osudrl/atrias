@@ -1,7 +1,7 @@
 #include <atc_slip_walking/controller_gui.h>
 
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
-    gui->get_widget("standing_leg_length_spinbutton", standing_leg_length_spinbutton);
+    gui->get_widget("stance_leg_length_spinbutton", stance_leg_length_spinbutton);
     gui->get_widget("touchdown_angle_spinbutton", touchdown_angle_spinbutton);
     gui->get_widget("takeoff_angle_spinbutton", takeoff_angle_spinbutton);
     gui->get_widget("slip_leg_length_spinbutton", slip_leg_length_spinbutton);
@@ -17,7 +17,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("stance_controller_combobox", stance_controller_combobox);
 
     // Ranges
-    standing_leg_length_spinbutton->set_range(0.5, 0.95);
+    stance_leg_length_spinbutton->set_range(0.5, 0.95);
     touchdown_angle_spinbutton->set_range(M_PI/8.0, M_PI/2.0);
     takeoff_angle_spinbutton->set_range(M_PI/2.0, M_PI*7.0/8.0);
     slip_leg_length_spinbutton->set_range(0.5, 0.95);
@@ -30,7 +30,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     hip_kd_spinbutton->set_range(0.0, 25.0);
 
     // Increments
-    standing_leg_length_spinbutton->set_increments(0.01, 0.0);
+    stance_leg_length_spinbutton->set_increments(0.01, 0.0);
     touchdown_angle_spinbutton->set_increments(0.05, 0.0);
     takeoff_angle_spinbutton->set_increments(0.05, 0.0);
     slip_leg_length_spinbutton->set_increments(0.01, 0.0);
@@ -43,7 +43,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     hip_kd_spinbutton->set_increments(1.0, 0.0);
 
     // Set default values
-    standing_leg_length_spinbutton->set_value(0.90);
+    stance_leg_length_spinbutton->set_value(0.90);
     touchdown_angle_spinbutton->set_value(M_PI/4.0+0.25);
     takeoff_angle_spinbutton->set_value(M_PI*3.0/4.0-0.25);
     slip_leg_length_spinbutton->set_value(0.85);
@@ -68,7 +68,7 @@ void controllerCallback(const atc_slip_walking::controller_status &status) {
 // Get parameters from the server and configure GUI accordingly
 void getParameters() {
     // Get parameters in the atrias_gui namespace
-    nh.getParam("/atrias_gui/standing_leg_length", controllerDataOut.standing_leg_length);
+    nh.getParam("/atrias_gui/stance_leg_length", controllerDataOut.stance_leg_length);
     nh.getParam("/atrias_gui/touchdown_angle", controllerDataOut.touchdown_angle);
     nh.getParam("/atrias_gui/takeoff_angle", controllerDataOut.takeoff_angle);
     nh.getParam("/atrias_gui/slip_leg_length", controllerDataOut.slip_leg_length);
@@ -90,7 +90,7 @@ void getParameters() {
     controllerDataOut.stance_controller = (uint8_t)stance_controller;
 
     // Configure the GUI
-    standing_leg_length_spinbutton->set_value(controllerDataOut.standing_leg_length);
+    stance_leg_length_spinbutton->set_value(controllerDataOut.stance_leg_length);
     touchdown_angle_spinbutton->set_value(controllerDataOut.touchdown_angle);
     takeoff_angle_spinbutton->set_value(controllerDataOut.takeoff_angle);
     slip_leg_length_spinbutton->set_value(controllerDataOut.slip_leg_length);
@@ -108,7 +108,7 @@ void getParameters() {
 
 // Set parameters on the ROS server according to current GUI settings
 void setParameters() {
-    nh.setParam("/atrias_gui/standing_leg_length", controllerDataOut.standing_leg_length);
+    nh.setParam("/atrias_gui/stance_leg_length", controllerDataOut.stance_leg_length);
     nh.setParam("/atrias_gui/touchdown_angle", controllerDataOut.touchdown_angle);
     nh.setParam("/atrias_gui/takeoff_angle", controllerDataOut.takeoff_angle);
     nh.setParam("/atrias_gui/slip_leg_length", controllerDataOut.slip_leg_length);
@@ -125,7 +125,7 @@ void setParameters() {
 }
 
 void guiUpdate() {
-    controllerDataOut.standing_leg_length = standing_leg_length_spinbutton->get_value();
+    controllerDataOut.stance_leg_length = stance_leg_length_spinbutton->get_value();
     controllerDataOut.touchdown_angle = touchdown_angle_spinbutton->get_value();
     controllerDataOut.takeoff_angle = takeoff_angle_spinbutton->get_value();
     controllerDataOut.slip_leg_length = slip_leg_length_spinbutton->get_value();
