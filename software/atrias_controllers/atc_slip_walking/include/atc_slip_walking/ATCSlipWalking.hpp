@@ -80,7 +80,7 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         atrias_msgs::controller_output_leg *coStanceLeg, *coFlightLeg;
         // State switching and ground contact
         uint8_t eqPointState;
-        bool sw_stance, sw_flight, rGC, lGC;
+        bool stanceComplete, flightComplete, rGC, lGC;
         double t, s;
         // Angles
         double qsl, qfl, qfmA, qfmB, qsmA, qsmB, qsmB_des;
