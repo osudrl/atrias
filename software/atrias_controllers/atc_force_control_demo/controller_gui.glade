@@ -1061,6 +1061,9 @@
         <col id="0" translatable="yes">Sinewave Force</col>
       </row>
       <row>
+        <col id="0" translatable="yes">Automated Position Test</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">Automated Force Test</col>
       </row>
     </data>
@@ -1079,6 +1082,9 @@
       </row>
       <row>
         <col id="0" translatable="yes">Sinewave Force</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Automated Position Test</col>
       </row>
       <row>
         <col id="0" translatable="yes">Automated Force Test</col>

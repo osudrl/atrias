@@ -1,42 +1,27 @@
-/**
-  * @file ASC_HIP_BOOM_KINEMATICS.cpp
-  * @author Mikhail Jones
-  * @brief This implements hip/boom kinematic relationships.
-  */
-
-// To use do something like this.
-// // Define toePosition struct
-// toePosition.left = 2.15;
-// toePosition.right = 2.45;
-//
-// // Compute and set hipAngle
-// std::tie(lhq, rhq) = inverseKinematics0(toePosition, rs.lLeg, rs.rLeg, rs.position);
-
-
 #include "asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp"
 
-// Again, we need to put our code inside the appropriate namespaces.
+// The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-/* Breakdown of the next few lines:
- * We need to call our parent class's constructor,
- * then we can call the LogPort's constructor. The second parameter
- * is the name for this log port, which controls how it appears in the
- * bagfiles.
- */
 ASCHipBoomKinematics::ASCHipBoomKinematics(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Initialize
-    lBoom = 2.04; // Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
-    lBody = 0.35; // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis
-    lHip = 0.18; // Distance from hip pivot X axis to XZ center plane of leg assembly
-    qBodyOffset = PI/2.0 - 0.126; // Angle between boom Y axis and robot body XZ center plane
+	// Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
+    lBoom = 2.04;
+    
+    // Distance from boom Y axis intersection with robot body XZ center plane to hip pivot X axis
+    lBody = 0.35;
+    
+    // Distance from hip pivot X axis to XZ center plane of leg assembly
+    lHip = 0.18;
+    
+    // Angle between boom Y axis and robot body XZ center plane
+    qBodyOffset = PI/2.0 - 0.126;
 }
 
-// inverseKinematics
+
 std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, atrias_msgs::robot_state_leg lLeg, atrias_msgs::robot_state_leg rLeg, atrias_msgs::robot_state_location position) {
 
     // Define imaginary number i
@@ -59,7 +44,7 @@ std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, at
 	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*PI, 2.0*PI);
 	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*PI, 2.0*PI);
 
-	// TODO -Clamp hip angles to physical limits
+	// TODO - Clamp hip angles to physical limits
 	
 	// Set the log data
     log_out.data.leftHipAngle = hipAngle.left;
@@ -71,7 +56,7 @@ std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, at
 	// Return the computed hip angles	
 	return std::make_tuple(hipAngle.left, hipAngle.right);
 
-} // inverseKinematics
+}
 
 }
 }

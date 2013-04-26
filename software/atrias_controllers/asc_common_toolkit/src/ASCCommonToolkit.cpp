@@ -1,35 +1,18 @@
-/**
-  * @file ASC_COMMON_TOOLKIT.cpp
-  * @author Mikhail Jones
-  * @brief This implements common functionality required by most controllers.
-  */
-
-// To use do something like this.
-// k = ASCCommonToolkit.legStiffness(r, r0);
-// std::tie(ql, rl) = ASCCommonToolkit.motorPos2LegPos(qmA, qmB);
-// std::tie(qmA, qmB) = ASCCommonToolkit.motorPos2LegPos(ql, rl);
-
 #include "asc_common_toolkit/ASCCommonToolkit.hpp"
 
-// Again, we need to put our code inside the appropriate namespaces.
+// The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-/* Breakdown of the next few lines:
- * We need to call our parent class's constructor,
- * then we can call the LogPort's constructor. The second parameter
- * is the name for this log port, which controls how it appears in the
- * bagfiles.
- */
 ASCCommonToolkit::ASCCommonToolkit(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Initialize
+	// Spring constant
 	ks = KS;
 }
 
-// legStiffness
+
 double ASCCommonToolkit::legStiffness(double r, double r0) {
 
 	// Compute non-linear ATRIAS virtual leg length stiffness
@@ -44,9 +27,9 @@ double ASCCommonToolkit::legStiffness(double r, double r0) {
 	// Return virtual leg stiffness
 	return k;
 	
-} // legStiffness
+}
 
-// motorPos2LegPos
+
 std::tuple<double, double> ASCCommonToolkit::motorPos2LegPos(double qmA, double qmB) {
 
 	// Compute leg positions
@@ -56,9 +39,9 @@ std::tuple<double, double> ASCCommonToolkit::motorPos2LegPos(double qmA, double 
 	// Return leg position
 	return std::make_tuple(ql, rl);
 	
-} // motorPos2LegPos
+}
 
-// legPos2MotorPos
+
 std::tuple<double, double> ASCCommonToolkit::legPos2MotorPos(double ql, double rl) {
 
 	// Compute motor positions
@@ -68,9 +51,9 @@ std::tuple<double, double> ASCCommonToolkit::legPos2MotorPos(double ql, double r
 	// Return motor positions
 	return std::make_tuple(qmA, qmB);
 	
-} // legPos2MotorPos
+}
 
-// motorVel2LegVel
+
 std::tuple<double, double> ASCCommonToolkit::motorVel2LegVel(double qmA, double qmB, double dqmA, double dqmB) {
 	
 	// Compute leg velocities
@@ -80,9 +63,9 @@ std::tuple<double, double> ASCCommonToolkit::motorVel2LegVel(double qmA, double 
 	// Return motor velocities
 	return std::make_tuple(dql, drl);
 	
-} // motorVel2LegVel
+}
 
-// legVel2MotorVel
+
 std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double ql, double dql, double drl) {
 
 	// Compute motor velocities
@@ -92,9 +75,9 @@ std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double ql, double d
 	// Return motor velocities
 	return std::make_tuple(dqmA, dqmB);
 	
-} // legVel2MotorVel
+}
 
-// rad2Deg
+
 double ASCCommonToolkit::rad2Deg(double rad) {
 
 	// Compute degrees
@@ -103,9 +86,9 @@ double ASCCommonToolkit::rad2Deg(double rad) {
 	// Return degrees
 	return deg;
 	
-} // rad2Deg
+}
 
-// deg2Rad
+
 double ASCCommonToolkit::deg2Rad(double deg) {
 
 	// Compute radians
@@ -114,9 +97,9 @@ double ASCCommonToolkit::deg2Rad(double deg) {
 	// Return radians
 	return rad;
 	
-} // deg2Rad
+}
 
-// cart2Pol
+
 std::tuple<double, double> ASCCommonToolkit::cart2Pol(double x, double z) {
 
 	// Compute polar coordinates
@@ -126,9 +109,9 @@ std::tuple<double, double> ASCCommonToolkit::cart2Pol(double x, double z) {
 	// Return polar coordinates
 	return std::make_tuple(q, r);
 	
-} // cart2Pol
+}
 
-// pol2Cart
+
 std::tuple<double, double> ASCCommonToolkit::pol2Cart(double q, double r) {
 
 	// Compute polar coordinates
@@ -138,8 +121,7 @@ std::tuple<double, double> ASCCommonToolkit::pol2Cart(double q, double r) {
 	// Return polar coordinates
 	return std::make_tuple(x, z);
 	
-} // pol2Cart
+}
 
 }
 }
-

@@ -73,9 +73,54 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		void controller();
 
 		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void updateState();
+		int controllerState, hoppingState;
+		int stanceControlType, hoppingType, forceControlType, springType;
+		bool isLeftStance, isRightStance;
+
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void hipController();
+		double qLh, qRh;
+		LeftRight toePosition;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void standingController();
+		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void forceStancePhaseController();
+		double h;
+		SlipState slipState;
+		LegForce legForce, fTemp;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void passiveStancePhaseController();
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void flightPhaseController();
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void shutdownController();
+		
+		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-		ASCCommonToolkit ascCommonToolkit;
+  		ASCCommonToolkit ascCommonToolkit;
 		ASCSlipModel ascSlipModel;
 		ASCLegForce ascLegForceLl;
 		ASCLegForce ascLegForceRl;
@@ -90,34 +135,6 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		ASCRateLimit ascRateLimitLmB;
 		ASCRateLimit ascRateLimitRmA;
 		ASCRateLimit ascRateLimitRmB;
-
-
-		/**
-		  * @brief These are function within the top-level controller.
-		  */
-		void updateState();
-		int controllerState, hoppingState;
-		int stanceControlType, hoppingType, forceControlType, springType;
-		bool isLeftStance, isRightStance;
-
-		void hipController();
-		double qLh, qRh;
-		LeftRight toePosition;
-
-		void standingController();
-		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
-		double legRateLimit;
-
-		void forceStancePhaseController();
-		double h;
-		SlipState slipState;
-		LegForce legForce, fTemp;
-
-		void passiveStancePhaseController();
-
-		void flightPhaseController();
-		
-		void shutdownController();
 
 };
 
