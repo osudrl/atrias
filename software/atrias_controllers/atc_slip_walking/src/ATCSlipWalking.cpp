@@ -26,7 +26,6 @@ void ATCSlipWalking::controller() {
     if (!isEnabled())
         return;
 
-    // Setup
     guiCommunication();
     hipControl();
 
@@ -114,7 +113,6 @@ void ATCSlipWalking::walkingControl() {
 }
 
 void ATCSlipWalking::eqPointWalkingSetup() {
-    std::cout << "Setup: Right leg in stance" << std::endl;
     rsStanceLeg = &rs.rLeg;
     coStanceLeg = &co.rLeg;
     rsFlightLeg = &rs.lLeg;
@@ -122,6 +120,7 @@ void ATCSlipWalking::eqPointWalkingSetup() {
     sw_stance = false;
     sw_flight = false;
     t=0.0;
+    eqPointState = 0;  // Right leg in stance
 }
 
 // Control concepts from atc_eq_point
@@ -137,8 +136,8 @@ void ATCSlipWalking::eqPointWalkingControl() {
     }
 
     // Switching conditions
-    if ((t>0.99) && rGC) {
-        std::cout << "Right leg in stance" << std::endl;
+    if ((eqPointState == 1) && (t>0.99) && rGC) {
+        eqPointState = 0;  // Right leg in stance
         rsStanceLeg = &rs.rLeg;
         coStanceLeg = &co.rLeg;
         rsFlightLeg = &rs.lLeg;
@@ -146,8 +145,8 @@ void ATCSlipWalking::eqPointWalkingControl() {
         sw_stance = false;
         sw_flight = false;
         t=0.0;
-    } else if ((t>0.99) && lGC) {
-        std::cout << "Left leg in stance" << std::endl;
+    } else if ((eqPointState == 0) && (t>0.99) && lGC) {
+        eqPointState = 1;  // Left leg in stance
         rsStanceLeg = &rs.lLeg;
         coStanceLeg = &co.lLeg;
         rsFlightLeg = &rs.rLeg;
