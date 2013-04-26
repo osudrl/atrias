@@ -1,18 +1,9 @@
-/**
-  * @file ATC_SLIP_HOPPING.cpp
-  * @author Mikhail Jones
-  * @brief This implements a SLIP template based vertical hopping controller.
-  */
-  
-// TODO - Add flight and stance gains for both force and position control.
-
 #include "atc_slip_hopping/ATCSlipHopping.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-// This constructor call is much simpler
 ATCSlipHopping::ATCSlipHopping(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
@@ -31,16 +22,15 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 	ascRateLimitRmA(this, "ascRateLimitRmA"),
 	ascRateLimitRmB(this, "ascRateLimitRmB")
 {
-	// Initialize
+	// Set leg motor rate limit
 	legRateLimit = 1.0;
+	
+	// Set hip controller toe positions
 	toePosition.left = 2.15;
 	toePosition.right = 2.45;
 }
 
-/* @brief This is the main function for the top-level controller.
- * @param rs The robot state is an inherited member.
- * @param co The controller output is an inhereted member.
- */
+
 void ATCSlipHopping::controller() {
 
 	/* Additionally, the following functions are available to command the robot state:
@@ -105,10 +95,9 @@ void ATCSlipHopping::controller() {
 }
 
 
-// updateState
 void ATCSlipHopping::updateState() {
 
-	// If we are disabled then reset rate limiters
+	// Reset rate limiters if needed
 	if (!isEnabled()) {
 		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
 		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
@@ -175,7 +164,6 @@ void ATCSlipHopping::updateState() {
 }
 
 
-// hipController
 void ATCSlipHopping::hipController() {
 
 	// Compute inverse kinematics
@@ -188,7 +176,6 @@ void ATCSlipHopping::hipController() {
 }
 
 
-// standingController
 void ATCSlipHopping::standingController() {
 
 	// Set leg angles
@@ -214,7 +201,6 @@ void ATCSlipHopping::standingController() {
 }
 
 
-// shutdownController
 void ATCSlipHopping::shutdownController() {
 
 	// Compute and set motor currents (applies virtual dampers to all actuators)
@@ -228,7 +214,6 @@ void ATCSlipHopping::shutdownController() {
 }
 
 
-// forceStancePhaseController
 void ATCSlipHopping::forceStancePhaseController() {
 
 	// Spring type
@@ -314,7 +299,6 @@ void ATCSlipHopping::forceStancePhaseController() {
 }
 
 
-// passiveStancePhaseController
 void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Left leg controller
@@ -343,7 +327,6 @@ void ATCSlipHopping::passiveStancePhaseController() {
 }
 
 
-// flightPhaseController
 void ATCSlipHopping::flightPhaseController() {
 
 	// Redefine slip initial conditions incase we go into stance next time step

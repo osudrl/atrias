@@ -1,44 +1,25 @@
-/**
-  * @file ASC_SLIP_MODEL.cpp
-  * @author Mikhail Jones
-  * @brief This implements a numerical integrator to solve the SLIP dynamics.
-  */
-
-// To use do something like this.
-// // Define slipState struct
-// slipState.r = 0.85;
-// slipState.dr = -sqrt(2.0*9.81*0.05);
-// slipState.q = PI/2.0;
-// slipState.dq = 0.0;
-//
-// // Compute and set legForce
-// ascSlipModel.k = ascCommonToolkit.legStiffness(r, r0);
-// slipState = ascSlipModel.advanceRK5(slipState);
-// legForce = ascSlipModel.force(slipState);
-
 #include "asc_slip_model/ASCSlipModel.hpp"
 
-// Again, we need to put our code inside the appropriate namespaces.
+// The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-/* Breakdown of the next few lines:
- * We need to call our parent class's constructor,
- * then we can call the LogPort's constructor. The second parameter
- * is the name for this log port, which controls how it appears in the
- * bagfiles.
- */
+// Controller constructor
 ASCSlipModel::ASCSlipModel(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Initialize
+	// Linear spring constant
 	k = 28000.0;
+	
+	// Initial leg length
 	r0 = 0.85;
+	
+	// Mass
 	m = M;
 }
 
-// rk4Advance
+
 SlipState ASCSlipModel::advanceRK4(SlipState slipState) {
 
 	// Our delta time
@@ -89,11 +70,10 @@ SlipState ASCSlipModel::advanceRK4(SlipState slipState) {
 
 	// Return new SLIP state
     return slipState;
+    
+}
 
-} // rk4Advance
 
-
-// rk5Advance
 SlipState ASCSlipModel::advanceRK5(SlipState slipState) {
 
 	// Our delta time
@@ -145,10 +125,9 @@ SlipState ASCSlipModel::advanceRK5(SlipState slipState) {
 	// Return new SLIP state
     return slipState;
 
-} // advance
+}
 
 
-// force
 LegForce ASCSlipModel::force(SlipState slipState) {
 
     // Unpack parameters
@@ -159,7 +138,7 @@ LegForce ASCSlipModel::force(SlipState slipState) {
 
 	// If virtual SLIP model is in flight
 	if (slipState.isFlight) {
-		// Define component force.
+		// Define component force
 		legForce.fx = 0.0;
 		legForce.fz = 0.0;
 		legForce.dfx = 0.0;
@@ -167,7 +146,7 @@ LegForce ASCSlipModel::force(SlipState slipState) {
 
 	// If virtual SLIP model is in NOT in flight (is in stance)
 	} else {
-		// Define component forces.
+		// Define component forces
 		legForce.fx = k*(r - r0)*cos(q);
 		legForce.fz = k*(r - r0)*sin(q);
 		legForce.dfx = k*(dr*cos(q) - dq*sin(q)*(r - r0));
@@ -186,7 +165,7 @@ LegForce ASCSlipModel::force(SlipState slipState) {
     // Return the leg force
     return legForce;
 
-} // force
+}
 
 }
 }

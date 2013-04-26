@@ -76,7 +76,6 @@ class ASCHipBoomKinematics : public AtriasController {
                 LogPort<asc_hip_boom_kinematics::controller_log_data> log_out;
 };
 
-// End namespaces
 }
 }
 
