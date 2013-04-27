@@ -44,15 +44,6 @@ using namespace atc_force_control_demo;
 namespace atrias {
 namespace controller {
 
-/* Our class definition. We subclass ATC for a top-level controller.
- * If we don't need a data type (such as the controller-to-gui message),
- * we simply leave that spot in the template blank. The following example
- * shows the necessary definition if this controller were not to transmit
- * data to the GUI:
- *     class ATC : public ATC<log_data, gui_to_controller,>
- *
- * Here, we don't need any log data, but we do communicate both ways w/ the GUI
- */
 class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_data, controller_input, controller_status> {
 	public:
 		/**
@@ -82,7 +73,7 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		/**
 		  * @brief Runs through a predetermined set of positions.
 		  */	
-		std::tuple<double, double> automatedPositionTest(double t);
+		std::tuple<double, double, double, double> automatedPositionTest(double t);
 		
 		/**
 		  * @brief Runs through a predetermined set of forces.
@@ -111,7 +102,7 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		double tL, tR;
 		
 		// Leg and motor positions
-		double qLmA, qLmB, qRmA, qRmB;
+		double qLmA, qLmB, qRmA, qRmB, dqLmA, dqLmB, dqRmA, dqRmB;
 		
 		// Leg motor rate limit
 		double legRateLimit;
@@ -128,8 +119,8 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		// Toe positions
 		LeftRight toePosition;
 		
-		// Motor angles
-		double qmA, qmB;
+		// Motor angles and velocities
+		double qmA, qmB, dqmA, dqmB;
 		
 		// Leg force structure
 		LegForce legForce;
@@ -138,7 +129,7 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		double duration;
 		
 		// Sine wave sweep parameters
-		double omega1, omega2, a, b;
+		double omega1, omega2, a, b, ql, rl, dql, drl;
 
 };
 

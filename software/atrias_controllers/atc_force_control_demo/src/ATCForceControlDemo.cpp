@@ -66,10 +66,11 @@ void ATCForceControlDemo::controller() {
 			// Rate limit motor velocities
 			qLmA = ascRateLimitLmA(qLmA, legRateLimit);
 			qLmB = ascRateLimitLmB(qLmB, legRateLimit);
+			dqLmA = dqLmB = 0.0;
 
 			// Compute and set motor currents
-			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
+			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, dqLmA, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, dqLmB, rs.lLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
@@ -99,11 +100,11 @@ void ATCForceControlDemo::controller() {
 		// Position control - automated test
 		case 3:
 			// Compute positions
-			std::tie(qLmA, qLmB) = automatedPositionTest(tL);
+			std::tie(qLmA, qLmB, dqLmA, dqLmB) = automatedPositionTest(tL);
 		
 			// Compute and set motor currents
-			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);	
+			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, dqLmA, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, dqLmB, rs.lLeg.halfB.motorVelocity);	
 			break;
 			
 		// Force control - automated test
@@ -127,10 +128,11 @@ void ATCForceControlDemo::controller() {
 			// Rate limit motor velocities
 			qRmA = ascRateLimitRmA(qRmA, legRateLimit);
 			qRmB = ascRateLimitRmB(qRmB, legRateLimit);
+			dqRmA = dqRmB = 0.0;
 			
 			// Compute and set motor currents
-			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, dqRmA, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, dqRmB, rs.rLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
@@ -160,11 +162,11 @@ void ATCForceControlDemo::controller() {
 		// Position control - automated test
 		case 3:
 			// Compute positions
-			std::tie(qRmA, qRmB) = automatedPositionTest(tR);
+			std::tie(qRmA, qRmB, dqRmA, dqRmB) = automatedPositionTest(tR);
 		
 			// Compute and set motor currents
-			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, dqRmA, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, dqRmB, rs.rLeg.halfB.motorVelocity);
 			break;
 				
 		// Force control - automated test
@@ -263,10 +265,11 @@ void ATCForceControlDemo::hipController() {
 }
 
 
-std::tuple<double, double> ATCForceControlDemo::automatedPositionTest(double t) {
+std::tuple<double, double, double, double> ATCForceControlDemo::automatedPositionTest(double t) {
 
-	// If nothing else go to a neutral location
+	// If nothing else go to a static neutral location
 	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
+	dqmA = dqmB = 0.0;
 	
 	// Piecewise position function
 	if (t >= 0*duration && t < 1*duration) {
@@ -304,19 +307,27 @@ std::tuple<double, double> ATCForceControlDemo::automatedPositionTest(double t) 
 		omega2 = 2.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7 + 0.2*sin(a*pow(t, 2) + b*t));
-		// TODO - Velocity terms
+		ql = PI/2.0;
+		rl = 0.7 + 0.2*sin(a*pow(t, 2) + b*t);
+		dql = 0.0;
+		drl = 0.2*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
+		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
 	} else if (t >= 17*duration && t < 19*duration) {
 		omega1 = 2.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7 + 0.2*sin(a*pow(t, 2) + b*t));
-		// TODO - Velocity terms
+		ql = PI/2.0;
+		rl = 0.7 + 0.2*sin(a*pow(t, 2) + b*t);
+		dql = 0.0;
+		drl = 0.2*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
+		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
 	}
 
 	// Return leg position
-	return std::make_tuple(qmA, qmB);
+	return std::make_tuple(qmA, qmB, dqmA, dqmB);
 
 }
 
@@ -366,14 +377,14 @@ LegForce ATCForceControlDemo::automatedForceTest(double t) {
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
-		// TODO - Velocity terms
+		legForce.dfz = 100.0*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
 	} else if (t >= 17*duration && t < 19*duration) {
 		omega1 = 2.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
-		// TODO - Velocity terms
+		legForce.dfz = 100.0*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);
 	}
 	
 	// Return forces

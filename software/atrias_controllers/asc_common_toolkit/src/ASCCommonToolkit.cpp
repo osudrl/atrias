@@ -66,11 +66,11 @@ std::tuple<double, double> ASCCommonToolkit::motorVel2LegVel(double qmA, double 
 }
 
 
-std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double ql, double dql, double drl) {
+std::tuple<double, double> ASCCommonToolkit::legVel2MotorVel(double rl, double dql, double drl) {
 
 	// Compute motor velocities
-    dqmA = dql + drl/sqrt(1.0 - pow(ql, 2));
-    dqmB = dql - drl/sqrt(1.0 - pow(ql, 2));
+    dqmA = dql + drl/sqrt(1.0 - pow(rl, 2));
+    dqmB = dql - drl/sqrt(1.0 - pow(rl, 2));
 	
 	// Return motor velocities
 	return std::make_tuple(dqmA, dqmB);
