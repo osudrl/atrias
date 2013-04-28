@@ -99,8 +99,8 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		ASCRateLimit ascRateLimitRmB;
 		
 		// Time counters
-		double tL, tR;
-		
+		double tL, tR, tOffset;
+
 		// Leg and motor positions
 		double qLmA, qLmB, qRmA, qRmB, dqLmA, dqLmB, dqRmA, dqRmB;
 		

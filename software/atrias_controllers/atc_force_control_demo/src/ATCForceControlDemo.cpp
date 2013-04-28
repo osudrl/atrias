@@ -26,7 +26,7 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	setStartupEnabled(true);
 	
 	// Set leg motor rate limit
-	legRateLimit = 0.5;
+	legRateLimit = 1.0;
 	
 	// Set hip controller toe positions
 	toePosition.left = 2.15;
@@ -51,7 +51,7 @@ void ATCForceControlDemo::controller() {
 	 */
 	
 	// Update current robot state
-    updateState();
+    	updateState();
 
 	// Run hip controller
 	hipController();
@@ -117,7 +117,8 @@ void ATCForceControlDemo::controller() {
 			break;
 			
 	}
-			
+	
+	
 	// Right leg controller selection
 	switch (rLegControllerState) {
 		// Position control
@@ -193,7 +194,6 @@ void ATCForceControlDemo::controller() {
 	logOut.right_dfx = fR.dfx;
 	logOut.right_dfz = fR.dfz;
 	
-	
 }
 
 
@@ -268,7 +268,7 @@ void ATCForceControlDemo::hipController() {
 std::tuple<double, double, double, double> ATCForceControlDemo::automatedPositionTest(double t) {
 
 	// If nothing else go to a static neutral location
-	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
+	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.70);
 	dqmA = dqmB = 0.0;
 	
 	// Piecewise position function
@@ -302,26 +302,30 @@ std::tuple<double, double, double, double> ATCForceControlDemo::automatedPositio
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.5);
 	} else if (t >= 14*duration && t < 15*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.9);
-	} else if (t >= 15*duration && t < 17*duration) {
+	} else if (t >= 15*duration && t < 16*duration) {
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7);
+	} else if (t >= 16*duration && t < 18*duration) {
+		tOffset = t - 16*duration;
 		omega1 = 0.0;
 		omega2 = 2.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		ql = PI/2.0;
-		rl = 0.7 + 0.2*sin(a*pow(t, 2) + b*t);
+		rl = 0.7 + 0.2*sin(a*pow(tOffset, 2) + b*tOffset);
 		dql = 0.0;
-		drl = 0.2*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
+		drl = 0.2*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);		
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
 		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
-	} else if (t >= 17*duration && t < 19*duration) {
+	} else if (t >= 18*duration && t < 20*duration) {
+		tOffset = t - 18*duration;
 		omega1 = 2.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		ql = PI/2.0;
-		rl = 0.7 + 0.2*sin(a*pow(t, 2) + b*t);
+		rl = 0.7 + 0.2*sin(a*pow(tOffset, 2) + b*tOffset);
 		dql = 0.0;
-		drl = 0.2*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
+		drl = 0.2*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);		
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
 		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
 	}
@@ -371,20 +375,24 @@ LegForce ATCForceControlDemo::automatedForceTest(double t) {
 		legForce.fz = -400.0;
 	} else if (t >= 14*duration && t < 15*duration) {
 		legForce.fz = -0.0;
-	} else if (t >= 15*duration && t < 17*duration) {
+	} else if (t >= 15*duration && t < 16*duration) {
+		legForce.fz = -100.0;
+	} else if (t >= 16*duration && t < 18*duration) {
+		tOffset = t - 16*duration;
 		omega1 = 0.0;
 		omega2 = 2.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
 		legForce.dfz = 100.0*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
-	} else if (t >= 17*duration && t < 19*duration) {
+	} else if (t >= 18*duration && t < 20*duration) {
+		tOffset = t - 18*duration;
 		omega1 = 2.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
-		legForce.dfz = 100.0*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);
+		legForce.fz = -200.0 + 100.0*sin(a*pow(tOffset, 2) + b*tOffset);
+		legForce.dfz = 100.0*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);
 	}
 	
 	// Return forces
