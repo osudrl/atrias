@@ -60,7 +60,7 @@ print pColors.OKBLUE + "Running fix_bag.py\n" + pColors.ENDC
 while True:
     # Spawn off new conversion processes.
     while len(procList) < int(maxNumThreads) and nextFileToProc < len(origFilenames):
-        procList.append(subprocess.Popen(["rosrun", "atrias", "fix_bag.py", origFilenames[nextFileToProc], sys.argv[2]+"/"+targetFilenames[nextFileToProc]+'.bag']))
+        procList.append(subprocess.Popen(["rosrun", "atrias", "fix_bag.py", origFilenames[nextFileToProc], sys.argv[2]+"/"+targetFilenames[nextFileToProc]+'_fixed.bag']))
         print pColors.OKGREEN + "[" + str(nextFileToProc+1) + "/" + str(len(origFilenames)) + "] " + pColors.ENDC + origFilenames[nextFileToProc]
         nextFileToProc += 1
 
@@ -78,7 +78,7 @@ print pColors.OKBLUE + "\nRunning bag2mat.py\n" + pColors.ENDC
 while True:
     # Spawn off new conversion processes.
     while len(procList) < int(maxNumThreads) and nextFileToProc < len(origFilenames):
-        procList.append(subprocess.Popen(["rosrun", "atrias", "bag2mat.py", sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'.bag', sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'.mat']))
+        procList.append(subprocess.Popen(["rosrun", "atrias", "bag2mat.py", sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'_fixed.bag', sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'.mat']))
         print pColors.OKGREEN + "[" + str(nextFileToProc+1) + "/" + str(len(origFilenames)) + "] " + pColors.ENDC + origFilenames[nextFileToProc]
         nextFileToProc += 1
 
