@@ -6,10 +6,13 @@ import glob
 import subprocess
 
 if (len(sys.argv) < 3):
-    print("Usage: " + sys.argv[0] + " [1] [2] [3]")
+    print("This script runs fix_bag.py and bag2mat.py on all bagfiles found in")
+    print("the source directory and outputs to a target directory, preserving")
+    print("subdirectory structure.\n")
+    print("Usage: " + sys.argv[0] + " [1] [2] [3]\n")
     print("    1: Directory containing bagfiles to convert")
     print("    2: Directory for fixed bagfiles and output MATLAB files")
-    print("    3: Number of threads to use (default is 1)")
+    print("    3: Number of threads to use (default is 1)\n")
     exit()
 
 # Declare some colors.
