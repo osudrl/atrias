@@ -13,13 +13,24 @@ if (len(sys.argv) < 3):
     exit()
 
 # Get list of files to convert.
-os.chdir(sys.argv[1])
-filesToProc = glob.glob("*.bag")
+filesToProc = glob.glob(sys.argv[1]+"/**/*.bag")
 
 print "Files to convert:\n"
 for f in filesToProc:
     print "    " + f
 print ""
+
+# Get (sub)directories containing bagfiles.
+dirList = []
+walk = os.walk(sys.argv[1])
+for path, dirs, files in walk:
+    bagfiles = glob.glob(path+"/*.bag")
+    if len(bagfiles) > 0:
+        dirList.append(path)
+
+# Create necessary subdirectories.
+for path in dirList:
+    subprocess.call(["mkdir", "-p", path.replace(sys.argv[1], sys.argv[2], 1)])
 
 # Set maximum number of threads to use.
 maxNumThreads = 1
