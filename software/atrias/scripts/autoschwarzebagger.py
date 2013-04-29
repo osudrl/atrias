@@ -7,7 +7,7 @@ import subprocess
 
 if (len(sys.argv) < 3):
     print("Usage: " + sys.argv[0] + " [1] [2] [3]")
-    print("    1: Directory containign bagfiles to convert")
+    print("    1: Directory containing bagfiles to convert")
     print("    2: Directory for fixed bagfiles and output MATLAB files")
     print("    3: Number of threads to use (default is 1)")
     exit()
