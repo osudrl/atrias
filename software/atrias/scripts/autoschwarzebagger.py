@@ -13,10 +13,11 @@ if (len(sys.argv) < 3):
     exit()
 
 # Get list of files to convert.
-filesToProc = glob.glob(sys.argv[1]+"/**/*.bag")
+origFilenames = glob.glob(sys.argv[1]+"/**/*.bag")
+targetFilenames = [x.replace(sys.argv[1]+'/', '', 1).replace('.bag', '') for x in origFilenames]
 
 print "Files to convert:\n"
-for f in filesToProc:
+for f in origFilenames:
     print "    " + f
 print ""
 
@@ -42,34 +43,36 @@ procList = []
 nextFileToProc = 0
 
 # Run fix_bag.py
+print "Running fix_bag.py\n"
 while True:
     # Spawn off new conversion processes.
-    while len(procList) < int(maxNumThreads) and nextFileToProc < len(filesToProc):
-        procList.append(subprocess.Popen(["rosrun", "atrias", "fix_bag.py", filesToProc[nextFileToProc], sys.argv[2]+"/"+filesToProc[nextFileToProc]]))
-        print "[" + str(nextFileToProc+1) + "/" + str(len(filesToProc)) + "] " + filesToProc[nextFileToProc]
+    while len(procList) < int(maxNumThreads) and nextFileToProc < len(origFilenames):
+        procList.append(subprocess.Popen(["rosrun", "atrias", "fix_bag.py", origFilenames[nextFileToProc], sys.argv[2]+"/"+targetFilenames[nextFileToProc]+'.bag']))
+        print "[" + str(nextFileToProc+1) + "/" + str(len(origFilenames)) + "] " + origFilenames[nextFileToProc]
         nextFileToProc += 1
 
     # Remove complete processes from list.
     procList = filter(lambda y: y.poll() == None, procList)
 
-    if len(procList) == 0 and nextFileToProc == len(filesToProc):
+    if len(procList) == 0 and nextFileToProc == len(origFilenames):
         break;
 
 # Reset things.
 nextFileToProc = 0
 
 # Run bag2mat.py
+print "\nRunning bag2mat.py\n"
 while True:
     # Spawn off new conversion processes.
-    while len(procList) < int(maxNumThreads) and nextFileToProc < len(filesToProc):
-        procList.append(subprocess.Popen(["rosrun", "atrias", "bag2mat.py", sys.argv[2]+"/"+filesToProc[nextFileToProc], sys.argv[2]+"/"+filesToProc[nextFileToProc].replace('.bag', '.mat')]))
-        print "[" + str(nextFileToProc+1) + "/" + str(len(filesToProc)) + "] " + filesToProc[nextFileToProc]
+    while len(procList) < int(maxNumThreads) and nextFileToProc < len(origFilenames):
+        procList.append(subprocess.Popen(["rosrun", "atrias", "bag2mat.py", sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'.bag', sys.argv[2]+'/'+targetFilenames[nextFileToProc]+'.mat']))
+        print "[" + str(nextFileToProc+1) + "/" + str(len(origFilenames)) + "] " + origFilenames[nextFileToProc]
         nextFileToProc += 1
 
     # Remove complete processes from list.
     procList = filter(lambda y: y.poll() == None, procList)
 
-    if len(procList) == 0 and nextFileToProc == len(filesToProc):
+    if len(procList) == 0 and nextFileToProc == len(origFilenames):
         break;
 
 print "\nHasta la vista, baby."
