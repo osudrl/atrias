@@ -84,13 +84,13 @@ class ASCCommonToolkit : public AtriasController {
 
 		/**
 		  * @brief Converts leg velocity to motor velocity.
-		  * @param ql The current leg angle.
+		  * @param rl The current leg length.
 		  * @param dql The current leg angular velocity.
 		  * @param drl The current leg length velocity.
 		  * @return dqmA The computed motor A velocity.
 		  * @return dqmB The computed motor B velocity.
 		  */
-		std::tuple<double, double> legVel2MotorVel(double ql, double dql, double drl);
+		std::tuple<double, double> legVel2MotorVel(double rl, double dql, double drl);
 		double dqmA, dqmB;
 
 		/**

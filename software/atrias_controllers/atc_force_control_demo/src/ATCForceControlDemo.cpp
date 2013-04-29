@@ -26,7 +26,7 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	setStartupEnabled(true);
 	
 	// Set leg motor rate limit
-	legRateLimit = 0.5;
+	legRateLimit = 1.0;
 	
 	// Set hip controller toe positions
 	toePosition.left = 2.15;
@@ -51,7 +51,7 @@ void ATCForceControlDemo::controller() {
 	 */
 	
 	// Update current robot state
-    updateState();
+    	updateState();
 
 	// Run hip controller
 	hipController();
@@ -66,10 +66,11 @@ void ATCForceControlDemo::controller() {
 			// Rate limit motor velocities
 			qLmA = ascRateLimitLmA(qLmA, legRateLimit);
 			qLmB = ascRateLimitLmB(qLmB, legRateLimit);
+			dqLmA = dqLmB = 0.0;
 
 			// Compute and set motor currents
-			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
+			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, dqLmA, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, dqLmB, rs.lLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
@@ -99,11 +100,11 @@ void ATCForceControlDemo::controller() {
 		// Position control - automated test
 		case 3:
 			// Compute positions
-			std::tie(qLmA, qLmB) = automatedPositionTest(tL);
+			std::tie(qLmA, qLmB, dqLmA, dqLmB) = automatedPositionTest(tL);
 		
 			// Compute and set motor currents
-			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);	
+			co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, dqLmA, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, dqLmB, rs.lLeg.halfB.motorVelocity);	
 			break;
 			
 		// Force control - automated test
@@ -116,7 +117,8 @@ void ATCForceControlDemo::controller() {
 			break;
 			
 	}
-			
+	
+	
 	// Right leg controller selection
 	switch (rLegControllerState) {
 		// Position control
@@ -127,10 +129,11 @@ void ATCForceControlDemo::controller() {
 			// Rate limit motor velocities
 			qRmA = ascRateLimitRmA(qRmA, legRateLimit);
 			qRmB = ascRateLimitRmB(qRmB, legRateLimit);
+			dqRmA = dqRmB = 0.0;
 			
 			// Compute and set motor currents
-			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, dqRmA, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, dqRmB, rs.rLeg.halfB.motorVelocity);
 			break;
 			
 		// Force control - constant
@@ -160,11 +163,11 @@ void ATCForceControlDemo::controller() {
 		// Position control - automated test
 		case 3:
 			// Compute positions
-			std::tie(qRmA, qRmB) = automatedPositionTest(tR);
+			std::tie(qRmA, qRmB, dqRmA, dqRmB) = automatedPositionTest(tR);
 		
 			// Compute and set motor currents
-			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, dqRmA, rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, dqRmB, rs.rLeg.halfB.motorVelocity);
 			break;
 				
 		// Force control - automated test
@@ -190,7 +193,6 @@ void ATCForceControlDemo::controller() {
 	logOut.right_fz = fR.fz;
 	logOut.right_dfx = fR.dfx;
 	logOut.right_dfz = fR.dfz;
-	
 	
 }
 
@@ -263,60 +265,73 @@ void ATCForceControlDemo::hipController() {
 }
 
 
-std::tuple<double, double> ATCForceControlDemo::automatedPositionTest(double t) {
+std::tuple<double, double, double, double> ATCForceControlDemo::automatedPositionTest(double t) {
 
-	// If nothing else go to a neutral location
-	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
+	// If nothing else go to a static neutral location
+	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.80);
+	dqmA = dqmB = 0.0;
 	
 	// Piecewise position function
 	if (t >= 0*duration && t < 1*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.9);
 	} else if (t >= 1*duration && t < 2*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.8);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.875);
 	} else if (t >= 2*duration && t < 3*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
 	} else if (t >= 3*duration && t < 4*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.6);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.825);
 	} else if (t >= 4*duration && t < 5*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.5);
-	} else if (t >= 5*duration && t < 6*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.6);
-	} else if (t >= 6*duration && t < 7*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7);
-	} else if (t >= 7*duration && t < 8*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.8);
+	} else if (t >= 5*duration && t < 6*duration) {
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.825);
+	} else if (t >= 6*duration && t < 7*duration) {
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
+	} else if (t >= 7*duration && t < 8*duration) {
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.875);
 	} else if (t >= 8*duration && t < 9*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.9);
 	} else if (t >= 9*duration && t < 10*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
 	} else if (t >= 10*duration && t < 11*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.5);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.8);
 	} else if (t >= 11*duration && t < 12*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
 	} else if (t >= 12*duration && t < 13*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.9);
 	} else if (t >= 13*duration && t < 14*duration) {
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.5);
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.8);
 	} else if (t >= 14*duration && t < 15*duration) {
 		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.9);
-	} else if (t >= 15*duration && t < 17*duration) {
+	} else if (t >= 15*duration && t < 16*duration) {
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
+	} else if (t >= 16*duration && t < 18*duration) {
+		tOffset = t - 16*duration;
 		omega1 = 0.0;
-		omega2 = 2.0;
+		omega2 = 3.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7 + 0.2*sin(a*pow(t, 2) + b*t));
-		// TODO - Velocity terms
-	} else if (t >= 17*duration && t < 19*duration) {
-		omega1 = 2.0;
+		ql = PI/2.0;
+		rl = 0.85 + 0.05*sin(a*pow(tOffset, 2) + b*tOffset);
+		dql = 0.0;
+		drl = 0.05*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);		
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
+		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
+	} else if (t >= 18*duration && t < 20*duration) {
+		tOffset = t - 18*duration;
+		omega1 = 3.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.7 + 0.2*sin(a*pow(t, 2) + b*t));
-		// TODO - Velocity terms
+		ql = PI/2.0;
+		rl = 0.85 + 0.05*sin(a*pow(tOffset, 2) + b*tOffset);
+		dql = 0.0;
+		drl = 0.05*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);		
+		std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(ql, rl);
+		std::tie(dqmA, dqmB) = ascCommonToolkit.legVel2MotorVel(rl, dql, drl);
 	}
 
 	// Return leg position
-	return std::make_tuple(qmA, qmB);
+	return std::make_tuple(qmA, qmB, dqmA, dqmB);
 
 }
 
@@ -360,20 +375,24 @@ LegForce ATCForceControlDemo::automatedForceTest(double t) {
 		legForce.fz = -400.0;
 	} else if (t >= 14*duration && t < 15*duration) {
 		legForce.fz = -0.0;
-	} else if (t >= 15*duration && t < 17*duration) {
+	} else if (t >= 15*duration && t < 16*duration) {
+		legForce.fz = -100.0;
+	} else if (t >= 16*duration && t < 18*duration) {
+		tOffset = t - 16*duration;
 		omega1 = 0.0;
 		omega2 = 2.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
 		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
-		// TODO - Velocity terms
-	} else if (t >= 17*duration && t < 19*duration) {
+		legForce.dfz = 100.0*cos(a*pow(t, 2) + b*t)*(b + 2.0*a*t);		
+	} else if (t >= 18*duration && t < 20*duration) {
+		tOffset = t - 18*duration;
 		omega1 = 2.0;
 		omega2 = 0.0;
 		a = PI*(omega2 - omega1)/(2.0*duration);
 		b = 2.0*PI*omega1;
-		legForce.fz = -200.0 + 100.0*sin(a*pow(t, 2) + b*t);
-		// TODO - Velocity terms
+		legForce.fz = -200.0 + 100.0*sin(a*pow(tOffset, 2) + b*tOffset);
+		legForce.dfz = 100.0*cos(a*pow(tOffset, 2) + b*tOffset)*(b + 2.0*a*tOffset);
 	}
 	
 	// Return forces
