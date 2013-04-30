@@ -589,7 +589,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Appex Tracking</col>
+        <col id="0" translatable="yes">Apex Tracking</col>
       </row>
       <row>
         <col id="0" translatable="yes">Terrain Following</col>
@@ -623,7 +623,7 @@
         <col id="0" translatable="yes">Stand</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Hop</col>
+        <col id="0" translatable="yes">Hop!</col>
       </row>
       <row>
         <col id="0" translatable="yes">Shutdown</col>

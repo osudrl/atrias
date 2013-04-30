@@ -117,8 +117,8 @@ void ATCSlipWalking::eqPointWalkingSetup() {
     coStanceLeg = &co.rLeg;
     rsFlightLeg = &rs.lLeg;
     coFlightLeg = &co.lLeg;
-    sw_stance = false;
-    sw_flight = false;
+    stanceComplete = false;
+    flightComplete = false;
     t=0.0;
     eqPointState = 0;  // Right leg in stance
 }
@@ -142,8 +142,8 @@ void ATCSlipWalking::eqPointWalkingControl() {
         coStanceLeg = &co.rLeg;
         rsFlightLeg = &rs.lLeg;
         coFlightLeg = &co.lLeg;
-        sw_stance = false;
-        sw_flight = false;
+        stanceComplete = false;
+        flightComplete = false;
         t=0.0;
     } else if ((eqPointState == 0) && (t>0.99) && lGC) {
         eqPointState = 1;  // Left leg in stance
@@ -151,8 +151,8 @@ void ATCSlipWalking::eqPointWalkingControl() {
         coStanceLeg = &co.lLeg;
         rsFlightLeg = &rs.rLeg;
         coFlightLeg = &co.rLeg;
-        sw_stance = false;
-        sw_flight = false;
+        stanceComplete = false;
+        flightComplete = false;
         t=0.0;
     }
 
@@ -169,7 +169,7 @@ void ATCSlipWalking::eqPointWalkingControl() {
     // Desired position for stance motor B
     qsmB_des = qTO + acos(lsl);
     // If the stance leg needs to be rotated
-    if ((rsStanceLeg->halfB.motorAngle < qsmB_des) && !sw_stance) {
+    if ((rsStanceLeg->halfB.motorAngle < qsmB_des) && !stanceComplete) {
         // Stance motor A and B angles
         std::tie(qsmA, qsmB) = commonToolkit.legPos2MotorPos(qsl,lsl);
         // Advance position
@@ -178,7 +178,7 @@ void ATCSlipWalking::eqPointWalkingControl() {
 
     // The stance leg is fully extended
     } else {
-        sw_stance = true;
+        stanceComplete = true;
         // Stance motor A and B angles
         std::tie(qsmA, qsmB) = commonToolkit.legPos2MotorPos(qTO,lsl);
         // Hold position
@@ -187,7 +187,7 @@ void ATCSlipWalking::eqPointWalkingControl() {
     }
 
     // If the flight leg needs to be rotated
-    if ((t < 1.0) && (!sw_flight)) {
+    if ((t < 1.0) && (!flightComplete)) {
         // Amplitude between stance and flight leg lengths
         amp = lsl - guiIn.min_flight_leg_length;
         // Takeoff
@@ -211,7 +211,7 @@ void ATCSlipWalking::eqPointWalkingControl() {
 
     // The other leg finished stance, so this leg is now in stance
     } else {
-        sw_flight=true;
+        flightComplete=true;
         std::tie(qfmA, qfmB) = commonToolkit.legPos2MotorPos(qTD,lsl);
         coFlightLeg->motorCurrentA = pdStanceLeg(qfmA,rsFlightLeg->halfA.motorAngle,0.0,rsFlightLeg->halfA.motorVelocity);
         coFlightLeg->motorCurrentB = pdStanceLeg(qfmB,rsFlightLeg->halfB.motorAngle,0.0,rsFlightLeg->halfB.motorVelocity);

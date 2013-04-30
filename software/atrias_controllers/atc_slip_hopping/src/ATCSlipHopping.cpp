@@ -303,8 +303,11 @@ void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Left leg controller
 	if (isLeftStance) {
+		// Compute current leg angle
+		std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
+			
 		// Set motor angles
-		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0);
+		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
 	} else {
 		// Set motor angles
 		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
@@ -312,8 +315,11 @@ void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Right leg controller
 	if (isRightStance) {
+		// Compute current leg angle
+		std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
+			
 		// Set motor angles
-		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0);
+		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
 	} else {
 		// Set motor angles
 		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
@@ -330,19 +336,18 @@ void ATCSlipHopping::passiveStancePhaseController() {
 void ATCSlipHopping::flightPhaseController() {
 
 	// Redefine slip initial conditions incase we go into stance next time step
-	slipState.r = ascSlipModel.r0;
-	slipState.q = PI/2.0;
-	slipState.dq = 0.0;
-
-	// Appex or terrain following force method
 	switch (forceControlType) {
-		// Appex tracking
+		// Updated initial conditions (Apex tracking)
 		case 0:
-			slipState.dr = rs.position.zVelocity;
+			std::tie(slipState.q, slipState.r) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
+			std::tie(slipState.dq, slipState.dr) = ascCommonToolkit.cartVel2PolVel(slipState.q, slipState.r, rs.position.xVelocity, rs.position.zVelocity);
 			break;
 
-		// Terrain following
+		// Non-updated intitial conditions (Terrain following)
 		case 1:
+			slipState.r = ascSlipModel.r0;
+			slipState.q = PI/2.0;
+			slipState.dq = 0.0;
 			slipState.dr = -sqrt(2.0*9.81*h);
 			break;
 	}
