@@ -41,6 +41,10 @@ for path, dirs, files in walk:
     if len(bagfiles) > 0:
         dirList.append(path)
 
+# Escape spaces in paths.
+for name in dirList:
+    name = name.replace(' ', '\ ')
+
 # Create necessary subdirectories.
 for path in dirList:
     subprocess.call(["mkdir", "-p", path.replace(sys.argv[1], sys.argv[2], 1)])
