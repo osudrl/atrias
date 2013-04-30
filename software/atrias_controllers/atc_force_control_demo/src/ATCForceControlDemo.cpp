@@ -268,7 +268,7 @@ void ATCForceControlDemo::hipController() {
 std::tuple<double, double, double, double> ATCForceControlDemo::automatedPositionTest(double t) {
 
 	// If nothing else go to a static neutral location
-	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.80);
+	std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, 0.85);
 	dqmA = dqmB = 0.0;
 	
 	// Piecewise position function
