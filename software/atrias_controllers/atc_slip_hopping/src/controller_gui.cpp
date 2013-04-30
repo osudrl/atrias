@@ -4,7 +4,6 @@
 
 #include <atc_slip_hopping/controller_gui.h>
 
-// guiInit
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Get widgets
@@ -53,11 +52,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	standing_leg_spinbutton->set_value(0.90);
 	hop_height_spinbutton->set_value(0.05);
 	slip_leg_spinbutton->set_value(0.85);
-	leg_pos_kp_spinbutton->set_value(2000.0);
-	leg_for_kp_spinbutton->set_value(1200.0);
+	leg_pos_kp_spinbutton->set_value(1000.0);
+	leg_for_kp_spinbutton->set_value(1000.0);
 	leg_for_kd_spinbutton->set_value(10.0);
 	leg_pos_kd_spinbutton->set_value(50.0);
-	hip_pos_kp_spinbutton->set_value(250.0);
+	hip_pos_kp_spinbutton->set_value(200.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 
 	// Set up subscriber and publisher.
@@ -68,15 +67,13 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 }
 
 
-// controllerCallback
 void controllerCallback(const atc_slip_hopping::controller_status &status) {
 
 	controllerDataIn = status;
 
-} // controllerCallback
+}
 
 
-// getParameters
 void getParameters() {
 
 	// Get parameters in the atrias_gui namespace
@@ -123,10 +120,9 @@ void getParameters() {
 	stance_controller_combobox->set_active(controllerDataOut.stance_controller);
 	hop_type_combobox->set_active(controllerDataOut.hop_type);
 
-} // getParameters
+}
 
 
-// setParameters
 void setParameters() {
 	nh.setParam("/atrias_gui/slip_spring", controllerDataOut.slip_spring);
 	nh.setParam("/atrias_gui/standing_leg", controllerDataOut.standing_leg);
@@ -144,10 +140,9 @@ void setParameters() {
 	nh.setParam("/atrias_gui/stance_controller", controllerDataOut.stance_controller);
 	nh.setParam("/atrias_gui/hop_type", controllerDataOut.hop_type);
     
-} // setParameters
+}
 
 
-// guiUpdate
 void guiUpdate() {
 
 	// Update GUI
@@ -170,10 +165,10 @@ void guiUpdate() {
 	// Publish
 	pub.publish(controllerDataOut);
 
-} // guiUpdate
+}
 
-// guiTakedown
+
 void guiTakedown() {
 	// Stuff
-} // guiTakedown
+}
 

@@ -116,7 +116,7 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return q The q polar coordinate.
 		  * @return r The r polar coordinate.
 		  */
-		std::tuple<double, double> cart2Pol(double x, double z);
+		std::tuple<double, double> cartPos2PolPos(double x, double z);
 		double q, r;
 
 		/**
@@ -126,8 +126,32 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return x The x cartesian coordinate.
 		  * @return z The z cartesian coordinate.
 		  */
-		std::tuple<double, double> pol2Cart(double q, double r);
+		std::tuple<double, double> polPos2CartPos(double q, double r);
 		double x, z;
+		
+		/**
+		  * @brief Converts cartesian velocity to polar velocity.
+		  * @param q The angular polar position.
+		  * @param r The radial polar position.
+		  * @param dx The x cartesian velocity.
+		  * @param dz The z cartesian velocity.
+		  * @return dq The angular polar velocity.
+		  * @return dr The radial polar velocity.
+		  */
+		std::tuple<double, double> cartVel2PolVel(double q, double r, double dx, double dz);
+		double dq, dr;
+
+		/**
+		  * @brief Converts polar velocity to cartesian velocity.
+		  * @param q The angular polar position.
+		  * @param r The radial polar position.
+  		  * @param dq The angular polar velocity.
+		  * @param dr The radial polar velocity.
+		  * @return dx The x cartesian velocity.
+		  * @return dz The z cartesian velocity.
+		  */
+		std::tuple<double, double> polVel2CartVel(double q, double r, double dq, double dr);
+		double dx, dz;
 
 	private:
 		/** 
