@@ -33,6 +33,11 @@ for f in origFilenames:
     print "    " + f
 print ""
 
+# Prompt for go-ahead.
+goAhead = raw_input("Proceed? (Y/n): ")
+if goAhead not in ['Y', 'y', '']:
+    exit()
+
 # Get (sub)directories containing bagfiles.
 dirList = []
 walk = os.walk(sys.argv[1])
