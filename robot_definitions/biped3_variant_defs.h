@@ -45,11 +45,11 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            3.0317560622336
+#define BOOM_Z_CALIB_LOC            3.02496562494915976514360979
 
 /** @brief The value of the boom encoder at the calibration location.
   */
-#define BOOM_Z_CALIB_VAL            88325
+#define BOOM_Z_CALIB_VAL            87529
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
@@ -74,8 +74,8 @@
 
 /** @brief Main motor torque limits. These are not used for scaling, just as limits.
   */
-#define MAX_MTR_CURRENT_CMD                                                 60.0
-#define MIN_MTR_CURRENT_CMD                                                -60.0
+#define MAX_MTR_CURRENT_CMD                                                120.0
+#define MIN_MTR_CURRENT_CMD                                               -120.0
 #define MAX_HIP_MTR_CURRENT_CMD                                             60.0
 #define MIN_HIP_MTR_CURRENT_CMD                                            -60.0
 

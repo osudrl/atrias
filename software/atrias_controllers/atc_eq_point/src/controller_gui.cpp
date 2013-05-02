@@ -65,8 +65,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		gc_r_button->signal_released().connect(sigc::ptr_fun((void(*)())gc_r_released));
 
 		// Set up subscriber and publisher.
-		sub = nh.subscribe("atc_eq_point_status", 0, controllerCallback);
-		pub = nh.advertise<atc_eq_point::controller_input>("atc_eq_point_input", 0);
+		sub = nh.subscribe("ATCEqPoint_status", 0, controllerCallback);
+		pub = nh.advertise<atc_eq_point::controller_input>("ATCEqPoint_input", 0);
 		return true;
 	}
 	return false;

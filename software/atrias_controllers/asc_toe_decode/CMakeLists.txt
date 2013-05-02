@@ -23,9 +23,7 @@ endif(DEFINED atrias_PACKAGE_PATH)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_library(ASCToeDecode src/ASCToeDecode.cpp)
-	target_link_libraries(ASCToeDecode ControlLib-${OROCOS_TARGET})
 
-	orocos_component(asc_toe_decode src/controller_component.cpp)
 	ros_generate_rtt_typekit(asc_toe_decode)
 endif(ATRIAS_BUILD_CONTROLLERS)
 

@@ -47,14 +47,12 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         // Sub controllers
         ASCCommonToolkit commonToolkit;
         ASCPD pdHip;
-        ASCPD pdLegStance;
-        ASCPD pdLegFlight;
+        ASCPD pdStanceLeg;
+        ASCPD pdFlightLeg;
         ASCHipBoomKinematics hipBoomKinematics;
 
-        // Control setup
         void guiCommunication();
-        // Previous GUI state
-        uint8_t prevMode;
+
         // Event Angles
         double qE;  // Extension
         double qTD; // TouchDown
@@ -63,18 +61,33 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         double qTO; // TakeOff
 
         // Hip control
+        void hipControlSetup();
         void hipControl();
         double qlh, qrh;
         LeftRight toePosition;
 
         // Standing
         void standingControl();
+        double qrl, qll, lrl, lll;      // SLIP model
+        double qrmA, qrmB, qlmA, qlmB;  // ATRIAS motors
 
         // Walking
         void walkingControl();
-        // Stance control
-
-        // Flight control
+        // eqPoint
+        void eqPointWalkingSetup();
+        void eqPointWalkingControl();
+        atrias_msgs::robot_state_leg *rsStanceLeg, *rsFlightLeg;
+        atrias_msgs::controller_output_leg *coStanceLeg, *coFlightLeg;
+        // State switching and ground contact
+        uint8_t eqPointState;
+        bool stanceComplete, flightComplete, rGC, lGC;
+        double t, s;
+        // Angles
+        double qsl, qfl, qfmA, qfmB, qsmA, qsmB, qsmB_des;
+        // Lengths
+        double amp, lfl, lsl;
+        // SLIP
+        void slipWalking();
 
         // Shutdown
         void shutdownControl();

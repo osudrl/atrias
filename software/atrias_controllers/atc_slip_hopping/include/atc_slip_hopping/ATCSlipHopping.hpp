@@ -29,6 +29,7 @@
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -62,7 +63,7 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  * just like current controllers.
 		  */
 		ATCSlipHopping(string name);
-	
+
 	private:
 		/**
 		  * @brief This is the main function for the top-level controller.
@@ -72,43 +73,69 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		void controller();
 
 		/**
-		  * @brief These are sub controllers used by the top level controller.
-		  */
-		ASCCommonToolkit ascCommonToolkit;
-		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForce;
-		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
-		
-	
-		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief Gets values from GUI and updates all relavent states.
 		  */
 		void updateState();
 		int controllerState, hoppingState;
 		int stanceControlType, hoppingType, forceControlType, springType;
 		bool isLeftStance, isRightStance;
-		
-		void hipControl();
-		double qlh, qrh;
+
+		/**
+		  * @brief A kinematically driven hip controller to limit knee forces.
+		  */
+		void hipController();
+		double qLh, qRh;
 		LeftRight toePosition;
-				
-		void standingControl();
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
 		
-		void forceStancePhaseControl();
+		/**
+		  * @brief A simple two leg standing controller
+		  */
+		void standingController();
+		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
+		
+		/**
+		  * @brief A SLIP based force tracking stance phase controller.
+		  */
+		void forceStancePhaseController();
 		double ql, rl, h;
 		SlipState slipState;
-		LegForce legForce;
+		LegForce legForce, fTemp;
 		
-		void passiveStancePhaseControl();
+		/**
+		  * @brief A simple stance phase controller allowing only leg length 
+		  * forces with zero leg angle torques.
+		  */
+		void passiveStancePhaseController();
 		
-		void flightPhaseControl();
+		/**
+		  * @brief A simple constant leg position flight phase controller.
+		  */
+		void flightPhaseController();
+		
+		/**
+		  * @brief Applies virtual dampers to all motors.
+		  */
+		void shutdownController();
+		
+		/**
+		  * @brief These are sub controllers used by the top level controller.
+		  */
+  		ASCCommonToolkit ascCommonToolkit;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
+		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
 
 };
 

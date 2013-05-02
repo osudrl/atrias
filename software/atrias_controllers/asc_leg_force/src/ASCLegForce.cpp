@@ -1,42 +1,20 @@
-/**
-  * @file ASC_LEG_FORCE.cpp
-  * @author Mikhail Jones
-  * @brief This implements leg force functions.
-  */
-
-// To use do something like this.
-// // Define legForce struct
-// legForce.fx = 0.0;
-// legForce.fz = 0.0;
-// legForce.dfx = 0.0;
-// legForce.dfz = 0.0;
-//
-// // Compute and set required motorCurrent
-// std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForce.control(legForce, rs.lLeg, rs.position);
-
 #include "asc_leg_force/ASCLegForce.hpp"
 
-// Again, we need to put our code inside the appropriate namespaces.
+// The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-/* Breakdown of the next few lines:
- * We need to call our parent class's constructor,
- * then we can call the LogPort's constructor. The second parameter
- * is the name for this log port, which controls how it appears in the
- * bagfiles.
- */
 ASCLegForce::ASCLegForce(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Initialize
+	// Gains
 	kp = 1000.0;
 	ki = 0.0;
 	kd = 8.0;
 }
 
-// control
+
 std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
 
 	// Unpack parameters
@@ -64,10 +42,10 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dtausB = fx*L1*sin(qlB + qb)*(dqlB + dqb) + dfz*L1*sin(qlB + qb) - dfx*L1*cos(qlB + qb) + fz*L1*cos(qlB + qb)*(dqlB + dqb);
 
 	// Compute required motor current using PD controller with feed forward term
-	curA = (KS*(qmA - qlA)/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
-	curB = (KS*(qmB - qlB)/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
-  
-    // Set the log data
+	curA = (tausA/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
+	curB = (tausB/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
+    	
+	// Set the log data
     log_out.data.control_fx = legForce.fx;
 	log_out.data.control_fz = legForce.fz;
 	log_out.data.control_dfx = legForce.dfx;
@@ -79,15 +57,15 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	log_out.data.control_curA = curA;
 	log_out.data.control_curB = curB;
 
-    // Transmit the log data
-    log_out.send();
+	// Transmit the log data
+	log_out.send();
 
 	// Return the motor current
 	return std::make_tuple(curA, curB);
 
-} // control
+}
 
-// compute
+
 LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
 
 	// Unpack the parameters
@@ -101,25 +79,25 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 	dqmA = leg.halfA.motorVelocity;
 	dqmB = leg.halfB.motorVelocity;
 	dqb = position.bodyPitchVelocity;
-	
+
 	// Compute the spring torques
 	tausA = KS*(qmA - qlA);
 	tausB = KS*(qmB - qlB);
-	
-	// Compute the derivative of the spring torques
+
+	// Compute the spring torques derivative
 	dtausA = KS*(dqmA - dqlA);
 	dtausB = KS*(dqmB - dqlB);
-	
+
 	// Compute the leg forces
 	legForce.fx = -(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))/(L1*L2*sin(qlA - qlB));
 	legForce.fz = -(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))/(L1*L2*sin(qlA - qlB));
-	
-	// Compute the derivative of the leg forces
+
+	// Compute the leg forces derivative
 	legForce.dfx = -(L2*dtausB*sin(qb + qlA) - L1*dtausA*sin(qb + qlB) + L2*tausB*cos(qb + qlA)*(dqb + dqlA) - L1*tausA*cos(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)/pow(sin(qlA - qlB), 2)*(L2*tausB*sin(qb + qlA) - L1*tausA*sin(qb + qlB))*(dqlA - dqlB))/(L1*L2);
 	legForce.dfz = -(L2*dtausB*cos(qb + qlA) - L1*dtausA*cos(qb + qlB) - L2*tausB*sin(qb + qlA)*(dqb + dqlA) + L1*tausA*sin(qb + qlB)*(dqb + dqlB))/(L1*L2*sin(qlA - qlB)) + (cos(qlA - qlB)/pow(sin(qlA - qlB), 2)*(L2*tausB*cos(qb + qlA) - L1*tausA*cos(qb + qlB))*(dqlA - dqlB))/(L1*L2);
 
-    // Set the log data
-    log_out.data.compute_tausA = tausA;
+	// Set the log data
+	log_out.data.compute_tausA = tausA;
 	log_out.data.compute_tausB = tausB;
 	log_out.data.compute_dtausA = dtausA;
 	log_out.data.compute_dtausB = dtausB;
@@ -128,13 +106,13 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 	log_out.data.compute_dfx = legForce.dfx;
 	log_out.data.compute_dfz = legForce.dfz;
 
-    // Transmit the log data
-    log_out.send();
-    
+	// Transmit the log data
+	log_out.send();
+
 	// Return the leg forces
 	return legForce;
 
-} // compute
+}
 
 }
 }

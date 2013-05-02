@@ -1,10 +1,10 @@
-# Set up the top controller
+# Set up ATCSlipHopping
 import("atc_slip_hopping")
-loadComponent("controller", "ATCSlipHopping")
+loadComponent("ATCSlipHopping", "ATCSlipHopping")
 
-# Connect RTOps with this controller (so they can see each other's operations)
-connectPeers("atrias_rt", "controller")
+# Connect RTOps with this ATCSlipHopping (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCSlipHopping")
 
 # Start components
-controller.configure()
-controller.start()
+ATCSlipHopping.configure()
+ATCSlipHopping.start()

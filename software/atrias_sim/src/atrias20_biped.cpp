@@ -10,7 +10,7 @@ GazeboControllerConnector::GazeboControllerConnector()
 {
     legMotorGearRatio = 50;
     hipGearRatio = 64;
-    legTorqueConstant = 0.099; // N*m/Amp
+    legTorqueConstant = 0.0987; // N*m/Amp
     hipTorqueConstant = 0.126; // N*m/Amp
     prevLeftLegAngle = 0.0;
     prevRightLegAngle = 0.0;

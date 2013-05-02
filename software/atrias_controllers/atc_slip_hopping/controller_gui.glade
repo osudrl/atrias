@@ -303,12 +303,6 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkLabel" id="slip_leg_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -319,6 +313,12 @@
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -589,7 +589,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Appex Tracking</col>
+        <col id="0" translatable="yes">Apex Tracking</col>
       </row>
       <row>
         <col id="0" translatable="yes">Terrain Following</col>
@@ -623,7 +623,10 @@
         <col id="0" translatable="yes">Stand</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Hop</col>
+        <col id="0" translatable="yes">Hop!</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Shutdown</col>
       </row>
     </data>
   </object>

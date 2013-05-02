@@ -28,6 +28,7 @@
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <robot_invariant_defs.h>
@@ -43,22 +44,11 @@ using namespace atc_force_control_demo;
 namespace atrias {
 namespace controller {
 
-/* Our class definition. We subclass ATC for a top-level controller.
- * If we don't need a data type (such as the controller-to-gui message),
- * we simply leave that spot in the template blank. The following example
- * shows the necessary definition if this controller were not to transmit
- * data to the GUI:
- *     class ATC : public ATC<log_data, gui_to_controller,>
- *
- * Here, we don't need any log data, but we do communicate both ways w/ the GUI
- */
 class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_data, controller_input, controller_status> {
 	public:
 		/**
 		  * @brief The constructor for this controller.
 		  * @param name The name of this component.
-		  * Every top-level controller will have this name parameter,
-		  * just like current controllers.
 		  */
 		ATCForceControlDemo(string name);
 	
@@ -70,42 +60,76 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 		  */
 		void controller();
 
-		// Time counters
-		double lt, rt;
-		
-		// Leg and motor positions
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
-		
-		// Leg forces
-		LegForce fl, fr, tempLegForce;
-
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief This gets GUI values and handles some high level logic.
 		  */		  
 		void updateState();
-		int lLegControllerState, rLegControllerState;
 		
-		void hipControl();
-		double qlh, qrh;
-		LeftRight toePosition;
+		/**
+		  * @brief Constant toe position hip controller.
+		  */	
+		void hipController();
 		
-		LegForce automateForceTest(double t);
-		LegForce legForce;
-		double duration;
+		/**
+		  * @brief Runs through a predetermined set of positions.
+		  */	
+		std::tuple<double, double, double, double> automatedPositionTest(double t);
 		
-			
+		/**
+		  * @brief Runs through a predetermined set of forces.
+		  */	
+		LegForce automatedForceTest(double t);
+		
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
 		ASCCommonToolkit ascCommonToolkit;
-		ASCLegForce ascLegForce;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
+		
+		// Time counters
+		double tL, tR, tOffset;
+
+		// Leg and motor positions
+		double qLmA, qLmB, qRmA, qRmB, dqLmA, dqLmB, dqRmA, dqRmB;
+		
+		// Leg motor rate limit
+		double legRateLimit;
+		
+		// Leg forces
+		LegForce fL, fR, fTemp;
+		
+		// Controller states
+		int lLegControllerState, rLegControllerState;
+		
+		// Hip angles
+		double qLh, qRh;
+		
+		// Toe positions
+		LeftRight toePosition;
+		
+		// Motor angles and velocities
+		double qmA, qmB, dqmA, dqmB;
+		
+		// Leg force structure
+		LegForce legForce;
+		
+		// Cycle duration for automated tests
+		double duration;
+		
+		// Sine wave sweep parameters
+		double omega1, omega2, a, b, ql, rl, dql, drl;
 
 };
 

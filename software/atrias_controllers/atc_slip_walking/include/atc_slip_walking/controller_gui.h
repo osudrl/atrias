@@ -1,10 +1,3 @@
-/*
- * controller_gui.h
- *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
- */
-
 #ifndef CONTROLLER_GUI_H_
 #define CONTROLLER_GUI_H_
 
@@ -22,25 +15,32 @@ ros::Publisher pub;
 atc_slip_walking::controller_input controllerDataOut;
 atc_slip_walking::controller_status controllerDataIn;
 
-// Math
-double hipIn, hipOut, hipCenter;
-
 // GUI elements
-Gtk::HScale *position_left_A_hscale,
-            *position_left_B_hscale,
-            *position_left_hip_hscale,
-            *position_right_A_hscale,
-            *position_right_B_hscale,
-            *position_right_hip_hscale;
+Gtk::SpinButton *stance_leg_length_spinbutton,
+    *touchdown_angle_spinbutton,
+    *takeoff_angle_spinbutton,
+    *slip_leg_length_spinbutton,
+    *linear_spring_constant_spinbutton,
+    *leg_stance_kp_spinbutton,
+    *leg_flight_kp_spinbutton,
+    *leg_stance_kd_spinbutton,
+    *leg_flight_kd_spinbutton,
+    *hip_kp_spinbutton,
+    *hip_kd_spinbutton,
+    *min_flight_leg_length_spinbutton,
+    *stance_current_offset_spinbutton,
+    *t_swing_spinbutton,
+    *t_extension_spinbutton;
 
-Gtk::SpinButton *position_leg_motor_p_spinbutton,
-                *position_leg_motor_d_spinbutton,
-                *position_hip_motor_p_spinbutton,
-                *position_hip_motor_d_spinbutton;
+Gtk::Button *right_ground_contact_button,
+    *left_ground_contact_button;
 
-Gtk::CheckButton *set_leg_motor_position_checkbutton;
-Gtk::CheckButton *set_hip_motor_position_checkbutton;
+Gtk::ComboBox *main_controller_combobox,
+    *spring_type_combobox,
+    *stance_controller_combobox,
+    *walking_controller_combobox,
+    *ground_contact_method_combobox;
 
 void controllerCallback(const atc_slip_walking::controller_status &status);
 
-#endif /* CONTROLLER_GUI_H_ */
+#endif

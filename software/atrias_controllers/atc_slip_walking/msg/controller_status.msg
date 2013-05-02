@@ -1,10 +1,3 @@
 Header header
 
 bool isEnabled
-
-float64 motorPositionLeftA
-float64 motorPositionLeftB
-float64 motorPositionLeftHip
-float64 motorPositionRightA
-float64 motorPositionRightB
-float64 motorPositionRightHip

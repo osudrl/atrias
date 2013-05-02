@@ -41,7 +41,6 @@ class ASCCommonToolkit : public AtriasController {
 		// Robot parameters
 		double ks;
 
-
 		/**
 		  * @brief Computes the current axial leg stiffness.
 		  * @param r The current leg length.
@@ -50,7 +49,6 @@ class ASCCommonToolkit : public AtriasController {
 		  */
 		double legStiffness(double r, double r0);
 		double k;
-
 
 		/**
 		  * @brief Converts motor position to leg position.
@@ -62,7 +60,6 @@ class ASCCommonToolkit : public AtriasController {
 		std::tuple<double, double> motorPos2LegPos(double qmA, double qmB);
 		double ql, rl;
 
-
 		/**
 		  * @brief Converts leg position to motor position.
 		  * @param ql The current leg angle.
@@ -72,7 +69,6 @@ class ASCCommonToolkit : public AtriasController {
 		  */
 		std::tuple<double, double> legPos2MotorPos(double ql, double rl);
 		double qmA, qmB;
-
 
 		/**
 		  * @brief Converts motor velocity to leg velocity.
@@ -86,18 +82,16 @@ class ASCCommonToolkit : public AtriasController {
 		std::tuple<double, double> motorVel2LegVel(double qmA, double qmB, double dqmA, double dqmB);
 		double drl, dql;
 
-
 		/**
 		  * @brief Converts leg velocity to motor velocity.
-		  * @param ql The current leg angle.
+		  * @param rl The current leg length.
 		  * @param dql The current leg angular velocity.
 		  * @param drl The current leg length velocity.
 		  * @return dqmA The computed motor A velocity.
 		  * @return dqmB The computed motor B velocity.
 		  */
-		std::tuple<double, double> legVel2MotorVel(double ql, double dql, double drl);
+		std::tuple<double, double> legVel2MotorVel(double rl, double dql, double drl);
 		double dqmA, dqmB;
-
 
 		/**
 		  * @brief Converts radians to degrees.
@@ -107,7 +101,6 @@ class ASCCommonToolkit : public AtriasController {
 		double rad2Deg(double rad);
 		double deg;
 
-
 		/**
 		  * @brief Converts degrees to radians.
 		  * @param deg The current angle in degrees.
@@ -116,7 +109,6 @@ class ASCCommonToolkit : public AtriasController {
 		double deg2Rad(double deg);
 		double rad;
 
-
 		/**
 		  * @brief Converts cartesian coordiantes to polar coordinates.
 		  * @param x The x cartesian coordinate.
@@ -124,9 +116,8 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return q The q polar coordinate.
 		  * @return r The r polar coordinate.
 		  */
-		std::tuple<double, double> cart2Pol(double x, double z);
+		std::tuple<double, double> cartPos2PolPos(double x, double z);
 		double q, r;
-
 
 		/**
 		  * @brief Converts polar coordiantes to cartesian coordinates.
@@ -135,9 +126,32 @@ class ASCCommonToolkit : public AtriasController {
 		  * @return x The x cartesian coordinate.
 		  * @return z The z cartesian coordinate.
 		  */
-		std::tuple<double, double> pol2Cart(double q, double r);
+		std::tuple<double, double> polPos2CartPos(double q, double r);
 		double x, z;
+		
+		/**
+		  * @brief Converts cartesian velocity to polar velocity.
+		  * @param q The angular polar position.
+		  * @param r The radial polar position.
+		  * @param dx The x cartesian velocity.
+		  * @param dz The z cartesian velocity.
+		  * @return dq The angular polar velocity.
+		  * @return dr The radial polar velocity.
+		  */
+		std::tuple<double, double> cartVel2PolVel(double q, double r, double dx, double dz);
+		double dq, dr;
 
+		/**
+		  * @brief Converts polar velocity to cartesian velocity.
+		  * @param q The angular polar position.
+		  * @param r The radial polar position.
+  		  * @param dq The angular polar velocity.
+		  * @param dr The radial polar velocity.
+		  * @return dx The x cartesian velocity.
+		  * @return dz The z cartesian velocity.
+		  */
+		std::tuple<double, double> polVel2CartVel(double q, double r, double dq, double dr);
+		double dx, dz;
 
 	private:
 		/** 
@@ -147,7 +161,6 @@ class ASCCommonToolkit : public AtriasController {
 		LogPort<asc_common_toolkit::controller_log_data> log_out;
 };
 
-// End namespaces
 }
 }
 

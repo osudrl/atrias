@@ -17,6 +17,8 @@
 #include "asc_slip_model/controller_log_data.h"
 
 // Datatypes
+#include <atrias_shared/globals.h>
+#include <robot_invariant_defs.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
 
@@ -40,7 +42,7 @@ class ASCSlipModel : public AtriasController {
                 
                	// SLIP model parameters
 				double k, r0, m;
-
+				double h;
 
                 /**
                   * @brief Advances the RK4 fixed timestep numerical integrator.
@@ -52,16 +54,14 @@ class ASCSlipModel : public AtriasController {
 				// State-space
 				double r, dr, q, dq;
 				double rNew, drNew, qNew, dqNew;
-				
-				
+								
 				/**
                   * @brief Advances the RK5 fixed timestep numerical integrator.
                   * @param slipState The current state-space parameters.
                   * @return slipState The computed next step state-space parameters.
                   */
 				SlipState advanceRK5(SlipState slipState);
-				
-				
+								
                 /**
                   * @brief Computes the leg force.
                   * @param slipState The current state-space parameters.
@@ -81,7 +81,6 @@ class ASCSlipModel : public AtriasController {
                 LogPort<asc_slip_model::controller_log_data> log_out;
 };
 
-// End namespaces
 }
 }
 

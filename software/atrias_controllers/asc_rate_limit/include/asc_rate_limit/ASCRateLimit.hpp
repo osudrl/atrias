@@ -9,6 +9,7 @@
 
 // The include for the controller class
 #include <atrias_control_lib/AtriasController.hpp>
+
 // And for the logging helper class
 #include <atrias_control_lib/LogPort.hpp>
 
@@ -77,7 +78,6 @@ class ASCRateLimit : public AtriasController {
 		LogPort<asc_rate_limit::controller_log_data> log_out;
 };
 
-// End namespaces
 }
 }
 

@@ -77,6 +77,7 @@ class ASCLegForce : public AtriasController {
 		// Leg forces
 		LegForce legForce;
 
+
     private:
 		/** 
 		  * @brief This is our logging port.
@@ -85,7 +86,6 @@ class ASCLegForce : public AtriasController {
 		LogPort<asc_leg_force::controller_log_data> log_out;
 };
 
-// End namespaces
 }
 }
 

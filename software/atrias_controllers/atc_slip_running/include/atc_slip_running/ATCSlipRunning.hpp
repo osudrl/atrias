@@ -72,44 +72,62 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		void controller();
 
 		/**
-		  * @brief These are sub controllers used by the top level controller.
-		  */
-		ASCCommonToolkit ascCommonToolkit;
-		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForce;
-		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDlA;
-		ASCPD ascPDlB;
-		ASCPD ascPDrA;
-		ASCPD ascPDrB;
-		ASCPD ascPDlh;
-		ASCPD ascPDrh;
-		
-	
-		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void updateState();
 		int controllerState, runningState;
-		int stanceControlType, runningType, forceControlType, springType;
-		bool isLeftStance, isRightStance;
+		int stanceControlType;
 		
-		void hipControl();
-		double qlh, qrh;
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void hipController();
+		double qLh, qRh;
 		LeftRight toePosition;
-				
-		void standingControl();
-		double qll, rll, qrl, rrl, qlmA, qlmB, qrmA, qrmB;
 		
-		void forceStancePhaseControl();
-		double ql, rl, h;
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void standingController();
+		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
+		double legRateLimit;
+		
+		/**
+		  * @brief These are function within the top-level controller.
+		  */
+		void shutdownController();
+		
+		
+		double h;
 		SlipState slipState;
 		LegForce legForce;
+		void rightLegFlightFalling();
+		void rightLegStance();
+		void leftLegFlightRising();
+		void leftLegFlightFalling();
+		void leftLegStance();
+		void rightLegFlightRising();
 		
-		void passiveStancePhaseControl();
-		
-		void flightPhaseControl();
 
+		/**
+		  * @brief These are sub controllers used by the top level controller.
+		  */
+  		ASCCommonToolkit ascCommonToolkit;
+		ASCSlipModel ascSlipModel;
+		ASCLegForce ascLegForceLl;
+		ASCLegForce ascLegForceRl;
+		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDLmA;
+		ASCPD ascPDLmB;
+		ASCPD ascPDRmA;
+		ASCPD ascPDRmB;
+		ASCPD ascPDLh;
+		ASCPD ascPDRh;
+		ASCRateLimit ascRateLimitLmA;
+		ASCRateLimit ascRateLimitLmB;
+		ASCRateLimit ascRateLimitRmA;
+		ASCRateLimit ascRateLimitRmB;
+		
 };
 
 }
