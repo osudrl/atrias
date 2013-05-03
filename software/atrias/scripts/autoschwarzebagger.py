@@ -33,6 +33,11 @@ for f in origFilenames:
     print "    " + f
 print ""
 
+# Prompt for go-ahead.
+goAhead = raw_input("Proceed? (Y/n): ")
+if goAhead not in ['Y', 'y', '']:
+    exit()
+
 # Get (sub)directories containing bagfiles.
 dirList = []
 walk = os.walk(sys.argv[1])
@@ -40,6 +45,10 @@ for path, dirs, files in walk:
     bagfiles = glob.glob(path+"/*.bag")
     if len(bagfiles) > 0:
         dirList.append(path)
+
+# Escape spaces in paths.
+for name in dirList:
+    name = name.replace(' ', '\ ')
 
 # Create necessary subdirectories.
 for path in dirList:
