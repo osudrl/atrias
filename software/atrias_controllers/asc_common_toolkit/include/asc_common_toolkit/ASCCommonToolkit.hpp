@@ -22,7 +22,6 @@
 
 // Namespaces we're using
 using namespace std;
-//using namespace atrias_msgs;
 
 // Our namespaces
 namespace atrias {

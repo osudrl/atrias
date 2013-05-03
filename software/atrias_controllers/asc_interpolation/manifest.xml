@@ -1,0 +1,12 @@
+<package>
+	<description brief="asc_interpolation">
+		asc_interpolation
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://atrias.googlecode.com/</url>
+	<depend package="atrias_control_lib"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+</package>
