@@ -8,15 +8,14 @@ ASCCommonToolkit::ASCCommonToolkit(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Spring constant
-	ks = KS;
+	// Nothing to see here
 }
 
 
 double ASCCommonToolkit::legStiffness(double r, double r0) {
 
 	// Compute non-linear ATRIAS virtual leg length stiffness
-	k = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*L1*L2*pow(sin(acos(r)), 3));
+	k = KS*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*L1*L2*pow(sin(acos(r)), 3));
 	
 	// Set the log data
 	log_out.data.k = k;

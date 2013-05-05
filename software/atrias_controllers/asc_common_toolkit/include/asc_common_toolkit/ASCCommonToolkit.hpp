@@ -38,9 +38,6 @@ class ASCCommonToolkit : public AtriasController {
 		  */                  
 		ASCCommonToolkit(AtriasController *parent, string name);
 
-		// Robot parameters
-		double ks;
-
 		/**
 		  * @brief Computes the current axial leg stiffness.
 		  * @param r The current leg length.
