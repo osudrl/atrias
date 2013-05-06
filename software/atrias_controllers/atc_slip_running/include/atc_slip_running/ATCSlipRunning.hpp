@@ -25,6 +25,7 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
+#include <asc_interpolation/ASCInterpolation.hpp>
 #include <asc_slip_model/ASCSlipModel.hpp>
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
@@ -71,48 +72,45 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		  */
 		void controller();
 
+
 		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void updateState();
-		int controllerState, runningState;
-		int stanceControlType;
+
 		
 		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void hipController();
-		double qLh, qRh;
-		LeftRight toePosition;
+
 		
 		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void standingController();
-		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
-		double legRateLimit;
+
 		
 		/**
 		  * @brief These are function within the top-level controller.
 		  */
 		void shutdownController();
+
 		
-		
-		double h;
-		SlipState slipState;
-		LegForce legForce;
 		void rightLegFlightFalling();
 		void rightLegStance();
 		void leftLegFlightRising();
 		void leftLegFlightFalling();
 		void leftLegStance();
 		void rightLegFlightRising();
+		double equilibriumGaitSolver(double vx, double va, double r);
 		
 
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
   		ASCCommonToolkit ascCommonToolkit;
+  		ASCInterpolation ascInterpolation;
 		ASCSlipModel ascSlipModel;
 		ASCLegForce ascLegForceLl;
 		ASCLegForce ascLegForceRl;
@@ -128,6 +126,36 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		ASCRateLimit ascRateLimitRmA;
 		ASCRateLimit ascRateLimitRmB;
 		
+		
+		// Declare variables
+		int controllerState, runningState;
+		int stanceControlType;
+		
+		// For cubic interpolations
+		double t, dt, t1, t2, qRl1, qRl2, dqRl1, dqRl2, qLl1, qLl2, dqLl1, dqLl2;
+		
+		// SLIP model variables
+		SlipState slipState;
+		LegForce legForce;		
+		
+		// Hip variables
+		double qLh, qRh;
+		LeftRight toePosition;
+		
+		// Motor and leg variables
+		double legRateLimit;
+		double qRl, rRl, qLl, rLl;
+		double dqRl, drRl, dqLl, drLl;
+		double qRmA, qRmB, qRmA, qRmB;
+		double dqRmA, dqRmB, dqRmA, dqRmB;
+		
+		// Leg cartesian lengths for ground triggers
+		double xRl, zRl, xLl, zLl;
+		
+		// Equilibrium gait curve fit
+		double b[55];
+		double q, dq;
+				
 };
 
 }

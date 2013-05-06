@@ -133,7 +133,7 @@ void ATCSlipHopping::updateState() {
 
 	// Check for stance phase and set hopping state
 	if (rs.position.zPosition < ascSlipModel.r0) {
-    		// Stance phase
+		// Stance phase
 		hoppingState = 0;
 	} else {
 		// Flight phase
@@ -337,13 +337,13 @@ void ATCSlipHopping::flightPhaseController() {
 
 	// Redefine slip initial conditions incase we go into stance next time step
 	switch (forceControlType) {
-		// Updated initial conditions (Apex tracking)
+		// Updated initial conditions (apex tracking)
 		case 0:
 			std::tie(slipState.q, slipState.r) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
 			std::tie(slipState.dq, slipState.dr) = ascCommonToolkit.cartVel2PolVel(slipState.q, slipState.r, rs.position.xVelocity, rs.position.zVelocity);
 			break;
 
-		// Non-updated intitial conditions (Terrain following)
+		// Non-updated intitial conditions (terrain following)
 		case 1:
 			slipState.r = ascSlipModel.r0;
 			slipState.q = PI/2.0;
