@@ -66,12 +66,10 @@ void ATCSlipWalking::guiCommunication() {
     qTD = guiIn.touchdown_angle;
     rSl = guiIn.stance_leg_length;
     // PD Gains
-    pdLmA.P = pdLmB.P = pdRmA.P = pdRmB.P = guiIn.leg_stance_kp;
-    pdLmA.D = pdLmB.D = pdRmA.D = pdRmB.D = guiIn.leg_stance_kd;
+    pdLmA.P = pdLmB.P = pdRmA.P = pdRmB.P = guiIn.leg_flight_kp;
+    pdLmA.D = pdLmB.D = pdRmA.D = pdRmB.D = guiIn.leg_flight_kd;
     pdLh.P = pdRh.P = guiIn.hip_kp;
     pdLh.D = pdRh.D = guiIn.hip_kd;
-    //pdFlightLeg.P = guiIn.leg_flight_kp;
-    //pdFlightLeg.D = guiIn.leg_flight_kd;
 
     // Copy over positions to the GUI output data
     guiOut.isEnabled = isEnabled();
