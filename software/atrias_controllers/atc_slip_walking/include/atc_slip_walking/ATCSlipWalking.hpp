@@ -23,8 +23,10 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
-#include <asc_pd/ASCPD.hpp>
+#include <asc_slip_model/ASCSlipModel.hpp>
+#include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+#include <asc_pd/ASCPD.hpp>
 #include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
@@ -47,6 +49,9 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
         // Subcontrollers
         ASCCommonToolkit commonToolkit;
+        ASCSlipModel ascSlipModel;
+        ASCLegForce ascLegForceLl;
+        ASCLegForce ascLegForceRl;
         ASCHipBoomKinematics hipBoomKinematics;
         ASCPD pdLmA;
         ASCPD pdLmB;
