@@ -62,10 +62,9 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
 
 // Structs for the medulla library
 limit_sw_port_t limit_sw_port;
-adc_port_t adc_port_a, adc_port_b;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
-usart_adc_t knee_adc;
+adc_port_t adc_port_a, adc_port_b;
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
 
@@ -140,11 +139,6 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing strain guage and toe sensor ADC\n");
-	#endif
-	knee_adc = usart_adc_init(&PORTF,&USARTF0,io_init_pin(&PORTD,4), knee_force1_pdo, knee_force2_pdo, toe_sensor_pdo, 0);
-
-	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing motor encoder\n");
 	#endif
 	motor_encoder = biss_encoder_init(&PORTC,&SPIC,timestamp_timer,32,motor_encoder_pdo,motor_encoder_timestamp_pdo);
@@ -197,9 +191,6 @@ inline void leg_disable_outputs(void) {
 }
 
 void leg_update_inputs(uint8_t id) {
-	// Since reading from the knee ADC takes so long, we start it first.
-	//usart_adc_start_read(&knee_adc);
-
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
@@ -217,7 +208,6 @@ void leg_update_inputs(uint8_t id) {
 	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
-	//while (!usart_adc_read_complete(&knee_adc));
 
 	cli();
 	last_incremental = *incremental_encoder_pdo;
@@ -242,10 +232,6 @@ void leg_update_inputs(uint8_t id) {
 		*leg_error_flags_pdo |= medulla_error_encoder;
 		leg_encoder_error_counter++;
 	}
-
-	//usart_adc_process_data(&knee_adc);
-
-	
 
 	if (((leg_therm_prev_val[0]>thermistor_pdo[0]) && (leg_therm_prev_val[0]-thermistor_pdo[0] < 50)) ||
 	    ((leg_therm_prev_val[0]<thermistor_pdo[0]) && (thermistor_pdo[0]-leg_therm_prev_val[0] < 50)))
