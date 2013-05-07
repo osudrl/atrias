@@ -30,6 +30,8 @@ Gtk::Button *gc_l_button,
 	*gc_r_button;
 
 Gtk::SpinButton *aea_spinbutton,
+	*lhip_pos_spinbutton,
+	*rhip_pos_spinbutton,
 	*pea_spinbutton,
 	*l_leg_fl_spinbutton,
 	*p_af_spinbutton,
