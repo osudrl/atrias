@@ -106,8 +106,8 @@ void ATCEqPoint::controller() {
 	// Hip control.
 	LeftRight hipTgts;
 	LeftRight toePosition;
-	toePosition.left  = 2.15;
-	toePosition.right = 2.45;
+	toePosition.left  = guiIn.lhip_pos;
+	toePosition.right = guiIn.rhip_pos;;
 	std::tie(hipTgts.left, hipTgts.right) = hipKine.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 	co.lLeg.motorCurrentHip = pd2Controller(hipTgts.left,  rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = pd5Controller(hipTgts.right, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);

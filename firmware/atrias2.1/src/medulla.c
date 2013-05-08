@@ -35,7 +35,6 @@ UART_USES_PORT(USARTD0)
 // ADCs on port a and b
 ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
-USART_ADC_USES_PORT(USARTF0)
 
 int main(void) {
 	// Initilize the clock to 32 Mhz oscillator

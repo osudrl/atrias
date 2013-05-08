@@ -13,6 +13,8 @@ float64 t_extension
 
 float64 leg_stance_kp
 float64 leg_stance_kd
+float64 leg_stance_force_kp
+float64 leg_stance_force_kd
 float64 leg_flight_kp
 float64 leg_flight_kd
 float64 hip_kp

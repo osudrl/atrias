@@ -71,6 +71,9 @@ void ATCSlipHopping::controller() {
 					} else if (stanceControlType == 1) {
 						// Run force control stance phase - track SLIP forces
 						forceStancePhaseController();
+					} else if (stanceControlType == 2) {
+						// Run force control stance phase - apply SLIP reaction forces
+						reactiveStancePhaseController();
 					}
 					break;
 
@@ -133,7 +136,7 @@ void ATCSlipHopping::updateState() {
 
 	// Check for stance phase and set hopping state
 	if (rs.position.zPosition < ascSlipModel.r0) {
-    		// Stance phase
+		// Stance phase
 		hoppingState = 0;
 	} else {
 		// Flight phase
@@ -298,13 +301,81 @@ void ATCSlipHopping::forceStancePhaseController() {
 	}
 }
 
+void ATCSlipHopping::reactiveStancePhaseController() {
+	// Spring type
+	if (springType == 0) {
+		ascSlipModel.k = ascCommonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+	} else if (springType == 1) {
+		ascSlipModel.k = guiIn.slip_spring;
+	}
+
+	// Left leg controller
+	if (isLeftStance) {
+		// Compute SLIP reaction force
+		std::tie(qLl, rLl) = ascCommonToolkit.motorPos2LegPos(rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
+		deltaL = ascSlipModel.r0 - rLl;
+		if (deltaL > 0.0) { // SLIP model stance
+			axialLegForce = deltaL*ascSlipModel.k;
+			angularLegForce = 0.0;
+		} else { // SLIP model flight
+			axialLegForce = 0.0;
+			angularLegForce = 0.0;
+		}
+		// Polar to cartesian
+		legForce.fx  = axialLegForce*cos(qLl);
+		legForce.dfx = 0.0;
+		legForce.fz  = -axialLegForce*sin(qLl);
+		legForce.dfz = 0.0;
+		// Apply the force
+		std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(legForce, rs.lLeg, rs.position);
+
+	} else {
+		// Keep the leg off the ground
+		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
+
+		co.lLeg.motorCurrentA = ascPDLmA(qLmA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
+		co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
+	}
+
+	// Right leg controller
+	if (isRightStance) {
+		// Compute SLIP reaction force
+		std::tie(qRl, rRl) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.motorAngle, rs.rLeg.halfB.motorAngle);
+		deltaL = ascSlipModel.r0 - rRl;
+		if (deltaL > 0.0) { // SLIP model stance
+			axialLegForce = deltaL*ascSlipModel.k;
+			angularLegForce = 0.0;
+		} else { // SLIP model flight
+			axialLegForce = 0.0;
+			angularLegForce = 0.0;
+		}
+		// Polar to cartesian
+		legForce.fx  = axialLegForce*cos(qRl);
+		legForce.dfx = 0.0;
+		legForce.fz  = -axialLegForce*sin(qRl);
+		legForce.dfz = 0.0;
+		// Apply the force
+		std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(legForce, rs.rLeg, rs.position);
+
+	} else {
+		// Keep the leg off the ground
+		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
+
+		co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
+		co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+	}
+}
+
 
 void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Left leg controller
 	if (isLeftStance) {
+		// Compute current leg angle
+		std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
+			
 		// Set motor angles
-		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0);
+		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
 	} else {
 		// Set motor angles
 		std::tie(qLmA, qLmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
@@ -312,8 +383,11 @@ void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Right leg controller
 	if (isRightStance) {
+		// Compute current leg angle
+		std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
+			
 		// Set motor angles
-		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0);
+		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
 	} else {
 		// Set motor angles
 		std::tie(qRmA, qRmB) = ascCommonToolkit.legPos2MotorPos(PI/2.0, ascSlipModel.r0*0.85);
@@ -330,19 +404,18 @@ void ATCSlipHopping::passiveStancePhaseController() {
 void ATCSlipHopping::flightPhaseController() {
 
 	// Redefine slip initial conditions incase we go into stance next time step
-	slipState.r = ascSlipModel.r0;
-	slipState.q = PI/2.0;
-	slipState.dq = 0.0;
-
-	// Appex or terrain following force method
 	switch (forceControlType) {
-		// Appex tracking
+		// Updated initial conditions (apex tracking)
 		case 0:
-			slipState.dr = rs.position.zVelocity;
+			std::tie(slipState.q, slipState.r) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
+			std::tie(slipState.dq, slipState.dr) = ascCommonToolkit.cartVel2PolVel(slipState.q, slipState.r, rs.position.xVelocity, rs.position.zVelocity);
 			break;
 
-		// Terrain following
+		// Non-updated intitial conditions (terrain following)
 		case 1:
+			slipState.r = ascSlipModel.r0;
+			slipState.q = PI/2.0;
+			slipState.dq = 0.0;
 			slipState.dr = -sqrt(2.0*9.81*h);
 			break;
 	}
@@ -384,3 +457,5 @@ ORO_CREATE_COMPONENT(ATCSlipHopping)
 
 }
 }
+
+// vim: noexpandtab

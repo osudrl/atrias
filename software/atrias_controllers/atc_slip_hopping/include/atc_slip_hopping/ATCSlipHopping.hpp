@@ -73,7 +73,7 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		void controller();
 
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief Gets values from GUI and updates all relavent states.
 		  */
 		void updateState();
 		int controllerState, hoppingState;
@@ -81,46 +81,54 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		bool isLeftStance, isRightStance;
 
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief A kinematically driven hip controller to limit knee forces.
 		  */
 		void hipController();
 		double qLh, qRh;
 		LeftRight toePosition;
 		
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief A simple two leg standing controller
 		  */
 		void standingController();
 		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
 		double legRateLimit;
 		
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief A SLIP based force tracking stance phase controller.
 		  */
 		void forceStancePhaseController();
-		double h;
+		double ql, rl, h;
 		SlipState slipState;
 		LegForce legForce, fTemp;
 		
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief A simple stance phase controller allowing only leg length 
+		  * forces with zero leg angle torques.
 		  */
 		void passiveStancePhaseController();
+
+		/**
+		  * @brief A stance phase controller for emulating SLIP reaction
+		  * forces.
+		  */
+		void reactiveStancePhaseController();
+		double deltaL, axialLegForce, angularLegForce;
 		
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief A simple constant leg position flight phase controller.
 		  */
 		void flightPhaseController();
 		
 		/**
-		  * @brief These are function within the top-level controller.
+		  * @brief Applies virtual dampers to all motors.
 		  */
 		void shutdownController();
 		
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-  		ASCCommonToolkit ascCommonToolkit;
+		ASCCommonToolkit ascCommonToolkit;
 		ASCSlipModel ascSlipModel;
 		ASCLegForce ascLegForceLl;
 		ASCLegForce ascLegForceRl;
@@ -142,3 +150,5 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 }
 
 #endif // ATC_SLIP_HOPPING_HPP
+
+// vim: noexpandtab

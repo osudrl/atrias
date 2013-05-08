@@ -23,8 +23,11 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
-#include <asc_pd/ASCPD.hpp>
+#include <asc_slip_model/ASCSlipModel.hpp>
+#include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
+#include <asc_pd/ASCPD.hpp>
+#include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
 #include <atrias_shared/controller_structs.h>
@@ -44,12 +47,22 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
     private:
         void controller();
 
-        // Sub controllers
+        // Subcontrollers
         ASCCommonToolkit commonToolkit;
-        ASCPD pdHip;
-        ASCPD pdStanceLeg;
-        ASCPD pdFlightLeg;
+        ASCSlipModel ascSlipModel;
+        ASCLegForce ascLegForceLl;
+        ASCLegForce ascLegForceRl;
         ASCHipBoomKinematics hipBoomKinematics;
+        ASCPD pdLmA;
+        ASCPD pdLmB;
+        ASCPD pdRmA;
+        ASCPD pdRmB;
+        ASCPD pdLh;
+        ASCPD pdRh;
+        ASCRateLimit ascRateLimitLmA;
+        ASCRateLimit ascRateLimitLmB;
+        ASCRateLimit ascRateLimitRmA;
+        ASCRateLimit ascRateLimitRmB;
 
         void guiCommunication();
 
@@ -60,6 +73,11 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         double qS2; // Exit single support
         double qTO; // TakeOff
 
+        // Motor and leg
+        double legRateLimit;
+        double qRl, qLl, rRl, rLl;      // SLIP model
+        double qRmA, qRmB, qLmA, qLmB;  // ATRIAS motors
+
         // Hip control
         void hipControlSetup();
         void hipControl();
@@ -68,26 +86,33 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
 
         // Standing
         void standingControl();
-        double qrl, qll, lrl, lll;      // SLIP model
-        double qrmA, qrmB, qlmA, qlmB;  // ATRIAS motors
 
         // Walking
         void walkingControl();
+
         // eqPoint
         void eqPointWalkingSetup();
         void eqPointWalkingControl();
-        atrias_msgs::robot_state_leg *rsStanceLeg, *rsFlightLeg;
-        atrias_msgs::controller_output_leg *coStanceLeg, *coFlightLeg;
+        void eqPointStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
+        void eqPointFlightControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
         // State switching and ground contact
         uint8_t eqPointState;
-        bool sw_stance, sw_flight, rGC, lGC;
+        bool stanceComplete, flightComplete, rGC, lGC;
         double t, s;
         // Angles
-        double qsl, qfl, qfmA, qfmB, qsmA, qsmB, qsmB_des;
+        double qSl, qFl, qFmA, qFmB, qSmA, qSmB, qSmB_des;
         // Lengths
-        double amp, lfl, lsl;
+        double amp, rFl, rSl;
+
         // SLIP
+        void slipWalkingSetup();
         void slipWalking();
+        void slipActiveStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCLegForce*);
+        void slipPassiveStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCLegForce*);
+        void slipFlightControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
+        uint8_t slipControlState;
+        SlipState slipState;
+        LegForce legForce;
 
         // Shutdown
         void shutdownControl();
