@@ -2,6 +2,8 @@ uint8 control
 uint8 gc_l
 uint8 gc_r
 
+float64 lhip_pos
+float64 rhip_pos
 float64 aea
 float64 pea
 float64 l_leg_fl
