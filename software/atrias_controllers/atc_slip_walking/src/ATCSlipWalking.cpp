@@ -7,6 +7,8 @@ ATCSlipWalking::ATCSlipWalking(string name) :
     ATC(name),
     commonToolkit(this, "commonToolkit"),
     ascSlipModel(this, "ascSlipModel"),
+    ascLegForceLl(this, "ascLegForceLl"),
+    ascLegForceRl(this, "ascLegForceRl"),
     hipBoomKinematics(this, "hipBoomKinematics"),
     pdLmA(this, "pdLmA"),
     pdLmB(this, "pdLmB"),
@@ -27,6 +29,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 
     hipControlSetup();
     eqPointWalkingSetup();
+    slipWalkingSetup();
 }
 
 void ATCSlipWalking::controller() {
@@ -116,6 +119,21 @@ void ATCSlipWalking::standingControl() {
 
 
 void ATCSlipWalking::walkingControl() {
+    switch (guiIn.ground_contact_method) {
+        case 0: // Manual
+            rGC = guiIn.right_ground_contact;
+            lGC = guiIn.left_ground_contact;
+            break;
+        case 1: // Robot configuration
+            qRl = (rs.rLeg.halfA.motorAngle+rs.rLeg.halfB.motorAngle)/2.0;
+            qLl = (rs.lLeg.halfA.motorAngle+rs.lLeg.halfB.motorAngle)/2.0;
+            rGC = (rs.position.zPosition < rSl*sin(qRl));
+            lGC = (rs.position.zPosition < rSl*sin(qLl));
+        default: // Don't use ground contact
+            rGC = true;
+            lGC = true;
+    }
+
     switch (guiIn.walking_controller) {
         case 0:
             eqPointWalkingControl(); // To get moving
@@ -140,16 +158,6 @@ void ATCSlipWalking::eqPointWalkingSetup() {
 
 // Control concepts from atc_eq_point
 void ATCSlipWalking::eqPointWalkingControl() {
-    switch (guiIn.ground_contact_method) {
-        case 0: // Manual
-            rGC = guiIn.right_ground_contact;
-            lGC = guiIn.left_ground_contact;
-            break;
-        default: // Don't use ground contact
-            rGC = true;
-            lGC = true;
-    }
-
     // Switching conditions
     if ((eqPointState == 1) && (t>0.99) && rGC) {
         eqPointState = 0;  // Right leg in stance
@@ -209,8 +217,8 @@ void ATCSlipWalking::eqPointStanceControl(atrias_msgs::robot_state_leg *rsSl, at
 
 void ATCSlipWalking::eqPointFlightControl(atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *pdFmA, ASCPD *pdFmB) {
     // Set gains
-    pdFmA.P = pdFmB.P = guiIn.leg_flight_kp;
-    pdFmA.D = pdFmB.D = guiIn.leg_flight_kd;
+    pdFmA->P = pdFmB->P = guiIn.leg_flight_kp;
+    pdFmA->D = pdFmB->D = guiIn.leg_flight_kd;
     // Virtual flight leg angle
     qFl = (rsFl->halfA.motorAngle+rsFl->halfB.motorAngle)/2.0;
     // Ratchet t along with s
@@ -248,63 +256,92 @@ void ATCSlipWalking::eqPointFlightControl(atrias_msgs::robot_state_leg *rsFl, at
     }
 }
 
+void ATCSlipWalking::slipWalkingSetup() {
+    slipControlState = 0; // Right leg in stance
+}
 
-// TODO: This is just an outline
-// Control concept from atc_slip_hopping
 void ATCSlipWalking::slipWalking() {
-    switch (guiIn.ground_contact_method) {
-        case 0: // Manual
-            rGC = guiIn.right_ground_contact;
-            lGC = guiIn.left_ground_contact;
-            break;
-        default: // Don't use ground contact
-            rGC = true;
-            lGC = true;
-    }
-
-    // Switching conditions
-    if ((slipState == 3) && rGC) {
-        slipState = 0;  // Right leg in stance
-    } else if ((slipState == 0) && rGC && lGC) {
-        slipState = 1;  // Both legs in stance
-    } else if ((slipState == 1) && lGC) {
-        slipState = 2;  // Left leg in stance
-    } else if ((slipState == 2) && rGC && lGC) {
-        slipState = 3;  // Both legs in stance
+    // TODO: Add variable comparison that progresses through stance
+    if ((slipControlState == 3) && rGC) {
+        slipControlState = 0;  // Right leg in stance
+    } else if ((slipControlState == 0) && rGC && lGC) {
+        slipControlState = 1;  // Both legs in stance
+    } else if ((slipControlState == 1) && lGC) {
+        slipControlState = 2;  // Left leg in stance
+    } else if ((slipControlState == 2) && rGC && lGC) {
+        slipControlState = 3;  // Both legs in stance
     }
 
     // Control
-    switch (slipState) {
+    switch (slipControlState) {
         case 0:
-            slipStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB);
+            slipPassiveStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB, &ascLegForceRl);
             slipFlightControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB);
             break;
         case 1:
-            slipStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB);
-            slipStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB);
+            slipPassiveStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB, &ascLegForceRl);
+            slipPassiveStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB, &ascLegForceLl);
             break;
         case 2:
             slipFlightControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB);
-            slipStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB);
+            slipPassiveStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB, &ascLegForceLl);
             break;
         case 3:
-            slipStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB);
-            slipStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB);
+            slipPassiveStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB, &ascLegForceRl);
+            slipPassiveStanceControl(&rs.lLeg, &co.lLeg, &pdLmA, &pdLmB, &ascLegForceLl);
             break;
         default:
-            std::cout << "Unknown slipState: " << slipState << std::endl;
+            std::cout << "Unknown slipControlState: " << slipControlState << std::endl;
     }
 }
 
-void ATCSlipWalking::slipStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB) {
+// SLIP force profile control concept from atc_slip_hopping
+void ATCSlipWalking::slipActiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
+    // Spring type
+    if (guiIn.spring_type == 0) {
+        ascSlipModel.k = commonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+    } else if (guiIn.spring_type == 1) {
+        ascSlipModel.k = guiIn.linear_spring_constant;
+    }
+
+    // Compute SLIP force profile
+    // TODO: Update ascSlipModel for walking
+    slipState = ascSlipModel.advanceRK5(slipState);
+    legForce = ascSlipModel.force(slipState);
+
+    // TODO: add stance progression variable for flight tracking
+
     // Set gains
     pdSmA->P = pdSmB->P = guiIn.leg_stance_kp;
     pdSmA->D = pdSmB->D = guiIn.leg_stance_kd;
+    ascLegForceSl->kp = guiIn.leg_stance_force_kp;
+    ascLegForceSl->kd = guiIn.leg_stance_force_kd;
+    ascLegForceSl->ki = 0.0;
+
+    // If the SLIP model says we should be in flight
+    // (This should only happen during stance exit)
+    if (slipState.isFlight) {
+        // Hold the last known stance leg position
+        coSl->motorCurrentA = pdSmA->operator()(qSmA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
+        coSl->motorCurrentB = pdSmB->operator()(qSmB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
+    // Otherwise the SLIP model is in stance
+    } else {
+        // Store last known leg position
+        qSmA = rsSl->halfA.legAngle;
+        qSmB = rsSl->halfB.legAngle;
+
+        // Compute and set motor currents
+        std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(legForce, *rsSl, rs.position);
+
+    }
+}
+
+void ATCSlipWalking::slipPassiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
     /*
     // Compute leg angle
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl.halfA.legAngle, rsSl.halfB.legAngle);
+    std::tie(qSl, rSl) = commonToolkit.motorPos2LegPos(rsSl.halfA.legAngle, rsSl.halfB.legAngle);
     // Set motor angles from the slip model
-    std::tie(qSmA, qSmB) = ascCommonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
+    std::tie(qSmA, qSmB) = commonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
 
     coSl.motorCurrentA = pdSmA->operator()(qSmA, rsSl.halfA.motorAngle, 0.0, rsSl.halfA.motorVelocity);
     coSl.motorCurrentB = pdSmB->operator()(qSmB, rsSl.halfB.motorAngle, 0.0, rsSl.halfB.motorVelocity);
@@ -313,8 +350,8 @@ void ATCSlipWalking::slipStanceControl(atrias_msgs::robot_state_leg *rsSl, atria
 
 void ATCSlipWalking::slipFlightControl(atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *pdFmA, ASCPD *pdFmB) {
     // Set gains
-    pdFmA.P = pdFmB.P = guiIn.leg_flight_kp;
-    pdFmA.D = pdFmB.D = guiIn.leg_flight_kd;
+    pdFmA->P = pdFmB->P = guiIn.leg_flight_kp;
+    pdFmA->D = pdFmB->D = guiIn.leg_flight_kd;
 }
 
 void ATCSlipWalking::shutdownControl() {
