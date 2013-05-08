@@ -105,7 +105,14 @@ class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, control
         double amp, rFl, rSl;
 
         // SLIP
+        void slipWalkingSetup();
         void slipWalking();
+        void slipActiveStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCLegForce*);
+        void slipPassiveStanceControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCLegForce*);
+        void slipFlightControl(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
+        uint8_t slipControlState;
+        SlipState slipState;
+        LegForce legForce;
 
         // Shutdown
         void shutdownControl();

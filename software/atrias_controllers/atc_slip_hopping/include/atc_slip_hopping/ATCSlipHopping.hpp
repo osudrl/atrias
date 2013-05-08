@@ -107,6 +107,13 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  * forces with zero leg angle torques.
 		  */
 		void passiveStancePhaseController();
+
+		/**
+		  * @brief A stance phase controller for emulating SLIP reaction
+		  * forces.
+		  */
+		void reactiveStancePhaseController();
+		double deltaL, axialLegForce, angularLegForce;
 		
 		/**
 		  * @brief A simple constant leg position flight phase controller.
@@ -121,7 +128,7 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-  		ASCCommonToolkit ascCommonToolkit;
+		ASCCommonToolkit ascCommonToolkit;
 		ASCSlipModel ascSlipModel;
 		ASCLegForce ascLegForceLl;
 		ASCLegForce ascLegForceRl;
@@ -143,3 +150,5 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 }
 
 #endif // ATC_SLIP_HOPPING_HPP
+
+// vim: noexpandtab
