@@ -28,6 +28,8 @@
 #include <atrias_shared/globals.h>
 // For our publishing timer
 #include <atrias_shared/GuiPublishTimer.h>
+// To let us register typekits for the messages
+#include <atrias_shared/RtMsgTypekits.hpp>
 
 // We subclass this, so let's include it
 #include "atrias_control_lib/AtriasController.hpp"
@@ -39,15 +41,16 @@ namespace controller {
 /**
   * @brief This indicates that a port is not needed.
   */
+template <class Alloc>
 struct Unused {
-	std_msgs::Header header;
+	std_msgs::Header_<Alloc> header;
 };
 
 /**
   * @brief This detected if a type is not equal to Unused.
   * @return False if this is of type Unused, true otherwise
   */
-template <typename T>
+template <template <class> class T>
 inline bool notUnused() {
 	return true;
 }
@@ -61,7 +64,9 @@ inline bool notUnused<Unused>() {
 // This is a component, so we subclass TaskContext;
 // as a controller, this subclasses AtriasController
 // Also, we're a template...
-template <typename logType = Unused, typename guiInType = Unused, typename guiOutType = Unused>
+template <template <class> class logType    = Unused,
+          template <class> class guiInType  = Unused,
+          template <class> class guiOutType = Unused>
 class ATC : public RTT::TaskContext, public AtriasController {
 	public:
 		/**
@@ -76,7 +81,7 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @brief Returns a ROS header with the current timestamp.
 		  * @return A ROS header for logging purposes.
 		  */
-		const std_msgs::Header& getROSHeader() const;
+		const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
 
 		/**
 		  * @brief This returns the TaskContext
@@ -117,9 +122,9 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 		// These member variables should be set/read from by
 		// the controllers themselves.
-		logType    logOut;
-		guiInType  guiIn;
-		guiOutType guiOut;
+		logType<RTT::os::rt_allocator<uint8_t>>    logOut;
+		guiInType<RTT::os::rt_allocator<uint8_t>>  guiIn;
+		guiOutType<RTT::os::rt_allocator<uint8_t>> guiOut;
 
 		// Here is the robot state
 		atrias_msgs::robot_state rs;
@@ -148,13 +153,17 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		//RTT::TaskContext& getTaskContext() const;
 
 		// Port for input data from the GUI
-		RTT::InputPort<guiInType>   guiInPort;
+		RTT::InputPort<guiInType<RTT::os::rt_allocator<uint8_t>>>   guiInPort;
 
 		// Port to send data to the GUI
-		RTT::OutputPort<guiOutType> guiOutPort;
+		RTT::OutputPort<guiOutType<RTT::os::rt_allocator<uint8_t>>> guiOutPort;
+
+		// Temporary header copy, so getROSHeader() can return a reference
+		// In the new event system, everything will be RT-safe, so this won't be necessary
+		std_msgs::Header_<RTT::os::rt_allocator<uint8_t>> header;
 
 		// Port for logging controller data
-		RTT::OutputPort<logType>    logOutPort;
+		RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>>    logOutPort;
 
 		/**
 		  * @brief This callback is executed when data is received from the GUI
@@ -203,7 +212,9 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		bool configureHook();
 };
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	RTT::TaskContext(name),
 	AtriasController(name),
@@ -229,6 +240,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		log(RTT::Info) << "[" << this->AtriasController::getName()
 		               << "] Setting up GUI input port." << RTT::endlog();
 
+		// Add typekits for this message type
+		shared::RtMsgTypekits::registerType<guiInType>(this->AtriasController::getName() + "_input");
+
 		this->addEventPort("guiInput", guiInPort, boost::bind(&ATC<logType, guiInType, guiOutType>::guiInCallback, this, _1));
 
 		// We need to use a ConnPolicy to connect this port.
@@ -249,6 +263,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	if (notUnused<guiOutType>()) {
 		log(RTT::Info) << "/" << this->AtriasController::getName()
 		               << "] Setting up GUI output port." << RTT::endlog();
+
+		// Add typekits for this message type
+		shared::RtMsgTypekits::registerType<guiOutType>(this->AtriasController::getName() + "_status");
 
 		this->addPort("guiOutput", guiOutPort);
 
@@ -272,6 +289,9 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	if (notUnused<logType>()) {
 		log(RTT::Info) << "/" << this->AtriasController::getName()
 		               << "] Setting up logging port." << RTT::endlog();
+
+		// Add typekits for this message type
+		shared::RtMsgTypekits::registerType<logType>(this->AtriasController::getName() + "_log");
 		
 		this->addPort("log", logOutPort);
 
@@ -292,17 +312,23 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 	}
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
-const std_msgs::Header& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
-	return this->rs.header;
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
+const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
+	return this->header;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 void ATC<logType, guiInType, guiOutType>::commandEStop() {
 	this->co.command = medulla_state_error;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 void ATC<logType, guiInType, guiOutType>::commandHalt() {
 	// Ignore the command if an EStop has already been commanded
 	if (co.command == medulla_state_error)
@@ -311,27 +337,37 @@ void ATC<logType, guiInType, guiOutType>::commandHalt() {
 	this->co.command = medulla_state_halt;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 bool ATC<logType, guiInType, guiOutType>::isEnabled() const {
 	return (rtOps::RtOpsState) rs.rtOpsState == rtOps::RtOpsState::ENABLED;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 RTT::TaskContext& ATC<logType, guiInType, guiOutType>::getTaskContext() const {
 	return *((RTT::TaskContext*) this);
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 void ATC<logType, guiInType, guiOutType>::sendEvent(rtOps::RtOpsEventMetadata_t metadata) {
 	this->sendEventOp(rtOps::RtOpsEvent::CONTROLLER_CUSTOM, metadata);
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 void ATC<logType, guiInType, guiOutType>::guiInCallback(RTT::base::PortInterface* portInterface) {
 	this->guiInPort.read(this->guiIn);
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runController(atrias_msgs::robot_state &robotState) {
 	// Check for change in state (to trigger the change to startup mode).
 	if (this->startupEnabled                         &&
@@ -345,6 +381,9 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 
 	// Save the robot state so the controller (and this class) can access it.
 	this->rs = robotState;
+
+	// And update header timestamp.
+	this->header.stamp = rs.header.stamp;
 
 	// Default to run -- this is changed if the
 	// controller commands a change
@@ -390,7 +429,9 @@ atrias_msgs::controller_output& ATC<logType, guiInType, guiOutType>::runControll
 	return this->co;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 void ATC<logType, guiInType, guiOutType>::startupController() {
 
 	// Clamp the controller outputs
@@ -418,17 +459,23 @@ void ATC<logType, guiInType, guiOutType>::startupController() {
 		this->mode = State::RUN;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 bool ATC<logType, guiInType, guiOutType>::setStartupEnabled(bool enable) {
 	return this->startupEnabled = enable;
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 bool ATC<logType, guiInType, guiOutType>::isStarting() const {
 	return (this->mode == State::STARTUP);
 }
 
-template <typename logType, typename guiInType, typename guiOutType>
+template <template <class> class logType,
+          template <class> class guiInType,
+          template <class> class guiOutType>
 bool ATC<logType, guiInType, guiOutType>::configureHook() {
 	// Connect services with RT Ops so it can see our "atc" service
 	this->connectServices(this->getPeer("atrias_rt"));

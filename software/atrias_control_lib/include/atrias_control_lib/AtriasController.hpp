@@ -13,7 +13,8 @@
 #include <string>
 
 // Orocos
-#include <rtt/TaskContext.hpp> // We're not a TaskContext, but we need to reference one.
+#include <rtt/TaskContext.hpp>      // We're not a TaskContext, but we need to reference one.
+#include <rtt/os/oro_allocator.hpp> // For accessing realtime messages.
 
 // ROS
 #include <std_msgs/Header.h> // So we can pass around ROS headers for logging.
@@ -72,7 +73,7 @@ class AtriasController {
 		  * @brief Returns a ROS header with the current timestamp.
 		  * @return A ROS header for logging purposes.
 		  */
-		virtual const std_msgs::Header& getROSHeader() const;
+		virtual const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
 
 		/**
 		  * @brief This returns the TaskContext

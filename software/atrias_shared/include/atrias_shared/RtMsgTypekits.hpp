@@ -27,12 +27,12 @@ class RtMsgTypekits {
 		  * @param name A unique name for this type, such as "rt_ops_event_"
 		  */
 		template <template<class> class msgType>
-		static void registerType(const char *name);
+		static void registerType(const std::string &name);
 };
 
 // Template definitions
 template <template<class> class msgType>
-void RtMsgTypekits::registerType(const char *name) {
+void RtMsgTypekits::registerType(const std::string &name) {
 	// This is taken off the Orocos mailinglist
 	// http://www.orocos.org/forum/orocos/orocos-users/cannot-transport-ros-message-rttosrtallocator
 	RTT::types::Types()->addType(new RTT::types::TemplateTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>, false>(name));
