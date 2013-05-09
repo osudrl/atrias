@@ -46,7 +46,7 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	curB = (tausB/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
     	
 	// Set the log data
-    log_out.data.control_fx = legForce.fx;
+	log_out.data.control_fx = legForce.fx;
 	log_out.data.control_fz = legForce.fz;
 	log_out.data.control_dfx = legForce.dfx;
 	log_out.data.control_dfz = legForce.dfz;

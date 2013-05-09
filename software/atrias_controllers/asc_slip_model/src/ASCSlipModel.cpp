@@ -11,6 +11,7 @@ ASCSlipModel::ASCSlipModel(AtriasController *parent, string name) :
 {
 	// Linear spring constant
 	k = 28000.0;
+	dk = 0.0;
 	
 	// Initial leg length
 	r0 = 0.85;
@@ -51,7 +52,7 @@ SlipState ASCSlipModel::advanceRK4(SlipState slipState) {
 
 		dqNew = dq-(h*(G*cos(q+dq*h*(1.0/2.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)))*(1.0/3.0))/(r+dr*h*(1.0/2.0))-(h*(G*cos(q+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(1.0/2.0))+(dq-(h*(G*cos(q+dq*h*(1.0/2.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)))*(1.0/2.0))/(r+dr*h*(1.0/2.0)))*(dr*2.0-h*(G*sin(q+dq*h*(1.0/2.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r,2.0)*(r+dr*h*(1.0/2.0))+(k*(r-r0+dr*h*(1.0/2.0)))/m)))*(1.0/3.0))/(r+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0))*(1.0/2.0))-(h*(dq*dr*2.0+G*cos(q))*(1.0/6.0))/r-(h*((dq-(h*(G*cos(q+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(1.0/2.0))+(dq-(h*(G*cos(q+dq*h*(1.0/2.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)))*(1.0/2.0))/(r+dr*h*(1.0/2.0)))*(dr*2.0-h*(G*sin(q+dq*h*(1.0/2.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r,2.0)*(r+dr*h*(1.0/2.0))+(k*(r-r0+dr*h*(1.0/2.0)))/m))))/(r+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0))*(1.0/2.0)))*(dr*2.0-h*(G*sin(q+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(1.0/2.0))-pow(dq-(h*(G*cos(q+dq*h*(1.0/2.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)))*(1.0/2.0))/(r+dr*h*(1.0/2.0)),2.0)*(r+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0))*(1.0/2.0))+(k*(r-r0+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0))*(1.0/2.0)))/m)*2.0)+G*cos(q+h*(dq-(h*(G*cos(q+dq*h*(1.0/2.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)))*(1.0/2.0))/(r+dr*h*(1.0/2.0)))))*(1.0/6.0))/(r+h*(dr-h*(G*sin(q+dq*h*(1.0/2.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/2.0))/r,2.0)*(r+dr*h*(1.0/2.0))+(k*(r-r0+dr*h*(1.0/2.0)))/m)*(1.0/2.0)));
 
-		// Advance time step, replace old with new
+	// Advance time step, replace old with new
         slipState.r = rNew;
         slipState.dr = drNew;
         slipState.q = qNew;
@@ -59,17 +60,17 @@ SlipState ASCSlipModel::advanceRK4(SlipState slipState) {
 
 	}
 
-    // Set the log data
-    log_out.data.r = slipState.r;
-    log_out.data.dr = slipState.dr;
-    log_out.data.q = slipState.q;
-    log_out.data.dq = slipState.dq;
+	// Set the log data
+	log_out.data.r = slipState.r;
+	log_out.data.dr = slipState.dr;
+	log_out.data.q = slipState.q;
+	log_out.data.dq = slipState.dq;
 
-    // Transmit the log data
-    log_out.send();
+	// Transmit the log data
+	log_out.send();
 
 	// Return new SLIP state
-    return slipState;
+	return slipState;
     
 }
 
@@ -105,7 +106,7 @@ SlipState ASCSlipModel::advanceRK5(SlipState slipState) {
 
 		dqNew = dq-(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(1.25E2/1.92E2))/(r+dr*h*(1.0/3.0))-(h*(G*cos(q+dq*h*(2.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(1.2E1/2.5E1)-h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(2.0/1.5E1)+h*(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r)*(8.0/7.5E1))+(dr*-2.0+h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(4.0/1.5E1)-h*(-G*sin(q+dq*h*(1.0/4.0)-h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*3.0-h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0))+pow(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r,2.0)*(r+dr*h*(1.0/4.0)-h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0-h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0))+(k*(-r+r0-dr*h*(1.0/4.0)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0+h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0)))/m)*(1.6E1/7.5E1)+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(2.4E1/2.5E1))*(-dq+(h*(G*cos(q+dq*h*(1.0/4.0)-h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*3.0-h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0))+(dr*2.0-h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(1.5E1/2.0)-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*6.0)*(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r))*(8.0/7.5E1))/(r+dr*h*(1.0/4.0)-h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0-h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0))+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(1.2E1/2.5E1))/(r+dr*h*(1.0/3.0))+(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(2.0/1.5E1))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))+(h*(dq*dr*2.0+G*cos(q))*(2.0/2.5E1))/r))*(1.25E2/1.92E2))/(r+dr*h*(2.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(1.2E1/2.5E1)+h*(dr-h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(1.5E1/4.0)-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/4.0)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*3.0)*(8.0/7.5E1)-h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(2.0/1.5E1))+(h*(G*cos(q+dq*h*(2.0/2.7E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(1.0E1/9.0)+h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(5.0E1/8.1E1)+h*(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r)*(8.0/8.1E1))-(dr*2.0+h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(1.0E2/8.1E1)+h*(-G*sin(q+dq*h*(1.0/4.0)-h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*3.0-h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0))+pow(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r,2.0)*(r+dr*h*(1.0/4.0)-h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0-h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0))+(k*(-r+r0-dr*h*(1.0/4.0)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0+h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0)))/m)*(1.6E1/8.1E1)-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.7E1)-h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(2.0E1/9.0))*(-dq+(h*(G*cos(q+dq*h*(1.0/4.0)-h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*3.0-h*(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(1.5E1/4.0))+(dr*2.0-h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(1.5E1/2.0)-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/2.0)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*6.0)*(dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*3.0)/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(1.5E1/4.0))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))-(h*(dq*dr*2.0+G*cos(q))*(1.0/4.0))/r))*(8.0/8.1E1))/(r+dr*h*(1.0/4.0)-h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*3.0-h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(1.5E1/4.0))+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(1.0E1/9.0))/(r+dr*h*(1.0/3.0))-(h*((-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r)*(dr*-2.0+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(8.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(1.2E1/2.5E1))+G*cos(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1)))*(5.0E1/8.1E1))/(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))+(h*(dq*dr*2.0+G*cos(q))*(2.0/2.7E1))/r))*(2.7E1/6.4E1))/(r+dr*h*(2.0/2.7E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(1.0E1/9.0)+h*(dr-h*(-(r+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1))*pow(-dq+(h*(G*cos(q+dq*h*(1.0/3.0))+(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(dr*2.0-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(2.0/3.0)))*(6.0/2.5E1))/(r+dr*h*(1.0/3.0))+(h*(dq*dr*2.0+G*cos(q))*(4.0/2.5E1))/r,2.0)+G*sin(q+dq*h*(4.0/2.5E1)+h*(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r)*(6.0/2.5E1))+(k*(r-r0+dr*h*(4.0/2.5E1)+h*(dr-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/3.0))*(6.0/2.5E1)))/m)*(1.5E1/4.0)-h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(1.0/4.0)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*3.0)*(8.0/8.1E1)+h*(-dr+h*(-(dq*dq)*r+G*sin(q)+(k*(r-r0))/m)*(4.0/2.5E1)+h*(G*sin(q+dq*h*(1.0/3.0))-pow(dq-(h*(dq*dr*2.0+G*cos(q))*(1.0/3.0))/r,2.0)*(r+dr*h*(1.0/3.0))+(k*(r-r0+dr*h*(1.0/3.0)))/m)*(6.0/2.5E1))*(5.0E1/8.1E1))-(h*(dq*dr*2.0+G*cos(q))*(2.3E1/1.92E2))/r;
 		
-		// Advance time step, replace old with new
+	// Advance time step, replace old with new
         slipState.r = rNew;
         slipState.dr = drNew;
         slipState.q = qNew;
@@ -113,28 +114,28 @@ SlipState ASCSlipModel::advanceRK5(SlipState slipState) {
 
 	}
 
-    // Set the log data
-    log_out.data.r = slipState.r;
-    log_out.data.dr = slipState.dr;
-    log_out.data.q = slipState.q;
-    log_out.data.dq = slipState.dq;
+	// Set the log data
+	log_out.data.r = slipState.r;
+	log_out.data.dr = slipState.dr;
+	log_out.data.q = slipState.q;
+	log_out.data.dq = slipState.dq;
 
-    // Transmit the log data
-    log_out.send();
+	// Transmit the log data
+	log_out.send();
 
 	// Return new SLIP state
-    return slipState;
+	return slipState;
 
 }
 
 
 LegForce ASCSlipModel::force(SlipState slipState) {
 
-    // Unpack parameters
-    r = slipState.r;
-    dr = slipState.dr;
-    q = slipState.q;
-    dq = slipState.dq;
+	// Unpack parameters
+	r = slipState.r;
+	dr = slipState.dr;
+	q = slipState.q;
+	dq = slipState.dq;
 
 	// If virtual SLIP model is in flight
 	if (slipState.isFlight) {
@@ -144,13 +145,13 @@ LegForce ASCSlipModel::force(SlipState slipState) {
 		legForce.dfx = 0.0;
 		legForce.dfz = 0.0;
 
-	// If virtual SLIP model is in NOT in flight (is in stance)
+	// If virtual SLIP model is NOT in flight (is in stance)
 	} else {
 		// Define component forces
 		legForce.fx = k*(r - r0)*cos(q);
-		legForce.fz = k*(r - r0)*sin(q);
-		legForce.dfx = k*(dr*cos(q) - dq*sin(q)*(r - r0));
-		legForce.dfz = k*(dr*sin(q) + dq*cos(q)*(r - r0));
+		legForce.dfx = dr*cos(q)*k + dk*cos(q)*(r - r0) - dq*sin(q)*k*(r - r0); 
+		legForce.fz = k*(r - r0)*sin(q); 
+		legForce.dfz = dr*sin(q)*k + dk*sin(q)*(r - r0) + dq*cos(q)*k*(r - r0);
 	}
 
     // Set the log data

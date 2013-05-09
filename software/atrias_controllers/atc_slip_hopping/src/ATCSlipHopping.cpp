@@ -221,14 +221,16 @@ void ATCSlipHopping::slipForceStancePhaseController() {
 
 	// Spring type
 	if (springType == 0) {
-		std::tie(ascSlipModel.k, dk) = ascCommonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+		std::tie(ascSlipModel.k, ascSlipModel.dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
 	} else if (springType == 1) {
 		ascSlipModel.k = guiIn.slip_spring;
+		ascSlipModel.dk = 0.0;
 	}
 
 	// Set SLIP model parameters, double stiffness if two leg hopping
 	if (hoppingType == 2) {
 		ascSlipModel.k = 2.0*ascSlipModel.k;
+		ascSlipModel.dk = 2.0*ascSlipModel.dk;
 	}
 
 	// Compute SLIP force profile
@@ -341,7 +343,7 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 	// Spring type and stiffness
 	if (springType == 0) {
 		// ATRIAS non-linear spring constant (per leg)
-		std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+		std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
 		
 	} else if (springType == 1) {
 		// Desired linear stiffness (per leg)
@@ -356,17 +358,11 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 		std::tie(qLl, rLl) = ascCommonToolkit.motorPos2LegPos(rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle);
 		std::tie(dqLl, drLl) = ascCommonToolkit.motorVel2LegVel(rs.lLeg.halfA.legAngle, rs.lLeg.halfB.legAngle, rs.lLeg.halfA.legVelocity, rs.lLeg.halfB.legVelocity);
 
-		// Simulate a virtual spring between the hip and toe that acts soley in axial direction
-		//rF = k*(rLl - ascSlipModel.r0);
-		//drF = drLl*k + dk*(rLl - ascSlipModel.r0);
-		//qF = 0.0;
-		//dqF = 0.0;
-		
 		// Define component forces
 		legForce.fx = -k*(rLl - ascSlipModel.r0)*cos(qLl);
-		legForce.dfx = -k*(drLl*cos(qLl) + dqLl*sin(qLl)*(rLl - ascSlipModel.r0));
+		legForce.dfx = dk*cos(qLl)*(ascSlipModel.r0 - rLl) - drLl*cos(qLl)*k + dqLl*sin(qLl)*k*(rLl - ascSlipModel.r0);
 		legForce.fz = k*(rLl - ascSlipModel.r0)*sin(qLl);
-		legForce.dfz = k*(drLl*sin(qLl) + dqLl*cos(qLl)*(rLl - ascSlipModel.r0));
+		legForce.dfz = drLl*sin(qLl)*k - dk*sin(qLl)*(ascSlipModel.r0 - rLl) + dqLl*cos(qLl)*k*(rLl - ascSlipModel.r0);
 		
 		// Apply the force
 		std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(legForce, rs.lLeg, rs.position);
@@ -385,18 +381,12 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 		// Compute curent leg angle
 		std::tie(qRl, rRl) = ascCommonToolkit.motorPos2LegPos(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle);
 		std::tie(dqRl, drRl) = ascCommonToolkit.motorVel2LegVel(rs.rLeg.halfA.legAngle, rs.rLeg.halfB.legAngle, rs.rLeg.halfA.legVelocity, rs.rLeg.halfB.legVelocity);
-
-		// Simulate a virtual spring between the hip and toe that acts soley in axial direction
-		//rF = k*(rRl - ascSlipModel.r0);
-		//drF = drRl*k + dk*(rRl - ascSlipModel.r0);
-		//qF = 0.0;
-		//dqF = 0.0;
-		
+	
 		// Define component forces
 		legForce.fx = -k*(rRl - ascSlipModel.r0)*cos(qRl);
-		legForce.dfx = -k*(drRl*cos(qRl) + dqRl*sin(qRl)*(rRl - ascSlipModel.r0));
+		legForce.dfx = dk*cos(qRl)*(ascSlipModel.r0 - rRl) - drRl*cos(qRl)*k + dqRl*sin(qRl)*k*(rRl - ascSlipModel.r0);
 		legForce.fz = k*(rRl - ascSlipModel.r0)*sin(qRl);
-		legForce.dfz = k*(drRl*sin(qRl) + dqRl*cos(qRl)*(rRl - ascSlipModel.r0));
+		legForce.dfz = drRl*sin(qRl)*k - dk*sin(qRl)*(ascSlipModel.r0 - rRl) + dqRl*cos(qRl)*k*(rRl - ascSlipModel.r0);
 		
 		// Apply the force
 		std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(legForce, rs.rLeg, rs.position);

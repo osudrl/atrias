@@ -12,12 +12,12 @@ ASCCommonToolkit::ASCCommonToolkit(AtriasController *parent, string name) :
 }
 
 
-std::tuple<double, double> ASCCommonToolkit::legStiffness(double r, double r0) {
+std::tuple<double, double> ASCCommonToolkit::legStiffness(double r, double dr, double r0) {
 
 	// Compute non-linear ATRIAS virtual leg length stiffness
 	k = KS*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*L1*L2*pow(sin(acos(r)), 3));
-	dk = (dr*KS/pow(-r*r + 1.0, 3.0/2.0)*(acos(r) - acos(r0))*(-1.0/2.0))/(L1*L2) - (dr*KS*r/pow(-r*r + 1.0, 5.0/2.0)*(r*(acos(r) - acos(r0)) - sqrt(-r*r + 1.0))*(3.0/2.0))/(L1*L2); // TODO Double check math
-	
+	dk = -(KS*dr*(acos(r) - acos(r0)))/(2.0*L1*L2*pow((1.0 - r*r), 1.5)) - (3.0*KS*dr*r*(r*(acos(r) - acos(r0)) - pow((1.0 - r*r), 0.5)))/(2.0*L1*L2*pow((1.0 - r*r), 2.5));
+
 	// Set the log data
 	log_out.data.k = k;
 	log_out.data.dk = dk;
