@@ -114,10 +114,10 @@ typedef enum {
 #define LEG_B_MOTOR_MIN_LOC                                          0.785398163
 #define LEG_B_MOTOR_MAX_LOC                                           3.44702527
 
-#define LEFT_HIP_MOTOR_MIN_LOC                                               0.0   // TODO: Get actual value.
-#define LEFT_HIP_MOTOR_MAX_LOC                                               0.0   // TODO: Get actual value.
-#define RIGHT_HIP_MOTOR_MIN_LOC                                              0.0   // TODO: Get actual value.
-#define RIGHT_HIP_MOTOR_MAX_LOC                                              0.0   // TODO: Get actual value.
+#define LEFT_HIP_MOTOR_MIN_LOC                                            4.5616
+#define LEFT_HIP_MOTOR_MAX_LOC                                            4.9245
+#define RIGHT_HIP_MOTOR_MIN_LOC                                           4.4671
+#define RIGHT_HIP_MOTOR_MAX_LOC                                           4.8892
 
 // The minimum and maximum distance in positions between the motors. For leg length
 // protection. Note: LEG_LOC_SAFETY_DISTANCE does not affect the safety stop position
@@ -136,7 +136,7 @@ typedef enum {
 #define ACCEL_PER_AMP                                                  1.7185879
 
 // The torque constant, including 50:1 gear reduction (in Nm/A)
-#define TRQ_CONST                                                  (50.0 * .121)
+#define TRQ_CONST                                                (50.0 * .0.121)
 
 /** @brief The minimum amps assumed available for a halt.
   * This only affects RT Ops's safeties, not those of the Medulla firmware.

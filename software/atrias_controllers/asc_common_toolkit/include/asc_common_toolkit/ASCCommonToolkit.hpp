@@ -42,9 +42,10 @@ class ASCCommonToolkit : public AtriasController {
 		  * @param r The current leg length.
 		  * @param r0 The initial leg length.
 		  * @return k The computed virtual leg stiffness.
+		  * @return k The computed virtual leg stiffness derivative.
 		  */
-		double legStiffness(double r, double r0);
-		double k;
+		std::tuple<double, double> legStiffness(double r, double r0);
+		double k, dk;
 
 		/**
 		  * @brief Converts motor position to leg position.

@@ -20,6 +20,7 @@
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
 #include <atrias_msgs/robot_state.h>
+#include <robot_invariant_defs.h>
 
 // Cpp
 #include <complex.h>
