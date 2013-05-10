@@ -134,6 +134,7 @@ void ATCSlipWalking::walkingControl() {
             lGC = true;
     }
 
+    // TODO: Handle the transition between these two controllers
     switch (guiIn.walking_controller) {
         case 0:
             eqPointWalkingControl(); // To get moving
@@ -273,6 +274,7 @@ void ATCSlipWalking::slipWalking() {
     }
 
     // Control
+    // TODO: Add a way to switch between passive and active stance control
     switch (slipControlState) {
         case 0:
             slipPassiveStanceControl(&rs.rLeg, &co.rLeg, &pdRmA, &pdRmB, &ascLegForceRl);
@@ -337,6 +339,32 @@ void ATCSlipWalking::slipActiveStanceControl(atrias_msgs::robot_state_leg *rsSl,
 }
 
 void ATCSlipWalking::slipPassiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
+    // TODO: Clean this up
+    // Spring type
+    if (springType == 0) {
+        ascSlipModel.k = ascCommonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+    } else if (springType == 1) {
+        ascSlipModel.k = guiIn.slip_spring;
+    }
+
+    // Compute SLIP reaction force
+    std::tie(qLl, rLl) = commonToolkit.motorPos2LegPos(rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
+    deltaL = ascSlipModel.r0 - rLl;
+    if (deltaL > 0.0) { // SLIP model stance
+        axialLegForce = deltaL*ascSlipModel.k;
+        angularLegForce = 0.0;
+    } else { // SLIP model flight
+        axialLegForce = 0.0;
+        angularLegForce = 0.0;
+    }
+    // Polar to cartesian
+    legForce.fx  = axialLegForce*cos(qLl);
+    legForce.dfx = 0.0;
+    legForce.fz  = -axialLegForce*sin(qLl);
+    legForce.dfz = 0.0;
+    // Apply the force
+    std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(legForce, rs.lLeg, rs.position);
+
     /*
     // Compute leg angle
     std::tie(qSl, rSl) = commonToolkit.motorPos2LegPos(rsSl.halfA.legAngle, rsSl.halfB.legAngle);
