@@ -32,53 +32,53 @@ namespace controller {
 
 // The subcontroller class itself
 class ASCSlipModel : public AtriasController {
-        public:
-                /**
-                  * @brief The constructor for this subcontroller
-                  * @param parent The instantiating, "parent" controller.
-                  * @param name The name for this controller.
-                  */                  
-                ASCSlipModel(AtriasController *parent, string name);
-                
-               	// SLIP model parameters
-				double k, r0, m;
-				double h;
+	public:
+		/**
+		  * @brief The constructor for this subcontroller
+		  * @param parent The instantiating, "parent" controller.
+		  * @param name The name for this controller.
+		  */                  
+		ASCSlipModel(AtriasController *parent, string name);
 
-                /**
-                  * @brief Advances the RK4 fixed timestep numerical integrator.
-                  * @param slipState The current state-space parameters.
-                  * @return slipState The computed next step state-space parameters.
-                  */
-				SlipState advanceRK4(SlipState slipState);
+		// SLIP model parameters
+		double k, dk, r0, m;
+		double h;
+
+		/**
+		  * @brief Advances the RK4 fixed timestep numerical integrator.
+		  * @param slipState The current state-space parameters.
+		  * @return slipState The computed next step state-space parameters.
+		  */
+		SlipState advanceRK4(SlipState slipState);
+
+		// State-space
+		double r, dr, q, dq;
+		double rNew, drNew, qNew, dqNew;
 				
-				// State-space
-				double r, dr, q, dq;
-				double rNew, drNew, qNew, dqNew;
-								
-				/**
-                  * @brief Advances the RK5 fixed timestep numerical integrator.
-                  * @param slipState The current state-space parameters.
-                  * @return slipState The computed next step state-space parameters.
-                  */
-				SlipState advanceRK5(SlipState slipState);
-								
-                /**
-                  * @brief Computes the leg force.
-                  * @param slipState The current state-space parameters.
-                  * @return legForce The computed component forces at the toe.
-                  */				
-				LegForce force(SlipState slipState);
-		
-				// Leg forces
-				LegForce legForce;
+		/**
+		  * @brief Advances the RK5 fixed timestep numerical integrator.
+		  * @param slipState The current state-space parameters.
+		  * @return slipState The computed next step state-space parameters.
+		  */
+		SlipState advanceRK5(SlipState slipState);
+						
+		/**
+		  * @brief Computes the leg force.
+		  * @param slipState The current state-space parameters.
+		  * @return legForce The computed component forces at the toe.
+		  */				
+		LegForce force(SlipState slipState);
 
-       
-        private:
-                /** 
-                  * @brief This is our logging port.
-                  * You may have as many of these as you'd like of various types.
-                  */
-                LogPort<asc_slip_model::controller_log_data> log_out;
+		// Leg forces
+		LegForce legForce;
+
+
+	private:
+		/** 
+		  * @brief This is our logging port.
+		  * You may have as many of these as you'd like of various types.
+		  */
+		LogPort<asc_slip_model::controller_log_data> log_out;
 };
 
 }

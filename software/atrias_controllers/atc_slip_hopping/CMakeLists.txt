@@ -37,15 +37,15 @@ endif(DEFINED atrias_PACKAGE_PATH)
 
 # Find GTK libraries and build GUI library.
 if(ATRIAS_BUILD_GUI)
-    rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
-    target_link_libraries(controller_gui ${GTK2_LIBRARIES})
+	rosbuild_add_library(controller_gui SHARED src/controller_gui.cpp)
+	target_link_libraries(controller_gui ${GTK2_LIBRARIES})
 endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	# Build new-style controller
-    orocos_component(ATCSlipHopping src/ATCSlipHopping.cpp)
-    target_link_libraries(ATCSlipHopping ControlLib-${OROCOS_TARGET})
+	orocos_component(ATCSlipHopping src/ATCSlipHopping.cpp)
+	target_link_libraries(ATCSlipHopping ControlLib-${OROCOS_TARGET})
      
 	# Build type-kits
 	ros_generate_rtt_typekit(atc_slip_hopping)

@@ -302,7 +302,7 @@ void ATCSlipRunning::rightLegFlightFalling() {
 void ATCSlipRunning::rightLegStance() {
 	
 	// Compute current virtual leg length spring stiffness
-	ascSlipModel.k = ascCommonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+	std::tie(ascSlipModel.k, ascSlipModel.dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
 
 	// Advance SLIP model integrator
 	slipState = ascSlipModel.advanceRK5(slipState);
@@ -419,7 +419,7 @@ void ATCSlipRunning::rightLegFlightRising() {
 }
 
 
-double ATCSlipRunnig::equilibriumGaitSolver(dx, dz, r0) {
+double ATCSlipRunnig::equilibriumGaitSolver(double dx, double dz, double r0) {
 
 	b[0] = -7.213440413060714;
 	b[1] = 3.468798283842735E1;

@@ -76,44 +76,37 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		  * @brief Gets values from GUI and updates all relavent states.
 		  */
 		void updateState();
-		int controllerState, hoppingState;
-		int stanceControlType, hoppingType, forceControlType, springType;
-		bool isLeftStance, isRightStance;
 
 		/**
 		  * @brief A kinematically driven hip controller to limit knee forces.
 		  */
 		void hipController();
-		double qLh, qRh;
-		LeftRight toePosition;
 		
 		/**
-		  * @brief A simple two leg standing controller
+		  * @brief A simple two leg standing controller that uses a position 
+		  * controller to hold a constant virtual motor leg length.
 		  */
 		void standingController();
-		double qLl, rLl, qRl, rRl, qLmA, qLmB, qRmA, qRmB;
-		double legRateLimit;
 		
 		/**
 		  * @brief A SLIP based force tracking stance phase controller.
 		  */
-		void forceStancePhaseController();
-		double ql, rl, h;
-		SlipState slipState;
-		LegForce legForce, fTemp;
+		void slipForceStancePhaseController();
 		
 		/**
 		  * @brief A simple stance phase controller allowing only leg length 
-		  * forces with zero leg angle torques.
+		  * forces with zero leg angle torques. Uses a position controller to 
+		  * keep virtual motor leg length constant while minimizing spring 
+		  * about the hip.
 		  */
 		void passiveStancePhaseController();
 
 		/**
-		  * @brief A stance phase controller for emulating SLIP reaction
-		  * forces.
+		  * @brief A simple stance phase controller simulating a virtual spring
+		  * between the hip and toe. Uses a force controller to then track these 
+		  * forces that are based on leg deflection.
 		  */
-		void reactiveStancePhaseController();
-		double deltaL, axialLegForce, angularLegForce;
+		void virtualSpringStancePhaseController();
 		
 		/**
 		  * @brief A simple constant leg position flight phase controller.
@@ -143,6 +136,46 @@ class ATCSlipHopping : public ATC<atc_slip_hopping::controller_log_data, control
 		ASCRateLimit ascRateLimitLmB;
 		ASCRateLimit ascRateLimitRmA;
 		ASCRateLimit ascRateLimitRmB;
+		
+		// State machine references
+		int controllerState, hoppingState;
+		
+		// Controller options and parameters
+		int stanceControlType, hoppingType, forceControlType, springType;
+		
+		// Defines which legs are used in stance
+		bool isLeftStance, isRightStance;
+		
+		// Hip angles
+		double qLh, qRh;
+		
+		// Desired toe positions for hip boom kinematic controller
+		LeftRight toePosition;
+		
+		// Leg angles and lengths	
+		double qLl, rLl, qRl, rRl;
+		
+		// Leg velocities
+		double dqLl, drLl, dqRl, drRl;
+		
+		// Motor angles and velocities
+		double qLmA, qLmB, qRmA, qRmB;
+		
+		// Velocity limit for motors (used in standing controller only)
+		double legRateLimit;
+		
+		// Desired hop height for terrain following SLIP force controller
+		double h;
+		
+		// SLIP model state structure
+		SlipState slipState;
+		
+		// Leg force structures
+		LegForce legForce;
+		
+		// Simulated virtual spring between robot
+		double k, dk;
+		double qF, rF;
 
 };
 

@@ -37,17 +37,16 @@ class ASCCommonToolkit : public AtriasController {
 		  */                  
 		ASCCommonToolkit(AtriasController *parent, string name);
 
-		// Robot parameters
-		double ks;
-
 		/**
 		  * @brief Computes the current axial leg stiffness.
 		  * @param r The current leg length.
+		  * @param dr The current leg length velocity.
 		  * @param r0 The initial leg length.
 		  * @return k The computed virtual leg stiffness.
+		  * @return k The computed virtual leg stiffness derivative.
 		  */
-		double legStiffness(double r, double r0);
-		double k;
+		std::tuple<double, double> legStiffness(double r, double dr, double r0);
+		double k, dk;
 
 		/**
 		  * @brief Converts motor position to leg position.

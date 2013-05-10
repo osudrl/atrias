@@ -654,10 +654,10 @@
         <col id="0" translatable="yes">Passive</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Force Tracking</col>
+        <col id="0" translatable="yes">SLIP Force</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Reactive</col>
+        <col id="0" translatable="yes">Virtual Spring</col>
       </row>
     </data>
   </object>

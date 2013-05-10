@@ -301,9 +301,10 @@ void ATCSlipWalking::slipWalking() {
 void ATCSlipWalking::slipActiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
     // Spring type
     if (guiIn.spring_type == 0) {
-        ascSlipModel.k = commonToolkit.legStiffness(slipState.r, ascSlipModel.r0);
+        std::tie(ascSlipModel.k, ascSlipModel.dk) = commonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
     } else if (guiIn.spring_type == 1) {
         ascSlipModel.k = guiIn.linear_spring_constant;
+        ascSlipModel.dk = 0.0;
     }
 
     // Compute SLIP force profile

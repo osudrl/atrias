@@ -8,6 +8,7 @@ ASCHipBoomKinematics::ASCHipBoomKinematics(AtriasController *parent, string name
         AtriasController(parent, name),
         log_out(this, "log")
 {
+	// TODO switch to robot_invariant.defs
 	// Distance from boom pivot Z axis to robot body XZ center plane along boom Y axis
     lBoom = 2.04;
     
@@ -27,7 +28,7 @@ std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, at
     // Define imaginary number i
     i = complex<double>(0.0, 1.0);
 
-	// Get leg lengths and angles
+	// Get leg lengths and angles // TODO switch to ascCommonToolkit equations
     lLeftLeg = (L1 + L2)*cos((lLeg.halfB.legAngle - lLeg.halfA.legAngle)/2.0);
     lRightLeg = (L1 + L2)*cos((rLeg.halfB.legAngle - rLeg.halfA.legAngle)/2.0);
     qLeftLeg = (lLeg.halfA.legAngle + lLeg.halfB.legAngle)/2.0;
@@ -44,7 +45,9 @@ std::tuple<double, double> ASCHipBoomKinematics::iKine(LeftRight toePosition, at
 	hipAngle.left = fmod(real(complexHipAngleLeft) + 4.0*PI, 2.0*PI);
 	hipAngle.right = fmod(real(complexHipAngleRight) + 4.0*PI, 2.0*PI);
 
-	// TODO - Clamp hip angles to physical limits
+	// Clamp hip angles to physical limits
+	hipAngle.left = clamp(hipAngle.left, LEFT_HIP_MOTOR_MIN_LOC, LEFT_HIP_MOTOR_MAX_LOC);
+	hipAngle.right = clamp(hipAngle.right, RIGHT_HIP_MOTOR_MIN_LOC, RIGHT_HIP_MOTOR_MAX_LOC);
 	
 	// Set the log data
     log_out.data.leftHipAngle = hipAngle.left;

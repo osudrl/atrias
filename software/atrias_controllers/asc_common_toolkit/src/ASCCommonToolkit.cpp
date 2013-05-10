@@ -8,24 +8,25 @@ ASCCommonToolkit::ASCCommonToolkit(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Spring constant
-	ks = KS;
+	// Nothing to see here
 }
 
 
-double ASCCommonToolkit::legStiffness(double r, double r0) {
+std::tuple<double, double> ASCCommonToolkit::legStiffness(double r, double dr, double r0) {
 
 	// Compute non-linear ATRIAS virtual leg length stiffness
-	k = ks*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*L1*L2*pow(sin(acos(r)), 3));
-	
+	k = KS*(sin(acos(r)) - (acos(r) - acos(r0))*cos(acos(r)))/(2.0*L1*L2*pow(sin(acos(r)), 3));
+	dk = -(KS*dr*(acos(r) - acos(r0)))/(2.0*L1*L2*pow((1.0 - r*r), 1.5)) - (3.0*KS*dr*r*(r*(acos(r) - acos(r0)) - pow((1.0 - r*r), 0.5)))/(2.0*L1*L2*pow((1.0 - r*r), 2.5));
+
 	// Set the log data
 	log_out.data.k = k;
+	log_out.data.dk = dk;
 
 	// Transmit the log data
 	log_out.send();
 
 	// Return virtual leg stiffness
-	return k;
+	return std::make_tuple(k, dk);
 	
 }
 

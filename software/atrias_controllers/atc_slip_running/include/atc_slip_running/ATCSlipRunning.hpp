@@ -132,7 +132,9 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		int stanceControlType;
 		
 		// For cubic interpolations
-		double t, dt, t1, t2, qRl1, qRl2, dqRl1, dqRl2, qLl1, qLl2, dqLl1, dqLl2;
+		double t, dt, t1, t2;
+		double qLl1, qLl2, dqLl1, dqLl2, qRl1, qRl2, dqRl1, dqRl2;
+		double rLl1, rLl2, drLl1, drLl2, rRl1, rRl2, drRl1, drl2;
 		
 		// SLIP model variables
 		SlipState slipState;
@@ -144,10 +146,10 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		
 		// Motor and leg variables
 		double legRateLimit;
-		double qRl, rRl, qLl, rLl;
-		double dqRl, drRl, dqLl, drLl;
-		double qRmA, qRmB, qRmA, qRmB;
-		double dqRmA, dqRmB, dqRmA, dqRmB;
+		double qLl, rLl, qRl, rRl;
+		double dqLl, drLl, dqRl, drRl;
+		double qLmA, qLmB, qRmA, qRmB;
+		double dqLmA, dqLmB, dqRmA, dqRmB;
 		
 		// Leg cartesian lengths for ground triggers
 		double xRl, zRl, xLl, zLl;
@@ -156,6 +158,7 @@ class ATCSlipRunning : public ATC<atc_slip_running::controller_log_data, control
 		double b[55];
 		double q, dq;
 				
+		double k, dk;
 };
 
 }
