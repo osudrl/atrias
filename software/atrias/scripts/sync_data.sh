@@ -31,8 +31,11 @@ SYNC_DIR="/mnt/attic/experimental-data/atrias-2-1"
 
 # Make sure we have cifs utilities to mount drive
 printf "${OKGREEN}[Checking for sshfs...]${ENDC}\n"
-sudo apt-get install sshfs -y
-printf "${OKGREEN}[Done!]${ENDC}\n"
+if [ ! $(hash sshfs 2>/dev/null) ]; then
+	  printf "${OKGREEN}[sshfs found]${ENDC}\n"
+else
+	sudo apt-get install sshfs -y
+fi
 
 
 
@@ -42,6 +45,11 @@ if [ "$HOSTNAME" != "$ROBOT_HOSTNAME" ]; then
 	exit 0
 fi
 
+# Check to see if there are files to sync
+if [ -z "$(ls $SOURCE_DIR)"]; then
+	printf "${FAIL}[Nothing to sync]${ENDC}\n"
+	exit 0
+fi
 
 
 # Prompt user for username and password and mount attic drive
@@ -57,7 +65,7 @@ else
 	if [ ! -d "$MOUNT_DIR" ]; then
 		sudo mkdir -p "$MOUNT_DIR"
 	fi
-	sudo chown robot:robot "$MOUNT_DIR"
+	sudo chown drl:drl "$MOUNT_DIR"
 	sudo chmod a+rw "$MOUNT_DIR"
 	
 	# Prompt with user info to mount
