@@ -130,7 +130,8 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
 # Sync files to network drive
 printf "${OKGREEN}[Rsync files to network drive...]${ENDC}\n"
-rsync -rlptDcvz --progress "${SORT_DIR}/" "${SYNC_DIR}/"
+#rsync -rlptDcvz --progress
+rsync --recursive --checksum --verbose --compress --human-readable --progress "${SORT_DIR}/" "${SYNC_DIR}/"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
 
