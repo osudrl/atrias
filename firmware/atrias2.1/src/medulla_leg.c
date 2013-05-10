@@ -472,5 +472,11 @@ void leg_reset_error() {
 	motor_encoder_error_counter = 0;
 	leg_encoder_error_counter = 0;
 	leg_damping_cnt = 0;
+	leg_therm_prev_val[0] = thermistor_pdo[0];
+	leg_therm_prev_val[1] = thermistor_pdo[1];
+	leg_therm_prev_val[2] = thermistor_pdo[2];
+	leg_therm_prev_val[3] = thermistor_pdo[3];
+	leg_therm_prev_val[4] = thermistor_pdo[4];
+	leg_therm_prev_val[5] = thermistor_pdo[5];
 }
 
