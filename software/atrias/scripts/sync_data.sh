@@ -119,13 +119,20 @@ for file in $file_list; do
 	# Now transfer the file to the target directory
 	mv -i "$file" "${SORT_DIR}/${file_date}/${file_name}"
 	printf "${OKBLUE}[${sorted_count}/${total_count}]${ENDC} ${file_name} ${HEADER}moved to${ENDC} ${SORT_DIR}/${file_date}\n"
- 
+
 done
 
 # Set the internal field spearator
 unset IFS
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
+# Convert .bag files to .mat
+rosrun atrias autoschwarzebagger.py ${SORT_DIR} ${SORT_DIR} 2
+
+# Compress .bag files
+echo "${OKGREEN}[Compressing .bag files...]${ENDC}"
+find ${SORT_DIR} -type f -name "*.bag" -exec gzip -v {} +
+echo "${OKGREEN}[Done compressing .bag files]${ENDC}"
 
 
 # Sync files to network drive
@@ -139,7 +146,6 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 printf "${OKGREEN}[Deleting files from robot computer...]${ENDC}\n"
 sudo rm -r "$SORT_DIR"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
-
 
 
 # Unmount drive
