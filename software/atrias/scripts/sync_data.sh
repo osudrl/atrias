@@ -23,19 +23,15 @@ printf "\n$OKBLUE[Starting!]$ENDC sync_data.sh\n\n"
 
 # Define computers
 ROBOT_HOSTNAME="i1000a-3"
-ROBOT="//atrias3.engr.oregonstate.edu"
-GUI_HOSTNAME="drl-guilaptop"
 HURST="//attic.engr.oregonstate.edu/hurst"
-DOMAIN="ENGINEERING"
-USER_ID=`id -u`
 MOUNT_DIR="/mnt/attic"
 SOURCE_DIR=`rospack find atrias`/bagfiles
 SORT_DIR=`rospack find atrias`/bagfiles/sorted
 SYNC_DIR="/mnt/attic/experimental-data/atrias-2-1"
 
 # Make sure we have cifs utilities to mount drive
-printf "$OKGREEN[Checking for cifs-utils...]$ENDC\n"
-sudo apt-get install cifs-utils -y
+printf "$OKGREEN[Checking for sshfs...]$ENDC\n"
+sudo apt-get install sshfs -y
 printf "$OKGREEN[Done!]$ENDC\n"
 
 
@@ -60,13 +56,15 @@ else
 	if [ ! -d "$MOUNT_DIR" ]; then
 		sudo mkdir -p "$MOUNT_DIR"
 	fi
+	sudo chown "${MOUNT_DIR}" robot:robot
+	sudo chmod a+rw "${MOUNT_DIR}"
 	
 	# Prompt with user info to mount
 	echo -n "Username: "
 	read -e ENGR_USERNAME
 
 	# Mount network drive
-	sudo mount -t cifs -o username="$ENGR_USERNAME",domain="$DOMAIN",uid="$USER_ID" "$HURST" "$MOUNT_DIR"
+	sshfs "${ENGR_USERNAME}@access.engr.orst.edu:/nfs/attic/hurst" "${MOUNT_DIR}"
 
 	# Check mount worked and we can access the target sync folder
 	if [ ! -d "$SYNC_DIR" ]; then
