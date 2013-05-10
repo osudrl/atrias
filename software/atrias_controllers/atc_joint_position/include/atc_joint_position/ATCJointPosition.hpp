@@ -29,7 +29,7 @@ using namespace atrias_msgs;
 namespace atrias {
 namespace controller {
 
-class ATCJointPosition : public ATC<atc_joint_position::controller_log_data, atc_joint_position::controller_input> {
+class ATCJointPosition : public ATC<atc_joint_position::controller_log_data_, atc_joint_position::controller_input_> {
 	public:
 		/**
 		  * @brief The constructor for this controller.

@@ -27,9 +27,9 @@ namespace atrias {
 namespace controller {
 
 class ToSubstituteClassName : public ATC<
-	ToSubstitutePackageName::controller_log_data,
-	ToSubstitutePackageName::controller_input,
-	ToSubstitutePackageName::controller_status>
+	ToSubstitutePackageName::controller_log_data_,
+	ToSubstitutePackageName::controller_input_,
+	ToSubstitutePackageName::controller_status_>
 {
 	public:
 		/** 

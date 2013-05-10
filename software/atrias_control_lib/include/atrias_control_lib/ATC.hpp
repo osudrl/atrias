@@ -19,6 +19,7 @@
 // Robot state and controller output
 #include <atrias_msgs/controller_output.h>
 #include <atrias_msgs/robot_state.h>
+#include <atrias_msgs/unused.h>
 
 // For the medulla state enum
 #include <robot_invariant_defs.h>
@@ -39,14 +40,6 @@ namespace atrias {
 namespace controller {
 
 /**
-  * @brief This indicates that a port is not needed.
-  */
-template <class Alloc>
-struct Unused {
-	std_msgs::Header_<Alloc> header;
-};
-
-/**
   * @brief This detected if a type is not equal to Unused.
   * @return False if this is of type Unused, true otherwise
   */
@@ -57,16 +50,16 @@ inline bool notUnused() {
 
 // Utilize template specialization to detect the difference
 template <>
-inline bool notUnused<Unused>() {
+inline bool notUnused<atrias_msgs::unused_>() {
 	return false;
 }
 
 // This is a component, so we subclass TaskContext;
 // as a controller, this subclasses AtriasController
 // Also, we're a template...
-template <template <class> class logType    = Unused,
-          template <class> class guiInType  = Unused,
-          template <class> class guiOutType = Unused>
+template <template <class> class logType    = atrias_msgs::unused_,
+          template <class> class guiInType  = atrias_msgs::unused_,
+          template <class> class guiOutType = atrias_msgs::unused_>
 class ATC : public RTT::TaskContext, public AtriasController {
 	public:
 		/**

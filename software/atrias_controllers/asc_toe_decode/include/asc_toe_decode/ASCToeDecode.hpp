@@ -68,7 +68,7 @@ class ASCToeDecode : public AtriasController {
 		/** 
 		  * @brief This is our logging port.
 		  */
-		LogPort<asc_toe_decode::controller_log_data> log_out;
+		LogPort<asc_toe_decode::controller_log_data_> log_out;
 };
 
 // End namespaces

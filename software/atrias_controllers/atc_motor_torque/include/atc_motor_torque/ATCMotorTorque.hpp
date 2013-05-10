@@ -21,7 +21,7 @@ using namespace std;
 namespace atrias {
 namespace controller {
 
-class ATCMotorTorque : public ATC<Unused, atc_motor_torque::controller_input> {
+class ATCMotorTorque : public ATC<atrias_msgs::unused_, atc_motor_torque::controller_input_> {
 	public:
 		/**
 		  * @brief The constructor for this controller.

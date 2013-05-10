@@ -83,7 +83,7 @@ class ASCLegForce : public AtriasController {
 		  * @brief This is our logging port.
 		  * You may have as many of these as you'd like of various types.
 		  */
-		LogPort<asc_leg_force::controller_log_data> log_out;
+		LogPort<asc_leg_force::controller_log_data_> log_out;
 };
 
 }

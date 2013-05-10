@@ -44,7 +44,7 @@ using namespace atc_force_control_demo;
 namespace atrias {
 namespace controller {
 
-class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_data, controller_input, controller_status> {
+class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_data_, controller_input_, controller_status_> {
 	public:
 		/**
 		  * @brief The constructor for this controller.
