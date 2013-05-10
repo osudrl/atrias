@@ -46,7 +46,7 @@ if [ "$HOSTNAME" != "$ROBOT_HOSTNAME" ]; then
 fi
 
 # Check to see if there are files to sync
-if [ -z "$(ls $SOURCE_DIR)"]; then
+if [ -z "$(ls ${SOURCE_DIR})" ]; then
 	printf "${FAIL}[Nothing to sync]${ENDC}\n"
 	exit 0
 fi
@@ -101,9 +101,8 @@ total_count=$(find "$SOURCE_DIR" -maxdepth 1 -name "*.bag" -o -name "*.mat" -typ
 
 # Loop through each item in file list
 for file in $file_list; do
-
 	# Increment counter
-	$((sorted_count++))
+	sorted_count=$((sorted_count+1))
 
 	# Parse out file name and path
 	file_name=$(basename "$file")
