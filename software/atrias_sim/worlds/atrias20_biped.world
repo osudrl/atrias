@@ -77,16 +77,20 @@
 
         <plugin name="pause_world" filename="libpause_world.so"/>
 
+        <!--
         <plugin name="freeze_pose" filename="libfreeze_pose.so">
             <modelName>atrias20</modelName>
             <linkName>atrias21_hip::body_link</linkName>
         </plugin>
-        <!--
-        <plugin name="planar_constraint" filename="libplanar_constraint.so">
+        <plugin name="hopping_constraint" filename="libhopping_constraint.so">
             <modelName>atrias20</modelName>
             <linkName>atrias21_hip::body_link</linkName>
         </plugin>
         -->
+        <plugin name="walking_constraint" filename="libwalking_constraint.so">
+            <modelName>atrias20</modelName>
+            <linkName>atrias21_hip::body_link</linkName>
+        </plugin>
 
         <plugin name="atrias20_biped" filename="libatrias20_biped.so">
             <modelName>atrias20</modelName>
