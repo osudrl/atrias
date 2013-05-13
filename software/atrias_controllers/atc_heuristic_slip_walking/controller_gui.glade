@@ -421,37 +421,6 @@
       <placeholder/>
     </child>
   </object>
-  <object class="GtkListStore" id="force_profile_liststore">
-    <columns>
-      <!-- column-name force_profile -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Apex Tracking</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Terrain Following</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="hop_type_liststore">
-    <columns>
-      <!-- column-name gchararray1 -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Left Leg</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Right Leg</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Two Leg</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkListStore" id="main_controller_liststore">
     <columns>
       <!-- column-name gchararray1 -->
@@ -462,41 +431,10 @@
         <col id="0" translatable="yes">Stand</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Hop!</col>
+        <col id="0" translatable="yes">Walk!</col>
       </row>
       <row>
         <col id="0" translatable="yes">Shutdown</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="slip_spring_type_liststore">
-    <columns>
-      <!-- column-name slip_spring_type -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">ATRIAS Non-linear</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Linear</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="stance_controller_liststore">
-    <columns>
-      <!-- column-name gchararray1 -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Passive</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">SLIP Force</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Virtual Spring</col>
       </row>
     </data>
   </object>

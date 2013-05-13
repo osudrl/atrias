@@ -38,8 +38,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
 
 	// Set values
-	standing_leg_spinbutton->set_value(0.90);
-	slip_leg_spinbutton->set_value(0.85);
+	standing_leg_spinbutton->set_value(0.85);
+	slip_leg_spinbutton->set_value(0.80);
 	leg_pos_kp_spinbutton->set_value(1000.0);
 	leg_for_kp_spinbutton->set_value(1000.0);
 	leg_for_kd_spinbutton->set_value(10.0);
@@ -50,7 +50,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("controller_status", 0, controllerCallback);
 	pub = nh.advertise<atc_heuristic_slip_walking::controller_input>("controller_input", 0);
-	return false;
+	return true;
 }
 
 //! \brief Update our local copy of the controller status.

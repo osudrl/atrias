@@ -36,7 +36,7 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	toePosition.left = 2.15;
 	toePosition.right = 2.45;
 
-	controllerState = 1;
+	// Initialize walking state
 	walkingState = 1;
 }
 
@@ -56,6 +56,11 @@ void ATCHeuristicSlipWalking::controller() {
 		case 1: // Stand upright in place
 			standingController(&rs.rLeg, &co.rLeg, &ascRateLimitRmA, &ascRateLimitRmB, &ascPDRmA, &ascPDRmB);
 			standingController(&rs.lLeg, &co.lLeg, &ascRateLimitLmA, &ascRateLimitLmB, &ascPDLmA, &ascPDLmB);
+			// Reset walking state parameters
+			walkingState = 1;
+			qeSl = PI/2.0;
+			qeFl = PI/2.0;
+			reFl = guiIn.standing_leg;
 			break;
 
 		case 2: // SLIP heuristic walking
@@ -105,7 +110,7 @@ void ATCHeuristicSlipWalking::updateState() {
 	}
 
 	// Get GUI values
-	controllerState = guiIn.main_controller;
+	controllerState = guiIn.main_controller + 1; // I like to start state machine at 1 not 0 like combo boxes
 	r0 = guiIn.slip_leg;
 
 	// Set leg motor position control PD gains
@@ -243,7 +248,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	}
 
 	// Stance leg take off event (ignore)
-	// TODO: add trigger
+	// TODO: add trigger to catch, this would mean the robot is bouncing, nothing to do to really stop it though
 
 }
 
@@ -262,7 +267,7 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	}
 
 	// Stance leg take off (ignore)
-	// TODO: add trigger
+	// TODO: add trigger to catch, this means we started going backwards
 }
 
 
