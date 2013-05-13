@@ -1,0 +1,12 @@
+# Set up the component
+import("atc_heuristic_slip_walking")
+loadComponent("controller", "ATCHeuristicSlipWalking")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "controller")
+
+# Configure the component
+controller.configure()
+
+# Start the component
+controller.start()

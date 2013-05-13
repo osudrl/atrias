@@ -134,6 +134,7 @@ void ATCSlipWalking::walkingControl() {
             lGC = true;
     }
 
+    // TODO: Handle the transition between these two controllers
     switch (guiIn.walking_controller) {
         case 0:
             eqPointWalkingControl(); // To get moving
@@ -295,58 +296,32 @@ void ATCSlipWalking::slipWalking() {
     }
 }
 
-// SLIP force profile control concept from atc_slip_hopping
-void ATCSlipWalking::slipActiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
-    // Spring type
-    if (guiIn.spring_type == 0) {
-        std::tie(ascSlipModel.k, ascSlipModel.dk) = commonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
-    } else if (guiIn.spring_type == 1) {
-        ascSlipModel.k = guiIn.linear_spring_constant;
-        ascSlipModel.dk = 0.0;
+void ATCSlipWalking::virtualSpringStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl) {
+    // Spring type and stiffness
+    if (springType == 0) {
+        // ATRIAS non-linear spring constant (per leg)
+        std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
+
+    } else if (springType == 1) {
+        // Desired linear stiffness (per leg)
+        k = guiIn.slip_spring;
+        dk = 0.0;
+
     }
-
-    // Compute SLIP force profile
-    // TODO: Update ascSlipModel for walking
-    slipState = ascSlipModel.advanceRK5(slipState);
-    legForce = ascSlipModel.force(slipState);
-
     // TODO: add stance progression variable for flight tracking
 
-    // Set gains
-    pdSmA->P = pdSmB->P = guiIn.leg_stance_kp;
-    pdSmA->D = pdSmB->D = guiIn.leg_stance_kd;
-    ascLegForceSl->kp = guiIn.leg_stance_force_kp;
-    ascLegForceSl->kd = guiIn.leg_stance_force_kd;
-    ascLegForceSl->ki = 0.0;
+    // Compute curent leg angle
+    std::tie(qLl, rLl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(dqLl, drLl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
-    // If the SLIP model says we should be in flight
-    // (This should only happen during stance exit)
-    if (slipState.isFlight) {
-        // Hold the last known stance leg position
-        coSl->motorCurrentA = pdSmA->operator()(qSmA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
-        coSl->motorCurrentB = pdSmB->operator()(qSmB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
-    // Otherwise the SLIP model is in stance
-    } else {
-        // Store last known leg position
-        qSmA = rsSl->halfA.legAngle;
-        qSmB = rsSl->halfB.legAngle;
+    // Define component forces
+    legForce.fx = -k*(rLl - ascSlipModel.r0)*cos(qLl);
+    legForce.dfx = dk*cos(qLl)*(ascSlipModel.r0 - rLl) - drLl*cos(qLl)*k + dqLl*sin(qLl)*k*(rLl - ascSlipModel.r0);
+    legForce.fz = k*(rLl - ascSlipModel.r0)*sin(qLl);
+    legForce.dfz = drLl*sin(qLl)*k - dk*sin(qLl)*(ascSlipModel.r0 - rLl) + dqLl*cos(qLl)*k*(rLl - ascSlipModel.r0);
 
-        // Compute and set motor currents
-        std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(legForce, *rsSl, rs.position);
-
-    }
-}
-
-void ATCSlipWalking::slipPassiveStanceControl(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *pdSmA, ASCPD *pdSmB, ASCLegForce *ascLegForceSl) {
-    /*
-    // Compute leg angle
-    std::tie(qSl, rSl) = commonToolkit.motorPos2LegPos(rsSl.halfA.legAngle, rsSl.halfB.legAngle);
-    // Set motor angles from the slip model
-    std::tie(qSmA, qSmB) = commonToolkit.legPos2MotorPos(ql, ascSlipModel.r0);
-
-    coSl.motorCurrentA = pdSmA->operator()(qSmA, rsSl.halfA.motorAngle, 0.0, rsSl.halfA.motorVelocity);
-    coSl.motorCurrentB = pdSmB->operator()(qSmB, rsSl.halfB.motorAngle, 0.0, rsSl.halfB.motorVelocity);
-    */
+    // Apply the force
+    std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(legForce, *rsSl, rs.position);
 }
 
 void ATCSlipWalking::slipFlightControl(atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *pdFmA, ASCPD *pdFmB) {
