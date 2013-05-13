@@ -2,8 +2,8 @@
 #define ATC_SLIP_RUNNING_HPP
 
 /**
-  * @file ATC_SLIP_RUNNING.hpp
-  * @author Mikhail Jones
+  * @file ATCSlipRunning.hpp
+  * @author Mikhail S. Jones
   * @brief This implements a SLIP based template controller.
   */
 

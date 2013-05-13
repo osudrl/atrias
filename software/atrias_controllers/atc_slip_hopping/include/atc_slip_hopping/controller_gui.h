@@ -37,11 +37,6 @@ Gtk::ComboBox *main_controller_combobox,
 	*stance_controller_combobox,
 	*hop_type_combobox;
 
-// Parameters
-//     NOTE: ROS parameters cannot be floats so loss-of-precision issues do not
-//     arise when both C and python nodes access the same parameter. See:
-//     http://answers.ros.org/question/10938/why-cant-you-use-floats-for-accessing-parameters-in-roscpp/
-
 void controllerCallback(const atc_slip_hopping::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */

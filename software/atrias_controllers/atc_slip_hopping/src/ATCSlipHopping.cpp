@@ -343,7 +343,7 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 	// Spring type and stiffness
 	if (springType == 0) {
 		// ATRIAS non-linear spring constant (per leg)
-		std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
+		std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0); // FIXME: need to replace slipState's with actual robot data
 		
 	} else if (springType == 1) {
 		// Desired linear stiffness (per leg)

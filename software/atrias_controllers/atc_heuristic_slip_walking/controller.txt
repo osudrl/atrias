@@ -1,0 +1,1 @@
+description=This controller is based on simulated SLIP walking gaits for ATRIAS and has been tuned manually through trial and error.

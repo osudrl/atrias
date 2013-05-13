@@ -1,6 +1,6 @@
 /**
-  * @file ATC_SLIP_RUNNING.cpp
-  * @author Mikhail Jones
+  * @file ATCSlipRunning.hpp
+  * @author Mikhail S. Jones
   * @brief This implements a SLIP based template controller.
   */
   
@@ -38,10 +38,7 @@ ATCSlipRunning::ATCSlipRunning(string name) :
 	toePosition.right = 2.45;
 }
 
-/* @brief This is the main function for the top-level controller.
- * @param rs The robot state is an inherited member.
- * @param co The controller output is an inhereted member.
- */
+
 void ATCSlipRunning::controller() {
 	
 	/* Additionally, the following functions are available to command the robot state:
@@ -486,7 +483,7 @@ double ATCSlipRunnig::equilibriumGaitSolver(double dx, double dz, double r0) {
 
 	// Return our output command
 	// return std::make_tuple(q, dq);
-	return q;	
+	return q;	// FIXME robot angles are defined differnetly than simulation (robot = pi - simulation)
 
 }
 
