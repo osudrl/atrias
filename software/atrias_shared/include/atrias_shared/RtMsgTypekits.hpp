@@ -37,18 +37,20 @@ void RtMsgTypekits::registerType(const std::string &name) {
 	// http://www.orocos.org/forum/orocos/orocos-users/cannot-transport-ros-message-rttosrtallocator
 	// The steps that check if this type's already been added are custom, however.
 
+	log(RTT::Info) << "Got type info: " << RTT::types::Types()->getTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>>() << RTT::endlog();
+	// Check if this type has already been registered. If it has been, then we'll be able to obtain
+	// a pointer to the type info
+	if (RTT::types::Types()->getTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>>()) {
+		// It's already been registered, so return immediately.
+		return;
+	}
+
 	// Instantiate the TemplateTypeInfo
 	auto typeInfo = new RTT::types::TemplateTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>, false>(name);
 	
 	// Time to register the type
 	log(RTT::Info) << "Registering type " << name << ": " << RTT::types::Types()->addType(typeInfo) << RTT::endlog();
 	
-	// Check if this type already existed
-	if (RTT::types::Types()->type(name)->getTypeName() != name) {
-		// This type already existed under a different name
-		return;
-	}
-
 	log(RTT::Info) << "Adding protocol" << RTT::endlog();
 	RTT::types::Types()->type(name)->addProtocol(3, new ros_integration::RosMsgTransporter<msgType<RTT::os::rt_allocator<uint8_t>>>());
 }
