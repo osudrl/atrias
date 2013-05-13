@@ -40,7 +40,7 @@ using namespace atc_slip_walking;
 namespace atrias {
 namespace controller {
 
-class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data, controller_input, controller_status> {
+class ATCSlipWalking : public ATC<atc_slip_walking::controller_log_data_, controller_input_, controller_status_> {
     public:
         ATCSlipWalking(string name);
 

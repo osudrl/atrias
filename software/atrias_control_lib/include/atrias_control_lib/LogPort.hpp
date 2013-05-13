@@ -10,16 +10,18 @@
   */
 
 // Orocos includes
-#include <rtt/ConnPolicy.hpp> // Allows for connecting the output port to ROS
-#include <rtt/OutputPort.hpp> // This allows the creation of an output port
+#include <rtt/ConnPolicy.hpp>       // Allows for connecting the output port to ROS
+#include <rtt/OutputPort.hpp>       // This allows the creation of an output port
+#include <rtt/os/oro_allocator.hpp> // Lets us send messages in HRT
 
-// This allows us to access the name and TaskContext
-#include "atrias_control_lib/AtriasController.hpp"
+// ATRIAS
+#include <atrias_shared/RtMsgTypekits.hpp>         // Lets us register a typekit for this message.
+#include "atrias_control_lib/AtriasController.hpp" // This allows us to access the name and TaskContext
 
 namespace atrias {
 namespace controller {
 
-template <typename logType>
+template <template <class> class logType>
 class LogPort {
 	public:
 		/**
@@ -32,7 +34,7 @@ class LogPort {
 		/**
 		  * @brief This allows controllers to access the data to be logged.
 		  */
-		logType data;
+		logType<RTT::os::rt_allocator<uint8_t>> data;
 
 		/**
 		  * @brief This transmits the data for logging.
@@ -42,17 +44,20 @@ class LogPort {
 	
 	private:
 		// Our output port
-		RTT::OutputPort<logType> port;
+		RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>> port;
 
 		// Allows us to access the top-level controller.
 		const AtriasController &tlc;
 };
 
-template <typename logType>
+template <template <class> class logType>
 LogPort<logType>::LogPort(const AtriasController* const controller, const std::string name) :
 	port(controller->getName() + "_" + name),
 	tlc(controller->getTLC())
 {
+	// Register typekit
+	shared::RtMsgTypekits::registerType<logType>(controller->getName() + "_" + name);
+
 	// Setup our port
 	this->tlc.getTaskContext().addPort(this->port);
 
@@ -65,7 +70,7 @@ LogPort<logType>::LogPort(const AtriasController* const controller, const std::s
 	this->port.createStream(policy);
 }
 
-template <typename logType>
+template <template <class> class logType>
 void LogPort<logType>::send() {
 	// Set the timestamp
 	this->data.header = this->tlc.getROSHeader();

@@ -42,7 +42,7 @@ namespace controller {
  *
  * Here, we don't need any log data, but we do communicate both ways w/ the GUI
  */
-class ATCMP : public ATC<atc_motor_position::controller_log_data, controller_input, controller_status> {
+class ATCMP : public ATC<atc_motor_position::controller_log_data_, controller_input_, controller_status_> {
 	public:
 		/**
 		  * @brief The constructor for this controller.
