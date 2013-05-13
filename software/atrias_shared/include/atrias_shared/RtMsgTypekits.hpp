@@ -14,7 +14,7 @@
 // Orocos
 #include <ros_msg_transporter.hpp>        // For registering ROS message transport types
 #include <rtt/os/oro_allocator.hpp>       // For the realtime-safe allocator
-#include <rtt/types/TemplateTypeInfo.hpp> // Allows us to create typekits
+#include <rtt/types/TemplateTypeInfo.hpp> // Allows us to create typekitsa
 
 // Namespaces we're inside
 namespace atrias {
@@ -33,9 +33,23 @@ class RtMsgTypekits {
 // Template definitions
 template <template<class> class msgType>
 void RtMsgTypekits::registerType(const std::string &name) {
-	// This is taken off the Orocos mailinglist
+	// This is taken partially off the Orocos mailinglist
 	// http://www.orocos.org/forum/orocos/orocos-users/cannot-transport-ros-message-rttosrtallocator
-	RTT::types::Types()->addType(new RTT::types::TemplateTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>, false>(name));
+	// The steps that check if this type's already been added are custom, however.
+
+	// Instantiate the TemplateTypeInfo
+	auto typeInfo = new RTT::types::TemplateTypeInfo<msgType<RTT::os::rt_allocator<uint8_t>>, false>(name);
+	
+	// Time to register the type
+	log(RTT::Info) << "Registering type " << name << ": " << RTT::types::Types()->addType(typeInfo) << RTT::endlog();
+	
+	// Check if this type already existed
+	if (RTT::types::Types()->type(name)->getTypeName() != name) {
+		// This type already existed under a different name
+		return;
+	}
+
+	log(RTT::Info) << "Adding protocol" << RTT::endlog();
 	RTT::types::Types()->type(name)->addProtocol(3, new ros_integration::RosMsgTransporter<msgType<RTT::os::rt_allocator<uint8_t>>>());
 }
 
