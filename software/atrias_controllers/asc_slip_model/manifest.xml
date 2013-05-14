@@ -4,6 +4,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/asc_slip_model</url>
+  <depend package="rtt_rosnode"/>
   <depend package="atrias_control_lib"/>
   <depend package="atrias_shared"/>
   <depend package="atrias_msgs"/>
