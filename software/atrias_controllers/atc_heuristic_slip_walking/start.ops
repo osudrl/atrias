@@ -6,7 +6,7 @@ loadComponent("ATCHeuristicSlipWalking", "ATCHeuristicSlipWalking")
 connectPeers("atrias_rt", "ATCHeuristicSlipWalking")
 
 # Configure the component
-controller.configure()
+ATCHeuristicSlipWalking.configure()
 
 # Start the component
-controller.start()
+ATCHeuristicSlipWalking.start()
