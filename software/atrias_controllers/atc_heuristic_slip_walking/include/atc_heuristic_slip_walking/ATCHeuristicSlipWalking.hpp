@@ -34,7 +34,6 @@
 
 // Namespaces we're using
 using namespace std;
-using namespace atc_heuristic_slip_walking;
 
 // Our namespaces
 namespace atrias {
@@ -86,7 +85,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		void standingController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCRateLimit*, ASCRateLimit*, ASCPD*, ASCPD*);
 		void shutdownController();
 		void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*);
-		void singleSupportEvents(atrias_msgs::robot_state_leg*);
+		void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
 		void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
 		void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
 
@@ -110,6 +109,8 @@ class ATCHeuristicSlipWalking : public ATC<
 
 		double qtSl, qtFl; // Target leg positions
 		double ql, dql, rl, drl; 
+		
+		bool isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
 
 
 

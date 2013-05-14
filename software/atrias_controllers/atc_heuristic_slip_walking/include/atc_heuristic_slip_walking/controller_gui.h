@@ -21,7 +21,8 @@ atc_heuristic_slip_walking::controller_input controllerDataOut;
 atc_heuristic_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
-Gtk::SpinButton *standing_leg_spinbutton,
+Gtk::SpinButton *walking_state_spinbutton,
+	*standing_leg_spinbutton,
 	*slip_leg_spinbutton,
 	*leg_pos_kp_spinbutton,
 	*leg_for_kp_spinbutton,
@@ -30,7 +31,8 @@ Gtk::SpinButton *standing_leg_spinbutton,
 	*hip_pos_kp_spinbutton,
 	*hip_pos_kd_spinbutton;
 	
-Gtk::ComboBox *main_controller_combobox;
+Gtk::ComboBox *main_controller_combobox,
+	*state_trigger_combobox;
 
 void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
 
