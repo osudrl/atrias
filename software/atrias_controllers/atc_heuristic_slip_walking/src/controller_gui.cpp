@@ -53,8 +53,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_value(10.0);
 
 	// Set up subscriber and publisher.
-	sub = nh.subscribe("controller_status", 0, controllerCallback);
-	pub = nh.advertise<atc_heuristic_slip_walking::controller_input>("controller_input", 0);
+	sub = nh.subscribe("ATCHeuristicSlipWalking_status", 0, controllerCallback);
+	pub = nh.advertise<atc_heuristic_slip_walking::controller_input>("ATCHeuristicSlipWalking_input", 0);
 	return true;
 }
 

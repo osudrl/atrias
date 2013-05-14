@@ -40,9 +40,9 @@ namespace atrias {
 namespace controller {
 
 class ATCHeuristicSlipWalking : public ATC<
-	atc_heuristic_slip_walking::controller_log_data,
-	atc_heuristic_slip_walking::controller_input,
-	atc_heuristic_slip_walking::controller_status>
+	atc_heuristic_slip_walking::controller_log_data_,
+	atc_heuristic_slip_walking::controller_input_,
+	atc_heuristic_slip_walking::controller_status_>
 {
 	public:
 		/** 

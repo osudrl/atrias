@@ -7,19 +7,12 @@
   * @brief This implements a SLIP based template controller.
   */
 
-// Top-level controllers are components, so we need to include this.
-#include <rtt/Component.hpp>
-
 // Include the ATC class
 #include <atrias_control_lib/ATC.hpp>
-// No logging helper is needed -- one log port is automatically produced.
-
 // Our logging data type.
 #include "atc_slip_hopping/controller_log_data.h"
-
 // The type transmitted from the GUI to the controller
 #include "atc_slip_hopping/controller_input.h"
-
 // The type transmitted from the controller to the GUI
 #include "atc_slip_hopping/controller_status.h"
 
