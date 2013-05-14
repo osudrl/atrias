@@ -110,7 +110,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		double qtSl, qtFl; // Target leg positions
 		double ql, dql, rl, drl; 
 		
-		bool isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+		bool isManualEvent, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
 
 
 

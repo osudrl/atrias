@@ -16,7 +16,7 @@ std::tuple<double, double> ASCInterpolation::linear(double x1, double x2, double
 	// Limit range since curve fit is only valid within range
 	if (x1 < x2) {
 		x = clamp(x, x1, x2);
-	} else {
+	} else if (x2 < x1) {
 		x = clamp(x, x2, x1);
 	}
 	
@@ -42,12 +42,12 @@ double ASCInterpolation::bilinear(double x1, double x2, double y1, double y2, do
 	// Limit range since curve fit is only valid within range
 	if (x1 < x2) {
 		x = clamp(x, x1, x2);
-	} else {
+	} else if (x2 < x1) {
 		x = clamp(x, x2, x1);
 	}
 	if (y1 < y2) {
 		y = clamp(y, y1, y2);
-	} else {
+	} else if (y2 < y1) {
 		y = clamp(y, y2, y1);
 	}
 	
@@ -70,7 +70,7 @@ std::tuple<double, double> ASCInterpolation::cosine(double x1, double x2, double
 	// Limit range since curve fit is only valid within range
 	if (x1 < x2) {
 		x = clamp(x, x1, x2);
-	} else {
+	} else if (x2 < x1) {
 		x = clamp(x, x2, x1);
 	}
 	
@@ -98,7 +98,7 @@ std::tuple<double, double> ASCInterpolation::cubic(double x1, double x2, double 
 	// Limit range since curve fit is only valid within range
 	if (x1 < x2) {
 		x = clamp(x, x1, x2);
-	} else {
+	} else if (x2 < x1) {
 		x = clamp(x, x2, x1);
 	}
 

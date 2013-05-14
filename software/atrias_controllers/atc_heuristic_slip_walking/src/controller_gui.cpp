@@ -4,6 +4,9 @@
 
 #include <atc_heuristic_slip_walking/controller_gui.h>
 
+void manual_event_pressed()  {controllerDataOut.manual_event = 1;}
+void manual_event_released() {controllerDataOut.manual_event = 0;}
+
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Get widgets
@@ -18,6 +21,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
 	gui->get_widget("main_controller_combobox", main_controller_combobox);
 	gui->get_widget("state_trigger_combobox", state_trigger_combobox);
+	gui->get_widget("manual_event_button", manual_event_button);
 
 	// Set ranges
 	walking_state_spinbutton->set_range(0, 3);
@@ -51,6 +55,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	leg_pos_kd_spinbutton->set_value(50.0);
 	hip_pos_kp_spinbutton->set_value(200.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
+	
+	// Connect buttons to functions
+	manual_event_button->signal_pressed().connect(sigc::ptr_fun((void(*)())manual_event_pressed));
+	manual_event_button->signal_released().connect(sigc::ptr_fun((void(*)())manual_event_released));
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("ATCHeuristicSlipWalking_status", 0, controllerCallback);
