@@ -45,11 +45,11 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            3.02496562494915976514360979
+#define BOOM_Z_CALIB_LOC            3.03421698321003716556104
 
 /** @brief The value of the boom encoder at the calibration location.
   */
-#define BOOM_Z_CALIB_VAL            87529
+#define BOOM_Z_CALIB_VAL            85875
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
