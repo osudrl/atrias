@@ -82,9 +82,12 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("MedullaB_VLogic", MedullaB_VLogic);
     gui->get_widget("MedullaB_VMotor", MedullaB_VMotor);
 
-    gui->get_widget("medullaAError_entry", medullaAError_entry);
-    gui->get_widget("medullaBError_entry", medullaBError_entry);
-    gui->get_widget("medullaHipError_entry", medullaHipError_entry);
+    gui->get_widget("medullaLAError_entry", medullaLAError_entry);
+    gui->get_widget("medullaLBError_entry", medullaLBError_entry);
+    gui->get_widget("medullaRAError_entry", medullaRAError_entry);
+    gui->get_widget("medullaRBError_entry", medullaRBError_entry);
+    gui->get_widget("medullaLHipError_entry", medullaLHipError_entry);
+    gui->get_widget("medullaRHipError_entry", medullaRHipError_entry);
     gui->get_widget("medullaBoomError_entry", medullaBoomError_entry);
 
     usageIndex = 0;
@@ -98,7 +101,6 @@ StatusGui::~StatusGui() {
 
 void StatusGui::update(rt_ops_cycle rtCycle) {
     update_robot_status(rtCycle);
-    update_medulla_status(rtCycle);
 }
 
 void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
@@ -179,11 +181,18 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.rLeg.halfA.motorAngle, rtCycle.robotState.rLeg.halfB.motorAngle));
     rightLegAngleDisplay->set_text(buffer);
 
-    //Commented out until we figure out where the hip angle went in the robot state
     sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.legBodyAngle);
     leftHipAngleDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f", rtCycle.robotState.rLeg.hip.legBodyAngle);
     rightHipAngleDisplay->set_text(buffer);
+
+	update_medulla_errors(rtCycle.robotState.lLeg.halfA.errorFlags,medullaLAError_entry);
+	update_medulla_errors(rtCycle.robotState.lLeg.halfB.errorFlags,medullaLBError_entry);
+	update_medulla_errors(rtCycle.robotState.rLeg.halfA.errorFlags,medullaRAError_entry);
+	update_medulla_errors(rtCycle.robotState.rLeg.halfB.errorFlags,medullaRBError_entry);
+	update_medulla_errors(rtCycle.robotState.lLeg.hip.errorFlags,medullaLHipError_entry);
+	update_medulla_errors(rtCycle.robotState.rLeg.hip.errorFlags,medullaLHipError_entry);
+	update_medulla_errors(rtCycle.robotState.boomMedullaErrorFlags,medullaBoomError_entry);
 
     //TODO: Fix this
     /*if (usageIndex < CPU_USAGE_AVERAGE_TICKS) {
@@ -204,116 +213,23 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     }*/
 }
 
-void StatusGui::update_medulla_status(rt_ops_cycle rtCycle) {
-/*    char buffer[20];
-
-    sprintf(buffer,"%0.2f",rs.thermistorA[0]);
-    MedullaA_TempA->set_text(buffer);
-
-    sprintf(buffer,"%0.2f",rs.thermistorA[1]);
-    MedullaA_TempB->set_text(buffer);
-
-    sprintf(buffer,"%0.2f",rs.thermistorA[2]);
-    MedullaA_TempC->set_text(buffer);
-
-    sprintf(buffer,"%0.1f",rs.motorVoltageA);
-    MedullaA_VMotor->set_text(buffer);
-
-    sprintf(buffer,"%0.1f",rs.logicVoltageA);
-    MedullaA_VLogic->set_text(buffer);
-
-    sprintf(buffer,"%0.2f",rs.thermistorB[0]);
-    MedullaB_TempA->set_text(buffer);
-
-    sprintf(buffer,"%0.2f",rs.thermistorB[1]);
-    MedullaB_TempB->set_text(buffer);
-
-    sprintf(buffer,"%0.2f",rs.thermistorB[2]);
-    MedullaB_TempC->set_text(buffer);
-
-    sprintf(buffer,"%0.1f",rs.motorVoltageB);
-    MedullaB_VMotor->set_text(buffer);
-
-    sprintf(buffer,"%0.1f",rs.logicVoltageB);
-    MedullaB_VLogic->set_text(buffer);
-
+void StatusGui::update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry)
+{
     Glib::ustring error;
-    if (rs.medullaStatusA & STATUS_ESTOP)
-        error += "EStop Pressed, ";
-    if (rs.medullaStatusA & STATUS_LIMITSW)
-        error += "Limit Switch, ";
-    if (rs.medullaStatusA & STATUS_OVER_TEMP)
-        error += "Motor Over Temperature, ";
-    if (rs.medullaStatusA & STATUS_MOTOR_OUT_OF_RANGE)
-        error += "Motor Out of Range, ";
-    if (rs.medullaStatusA & STATUS_MOTOR_CTRL_DISABLE)
-        error += "Motor Control Disabled, ";
-    if (rs.medullaStatusA & STATUS_MOTOR_VOLTAGE_LOW)
-        error += "Motor Voltage Low, ";
-    if (rs.medullaStatusA & STATUS_LOGIC_VOLTAGE_LOW)
-        error += "Logic Voltage Low, ";
-    if (rs.medullaStatusA & STATUS_ENCODER_ERROR)
-            error += "Encoder Error ";
+    if (errorFlags & medulla_error_estop)
+        error += "EStop pressed, ";
+    if (errorFlags & medulla_error_limit_switch)
+        error += "Limit switch, ";
+    if (errorFlags & medulla_error_thermistor)
+        error += "Motor over temperature, ";
+    if (errorFlags & medulla_error_motor_voltage)
+        error += "Motor loltage low, ";
+    if (errorFlags & medulla_error_logic_voltage)
+        error += "Logic loltage low, ";
+    if (errorFlags & medulla_error_halt)
+        error += "Halt mode activated, ";
+    if (errorFlags & medulla_error_amplifier)
+        error += "Amplifier error, ";
 
-    medullaAError_entry->set_text(error);
-
-    error = "";
-    if (rs.medullaStatusB & STATUS_ESTOP)
-        error += "EStop Pressed, ";
-    if (rs.medullaStatusB & STATUS_LIMITSW)
-        error += "Limit Switch, ";
-    if (rs.medullaStatusB & STATUS_OVER_TEMP)
-        error += "Motor Over Temperature, ";
-    if (rs.medullaStatusB & STATUS_MOTOR_OUT_OF_RANGE)
-        error += "Motor Out of Range, ";
-    if (rs.medullaStatusB & STATUS_MOTOR_CTRL_DISABLE)
-        error += "Motor Control Disabled, ";
-    if (rs.medullaStatusB & STATUS_MOTOR_VOLTAGE_LOW)
-        error += "Motor Voltage Low ";
-    if (rs.medullaStatusB & STATUS_LOGIC_VOLTAGE_LOW)
-        error += "Logic Voltage Low ";
-    if (rs.medullaStatusB & STATUS_ENCODER_ERROR)
-        error += "Encoder Error ";
-
-    medullaBError_entry->set_text(error);
-
-    error = "";
-    if (rs.medullaStatusHip & STATUS_ESTOP)
-        error += "EStop Pressed, ";
-    if (rs.medullaStatusHip & STATUS_LIMITSW)
-        error += "Limit Switch, ";
-    if (rs.medullaStatusHip & STATUS_OVER_TEMP)
-        error += "Motor Over Temperature, ";
-    if (rs.medullaStatusHip & STATUS_MOTOR_OUT_OF_RANGE)
-        error += "Motor Out of Range, ";
-    if (rs.medullaStatusHip & STATUS_MOTOR_CTRL_DISABLE)
-        error += "Motor Control Disabled, ";
-    if (rs.medullaStatusHip & STATUS_MOTOR_VOLTAGE_LOW)
-        error += "Motor Voltage Low ";
-    if (rs.medullaStatusHip & STATUS_LOGIC_VOLTAGE_LOW)
-        error += "Logic Voltage Low ";
-    if (rs.medullaStatusHip & STATUS_ENCODER_ERROR)
-        error += "Encoder Error ";
-
-    medullaHipError_entry->set_text(error);
-
-    error = "";
-    if (rs.medullaStatusBoom & STATUS_ESTOP)
-        error += "EStop Pressed, ";
-    if (rs.medullaStatusBoom & STATUS_LIMITSW)
-        error += "Limit Switch, ";
-    if (rs.medullaStatusBoom & STATUS_OVER_TEMP)
-        error += "Motor Over Temperature, ";
-    if (rs.medullaStatusBoom & STATUS_MOTOR_OUT_OF_RANGE)
-        error += "Motor Out of Range, ";
-    if (rs.medullaStatusBoom & STATUS_MOTOR_CTRL_DISABLE)
-        error += "Motor Control Disabled, ";
-    if (rs.medullaStatusBoom & STATUS_MOTOR_VOLTAGE_LOW)
-        error += "Motor Voltage Low ";
-    if (rs.medullaStatusBoom & STATUS_LOGIC_VOLTAGE_LOW)
-        error += "Logic Voltage Low ";
-    if (rs.medullaStatusBoom & STATUS_ENCODER_ERROR)
-        error += "Encoder Error ";
-
-    medullaBoomError_entry->set_text(error);*/
+    errorEntry->set_text(error);
 }
