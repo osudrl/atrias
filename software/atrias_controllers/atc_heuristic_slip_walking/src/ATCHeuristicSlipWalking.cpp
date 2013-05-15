@@ -215,22 +215,24 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	// TODO: Should make angles relative to world not to body (add in body pitch)
 	// TODO: If qeSl > qtSl then we have a issue, need to error catch but not sure what to do if it fails (maybe just take current value and add on some resonable amount)
 	
-	// Compute the current leg angles and lengths
+	// Compute the current leg angles and lengths and velocities
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+	std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	qtSl = PI/2.0 + 0.1; // Predicted stance leg angle at flight leg TD
 	qtFl = PI/2.0 - 0.23; // Target flight leg angle at TD
-	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.0, qSl);
+	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.0, qSl, dqSl);
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
 	if (qSl <= (qeSl + qtSl)/2.0) {
 		// Leg retraction during first half
-		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, r0 - 0.1, 0.0, 0.0, qSl);
+		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, r0 - 0.1, 0.0, 0.0, qSl, dqSl);
 	} else {
 		// Leg extension during the second half
-		std::tie(rl, drl) = ascInterpolation.cubic((qeSl + qtSl)/2.0, qtSl, r0 - 0.1, r0, 0.0, 0.0, qSl);
+		std::tie(rl, drl) = ascInterpolation.cubic((qeSl + qtSl)/2.0, qtSl, r0 - 0.1, r0, 0.0, 0.0, qSl, dqSl);
 	}
 
 	// Convert desired leg angles and lengths into motor positions and velocities

@@ -41,9 +41,10 @@ class ASCInterpolation : public AtriasController {
 		* @param x1, x2 The coordinates of the two points.
 		* @param y1, y2 The values of the two points.
 		* @param x The point to be interpolated.
+		* @param dx The velocity at the point to be interpolated.
 		* @return y The interpolated value.
 		*/
-		std::tuple<double, double> linear(double x1, double x2, double y1, double y2, double x);
+		std::tuple<double, double> linear(double x1, double x2, double y1, double y2, double x, double dx);
 		
 		
 		/** 
@@ -61,9 +62,10 @@ class ASCInterpolation : public AtriasController {
 		* @param x1, x2 The coordinates of the two points.
 		* @param y1, y2 The values of the two points.
 		* @param x The point to be interpolated.
+		* @param dx The velocity at the point to be interpolated.
 		* @return y The interpolated value.
 		*/
-		std::tuple<double, double> cosine(double x1, double x2, double y1, double y2, double x);
+		std::tuple<double, double> cosine(double x1, double x2, double y1, double y2, double x, double dx);
 		
 		
 		/** 
@@ -72,9 +74,10 @@ class ASCInterpolation : public AtriasController {
 		* @param y1, y2 The values of the two points.
 		* @param dy1, dy2 The slope of the two points.
 		* @param x The point to be interpolated.
+		* @param dx The velocity at the point to be interpolated.
 		* @return y The interpolated value.
 		*/
-		std::tuple<double, double> cubic(double x1, double x2, double y1, double y2, double dy1, double dy2, double x);
+		std::tuple<double, double> cubic(double x1, double x2, double y1, double y2, double dy1, double dy2, double x, double dx);
 
 
 		// Declare variables
