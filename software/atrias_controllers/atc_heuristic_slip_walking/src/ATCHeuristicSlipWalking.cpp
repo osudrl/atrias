@@ -61,6 +61,7 @@ void ATCHeuristicSlipWalking::controller() {
 			walkingState = 0;
 			qeSl = PI/2.0;
 			qeFl = PI/2.0;
+			reSl = guiIn.standing_leg;
 			reFl = guiIn.standing_leg;
 			break;
 
@@ -205,7 +206,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	// A gait is defined by
 		// The TO angle of the flight leg
 		// The TO length of the flight leg (not as important, could use to inject energy)
-		// The TD angle of the flight leg (after constants work could fit curve fro various gaits vs dx)
+		// The TD angle of the flight leg (after constants work could fit curve for various gaits vs dx)
 		// The TD length of the flight leg (should be constant)
 		// The angle of the stance leg when TO of flight leg occurs
 		// The simulated angle of the stance leg during flight TD
@@ -256,7 +257,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
 	// Compute conditionals for event triggers
-	isFlightLegTD = (rFl*sin(qFl) >= rs.position.zPosition);
+	isFlightLegTD = (rFl*sin(qFl) > rs.position.zPosition);
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
 	
@@ -264,11 +265,11 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	if ((isFlightLegTD || isManualEvent) && isForwardStep) {
 		// Advance the walking state machine 1 step and loop to beginning if needed
 		walkingState = (walkingState + 1) % 4;
-		printf("singleSupportEvent TD forward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
+		//printf("singleSupportEvent TD forward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
 	} else if ((isFlightLegTD || isManualEvent) && isBackwardStep) {
 		// Regress the walking state machine 1 step and loop to end if needed (the + 4 prevents negatives)
 		walkingState = (walkingState - 1 + 4) % 4;
-		printf("singleSupportEvent TD backward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
+		//printf("singleSupportEvent TD backward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
 	}
 
 	// Stance leg take off event (ignore)
@@ -282,13 +283,14 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
 	// Compute conditionals for event triggers
-	isFlightLegTO = (rFl*sin(qFl) <= rs.position.zPosition);
+	//isFlightLegTO = (rFl*sin(qFl) <= rs.position.zPosition);
+	isFlightLegTO = rFl > r0;
 	
 	// Flight leg take off (trigger next state)
 	if (isFlightLegTO || isManualEvent) {
 		// Advance the walking state machine 1 step and loop to beginning if needed
 		walkingState = (walkingState + 1) % 4;
-		printf("doubleSupportEvent TO triggered walkingState = %i\n", walkingState); // TODO: remove after debugging
+		//printf("doubleSupportEvent TO triggered walkingState = %i\n", walkingState); // TODO: remove after debugging
 		
 		// Save the stance and flight leg exit conditions for use in leg swing trajectory generation
 		std::tie(qeFl, reFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
