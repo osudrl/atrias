@@ -34,7 +34,8 @@ class LogPort {
 		/**
 		  * @brief This allows controllers to access the data to be logged.
 		  */
-		logType<RTT::os::rt_allocator<uint8_t>> data;
+		//logType<RTT::os::rt_allocator<uint8_t>> data;
+		logType<std::allocator<void>> data;
 
 		/**
 		  * @brief This transmits the data for logging.
@@ -44,7 +45,8 @@ class LogPort {
 	
 	private:
 		// Our output port
-		RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>> port;
+		//RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>> port;
+		RTT::OutputPort<logType<std::allocator<void>>> port;
 
 		// Allows us to access the top-level controller.
 		const AtriasController &tlc;
@@ -56,7 +58,7 @@ LogPort<logType>::LogPort(const AtriasController* const controller, const std::s
 	tlc(controller->getTLC())
 {
 	// Register typekit
-	shared::RtMsgTypekits::registerType<logType>(controller->getName() + "_" + name);
+	//shared::RtMsgTypekits::registerType<logType>(controller->getName() + "_" + name);
 
 	// Setup our port
 	this->tlc.getTaskContext().addPort(this->port);

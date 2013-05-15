@@ -74,7 +74,8 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		  * @brief Returns a ROS header with the current timestamp.
 		  * @return A ROS header for logging purposes.
 		  */
-		const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
+		//const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
+		const std_msgs::Header& getROSHeader() const;
 
 		/**
 		  * @brief This returns the TaskContext
@@ -115,9 +116,12 @@ class ATC : public RTT::TaskContext, public AtriasController {
 
 		// These member variables should be set/read from by
 		// the controllers themselves.
-		logType<RTT::os::rt_allocator<uint8_t>>    logOut;
+		/*logType<RTT::os::rt_allocator<uint8_t>>    logOut;
 		guiInType<RTT::os::rt_allocator<uint8_t>>  guiIn;
-		guiOutType<RTT::os::rt_allocator<uint8_t>> guiOut;
+		guiOutType<RTT::os::rt_allocator<uint8_t>> guiOut;*/
+		logType<std::allocator<void>>    logOut;
+		guiInType<std::allocator<void>>  guiIn;
+		guiOutType<std::allocator<void>> guiOut;
 
 		// Here is the robot state
 		atrias_msgs::robot_state rs;
@@ -146,17 +150,21 @@ class ATC : public RTT::TaskContext, public AtriasController {
 		//RTT::TaskContext& getTaskContext() const;
 
 		// Port for input data from the GUI
-		RTT::InputPort<guiInType<RTT::os::rt_allocator<uint8_t>>>   guiInPort;
+		//RTT::InputPort<guiInType<RTT::os::rt_allocator<uint8_t>>>   guiInPort;
+		RTT::InputPort<guiInType<std::allocator<void>>>   guiInPort;
 
 		// Port to send data to the GUI
-		RTT::OutputPort<guiOutType<RTT::os::rt_allocator<uint8_t>>> guiOutPort;
+		//RTT::OutputPort<guiOutType<RTT::os::rt_allocator<uint8_t>>> guiOutPort;
+		RTT::OutputPort<guiOutType<std::allocator<void>>> guiOutPort;
 
 		// Temporary header copy, so getROSHeader() can return a reference
 		// In the new event system, everything will be RT-safe, so this won't be necessary
-		std_msgs::Header_<RTT::os::rt_allocator<uint8_t>> header;
+		//std_msgs::Header_<RTT::os::rt_allocator<uint8_t>> header;
+		std_msgs::Header header;
 
 		// Port for logging controller data
-		RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>>    logOutPort;
+		//RTT::OutputPort<logType<RTT::os::rt_allocator<uint8_t>>>    logOutPort;
+		RTT::OutputPort<logType<std::allocator<void>>>    logOutPort;
 
 		/**
 		  * @brief This callback is executed when data is received from the GUI
@@ -234,7 +242,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		               << "] Setting up GUI input port." << RTT::endlog();
 
 		// Add typekits for this message type
-		shared::RtMsgTypekits::registerType<guiInType>(this->AtriasController::getName() + "_input");
+		//shared::RtMsgTypekits::registerType<guiInType>(this->AtriasController::getName() + "_input");
 
 		this->addEventPort("guiInput", guiInPort, boost::bind(&ATC<logType, guiInType, guiOutType>::guiInCallback, this, _1));
 
@@ -258,7 +266,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		               << "] Setting up GUI output port." << RTT::endlog();
 
 		// Add typekits for this message type
-		shared::RtMsgTypekits::registerType<guiOutType>(this->AtriasController::getName() + "_status");
+		//shared::RtMsgTypekits::registerType<guiOutType>(this->AtriasController::getName() + "_status");
 
 		this->addPort("guiOutput", guiOutPort);
 
@@ -284,7 +292,7 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 		               << "] Setting up logging port." << RTT::endlog();
 
 		// Add typekits for this message type
-		shared::RtMsgTypekits::registerType<logType>(this->AtriasController::getName() + "_log");
+		//shared::RtMsgTypekits::registerType<logType>(this->AtriasController::getName() + "_log");
 		
 		this->addPort("log", logOutPort);
 
@@ -308,7 +316,8 @@ ATC<logType, guiInType, guiOutType>::ATC(const std::string &name) :
 template <template <class> class logType,
           template <class> class guiInType,
           template <class> class guiOutType>
-const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
+//const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
+const std_msgs::Header& ATC<logType, guiInType, guiOutType>::getROSHeader() const {
 	return this->header;
 }
 

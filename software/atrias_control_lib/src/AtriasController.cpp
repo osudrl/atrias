@@ -22,7 +22,8 @@ const std::string& AtriasController::getName() const {
 	return this->name;
 }
 
-const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& AtriasController::getROSHeader() const {
+//const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& AtriasController::getROSHeader() const {
+const std_msgs::Header& AtriasController::getROSHeader() const {
 	// This is overridden by the ATC class, preventing recursion.
 	return tlc.getROSHeader();
 }

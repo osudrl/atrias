@@ -33,6 +33,8 @@ Gtk::SpinButton *walking_state_spinbutton,
 	
 Gtk::ComboBox *main_controller_combobox,
 	*state_trigger_combobox;
+	
+Gtk::Button *manual_event_button;
 
 void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
 
