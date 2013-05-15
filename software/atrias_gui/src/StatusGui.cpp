@@ -171,14 +171,14 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     sprintf(buffer, "%0.4f", rtCycle.robotState.position.zVelocity);
     zVelDisplay->set_text(buffer);
 
-    sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.lLeg.halfA.motorAngle, rtCycle.robotState.lLeg.halfB.motorAngle));
+    sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.lLeg.halfA.legAngle, rtCycle.robotState.lLeg.halfB.legAngle));
     leftLegLengthDisplay->set_text(buffer);
-    sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.lLeg.halfA.motorAngle, rtCycle.robotState.lLeg.halfB.motorAngle));
+    sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.lLeg.halfA.legAngle, rtCycle.robotState.lLeg.halfB.legAngle));
     leftLegAngleDisplay->set_text(buffer);
 
-    sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.rLeg.halfA.motorAngle, rtCycle.robotState.rLeg.halfB.motorAngle));
+    sprintf(buffer, "%0.4f", LEG_LENGTH(rtCycle.robotState.rLeg.halfA.legAngle, rtCycle.robotState.rLeg.halfB.legAngle));
     rightLegLengthDisplay->set_text(buffer);
-    sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.rLeg.halfA.motorAngle, rtCycle.robotState.rLeg.halfB.motorAngle));
+    sprintf(buffer, "%0.4f", LEG_ANGLE(rtCycle.robotState.rLeg.halfA.legAngle, rtCycle.robotState.rLeg.halfB.legAngle));
     rightLegAngleDisplay->set_text(buffer);
 
     sprintf(buffer, "%0.4f", rtCycle.robotState.lLeg.hip.legBodyAngle);
