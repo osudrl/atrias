@@ -14,6 +14,8 @@
 #include <robot_variant_defs.h>
 #include <gtkmm.h>
 #include <atrias_msgs/rt_ops_cycle.h>
+#include <atrias_msgs/robot_state_legHalf.h>
+#include <atrias_msgs/robot_state_hip.h>
 
 #define CONTROL_LOOP_INTERVAL_USEC 1000.
 #define CPU_USAGE_AVERAGE_TICKS 10
@@ -28,7 +30,7 @@ public:
 	void update(rt_ops_cycle);
 
 private:
-	void update_medulla_status(rt_ops_cycle);
+	void update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry);
 	void update_robot_status(rt_ops_cycle);
 
 	//CPU Usage variables
@@ -48,10 +50,13 @@ private:
 	Gtk::Entry  *MedullaB_VLogic,
 	            *MedullaB_VMotor;
 
-	Gtk::Entry  *medullaAError_entry,
-		    *medullaBError_entry,
-		    *medullaHipError_entry,
-		    *medullaBoomError_entry;
+	Gtk::Entry  *medullaLAError_entry,
+		       *medullaLBError_entry,
+		       *medullaRAError_entry,
+		       *medullaRBError_entry,
+		       *medullaLHipError_entry,
+		       *medullaRHipError_entry,
+		       *medullaBoomError_entry;
 	/*
 	 * End Medulla Status
 	 */

@@ -1,5 +1,5 @@
 /*! \FILE CONTROLLER_COMPONENT.CPp
- *  \author Daniel Renjewski	Nov. 5, 2012
+ *  \author Daniel Renjewski	May. 15, 2013
  *  \to run with simulation
  *  \brief Orocos Component code for the atc_eq_point controller.
  */
@@ -314,21 +314,29 @@ default:
 		D1.set(guiIn.d_lf);
 						if (t < 0.1){						// leg lift off
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
-							phi_lLeg = guiIn.pea;
+							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
+							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle){
+								leftMotorAngle.B = rs.lLeg.halfB.legAngle - rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle;
+							}
+							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 							logData.state=11;
-						} else if (t<guiIn.l_fl){			// forward swing
-							phi_lLeg=max_phi_swing - (t - 0.1) / (guiIn.l_fl - 0.1) * (max_phi_swing - guiIn.aea) * (1 + guiIn.d_as);
-							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
-							logData.state=12;
-						} else {						    // retraction towards touch-down	
-							phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-							l_swing = guiIn.l_leg_st;
-							logData.state=13;
+						} else {
+							if (t<guiIn.l_fl){			// forward swing
+								phi_lLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+								l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+								logData.state=12;
+							} else {						    // retraction towards touch-down	
+								phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
+								l_swing = guiIn.l_leg_st;
+								logData.state=13;
+							}
+							//map leg angle sweep of flight leg to 0->1
+							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
+                       		co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 						}
-						//map leg angle sweep of flight leg to 0->1
-                        leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
-                       	co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-						co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 		} else 
 		{																														// aea is reached once
 			sw_flight=true;
@@ -365,8 +373,7 @@ default:
 			leftMotorAngle = legToMotorPos(guiIn.pea,guiIn.l_leg_st);
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 		    co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-			//logData.currState = 4;
-		  }
+		}
 		
 	//*******************************************************************************************************************************************************************************************************************
 		if ((t < 1) && (!sw_flight)) 
@@ -377,21 +384,30 @@ default:
 		D4.set(guiIn.d_lf);
 						if (t < 0.1){
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
-							phi_rLeg = guiIn.pea;
+							phi_rLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
+							co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+							//keep spring deflection of spring A smaller than spring B
+							if (rightMotorAngle.B < rs.rLeg.halfB.legAngle - rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle){
+								rightMotorAngle.B = rs.rLeg.halfB.legAngle - rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle;
+							}
+							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 							logData.state=21;
-						} else if (t<guiIn.l_fl){
-							phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
-							l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
-							logData.state=22;
 						} else {
-							phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-							l_swing = guiIn.l_leg_st;
-							logData.state=23;
+							if (t<guiIn.l_fl){
+								l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+								phi_rLeg=guiIn.pea - t / (guiIn.l_fl) * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+								logData.state=22;
+							} else {
+								phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
+								l_swing = guiIn.l_leg_st;
+								logData.state=23;
+							}
+							//map leg angle sweep of flight leg to 0->1
+							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
+                       		co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 						}
-						//map leg angle sweep of flight leg to 0->1
-                        rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
-                       	co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
-						co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 		} else 
 		{																														// aea is reached once
 			sw_flight=true;

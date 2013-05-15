@@ -151,6 +151,7 @@ inline void boom_update_outputs(uint8_t id) {
 
 inline void boom_estop(void) {
 	boom_disable_outputs();
+	*boom_error_flags_pdo |= medulla_error_estop;
 }
 
 void boom_wait_loop(void) {

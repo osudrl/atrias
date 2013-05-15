@@ -223,6 +223,7 @@ inline void hip_update_outputs(uint8_t id) {
 
 inline void hip_estop(void) {
 	disable_pwm();
+	*hip_error_flags_pdo |= medulla_error_estop;
 }
 
 void hip_wait_loop() {

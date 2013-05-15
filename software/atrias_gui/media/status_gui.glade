@@ -1330,7 +1330,7 @@
           <object class="GtkTable" id="table5">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="n_rows">5</property>
+            <property name="n_rows">8</property>
             <property name="n_columns">2</property>
             <child>
               <object class="GtkLabel" id="medullaErrorLabel">
@@ -1343,10 +1343,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="medullaAErrorLabel">
+              <object class="GtkLabel" id="medullaLAErrorLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Medulla A</property>
+                <property name="label" translatable="yes">Medulla Left A</property>
                 <property name="justify">center</property>
               </object>
               <packing>
@@ -1356,10 +1356,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="medullaBErrorLabel">
+              <object class="GtkLabel" id="medullaLBErrorLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Medulla B</property>
+                <property name="label" translatable="yes">Medulla Left B</property>
               </object>
               <packing>
                 <property name="top_attach">2</property>
@@ -1368,14 +1368,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="medullaHipErrorLabel">
+              <object class="GtkLabel" id="medullaLHipErrorLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Medulla Hip</property>
               </object>
               <packing>
-                <property name="top_attach">3</property>
-                <property name="bottom_attach">4</property>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
                 <property name="x_options"></property>
               </packing>
             </child>
@@ -1388,13 +1388,13 @@
                 <property name="label" translatable="yes">Medulla Boom</property>
               </object>
               <packing>
-                <property name="top_attach">4</property>
-                <property name="bottom_attach">5</property>
+                <property name="top_attach">7</property>
+                <property name="bottom_attach">8</property>
                 <property name="x_options"></property>
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="medullaAError_entry">
+              <object class="GtkEntry" id="medullaLAError_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -1412,7 +1412,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="medullaBError_entry">
+              <object class="GtkEntry" id="medullaLBError_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -1430,7 +1430,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="medullaHipError_entry">
+              <object class="GtkEntry" id="medullaLHipError_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -1443,8 +1443,8 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
-                <property name="top_attach">3</property>
-                <property name="bottom_attach">4</property>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
               </packing>
             </child>
             <child>
@@ -1461,8 +1461,98 @@
               <packing>
                 <property name="left_attach">1</property>
                 <property name="right_attach">2</property>
+                <property name="top_attach">7</property>
+                <property name="bottom_attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="medullaRAError_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+                <property name="invisible_char_set">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="medullaRBError_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+                <property name="invisible_char_set">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
                 <property name="top_attach">4</property>
                 <property name="bottom_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="medullaLBErrorLabel1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Medulla Right A</property>
+              </object>
+              <packing>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+                <property name="x_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="medullaLBErrorLabel2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Medulla Right B</property>
+              </object>
+              <packing>
+                <property name="top_attach">4</property>
+                <property name="bottom_attach">5</property>
+                <property name="x_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="medullaRHipErrorLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Medulla Hip</property>
+              </object>
+              <packing>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+                <property name="x_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="medullaRHipError_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+                <property name="invisible_char_set">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
               </packing>
             </child>
           </object>
@@ -1472,18 +1562,6 @@
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child>
           <object class="GtkHSeparator" id="hseparator2">
@@ -1506,6 +1584,18 @@
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>

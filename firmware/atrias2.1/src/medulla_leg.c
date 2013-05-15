@@ -290,6 +290,7 @@ inline void leg_update_outputs(uint8_t id) {
 
 inline void leg_estop(void) {
 	disable_pwm();
+	*leg_error_flags_pdo |= medulla_error_estop;
 }
 
 void leg_wait_loop() {
