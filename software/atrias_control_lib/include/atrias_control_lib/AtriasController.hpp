@@ -73,7 +73,8 @@ class AtriasController {
 		  * @brief Returns a ROS header with the current timestamp.
 		  * @return A ROS header for logging purposes.
 		  */
-		virtual const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
+		//virtual const std_msgs::Header_<RTT::os::rt_allocator<uint8_t>>& getROSHeader() const;
+		virtual const std_msgs::Header& getROSHeader() const;
 
 		/**
 		  * @brief This returns the TaskContext
