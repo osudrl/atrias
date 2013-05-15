@@ -31,10 +31,10 @@ Gtk::SpinButton *walking_state_spinbutton,
 	*hip_pos_kp_spinbutton,
 	*hip_pos_kd_spinbutton;
 	
-Gtk::ComboBox *main_controller_combobox,
-	*state_trigger_combobox;
+Gtk::ComboBox *main_controller_combobox;
 	
-Gtk::Button *manual_event_button;
+Gtk::Button *flight_to_button,
+	*flight_td_button;
 
 void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
 

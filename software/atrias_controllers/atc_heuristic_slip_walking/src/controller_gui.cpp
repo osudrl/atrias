@@ -4,8 +4,10 @@
 
 #include <atc_heuristic_slip_walking/controller_gui.h>
 
-void manual_event_pressed()  {controllerDataOut.manual_event = 1;}
-void manual_event_released() {controllerDataOut.manual_event = 0;}
+void flight_td_pressed()  {controllerDataOut.flight_td = 1;}
+void flight_td_released() {controllerDataOut.flight_td = 0;}
+void flight_to_pressed()  {controllerDataOut.flight_to = 1;}
+void flight_to_released() {controllerDataOut.flight_to = 0;}
 
 //! \brief Initialize the GUI.
 bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
@@ -20,8 +22,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
 	gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
 	gui->get_widget("main_controller_combobox", main_controller_combobox);
-	gui->get_widget("state_trigger_combobox", state_trigger_combobox);
-	gui->get_widget("manual_event_button", manual_event_button);
+	gui->get_widget("flight_td_button", flight_td_button);
+	gui->get_widget("flight_to_button", flight_to_button);
 
 	// Set ranges
 	walking_state_spinbutton->set_range(0, 3);
@@ -35,7 +37,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_range(0.0, 50.0);
 
 	// Set increments
-	walking_state_spinbutton->set_increments(1, 0.0);
+	walking_state_spinbutton->set_increments(1, 0);
 	standing_leg_spinbutton->set_increments(0.01, 0.0);
 	slip_leg_spinbutton->set_increments(0.01, 0.0);
 	leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
@@ -47,18 +49,20 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Set values
 	walking_state_spinbutton->set_value(0);
-	standing_leg_spinbutton->set_value(0.85);
+	standing_leg_spinbutton->set_value(0.80);
 	slip_leg_spinbutton->set_value(0.80);
-	leg_pos_kp_spinbutton->set_value(1000.0);
+	leg_pos_kp_spinbutton->set_value(500.0);
 	leg_for_kp_spinbutton->set_value(1000.0);
 	leg_for_kd_spinbutton->set_value(10.0);
-	leg_pos_kd_spinbutton->set_value(50.0);
-	hip_pos_kp_spinbutton->set_value(200.0);
+	leg_pos_kd_spinbutton->set_value(25.0);
+	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	
 	// Connect buttons to functions
-	manual_event_button->signal_pressed().connect(sigc::ptr_fun((void(*)())manual_event_pressed));
-	manual_event_button->signal_released().connect(sigc::ptr_fun((void(*)())manual_event_released));
+	flight_td_button->signal_pressed().connect(sigc::ptr_fun((void(*)())flight_td_pressed));
+	flight_td_button->signal_released().connect(sigc::ptr_fun((void(*)())flight_td_released));
+	flight_to_button->signal_pressed().connect(sigc::ptr_fun((void(*)())flight_to_pressed));
+	flight_to_button->signal_released().connect(sigc::ptr_fun((void(*)())flight_to_released));
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("ATCHeuristicSlipWalking_status", 0, controllerCallback);
@@ -86,9 +90,6 @@ void getParameters() {
 	int main_controller;
 	nh.getParam("/atrias_gui/main_controller", main_controller);
 	controllerDataOut.main_controller = (uint8_t)main_controller;
-	int state_trigger;
-	nh.getParam("/atrias_gui/state_trigger", state_trigger);
-	controllerDataOut.state_trigger = (uint8_t)state_trigger;
 
 	// Configure the GUI
 	walking_state_spinbutton->set_value(controllerDataOut.walking_state);
@@ -101,7 +102,6 @@ void getParameters() {
 	hip_pos_kp_spinbutton->set_value(controllerDataOut.hip_pos_kp);
 	hip_pos_kd_spinbutton->set_value(controllerDataOut.hip_pos_kd);
 	main_controller_combobox->set_active(controllerDataOut.main_controller);
-	state_trigger_combobox->set_active(controllerDataOut.state_trigger);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -116,17 +116,14 @@ void setParameters() {
 	nh.setParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
 	nh.setParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
 	nh.setParam("/atrias_gui/main_controller", controllerDataOut.main_controller);
-	nh.setParam("/atrias_gui/state_trigger", controllerDataOut.state_trigger);
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
+	// Set GUI values from controllerDataOut
+	walking_state_spinbutton->set_value(controllerDataIn.walking_state);
+	
 	// Set values in controllerDataOut variable here
-	if ((uint8_t)state_trigger_combobox->get_active_row_number() == 1) {
-		walking_state_spinbutton->set_value(controllerDataIn.walking_state);
-	}
-    
-	controllerDataOut.walking_state = walking_state_spinbutton->get_value();
 	controllerDataOut.standing_leg = standing_leg_spinbutton->get_value();
 	controllerDataOut.slip_leg = slip_leg_spinbutton->get_value();
 	controllerDataOut.leg_pos_kp = leg_pos_kp_spinbutton->get_value();
@@ -136,7 +133,6 @@ void guiUpdate() {
 	controllerDataOut.hip_pos_kp = hip_pos_kp_spinbutton->get_value();
 	controllerDataOut.hip_pos_kd = hip_pos_kd_spinbutton->get_value();
 	controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
-	controllerDataOut.state_trigger = (uint8_t)state_trigger_combobox->get_active_row_number();
 
 	// publish the controller input
 	pub.publish(controllerDataOut);

@@ -88,6 +88,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
 		void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
 		void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
+		void updateExitConditions(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
 
 		// Variables
 		int controllerState, walkingState; // State machines
@@ -110,7 +111,8 @@ class ATCHeuristicSlipWalking : public ATC<
 		double qtSl, qtFl; // Target leg positions
 		double ql, dql, rl, drl; 
 		
-		bool isManualEvent, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+		bool isManualFlightLegTO, isManualFlightLegTD;
+		bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
 
 
 

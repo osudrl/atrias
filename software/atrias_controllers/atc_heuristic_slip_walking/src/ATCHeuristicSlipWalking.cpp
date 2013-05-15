@@ -37,7 +37,6 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	toePosition.right = 2.45;
 
 	// Initialize walking state
-	//controllerState = 0;
 	walkingState = 0;
 }
 
@@ -59,10 +58,8 @@ void ATCHeuristicSlipWalking::controller() {
 			standingController(&rs.lLeg, &co.lLeg, &ascRateLimitLmA, &ascRateLimitLmB, &ascPDLmA, &ascPDLmB);
 			// Reset walking state parameters
 			walkingState = 0;
-			qeSl = PI/2.0;
-			qeFl = PI/2.0;
-			reSl = guiIn.standing_leg;
-			reFl = guiIn.standing_leg;
+			// Save the stance and flight leg exit conditions
+			updateExitConditions(&rs.rLeg, &rs.lLeg); // (stance leg, flight leg)
 			break;
 
 		case 1: // SLIP heuristic walking
@@ -115,15 +112,12 @@ void ATCHeuristicSlipWalking::updateState() {
 	controllerState = guiIn.main_controller;
 	r0 = guiIn.slip_leg;
 	
-	// Switch betwwen manual event trigger from GUI (pull walking state), or automatic (push walking state) TODO: may not need with manual event trigger
-	if (guiIn.state_trigger == 0) { // Manual state transistions
-		walkingState = guiIn.walking_state;
-	} else if (guiIn.state_trigger == 1) { // Automatic state transistions
-		guiOut.walking_state = walkingState;
-	}	
+	// Update GUI walking state display
+	guiOut.walking_state = walkingState;
 	
 	// Manually triger events
-	isManualEvent = guiIn.manual_event;
+	isManualFlightLegTO = guiIn.flight_to;
+	isManualFlightLegTD = guiIn.flight_td;
 
 	// Set leg motor position control PD gains
 	ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
@@ -218,7 +212,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 		// r0 = 0.85, qtFl = PI - (PI/2.0 + 0.193), qtSl = PI - (PI/2.0 - 0.07), legRetraction = 0.07
 		// r0 = 0.90, qtFl = PI - (PI/2.0 + 0.157), qtSl = PI - (PI/2.0 - 0.05), legRetraction = 0.05
 		
-	// TODO: Should make angles relative to world not to body.
+	// TODO: Should make angles relative to world not to body (add in body pitch)
 	// TODO: If qeSl > qtSl then we have a issue, need to error catch but not sure what to do if it fails (maybe just take current value and add on some resonable amount)
 	
 	// Compute the current leg angles and lengths
@@ -228,15 +222,15 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	qtSl = PI/2.0 + 0.1; // Predicted stance leg angle at flight leg TD
 	qtFl = PI/2.0 - 0.23; // Target flight leg angle at TD
-	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0, 0, qSl);
+	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.0, qSl);
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
 	if (qSl <= (qeSl + qtSl)/2.0) {
 		// Leg retraction during first half
-		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, r0 - 0.1, 0, 0, qSl);
+		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, r0 - 0.1, 0.0, 0.0, qSl);
 	} else {
 		// Leg extension during the second half
-		std::tie(rl, drl) = ascInterpolation.cubic((qeSl + qtSl)/2.0, qtSl, r0 - 0.1, r0, 0, 0, qSl);
+		std::tie(rl, drl) = ascInterpolation.cubic((qeSl + qtSl)/2.0, qtSl, r0 - 0.1, r0, 0.0, 0.0, qSl);
 	}
 
 	// Convert desired leg angles and lengths into motor positions and velocities
@@ -260,20 +254,21 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	isFlightLegTD = (rFl*sin(qFl) > rs.position.zPosition);
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
+	isStanceLegTO = (rSl > r0);
 	
 	// Flight leg touch down event (trigger next state)
-	if ((isFlightLegTD || isManualEvent) && isForwardStep) {
+	if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {
 		// Advance the walking state machine 1 step and loop to beginning if needed
 		walkingState = (walkingState + 1) % 4;
-		//printf("singleSupportEvent TD forward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
-	} else if ((isFlightLegTD || isManualEvent) && isBackwardStep) {
+	} else if ((isFlightLegTD || isManualFlightLegTD) && isBackwardStep) {
 		// Regress the walking state machine 1 step and loop to end if needed (the + 4 prevents negatives)
 		walkingState = (walkingState - 1 + 4) % 4;
-		//printf("singleSupportEvent TD backward step triggered - walkingState = %i\n", walkingState); // TODO: remove after debugging
 	}
 
-	// Stance leg take off event (ignore)
-	// TODO: add trigger to catch, this would mean the robot is bouncing, nothing to do to really stop it though
+	// Stance leg take off
+	if (isStanceLegTO) {
+		// TODO: add trigger to catch, this would mean the robot is bouncing, nothing to do to really stop it though
+	}
 
 }
 
@@ -283,24 +278,30 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
 	// Compute conditionals for event triggers
-	//isFlightLegTO = (rFl*sin(qFl) <= rs.position.zPosition);
-	isFlightLegTO = rFl > r0;
+	isFlightLegTO = (rFl > r0);
+	isStanceLegTO = (rSl > r0);
 	
 	// Flight leg take off (trigger next state)
-	if (isFlightLegTO || isManualEvent) {
+	if (isFlightLegTO || isManualFlightLegTO) {
 		// Advance the walking state machine 1 step and loop to beginning if needed
 		walkingState = (walkingState + 1) % 4;
-		//printf("doubleSupportEvent TO triggered walkingState = %i\n", walkingState); // TODO: remove after debugging
-		
-		// Save the stance and flight leg exit conditions for use in leg swing trajectory generation
-		std::tie(qeFl, reFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
-		std::tie(dqeFl, dreFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
-		std::tie(qeSl, reSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-		std::tie(dqeSl, dreSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+		// Save the stance and flight leg exit conditions
+		updateExitConditions(rsSl, rsFl);
 	}
 
-	// Stance leg take off (ignore)
-	// TODO: add trigger to catch, this means we started going backwards
+	// Stance leg take off
+	if (isStanceLegTO) {
+		// TODO: add trigger to catch, this means we started going backwards
+	}
+}
+
+
+void ATCHeuristicSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl) {
+	// Save the stance and flight leg exit conditions for use in leg swing trajectory generation
+	std::tie(qeFl, reFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+	std::tie(dqeFl, dreFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
+	std::tie(qeSl, reSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+	std::tie(dqeSl, dreSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 }
 
 
