@@ -42,16 +42,19 @@ class AtriasController {
 		AtriasController(const std::string &name);
 
 		/**
-		  * @brief This returns the value num clamped between min and max.
+		  * @brief This returns the value num clamped between a and b.
 		  * @param num The number to be clamped
-		  * @param min The minimum output value.
-		  * @param max The maximum output value.
+		  * @param a   One side of the interval
+		  * @param b   The other side of the interval
 		  * @return The clamped value (>=min, <=max)
 		  * This is a convenience function for controllers. This will work on any
 		  * type with a defined '<' comparison operator
 		  */
 		template <typename T>
-		const T& clamp(const T& num, const T& min, const T& max) const {
+		const T& clamp(const T& num, const T& a, const T& b) const {
+			const T& min = std::min(a, b);
+			const T& max = std::max(a, b);
+
 			if (num < min)
 				return min;
 
