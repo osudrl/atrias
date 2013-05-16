@@ -227,7 +227,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	qtSl = PI/2.0 + 0.06; // Predicted stance leg angle at flight leg TD
 	qtFl = PI/2.0 - 0.157; // Target flight leg angle at TD
-	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.5/(qeSl - qtSl), qSl, dqSl);
+	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.2/(qtSl - qeSl), 0.4/(qtSl - qeSl), qSl, dqSl);
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
 	if (qSl <= (qeSl + qtSl)/2.0) {
