@@ -12,7 +12,6 @@
 	<depend package="atrias_msgs"/>
 	<depend package="asc_common_toolkit"/>
 	<depend package="asc_interpolation"/>
-	<depend package="asc_slip_model"/>
 	<depend package="asc_leg_force"/>
 	<depend package="asc_hip_boom_kinematics"/>
 	<depend package="asc_pd"/>

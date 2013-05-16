@@ -20,7 +20,6 @@
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
 #include <asc_interpolation/ASCInterpolation.hpp>
-#include <asc_slip_model/ASCSlipModel.hpp>
 #include <asc_leg_force/ASCLegForce.hpp>
 #include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
@@ -64,20 +63,10 @@ class ATCHeuristicSlipWalking : public ATC<
 		  */
   		ASCCommonToolkit ascCommonToolkit;
   		ASCInterpolation ascInterpolation;
-		ASCSlipModel ascSlipModel;
-		ASCLegForce ascLegForceL;
-		ASCLegForce ascLegForceR;
+		ASCLegForce ascLegForceL, ascLegForceR;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDLmA;
-		ASCPD ascPDLmB;
-		ASCPD ascPDRmA;
-		ASCPD ascPDRmB;
-		ASCPD ascPDLh;
-		ASCPD ascPDRh;
-		ASCRateLimit ascRateLimitLmA;
-		ASCRateLimit ascRateLimitLmB;
-		ASCRateLimit ascRateLimitRmA;
-		ASCRateLimit ascRateLimitRmB;
+		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB;
 
 		// Functions
 		void updateState();
@@ -85,9 +74,9 @@ class ATCHeuristicSlipWalking : public ATC<
 		void standingController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCRateLimit*, ASCRateLimit*, ASCPD*, ASCPD*);
 		void shutdownController();
 		void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*);
-		void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
+		void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*);
 		void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
-		void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
+		void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*);
 		void updateExitConditions(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
 
 		// Variables
@@ -98,16 +87,19 @@ class ATCHeuristicSlipWalking : public ATC<
 		// Motor and leg variables
 		double rSl, drSl, qSl, dqSl; // Stance leg states
 		double rFl, drFl, qFl, dqFl; // Flight leg states
-		double r0, k, dk; // Spring paramter
 		double qmSA, dqmSA, qmSB, dqmSB; // Stance motor states
 		double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
-		LegForce legForce;
+		LegForce forceSl, forceFl;
 
-		// Leg parameters at event trigger
+		// Leg parameters at exit state (event trigger)
 		double reSl, dreSl, qeSl, dqeSl; // Stance leg exit states
 		double reFl, dreFl, qeFl, dqeFl; // Flight leg exit states
+		
+		// Leg parameters at target states
+		double rtSl, drtSl, qtSl, dqtSl; // Stance leg target states
+		double rtFl, drtFl, qtFl, dqtFl; // Flight leg target states
 
-		double qtSl, qtFl; // Target leg positions
+		// Temp leg parameters
 		double ql, dql, rl, drl; 
 		
 		// Debug events
@@ -116,8 +108,13 @@ class ATCHeuristicSlipWalking : public ATC<
 		// State transistion events
 		bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
 		
-		// Misc margins, ratelimiters and other ludge values
-		double triggerMarginTO;
+		// Walking gait definition values
+		double r0, k, dk; // Spring parameters
+		double swingLegRetraction; // The amount the leg retracts during swing
+		
+		// Misc margins, ratelimiters and other kludge values
+		double triggerForce; // The amount of force required to trigger TD and TO
+		//double triggerMarginTO;
 		double legRateLimit;
 
 
