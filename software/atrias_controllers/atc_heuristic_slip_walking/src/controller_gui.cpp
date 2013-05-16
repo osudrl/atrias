@@ -27,8 +27,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Set ranges
 	walking_state_spinbutton->set_range(0, 3);
-	standing_leg_spinbutton->set_range(0.7, 0.95);
-	slip_leg_spinbutton->set_range(0.7, 0.95);
+	standing_leg_spinbutton->set_range(0.75, 0.95);
+	slip_leg_spinbutton->set_range(0.75, 0.95);
 	leg_pos_kp_spinbutton->set_range(0.0, 1500.0);
 	leg_for_kp_spinbutton->set_range(0.0, 1500.0);
 	leg_for_kd_spinbutton->set_range(0.0, 50.0);
@@ -49,12 +49,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Set values
 	walking_state_spinbutton->set_value(0);
-	standing_leg_spinbutton->set_value(0.80);
-	slip_leg_spinbutton->set_value(0.80);
-	leg_pos_kp_spinbutton->set_value(400.0);
-	leg_pos_kd_spinbutton->set_value(20.0);
-	leg_for_kp_spinbutton->set_value(400.0);
-	leg_for_kd_spinbutton->set_value(10.0);
+	standing_leg_spinbutton->set_value(0.90);
+	slip_leg_spinbutton->set_value(0.90);
+	leg_pos_kp_spinbutton->set_value(300.0);
+	leg_pos_kd_spinbutton->set_value(15.0);
+	leg_for_kp_spinbutton->set_value(300.0);
+	leg_for_kd_spinbutton->set_value(5.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	

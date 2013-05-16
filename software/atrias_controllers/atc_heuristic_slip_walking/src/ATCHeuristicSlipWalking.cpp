@@ -40,7 +40,7 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	walkingState = 0;
 
 	// Add a margin for takeoff event trigger
-	triggerMarginTO = 0.0005;
+	triggerMarginTO = 0.001;
 }
 
 
@@ -210,10 +210,10 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 		// Amount of flight leg retraction desired
 		// Velocities of cubic splines can be adjusted as needed.
 
-	// Some good gaits found through simulation on MATLAB
+	// Some good gaits found through simulation on MATLAB (1 m/s)
 		// r0 = 0.80, qtFl = PI - (PI/2.0 + 0.230), qtSl = PI - (PI/2.0 - 0.10), legRetraction = 0.10
-		// r0 = 0.85, qtFl = PI - (PI/2.0 + 0.193), qtSl = PI - (PI/2.0 - 0.07), legRetraction = 0.07
-		// r0 = 0.90, qtFl = PI - (PI/2.0 + 0.157), qtSl = PI - (PI/2.0 - 0.05), legRetraction = 0.05
+		// r0 = 0.85, qtFl = PI - (PI/2.0 + 0.193), qtSl = PI - (PI/2.0 - 0.08), legRetraction = 0.10
+		// r0 = 0.90, qtFl = PI - (PI/2.0 + 0.157), qtSl = PI - (PI/2.0 - 0.06), legRetraction = 0.10
 		
 	// TODO: Should make angles relative to world not to body (add in body pitch)
 	// TODO: If qeSl > qtSl then we have a issue, need to error catch but not sure what to do if it fails (maybe just take current value and add on some resonable amount)
@@ -225,9 +225,9 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
-	qtSl = PI/2.0 + 0.1; // Predicted stance leg angle at flight leg TD
-	qtFl = PI/2.0 - 0.23; // Target flight leg angle at TD
-	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.0, qSl, dqSl);
+	qtSl = PI/2.0 + 0.06; // Predicted stance leg angle at flight leg TD
+	qtFl = PI/2.0 - 0.157; // Target flight leg angle at TD
+	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, 0.0, 0.5/(qeSl - qtSl), qSl, dqSl);
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
 	if (qSl <= (qeSl + qtSl)/2.0) {
@@ -256,10 +256,10 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
 	// Compute conditionals for event triggers
-	isFlightLegTD = (rFl*sin(qFl) > rs.position.zPosition);
+	isFlightLegTD = (rFl*sin(qFl) > rSl*sin(qSl));//rs.position.zPosition);
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
-	isStanceLegTO = (rSl > r0);
+	isStanceLegTO = (rSl >= (r0 - triggerMarginTO));
 	
 	// Flight leg touch down event (trigger next state)
 	if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {

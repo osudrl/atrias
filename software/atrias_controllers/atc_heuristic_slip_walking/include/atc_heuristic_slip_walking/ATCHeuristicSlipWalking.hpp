@@ -96,7 +96,6 @@ class ATCHeuristicSlipWalking : public ATC<
 		LeftRight toePosition; // Desired toe positions measures from boom center axis
 
 		// Motor and leg variables
-		double legRateLimit;
 		double rSl, drSl, qSl, dqSl; // Stance leg states
 		double rFl, drFl, qFl, dqFl; // Flight leg states
 		double r0, k, dk; // Spring paramter
@@ -111,9 +110,15 @@ class ATCHeuristicSlipWalking : public ATC<
 		double qtSl, qtFl; // Target leg positions
 		double ql, dql, rl, drl; 
 		
+		// Debug events
 		bool isManualFlightLegTO, isManualFlightLegTD;
+		
+		// State transistion events
 		bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+		
+		// Misc margins, ratelimiters and other ludge values
 		double triggerMarginTO;
+		double legRateLimit;
 
 
 
