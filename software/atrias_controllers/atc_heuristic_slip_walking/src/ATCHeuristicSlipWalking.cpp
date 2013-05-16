@@ -38,6 +38,9 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 
 	// Initialize walking state
 	walkingState = 0;
+
+	// Add a margin for takeoff event trigger
+	triggerMarginTO = 0.0005;
 }
 
 
@@ -264,7 +267,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 		walkingState = (walkingState + 1) % 4;
 	} else if ((isFlightLegTD || isManualFlightLegTD) && isBackwardStep) {
 		// Regress the walking state machine 1 step and loop to end if needed (the + 4 prevents negatives)
-		walkingState = (walkingState - 1 + 4) % 4;
+		//walkingState = (walkingState - 1 + 4) % 4;
 	}
 
 	// Stance leg take off
@@ -280,8 +283,8 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
 	// Compute conditionals for event triggers
-	isFlightLegTO = (rFl > r0);
-	isStanceLegTO = (rSl > r0);
+	isFlightLegTO = (rFl >= (r0 - triggerMarginTO));
+	isStanceLegTO = (rSl >= (r0 - triggerMarginTO));
 	
 	// Flight leg take off (trigger next state)
 	if (isFlightLegTO || isManualFlightLegTO) {

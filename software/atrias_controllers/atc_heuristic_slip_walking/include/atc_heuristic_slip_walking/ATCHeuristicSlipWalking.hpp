@@ -113,6 +113,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		
 		bool isManualFlightLegTO, isManualFlightLegTD;
 		bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+		double triggerMarginTO;
 
 
 
