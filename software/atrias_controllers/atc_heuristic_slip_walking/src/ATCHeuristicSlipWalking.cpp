@@ -232,8 +232,8 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
-	dqeFl = 0.3/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.6/(qtSl - qeSl);
+	dqeFl = 0.2/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
+	dqtFl = 0.4/(qtSl - qeSl);
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
@@ -271,7 +271,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
 	// Compute conditionals for event triggers
-	isFlightLegTD = (forceFl.fz <= -triggerForce) && (rFl*sin(qFl) >= rSl*sin(qSl) - 0.04); // TODO: look at axial force instead
+	isFlightLegTD = (forceFl.fz <= -triggerForce) && (rFl*sin(qFl) >= rSl*sin(qSl) - 0.01); // TODO: look at axial force instead
 	isStanceLegTO = (forceSl.fz >= -triggerForce); // TODO: look at axial force instead
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
