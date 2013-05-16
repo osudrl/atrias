@@ -10,7 +10,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">SLIP Heuristic Walking - By Mikhail Jones</property>
+        <property name="label" translatable="yes">SLIP Walking - By Mikhail Jones</property>
         <attributes>
           <attribute name="weight" value="bold"/>
         </attributes>
@@ -52,7 +52,7 @@
       <object class="GtkTable" id="controller_table">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_rows">4</property>
+        <property name="n_rows">5</property>
         <property name="n_columns">4</property>
         <property name="homogeneous">True</property>
         <child>
@@ -78,7 +78,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="walking_state_spinbutton">
+          <object class="GtkSpinButton" id="standing_leg_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -87,6 +87,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">2</property>
           </object>
           <packing>
             <property name="left_attach">3</property>
@@ -94,11 +95,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="walking_state_label">
+          <object class="GtkLabel" id="standing_leg_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="xalign">1</property>
-            <property name="label" translatable="yes">Walking State:</property>
+            <property name="label" translatable="yes">Standing Leg Length:</property>
           </object>
           <packing>
             <property name="left_attach">2</property>
@@ -106,7 +107,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="standing_leg_spinbutton">
+          <object class="GtkSpinButton" id="slip_leg_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -125,7 +126,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="slip_leg_spinbutton">
+          <object class="GtkSpinButton" id="swing_leg_retraction_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -151,20 +152,6 @@
             <property name="label" translatable="yes">SLIP Leg Length:</property>
           </object>
           <packing>
-            <property name="left_attach">2</property>
-            <property name="right_attach">3</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="standing_leg_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">Standing Leg Length:</property>
-          </object>
-          <packing>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
@@ -177,52 +164,14 @@
             <property name="label" translatable="yes">Swing Leg Retraction:</property>
           </object>
           <packing>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="event_trigger_force_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">Event Trigger Force:</property>
-          </object>
-          <packing>
             <property name="left_attach">2</property>
             <property name="right_attach">3</property>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="stance_leg_target_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">Stance Leg Target Angle (qtSl):</property>
-          </object>
-          <packing>
-            <property name="top_attach">3</property>
-            <property name="bottom_attach">4</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="flight_leg_target_label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">Flight Leg Target Angle (qtFl):</property>
-          </object>
-          <packing>
-            <property name="left_attach">2</property>
-            <property name="right_attach">3</property>
-            <property name="top_attach">3</property>
-            <property name="bottom_attach">4</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSpinButton" id="swing_leg_retraction_spinbutton">
+          <object class="GtkSpinButton" id="flight_leg_target_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -231,25 +180,7 @@
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
-            <property name="digits">2</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSpinButton" id="event_trigger_force_spinbutton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="invisible_char">•</property>
-            <property name="invisible_char_set">True</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="secondary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">True</property>
-            <property name="secondary_icon_sensitive">True</property>
+            <property name="digits">3</property>
           </object>
           <packing>
             <property name="left_attach">3</property>
@@ -273,12 +204,86 @@
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="flight_leg_target_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Flight Leg Target Angle (qtFl):</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="stance_leg_target_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Stance Leg Target Angle (qtSl):</property>
+          </object>
+          <packing>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="force_threshold_td_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
           </packing>
         </child>
         <child>
-          <object class="GtkSpinButton" id="flight_leg_target_spinbutton">
+          <object class="GtkLabel" id="force_threshold_td_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Force Trigger Threshold TD:</property>
+          </object>
+          <packing>
+            <property name="top_attach">3</property>
+            <property name="bottom_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="force_threshold_to_spinbutton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="invisible_char_set">True</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="secondary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">True</property>
+            <property name="secondary_icon_sensitive">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">3</property>
+            <property name="right_attach">4</property>
+            <property name="top_attach">3</property>
+            <property name="bottom_attach">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="position_threshold_td_spinbutton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="invisible_char">•</property>
@@ -290,11 +295,43 @@
             <property name="digits">3</property>
           </object>
           <packing>
-            <property name="left_attach">3</property>
-            <property name="right_attach">4</property>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="force_threshold_to_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Force Trigger Threshold TO:</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
           </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="position_threshold_td_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="xalign">1</property>
+            <property name="label" translatable="yes">Position Trigger Threshold TD:</property>
+          </object>
+          <packing>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -555,6 +592,7 @@
           <object class="GtkTable" id="debug_table">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="n_rows">2</property>
             <property name="n_columns">4</property>
             <property name="homogeneous">True</property>
             <child>
@@ -603,13 +641,49 @@
                 <property name="label" translatable="yes">Trigger Flight Leg TD:</property>
               </object>
             </child>
+            <child>
+              <object class="GtkSpinButton" id="walking_state_spinbutton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">•</property>
+                <property name="invisible_char_set">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="walking_state_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">1</property>
+                <property name="label" translatable="yes">Walking State:</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
           </object>
         </child>
         <child type="label">
           <object class="GtkLabel" id="debug_expander_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Debug Options</property>
+            <property name="label" translatable="yes">Debug</property>
             <attributes>
               <attribute name="underline" value="True"/>
             </attributes>
@@ -628,16 +702,17 @@
         <property name="can_focus">True</property>
         <property name="expanded">True</property>
         <child>
-          <object class="GtkTable" id="table1">
+          <object class="GtkTable" id="note_table">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="n_rows">2</property>
-            <property name="n_columns">4</property>
+            <property name="n_columns">2</property>
             <child>
               <object class="GtkLabel" id="walking_state_key_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="xalign">0</property>
+                <property name="yalign">0</property>
                 <property name="label" translatable="yes">Walking State Key: 
 ( 0 ) Right Leg Single Support
 ( 1 ) Double Support
@@ -646,19 +721,20 @@
               </object>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
+              <object class="GtkLabel" id="feasible_gaits_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+                <property name="label" translatable="yes">Feasible Gaits:
+- (dx= 1.0) (r0 = 0.80) (qtSl = 1.80) (qtFl = 1.47)
+- (dx= 1.0) (r0 = 0.85) (qtSl = 1.76) (qtFl = 1.49)
+- (dx= 1.0) (r0 = 0.90) (qtSl = 1.73) (qtFl = 1.45)</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
             </child>
             <child>
               <placeholder/>
@@ -684,9 +760,6 @@
         <property name="fill">False</property>
         <property name="position">7</property>
       </packing>
-    </child>
-    <child>
-      <placeholder/>
     </child>
     <child>
       <placeholder/>

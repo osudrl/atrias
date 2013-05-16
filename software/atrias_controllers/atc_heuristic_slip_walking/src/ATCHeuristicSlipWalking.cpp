@@ -110,20 +110,21 @@ void ATCHeuristicSlipWalking::updateState() {
 	// Get some gui inputs
 	controllerState = guiIn.main_controller;
 	
-	// Gait definitions
-	r0 = guiIn.slip_leg;
-	swingLegRetraction = guiIn.swing_leg_retraction;
-	triggerForce = guiIn.event_trigger_force;
-	qtSl = guiIn.stance_leg_target; // Predicted stance leg angle at flight leg TD
-	qtFl = guiIn.flight_leg_target; // Target flight leg angle at TD
-	//triggerMarginTO = 0.001; // Add a margin for takeoff event trigger TODO: remove
-	
 	// Update GUI walking state display
 	guiOut.walking_state = walkingState;
 	
-	// Manually triger events
-	isManualFlightLegTO = guiIn.flight_to;
-	isManualFlightLegTD = guiIn.flight_td;
+	// Event and state trigger parameters
+	isManualFlightLegTO = guiIn.flight_to; // Manually triger events
+	isManualFlightLegTD = guiIn.flight_td; // Manually triger events
+	forceThresholdTO = guiIn.force_threshold_td;
+	forceThresholdTO = guiIn.force_threshold_to;
+	positionThresholdTD = guiIn.position_threshold_td;
+	
+	// Gait definitions
+	r0 = guiIn.slip_leg; // Rest spring length
+	swingLegRetraction = guiIn.swing_leg_retraction; // Amount the leg retracts in swing phase
+	qtSl = guiIn.stance_leg_target; // Predicted stance leg angle at flight leg TD
+	qtFl = guiIn.flight_leg_target; // Target flight leg angle at TD
 
 	// Set leg motor position control PD gains
 	ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
@@ -137,10 +138,6 @@ void ATCHeuristicSlipWalking::updateState() {
 	ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
 	ascLegForceL.ki = ascLegForceR.ki = 0.0;
 	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
-
-	// Compute actual leg force from spring deflection and robot state
-	//ascLegForceL.compute(rs.lLeg, rs.position);
-	//ascLegForceR.compute(rs.rLeg, rs.position);
 
 }
 
@@ -185,9 +182,6 @@ void ATCHeuristicSlipWalking::shutdownController() {
 
 
 void ATCHeuristicSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl) {
-	// Linearly interpolate from current rest leg length to the target rest length // TODO: may not need to do once contact sensing is implemented
-	//r0 = ascInterpolation.linear(qeSl, PI/2.0, r0Sl, r0, time, 0.0); // TODO
-
 	// Compute current ATRIAS non-linear spring constant for given leg configuration
 	std::tie(k, dk) = ascCommonToolkit.legStiffness(rSl, drSl, r0);
 
@@ -260,7 +254,6 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 }
 
 
-// TODO: switch over to the toe ground contact sensors once they are ready
 void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl) {
 	// Compute the current flight leg angle and length
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -271,12 +264,10 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
 	// Compute conditionals for event triggers
-	isFlightLegTD = (forceFl.fz <= -triggerForce) && (rFl*sin(qFl) >= rSl*sin(qSl) - 0.01); // TODO: look at axial force instead
-	isStanceLegTO = (forceSl.fz >= -triggerForce); // TODO: look at axial force instead
+	isFlightLegTD = (forceFl.fz <= -forceThresholdTD) && (rFl*sin(qFl) >= rSl*sin(qSl) - positionThresholdTD);
+	isStanceLegTO = (forceSl.fz >= -forceThresholdTO);
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
-	//isFlightLegTD = (rFl*sin(qFl) >= rSl*sin(qSl) - 0.04);
-	//isStanceLegTO = (rSl >= (r0 - triggerMarginTO));
 	
 	// Flight leg touch down event (trigger next state)
 	if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {
@@ -297,7 +288,6 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 }
 
 
-// TODO: switch over to the toe ground contact sensors once they are ready
 void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl) {
 	// Compute the current flight leg angle and length
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -308,10 +298,8 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
 	// Compute conditionals for event triggers
-	isFlightLegTO = forceFl.fz >= -triggerForce; // TODO: look at axial force instead
-	isStanceLegTO = forceSl.fz >= -triggerForce; // TODO: look at axial force instead
-	//isFlightLegTO = (rFl >= (r0 - triggerMarginTO));
-	//isStanceLegTO = (rSl >= (r0 - triggerMarginTO));
+	isFlightLegTO = forceFl.fz >= -forceThresholdTO;
+	isStanceLegTO = forceSl.fz >= -forceThresholdTO;
 	
 	// Flight leg take off (trigger next state)
 	if (isFlightLegTO || isManualFlightLegTO) {

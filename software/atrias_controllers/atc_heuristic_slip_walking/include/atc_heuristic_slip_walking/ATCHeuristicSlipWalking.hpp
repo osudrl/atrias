@@ -113,8 +113,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		double swingLegRetraction; // The amount the leg retracts during swing
 		
 		// Misc margins, ratelimiters and other kludge values
-		double triggerForce; // The amount of force required to trigger TD and TO
-		//double triggerMarginTO;
+		double forceThresholdTO, forceThresholdTD, positionThresholdTD;
 		double legRateLimit;
 
 
