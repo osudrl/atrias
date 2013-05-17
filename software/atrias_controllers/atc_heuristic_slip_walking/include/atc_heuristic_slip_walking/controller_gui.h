@@ -22,7 +22,7 @@ atc_heuristic_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::SpinButton *walking_state_spinbutton,
-	*standing_leg_spinbutton,
+	*atrias_spring_spinbutton,
 	*slip_leg_spinbutton,
 	*swing_leg_retraction_spinbutton,
 	*force_threshold_td_spinbutton,

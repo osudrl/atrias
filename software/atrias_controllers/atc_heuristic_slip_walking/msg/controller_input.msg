@@ -1,5 +1,5 @@
 float64 walking_state
-float64 standing_leg
+float64 atrias_spring
 float64 slip_leg
 float64 swing_leg_retraction
 float64 force_threshold_td
