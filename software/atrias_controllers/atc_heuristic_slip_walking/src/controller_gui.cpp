@@ -55,7 +55,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
 	force_threshold_td_spinbutton->set_increments(1.0, 0.0);
 	force_threshold_to_spinbutton->set_increments(1.0, 0.0);
-	position_threshold_td_spinbutton->set_increments(0.01, 0.0);
+	position_threshold_td_spinbutton->set_increments(0.001, 0.0);
 	stance_leg_target_spinbutton->set_increments(0.01, 0.0);
 	flight_leg_target_spinbutton->set_increments(0.01, 0.0);
 	leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
@@ -71,13 +71,13 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	atrias_spring_spinbutton->set_value(4118.0);
 	swing_leg_retraction_spinbutton->set_value(0.10);
 	force_threshold_td_spinbutton->set_value(50.0);
-	force_threshold_to_spinbutton->set_value(0.0);
+	force_threshold_to_spinbutton->set_value(30.0);
 	position_threshold_td_spinbutton->set_value(0.02);
 	stance_leg_target_spinbutton->set_value(M_PI/2.0 + 0.06);
 	flight_leg_target_spinbutton->set_value(M_PI/2.0 - 0.157);
-	leg_pos_kp_spinbutton->set_value(250.0);
+	leg_pos_kp_spinbutton->set_value(200.0);
 	leg_pos_kd_spinbutton->set_value(10.0);
-	leg_for_kp_spinbutton->set_value(250.0);
+	leg_for_kp_spinbutton->set_value(200.0);
 	leg_for_kd_spinbutton->set_value(5.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);

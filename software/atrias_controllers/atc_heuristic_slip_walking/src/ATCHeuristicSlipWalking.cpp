@@ -32,10 +32,10 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 {
 	// Set leg motor rate limit
 	legRateLimit = 0.2;
-	springRateLimit = 0.01;
+	springRateLimit = 0.04;
 	
 	// Set hip controller toe positions
-	toePosition.left = 2.12;
+	toePosition.left = 2.15;
 	toePosition.right = 2.45;
 
 	// Initialize walking state
