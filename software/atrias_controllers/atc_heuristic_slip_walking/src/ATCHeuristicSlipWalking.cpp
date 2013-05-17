@@ -31,7 +31,7 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	ascRateLimitRr0(this, "ascRateLimitRr0")
 {
 	// Set leg motor rate limit
-	legRateLimit = 0.25;
+	legRateLimit = 0.2;
 	springRateLimit = 0.01;
 	
 	// Set hip controller toe positions
@@ -158,6 +158,10 @@ void ATCHeuristicSlipWalking::hipController() {
 	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
+	// Rate limit motor velocities to smooth step inputs
+	// TODO
+	// TODO
+
 	// Compute and set motor currents from position based PD controllers
 	co.lLeg.motorCurrentHip = ascPDLh(qLh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = ascPDRh(qRh, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
@@ -237,7 +241,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.2/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.4/(qtSl - qeSl);
+	dqtFl = 0.5/(qtSl - qeSl); // TODO make a GUI input
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
@@ -286,7 +290,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 		// Save the stance and flight leg exit conditions
 		updateExitConditions(rsSl, rsFl, ascRateLimitSr0, ascRateLimitFr0);
 	} else if ((isFlightLegTD || isManualFlightLegTD) && isBackwardStep) {
-		// Regress the walking state machine 1 step and loop to end if needed (the + 4 prevents negatives)
+		// Do nothing - Regress the walking state machine 1 step and loop to end if needed (the + 4 prevents negatives)
 		//walkingState = (walkingState - 1 + 4) % 4;
 	}
 
