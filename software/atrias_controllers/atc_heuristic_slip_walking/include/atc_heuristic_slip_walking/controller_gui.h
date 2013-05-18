@@ -41,6 +41,8 @@ Gtk::ComboBox *main_controller_combobox;
 	
 Gtk::Button *flight_to_button,
 	*flight_td_button;
+	
+Gtk::ToggleButton *debug_togglebutton;
 
 void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
 

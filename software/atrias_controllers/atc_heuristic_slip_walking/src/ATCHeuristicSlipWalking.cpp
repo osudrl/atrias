@@ -27,11 +27,14 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	ascRateLimitLmB(this, "ascRateLimitLmB"),
 	ascRateLimitRmA(this, "ascRateLimitRmA"),
 	ascRateLimitRmB(this, "ascRateLimitRmB"),
+	ascRateLimitLh(this, "ascRateLimitLh"),
+	ascRateLimitRh(this, "ascRateLimitRh"),
 	ascRateLimitLr0(this, "ascRateLimitLr0"),
 	ascRateLimitRr0(this, "ascRateLimitRr0")
 {
 	// Set leg motor rate limit
 	legRateLimit = 0.2;
+	hipRateLimit = 0.2;
 	springRateLimit = 0.04;
 	
 	// Set hip controller toe positions
@@ -40,14 +43,6 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 
 	// Initialize walking state
 	walkingState = 0;
-	
-	// Reset rate limiters
-	ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
-	ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
-	ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
-	ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
-	ascRateLimitLr0.reset(r0);
-	ascRateLimitRr0.reset(r0);
 }
 
 
@@ -79,6 +74,10 @@ void ATCHeuristicSlipWalking::controller() {
 					stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
 					legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
 					singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
+					if (guiIn.debug) {
+						co.rLeg.motorCurrentA += 4.0;
+						co.rLeg.motorCurrentB += 4.0;
+					}					
 					break;
 			
 				case 1: // Double support (right = flight, left = stance)
@@ -91,6 +90,10 @@ void ATCHeuristicSlipWalking::controller() {
 					stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
 					legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
 					singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
+					if (guiIn.debug) {
+						co.lLeg.motorCurrentA += 4.0;
+						co.lLeg.motorCurrentB += 4.0;
+					}	
 					break;
 				
 				case 3: // Double support (right = stance, left = flight)
@@ -116,6 +119,10 @@ void ATCHeuristicSlipWalking::updateState() {
 		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
 		ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
 		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
+		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
+		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
+		ascRateLimitLr0.reset(r0);
+		ascRateLimitRr0.reset(r0);
 	}
 
 	// Get some gui inputs
@@ -159,8 +166,8 @@ void ATCHeuristicSlipWalking::hipController() {
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
 	// Rate limit motor velocities to smooth step inputs
-	// TODO
-	// TODO
+	qLh = ascRateLimitLh(qLh, hipRateLimit);
+	qRh = ascRateLimitRh(qRh, hipRateLimit);
 
 	// Compute and set motor currents from position based PD controllers
 	co.lLeg.motorCurrentHip = ascPDLh(qLh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
@@ -201,13 +208,14 @@ void ATCHeuristicSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsS
 	// Rate limit change in spring rest length from current to desired
 	r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
-	// Compute current ATRIAS non-linear spring constant for given leg configuration
-	std::tie(k, dk) = ascCommonToolkit.legStiffness(rSl, drSl, r0Sl);
-
 	// Compute current leg angle and length
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 	std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
+	// Compute current ATRIAS non-linear spring constant for given leg configuration
+	std::tie(k, dk) = ascCommonToolkit.legStiffness(rSl, drSl, r0Sl);
+	dk = 0.0; // TODO: set to zero for debugging to track down noise.
+	
 	// Define component forces and their derivatives
 	forceSl.fx = -k*(rSl - r0Sl)*cos(qSl);
 	forceSl.dfx = dk*cos(qSl)*(r0Sl - rSl) - drSl*cos(qSl)*k + dqSl*sin(qSl)*k*(rSl - r0Sl);
@@ -241,7 +249,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.2/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.5/(qtSl - qeSl); // TODO make a GUI input
+	dqtFl = 0.6/(qtSl - qeSl); // TODO make a GUI input
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg

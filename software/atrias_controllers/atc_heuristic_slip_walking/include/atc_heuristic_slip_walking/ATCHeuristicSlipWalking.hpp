@@ -66,7 +66,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		ASCLegForce ascLegForceL, ascLegForceR;
 		ASCHipBoomKinematics ascHipBoomKinematics;
 		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
-		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLr0, ascRateLimitRr0;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
 
 		// Functions
 		void updateState();
@@ -118,7 +118,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		
 		// Misc margins, ratelimiters and other kludge values
 		double forceThresholdTO, forceThresholdTD, positionThresholdTD;
-		double legRateLimit, springRateLimit;
+		double legRateLimit, hipRateLimit, springRateLimit;
 
 
 

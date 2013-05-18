@@ -30,6 +30,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("main_controller_combobox", main_controller_combobox);
 	gui->get_widget("flight_td_button", flight_td_button);
 	gui->get_widget("flight_to_button", flight_to_button);
+	gui->get_widget("debug_togglebutton", debug_togglebutton);
 
 	// Set ranges
 	walking_state_spinbutton->set_range(0, 3);
@@ -178,6 +179,7 @@ void guiUpdate() {
 	controllerDataOut.hip_pos_kp = hip_pos_kp_spinbutton->get_value();
 	controllerDataOut.hip_pos_kd = hip_pos_kd_spinbutton->get_value();
 	controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
+	controllerDataOut.debug = debug_togglebutton->get_active();
 
 	// publish the controller input
 	pub.publish(controllerDataOut);

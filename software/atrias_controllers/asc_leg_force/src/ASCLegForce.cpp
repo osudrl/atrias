@@ -9,9 +9,9 @@ ASCLegForce::ASCLegForce(AtriasController *parent, string name) :
         log_out(this, "log")
 {
 	// Gains
-	kp = 1000.0;
+	kp = 250.0;
 	ki = 0.0;
-	kd = 8.0;
+	kd = 5.0;
 }
 
 
