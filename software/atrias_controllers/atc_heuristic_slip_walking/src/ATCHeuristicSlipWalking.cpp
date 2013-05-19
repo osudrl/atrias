@@ -255,8 +255,8 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
-	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good (0.3)
-	dqtFl = 0.0/(qtSl - qeSl); // TODO make a GUI input (0.6)
+	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
+	dqtFl = 0.8/(qtSl - qeSl); // TODO make a GUI input (0.6)
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
@@ -266,10 +266,10 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	// Switch between cubic spline depending on value of domain
 	if (qSl <= (qeSl + qtSl)/2.0) {
 		// Leg retraction during first half
-		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, 3.0*(qeSl + qtSl)/5.0, reFl, rtFl, dreFl, 0.0, qSl, dqSl);
+		std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, rtFl, dreFl, 0.0, qSl, dqSl);
 	} else {
 		// Leg extension during the second half
-		std::tie(rl, drl) = ascInterpolation.cubic(3.0*(qeSl + qtSl)/5.0, qtSl - 0.05, rtFl, r0, 0.0, drtFl, qSl, dqSl);
+		std::tie(rl, drl) = ascInterpolation.cubic((qeSl + qtSl)/2.0, qtSl, rtFl, r0, 0.0, drtFl, qSl, dqSl);
 	}
 
 	// Convert desired leg angles and lengths into motor positions and velocities
