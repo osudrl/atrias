@@ -1,7 +1,7 @@
 #ifndef MEDULLA_H
 #define MEDULLA_H
 
-#include <stdio.h>
+#include "/usr/avr/include/stdio.h"
 
 // Include AVR specific stuff
 #include <avr/io.h>
