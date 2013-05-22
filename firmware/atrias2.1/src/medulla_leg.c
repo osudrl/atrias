@@ -336,7 +336,7 @@ bool leg_check_error(uint8_t id) {
 		printf("[Medulla Leg] Thermistor error.\n");
 		#endif
 		*leg_error_flags_pdo |= medulla_error_thermistor;
-		return true;
+		//return true;
 	}
 	#endif
 
