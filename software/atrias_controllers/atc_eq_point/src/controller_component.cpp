@@ -317,8 +317,8 @@ default:
 							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle){
-								leftMotorAngle.B = rs.lLeg.halfB.legAngle - rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle;
+							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle)){
+								leftMotorAngle.B = rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle);
 							}
 							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 							logData.state=11;
@@ -388,8 +388,8 @@ default:
 							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 							co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 							//keep spring deflection of spring A smaller than spring B
-							if (rightMotorAngle.B < rs.rLeg.halfB.legAngle - rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle){
-								rightMotorAngle.B = rs.rLeg.halfB.legAngle - rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle;
+							if (rightMotorAngle.B < rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle)){
+								rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
 							}
 							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 							logData.state=21;
