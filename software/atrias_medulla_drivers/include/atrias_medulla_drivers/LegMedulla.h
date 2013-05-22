@@ -37,7 +37,7 @@ class LegMedulla : public Medulla {
 	uint8_t*        timingCounter;
 	uint8_t*        errorFlags;
 	uint8_t*        limitSwitch;
-	uint16_t*       toeSensor;
+	int16_t*        toeSensor;
 	
 	uint32_t*       motorEncoder;
 	int16_t*        motorEncoderTimestamp;
