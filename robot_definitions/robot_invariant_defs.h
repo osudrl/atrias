@@ -58,7 +58,7 @@ typedef enum {
 #define MEDULLA_RIGHT_LEG_B_ID                      (MEDULLA_LEG_ID_PREFIX  + 4)
 #define MEDULLA_RIGHT_HIP_ID                        (MEDULLA_HIP_ID_PREFIX  + 1)
 #define MEDULLA_BOOM_ID                             (MEDULLA_BOOM_ID_PREFIX + 0)
-#define MEDULLA_IMU_ID                              (MEDULLA_IMU_ID_PREFIX  + 1)
+#define MEDULLA_IMU_ID                              (MEDULLA_IMU_ID_PREFIX  + 0)
 
 // Limit switch masks for medullas
 #define MEDULLA_LLEG_ASIDE_LSW_MASK                    0b00111111
