@@ -301,8 +301,8 @@ default:
 		{																															 // if pea was reached once
 			sw_stance=true;
 			rightMotorAngle = legToMotorPos(guiIn.pea, guiIn.l_leg_st);
-			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
-			co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+			co.rLeg.motorCurrentB = 0;//pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+			co.rLeg.motorCurrentA = 0;//pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 		}
 		
 	//****************************************************************flight control left leg*************************************************************************************************************
@@ -313,6 +313,10 @@ default:
 		P1.set(guiIn.p_lf);
 		D1.set(guiIn.d_lf);
 						if (t < 0.1){						// leg lift off
+									P0.set(guiIn.p_ls);
+									D0.set(guiIn.d_ls);
+									P1.set(guiIn.p_ls);
+									D1.set(guiIn.d_ls);
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
@@ -371,8 +375,8 @@ default:
 		{                        // if aea was reached once
 			sw_stance=true;
 			leftMotorAngle = legToMotorPos(guiIn.pea,guiIn.l_leg_st);
-			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
-		    co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = 0;//pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+		    co.lLeg.motorCurrentA = 0;//pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 		}
 		
 	//*******************************************************************************************************************************************************************************************************************
@@ -383,6 +387,10 @@ default:
 		P4.set(guiIn.p_lf);
 		D4.set(guiIn.d_lf);
 						if (t < 0.1){
+							P3.set(guiIn.p_ls);
+							D3.set(guiIn.d_ls);
+							P4.set(guiIn.p_ls);
+							D4.set(guiIn.d_ls);
 							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
 							phi_rLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
