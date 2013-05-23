@@ -1,5 +1,5 @@
-#include "../include/medulla_imu.h"
-#include "../include/medulla.h"
+#include <medulla.h>
+#include <medulla_imu.h>
 
 kvh_data_t kvh_data;
 
@@ -36,8 +36,6 @@ uint32_t *ZAccel_pdo;
 uint8_t  *Status_pdo;
 uint8_t  *Seq_pdo;
 int16_t  *Temp_pdo;
-
-void populate_byte_to_data(const uint8_t* data_byte,uint32_t* data);
 
 ecat_pdo_entry_t imu_rx_pdos[] = {{((void**)(&imu_command_state_pdo)),1},
 							  {((void**)(&imu_counter_pdo)),2},
@@ -95,9 +93,6 @@ void imu_read_data(ecat_slave_t ecat_port){
 
 	    uint32_t pResponse[36];
 		uint8_t u8_pResponse[36];
-		uint32_t *roll;
-		uint32_t *pitch;
-		uint32_t *yaw;
 
 		uint8_t led_cnt = 0;
 
@@ -113,8 +108,6 @@ void imu_read_data(ecat_slave_t ecat_port){
 				LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_BLUE;
 			}
 			++led_cnt;
-
-			uint32_t ptr = 0;
 
 			(*imu_medulla_id_pdo) = 0;
 			(*imu_current_state_pdo)= 0;
@@ -139,16 +132,12 @@ void imu_read_data(ecat_slave_t ecat_port){
 
 				if (response)
 				{
-					//_delay_ms(1);
-
-
 					for (uint8_t i=0;i<36;i++)
 					{
 						pResponse[i] = u8_pResponse[i];
 					}
 
-
-						//TxPDO entries
+					//TxPDO entries
 					(*imu_medulla_id_pdo) = 1;
 					(*imu_current_state_pdo) = 2;
 					(*imu_medulla_counter_pdo) = 3;
@@ -165,7 +154,6 @@ void imu_read_data(ecat_slave_t ecat_port){
 					// YAngDelta
 					ptr = u8_pResponse+8;
 					populate_byte_to_data(ptr,YAngDelta_pdo);
-
 
 					// ZAngDelta
 					ptr = u8_pResponse+12;
@@ -246,7 +234,6 @@ uint8_t imu_set_continuous_mode(void){
 		uint8_t response;
 		uint8_t tx_buffer_length;
 
-
 		while (1)
 		{
 			tx_buffer_length = 0;
@@ -258,9 +245,7 @@ uint8_t imu_set_continuous_mode(void){
 			{
 				return rx_buffer[0];
 			}
-
 		}
-
 }
 
 uint8_t imu_unset_continuous_mode(void){
@@ -284,9 +269,7 @@ uint8_t imu_unset_continuous_mode(void){
 			//{
 				return rx_buffer[0];
 			//}
-
 		//}
-
 }
 
 
@@ -305,7 +288,6 @@ uint8_t imu_set_active_mode(void){
 			uart_rx_data(&uart_debug,rx_buffer,4);
 			_delay_ms(5);
 		}
-
 }
 
 uint8_t imu_read_euler_angles(uint32_t *ptr_roll, uint32_t *ptr_pitch, uint32_t *ptr_yaw){
@@ -314,12 +296,10 @@ uint8_t imu_read_euler_angles(uint32_t *ptr_roll, uint32_t *ptr_pitch, uint32_t 
 
 		tx_buffer[0] = 0xCE;
 
-
 		uart_tx_data(&uart_debug,tx_buffer, 1);
 		uart_rx_data(&uart_debug,rx_buffer,19);
 
 		// read euler angles
-
 		(*ptr_roll) = SHIFT_3BYTE(rx_buffer[1]);
 		(*ptr_roll) += SHIFT_2BYTE(rx_buffer[2]);
 		(*ptr_roll) += SHIFT_1BYTE(rx_buffer[3]);
@@ -334,8 +314,6 @@ uint8_t imu_read_euler_angles(uint32_t *ptr_roll, uint32_t *ptr_pitch, uint32_t 
 		(*ptr_yaw) += SHIFT_2BYTE(rx_buffer[10]);
 		(*ptr_yaw) += SHIFT_1BYTE(rx_buffer[11]);
 		(*ptr_yaw) += rx_buffer[12];
-
-
 
 		return rx_buffer[0];
 }
@@ -501,5 +479,4 @@ void populate_byte_to_data(const uint8_t* data_byte,uint32_t* data){
 	(*data) += SHIFT_1BYTE((uint32_t)(*data_byte));
 	++data_byte;
 	(*data) += (uint32_t)(*data_byte);
-
 }
