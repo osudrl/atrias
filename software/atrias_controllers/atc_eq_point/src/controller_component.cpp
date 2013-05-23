@@ -321,10 +321,10 @@ default:
 							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle)){
-								leftMotorAngle.B = rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle);
-							}
 							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle)){
+								co.lLeg.motorCurrentB = 20;
+							}
 							logData.state=11;
 						} else {
 							if (t<guiIn.l_fl){			// forward swing
