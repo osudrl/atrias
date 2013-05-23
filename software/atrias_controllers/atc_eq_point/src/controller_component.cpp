@@ -295,8 +295,8 @@ default:
 		{																								// stance leg rotate to pea
 					// asymmetry - extend right leg
 			        rightMotorAngle = legToMotorPos(phi_rLeg,guiIn.l_leg_st);
-					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0.5,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
-					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0.5,rs.rLeg.halfA.motorVelocity);
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
+					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 		} else 
 		{																															 // if pea was reached once
 			sw_stance=true;
@@ -317,7 +317,7 @@ default:
 									D0.set(guiIn.d_ls);
 									P1.set(guiIn.p_ls);
 									D1.set(guiIn.d_ls);
-							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
+							l_swing = guiIn.l_leg_st - amp * sin(t * M_PI);
 							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
@@ -329,11 +329,11 @@ default:
 						} else {
 							if (t<guiIn.l_fl){			// forward swing
 								phi_lLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
-								l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=12;
 							} else {						    // retraction towards touch-down	
 								phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-								l_swing = guiIn.l_leg_st;
+								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=13;
 							}
 							//map leg angle sweep of flight leg to 0->1
@@ -369,8 +369,8 @@ default:
 		if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 		{           // stance leg rotate to pea
 					leftMotorAngle = legToMotorPos(phi_lLeg,guiIn.l_leg_st);
-					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0.5,rs.lLeg.halfB.motorVelocity)  + guiIn.l_st;
-					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0.5,rs.lLeg.halfA.motorVelocity);
+					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + guiIn.l_st;
+					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 		} else 
 		{                        // if aea was reached once
 			sw_stance=true;
@@ -391,7 +391,7 @@ default:
 							D3.set(guiIn.d_ls);
 							P4.set(guiIn.p_ls);
 							D4.set(guiIn.d_ls);
-							l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
+							l_swing = guiIn.l_leg_st - amp * sin(t * M_PI);
 							phi_rLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 							co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
@@ -403,12 +403,12 @@ default:
 							logData.state=21;
 						} else {
 							if (t<guiIn.l_fl){
-								l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
+								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								phi_rLeg=guiIn.pea - t / (guiIn.l_fl) * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 								logData.state=22;
 							} else {
 								phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-								l_swing = guiIn.l_leg_st;
+								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=23;
 							}
 							//map leg angle sweep of flight leg to 0->1
