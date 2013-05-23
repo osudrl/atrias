@@ -22,10 +22,12 @@ atc_heuristic_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::SpinButton *walking_state_spinbutton,
-	*standing_leg_spinbutton,
+	*atrias_spring_spinbutton,
 	*slip_leg_spinbutton,
 	*swing_leg_retraction_spinbutton,
-	*event_trigger_force_spinbutton,
+	*force_threshold_td_spinbutton,
+	*force_threshold_to_spinbutton,
+	*position_threshold_td_spinbutton,
 	*stance_leg_target_spinbutton,
 	*flight_leg_target_spinbutton,
 	*leg_pos_kp_spinbutton,
@@ -39,6 +41,8 @@ Gtk::ComboBox *main_controller_combobox;
 	
 Gtk::Button *flight_to_button,
 	*flight_td_button;
+	
+Gtk::ToggleButton *debug_togglebutton;
 
 void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
 
