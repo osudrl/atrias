@@ -23,6 +23,7 @@
 #include "medulla_leg.h"
 #include "medulla_boom.h"
 #include "medulla_hip.h"
+#include "medulla_imu.h"
 
 #include "amplifier.h"
 

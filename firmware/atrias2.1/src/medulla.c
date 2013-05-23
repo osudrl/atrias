@@ -152,12 +152,28 @@ int main(void) {
 			wait_loop = boom_wait_loop;
 			break;
 
-		case MEDULLA_TEST_ID_PREFIX:
+		// NOTE: MEDULLA_TEST case disabled to make room for IMU
+		//case MEDULLA_TEST_ID_PREFIX:
+		//	#if defined DEBUG_HIGH || defined DEBUG_LOW
+		//	printf("loading test medulla.\n");
+		//	#endif
+		//	/// TODO: Add code to map function pointers to test medulla
+		//	break;
+
+		case MEDULLA_IMU_ID_PREFIX:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
-			printf("loading test medulla.\n");
+			printf("loading imu medulla.\n");
 			#endif
-			/// TODO: Add code to map function pointers to test medulla
+			initilize = imu_initilize;
+			update_inputs = imu_update_inputs;
+			//update_outputs = imu_update_outputs;
+			estop = imu_estop;
+			//check_error = imu_check_error;
+			//check_halt = imu_check_halt;
+			reset_error = imu_reset_error;
+			//wait_loop = imu_wait_loop;
 			break;
+
 		default:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
 			printf(" unknown medulla.\n");
