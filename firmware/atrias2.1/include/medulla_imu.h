@@ -12,6 +12,9 @@
 #include "ethercat.h"
 #include "adc.h"
 
+#define KVH_TX_BUFFER_LENGTH 10
+#define KVH_RX_BUFFER_LENGTH 100
+
 // KVH stuff. TODO: Move this to own header file.
 typedef struct {
 	uint8_t tx_buffer[KVH_TX_BUFFER_LENGTH];
@@ -20,13 +23,14 @@ typedef struct {
 	uint8_t *data_buffer;
 } kvh_data_t;
 
-kvh_init(PORT_t *port, USART_t *uart, kvh_data_t *data, uint8_t *data_buffer);
+void kvh_init(PORT_t *port, USART_t *uart, kvh_data_t *kvh_data);
+void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data);
 
 // Medulla stuff.
 void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
 
 void imu_read_data(ecat_slave_t ecat_port);
-bool imu_calculating_checksum(uint8+_t *rx_buffer, uint8_t rx_buffer_length);
+bool imu_calculating_checksum(uint8_t *rx_buffer, uint8_t rx_buffer_length);
 uint8_t imu_set_continuous_mode(void);
 uint8_t imu_unset_continuous_mode(void);
 uint8_t imu_set_active_mode(void);
