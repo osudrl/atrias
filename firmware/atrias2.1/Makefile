@@ -10,7 +10,7 @@ OUTPUT = medulla
 OUTPUT_DIR = .
 
 # Source Files
-SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c amplifier.c
+SOURCES = medulla.c medulla_leg.c medulla_hip.c medulla_boom.c medulla_imu.c amplifier.c
 SRCDIR = src
 
 # Medulla_lib stuff
