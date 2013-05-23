@@ -27,6 +27,8 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 
 void imu_update_inputs(uint8_t id);
 void imu_estop(void);
+bool imu_check_error(uint8_t id);
+bool imu_check_halt(uint8_t id);
 void imu_reset_error(void);
 bool imu_calculating_checksum(uint8_t *rx_buffer, uint8_t rx_buffer_length);
 uint8_t imu_set_continuous_mode(void);

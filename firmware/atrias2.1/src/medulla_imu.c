@@ -55,7 +55,7 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	*imu_error_flags_pdo = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing leg with ID: %04x\n",id);
+	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
 	#endif
 
 	#ifdef DEBUG_HIGH
@@ -181,6 +181,14 @@ void imu_update_inputs(uint8_t id) {
 
 inline void imu_estop(void) {
 	*imu_error_flags_pdo |= medulla_error_estop;
+}
+
+bool imu_check_error(uint8_t id) {
+	return false;
+}
+
+bool imu_check_halt(uint8_t id) {
+	return false;
 }
 
 void imu_reset_error(void) {
