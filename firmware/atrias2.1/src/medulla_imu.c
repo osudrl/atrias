@@ -93,90 +93,79 @@ void imu_update_inputs(uint8_t id) {
 
 	uint8_t led_cnt = 0;
 
-	while (1) {
-		// Blinking means IMU is performing fine.
-		if (led_cnt/((uint32_t)(100))) {
-			LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN;
-		}
-		else {
-			LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_BLUE;
-		}
-		++led_cnt;
-
-		(*imu_medulla_id_pdo) = 0;
-		(*imu_current_state_pdo)= 0;
-		(*imu_medulla_counter_pdo)= 0;
-		(*imu_error_flags_pdo)= 0;
-		(*XAngDelta_pdo) = 0;
-		(*XAccel_pdo)= 0;
-		(*YAngDelta_pdo)= 0;
-		(*YAccel_pdo)= 0;
-		(*ZAngDelta_pdo)= 0;
-		(*ZAccel_pdo)= 0;
-		(*Status_pdo)= 0;
-		(*Seq_pdo)= 0;
-		(*Temp_pdo)= 0;
-
-		//if (*imu_command_pdo)
-		if (1) {
-			// Read data
-			//response = imu_read_accel_angRate_OriMatrix(u8_pResponse);
-			//response = imu_pull_accel_angRate_OriMatrix(u8_pResponse);
-
-			if (response) {
-				for (uint8_t i=0;i<36;i++) {
-					pResponse[i] = u8_pResponse[i];
-				}
-
-				//TxPDO entries
-				(*imu_medulla_id_pdo) = 1;
-				(*imu_current_state_pdo) = 2;
-				(*imu_medulla_counter_pdo) = 3;
-				(*imu_error_flags_pdo) = 4;
-
-				// Populate data from IMU. Refer to p. 10 in manual for
-				// data locations.
-				uint8_t *ptr;
-
-				// XAngDelta
-				ptr = u8_pResponse+4;
-				populate_byte_to_data(ptr,XAngDelta_pdo);
-
-				// YAngDelta
-				ptr = u8_pResponse+8;
-				populate_byte_to_data(ptr,YAngDelta_pdo);
-
-				// ZAngDelta
-				ptr = u8_pResponse+12;
-				populate_byte_to_data(ptr,ZAngDelta_pdo);
-
-				// XAccel
-				ptr = u8_pResponse+16;
-				populate_byte_to_data(ptr,XAccel_pdo);
-
-				// YAccel
-				ptr = u8_pResponse+20;
-				populate_byte_to_data(ptr,YAccel_pdo);
-
-				// ZAccel
-				ptr = u8_pResponse+24;
-				populate_byte_to_data(ptr,ZAccel_pdo);
-
-				// Status
-				ptr = u8_pResponse+28;
-				*Status_pdo = *ptr;
-
-				// Seq
-				ptr = u8_pResponse+29;
-				*Seq_pdo = *ptr;
-
-				// Temp
-				ptr = u8_pResponse+30;
-				*Temp_pdo = SHIFT_1BYTE((int16_t)(*ptr++));
-				*Temp_pdo += (int16_t)(*ptr);
-			}
-		}
+	// Blinking means IMU is performing fine.
+	if (led_cnt/((uint32_t)(100))) {
+		LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN;
 	}
+	else {
+		LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_BLUE;
+	}
+	++led_cnt;
+
+	(*imu_medulla_id_pdo) = 0;
+	(*imu_current_state_pdo)= 0;
+	(*imu_medulla_counter_pdo)= 0;
+	(*imu_error_flags_pdo)= 0;
+	(*XAngDelta_pdo) = 0;
+	(*XAccel_pdo)= 0;
+	(*YAngDelta_pdo)= 0;
+	(*YAccel_pdo)= 0;
+	(*ZAngDelta_pdo)= 0;
+	(*ZAccel_pdo)= 0;
+	(*Status_pdo)= 0;
+	(*Seq_pdo)= 0;
+	(*Temp_pdo)= 0;
+
+	for (uint8_t i=0;i<36;i++) {
+		pResponse[i] = u8_pResponse[i];
+	}
+
+	//TxPDO entries
+	(*imu_medulla_id_pdo) = 1;
+	(*imu_current_state_pdo) = 2;
+	(*imu_medulla_counter_pdo) = 3;
+	(*imu_error_flags_pdo) = 4;
+
+	// Populate data from IMU. Refer to p. 10 in manual for
+	// data locations.
+	uint8_t *ptr;
+
+	// XAngDelta
+	ptr = u8_pResponse+4;
+	populate_byte_to_data(ptr,XAngDelta_pdo);
+
+	// YAngDelta
+	ptr = u8_pResponse+8;
+	populate_byte_to_data(ptr,YAngDelta_pdo);
+
+	// ZAngDelta
+	ptr = u8_pResponse+12;
+	populate_byte_to_data(ptr,ZAngDelta_pdo);
+
+	// XAccel
+	ptr = u8_pResponse+16;
+	populate_byte_to_data(ptr,XAccel_pdo);
+
+	// YAccel
+	ptr = u8_pResponse+20;
+	populate_byte_to_data(ptr,YAccel_pdo);
+
+	// ZAccel
+	ptr = u8_pResponse+24;
+	populate_byte_to_data(ptr,ZAccel_pdo);
+
+	// Status
+	ptr = u8_pResponse+28;
+	*Status_pdo = *ptr;
+
+	// Seq
+	ptr = u8_pResponse+29;
+	*Seq_pdo = *ptr;
+
+	// Temp
+	ptr = u8_pResponse+30;
+	*Temp_pdo = SHIFT_1BYTE((int16_t)(*ptr++));
+	*Temp_pdo += (int16_t)(*ptr);
 }
 
 inline void imu_estop(void) {
