@@ -58,6 +58,7 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
 	#endif
 
+	#ifdef ENABLE_ECAT
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing sync managers\n");
 	#endif
@@ -67,6 +68,7 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	printf("[Medulla IMU] Initilizing PDO entries\n");
 	#endif
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
+	#endif // ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing UART\n");

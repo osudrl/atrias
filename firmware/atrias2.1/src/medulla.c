@@ -227,7 +227,7 @@ int main(void) {
 		#ifdef ENABLE_ECAT
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
 		#else
-		_delay_ms(1);
+		_delay_ms(5);
 		if (true) {
 		#endif
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
