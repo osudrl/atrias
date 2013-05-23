@@ -172,31 +172,24 @@ void imu_read_data(ecat_slave_t ecat_port){
 
 					// Status
 					ptr = u8_pResponse+28;
-					populate_byte_to_data(ptr,Status_pdo);
+					*Status_pdo = *ptr;
 
 					// Seq
 					ptr = u8_pResponse+29;
-					populate_byte_to_data(ptr,Seq_pdo);
+					*Seq_pdo = *ptr;
 
 					// Temp
 					ptr = u8_pResponse+30;
-					populate_byte_to_data(ptr,Temp_pdo);
+					*Temp_pdo = SHIFT_1BYTE((int16_t)(*ptr++));
+					*Temp_pdo += (int16_t)(*ptr);
 				}
 			}
-
 		}
+
 		//Read new commands from the ethercat slave
 		ecat_read_rx_sm(&ecat_port);
 		//Send the new sensor data to the ethercat slave
 		ecat_write_tx_sm(&ecat_port);
-
-		//_delay_ms(15);
-	}
-
-
-	//_delay_ms(50);
-
-
 }
 
 bool imu_calculating_checksum(uint8_t *rx_buffer,uint8_t rx_buffer_length){
