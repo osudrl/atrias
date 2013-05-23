@@ -56,11 +56,10 @@ ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
 							  {((void**)(&Temp_pdo)),2}};
 
 void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
-
 	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_IMU_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_IMU_INPUTS_SIZE, 0x2000);
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, 19);   // TODO: What's 19?
 
-	kvh_init(&PORTF, &USARTF0, &kvh_data, kvh_data_pdo);
+	kvh_init(&PORTF, &USARTF0, &kvh_data);
 
 	*master_watchdog = imu_counter_pdo;
 	*packet_counter = imu_medulla_counter_pdo;
@@ -465,13 +464,14 @@ uint8_t imu_reset_update_mode(void){
 	}
 }
 
-void kvh_init(PORT_t *port, USART_t *uart, kvh_data_t *data, uint8_t *data_buffer) {
-	data->uart_port = uart_init_port(port, uat, uart_baud_921600, data->tx_buffer, KVH_TX_BUFFER_LENGTH, data->rx_buffer, KVH_RX_BUFFER_LENGTH);
-	uart_connect_port(&(data->uart_port), 0);
-	data->data_buffer = data_buffer;
+void kvh_init(PORT_t *port, USART_t *uart, kvh_data_t *kvh_data) {
+	kvh_data->uart_port = uart_init_port(port, uart, uart_baud_921600, kvh_data->tx_buffer, KVH_TX_BUFFER_LENGTH, kvh_data->rx_buffer, KVH_RX_BUFFER_LENGTH);
+	uart_connect_port(&(kvh_data->uart_port), false);
+
+	// TODO: configure IMU.
 }
 
-void populate_byte_to_data(const uint8_t* data_byte,uint32_t* data){
+void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data) {
 	(*data) = SHIFT_3BYTE((uint32_t)(*data_byte));
 	++data_byte;
 	(*data) += SHIFT_2BYTE((uint32_t)(*data_byte));
