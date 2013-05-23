@@ -100,8 +100,8 @@ void imu_read_data(ecat_slave_t ecat_port){
 		// soft reset
 		//imu_soft_reset();
 
-	    uint32_t pResponse[67];
-		uint8_t u8_pResponse[67];
+	    uint32_t pResponse[36];
+		uint8_t u8_pResponse[36];
 		uint32_t *roll;
 		uint32_t *pitch;
 		uint32_t *yaw;
@@ -149,7 +149,7 @@ void imu_read_data(ecat_slave_t ecat_port){
 					//_delay_ms(1);
 
 
-					for (uint8_t i=0;i<67;i++)
+					for (uint8_t i=0;i<36;i++)
 					{
 						pResponse[i] = u8_pResponse[i];
 					}
