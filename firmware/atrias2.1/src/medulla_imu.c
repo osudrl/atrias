@@ -72,15 +72,8 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 }
 
 void imu_read_data(ecat_slave_t ecat_port){
-
-	   // Read raw data through UART from IMU
-	   int tx_byte_cnt;
-	   int rx_byte_cnt;
-	   uint8_t rx_byte;
-	   uint8_t byte;
-
-	   // init UART
-	   uart_debug = uart_init_port(&PORTE, &USARTE0, uart_baud_460800, imu_tx_buffer, 10, imu_rx_buffer, 100);
+	   // Init debug UART
+	   uart_debug = uart_init_port(&PORTE, &USARTE0, uart_baud_921600, imu_tx_buffer, 10, imu_rx_buffer, 100);
 	   uart_connect_port(&uart_debug, true);
 
 		// reset updata mode
