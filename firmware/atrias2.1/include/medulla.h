@@ -44,6 +44,9 @@
 
 #define ENABLE_LEDS
 
+// EtherCAT
+#define ENABLE_ECAT
+
 // Debug uart port definitions
 #define DEBUG_UART_TX_BUFFER_SIZE 1024
 #define DEBUG_UART_RX_BUFFER_SIZE 16
