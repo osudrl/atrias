@@ -265,7 +265,7 @@ void ATCEqPoint::controller() {
 					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 					logOut.state=11;
 					if (leftMotorAngle.B < (rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle))){
-						co.lLeg.motorCurrentB = 40;
+						co.lLeg.motorCurrentB = guiIn.d_af;
 						logOut.state=11.1;
 					}
 				} else {
@@ -346,7 +346,7 @@ void ATCEqPoint::controller() {
 					logOut.state=21;
 					//keep spring deflection of spring A smaller than spring B
 					if (rightMotorAngle.B < (rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle))){
-						co.rLeg.motorCurrentB=40;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
+						co.rLeg.motorCurrentB=guiIn.d_af;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
 						logOut.state=21.1;
 					}
 				} else {
