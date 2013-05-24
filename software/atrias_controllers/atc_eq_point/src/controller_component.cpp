@@ -308,30 +308,35 @@ default:
 	//****************************************************************flight control left leg*************************************************************************************************************
 		if ((t < 1) && (!sw_flight)) 
         {
-		P0.set(guiIn.p_lf);
-		D0.set(guiIn.d_lf);
-		P1.set(guiIn.p_lf);
-		D1.set(guiIn.d_lf);
-						if (t < 0.1){						// leg lift off
-									P0.set(guiIn.p_ls);
-									D0.set(guiIn.d_ls);
-									P1.set(guiIn.p_ls);
-									D1.set(guiIn.d_ls);
+
+						if (t < 0.2){						// leg lift off
+							P0.set(guiIn.p_ls);
+							D0.set(guiIn.d_ls);
+							P1.set(guiIn.p_ls);
+							D1.set(guiIn.d_ls);
 							l_swing = guiIn.l_leg_st - amp * sin(t * M_PI);
 							phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 							if (leftMotorAngle.B < rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle)){
-								co.lLeg.motorCurrentB = 20;
+								co.lLeg.motorCurrentB = 40;
 							}
 							logData.state=11;
 						} else {
 							if (t<guiIn.l_fl){			// forward swing
-								phi_lLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+								P0.set(guiIn.p_lf);
+								D0.set(guiIn.d_lf);
+								P1.set(guiIn.p_lf);
+								D1.set(guiIn.d_lf);
+								phi_lLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=12;
 							} else {						    // retraction towards touch-down	
+								P0.set(guiIn.p_ls);
+								D0.set(guiIn.d_ls);
+								P1.set(guiIn.p_ls);
+								D1.set(guiIn.d_ls);
 								phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=13;
@@ -382,11 +387,8 @@ default:
 	//*******************************************************************************************************************************************************************************************************************
 		if ((t < 1) && (!sw_flight)) 
         {
-		P3.set(guiIn.p_lf);
-		D3.set(guiIn.d_lf);
-		P4.set(guiIn.p_lf);
-		D4.set(guiIn.d_lf);
-						if (t < 0.1){
+
+						if (t < 0.2){
 							P3.set(guiIn.p_ls);
 							D3.set(guiIn.d_ls);
 							P4.set(guiIn.p_ls);
@@ -395,18 +397,27 @@ default:
 							phi_rLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
 							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 							co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 							//keep spring deflection of spring A smaller than spring B
 							if (rightMotorAngle.B < rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle)){
-								rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
+								co.rLeg.motorCurrentB=40;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
 							}
-							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+	
 							logData.state=21;
 						} else {
 							if (t<guiIn.l_fl){
+								P3.set(guiIn.p_lf);
+								D3.set(guiIn.d_lf);
+								P4.set(guiIn.p_lf);
+								D4.set(guiIn.d_lf);
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
-								phi_rLeg=guiIn.pea - t / (guiIn.l_fl) * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+								phi_rLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 								logData.state=22;
 							} else {
+								P3.set(guiIn.p_ls);
+								D3.set(guiIn.d_ls);
+								P4.set(guiIn.p_ls);
+								D4.set(guiIn.d_ls);
 								phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=23;
