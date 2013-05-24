@@ -1,0 +1,13 @@
+<package>
+	<description brief="atrias_rosbag">
+		atrias_rosbag
+	</description>
+	<author>Dynamic Robotics Laboratory</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/atrias_rosbag</url>
+	<depend package="roscpp" />
+	<depend package="rosbag" />
+</package>
+
+<!-- vim: set noexpandtab: -->
