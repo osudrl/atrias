@@ -404,7 +404,7 @@ default:
 								co.rLeg.motorCurrentB=40;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
 							}
 	
-							logData.state=21;
+							logData.state=21.1;
 						} else {
 							if (t<guiIn.l_fl){
 								P3.set(guiIn.p_lf);
