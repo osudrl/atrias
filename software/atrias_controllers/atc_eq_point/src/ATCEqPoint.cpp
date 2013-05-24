@@ -236,43 +236,61 @@ void ATCEqPoint::controller() {
 			pd4Controller.D = guiIn.d_ls;
 			pd4Controller.P = guiIn.p_ls;
 			if ((rs.rLeg.halfB.motorAngle < phiBs_des) && !sw_stance)
-			{																								// stance leg rotate to pea
+			{											// stance leg rotate to pea
 				// asymmetry - extend right leg
 				std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,guiIn.l_leg_st);
-				co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0.5,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
-				co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0.5,rs.rLeg.halfA.motorVelocity);
+				co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity) + guiIn.l_st;
+				co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 			} else 
 			{																															 // if pea was reached once
 				sw_stance=true;
 				std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.pea, guiIn.l_leg_st);
-				co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
-				co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+				co.rLeg.motorCurrentB = 0;//pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+				co.rLeg.motorCurrentA = 0;//pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 			}
 
 			//****************************************************************flight control left leg*************************************************************************************************************
 			if ((t < 1) && (!sw_flight)) 
 			{
-				pd0Controller.P = guiIn.p_lf;
-				pd0Controller.D = guiIn.d_lf;
-				pd1Controller.P = guiIn.p_lf;
-				pd1Controller.D = guiIn.d_lf;
-				if (t < 0.1){
-					l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
-					phi_lLeg = guiIn.pea;
+
+				if (t < 0.2){						// leg lift off
+					pd0Controller.P = guiIn.p_ls;
+					pd0Controller.D = guiIn.d_ls;
+					pd1Controller.P = guiIn.p_ls;
+					pd1Controller.D = guiIn.d_ls;
+					l_swing = guiIn.l_leg_st - amp * sin(t * M_PI);
+					phi_lLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+					std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg, l_swing);
+					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 					logOut.state=11;
-				} else if (t<guiIn.l_fl){
-					phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
-					l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
-					logOut.state=12;
+					if (leftMotorAngle.B < (rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle))){
+						co.lLeg.motorCurrentB = 40;
+						logOut.state=11.1;
+					}
 				} else {
-					phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-					l_swing = guiIn.l_leg_st;
-					logOut.state=13;
+					if (t<guiIn.l_fl){			// forward swing
+						pd0Controller.P = guiIn.p_lf;
+						pd0Controller.D = guiIn.d_lf;
+						pd1Controller.P = guiIn.p_lf;
+						pd1Controller.D = guiIn.d_lf;
+						phi_lLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+						l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
+						logOut.state=12;
+					} else {						    // retraction towards touch-down	
+						pd0Controller.P = guiIn.p_lf;
+						pd0Controller.D = guiIn.d_lf;
+						pd1Controller.P = guiIn.p_lf;
+						pd1Controller.D = guiIn.d_lf;
+						phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
+						l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
+						logOut.state=13;
+					}
+					//map leg angle sweep of flight leg to 0->1
+					std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,l_swing);
+					co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+					co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 				}
-				//map leg angle sweep of flight leg to 0->1
-				std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,l_swing);
-				co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-				co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
 			} else 
 			{																														// aea is reached once
 				sw_flight=true;
@@ -301,41 +319,59 @@ void ATCEqPoint::controller() {
 			if ((rs.lLeg.halfB.motorAngle < phiBs_des) && !sw_stance) 
 			{           // stance leg rotate to pea
 				std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,guiIn.l_leg_st);
-				co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0.5,rs.lLeg.halfB.motorVelocity)  + guiIn.l_st;
-				co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0.5,rs.lLeg.halfA.motorVelocity);
+				co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)  + guiIn.l_st;
+				co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 			} else 
 			{                        // if aea was reached once
 				sw_stance=true;
 				std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.pea,guiIn.l_leg_st);
-				co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
-				co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
-				//logOut.currState = 4;
+				co.lLeg.motorCurrentB = 0;//pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+				co.lLeg.motorCurrentA = 0;//pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 			}
 
 			//*******************************************************************************************************************************************************************************************************************
 			if ((t < 1) && (!sw_flight)) 
 			{
-				pd3Controller.P = guiIn.p_lf;
-				pd3Controller.D = guiIn.d_lf;
-				pd4Controller.P = guiIn.p_lf;
-				pd4Controller.D = guiIn.d_lf;
+
 				if (t < 0.1){
-					l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
-					phi_rLeg = guiIn.pea;
+					pd3Controller.P = guiIn.p_ls;
+					pd3Controller.D = guiIn.d_ls;
+					pd4Controller.P = guiIn.p_ls;
+					pd4Controller.D = guiIn.d_ls;
+					l_swing = guiIn.l_leg_st - amp * sin(t * M_PI);
+					phi_rLeg = guiIn.pea - t / guiIn.l_fl * (1 + guiIn.d_as) * (guiIn.pea - guiIn.aea);
+					std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,l_swing);
+					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 					logOut.state=21;
-				} else if (t<guiIn.l_fl){
-					phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
-					l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
-					logOut.state=22;
+					//keep spring deflection of spring A smaller than spring B
+					if (rightMotorAngle.B < (rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle))){
+						co.rLeg.motorCurrentB=40;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
+						logOut.state=21.1;
+					}
 				} else {
-					phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
-					l_swing = guiIn.l_leg_st;
-					logOut.state=23;
+					if (t<guiIn.l_fl){
+						pd3Controller.P = guiIn.p_lf;
+						pd3Controller.D = guiIn.d_lf;
+						pd4Controller.P = guiIn.p_lf;
+						pd4Controller.D = guiIn.d_lf;
+						l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
+						phi_rLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+						logOut.state=22;
+					} else {
+						pd3Controller.P = guiIn.p_lf;
+						pd3Controller.D = guiIn.d_lf;
+						pd4Controller.P = guiIn.p_lf;
+						pd4Controller.D = guiIn.d_lf;
+						phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
+						l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
+						logOut.state=23;
+					}
+					//map leg angle sweep of flight leg to 0->1
+					std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,l_swing);
+					co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+					co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 				}
-				//map leg angle sweep of flight leg to 0->1
-				std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,l_swing);
-				co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
-				co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
 			} else 
 			{																														// aea is reached once
 				sw_flight=true;
