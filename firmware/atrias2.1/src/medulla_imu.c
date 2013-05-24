@@ -119,8 +119,6 @@ void imu_update_inputs(uint8_t id) {
 	uint32_t pResponse[36];
 	uint8_t u8_pResponse[36];
 
-	uint8_t led_cnt = 0;
-
 	while (uart_received_bytes(&imu_port) < 36);
 	uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
 
@@ -129,15 +127,6 @@ void imu_update_inputs(uint8_t id) {
 	//	imu_rx_buffer[i] = 97+i;
 	//}
 	printf("[Medulla IMU] %u %x\n", imu_rx_buffer[0], (uint8_t) imu_rx_buffer[28]);
-
-	// Blinking means IMU is performing fine.
-	if (led_cnt/((uint32_t)(100))) {
-		LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN;
-	}
-	else {
-		LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_BLUE;
-	}
-	++led_cnt;
 
 	(*imu_medulla_id_pdo) = 0;
 	(*imu_current_state_pdo)= 0;
