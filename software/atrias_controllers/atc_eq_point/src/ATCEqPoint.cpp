@@ -245,8 +245,8 @@ void ATCEqPoint::controller() {
 			{																															 // if pea was reached once
 				sw_stance=true;
 				std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.pea, guiIn.l_leg_st);
-				co.rLeg.motorCurrentB = 0;//pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
-				co.rLeg.motorCurrentA = 0;//pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
+				co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+				co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 			}
 
 			//****************************************************************flight control left leg*************************************************************************************************************
@@ -325,8 +325,8 @@ void ATCEqPoint::controller() {
 			{                        // if aea was reached once
 				sw_stance=true;
 				std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.pea,guiIn.l_leg_st);
-				co.lLeg.motorCurrentB = 0;//pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
-				co.lLeg.motorCurrentA = 0;//pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
+				co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+				co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 			}
 
 			//*******************************************************************************************************************************************************************************************************************
