@@ -76,10 +76,30 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH);
 	uart_connect_port(&imu_port, false);
 
+	//#ifdef DEBUG_HIGH
+	//printf("[Medulla IMU] Configuring IMU\n");
+	//#endif
+	//sprintf(imu_tx_buffer, "=config,1\n");
+	//printf("[Medulla IMU] %s", imu_tx_buffer);
+	//uart_tx_data(&imu_port, imu_tx_buffer, 10);
+	//_delay_ms(100);
+	//uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
+	//printf("resp: %s\n", imu_rx_buffer);
+	//sprintf(imu_tx_buffer, "=msync,ext\n");
+	//printf("[Medulla IMU] %s", imu_tx_buffer);
+	//uart_tx_data(&imu_port, imu_tx_buffer, 11);
+	//_delay_ms(100);
+	//sprintf(imu_tx_buffer, "=config,0\n");
+	//printf("[Medulla IMU] %s", imu_tx_buffer);
+	//uart_tx_data(&imu_port, imu_tx_buffer, 10);
+	//_delay_ms(100);
+
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Configuring IMU\n");
+	printf("[Medulla IMU] Initilizing Master Sync pin\n");
 	#endif
-	// TODO: configure IMU.
+	msync_pin = io_init_pin(&PORTF, 1);
+	//io_set_direction(msync_pin, io_output);
+	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Why doesn't the above (commented) line work?
 
 	*master_watchdog = imu_counter_pdo;
 	*packet_counter = imu_medulla_counter_pdo;
@@ -89,11 +109,26 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 }
 
 void imu_update_inputs(uint8_t id) {
+	// Trigger Master Sync
+	//io_set_output(msync_pin, io_high);
+	PORTF.OUT = PORTF.OUT | (1<<1);   // TODO: Why doen't the above (commented) line work?
+	_delay_us(50);   // This should be at least 30 us.
+	io_set_output(msync_pin, io_low);
+
 	uint8_t response;
 	uint32_t pResponse[36];
 	uint8_t u8_pResponse[36];
 
 	uint8_t led_cnt = 0;
+
+	while (uart_received_bytes(&imu_port) < 36);
+	uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
+
+	int i;
+	//for (i=0; i<36; i++) {
+	//	imu_rx_buffer[i] = 97+i;
+	//}
+	printf("[Medulla IMU] %u %x\n", imu_rx_buffer[0], (uint8_t) imu_rx_buffer[28]);
 
 	// Blinking means IMU is performing fine.
 	if (led_cnt/((uint32_t)(100))) {

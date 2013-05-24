@@ -11,14 +11,16 @@
 // Include medulla_lib headers
 #include "ethercat.h"
 #include "adc.h"
+#include "io_pin.h"
 
-#define KVH_TX_BUFFER_LENGTH 10
+#define KVH_TX_BUFFER_LENGTH 100
 #define KVH_RX_BUFFER_LENGTH 100
 
 // KVH stuff. TODO: Move this to own header file.
 uint8_t imu_tx_buffer[KVH_TX_BUFFER_LENGTH];
 uint8_t imu_rx_buffer[KVH_RX_BUFFER_LENGTH];
 uart_port_t imu_port;
+io_pin_t msync_pin;
 
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data);
 
