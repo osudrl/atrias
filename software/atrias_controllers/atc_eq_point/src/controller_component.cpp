@@ -309,7 +309,7 @@ default:
 		if ((t < 1) && (!sw_flight)) 
         {
 
-						if (t < 0.1){						// leg lift off
+						if (t < 0.2){						// leg lift off
 							P0.set(guiIn.p_ls);
 							D0.set(guiIn.d_ls);
 							P1.set(guiIn.p_ls);
@@ -319,18 +319,18 @@ default:
 							leftMotorAngle = legToMotorPos(phi_lLeg,l_swing);
 							co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
 							co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity);
+							logData.state=11;
 							if (leftMotorAngle.B < (rs.lLeg.halfB.legAngle - (rs.lLeg.halfA.motorAngle - rs.lLeg.halfB.legAngle))){
 								co.lLeg.motorCurrentB = 40;
 								logData.state=11.1;
 							}
-							logData.state=11;
 						} else {
 							if (t<guiIn.l_fl){			// forward swing
 								P0.set(guiIn.p_lf);
 								D0.set(guiIn.d_lf);
 								P1.set(guiIn.p_lf);
 								D1.set(guiIn.d_lf);
-								phi_lLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+								phi_lLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=12;
 							} else {						    // retraction towards touch-down	
@@ -399,12 +399,12 @@ default:
 							rightMotorAngle = legToMotorPos(phi_rLeg,l_swing);
 							co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
 							co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
+							logData.state=21;
 							//keep spring deflection of spring A smaller than spring B
 							if (rightMotorAngle.B < (rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle))){
 								co.rLeg.motorCurrentB=40;//rightMotorAngle.B = rs.rLeg.halfB.legAngle - (rs.rLeg.halfA.motorAngle - rs.rLeg.halfB.legAngle);
+								logData.state=21.1;
 							}
-	
-							logData.state=21.1;
 						} else {
 							if (t<guiIn.l_fl){
 								P3.set(guiIn.p_lf);
