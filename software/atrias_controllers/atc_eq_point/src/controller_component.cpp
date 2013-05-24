@@ -333,10 +333,10 @@ default:
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=12;
 							} else {						    // retraction towards touch-down	
-								P0.set(guiIn.p_ls);
-								D0.set(guiIn.d_ls);
-								P1.set(guiIn.p_ls);
-								D1.set(guiIn.d_ls);
+								P0.set(guiIn.p_lf);
+								D0.set(guiIn.d_lf);
+								P1.set(guiIn.p_lf);
+								D1.set(guiIn.d_lf);
 								phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=13;
@@ -414,10 +414,10 @@ default:
 								phi_rLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 								logData.state=22;
 							} else {
-								P3.set(guiIn.p_ls);
-								D3.set(guiIn.d_ls);
-								P4.set(guiIn.p_ls);
-								D4.set(guiIn.d_ls);
+								P3.set(guiIn.p_lf);
+								D3.set(guiIn.d_lf);
+								P4.set(guiIn.p_lf);
+								D4.set(guiIn.d_lf);
 								phi_rLeg=guiIn.aea - (1 - t) / (1 - guiIn.l_fl) * (guiIn.pea-guiIn.aea) * guiIn.d_as;
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=23;
