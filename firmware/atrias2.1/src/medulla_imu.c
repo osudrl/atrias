@@ -142,10 +142,6 @@ void imu_update_inputs(uint8_t id) {
 	(*Seq_pdo)= 0;
 	(*Temp_pdo)= 0;
 
-	for (uint8_t i=0;i<36;i++) {
-		pResponse[i] = u8_pResponse[i];
-	}
-
 	//TxPDO entries
 	(*imu_medulla_id_pdo) = 1;
 	(*imu_current_state_pdo) = 2;
@@ -157,41 +153,43 @@ void imu_update_inputs(uint8_t id) {
 	uint8_t *ptr;
 
 	// XAngDelta
-	ptr = u8_pResponse+4;
+	ptr = imu_rx_buffer+4;
 	populate_byte_to_data(ptr,XAngDelta_pdo);
 
 	// YAngDelta
-	ptr = u8_pResponse+8;
+	ptr = imu_rx_buffer+8;
 	populate_byte_to_data(ptr,YAngDelta_pdo);
 
 	// ZAngDelta
-	ptr = u8_pResponse+12;
+	ptr = imu_rx_buffer+12;
 	populate_byte_to_data(ptr,ZAngDelta_pdo);
 
 	// XAccel
-	ptr = u8_pResponse+16;
+	ptr = imu_rx_buffer+16;
 	populate_byte_to_data(ptr,XAccel_pdo);
 
 	// YAccel
-	ptr = u8_pResponse+20;
+	ptr = imu_rx_buffer+20;
 	populate_byte_to_data(ptr,YAccel_pdo);
 
 	// ZAccel
-	ptr = u8_pResponse+24;
+	ptr = imu_rx_buffer+24;
 	populate_byte_to_data(ptr,ZAccel_pdo);
 
 	// Status
-	ptr = u8_pResponse+28;
-	*Status_pdo = *ptr;
+	*Status_pdo = imu_rx_buffer[28];
 
 	// Seq
-	ptr = u8_pResponse+29;
+	ptr = imu_rx_buffer+29;
 	*Seq_pdo = *ptr;
 
 	// Temp
-	ptr = u8_pResponse+30;
+	ptr = imu_rx_buffer+30;
 	*Temp_pdo = SHIFT_1BYTE((int16_t)(*ptr++));
 	*Temp_pdo += (int16_t)(*ptr);
+
+
+	printf("[Medulla IMU] %u %x\n", imu_rx_buffer[0], (*Temp_pdo));
 }
 
 inline void imu_estop(void) {
@@ -233,22 +231,6 @@ bool imu_calculating_checksum(uint8_t *rx_buffer,uint8_t rx_buffer_length) {
 	}
 
 	return tGoodResponse;
-}
-
-uint8_t imu_set_active_mode(void) {
-	uint8_t imu_tx_buffer[4];
-	uint8_t imu_rx_buffer[4];
-
-	imu_tx_buffer[0] = 0xD4;
-	imu_tx_buffer[1] = 0xA3;
-	imu_tx_buffer[2] = 0x47;
-	imu_tx_buffer[3] = 0x01;
-
-	while (1) {
-		uart_tx_data(&imu_port, imu_tx_buffer, 4);
-		uart_rx_data(&imu_port, imu_rx_buffer, 4);
-		_delay_ms(5);
-	}
 }
 
 uint8_t imu_read_euler_angles(uint32_t *ptr_roll, uint32_t *ptr_pitch, uint32_t *ptr_yaw) {
