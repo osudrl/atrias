@@ -17,7 +17,7 @@ MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 
 # Build Options
 OBJDIR = .
-INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include
+INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../atrias2.1/include ../../robot_definitions
 OPT = 2
 
 # AVR Dude options
