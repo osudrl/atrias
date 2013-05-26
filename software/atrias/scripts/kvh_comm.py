@@ -4,7 +4,7 @@
 import serial
 from time import sleep
 
-serialPort = '/dev/ttyUSB0'
+serialPort = '/dev/ttyACM0'
 baudrate = '921600'
 newlineChar = '\n'
 
@@ -53,8 +53,8 @@ if __name__ == "__main__":
 
         sleep(0.01)
 
-        #if ser.inWaiting() > 0:
-        #    print ser.read(ser.inWaiting())
+        if ser.inWaiting() > 0:
+            print ser.read(ser.inWaiting()).encode("hex")
 
 # vim: expandtab
 
