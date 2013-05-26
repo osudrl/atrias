@@ -16,7 +16,7 @@ SRCDIR = src
 # Medulla_lib stuff
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 #DEBUG_LEVEL = -DDEBUG_LOW
-#DEBUG_LEVEL = -DDEBUG_HIGH
+DEBUG_LEVEL = -DDEBUG_HIGH
 
 # Build Options
 OBJDIR = build
