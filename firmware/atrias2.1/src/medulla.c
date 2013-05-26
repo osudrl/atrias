@@ -200,18 +200,18 @@ int main(void) {
 	#endif
 	USARTE0.CTRLA = USART_RXCINTLVL_LO_gc | USART_TXCINTLVL_LO_gc;
 	
-	#ifdef DEBUG_HIGH
-	printf("[Medulla] Starting watchdog timer\n");
-	#endif
-	// Now that everything is set up, start the watchdog timer
-	WATCHDOG_TIMER.INTCTRLA = TC_OVFINTLVL_HI_gc;
-	WATCHDOG_TIMER.CTRLA = TC_CLKSEL_DIV4_gc;
+	//#ifdef DEBUG_HIGH
+	//printf("[Medulla] Starting watchdog timer\n");
+	//#endif
+	//// Now that everything is set up, start the watchdog timer
+	//WATCHDOG_TIMER.INTCTRLA = TC_OVFINTLVL_HI_gc;
+	//WATCHDOG_TIMER.CTRLA = TC_CLKSEL_DIV4_gc;
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Enabling E-Stop\n");
 	#endif
 	// and enable the estop initilize the estop
-	estop_enable_port(&estop_port);
+	//estop_enable_port(&estop_port);
 
 	#if defined DEUBG_LOW || defined DEBUG_HIGH
 	printf("[Medulla] Starting state machine\n");

@@ -115,18 +115,16 @@ void imu_update_inputs(uint8_t id) {
 	_delay_us(50);   // This should be at least 30 us.
 	io_set_output(msync_pin, io_low);
 
-	uint8_t response;
-	uint32_t pResponse[36];
-	uint8_t u8_pResponse[36];
-
-	while (uart_received_bytes(&imu_port) < 36);
+	//while (uart_received_bytes(&imu_port) < 36);
+	_delay_ms(2);   // DEBUG wait for IMU to finish sending data.
+	uint8_t bytes_received = uart_received_bytes(&imu_port);   // DEBUG
 	uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
 
-	int i;
+	// For DEBUG, fill buffer with some characters.
+	//int i;
 	//for (i=0; i<36; i++) {
-	//	imu_rx_buffer[i] = 97+i;
+	//	imu_rx_buffer[i] = 0x10+i;
 	//}
-	printf("[Medulla IMU] %u %x\n", imu_rx_buffer[0], (uint8_t) imu_rx_buffer[28]);
 
 	(*imu_medulla_id_pdo) = 0;
 	(*imu_current_state_pdo)= 0;
@@ -189,7 +187,8 @@ void imu_update_inputs(uint8_t id) {
 	*Temp_pdo += (int16_t)(*ptr);
 
 
-	printf("[Medulla IMU] %u %x\n", imu_rx_buffer[0], (*Temp_pdo));
+	int a=28;
+	printf("[Medulla IMU] %u %x %x %x %x\n", bytes_received, imu_rx_buffer[a+0], imu_rx_buffer[a+1], *(imu_rx_buffer+a+2), *(imu_rx_buffer+a+3));
 }
 
 inline void imu_estop(void) {
