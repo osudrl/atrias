@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import serial
+from time import sleep
 
 serialPort = '/dev/ttyUSB0'
 baudrate = '921600'
@@ -50,8 +51,7 @@ if __name__ == "__main__":
 
         serWrite(cmd+newlineChar)
 
-        for i in range(10000):
-            i = i
+        sleep(0.01)
 
         #if ser.inWaiting() > 0:
         #    print ser.read(ser.inWaiting())
