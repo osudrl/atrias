@@ -860,7 +860,7 @@
 					</Entry>
 					<Entry>
 						<Index>#x0006</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>2</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Counter</Name>
 						<DataType>UINT</DataType>
@@ -871,28 +871,28 @@
 					<Name>uController Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>3</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>ID</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>4</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>State</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>4</SubIndex>
+						<SubIndex>5</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Counter</Name>
 						<DataType>USINT</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>5</SubIndex>
+						<SubIndex>6</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Error Flags</Name>
 						<DataType>USINT</DataType>
@@ -903,21 +903,21 @@
 					<Name>Rotation</Name>
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>7</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>X</Name>
 						<DataType>REAL</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>8</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Y</Name>
 						<DataType>REAL</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>9</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Z</Name>
 						<DataType>REAL</DataType>
@@ -928,21 +928,21 @@
 					<Name>Acceleration</Name>
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>10</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>X</Name>
 						<DataType>REAL</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>11</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Y</Name>
 						<DataType>REAL</DataType>
 					</Entry>
 					<Entry>
 						<Index>#x0007</Index>
-						<SubIndex>3</SubIndex>
+						<SubIndex>12</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Z</Name>
 						<DataType>REAL</DataType>
@@ -953,21 +953,21 @@
 					<Name>Status</Name>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>13</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Status</Name>
 						<DataType>USINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>2</SubIndex>
+						<SubIndex>14</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Sequence</Name>
 						<DataType>USINT</DataType>
 					</Entry>					
 					<Entry>
 						<Index>#x0003</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>15</SubIndex>
 						<BitLen>16</BitLen>
 						<Name>Temperature</Name>
 						<DataType>INT</DataType>
