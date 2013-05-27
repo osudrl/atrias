@@ -16,7 +16,6 @@ uint32_t counter = 0;
 // RxPDO entries
 medulla_state_t *imu_command_state_pdo;
 uint16_t *imu_counter_pdo;
-int32_t *imu_command_pdo;
 
 // TxPDO entries
 uint8_t *imu_medulla_id_pdo;
@@ -34,8 +33,7 @@ uint8_t  *Seq_pdo;
 int16_t  *Temp_pdo;
 
 ecat_pdo_entry_t imu_rx_pdos[] = {{((void**)(&imu_command_state_pdo)),1},
-	{((void**)(&imu_counter_pdo)),2},
-	{((void**)(&imu_command_pdo)),2}};
+	{((void**)(&imu_counter_pdo)),2}};
 
 ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&imu_current_state_pdo)),1},
