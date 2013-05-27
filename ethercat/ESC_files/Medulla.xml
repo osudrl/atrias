@@ -902,21 +902,21 @@
 					<Index>#x1A10</Index>
 					<Name>Rotation</Name>
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>7</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>X</Name>
 						<DataType>REAL</DataType>
 					</Entry>					
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>8</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Y</Name>
 						<DataType>REAL</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>9</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Z</Name>
@@ -927,21 +927,21 @@
 					<Index>#x1A11</Index>
 					<Name>Acceleration</Name>
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>10</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>X</Name>
 						<DataType>REAL</DataType>
 					</Entry>					
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>11</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Y</Name>
 						<DataType>REAL</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0007</Index>
+						<Index>#x0008</Index>
 						<SubIndex>12</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>Z</Name>
