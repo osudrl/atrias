@@ -958,21 +958,13 @@
 						<Name>Status</Name>
 						<DataType>USINT</DataType>
 					</Entry>					
-				</TxPdo>
-				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A13</Index>
-					<Name>Sequence</Name>
 					<Entry>
 						<Index>#x0005</Index>
-						<SubIndex>1</SubIndex>
+						<SubIndex>2</SubIndex>
 						<BitLen>8</BitLen>
 						<Name>Sequence</Name>
 						<DataType>USINT</DataType>
 					</Entry>					
-				</TxPdo>
-				<TxPdo Fixed="1" Sm="3">
-					<Index>#x1A14</Index>
-					<Name>Temperature</Name>
 					<Entry>
 						<Index>#x0003</Index>
 						<SubIndex>1</SubIndex>
