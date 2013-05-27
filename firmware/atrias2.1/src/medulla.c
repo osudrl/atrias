@@ -77,16 +77,16 @@ int main(void) {
 	#endif
 
 	// Initilizing EStop
-	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing E-Stop\n");
-	#endif
-	estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
+	//#ifdef DEBUG_HIGH
+	//printf("[Medulla] Initilizing E-Stop\n");
+	//#endif
+	//estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
 
-	// Initilizing timestamp counter
-	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing timestamp counter\n");
-	#endif
-	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
+	//// Initilizing timestamp counter
+	//#ifdef DEBUG_HIGH
+	//printf("[Medulla] Initilizing timestamp counter\n");
+	//#endif
+	//TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initilize the EtherCAT
 	#ifdef ENABLE_ECAT

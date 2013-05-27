@@ -16,9 +16,14 @@
 #define KVH_TX_BUFFER_LENGTH 100
 #define KVH_RX_BUFFER_LENGTH 100
 
+#ifndef ENABLE_ECAT
+uint8_t dummy_pdo[36];
+#endif // ENABLE_ECAT
+
 // KVH stuff. TODO: Move this to own header file.
 uint8_t imu_tx_buffer[KVH_TX_BUFFER_LENGTH];
 uint8_t imu_rx_buffer[KVH_RX_BUFFER_LENGTH];
+uint8_t imu_packet[36];
 uart_port_t imu_port;
 io_pin_t msync_pin;
 

@@ -59,15 +59,34 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 
 	#ifdef ENABLE_ECAT
+
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing sync managers\n");
-	#endif
+	#endif // DEBUG_HIGH
 	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_IMU_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_IMU_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing PDO entries\n");
-	#endif
+	#endif // DEBUG_HIGH
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
+
+	#else
+
+	// TODO: I want to enable the below debug printf, but the Medulla is silly
+	// and will freeze up if I print too much.
+	//#ifdef DEBUG_HIGH
+	//printf("[Medulla IMU] Initilizing dummy PDO entries\n");
+	//#endif // DEBUG_HIGH
+	XAngDelta_pdo  = dummy_pdo+4;
+	XAccel_pdo = dummy_pdo+8;
+	YAngDelta_pdo = dummy_pdo+12;
+	YAccel_pdo = dummy_pdo+16;
+	ZAngDelta_pdo = dummy_pdo+20;
+	ZAccel_pdo = dummy_pdo+24;
+	Status_pdo = dummy_pdo+28;
+	Seq_pdo = dummy_pdo+29;
+	Temp_pdo = dummy_pdo+30;
+
 	#endif // ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
@@ -75,24 +94,6 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif
 	imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH);
 	uart_connect_port(&imu_port, false);
-
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla IMU] Configuring IMU\n");
-	//#endif
-	//sprintf(imu_tx_buffer, "=config,1\n");
-	//printf("[Medulla IMU] %s", imu_tx_buffer);
-	//uart_tx_data(&imu_port, imu_tx_buffer, 10);
-	//_delay_ms(100);
-	//uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
-	//printf("resp: %s\n", imu_rx_buffer);
-	//sprintf(imu_tx_buffer, "=msync,ext\n");
-	//printf("[Medulla IMU] %s", imu_tx_buffer);
-	//uart_tx_data(&imu_port, imu_tx_buffer, 11);
-	//_delay_ms(100);
-	//sprintf(imu_tx_buffer, "=config,0\n");
-	//printf("[Medulla IMU] %s", imu_tx_buffer);
-	//uart_tx_data(&imu_port, imu_tx_buffer, 10);
-	//_delay_ms(100);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing Master Sync pin\n");
@@ -112,19 +113,11 @@ void imu_update_inputs(uint8_t id) {
 	// Trigger Master Sync
 	//io_set_output(msync_pin, io_high);
 	PORTF.OUT = PORTF.OUT | (1<<1);   // TODO: Why doen't the above (commented) line work?
-	_delay_us(50);   // This should be at least 30 us.
+	_delay_us(30);   // This should be at least 30 us.
 	io_set_output(msync_pin, io_low);
 
-	//while (uart_received_bytes(&imu_port) < 36);
-	_delay_ms(2);   // DEBUG wait for IMU to finish sending data.
-	uint8_t bytes_received = uart_received_bytes(&imu_port);   // DEBUG
-	uart_rx_data(&imu_port, imu_rx_buffer, uart_received_bytes(&imu_port));
-
-	// For DEBUG, fill buffer with some characters.
-	//int i;
-	//for (i=0; i<36; i++) {
-	//	imu_rx_buffer[i] = 0x10+i;
-	//}
+	while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
 	(*imu_medulla_id_pdo) = 0;
 	(*imu_current_state_pdo)= 0;
@@ -146,49 +139,20 @@ void imu_update_inputs(uint8_t id) {
 	(*imu_medulla_counter_pdo) = 3;
 	(*imu_error_flags_pdo) = 4;
 
-	// Populate data from IMU. Refer to p. 10 in manual for
-	// data locations.
-	uint8_t *ptr;
+	// Populate data from IMU. Refer to p. 10 in manual for data locations.
+	populate_byte_to_data(imu_packet[4], XAngDelta_pdo);   // XAngDelta
+	populate_byte_to_data(imu_packet[8], YAngDelta_pdo);   // YAngDelta
+	populate_byte_to_data(imu_packet[12], ZAngDelta_pdo);   // ZAngDelta
+	populate_byte_to_data(imu_packet[16], XAccel_pdo);   // XAccel
+	populate_byte_to_data(imu_packet[20], YAccel_pdo);   // YAccel
+	populate_byte_to_data(imu_packet[24], ZAccel_pdo);   // ZAccel
+	*Status_pdo = imu_packet[28];   // Status
+	*Seq_pdo = imu_packet[29];   // Seq
+	*Temp_pdo = SHIFT_1BYTE((int16_t)imu_packet[30]) + ((int16_t)imu_packet[31]);   // Temp
 
-	// XAngDelta
-	ptr = imu_rx_buffer+4;
-	populate_byte_to_data(ptr,XAngDelta_pdo);
-
-	// YAngDelta
-	ptr = imu_rx_buffer+8;
-	populate_byte_to_data(ptr,YAngDelta_pdo);
-
-	// ZAngDelta
-	ptr = imu_rx_buffer+12;
-	populate_byte_to_data(ptr,ZAngDelta_pdo);
-
-	// XAccel
-	ptr = imu_rx_buffer+16;
-	populate_byte_to_data(ptr,XAccel_pdo);
-
-	// YAccel
-	ptr = imu_rx_buffer+20;
-	populate_byte_to_data(ptr,YAccel_pdo);
-
-	// ZAccel
-	ptr = imu_rx_buffer+24;
-	populate_byte_to_data(ptr,ZAccel_pdo);
-
-	// Status
-	*Status_pdo = imu_rx_buffer[28];
-
-	// Seq
-	ptr = imu_rx_buffer+29;
-	*Seq_pdo = *ptr;
-
-	// Temp
-	ptr = imu_rx_buffer+30;
-	*Temp_pdo = SHIFT_1BYTE((int16_t)(*ptr++));
-	*Temp_pdo += (int16_t)(*ptr);
-
-
-	int a=28;
-	printf("[Medulla IMU] %u %x %x %x %x\n", bytes_received, imu_rx_buffer[a+0], imu_rx_buffer[a+1], *(imu_rx_buffer+a+2), *(imu_rx_buffer+a+3));
+	#ifdef DEBUG_HIGH
+	printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
+	#endif // DEBUG_HIGH
 }
 
 inline void imu_estop(void) {
