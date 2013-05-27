@@ -961,7 +961,7 @@
 				</TxPdo>
 				<TxPdo Fixed="1" Sm="3">
 					<Index>#x1A13</Index>
-					<Name>Z Encoder</Name>
+					<Name>Sequence</Name>
 					<Entry>
 						<Index>#x0005</Index>
 						<SubIndex>1</SubIndex>
