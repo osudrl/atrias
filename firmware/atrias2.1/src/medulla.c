@@ -170,7 +170,7 @@ int main(void) {
 			#endif
 			initilize = imu_initilize;
 			update_inputs = imu_update_inputs;
-			//update_outputs = imu_update_outputs;
+			update_outputs = imu_update_outputs;
 			estop = imu_estop;
 			//check_error = imu_check_error;
 			//check_halt = imu_check_halt;
@@ -235,7 +235,7 @@ int main(void) {
 			// This is the signal to read all the sensors and run the state mechine
 
 			// Update the inputs
-			update_inputs(medulla_id);
+			//update_inputs(medulla_id);
 
 			// Increment the packet counter
 			*packet_counter += 1;
@@ -261,12 +261,12 @@ int main(void) {
 				// We will continually deassert the estop line here, because it takes a long time for it to respond
 				estop_deassert_port(&estop_port);
 
-				if (*commanded_state == medulla_state_run) {
-					*current_state = medulla_state_init;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
-					printf("[State Machine] Entering state: Init\n");
-					#endif
-				}
+				//if (*commanded_state == medulla_state_run) {
+				//	*current_state = medulla_state_init;
+				//	#if defined DEUBG_LOW || defined DEBUG_HIGH
+				//	printf("[State Machine] Entering state: Init\n");
+				//	#endif
+				//}
 				continue;
 			}
 			if (*current_state == medulla_state_init) {

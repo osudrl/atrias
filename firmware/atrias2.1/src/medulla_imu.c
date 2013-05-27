@@ -117,40 +117,28 @@ void imu_update_inputs(uint8_t id) {
 	while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
-	(*imu_medulla_id_pdo) = 0;
-	(*imu_current_state_pdo)= 0;
-	(*imu_medulla_counter_pdo)= 0;
-	(*imu_error_flags_pdo)= 0;
-	(*XAngDelta_pdo) = 0;
-	(*YAngDelta_pdo)= 0;
-	(*ZAngDelta_pdo)= 0;
-	(*XAccel_pdo)= 0;
-	(*YAccel_pdo)= 0;
-	(*ZAccel_pdo)= 0;
-	(*Status_pdo)= 0;
-	(*Seq_pdo)= 0;
-	(*Temp_pdo)= 0;
-
-	//TxPDO entries
-	(*imu_medulla_id_pdo) = 1;
-	(*imu_current_state_pdo) = 2;
-	(*imu_medulla_counter_pdo) = 3;
-	(*imu_error_flags_pdo) = 4;
-
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
-	populate_byte_to_data(imu_packet[4], XAngDelta_pdo);   // XAngDelta
-	populate_byte_to_data(imu_packet[8], YAngDelta_pdo);   // YAngDelta
-	populate_byte_to_data(imu_packet[12], ZAngDelta_pdo);   // ZAngDelta
-	populate_byte_to_data(imu_packet[16], XAccel_pdo);   // XAccel
-	populate_byte_to_data(imu_packet[20], YAccel_pdo);   // YAccel
-	populate_byte_to_data(imu_packet[24], ZAccel_pdo);   // ZAccel
+	populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
+	populate_byte_to_data(&(imu_packet[8]), YAngDelta_pdo);   // YAngDelta
+	populate_byte_to_data(&(imu_packet[12]), ZAngDelta_pdo);   // ZAngDelta
+	populate_byte_to_data(&(imu_packet[16]), XAccel_pdo);   // XAccel
+	populate_byte_to_data(&(imu_packet[20]), YAccel_pdo);   // YAccel
+	populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);   // ZAccel
 	*Status_pdo = imu_packet[28];   // Status
 	*Seq_pdo = imu_packet[29];   // Seq
 	*Temp_pdo = SHIFT_1BYTE((int16_t)imu_packet[30]) + ((int16_t)imu_packet[31]);   // Temp
 
+	//float arst = 12.0;
+	//memcpy(ZAngDelta_pdo, &arst, sizeof(float));
+
+
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
+	//printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
 	#endif // DEBUG_HIGH
+}
+
+void imu_update_outputs(uint8_t id)
+{
 }
 
 inline void imu_estop(void) {
@@ -169,63 +157,10 @@ void imu_reset_error(void) {
 	*imu_error_flags_pdo = 0;
 }
 
-bool imu_calculating_checksum(uint8_t *rx_buffer,uint8_t rx_buffer_length) {
-	bool tGoodResponse;
-	uint8_t tix;
-	uint16_t tChksum;
-	uint16_t tResponseChksum;
-
-	tChksum = 0;
-	for (tix = 0;tix < (rx_buffer_length-2);tix++) {
-		tChksum += (uint16_t)(rx_buffer[tix]);
-	}
-
-	tResponseChksum = 0;
-	tResponseChksum = rx_buffer[rx_buffer_length-2] << 8;
-	tResponseChksum += rx_buffer[rx_buffer_length-1];
-
-	if (tChksum==tResponseChksum) {
-		tGoodResponse = true;
-	}
-	else {
-		tGoodResponse = false;
-	}
-
-	return tGoodResponse;
-}
-
-uint8_t imu_read_euler_angles(uint32_t *ptr_roll, uint32_t *ptr_pitch, uint32_t *ptr_yaw) {
-	uint8_t tx_buffer[1];
-	uint8_t rx_buffer[19];
-
-	tx_buffer[0] = 0xCE;
-
-	// read euler angles
-	(*ptr_roll) = SHIFT_3BYTE(rx_buffer[1]);
-	(*ptr_roll) += SHIFT_2BYTE(rx_buffer[2]);
-	(*ptr_roll) += SHIFT_1BYTE(rx_buffer[3]);
-	(*ptr_roll) += rx_buffer[4];
-
-	(*ptr_pitch) = SHIFT_3BYTE(rx_buffer[5]);
-	(*ptr_pitch) += SHIFT_2BYTE(rx_buffer[6]);
-	(*ptr_pitch) += SHIFT_1BYTE(rx_buffer[7]);
-	(*ptr_pitch) += rx_buffer[8];
-
-	(*ptr_yaw) = SHIFT_3BYTE(rx_buffer[9]);
-	(*ptr_yaw) += SHIFT_2BYTE(rx_buffer[10]);
-	(*ptr_yaw) += SHIFT_1BYTE(rx_buffer[11]);
-	(*ptr_yaw) += rx_buffer[12];
-
-	return rx_buffer[0];
-}
-
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data) {
-	(*data) = SHIFT_3BYTE((uint32_t)(*data_byte));
-	++data_byte;
-	(*data) += SHIFT_2BYTE((uint32_t)(*data_byte));
-	++data_byte;
-	(*data) += SHIFT_1BYTE((uint32_t)(*data_byte));
-	++data_byte;
-	(*data) += (uint32_t)(*data_byte);
+	*(((uint8_t*)data)+3) = *(data_byte++);
+	*(((uint8_t*)data)+2) = *(data_byte++);
+	*(((uint8_t*)data)+1) = *(data_byte++);
+	*(((uint8_t*)data)+0) = *(data_byte);
 }
 
