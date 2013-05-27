@@ -23,10 +23,10 @@ medulla_state_t *imu_current_state_pdo;
 uint8_t *imu_medulla_counter_pdo;
 uint8_t *imu_error_flags_pdo;
 uint32_t *XAngDelta_pdo;
-uint32_t *XAccel_pdo;
 uint32_t *YAngDelta_pdo;
-uint32_t *YAccel_pdo;
 uint32_t *ZAngDelta_pdo;
+uint32_t *XAccel_pdo;
+uint32_t *YAccel_pdo;
 uint32_t *ZAccel_pdo;
 uint8_t  *Status_pdo;
 uint8_t  *Seq_pdo;
@@ -40,10 +40,10 @@ ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&imu_medulla_counter_pdo)),1},
 	{((void**)(&imu_error_flags_pdo)),1},
 	{((void**)(&XAngDelta_pdo)),4},
-	{((void**)(&XAccel_pdo)),4},
 	{((void**)(&YAngDelta_pdo)),4},
-	{((void**)(&YAccel_pdo)),4},
 	{((void**)(&ZAngDelta_pdo)),4},
+	{((void**)(&XAccel_pdo)),4},
+	{((void**)(&YAccel_pdo)),4},
 	{((void**)(&ZAccel_pdo)),4},
 	{((void**)(&Status_pdo)),1},
 	{((void**)(&Seq_pdo)),1},
@@ -76,10 +76,10 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	//printf("[Medulla IMU] Initilizing dummy PDO entries\n");
 	//#endif // DEBUG_HIGH
 	XAngDelta_pdo  = dummy_pdo+4;
-	XAccel_pdo = dummy_pdo+8;
-	YAngDelta_pdo = dummy_pdo+12;
-	YAccel_pdo = dummy_pdo+16;
-	ZAngDelta_pdo = dummy_pdo+20;
+	YAngDelta_pdo = dummy_pdo+8;
+	ZAngDelta_pdo = dummy_pdo+12;
+	XAccel_pdo = dummy_pdo+16;
+	YAccel_pdo = dummy_pdo+20;
 	ZAccel_pdo = dummy_pdo+24;
 	Status_pdo = dummy_pdo+28;
 	Seq_pdo = dummy_pdo+29;
@@ -122,10 +122,10 @@ void imu_update_inputs(uint8_t id) {
 	(*imu_medulla_counter_pdo)= 0;
 	(*imu_error_flags_pdo)= 0;
 	(*XAngDelta_pdo) = 0;
-	(*XAccel_pdo)= 0;
 	(*YAngDelta_pdo)= 0;
-	(*YAccel_pdo)= 0;
 	(*ZAngDelta_pdo)= 0;
+	(*XAccel_pdo)= 0;
+	(*YAccel_pdo)= 0;
 	(*ZAccel_pdo)= 0;
 	(*Status_pdo)= 0;
 	(*Seq_pdo)= 0;
