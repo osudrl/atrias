@@ -63,6 +63,11 @@ int main(void) {
 		amplifier_debug();
 	}
 
+	// Check if we are in IMU debug mode
+	if (medulla_id == MEDULLA_IMU_DEBUG_ID) {
+		imu_debug();
+	}
+
 	// Initilize the debug uart
 	debug_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, debug_uart_tx_buffer, DEBUG_UART_TX_BUFFER_SIZE, debug_uart_rx_buffer, DEBUG_UART_RX_BUFFER_SIZE);
 
@@ -472,6 +477,33 @@ void amplifier_debug() {
 
 		// Get data from amplifier and send it to the computer
 		data_size = uart_rx_data(&amplifier_port,data_buffer,64);
+		uart_tx_data(&computer_port,data_buffer,data_size);
+
+	}
+
+}
+
+void imu_debug() {
+	uint8_t computer_port_tx[64];
+	uint8_t computer_port_rx[64];
+	uint8_t imu_port_tx[64];
+	uint8_t imu_port_rx[64];
+	uint8_t data_buffer[64];
+	uint8_t data_size;
+
+	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 64, computer_port_rx, 64);
+	uart_connect_port(&computer_port,false);
+
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 64, imu_port_rx, 64);
+	uart_connect_port(&imu_port,false);
+
+	while (1) {
+		// Get the data from the computer and send to imu
+		data_size = uart_rx_data(&computer_port,data_buffer,64);
+		uart_tx_data(&imu_port,data_buffer,data_size);
+
+		// Get data from imu and send it to the computer
+		data_size = uart_rx_data(&imu_port,data_buffer,64);
 		uart_tx_data(&computer_port,data_buffer,data_size);
 
 	}

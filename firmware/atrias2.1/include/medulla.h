@@ -1,7 +1,7 @@
 #ifndef MEDULLA_H
 #define MEDULLA_H
 
-#include <stdio.h>
+#include "/usr/avr/include/stdio.h"
 
 // Include AVR specific stuff
 #include <avr/io.h>
@@ -110,6 +110,7 @@ uint16_t estop_timeout_counter;
 
 void main_estop();
 void amplifier_debug();
+void imu_debug();
 
 // Function Pointers to the individual medulla functions
 /** @brief Function called to initilize hardware
