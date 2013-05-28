@@ -107,6 +107,10 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	*current_state = imu_current_state_pdo;
 }
 
+void imu_enable_outputs(void) {}
+
+void imu_disable_outputs(void) {}
+
 void imu_update_inputs(uint8_t id) {
 	// Trigger Master Sync
 	//io_set_output(msync_pin, io_high);
@@ -135,6 +139,11 @@ void imu_update_inputs(uint8_t id) {
 	#ifdef DEBUG_HIGH
 	//printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
 	#endif // DEBUG_HIGH
+}
+
+bool imu_run_halt(uint8_t id)
+{
+	return true;
 }
 
 void imu_update_outputs(uint8_t id)
