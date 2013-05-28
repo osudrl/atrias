@@ -18,6 +18,7 @@
 #include "estop.h"
 #include "uart.h"
 #include "ethercat.h"
+#include "ad7193.h"
 
 // Include headers for individual medullas
 #include "medulla_leg.h"
