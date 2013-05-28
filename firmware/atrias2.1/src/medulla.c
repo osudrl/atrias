@@ -9,9 +9,7 @@ ESTOP_USES_PORT(PORTJ)
 ESTOP_USES_COUNTER(TCE0)
 
 // Ethercat on port E
-#ifdef ENABLE_ECAT
 ECAT_USES_PORT(SPIE);
-#endif
 
 // Interrupt for handling watchdog (we don't need a driver for this)
 ISR(TCE1_OVF_vect) {
@@ -77,19 +75,18 @@ int main(void) {
 	#endif
 
 	// Initilizing EStop
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla] Initilizing E-Stop\n");
-	//#endif
-	//estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
+	#ifdef DEBUG_HIGH
+	printf("[Medulla] Initilizing E-Stop\n");
+	#endif
+	estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
 
-	//// Initilizing timestamp counter
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla] Initilizing timestamp counter\n");
-	//#endif
-	//TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
+	// Initilizing timestamp counter
+	#ifdef DEBUG_HIGH
+	printf("[Medulla] Initilizing timestamp counter\n");
+	#endif
+	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initilize the EtherCAT
-	#ifdef ENABLE_ECAT
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Initilizing EtherCAT\n");
 	#endif
@@ -97,7 +94,6 @@ int main(void) {
 	// set the the IRQ pin so it sets the IRQ flags on the falling edge so we can check that for the DC clock
 	PORTE.PIN1CTRL = PORT_ISC_FALLING_gc;
 	PORTE.INT0MASK = 0b10;
-	#endif // ENABLE_ECAT
 
 //	medulla_id = 1;
 	#if defined DEBUG_HIGH || defined DEBUG_LOW
@@ -156,28 +152,23 @@ int main(void) {
 			wait_loop = boom_wait_loop;
 			break;
 
-		// NOTE: MEDULLA_TEST case disabled to make room for IMU
-		//case MEDULLA_TEST_ID_PREFIX:
-		//	#if defined DEBUG_HIGH || defined DEBUG_LOW
-		//	printf("loading test medulla.\n");
-		//	#endif
-		//	/// TODO: Add code to map function pointers to test medulla
-		//	break;
-
 		case MEDULLA_IMU_ID_PREFIX:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
-			printf("loading imu medulla.\n");
+			printf("loading test medulla.\n");
 			#endif
 			initilize = imu_initilize;
+			//enable_outputs = boom_enable_outputs;
+			//disable_outputs = boom_disable_outputs;
 			update_inputs = imu_update_inputs;
+			//run_halt = boom_run_halt;
 			update_outputs = imu_update_outputs;
 			estop = imu_estop;
-			//check_error = imu_check_error;
-			//check_halt = imu_check_halt;
-			reset_error = imu_reset_error;
-			//wait_loop = imu_wait_loop;
+			//check_error = boom_check_error;
+			//check_halt = boom_check_halt;
+			//reset_error = boom_reset_error;
+			//wait_loop = boom_wait_loop;
+			/// TODO: Add code to map function pointers to test medulla
 			break;
-
 		default:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
 			printf(" unknown medulla.\n");
@@ -200,18 +191,18 @@ int main(void) {
 	#endif
 	USARTE0.CTRLA = USART_RXCINTLVL_LO_gc | USART_TXCINTLVL_LO_gc;
 	
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla] Starting watchdog timer\n");
-	//#endif
-	//// Now that everything is set up, start the watchdog timer
-	//WATCHDOG_TIMER.INTCTRLA = TC_OVFINTLVL_HI_gc;
-	//WATCHDOG_TIMER.CTRLA = TC_CLKSEL_DIV4_gc;
+	#ifdef DEBUG_HIGH
+	printf("[Medulla] Starting watchdog timer\n");
+	#endif
+	// Now that everything is set up, start the watchdog timer
+	WATCHDOG_TIMER.INTCTRLA = TC_OVFINTLVL_HI_gc;
+	WATCHDOG_TIMER.CTRLA = TC_CLKSEL_DIV4_gc;
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Enabling E-Stop\n");
 	#endif
 	// and enable the estop initilize the estop
-	//estop_enable_port(&estop_port);
+	estop_enable_port(&estop_port);
 
 	#if defined DEUBG_LOW || defined DEBUG_HIGH
 	printf("[Medulla] Starting state machine\n");
@@ -224,33 +215,26 @@ int main(void) {
 	#endif
 	while(1) {
 		// Check if there was a falling edge of the ethercat IRQ pin
-		#ifdef ENABLE_ECAT
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
-		#else
-		_delay_ms(1);
-		if (true) {
-		#endif
+			LED_PORT.OUT = 0b10;
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
 			// This is the signal to read all the sensors and run the state mechine
-
 			// Update the inputs
-			//update_inputs(medulla_id);
+			update_inputs(medulla_id);
 
 			// Increment the packet counter
 			*packet_counter += 1;
 
-			#ifdef ENABLE_ECAT
 			// Send the new sensor data to the ethercat slave
 			ecat_write_tx_sm(&ecat_port);
 
 			// Read new commands from the ethercat slave
 			ecat_read_rx_sm(&ecat_port);
-			#endif // ENABLE_ECAT
 	
 			// As long as we get the DC clock we can always feed the watchdog
 			WATCHDOG_TIMER_RESET;
-
+		
 			// Run state machine
 			if (*current_state == medulla_state_idle) {
 				#ifdef ENABLE_LEDS
@@ -261,12 +245,12 @@ int main(void) {
 				// We will continually deassert the estop line here, because it takes a long time for it to respond
 				estop_deassert_port(&estop_port);
 
-				//if (*commanded_state == medulla_state_run) {
-				//	*current_state = medulla_state_init;
-				//	#if defined DEUBG_LOW || defined DEBUG_HIGH
-				//	printf("[State Machine] Entering state: Init\n");
-				//	#endif
-				//}
+				if (*commanded_state == medulla_state_run) {
+					*current_state = medulla_state_init;
+					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					printf("[State Machine] Entering state: Init\n");
+					#endif
+				}
 				continue;
 			}
 			if (*current_state == medulla_state_init) {

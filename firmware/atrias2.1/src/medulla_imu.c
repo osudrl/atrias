@@ -1,17 +1,9 @@
-#include <medulla.h>
 #include <medulla_imu.h>
 
 //--- Define interrupt functions ---//
 UART_USES_PORT(USARTF0)   // KVH 1750
 
 //--- Define ethercat PDO entries ---//
-
-#define SHIFT_1BYTE(X)	(X<<8)
-#define SHIFT_2BYTE(X)	(X<<16)
-#define SHIFT_3BYTE(X)	(X<<24)
-
-uint32_t buffer[1000];
-uint32_t counter = 0;
 
 // RxPDO entries
 medulla_state_t *imu_command_state_pdo;
@@ -56,7 +48,7 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
 	#endif
 
-	#ifdef ENABLE_ECAT
+	//#ifdef ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing sync managers\n");
@@ -68,24 +60,24 @@ void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#endif // DEBUG_HIGH
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
 
-	#else
+	//#else
 
 	// TODO: I want to enable the below debug printf, but the Medulla is silly
 	// and will freeze up if I print too much.
 	//#ifdef DEBUG_HIGH
 	//printf("[Medulla IMU] Initilizing dummy PDO entries\n");
 	//#endif // DEBUG_HIGH
-	XAngDelta_pdo  = dummy_pdo+4;
-	YAngDelta_pdo = dummy_pdo+8;
-	ZAngDelta_pdo = dummy_pdo+12;
-	XAccel_pdo = dummy_pdo+16;
-	YAccel_pdo = dummy_pdo+20;
-	ZAccel_pdo = dummy_pdo+24;
-	Status_pdo = dummy_pdo+28;
-	Seq_pdo = dummy_pdo+29;
-	Temp_pdo = dummy_pdo+30;
+	//XAngDelta_pdo  = dummy_pdo+4;
+	//YAngDelta_pdo = dummy_pdo+8;
+	//ZAngDelta_pdo = dummy_pdo+12;
+	//XAccel_pdo = dummy_pdo+16;
+	//YAccel_pdo = dummy_pdo+20;
+	//ZAccel_pdo = dummy_pdo+24;
+	//Status_pdo = dummy_pdo+28;
+	//Seq_pdo = dummy_pdo+29;
+	//Temp_pdo = dummy_pdo+30;
 
-	#endif // ENABLE_ECAT
+	//#endif // ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing UART\n");
@@ -130,7 +122,7 @@ void imu_update_inputs(uint8_t id) {
 	populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);   // ZAccel
 	*Status_pdo = imu_packet[28];   // Status
 	*Seq_pdo = imu_packet[29];   // Seq
-	*Temp_pdo = SHIFT_1BYTE((int16_t)imu_packet[30]) + ((int16_t)imu_packet[31]);   // Temp
+	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
 
 	//float arst = 12.0;
 	//memcpy(ZAngDelta_pdo, &arst, sizeof(float));
