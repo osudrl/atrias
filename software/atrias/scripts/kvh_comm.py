@@ -54,7 +54,7 @@ if __name__ == "__main__":
         sleep(0.01)
 
         if ser.inWaiting() > 0:
-            print ser.read(ser.inWaiting()).encode("hex")
+            print ser.read(ser.inWaiting())#.encode("hex")   # Hex encoding useful for debugging individual packets.
 
 # vim: expandtab
 
