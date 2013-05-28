@@ -39,6 +39,11 @@ CFLAGS += -mmcu=$(MCU)
 CFLAGS += -std=gnu99
 CFLAGS += -lm
 
+# avr-libc version > 1.7.0?
+ifeq "$(shell expr `gcc -dumpversion` \> 1.7.0)" "1"
+	CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
+endif
+
 # Define all object files
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))
 
