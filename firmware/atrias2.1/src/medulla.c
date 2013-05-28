@@ -157,17 +157,15 @@ int main(void) {
 			printf("loading test medulla.\n");
 			#endif
 			initilize = imu_initilize;
-			//enable_outputs = boom_enable_outputs;
-			//disable_outputs = boom_disable_outputs;
+			enable_outputs = imu_enable_outputs;
+			disable_outputs = imu_disable_outputs;
 			update_inputs = imu_update_inputs;
-			//run_halt = boom_run_halt;
+			run_halt = imu_run_halt;
 			update_outputs = imu_update_outputs;
 			estop = imu_estop;
-			//check_error = boom_check_error;
-			//check_halt = boom_check_halt;
-			//reset_error = boom_reset_error;
-			//wait_loop = boom_wait_loop;
-			/// TODO: Add code to map function pointers to test medulla
+			check_error = imu_check_error;
+			check_halt = imu_check_halt;
+			reset_error = imu_reset_error;
 			break;
 		default:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
