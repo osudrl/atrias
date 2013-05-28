@@ -3,9 +3,10 @@
 #include <ecrt.h>
 #include <signal.h>
 #include <time.h>
+#include <string.h>
 
 #define VENDOR_ID    0x060F
-#define PRODUCT_CODE 0x0001
+#define PRODUCT_CODE 0x0006
 
 #define LOOP_PERIOD_NS 1000000
 
@@ -13,67 +14,43 @@
     (((TV).tv_sec - 946684800ULL) * 1000000000ULL + (TV).tv_nsec)
 
 volatile bool done = false;
-
-/* Master 0, Slave 0, "ATRIAS 2.1 (Medulla 1.5)"
- * Vendor ID:       0x0000060f
- * Product code:    0x00000001
- * Revision number: 0x00000001
- */
+/* Master 0, Slave 0, "ATRIAS_2.1_IMU_(Medulla_1.5)"
+ *  * Vendor ID:       0x0000060f
+ *   * Product code:    0x00000006
+ *    * Revision number: 0x00000001
+ *     */
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
-    {0x0005, 0x01, 8}, /* Command */
-    {0x0006, 0x01, 16}, /* Counter */
-    {0x0005, 0x01, 8}, /* ID */
-    {0x0005, 0x02, 8}, /* State */
-    {0x0005, 0x03, 8}, /* Error Flags */
-    {0x0007, 0x01, 32}, /* Encoder */
-    {0x0006, 0x02, 16}, /* Timestamp */
-    {0x0007, 0x01, 32}, /* Encoder */
-    {0x0006, 0x02, 16}, /* Timestamp */
-    {0x0007, 0x01, 32}, /* Encoder */
-    {0x0006, 0x02, 16}, /* Timestamp */
-    {0x0006, 0x02, 16}, /* Logic Voltage */
+    {0x0005, 1, 8}, /* Command */
+    {0x0006, 2, 16}, /* Counter */
+    {0x0005, 3, 8}, /* ID */
+    {0x0005, 4, 8}, /* State */
+    {0x0005, 5, 8}, /* Counter */
+    {0x0005, 6, 8}, /* Error Flags */
+    {0x0008, 7, 32}, /* X */
+    {0x0008, 8, 32}, /* Y */
+    {0x0008, 9, 32}, /* Z */
+    {0x0008, 10, 32}, /* X */
+    {0x0008, 11, 32}, /* Y */
+    {0x0008, 12, 32}, /* Z */
+    {0x0005, 13, 8}, /* Status */
+    {0x0005, 14, 8}, /* Sequence */
+    {0x0003, 15, 16}, /* Temperature */
 };
 
 ec_pdo_info_t slave_0_pdos[] = {
-    {0x1600, 2, slave_0_pdo_entries + 0}, /* uControllerInput */
-    {0x1a00, 3, slave_0_pdo_entries + 2}, /* uController Status */
-    {0x1a01, 2, slave_0_pdo_entries + 5}, /* X Encoder */
-    {0x1a02, 2, slave_0_pdo_entries + 7}, /* Pitch Encoder */
-    {0x1a03, 2, slave_0_pdo_entries + 9}, /* Z Encoder */
-    {0x1a04, 1, slave_0_pdo_entries + 11}, /* Power */
+    {0x1602, 2, slave_0_pdo_entries + 0}, /* uControllerInput */
+    {0x1a0f, 4, slave_0_pdo_entries + 2}, /* uController Status */
+    {0x1a10, 3, slave_0_pdo_entries + 6}, /* Rotation */
+    {0x1a11, 3, slave_0_pdo_entries + 9}, /* Acceleration */
+    {0x1a12, 3, slave_0_pdo_entries + 12}, /* Status */
 };
 
 ec_sync_info_t slave_0_syncs[] = {
     {0, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
-    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 4, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
 
-/* Master 0, Slave 1, "ATRIAS 2.1 (Medulla 1.5)"
- * Vendor ID:       0x0000060f
- * Product code:    0x00000001
- * Revision number: 0x00000001
- */
-
-ec_pdo_entry_info_t slave_1_pdo_entries[] = {
-    {0x0005, 0x01, 8}, /* Command */
-    {0x0003, 0x02, 16}, /* Motor Current */
-    {0x0006, 0x01, 16}, /* Timestep */
-    {0x0007, 0x02, 32}, /* Encoder 0 */
-};
-
-ec_pdo_info_t slave_1_pdos[] = {
-    {0x1600, 2, slave_1_pdo_entries + 0}, /* uControllerInput */
-    {0x1a00, 2, slave_1_pdo_entries + 2}, /* uControllerOutput */
-};
-
-ec_sync_info_t slave_1_syncs[] = {
-    {0, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
-    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
-    {2, EC_DIR_OUTPUT, 1, slave_1_pdos + 0, EC_WD_DISABLE},
-    {3, EC_DIR_INPUT, 1, slave_1_pdos + 1, EC_WD_DISABLE},
-    {0xff}
-};

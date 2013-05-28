@@ -1,7 +1,7 @@
 #ifndef MEDULLA_H
 #define MEDULLA_H
 
-#include <stdio.h>
+#include "stdio.h"
 
 // Include AVR specific stuff
 #include <avr/io.h>
@@ -18,11 +18,13 @@
 #include "estop.h"
 #include "uart.h"
 #include "ethercat.h"
+#include "ad7193.h"
 
 // Include headers for individual medullas
 #include "medulla_leg.h"
 #include "medulla_boom.h"
 #include "medulla_hip.h"
+#include "medulla_imu.h"
 
 #include "amplifier.h"
 
@@ -109,6 +111,7 @@ uint16_t estop_timeout_counter;
 
 void main_estop();
 void amplifier_debug();
+void imu_debug();
 
 // Function Pointers to the individual medulla functions
 /** @brief Function called to initilize hardware
