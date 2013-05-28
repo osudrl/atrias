@@ -159,7 +159,7 @@ int main(void) {
 
 		case MEDULLA_IMU_ID_PREFIX:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
-			printf("loading test medulla.\n");
+			printf("loading imu medulla.\n");
 			#endif
 			initilize = imu_initilize;
 			enable_outputs = imu_enable_outputs;
@@ -219,7 +219,6 @@ int main(void) {
 	while(1) {
 		// Check if there was a falling edge of the ethercat IRQ pin
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
-			LED_PORT.OUT = 0b10;
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
 			// This is the signal to read all the sensors and run the state mechine
