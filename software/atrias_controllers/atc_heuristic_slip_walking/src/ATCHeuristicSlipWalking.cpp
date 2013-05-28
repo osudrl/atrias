@@ -254,9 +254,14 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
+	// Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
+	if (qeSl > qtSl) {
+		qtSl = qeSl + 0.2;
+	}
+
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.8/(qtSl - qeSl); // TODO make a GUI input (0.6)
+	dqtFl = 0.0/(qtSl - qeSl); // TODO make a GUI input (0.6)
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
