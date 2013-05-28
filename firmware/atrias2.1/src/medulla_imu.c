@@ -1,7 +1,6 @@
 #include <medulla_imu.h>
 
 //--- Define interrupt functions ---//
-UART_USES_PORT(USARTF0)   // KVH 1750
 
 //--- Define ethercat PDO entries ---//
 

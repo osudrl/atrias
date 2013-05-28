@@ -101,10 +101,16 @@ int main(int argc, char ** argv) {
 	};
 	ec_master_state_t master_state;
 	
-
+	*input_counter = 0;
+	int  count = 0;
 	while (!done) {
-		//if ((*input_counter) > 10000)
-			*command = 2;
+//		if ((count) <10) {
+			*command = 6;
+			count++;
+//		}
+//		else
+//`			*command = 2;
+		(*input_counter) = (*input_counter)++;
 		printf("counter: %d Stat: %x Seq: %3d Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z);
 		
 		clock_gettime(CLOCK_REALTIME, &cur_time);
