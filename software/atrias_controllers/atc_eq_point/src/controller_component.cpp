@@ -309,7 +309,7 @@ default:
 		if ((t < 1) && (!sw_flight)) 
         {
 
-						if (t < 0.2){						// leg lift off
+						if (t < 0.1){						// leg lift off
 							P0.set(guiIn.p_ls);
 							D0.set(guiIn.d_ls);
 							P1.set(guiIn.p_ls);
@@ -330,7 +330,7 @@ default:
 								D0.set(guiIn.d_lf);
 								P1.set(guiIn.p_lf);
 								D1.set(guiIn.d_lf);
-								phi_lLeg = guiIn.pea - (t - 0.2) / (guiIn.l_fl - 0.2) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+								phi_lLeg = guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
 								l_swing = guiIn.l_leg_st - amp * sin (t * M_PI);
 								logData.state=12;
 							} else {						    // retraction towards touch-down	
@@ -359,6 +359,8 @@ default:
 			co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)+2;
 			logData.state=14;
 		}
+		co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA,-25,25);
+		co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB,-25,25);
 		break;
 
 
@@ -440,6 +442,8 @@ default:
 			co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
 			logData.state=24;
 		}
+		co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA,-25,25);
+		co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB,-25,25);
 		break;
 
 
