@@ -36,6 +36,8 @@ UART_USES_PORT(USARTD0)
 ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
 
+UART_USES_PORT(USARTF0)   // KVH 1750
+
 int main(void) {
 	// Initilize the clock to 32 Mhz oscillator
 	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
@@ -61,6 +63,11 @@ int main(void) {
 	// Check if we are in the amplifier debug mode
 	if (medulla_id == MEDULLA_AMPLIFIER_DEBUG) {
 		amplifier_debug();
+	}
+
+	// Check if we are in IMU debug mode
+	if (medulla_id == MEDULLA_IMU_DEBUG_ID) {
+		imu_debug();
 	}
 
 	// Initilize the debug uart
@@ -152,11 +159,20 @@ int main(void) {
 			wait_loop = boom_wait_loop;
 			break;
 
-		case MEDULLA_TEST_ID_PREFIX:
+		case MEDULLA_IMU_ID_PREFIX:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
-			printf("loading test medulla.\n");
+			printf("loading imu medulla.\n");
 			#endif
-			/// TODO: Add code to map function pointers to test medulla
+			initilize = imu_initilize;
+			enable_outputs = imu_enable_outputs;
+			disable_outputs = imu_disable_outputs;
+			update_inputs = imu_update_inputs;
+			run_halt = imu_run_halt;
+			update_outputs = imu_update_outputs;
+			estop = imu_estop;
+			check_error = imu_check_error;
+			check_halt = imu_check_halt;
+			reset_error = imu_reset_error;
 			break;
 		default:
 			#if defined DEBUG_HIGH || defined DEBUG_LOW
@@ -208,7 +224,6 @@ int main(void) {
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
 			// This is the signal to read all the sensors and run the state mechine
-
 			// Update the inputs
 			update_inputs(medulla_id);
 
@@ -223,7 +238,7 @@ int main(void) {
 	
 			// As long as we get the DC clock we can always feed the watchdog
 			WATCHDOG_TIMER_RESET;
-
+		
 			// Run state machine
 			if (*current_state == medulla_state_idle) {
 				#ifdef ENABLE_LEDS
@@ -463,6 +478,33 @@ void amplifier_debug() {
 
 		// Get data from amplifier and send it to the computer
 		data_size = uart_rx_data(&amplifier_port,data_buffer,64);
+		uart_tx_data(&computer_port,data_buffer,data_size);
+
+	}
+
+}
+
+void imu_debug() {
+	uint8_t computer_port_tx[32];
+	uint8_t computer_port_rx[32];
+	uint8_t imu_port_tx[32];
+	uint8_t imu_port_rx[32];
+	uint8_t data_buffer[32];
+	uint8_t data_size;
+
+	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 32, computer_port_rx, 32);
+	uart_connect_port(&computer_port,false);
+
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 32, imu_port_rx, 32);
+	uart_connect_port(&imu_port,false);
+
+	while (1) {
+		// Get the data from the computer and send to imu
+		data_size = uart_rx_data(&computer_port,data_buffer,32);
+		uart_tx_data(&imu_port,data_buffer,data_size);
+
+		// Get data from imu and send it to the computer
+		data_size = uart_rx_data(&imu_port,data_buffer,32);
 		uart_tx_data(&computer_port,data_buffer,data_size);
 
 	}
