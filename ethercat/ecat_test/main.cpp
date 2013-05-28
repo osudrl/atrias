@@ -48,12 +48,12 @@ int main(int argc, char ** argv) {
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 4,  &state_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 5,  &output_counter_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 6,  &error_flags_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 7,  &rot_x_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 8,  &rot_y_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 9,  &rot_z_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 10,  &accel_x_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 11,  &accel_y_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 12,  &accel_z_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 7,  &rot_x_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 8,  &rot_y_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 9,  &rot_z_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 10,  &accel_x_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 11,  &accel_y_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 12,  &accel_z_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 13,  &status_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 14,  &sequence_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x3, 15,  &temp_off, NULL},
@@ -105,7 +105,7 @@ int main(int argc, char ** argv) {
 	int  count = 0;
 	while (!done) {
 //		if ((count) <10) {
-			*command = 6;
+	//		*command = 6;
 			count++;
 //		}
 //		else
@@ -113,10 +113,10 @@ int main(int argc, char ** argv) {
 		(*input_counter) = (*input_counter)++;
 		printf("counter: %d Stat: %x Seq: %3d Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z);
 		
-		clock_gettime(CLOCK_REALTIME, &cur_time);
-		ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
-		ecrt_master_sync_reference_clock(ec_master);
-		ecrt_master_sync_slave_clocks(ec_master);
+		clock_gettime(CLOCK_REALTIME, &cur8_time);
+		ecrt_master_application_time(ec_ma8ster, EC_NEWTIMEVAL2NANO(cur_time));
+		ecrt_master_sync_reference_clock(e8c_master);
+		ecrt_master_sync_slave_clocks(ec_m8aster);
 		ecrt_domain_queue(domain);
 		ecrt_master_send(ec_master);
 		usleep(300);
