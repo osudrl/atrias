@@ -1,7 +1,7 @@
 #ifndef MEDULLA_HIP_H
 #define MEDULLA_HIP_H
 
-#include "/usr/avr/include/stdio.h"
+#include <stdio.h>
 #include <string.h>
 
 // Include the robot definitions

@@ -17,7 +17,6 @@ SRCDIR = src
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 #DEBUG_LEVEL = -DDEBUG_LOW
 DEBUG_LEVEL = -DDEBUG_HIGH
-ENABLE_ECAT = -DENABLE_ECAT
 
 # Build Options
 OBJDIR = build
@@ -30,7 +29,7 @@ PORT = usb
 
 # Create the compiler flags
 CFLAGS  = -DF_CPU=$(F_CPU)UL
-CFLAGS += $(DEBUG_LEVEL) $(ENABLE_ECAT)
+CFLAGS += $(DEBUG_LEVEL)
 CFLAGS += -O$(OPT)
 CFLAGS += -fshort-enums
 CFLAGS += -Wall
@@ -39,7 +38,6 @@ CFLAGS += $(patsubst %,-I%,$(INCLUDE_DIRS))
 CFLAGS += -mmcu=$(MCU)
 CFLAGS += -std=gnu99
 CFLAGS += -lm
-CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__   # The new implementation of _delay_us(double __us) with __builtin_avr_delay_cycles(unsigned long) support is not backward compatible. This get us a backward compatible delay.
 
 # Define all object files
 OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SOURCES))

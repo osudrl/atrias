@@ -1,8 +1,9 @@
 #ifndef MEDULLA_IMU_H
 #define MEDULLA_IMU_H
 
-#include "/usr/avr/include/stdio.h"
+#include <stdio.h>
 #include <string.h>
+#include <util/delay.h>
 
 // Include the robot definitions
 #include "robot_invariant_defs.h"
@@ -12,6 +13,7 @@
 #include "ethercat.h"
 #include "adc.h"
 #include "io_pin.h"
+#include "uart.h"
 
 #define KVH_TX_BUFFER_LENGTH 100
 #define KVH_RX_BUFFER_LENGTH 100
