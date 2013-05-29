@@ -291,8 +291,8 @@ void ATCEqPoint::controller() {
                                 co.lLeg.motorCurrentB = pd1Controller(leftMotorAngle.B,rs.lLeg.halfB.motorAngle,0,rs.lLeg.halfB.motorVelocity)+2;
                                 logOut.state=14;
                         }
-						co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA,-25,25);
-						co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB,-25,25);
+					//	co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA,-25,25);
+					//	co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB,-25,25);
                         break;
 
 
@@ -362,8 +362,8 @@ void ATCEqPoint::controller() {
                                 co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity)+2;
                                 logOut.state=24;
                         }
-						co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA,-25,25);
-						co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB,-25,25);
+					//	co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA,-25,25);
+					//	co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB,-25,25);
                         break;
 
 
