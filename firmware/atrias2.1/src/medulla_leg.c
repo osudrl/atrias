@@ -266,7 +266,6 @@ void leg_update_inputs(uint8_t id) {
 		leg_therm_prev_val[5] = thermistor_pdo[5];
 
 	ad7193_process_data(&knee_adc);
-	printf("%x\n",*toe_sensor_pdo);
 
 	//leg_send_current_read = true;
 }
