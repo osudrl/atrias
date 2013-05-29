@@ -17,6 +17,7 @@ typedef enum {
 #define MEDULLA_LEG_PRODUCT_CODE                                      0x00000001
 #define MEDULLA_HIP_PRODUCT_CODE                                      0x00000002
 #define MEDULLA_BOOM_PRODUCT_CODE                                     0x00000003
+#define MEDULLA_IMU_PRODUCT_CODE                                      0x00000006
 #define MEDULLA_TEST_PRODUCT_CODE                                     0x00000004
 #define KPA_SLAVE_CARD_PRODUCT_CODE                                   0x00000005
 #define MEDULLA_ASSIGN_ACTIVATE_WORD                                      0x0300

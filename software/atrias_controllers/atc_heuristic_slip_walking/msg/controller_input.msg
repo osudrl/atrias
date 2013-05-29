@@ -18,4 +18,8 @@ uint8 main_controller
 uint8 flight_to
 uint8 flight_td
 
+float64 td_force
+float64 to_force
+float64 td_position
+
 bool debug

@@ -80,7 +80,7 @@ void ATCHeuristicSlipWalking::controller() {
 					stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
 					legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
 					singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
-					if (guiIn.debug) {
+					if (guiIn.debug && ~debugFlag) {
 						co.rLeg.motorCurrentA += 5.0;
 						co.rLeg.motorCurrentB += 5.0;
 					}					
@@ -96,7 +96,7 @@ void ATCHeuristicSlipWalking::controller() {
 					stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
 					legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
 					singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
-					if (guiIn.debug) {
+					if (guiIn.debug && ~debugFlag) {
 						co.lLeg.motorCurrentA += 5.0;
 						co.lLeg.motorCurrentB += 5.0;
 					}	
@@ -137,6 +137,10 @@ void ATCHeuristicSlipWalking::updateState() {
 	
 	// Update GUI walking state display
 	guiOut.walking_state = walkingState;
+	guiOut.td_force = forceTD;
+	guiOut.to_force = forceTO;
+	guiOut.td_position = positionTD;
+	debugFlag = false;
 	
 	// Event and state trigger parameters
 	isManualFlightLegTO = guiIn.flight_to; // Manually triger events
@@ -256,9 +260,14 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 
 	// Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
 	if (qeSl > qtSl) {
-		qtSl = qeSl + 0.2;
+		qtSl = qeSl + 0.1;
 	}
 
+	// Set flag to disable constant hip torque debug toggle
+	if (qSl > qtSl) {
+		debugFlag = true;
+	}
+	
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
 	dqtFl = 0.0/(qtSl - qeSl); // TODO make a GUI input (0.6)
@@ -303,6 +312,11 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
 	
+	// Set debug status values
+	forceTD = forceFl.fz;
+	forceTO = 0.0;
+	positionTD = rSl*sin(qSl) - rFl*sin(qFl);
+	
 	// Flight leg touch down event (trigger next state)
 	if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {
 		// Advance the walking state machine 1 step and loop to beginning if needed
@@ -331,6 +345,11 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 	forceFl = ascLegForceFl->compute(*rsFl, rs.position);
 	forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
+	// Set debug status values
+	forceTD = 0.0;
+	forceTO = forceFl.fz;
+	positionTD = 0.0;
+	
 	// Compute conditionals for event triggers
 	isFlightLegTO = forceFl.fz >= -forceThresholdTO;
 	isStanceLegTO = forceSl.fz >= -forceThresholdTO;
