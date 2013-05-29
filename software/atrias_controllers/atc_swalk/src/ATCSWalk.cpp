@@ -1,17 +1,17 @@
 /**
-  * @file ATCEqPoint.cpp
+  * @file ATCSWalk.cpp
   * @author Daniel Renjewski
-  * @brief Code for the atc_eq_point controller.
+  * @brief Code for the atc_swalk controller.
   */
 
-#include "atc_eq_point/ATCEqPoint.hpp"
+#include "atc_swalk/ATCSWalk.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
 // This constructor call is much simpler.
-ATCEqPoint::ATCEqPoint(string name) :
+ATCSWalk::ATCSWalk(string name) :
 	ATC(name),
 	commonToolkit(this, "commonToolkit"),
 	hipKine(this, "hipKine"),
@@ -49,7 +49,7 @@ ATCEqPoint::ATCEqPoint(string name) :
 	setStartupEnabled(true);
 }
 
-void ATCEqPoint::controller() {
+void ATCSWalk::controller() {
 	MotorState desiredLAState,
 			 desiredLBState,
 			 desiredRAState,
@@ -381,7 +381,7 @@ void ATCEqPoint::controller() {
 }
 
 // We need to make top-level controllers components
-ORO_CREATE_COMPONENT(ATCEqPoint)
+ORO_CREATE_COMPONENT(ATCSWalk)
 
 }
 }

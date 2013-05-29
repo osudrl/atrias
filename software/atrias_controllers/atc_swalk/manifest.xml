@@ -1,0 +1,19 @@
+<package>
+	<description brief="atc_swalk">
+		atc_swalk
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://ros.org/wiki/atc_swalk</url>
+	<depend package="rtt_rosnode"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="atrias_control_lib"/>
+	<depend package="asc_common_toolkit"/>
+	<depend package="asc_hip_boom_kinematics"/>
+	<depend package="asc_pd"/>
+	<depend package="asc_rate_limit"/>
+</package>
+
+<!-- vim: set noexpandtab: -->

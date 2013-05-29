@@ -18,6 +18,19 @@ AtriasController::AtriasController(const std::string &name) :
 	// This space intentionally left blank
 }
 
+double AtriasController::clamp(double num, double a, double b) {
+	auto min = std::min(a, b);
+	auto max = std::max(a, b);
+
+	if (num < min)
+		return min;
+
+	if (max < num)
+		return max;
+
+	return num;
+}
+
 const std::string& AtriasController::getName() const {
 	return this->name;
 }
