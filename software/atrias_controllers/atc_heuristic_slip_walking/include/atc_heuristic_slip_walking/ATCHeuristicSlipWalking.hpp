@@ -119,6 +119,8 @@ class ATCHeuristicSlipWalking : public ATC<
 		// Misc margins, ratelimiters and other kludge values
 		double forceThresholdTO, forceThresholdTD, positionThresholdTD;
 		double legRateLimit, hipRateLimit, springRateLimit;
+		double forceTD, forceTO, positionTD;
+		bool debugFlag;
 
 
 
