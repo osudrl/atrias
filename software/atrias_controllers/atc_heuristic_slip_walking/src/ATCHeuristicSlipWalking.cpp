@@ -81,8 +81,8 @@ void ATCHeuristicSlipWalking::controller() {
 					legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
 					singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
 					if (guiIn.debug && ~debugFlag) {
-						co.rLeg.motorCurrentA += 5.0;
-						co.rLeg.motorCurrentB += 5.0;
+						co.rLeg.motorCurrentA += 7.0;
+						co.rLeg.motorCurrentB += 7.0;
 					}					
 					break;
 			
@@ -97,8 +97,8 @@ void ATCHeuristicSlipWalking::controller() {
 					legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
 					singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
 					if (guiIn.debug && ~debugFlag) {
-						co.lLeg.motorCurrentA += 5.0;
-						co.lLeg.motorCurrentB += 5.0;
+						co.lLeg.motorCurrentA += 7.0;
+						co.lLeg.motorCurrentB += 7.0;
 					}	
 					break;
 				
@@ -270,7 +270,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 	
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.0/(qtSl - qeSl); // TODO make a GUI input (0.6)
+	dqtFl = 0.3/(qtSl - qeSl); // TODO make a GUI input (0.6)
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg

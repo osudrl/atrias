@@ -78,18 +78,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
 	// Set values
 	walking_state_spinbutton->set_value(0);
-	slip_leg_spinbutton->set_value(0.90);
+	slip_leg_spinbutton->set_value(0.93);
 	atrias_spring_spinbutton->set_value(1400.0);
-	swing_leg_retraction_spinbutton->set_value(0.1);
+	swing_leg_retraction_spinbutton->set_value(0.12);
 	force_threshold_td_spinbutton->set_value(50.0);
 	force_threshold_to_spinbutton->set_value(30.0);
 	position_threshold_td_spinbutton->set_value(0.02);
-	stance_leg_target_spinbutton->set_value(M_PI - 1.545);
-	flight_leg_target_spinbutton->set_value(M_PI - 1.786);
+	stance_leg_target_spinbutton->set_value(1.6);//(M_PI - 1.545);
+	flight_leg_target_spinbutton->set_value(1.35);//(M_PI - 1.786);
 	leg_pos_kp_spinbutton->set_value(200.0);
 	leg_pos_kd_spinbutton->set_value(10.0);
 	leg_for_kp_spinbutton->set_value(100.0);
-	leg_for_kd_spinbutton->set_value(1.0);
+	leg_for_kd_spinbutton->set_value(2.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	
