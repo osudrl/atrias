@@ -163,14 +163,14 @@ void ATCEqPoint::controller() {
 	switch (guiIn.control)
 	{
 		case 1:
-			if (state == 2 && t>0.99 && rGC)								//switch left / right stepping 
+			if (state == 2 && t>0.97 && rGC)								//switch left / right stepping 
 			{
 				state = 1;
 				sw_stance = false;
 				sw_flight = false;
 				t=0;
 			}
-			if (state == 1 && t>0.99 && lGC) 	
+			if (state == 1 && t>0.97 && lGC) 	
 			{
 				state = 2;
 				sw_stance = false;
@@ -181,7 +181,7 @@ void ATCEqPoint::controller() {
 		case 2:
 			// state machine
 			//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping automatically
-			if ((state == 2) && (t>0.99))
+			if ((state == 2) && (t>0.97))
 			{
 				state = 1;
 				sw_stance = false;
@@ -189,7 +189,7 @@ void ATCEqPoint::controller() {
 				t=0;
 			}
 			//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
-			if ((state == 1) && (t>0.99))
+			if ((state == 1) && (t>0.97))
 			{
 				state = 2;
 				sw_stance = false;
@@ -201,6 +201,7 @@ void ATCEqPoint::controller() {
 			break;
 	}
 
+	//printf("t: %f \n",t);
 	// command legs ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//************************************************************stance control right leg***************************************************************************************************************************
 	        switch (state)                                                                                                                                                                                                                                                  //stance leg right, flight leg left
