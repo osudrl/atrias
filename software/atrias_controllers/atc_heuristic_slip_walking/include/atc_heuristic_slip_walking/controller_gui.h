@@ -35,7 +35,10 @@ Gtk::SpinButton *walking_state_spinbutton,
 	*leg_pos_kd_spinbutton,
 	*leg_for_kd_spinbutton,
 	*hip_pos_kp_spinbutton,
-	*hip_pos_kd_spinbutton;
+	*hip_pos_kd_spinbutton,
+	*td_force_spinbutton,
+	*to_force_spinbutton,
+	*td_position_spinbutton;
 	
 Gtk::ComboBox *main_controller_combobox;
 	

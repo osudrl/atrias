@@ -93,10 +93,17 @@ class ATCEqPoint : public ATC<controller_log_data_, controller_input_, controlle
 		double  amp;
 		double  phi_MsA;
 		double  phi_MfB;
-		double  phiAf_des;
-		double  phiBs_des;
+		double  phiBs_des_o;
+		double  phiBs_des_i;
 		double  max_phi_swing;
 		double  time;
+		double  c_radius_i;
+		double  c_radius_o;
+		double  iPEA;
+		double  oPEA;
+		double  iAEA;
+		double  oAEA;
+		double  gamma;
 
 		// Whether we are in idle mode (so the robot can't re-enable)
 		bool idle_mode;

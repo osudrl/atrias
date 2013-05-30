@@ -16,7 +16,7 @@ namespace controller {
 #define L2 0.5
 
 // ATRIAS rotational spring constant [N*m/rad]
-#define KS 4118.0
+#define KS 1400.0
 
 // ATRIAS motor torque constant [N*m/A]
 #define KT 0.0987
@@ -25,7 +25,7 @@ namespace controller {
 #define KG 50.0
 
 // ATRIAS mass [kg]
-#define M 58.06
+#define M 58.8
 
 // Gravity [m/sec^2]
 #define G 9.81
