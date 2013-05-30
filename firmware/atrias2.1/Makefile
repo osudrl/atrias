@@ -17,7 +17,8 @@ SRCDIR = src
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 #DEBUG_LEVEL = -DDEBUG_LOW
 DEBUG_LEVEL = -DDEBUG_HIGH
-#ENABLE_ECAT = -DENABLE_ECAT
+ENABLE_ECAT = -DENABLE_ECAT
+ENABLE_IMU = -DENABLE_IMU
 
 # Build Options
 OBJDIR = build
@@ -32,6 +33,7 @@ PORT = usb
 CFLAGS  = -DF_CPU=$(F_CPU)UL
 CFLAGS += $(DEBUG_LEVEL)
 CFLAGS += $(ENABLE_ECAT)
+CFLAGS += $(ENABLE_IMU)
 CFLAGS += -O$(OPT)
 CFLAGS += -fshort-enums
 CFLAGS += -Wall

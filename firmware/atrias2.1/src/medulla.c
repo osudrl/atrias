@@ -36,11 +36,12 @@ UART_USES_PORT(USARTD0)
 ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
 
-#ifdef IMU_MEDULLA
+#ifdef ENABLE_IMU
 UART_USES_PORT(USARTF0)   // KVH 1750
 #else
-AD7193_USES_PORT(USARTF0) // Need ADC
+AD7193_USEs_PORT(USARTF0)
 #endif
+
 
 int main(void) {
 	// Initilize the clock to 32 Mhz oscillator
@@ -98,7 +99,6 @@ int main(void) {
 	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initilize the EtherCAT
-	#ifdef ENABLE_ECAT
 	#ifdef DEBUG_HIGH
 	printf("[Medulla] Initilizing EtherCAT\n");
 	#endif
@@ -106,8 +106,6 @@ int main(void) {
 	// set the the IRQ pin so it sets the IRQ flags on the falling edge so we can check that for the DC clock
 	PORTE.PIN1CTRL = PORT_ISC_FALLING_gc;
 	PORTE.INT0MASK = 0b10;
-	#endif
-
 
 //	medulla_id = 1;
 	#if defined DEBUG_HIGH || defined DEBUG_LOW
@@ -227,12 +225,7 @@ int main(void) {
 	#endif
 	while(1) {
 		// Check if there was a falling edge of the ethercat IRQ pin
-		#ifdef ENABLE_ECAT
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
-		#else
-		_delay_ms(1);
-		if (true) {
-		#endif
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
 			// This is the signal to read all the sensors and run the state mechine
@@ -242,13 +235,11 @@ int main(void) {
 			// Increment the packet counter
 			*packet_counter += 1;
 
-			#ifdef ENABLE_ECAT
 			// Send the new sensor data to the ethercat slave
 			ecat_write_tx_sm(&ecat_port);
 
 			// Read new commands from the ethercat slave
 			ecat_read_rx_sm(&ecat_port);
-			#endif
 	
 			// As long as we get the DC clock we can always feed the watchdog
 			WATCHDOG_TIMER_RESET;
