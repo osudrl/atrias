@@ -395,7 +395,7 @@
                           <object class="GtkLabel" id="label11">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">n/a</property>
+                            <property name="label" translatable="yes">lo curr</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
