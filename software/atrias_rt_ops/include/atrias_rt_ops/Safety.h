@@ -27,7 +27,18 @@ class Safety {
 	  * @return Its predicted stopping point.
 	  */
 	double predictStop(double pos, double vel);
-	
+
+	/**
+	  * @brief This checks for a collision given motor stopping position
+	  * @param lLegAPred The predicted stop location for left A motor
+	  * @param lLegBPred The predicted stop location for left B motor
+	  * @param rLegAPred The predicted stop location for right A motor
+	  * @param rLegBPred The predicted stop location for right B motor
+	  * @return true if there's a collision, false otherwise.
+	  * This function will also send the correct event to report the collision detected
+	  */
+	bool checkCollision(double lLegAPred, double lLegBPred, double rLegAPred, double rLegBPred);
+
 	public:
 		/** @brief Initializes this Safety.
 		  * @param rt_ops A pointer to RT Ops.

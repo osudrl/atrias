@@ -63,7 +63,27 @@ bool Safety::shouldHalt() {
 	double lLegBPred = predictStop(robotState.lLeg.halfB.motorAngle, robotState.lLeg.halfB.rotorVelocity);
 	double rLegAPred = predictStop(robotState.rLeg.halfA.motorAngle, robotState.rLeg.halfA.rotorVelocity);
 	double rLegBPred = predictStop(robotState.rLeg.halfB.motorAngle, robotState.rLeg.halfB.rotorVelocity);
-	
+
+	// Check for a collision given this combination of sensor input
+	if (checkCollision(lLegAPred, lLegBPred, rLegAPred, rLegBPred))
+		return true;
+
+	// Let's also check based purely off the (more reliable) rotor encoders
+	lLegAPred = predictStop(robotState.lLeg.halfA.rotorAngle, robotState.lLeg.halfA.rotorVelocity);
+	lLegBPred = predictStop(robotState.lLeg.halfB.rotorAngle, robotState.lLeg.halfB.rotorVelocity);
+	rLegAPred = predictStop(robotState.rLeg.halfA.rotorAngle, robotState.rLeg.halfA.rotorVelocity);
+	rLegBPred = predictStop(robotState.rLeg.halfB.rotorAngle, robotState.rLeg.halfB.rotorVelocity);
+
+	if (checkCollision(lLegAPred, lLegBPred, rLegAPred, rLegBPred))
+		return true;
+
+	// If we've made it this far, then we're fine
+	return false;
+}
+
+bool Safety::checkCollision(double lLegAPred, double lLegBPred, double rLegAPred, double rLegBPred) {
+	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
+
 	// Check if a single motor has exceeded its limits.
 	if (lLegAPred < LEG_A_MOTOR_MIN_LOC + LEG_LOC_SAFETY_DISTANCE) {
 		rtOps->getOpsLogger()->sendEvent(RtOpsEvent::SAFETY, (RtOpsEventMetadata_t) RtOpsEventSafetyMetadata::LEFT_LEG_A_TOO_SMALL);
