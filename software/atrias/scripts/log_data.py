@@ -15,7 +15,7 @@ def logRequestCallback (req):
 
     if req.enableLogging and not currentlyLogging:
         # Spawn off roslaunch process (non-blocking).
-        roslaunchProcess = subprocess.Popen(["roslaunch", "atrias", "rosbag.launch"])
+        roslaunchProcess = subprocess.Popen(["chrt", "55", "roslaunch", "atrias", "rosbag.launch"])
         currentlyLogging = True
 
     elif not req.enableLogging and currentlyLogging:
@@ -31,3 +31,4 @@ if __name__ == "__main__":
     sub = rospy.Subscriber("atrias_log_request", log_request, logRequestCallback, queue_size=10)
     rospy.spin()
 
+# vim: expandtab:sts=4

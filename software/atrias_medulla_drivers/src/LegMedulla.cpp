@@ -90,7 +90,7 @@ void LegMedulla::checkErroneousEncoderValues() {
 	skipMotorEncoder      = false;
 	int32_t deltaMotorPos = *motorEncoder - motorEncoderValue;
 	// Check for bad readings
-	if (*motorEncoder == motorEncoderValue)
+	if (!deltaMotorPos)
 		skipMotorEncoder = true;
 
 	if (abs(deltaMotorPos) > MAX_ACCEPTABLE_ENCODER_CHANGE) {
@@ -103,7 +103,7 @@ void LegMedulla::checkErroneousEncoderValues() {
 	
 	skipLegEncoder      = false;
 	int32_t deltaLegPos = *legEncoder - legEncoderValue;
-	if (*legEncoder == legEncoderValue)
+	if (!deltaLegPos)
 		skipLegEncoder = true;
 
 	if (abs(deltaLegPos) > MAX_ACCEPTABLE_ENCODER_CHANGE)
@@ -338,18 +338,10 @@ void LegMedulla::processVelocities(RTT::os::TimeService::nsecs deltaTime, atrias
 			break;
 	}
 
-	if (!skipMotorEncoder) {
-		motorEncoderValue          = (int64_t) *motorEncoder;
-		motorEncoderTimestampValue = *motorEncoderTimestamp;
-	} else {
-		motorEncoderTimestampValue -= deltaTime * 32000; // Number of timer ticks in a millisecond.
-	}
-	if (!skipLegEncoder) {
-		legEncoderValue          = (int64_t) *legEncoder;
-		legEncoderTimestampValue = *legEncoderTimestamp;
-	} else {
-		legEncoderTimestampValue -= deltaTime * 32000;
-	}
+	motorEncoderValue          = (int64_t) *motorEncoder;
+	motorEncoderTimestampValue = *motorEncoderTimestamp;
+	legEncoderValue          = (int64_t) *legEncoder;
+	legEncoderTimestampValue = *legEncoderTimestamp;
 }
 
 void LegMedulla::processThermistors(atrias_msgs::robot_state& robotState) {

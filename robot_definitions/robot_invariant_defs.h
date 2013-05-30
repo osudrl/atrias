@@ -138,7 +138,7 @@ typedef enum {
 
 // The maximum acceptable change in encoder value in a single cycle, for detecting
 // erroneous encoder readings.
-#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    1000000
+#define MAX_ACCEPTABLE_ENCODER_CHANGE                                    2000000
 
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
