@@ -1,0 +1,5 @@
+# Shut stuff down
+ATCSlipWalking.stop()
+ATCSlipWalking.cleanup()
+unloadComponent("ATCSlipWalking")
+atrias_cm.resetControllerNames()

@@ -5,8 +5,8 @@
 #ifndef CONTROLLER_GUI_H_
 #define CONTROLLER_GUI_H_
 
-#include <atc_heuristic_slip_walking/controller_input.h>
-#include <atc_heuristic_slip_walking/controller_status.h>
+#include <atc_slip_walking/controller_input.h>
+#include <atc_slip_walking/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
@@ -17,11 +17,12 @@ ros::Subscriber sub;
 ros::Publisher pub;
 
 // Data
-atc_heuristic_slip_walking::controller_input controllerDataOut;
-atc_heuristic_slip_walking::controller_status controllerDataIn;
+atc_slip_walking::controller_input controllerDataOut;
+atc_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::SpinButton *walking_state_spinbutton,
+	*hip_torque_spinbutton,
 	*atrias_spring_spinbutton,
 	*slip_leg_spinbutton,
 	*swing_leg_retraction_spinbutton,
@@ -36,18 +37,21 @@ Gtk::SpinButton *walking_state_spinbutton,
 	*leg_for_kd_spinbutton,
 	*hip_pos_kp_spinbutton,
 	*hip_pos_kd_spinbutton,
+	*left_toe_pos_spinbutton,
+	*right_toe_pos_spinbutton,
 	*td_force_spinbutton,
 	*to_force_spinbutton,
 	*td_position_spinbutton;
 	
-Gtk::ComboBox *main_controller_combobox;
+Gtk::ComboBox *main_controller_combobox,
+	*gait_transitions_combobox;
 	
 Gtk::Button *flight_to_button,
 	*flight_td_button;
 	
-Gtk::ToggleButton *debug_togglebutton;
+Gtk::ToggleButton *apply_hip_torque_togglebutton;
 
-void controllerCallback(const atc_heuristic_slip_walking::controller_status &status);
+void controllerCallback(const atc_slip_walking::controller_status &status);
 
 #endif /* CONTROLLER_GUI_H_ */
 

@@ -1,5 +1,0 @@
-# Shut stuff down
-ATCHeuristicSlipWalking.stop()
-ATCHeuristicSlipWalking.cleanup()
-unloadComponent("ATCHeuristicSlipWalking")
-atrias_cm.resetControllerNames()

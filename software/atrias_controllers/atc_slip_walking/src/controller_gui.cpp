@@ -2,7 +2,7 @@
  *  \author Mikhail Jones
  */
 
-#include <atc_heuristic_slip_walking/controller_gui.h>
+#include <atc_slip_walking/controller_gui.h>
 
 void flight_td_pressed()  {controllerDataOut.flight_td = 1;}
 void flight_td_released() {controllerDataOut.flight_td = 0;}
@@ -27,10 +27,14 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("leg_pos_kd_spinbutton", leg_pos_kd_spinbutton);
 	gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
 	gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
+	gui->get_widget("left_toe_pos_spinbutton", left_toe_pos_spinbutton);
+	gui->get_widget("right_toe_pos_spinbutton", right_toe_pos_spinbutton);
 	gui->get_widget("main_controller_combobox", main_controller_combobox);
+	gui->get_widget("gait_transitions_combobox", gait_transitions_combobox);
 	gui->get_widget("flight_td_button", flight_td_button);
 	gui->get_widget("flight_to_button", flight_to_button);
-	gui->get_widget("debug_togglebutton", debug_togglebutton);
+	gui->get_widget("apply_hip_torque_togglebutton", apply_hip_torque_togglebutton);
+	gui->get_widget("hip_torque_spinbutton", hip_torque_spinbutton);
 	gui->get_widget("td_force_spinbutton", td_force_spinbutton);
 	gui->get_widget("to_force_spinbutton", to_force_spinbutton);
 	gui->get_widget("td_position_spinbutton", td_position_spinbutton);
@@ -51,9 +55,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	leg_pos_kd_spinbutton->set_range(0.0, 100.0);
 	hip_pos_kp_spinbutton->set_range(0.0, 300.0);
 	hip_pos_kd_spinbutton->set_range(0.0, 50.0);
+	left_toe_pos_spinbutton->set_range(2.1, 2.5);
+	right_toe_pos_spinbutton->set_range(2.1, 2.5);
 	td_force_spinbutton->set_range(-100.0, 100.0);
 	to_force_spinbutton->set_range(-100.0, 100.0);
 	td_position_spinbutton->set_range(-0.05, 0.05);
+	hip_torque_spinbutton->set_range(0.0, 15.0);
 
 
 	// Set increments
@@ -72,9 +79,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	leg_pos_kd_spinbutton->set_increments(1.0, 0.0);
 	hip_pos_kp_spinbutton->set_increments(10.0, 0.0);
 	hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
+	left_toe_pos_spinbutton->set_increments(0.01, 0.0);
+	right_toe_pos_spinbutton->set_increments(0.01, 0.0);
 	td_force_spinbutton->set_increments(0.1, 0.0);
 	to_force_spinbutton->set_increments(0.1, 0.0);
 	td_position_spinbutton->set_increments(0.001, 0.0);
+	hip_torque_spinbutton->set_increments(0.5, 0.0);
 
 	// Set values
 	walking_state_spinbutton->set_value(0);
@@ -84,14 +94,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	force_threshold_td_spinbutton->set_value(50.0);
 	force_threshold_to_spinbutton->set_value(30.0);
 	position_threshold_td_spinbutton->set_value(0.02);
-	stance_leg_target_spinbutton->set_value(1.6);//(M_PI - 1.545);
-	flight_leg_target_spinbutton->set_value(1.35);//(M_PI - 1.786);
+	stance_leg_target_spinbutton->set_value(1.6);
+	flight_leg_target_spinbutton->set_value(1.3);
 	leg_pos_kp_spinbutton->set_value(200.0);
 	leg_pos_kd_spinbutton->set_value(10.0);
 	leg_for_kp_spinbutton->set_value(100.0);
 	leg_for_kd_spinbutton->set_value(2.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
+	left_toe_pos_spinbutton->set_value(2.15);
+	right_toe_pos_spinbutton->set_value(2.45);
+	hip_torque_spinbutton->set_value(7.0);
 	
 	// Connect buttons to functions
 	flight_td_button->signal_pressed().connect(sigc::ptr_fun((void(*)())flight_td_pressed));
@@ -100,13 +113,13 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	flight_to_button->signal_released().connect(sigc::ptr_fun((void(*)())flight_to_released));
 
 	// Set up subscriber and publisher.
-	sub = nh.subscribe("ATCHeuristicSlipWalking_status", 0, controllerCallback);
-	pub = nh.advertise<atc_heuristic_slip_walking::controller_input>("ATCHeuristicSlipWalking_input", 0);
+	sub = nh.subscribe("ATCSlipWalking_status", 0, controllerCallback);
+	pub = nh.advertise<atc_slip_walking::controller_input>("ATCSlipWalking_input", 0);
 	return true;
 }
 
 //! \brief Update our local copy of the controller status.
-void controllerCallback(const atc_heuristic_slip_walking::controller_status &status) {
+void controllerCallback(const atc_slip_walking::controller_status &status) {
 	controllerDataIn = status;
 }
 
@@ -131,9 +144,15 @@ void getParameters() {
 	int main_controller;
 	nh.getParam("/atrias_gui/main_controller", main_controller);
 	controllerDataOut.main_controller = (uint8_t)main_controller;
+	int gait_transitions;
+	nh.getParam("/atrias_gui/gait_transitions", gait_transitions);
+	controllerDataOut.gait_transitions = (uint8_t)gait_transitions;
 	nh.getParam("/atrias_gui/td_force", controllerDataOut.td_force);
 	nh.getParam("/atrias_gui/to_force", controllerDataOut.to_force);
 	nh.getParam("/atrias_gui/td_position", controllerDataOut.td_position);
+	nh.getParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
+	nh.getParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
+	nh.getParam("/atrias_gui/hip_torque", controllerDataOut.hip_torque);
 
 	// Configure the GUI
 	walking_state_spinbutton->set_value(controllerDataOut.walking_state);
@@ -149,9 +168,13 @@ void getParameters() {
 	hip_pos_kp_spinbutton->set_value(controllerDataOut.hip_pos_kp);
 	hip_pos_kd_spinbutton->set_value(controllerDataOut.hip_pos_kd);
 	main_controller_combobox->set_active(controllerDataOut.main_controller);
+	gait_transitions_combobox->set_active(controllerDataOut.gait_transitions);
 	td_force_spinbutton->set_value(controllerDataOut.td_force);
 	to_force_spinbutton->set_value(controllerDataOut.to_force);
 	td_position_spinbutton->set_value(controllerDataOut.td_position);
+	left_toe_pos_spinbutton->set_value(controllerDataOut.left_toe_pos);
+	right_toe_pos_spinbutton->set_value(controllerDataOut.right_toe_pos);
+	hip_torque_spinbutton->set_value(controllerDataOut.hip_torque);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -172,9 +195,13 @@ void setParameters() {
 	nh.setParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
 	nh.setParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
 	nh.setParam("/atrias_gui/main_controller", controllerDataOut.main_controller);
+	nh.setParam("/atrias_gui/gait_transitions", controllerDataOut.gait_transitions);
 	nh.setParam("/atrias_gui/td_force", controllerDataOut.td_force);
 	nh.setParam("/atrias_gui/to_force", controllerDataOut.to_force);
 	nh.setParam("/atrias_gui/td_position", controllerDataOut.td_position);
+	nh.setParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
+	nh.setParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
+	nh.setParam("/atrias_gui/hip_torque", controllerDataOut.hip_torque);
 }
 
 //! \brief Update the GUI.
@@ -201,7 +228,11 @@ void guiUpdate() {
 	controllerDataOut.hip_pos_kp = hip_pos_kp_spinbutton->get_value();
 	controllerDataOut.hip_pos_kd = hip_pos_kd_spinbutton->get_value();
 	controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
-	controllerDataOut.debug = debug_togglebutton->get_active();
+	controllerDataOut.gait_transitions = (uint8_t)gait_transitions_combobox->get_active_row_number();
+	controllerDataOut.apply_hip_torque = apply_hip_torque_togglebutton->get_active();
+	controllerDataOut.left_toe_pos = left_toe_pos_spinbutton->get_value();
+	controllerDataOut.right_toe_pos = right_toe_pos_spinbutton->get_value();
+	controllerDataOut.hip_torque = hip_torque_spinbutton->get_value();
 
 	// publish the controller input
 	pub.publish(controllerDataOut);

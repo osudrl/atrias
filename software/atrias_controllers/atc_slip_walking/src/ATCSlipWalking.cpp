@@ -1,16 +1,16 @@
 /**
- * @file ATCHeuristicSlipWalking.cpp
+ * @file ATCSlipWalking.cpp
  * @author Mikhail S. Jones
  * @brief This controller is based on simulated SLIP walking gaits for ATRIAS and has been tuned manually through trial and error.
  */
 
-#include "atc_heuristic_slip_walking/ATCHeuristicSlipWalking.hpp"
+#include "atc_slip_walking/ATCSlipWalking.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
+ATCSlipWalking::ATCSlipWalking(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
 	ascInterpolation(this, "ascInterpolation"),
@@ -36,10 +36,6 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 	legRateLimit = 0.2;
 	hipRateLimit = 0.2;
 	springRateLimit = 0.05;
-	
-	// Set hip controller toe positions
-	toePosition.left = 2.15;
-	toePosition.right = 2.45;
 
 	// Initialize walking state
 	walkingState = 0;
@@ -52,7 +48,7 @@ ATCHeuristicSlipWalking::ATCHeuristicSlipWalking(string name) :
 }
 
 
-void ATCHeuristicSlipWalking::controller() {
+void ATCSlipWalking::controller() {
 	// Startup is handled by the ATC class
 	setStartupEnabled(true);
 
@@ -65,24 +61,23 @@ void ATCHeuristicSlipWalking::controller() {
 	// Main controller state machine
 	switch (controllerState) {
 		case 0: // Stand upright in place
-			standingController(&rs.rLeg, &co.rLeg, &ascRateLimitRmA, &ascRateLimitRmB, &ascPDRmA, &ascPDRmB);
-			standingController(&rs.lLeg, &co.lLeg, &ascRateLimitLmA, &ascRateLimitLmB, &ascPDLmA, &ascPDLmB);
+			standingController();
 			// Reset walking state parameters
 			walkingState = 0;
 			// Save the stance and flight leg exit conditions
 			updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0); // (stance leg, flight leg)
 			break;
 
-		case 1: // SLIP heuristic walking
-			// SLIP heuristic walking controller state machine
+		case 1: // SLIP  walking
+			// SLIP  walking controller state machine
 			switch (walkingState) {			
 				case 0: // Right leg single support	(right = stance, left = flight)
 					stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
 					legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
 					singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
-					if (guiIn.debug && ~debugFlag) {
-						co.rLeg.motorCurrentA += 7.0;
-						co.rLeg.motorCurrentB += 7.0;
+					if (guiIn.apply_hip_torque && ~hipTorqueFlag) {
+						co.rLeg.motorCurrentA += guiIn.hip_torque;
+						co.rLeg.motorCurrentB += guiIn.hip_torque;
 					}					
 					break;
 			
@@ -96,9 +91,9 @@ void ATCHeuristicSlipWalking::controller() {
 					stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
 					legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
 					singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
-					if (guiIn.debug && ~debugFlag) {
-						co.lLeg.motorCurrentA += 7.0;
-						co.lLeg.motorCurrentB += 7.0;
+					if (guiIn.apply_hip_torque && ~hipTorqueFlag) {
+						co.lLeg.motorCurrentA += guiIn.hip_torque;
+						co.lLeg.motorCurrentB += guiIn.hip_torque;
 					}	
 					break;
 				
@@ -118,7 +113,7 @@ void ATCHeuristicSlipWalking::controller() {
 }
 
 
-void ATCHeuristicSlipWalking::updateState() {
+void ATCSlipWalking::updateState() {
 	// Reset rate limiters when not enabled (prevents jumps)
 	if (!(isEnabled()) || !(controllerState == 0)) {
 		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
@@ -126,7 +121,6 @@ void ATCHeuristicSlipWalking::updateState() {
 		ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
 		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
 	}
-
 	if (!(isEnabled()) || (controllerState == 2)) {
 		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
 		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
@@ -140,7 +134,7 @@ void ATCHeuristicSlipWalking::updateState() {
 	guiOut.td_force = forceTD;
 	guiOut.to_force = forceTO;
 	guiOut.td_position = positionTD;
-	debugFlag = false;
+	hipTorqueFlag = false;
 	
 	// Event and state trigger parameters
 	isManualFlightLegTO = guiIn.flight_to; // Manually triger events
@@ -172,7 +166,11 @@ void ATCHeuristicSlipWalking::updateState() {
 }
 
 
-void ATCHeuristicSlipWalking::hipController() {
+void ATCSlipWalking::hipController() {
+	// Set hip controller toe positions
+	toePosition.left = guiIn.left_toe_pos;
+	toePosition.right = guiIn.right_toe_pos;
+	
 	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
@@ -186,25 +184,26 @@ void ATCHeuristicSlipWalking::hipController() {
 }
 
 
-void ATCHeuristicSlipWalking::standingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCRateLimit *ascRateLimitmA, ASCRateLimit *ascRateLimitmB, ASCPD *ascPDmA, ASCPD *ascPDmB) {
-	// Set leg angles for a neutral upright standing pose
-	qSl = PI/2.0;
-	rSl = r0;
+void ATCSlipWalking::standingController() {
+	// Compute motor angles
+	std::tie(qmSA, qmFB) = ascCommonToolkit.legPos2MotorPos(qtSl, r0);
+	std::tie(qmSA, qmFB) = ascCommonToolkit.legPos2MotorPos(qtFl, r0);
 
-	// Compute required motor angles
-	std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(qSl, rSl);
+	// Rate limit motor velocities
+	qmSA = ascRateLimitLmA(qmSA, legRateLimit);
+	qmSB = ascRateLimitLmB(qmSB, legRateLimit);
+	qmFA = ascRateLimitRmA(qmFA, legRateLimit);
+	qmFB = ascRateLimitRmB(qmFB, legRateLimit);
 
-	// Rate limit motor velocities to smooth step inputs
-	qmSA = ascRateLimitmA->operator()(qmSA, legRateLimit);
-	qmSB = ascRateLimitmB->operator()(qmSB, legRateLimit);
-
-	// Compute and set motor currents from position based PD controllers
-	coSl->motorCurrentA = ascPDmA->operator()(qmSA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
-	coSl->motorCurrentB = ascPDmB->operator()(qmSB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
+	// Compute and set motor currents
+	co.lLeg.motorCurrentA = ascPDLmA(qmSA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
+	co.lLeg.motorCurrentB = ascPDLmB(qmSB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
+	co.rLeg.motorCurrentA = ascPDRmA(qmFA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
+	co.rLeg.motorCurrentB = ascPDRmB(qmFB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
 }
 
 
-void ATCHeuristicSlipWalking::shutdownController() {
+void ATCSlipWalking::shutdownController() {
 	// Compute and set motor currents (applies virtual dampers to all actuators)
 	co.lLeg.motorCurrentA = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
@@ -215,7 +214,7 @@ void ATCHeuristicSlipWalking::shutdownController() {
 }
 
 
-void ATCHeuristicSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
+void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
 	// Rate limit change in spring rest length from current to desired
 	r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
@@ -238,7 +237,7 @@ void ATCHeuristicSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsS
 }
 
 
-void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
+void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
 	// A gait is defined by
 		// The TO angle of the flight leg
 		// The TO length of the flight leg (not as important, could use to inject energy)
@@ -265,12 +264,12 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 
 	// Set flag to disable constant hip torque debug toggle
 	if (qSl > qtSl) {
-		debugFlag = true;
+		hipTorqueFlag = true;
 	}
 	
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
 	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.3/(qtSl - qeSl); // TODO make a GUI input (0.6)
+	dqtFl = 0.3/(qtSl - qeSl); // TODO make a GUI input (0.3)
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
@@ -297,7 +296,7 @@ void ATCHeuristicSlipWalking::legSwingController(atrias_msgs::robot_state_leg *r
 }
 
 
-void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
+void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
 	// Compute the current flight leg angle and length
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
@@ -336,7 +335,7 @@ void ATCHeuristicSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *
 
 
 
-void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
+void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
 	// Compute the current flight leg angle and length
 	std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 	std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
@@ -369,7 +368,7 @@ void ATCHeuristicSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *
 }
 
 
-void ATCHeuristicSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
+void ATCSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
 	// Save the stance and flight leg exit conditions for use in leg swing trajectory generation
 	std::tie(qeFl, reFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 	std::tie(dqeFl, dreFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
@@ -386,7 +385,7 @@ void ATCHeuristicSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg 
 }
 
 
-ORO_CREATE_COMPONENT(ATCHeuristicSlipWalking)
+ORO_CREATE_COMPONENT(ATCSlipWalking)
 
 }
 }

@@ -1,8 +1,8 @@
-#ifndef ATCHeuristicSlipWalking_HPP
-#define ATCHeuristicSlipWalking_HPP
+#ifndef ATCSlipWalking_HPP
+#define ATCSlipWalking_HPP
 
 /**
- * @file ATCHeuristicSlipWalking.hpp
+ * @file ATCSlipWalking.hpp
  * @author Mikhail S. Jones
  * @brief This controller is based on simulated SLIP walking gaits for ATRIAS 
  * and has been tuned manually through trial and error.
@@ -11,11 +11,11 @@
 // Include the ATC class
 #include <atrias_control_lib/ATC.hpp>
 // Our logging data type.
-#include "atc_heuristic_slip_walking/controller_log_data.h"
+#include "atc_slip_walking/controller_log_data.h"
 // The type transmitted from the GUI to the controller
-#include "atc_heuristic_slip_walking/controller_input.h"
+#include "atc_slip_walking/controller_input.h"
 // The type transmitted from the controller to the GUI
-#include "atc_heuristic_slip_walking/controller_status.h"
+#include "atc_slip_walking/controller_status.h"
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
@@ -38,10 +38,10 @@ using namespace std;
 namespace atrias {
 namespace controller {
 
-class ATCHeuristicSlipWalking : public ATC<
-	atc_heuristic_slip_walking::controller_log_data_,
-	atc_heuristic_slip_walking::controller_input_,
-	atc_heuristic_slip_walking::controller_status_>
+class ATCSlipWalking : public ATC<
+	atc_slip_walking::controller_log_data_,
+	atc_slip_walking::controller_input_,
+	atc_slip_walking::controller_status_>
 {
 	public:
 		/** 
@@ -50,7 +50,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		 * Every top-level controller will have this name parameter,
 		 * just like current controllers.
 		 */
-		ATCHeuristicSlipWalking(string name);
+		ATCSlipWalking(string name);
 
 	private:
 		/** 
@@ -71,7 +71,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		// Functions
 		void updateState();
 		void hipController();
-		void standingController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCRateLimit*, ASCRateLimit*, ASCPD*, ASCPD*);
+		void standingController();
 		void shutdownController();
 		void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
 		void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
@@ -120,7 +120,7 @@ class ATCHeuristicSlipWalking : public ATC<
 		double forceThresholdTO, forceThresholdTD, positionThresholdTD;
 		double legRateLimit, hipRateLimit, springRateLimit;
 		double forceTD, forceTO, positionTD;
-		bool debugFlag;
+		bool hipTorqueFlag; // Is triggered once trajectory is finished and stops hip from applying more torque
 
 
 
@@ -129,4 +129,4 @@ class ATCHeuristicSlipWalking : public ATC<
 }
 }
 
-#endif // ATCHeuristicSlipWalking_HPP
+#endif // ATCSlipWalking_HPP

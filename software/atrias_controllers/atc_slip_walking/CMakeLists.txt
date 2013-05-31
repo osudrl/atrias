@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.3)
-project(atc_heuristic_slip_walking)
+project(atc_slip_walking)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
 
@@ -28,7 +28,7 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(ATCHeuristicSlipWalking src/ATCHeuristicSlipWalking.cpp)
-	target_link_libraries(ATCHeuristicSlipWalking ControlLib-${OROCOS_TARGET})
-	ros_generate_rtt_typekit(atc_heuristic_slip_walking)
+	orocos_component(ATCSlipWalking src/ATCSlipWalking.cpp)
+	target_link_libraries(ATCSlipWalking ControlLib-${OROCOS_TARGET})
+	ros_generate_rtt_typekit(atc_slip_walking)
 endif(ATRIAS_BUILD_CONTROLLERS)

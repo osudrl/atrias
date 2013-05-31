@@ -1,6 +1,6 @@
 <package>
-	<description brief="atc_heuristic_slip_walking">
-		atc_heuristic_slip_walking
+	<description brief="atc_slip_walking">
+		atc_slip_walking
 	</description>
 	<author>Mikhail Jones</author>
 	<license>BSD</license>
