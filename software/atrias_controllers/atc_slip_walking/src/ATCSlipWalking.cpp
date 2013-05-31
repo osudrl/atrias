@@ -186,8 +186,8 @@ void ATCSlipWalking::hipController() {
 
 void ATCSlipWalking::standingController() {
 	// Compute motor angles
-	std::tie(qmSA, qmFB) = ascCommonToolkit.legPos2MotorPos(qtSl, r0);
-	std::tie(qmSA, qmFB) = ascCommonToolkit.legPos2MotorPos(qtFl, r0);
+	std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(qtSl, r0);
+	std::tie(qmFA, qmFB) = ascCommonToolkit.legPos2MotorPos(qtFl, r0);
 
 	// Rate limit motor velocities
 	qmSA = ascRateLimitLmA(qmSA, legRateLimit);
