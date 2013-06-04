@@ -8,18 +8,11 @@
   */
 
 // Top-level controllers are components, so we need to include this.
-#include <rtt/Component.hpp>
-
-// Include the ATC class
 #include <atrias_control_lib/ATC.hpp>
-// No logging helper is needed -- one log port is automatically produced.
-
 // Our logging data type.
 #include "atc_force_control_demo/controller_log_data.h"
-
 // The type transmitted from the GUI to the controller
 #include "atc_force_control_demo/controller_input.h"
-
 // The type transmitted from the controller to the GUI
 #include "atc_force_control_demo/controller_status.h"
 
@@ -38,13 +31,16 @@
 
 // Namespaces we're using
 using namespace std;
-using namespace atc_force_control_demo;
 
 // Our namespaces
 namespace atrias {
 namespace controller {
 
-class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_data_, controller_input_, controller_status_> {
+class ATCForceControlDemo : public ATC<
+	atc_force_control_demo::controller_log_data_,
+	atc_force_control_demo::controller_input_,
+	atc_force_control_demo::controller_status_>
+{
 	public:
 		/**
 		  * @brief The constructor for this controller.
@@ -55,81 +51,52 @@ class ATCForceControlDemo : public ATC<atc_force_control_demo::controller_log_da
 	private:
 		/**
 		  * @brief This is the main function for the top-level controller.
-		  * The ATC class automatically handles startup and shutdown,
-		  * if they are not disabled.
 		  */
 		void controller();
 
 		/**
-		  * @brief This gets GUI values and handles some high level logic.
-		  */		  
+		  * @brief These are functions for the top-level controller.
+		  */
 		void updateState();
-		
-		/**
-		  * @brief Constant toe position hip controller.
-		  */	
 		void hipController();
-		
-		/**
-		  * @brief Runs through a predetermined set of positions.
-		  */	
-		std::tuple<double, double, double, double> automatedPositionTest(double t);
-		
-		/**
-		  * @brief Runs through a predetermined set of forces.
-		  */	
-		LegForce automatedForceTest(double t);
-		
+		std::tuple<double, double> sinewave(double, double, double, double);
+		std::tuple<double, double> stairStep(double, double, double, double, double);
+		std::tuple<double, double> sinewaveSweep(double, double, double, double, double, double);
+			
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
 		ASCCommonToolkit ascCommonToolkit;
-		ASCLegForce ascLegForceLl;
-		ASCLegForce ascLegForceRl;
 		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDLmA;
-		ASCPD ascPDLmB;
-		ASCPD ascPDRmA;
-		ASCPD ascPDRmB;
-		ASCPD ascPDLh;
-		ASCPD ascPDRh;
-		ASCRateLimit ascRateLimitLmA;
-		ASCRateLimit ascRateLimitLmB;
-		ASCRateLimit ascRateLimitRmA;
-		ASCRateLimit ascRateLimitRmB;
-		
-		// Time counters
-		double tL, tR, tOffset;
+		ASCLegForce ascLegForceL, ascLegForceR;
+		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh;
 
-		// Leg and motor positions
-		double qLmA, qLmB, qRmA, qRmB, dqLmA, dqLmB, dqRmA, dqRmB;
+		// Variables
+		int lLegControllerState, rLegControllerState; // State machines
+		double qLh, qRh; // Hip angles
+		LeftRight toePosition; // Desired toe positions measures from boom center axis
 		
-		// Leg motor rate limit
-		double legRateLimit;
-		
-		// Leg forces
-		LegForce fL, fR, fTemp;
-		
-		// Controller states
-		int lLegControllerState, rLegControllerState;
-		
-		// Hip angles
-		double qLh, qRh;
-		
-		// Toe positions
-		LeftRight toePosition;
-		
-		// Motor angles and velocities
+		// Motor positions and velocities
 		double qmA, qmB, dqmA, dqmB;
 		
-		// Leg force structure
-		LegForce legForce;
+		// Leg positions and velocities
+		double ql, rl, dql, drl;
 		
-		// Cycle duration for automated tests
-		double duration;
+		// 
+		double t, y, dy;
 		
+		// Time counters
+		double tL, tR;
+		
+		// Leg forces
+		LegForce legForce;		
+
 		// Sine wave sweep parameters
-		double omega1, omega2, a, b, ql, rl, dql, drl;
+		double omega1, omega2, a, b;
+		
+		// Misc margins, ratelimiters and other kludge values
+		double legRateLimit, hipRateLimit;
 
 };
 

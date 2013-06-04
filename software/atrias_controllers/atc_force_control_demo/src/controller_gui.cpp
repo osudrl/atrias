@@ -101,8 +101,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     leg_for_kd_spinbutton->set_value(8.0);
     hip_pos_kp_spinbutton->set_value(150.0);
     hip_pos_kd_spinbutton->set_value(8.0);
-    left_leg_len_spinbutton->set_value(0.85);
-    right_leg_len_spinbutton->set_value(0.85);
+    left_leg_len_spinbutton->set_value(0.90);
+    right_leg_len_spinbutton->set_value(0.90);
     left_leg_ang_spinbutton->set_value(M_PI/2.0);
     right_leg_ang_spinbutton->set_value(M_PI/2.0);
     left_fx_spinbutton->set_value(0.0);

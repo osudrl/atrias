@@ -1,9 +1,3 @@
-/**
- * @file ATCSlipWalking.cpp
- * @author Mikhail S. Jones
- * @brief This controller is based on simulated SLIP walking gaits for ATRIAS and has been tuned manually through trial and error.
- */
-
 #include "atc_slip_walking/ATCSlipWalking.hpp"
 
 // The namespaces this controller resides in
@@ -13,10 +7,10 @@ namespace controller {
 ATCSlipWalking::ATCSlipWalking(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
+	ascHipBoomKinematics(this, "ascHipBoomKinematics"),
 	ascInterpolation(this, "ascInterpolation"),
 	ascLegForceR(this, "ascLegForceR"),
 	ascLegForceL(this, "ascLegForceL"),
-	ascHipBoomKinematics(this, "ascHipBoomKinematics"),
 	ascPDLmA(this, "ascPDLmA"),
 	ascPDLmB(this, "ascPDLmB"),
 	ascPDRmA(this, "ascPDRmA"),
@@ -32,6 +26,9 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 	ascRateLimitLr0(this, "ascRateLimitLr0"),
 	ascRateLimitRr0(this, "ascRateLimitRr0")
 {
+	// Startup is handled by the ATC class
+	setStartupEnabled(true);
+	
 	// Set leg motor rate limit
 	legRateLimit = 0.2;
 	hipRateLimit = 0.2;
@@ -49,9 +46,6 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 
 
 void ATCSlipWalking::controller() {
-	// Startup is handled by the ATC class
-	setStartupEnabled(true);
-
 	// Update current robot state
 	updateState();
 
@@ -114,7 +108,7 @@ void ATCSlipWalking::controller() {
 
 
 void ATCSlipWalking::updateState() {
-	// Reset rate limiters when not enabled (prevents jumps)
+	// If we are disabled then reset rate limiters
 	if (!(isEnabled()) || !(controllerState == 0)) {
 		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
 		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
@@ -125,6 +119,7 @@ void ATCSlipWalking::updateState() {
 		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
 		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
 	}
+	// TODO reset upon switching controller type
 
 	// Get some gui inputs
 	controllerState = guiIn.main_controller;

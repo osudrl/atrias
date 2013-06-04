@@ -4,8 +4,7 @@
 /**
  * @file ATCSlipWalking.hpp
  * @author Mikhail S. Jones
- * @brief This controller is based on simulated SLIP walking gaits for ATRIAS 
- * and has been tuned manually through trial and error.
+ * @brief This controller is based on simulated SLIP walking gaits for ATRIAS.
  */
 
 // Include the ATC class
@@ -47,8 +46,6 @@ class ATCSlipWalking : public ATC<
 		/** 
 		 * @brief The constructor for this controller.
 		 * @param name The name of this component.
-		 * Every top-level controller will have this name parameter,
-		 * just like current controllers.
 		 */
 		ATCSlipWalking(string name);
 
@@ -59,16 +56,8 @@ class ATCSlipWalking : public ATC<
 		void controller();
 
 		/**
-		  * @brief These are sub controllers used by the top level controller.
+		  * @brief These are functions for the top-level controller.
 		  */
-  		ASCCommonToolkit ascCommonToolkit;
-  		ASCInterpolation ascInterpolation;
-		ASCLegForce ascLegForceL, ascLegForceR;
-		ASCHipBoomKinematics ascHipBoomKinematics;
-		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
-		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
-
-		// Functions
 		void updateState();
 		void hipController();
 		void standingController();
@@ -78,6 +67,17 @@ class ATCSlipWalking : public ATC<
 		void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
 		void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
 		void updateExitConditions(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*, ASCRateLimit*);
+		
+		/**
+		  * @brief These are sub controllers used by the top level controller.
+		  */
+  	ASCCommonToolkit ascCommonToolkit;
+  	ASCInterpolation ascInterpolation;
+		ASCLegForce ascLegForceL, ascLegForceR;
+		ASCHipBoomKinematics ascHipBoomKinematics;
+		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
+
 
 		// Variables
 		int controllerState, walkingState; // State machines
@@ -121,8 +121,6 @@ class ATCSlipWalking : public ATC<
 		double legRateLimit, hipRateLimit, springRateLimit;
 		double forceTD, forceTO, positionTD;
 		bool hipTorqueFlag; // Is triggered once trajectory is finished and stops hip from applying more torque
-
-
 
 };
 
