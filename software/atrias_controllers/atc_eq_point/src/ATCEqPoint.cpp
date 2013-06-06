@@ -149,8 +149,8 @@ void ATCEqPoint::controller() {
 
 
 	// calculate circle correction for step length
-	c_radius_i = abs((1 - guiIn.lhip_pos / 2.3 ) / 2);
-	c_radius_o = abs((1 - guiIn.rhip_pos / 2.3 ) / 2);
+	c_radius_i = abs((1 - guiIn.lhip_pos / 2 ) / 2) * guiIn.d_as;
+	c_radius_o = abs((1 - guiIn.rhip_pos / 2 ) / 2);
 	gamma = guiIn.pea - guiIn.aea;
 	oPEA = guiIn.pea + c_radius_o * gamma;
 	iPEA = guiIn.pea - c_radius_i * gamma;
@@ -163,14 +163,14 @@ void ATCEqPoint::controller() {
 	switch (guiIn.control)
 	{
 		case 1:
-			if (state == 2 && t>0.97 && rGC)								//switch left / right stepping 
+			if (state == 2 && t>0.98 && rGC)								//switch left / right stepping 
 			{
 				state = 1;
 				sw_stance = false;
 				sw_flight = false;
 				t=0;
 			}
-			if (state == 1 && t>0.97 && lGC) 	
+			if (state == 1 && t>0.98 && lGC) 	
 			{
 				state = 2;
 				sw_stance = false;
@@ -181,7 +181,7 @@ void ATCEqPoint::controller() {
 		case 2:
 			// state machine
 			//if (state == 2 && phi_rLeg<M_PI/2 && rGC)								//switch left / right stepping automatically
-			if ((state == 2) && (t>0.97))
+			if ((state == 2) && (t>0.98))
 			{
 				state = 1;
 				sw_stance = false;
@@ -189,7 +189,7 @@ void ATCEqPoint::controller() {
 				t=0;
 			}
 			//if (state == 1 && phi_lLeg < M_PI/2 && lGC) 	
-			if ((state == 1) && (t>0.97))
+			if ((state == 1) && (t>0.98))
 			{
 				state = 2;
 				sw_stance = false;
