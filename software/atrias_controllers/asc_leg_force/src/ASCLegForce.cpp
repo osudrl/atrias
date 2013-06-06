@@ -8,15 +8,17 @@ ASCLegForce::ASCLegForce(AtriasController *parent, string name) :
         AtriasController(parent, name),
         log_out(this, "log")
 {
-	// Gains
+	// PID controller gains
 	kp = 250.0;
 	ki = 0.0;
 	kd = 5.0;
+	
+	// Anti wind-up limit for integral error term
+	antiWindup = 5.0;
 }
 
 
 std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
-
 	// Unpack parameters
 	fx = legForce.fx;
 	fz = legForce.fz;
@@ -33,7 +35,7 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dqmB = leg.halfB.motorVelocity;
 	dqb = position.bodyPitchVelocity;
 
-	// Compute required joint torque using Jacobian
+	// Compute required joint torque from desired end effector forces using Jacobian
 	tausA = -fx*L2*cos(qlA + qb) + fz*L2*sin(qlA + qb);
 	tausB = -fx*L1*cos(qlB + qb) + fz*L1*sin(qlB + qb);
 
@@ -41,9 +43,21 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 	dtausA = fx*L2*sin(qlA + qb)*(dqlA + dqb) + dfz*L2*sin(qlA + qb) - dfx*L2*cos(qlA + qb) + fz*L2*cos(qlA + qb)*(dqlA + dqb);
 	dtausB = fx*L1*sin(qlB + qb)*(dqlB + dqb) + dfz*L1*sin(qlB + qb) - dfx*L1*cos(qlB + qb) + fz*L1*cos(qlB + qb)*(dqlB + dqb);
 
-	// Compute required motor current using PD controller with feed forward term
-	curA = (tausA/KG + kp*(tausA/KS - (qmA - qlA)) + kd*(dtausA/KS - (dqmA - dqlA)))/KT;
-	curB = (tausB/KG + kp*(tausB/KS - (qmB - qlB)) + kd*(dtausB/KS - (dqmB - dqlB)))/KT;
+	// Compute proportional error terms
+	epA = tausA/KS - (qmA - qlA);
+	epB = tausB/KS - (qmB - qlB);
+	
+	// Compute integral error terms using clamping anti-windup method
+	eiA = clamp(eiA + (epA * 0.001), -antiWindup, antiWindup);
+	eiB = clamp(eiB + (epB * 0.001), -antiWindup, antiWindup);
+	
+	// Compute derivative error terms
+	edA = dtausA/KS - (dqmA - dqlA);
+	edB = dtausB/KS - (dqmB - dqlB);
+	
+	// Compute required motor current using PD terms on spring deflection with feed forward term
+	curA = (tausA/KG + kp*epA + ki*eiA + kd*edA)/KT;
+	curB = (tausB/KG + kp*epB + ki*eiB + kd*edB)/KT;
     	
 	// Set the log data
 	log_out.data.control_fx = legForce.fx;
@@ -62,12 +76,10 @@ std::tuple<double, double> ASCLegForce::control(LegForce legForce, atrias_msgs::
 
 	// Return the motor current
 	return std::make_tuple(curA, curB);
-
 }
 
 
 LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
-
 	// Unpack the parameters
 	qlA = leg.halfA.legAngle;
 	qlB = leg.halfB.legAngle;
@@ -111,7 +123,6 @@ LegForce ASCLegForce::compute(atrias_msgs::robot_state_leg leg, atrias_msgs::rob
 
 	// Return the leg forces
 	return legForce;
-
 }
 
 }

@@ -62,6 +62,12 @@ class ASCLegForce : public AtriasController {
 		
 		// Forces
 		double fx, fz, dfx, dfz;
+		
+		// PID error terms
+		double epA, epB, eiA, eiB, edA, edB;
+		
+		// Anti wind-up limit for integral term
+		double antiWindup;
 
 		// Motor current
 		double curA, curB;
