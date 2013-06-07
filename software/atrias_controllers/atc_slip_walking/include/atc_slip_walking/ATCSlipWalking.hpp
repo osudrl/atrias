@@ -18,9 +18,9 @@
 
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
+#include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_interpolation/ASCInterpolation.hpp>
 #include <asc_leg_force/ASCLegForce.hpp>
-#include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_pd/ASCPD.hpp>
 #include <asc_rate_limit/ASCRateLimit.hpp>
 
@@ -71,10 +71,10 @@ class ATCSlipWalking : public ATC<
 		/**
 		  * @brief These are sub controllers used by the top level controller.
 		  */
-  	ASCCommonToolkit ascCommonToolkit;
-  	ASCInterpolation ascInterpolation;
-		ASCLegForce ascLegForceL, ascLegForceR;
+  	    ASCCommonToolkit ascCommonToolkit;
 		ASCHipBoomKinematics ascHipBoomKinematics;
+  	    ASCInterpolation ascInterpolation;
+		ASCLegForce ascLegForceL, ascLegForceR;
 		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
 		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
 

@@ -36,12 +36,6 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 
 	// Initialize walking state
 	walkingState = 0;
-
-	// Reset rest rate limiters
-	ascRateLimitLr0.reset(r0);
-	ascRateLimitRr0.reset(r0);
-	ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
-	ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
 }
 
 
@@ -103,25 +97,23 @@ void ATCSlipWalking::controller() {
 			shutdownController(); // Call shutdown controller
 			break;
 	}
-
 }
 
 
 void ATCSlipWalking::updateState() {
-	// If we are disabled then reset rate limiters
-	if (!(isEnabled()) || !(controllerState == 0)) {
+	// If we are disabled or the controller has been switched, reset rate limiters
+	if (!(isEnabled()) || !(controllerState == guiIn.main_controller)) {
 		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
 		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
 		ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
 		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
-	}
-	if (!(isEnabled()) || (controllerState == 2)) {
 		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
 		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
+        ascRateLimitLr0.reset(r0);
+	    ascRateLimitRr0.reset(r0);
 	}
-	// TODO reset upon switching controller type
 
-	// Get some gui inputs
+	// Get GUI inputs
 	controllerState = guiIn.main_controller;
 	
 	// Update GUI walking state display

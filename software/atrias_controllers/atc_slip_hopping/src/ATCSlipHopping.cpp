@@ -7,10 +7,11 @@ namespace controller {
 ATCSlipHopping::ATCSlipHopping(string name) :
 	ATC(name),
 	ascCommonToolkit(this, "ascCommonToolkit"),
-	ascSlipModel(this, "ascSlipModel"),
-	ascLegForceLl(this, "ascLegForceLl"),
-	ascLegForceRl(this, "ascLegForceRl"),
 	ascHipBoomKinematics(this, "ascHipBoomKinematics"),
+	ascInterpolation(this, "ascInterpolation"),
+	ascSlipModel(this, "ascSlipModel"),
+	ascLegForceL(this, "ascLegForceL"),
+	ascLegForceR(this, "ascLegForceR"),
 	ascPDLmA(this, "ascPDLmA"),
 	ascPDLmB(this, "ascPDLmB"),
 	ascPDRmA(this, "ascPDRmA"),
@@ -20,10 +21,16 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 	ascRateLimitLmA(this, "ascRateLimitLmA"),
 	ascRateLimitLmB(this, "ascRateLimitLmB"),
 	ascRateLimitRmA(this, "ascRateLimitRmA"),
-	ascRateLimitRmB(this, "ascRateLimitRmB")
+	ascRateLimitRmB(this, "ascRateLimitRmB"),
+	ascRateLimitLh(this, "ascRateLimitLh"),
+	ascRateLimitRh(this, "ascRateLimitRh")
 {
+	// Startup is handled by the ATC class
+	setStartupEnabled(true);
+	
 	// Set leg motor rate limit
-	legRateLimit = 1.0;
+	legRateLimit = 0.2;
+	hipRateLimit = 0.2;
 	
 	// Set hip controller toe positions
 	toePosition.left = 2.15;
@@ -31,19 +38,12 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 }
 
 
+/**
+ * @brief This is the main function for the top-level controller.
+ * The ATC class automatically handles startup and shutdown,
+ * if they are not disabled.
+ */
 void ATCSlipHopping::controller() {
-
-	/* Additionally, the following functions are available to command the robot state:
-	 * commandHalt();    // Trigger a Halt
-	 * commandEStop();   // Trigger an EStop
-	 * commandDisable(); // Disable the robot
-	 * setStartupEnabled(true/false) // Enable or disable the default startup controller
-	 * setShutdownEnabled(true/false) // Enable or disable the shutdown controller
-	 */
-
-	// Startup is handled by the ATC class
-	setStartupEnabled(true);
-
 	// Update current robot state
 	updateState();
 
@@ -52,18 +52,15 @@ void ATCSlipHopping::controller() {
 
 	// Main controller state machine
 	switch (controllerState) {
-		// Standing
-		case 0:
+		case 0: // Standing
 			// Standing in place
 			standingController();
 			break;
-
-		// Vertical hopping
-		case 1:
+		
+		case 1: // Vertical hopping
 			// SLIP hopping controller state machine
 			switch (hoppingState) {
-				// Stance phase
-				case 0:
+				case 0: // Stance phase
 					// Stance control type
 					if (stanceControlType == 0) {
 						// Run passive stance phase - zero torque at the hip
@@ -77,35 +74,35 @@ void ATCSlipHopping::controller() {
 					}
 					break;
 
-				// Flight phase
-				case 1:
+				case 1: // Flight phase
 					// Run flight phase controller
 					flightPhaseController();
 					break;
 			}
 			break;
 
-		// Shutdown
-		case 2:
-			// Call shutdown controller
+		case 2: // Shutdown
+		    // Call shutdown controller
 			shutdownController();
 			break;
 	}
-
-	// Copy over positions to the GUI output data
-	guiOut.isEnabled = isEnabled();
-
 }
 
 
+/**
+ * @brief This function handles all of the non-controller related updating 
+ * including getting and setting GUI parameters, updating sub-controllers,
+ * and handling other secondary controller functions.
+ */
 void ATCSlipHopping::updateState() {
-
-	// Reset rate limiters if needed
-	if (!isEnabled()) {
+	// If we are disabled or the controller has been switched, reset rate limiters
+	if (!(isEnabled()) || !(controllerState == guiIn.main_controller)) {
 		ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
 		ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
 		ascRateLimitRmA.reset(rs.rLeg.halfA.motorAngle);
 		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
+		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
+		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
 	}
 
 	// Get GUI values
@@ -117,6 +114,9 @@ void ATCSlipHopping::updateState() {
 	ascSlipModel.r0 = guiIn.slip_leg;
 	h = guiIn.hop_height;
 
+	// TODO: add GUI outputs
+	guiOut.isEnabled = isEnabled();
+
 	// Set leg motor position control PD gains
 	ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
 	ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = guiIn.leg_pos_kd;
@@ -126,14 +126,16 @@ void ATCSlipHopping::updateState() {
 	ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 
 	// Set leg motor force control PID gains
-	ascLegForceLl.kp = ascLegForceRl.kp = guiIn.leg_for_kp;
-	ascLegForceLl.ki = ascLegForceRl.ki = 0.0;
-	ascLegForceLl.kd = ascLegForceRl.kd = guiIn.leg_for_kd;
+	ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
+	ascLegForceL.ki = ascLegForceR.ki = 0.0;
+	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
 
 	// Compute actual leg force from spring deflection
-	ascLegForceLl.compute(rs.lLeg, rs.position);// fix
-	ascLegForceRl.compute(rs.rLeg, rs.position);// fix
+	ascLegForceL.compute(rs.lLeg, rs.position);
+	ascLegForceR.compute(rs.rLeg, rs.position);
 
+
+	// TODO: rework everything below this
 	// Check for stance phase and set hopping state
 	if (rs.position.zPosition < ascSlipModel.r0) {
 		// Stance phase
@@ -167,20 +169,35 @@ void ATCSlipHopping::updateState() {
 }
 
 
+/**
+ * @brief This function handles all hip motor commands independent of other
+ * functions. It works by computing the inverse kinematics of the robot 
+ * selecting hip angles that result in the desired toe positions. This keeps
+ * knee torques to a minimum.
+ */
 void ATCSlipHopping::hipController() {
-
-	// Compute inverse kinematics
+	// Set hip controller toe positions FIXME
+	//toePosition.left = guiIn.left_toe_pos;
+	//toePosition.right = guiIn.right_toe_pos;
+	
+	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
 
-	// Compute and set motor currents
+	// Rate limit motor velocities to smooth step inputs
+	qLh = ascRateLimitLh(qLh, hipRateLimit);
+	qRh = ascRateLimitRh(qRh, hipRateLimit);
+
+	// Compute and set motor currents from position based PD controllers
 	co.lLeg.motorCurrentHip = ascPDLh(qLh, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
 	co.rLeg.motorCurrentHip = ascPDRh(qRh, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
-
 }
 
 
+/**
+ * @brief This functions uses position control on the leg motors to allow the
+ * robot to stand with the torso locked. Does not work with unlocked torso.
+ */
 void ATCSlipHopping::standingController() {
-
 	// Set leg angles
 	qLl = qRl = PI/2.0;
 	rLl = rRl = guiIn.standing_leg;
@@ -200,12 +217,14 @@ void ATCSlipHopping::standingController() {
 	co.lLeg.motorCurrentB = ascPDLmB(qLmB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
 	co.rLeg.motorCurrentA = ascPDRmA(qRmA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
 	co.rLeg.motorCurrentB = ascPDRmB(qRmB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
-
 }
 
 
+/**
+ * @brief This function imposes virtual dampers on each motor allowing the
+ * robot to safely and slowly shutdown.
+ */
 void ATCSlipHopping::shutdownController() {
-
 	// Compute and set motor currents (applies virtual dampers to all actuators)
 	co.lLeg.motorCurrentA = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
 	co.lLeg.motorCurrentB = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
@@ -213,12 +232,13 @@ void ATCSlipHopping::shutdownController() {
 	co.rLeg.motorCurrentA = ascPDRmA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
 	co.rLeg.motorCurrentB = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
 	co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
-
 }
 
 
+/**
+ * @brief A SLIP based force tracking stance phase controller.
+ */
 void ATCSlipHopping::slipForceStancePhaseController() {
-
 	// Spring type
 	if (springType == 0) {
 		std::tie(ascSlipModel.k, ascSlipModel.dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
@@ -260,7 +280,7 @@ void ATCSlipHopping::slipForceStancePhaseController() {
 			qLmB = rs.lLeg.halfB.legAngle;
 
 			// Compute and set motor currents
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
 
 		}
 
@@ -289,7 +309,7 @@ void ATCSlipHopping::slipForceStancePhaseController() {
 			qRmB = rs.rLeg.halfB.legAngle;
 
 			// Compute and set motor currents
-			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(legForce, rs.rLeg, rs.position);
+			std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceR.control(legForce, rs.rLeg, rs.position);
 
 		}
 
@@ -304,6 +324,12 @@ void ATCSlipHopping::slipForceStancePhaseController() {
 }
 
 
+/**
+ * @brief A simple stance phase controller allowing only leg length 
+ * forces with zero leg angle torques. Uses a position controller to 
+ * keep virtual motor leg length constant while minimizing spring 
+ * about the hip.
+ */
 void ATCSlipHopping::passiveStancePhaseController() {
 
 	// Left leg controller
@@ -338,6 +364,11 @@ void ATCSlipHopping::passiveStancePhaseController() {
 }
 
 
+/**
+ * @brief A simple stance phase controller simulating a virtual spring
+ * between the hip and toe. Uses a force controller to then track these 
+ * forces that are based on leg deflection.
+ */
 void ATCSlipHopping::virtualSpringStancePhaseController() {
 
 	// Spring type and stiffness
@@ -365,7 +396,7 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 		legForce.dfz = drLl*sin(qLl)*k - dk*sin(qLl)*(ascSlipModel.r0 - rLl) + dqLl*cos(qLl)*k*(rLl - ascSlipModel.r0);
 		
 		// Apply the force
-		std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceLl.control(legForce, rs.lLeg, rs.position);
+		std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
 
 	} else {
 		// Set motor angles
@@ -389,7 +420,7 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 		legForce.dfz = drRl*sin(qRl)*k - dk*sin(qRl)*(ascSlipModel.r0 - rRl) + dqRl*cos(qRl)*k*(rRl - ascSlipModel.r0);
 		
 		// Apply the force
-		std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceRl.control(legForce, rs.rLeg, rs.position);
+		std::tie(co.rLeg.motorCurrentA, co.rLeg.motorCurrentB) = ascLegForceR.control(legForce, rs.rLeg, rs.position);
 
 	} else {
 		// Set motor angles
@@ -402,6 +433,9 @@ void ATCSlipHopping::virtualSpringStancePhaseController() {
 }
 
 
+/**
+ * @brief A simple constant leg position flight phase controller.
+ */
 void ATCSlipHopping::flightPhaseController() {
 
 	// Redefine slip initial conditions incase we go into stance next time step
