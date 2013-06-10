@@ -109,8 +109,8 @@ void ATCSlipWalking::updateState() {
 		ascRateLimitRmB.reset(rs.rLeg.halfB.motorAngle);
 		ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
 		ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
-        ascRateLimitLr0.reset(r0);
-	    ascRateLimitRr0.reset(r0);
+        	ascRateLimitLr0.reset(r0);
+	    	ascRateLimitRr0.reset(r0);
 	}
 
 	// Get GUI inputs
@@ -150,7 +150,6 @@ void ATCSlipWalking::updateState() {
 	ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
 	ascLegForceL.ki = ascLegForceR.ki = 0.0;
 	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
-
 }
 
 
@@ -251,12 +250,12 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 	}
 
 	// Set flag to disable constant hip torque debug toggle
-	if (qSl > qtSl) {
+	if (qSl >= qtSl) {
 		hipTorqueFlag = true;
 	}
 	
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
-	dqeFl = 0.0/(qtSl - qeSl); // TODO can remove once exit condition is verfied to be good
+	dqeFl = 0.0; // TODO can remove once exit condition is verfied to be good
 	dqtFl = 0.3/(qtSl - qeSl); // TODO make a GUI input (0.3)
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
@@ -280,7 +279,6 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 	// Compute and set motor currents from position based PD controllers
 	coFl->motorCurrentA = ascPDmA->operator()(qmFA, rsFl->halfA.motorAngle, dqmFA, rsFl->halfA.motorVelocity);
 	coFl->motorCurrentB = ascPDmB->operator()(qmFB, rsFl->halfB.motorAngle, dqmFB, rsFl->halfB.motorVelocity);
-
 }
 
 

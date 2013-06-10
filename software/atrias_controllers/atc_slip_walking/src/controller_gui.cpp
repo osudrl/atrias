@@ -60,7 +60,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	td_force_spinbutton->set_range(-100.0, 100.0);
 	to_force_spinbutton->set_range(-100.0, 100.0);
 	td_position_spinbutton->set_range(-0.05, 0.05);
-	hip_torque_spinbutton->set_range(0.0, 15.0);
+	hip_torque_spinbutton->set_range(0.0, 25.0);
 
 
 	// Set increments

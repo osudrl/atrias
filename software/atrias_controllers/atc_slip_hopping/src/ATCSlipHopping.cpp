@@ -29,8 +29,8 @@ ATCSlipHopping::ATCSlipHopping(string name) :
 	setStartupEnabled(true);
 	
 	// Set leg motor rate limit
-	legRateLimit = 0.2;
-	hipRateLimit = 0.2;
+	legRateLimit = 0.5;
+	hipRateLimit = 0.5;
 	
 	// Initialize hopping state
 	hoppingState = 0;
@@ -56,7 +56,11 @@ void ATCSlipHopping::controller() {
 	switch (controllerState) {
 		case 0: // Standing controller
 			standingController();
+
+			// Reset hopping state machine
+			hoppingState = 0;
 			break;
+
 		case 1: // SLIP hopping controller
 			// SLIP hopping controller state machine
 			switch (hoppingState) {
@@ -72,11 +76,13 @@ void ATCSlipHopping::controller() {
 							passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
 							passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
 							break;
+
 						case 1:
 							updateSlipForces();
 							slipForceStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascLegForceL);
 							slipForceStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascLegForceR);
 							break;
+
 						case 2:
 							virtualSpringStanceController(&rs.lLeg, &co.lLeg, &ascLegForceL);
 							virtualSpringStanceController(&rs.rLeg, &co.rLeg, &ascLegForceR);
@@ -86,6 +92,7 @@ void ATCSlipHopping::controller() {
 					break;
 			}
 			break;
+
 		case 2: // Shutdown
 			shutdownController();
 			break;
@@ -228,11 +235,11 @@ void ATCSlipHopping::updateSlipForces() {
 	// Spring type and stiffness
 	if (springType == 0) {
 		// Compute current ATRIAS non-linear spring constant for given leg configuration
-		std::tie(k, dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
+		std::tie(ascSlipModel.k, ascSlipModel.dk) = ascCommonToolkit.legStiffness(slipState.r, slipState.dr, ascSlipModel.r0);
 	} else if (springType == 1) {
 		// Desired linear stiffness
-		k = guiIn.slip_spring;
-		dk = 0.0;
+		ascSlipModel.k = guiIn.slip_spring;
+		ascSlipModel.dk = 0.0;
 	}
 	
 	// Set SLIP model parameters, double stiffness if two leg hopping
@@ -241,8 +248,11 @@ void ATCSlipHopping::updateSlipForces() {
 		ascSlipModel.dk = 2.0*ascSlipModel.dk;
 	}
 
+	//printf("k dk %f %f\n", ascSlipModel.k, ascSlipModel.dk);
+	//printf("before r q dr dq  %f %f %f %f\n", slipState.r, slipState.q, slipState.dr, slipState.dq);
+
 	// Compute SLIP force profile
-	slipState = ascSlipModel.advanceRK5(slipState);
+	slipState = ascSlipModel.advanceRK4(slipState);
 	forceS = ascSlipModel.force(slipState);
 
 	// Halve the force if two leg hopping
@@ -252,11 +262,14 @@ void ATCSlipHopping::updateSlipForces() {
 		forceS.dfx = forceS.dfx/2.0;
 		forceS.dfz = forceS.dfz/2.0;
 	}
+	
+	//printf("after: %f %f %f %f\n", slipState.r, slipState.q, slipState.dr, slipState.dq);
+	//printf("forces: %f %f %f %f\m", forceS.fx, forceS.fz, forceS.dfx, forceS.dfz);
 }
 
 
 /**
- * @brief A SLIP based force tracking stance phase controller.
+ * @brief A SLIP based force tracking stance phase controller. FIXME
  */
 void ATCSlipHopping::slipForceStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCLegForce *ascLegForceS) {
 	// Check if SLIP model says we should be in flight or stance
@@ -266,7 +279,7 @@ void ATCSlipHopping::slipForceStanceController(atrias_msgs::robot_state_leg *rsS
 		coSl->motorCurrentB = ascPDSmB->operator()(qSmB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
 
 	} else {
-		// Store last known leg position
+		// Store last known leg position // FIXME: conflict when two leg hopping because this is called twice
 		qSmA = rsSl->halfA.legAngle;
 		qSmB = rsSl->halfB.legAngle;
 
@@ -356,8 +369,8 @@ void ATCSlipHopping::ballisticStanceLegController(atrias_msgs::robot_state_leg *
 	qSmB = ascRateLimitSmB->operator()(qSmB, legRateLimit);
 
 	// Compute and set motor currents from position based PID controllers
-	coSl->motorCurrentA = ascPDSmA->operator()(qFmA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
-	coSl->motorCurrentB = ascPDSmB->operator()(qFmB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
+	coSl->motorCurrentA = ascPDSmA->operator()(qSmA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
+	coSl->motorCurrentB = ascPDSmB->operator()(qSmB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
 }
 
 
