@@ -2,9 +2,9 @@
 #define ATCSlipWalking_HPP
 
 /**
- * @file ATCSlipWalking.hpp
- * @author Mikhail S. Jones
- * @brief This controller is based on simulated SLIP walking gaits for ATRIAS.
+ * @author Mikhail Jones
+ * @brief This walking controller is based on a Spring Loaded Inverted 
+ * Pendulum (SLIP) template model.
  */
 
 // Include the ATC class

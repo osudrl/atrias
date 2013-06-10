@@ -66,7 +66,7 @@ void ATCSlipWalking::controller() {
 					if (guiIn.apply_hip_torque && ~hipTorqueFlag) {
 						co.rLeg.motorCurrentA += guiIn.hip_torque;
 						co.rLeg.motorCurrentB += guiIn.hip_torque;
-					}					
+					}				
 					break;
 			
 				case 1: // Double support (right = flight, left = stance)
@@ -117,6 +117,7 @@ void ATCSlipWalking::updateState() {
 	controllerState = guiIn.main_controller;
 	
 	// Update GUI walking state display
+	guiOut.isEnabled = isEnabled();
 	guiOut.walking_state = walkingState;
 	guiOut.td_force = forceTD;
 	guiOut.to_force = forceTO;

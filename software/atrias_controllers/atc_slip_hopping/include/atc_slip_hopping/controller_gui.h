@@ -29,7 +29,13 @@ Gtk::SpinButton *slip_spring_spinbutton,
 	*leg_pos_kd_spinbutton,
 	*leg_for_kd_spinbutton,
 	*hip_pos_kp_spinbutton,
-	*hip_pos_kd_spinbutton;
+	*hip_pos_kd_spinbutton,
+	*force_threshold_td_spinbutton,
+	*force_threshold_to_spinbutton,
+	*position_threshold_td_spinbutton,
+	*left_toe_pos_spinbutton,
+	*right_toe_pos_spinbutton,
+	*hopping_state_spinbutton;
 	
 Gtk::ComboBox *main_controller_combobox,
 	*spring_type_combobox,
