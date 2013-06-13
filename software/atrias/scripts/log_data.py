@@ -15,7 +15,7 @@ def logRequestCallback (req):
 
     if req.enableLogging and not currentlyLogging:
         # Spawn off roslaunch process (non-blocking).
-        roslaunchProcess = subprocess.Popen(["chrt", "55", "roslaunch", "atrias", "rosbag.launch"])
+        roslaunchProcess = subprocess.Popen(["roslaunch", "atrias", "rosbag.launch"])
         currentlyLogging = True
 
     elif not req.enableLogging and currentlyLogging:
