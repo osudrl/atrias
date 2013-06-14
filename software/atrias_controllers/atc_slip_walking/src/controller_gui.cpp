@@ -60,7 +60,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	td_force_spinbutton->set_range(-100.0, 100.0);
 	to_force_spinbutton->set_range(-100.0, 100.0);
 	td_position_spinbutton->set_range(-0.05, 0.05);
-	hip_torque_spinbutton->set_range(0.0, 25.0);
+	hip_torque_spinbutton->set_range(0.0, 30.0);
 
 
 	// Set increments
@@ -89,11 +89,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set values
 	walking_state_spinbutton->set_value(0);
 	slip_leg_spinbutton->set_value(0.93);
-	atrias_spring_spinbutton->set_value(1400.0);
+	atrias_spring_spinbutton->set_value(1895.0);
 	swing_leg_retraction_spinbutton->set_value(0.12);
 	force_threshold_td_spinbutton->set_value(40.0);
 	force_threshold_to_spinbutton->set_value(0.0);
-	position_threshold_td_spinbutton->set_value(0.025);
+	position_threshold_td_spinbutton->set_value(0.02);
 	stance_leg_target_spinbutton->set_value(1.6);
 	flight_leg_target_spinbutton->set_value(1.3);
 	leg_pos_kp_spinbutton->set_value(200.0);
@@ -103,7 +103,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	left_toe_pos_spinbutton->set_value(2.20);
-	right_toe_pos_spinbutton->set_value(2.45);
+	right_toe_pos_spinbutton->set_value(2.5);
 	hip_torque_spinbutton->set_value(25.0);
 	
 	// Connect buttons to functions

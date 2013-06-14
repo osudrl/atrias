@@ -32,7 +32,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 	// Set leg motor rate limit
 	legRateLimit = 0.2;
 	hipRateLimit = 0.2;
-	springRateLimit = 0.05;
+	springRateLimit = 0.1;
 
 	// Initialize walking state
 	walkingState = 0;
@@ -245,7 +245,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 	std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
 	// Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
-	if (qeSl > qtSl) {
+	if (qeSl > qtSl - 0.1) {
 		qtSl = qeSl + 0.1;
 	}
 
@@ -255,13 +255,13 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 	}
 	
 	// Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
-	dqeFl = 0.0; // TODO can remove once exit condition is verfied to be good
-	dqtFl = 0.3/(qtSl - qeSl); // TODO make a GUI input (0.3)
+	dqeFl = 0.0;
+	dqtFl = 0.3/(qtSl - qeSl);
 	std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl); 
 
 	// Use two cubic splines slaved to stance leg angle to retract and then extend the flight leg
 	rtFl = r0 - swingLegRetraction;
-	dreFl = 0.0; // TODO can remove once exit condition is verfied to be good
+	dreFl = 0.0;
 	drtFl = 0.0;
 	// Switch between cubic spline depending on value of domain
 	if (qSl <= (qeSl + qtSl)/2.0) {
@@ -279,6 +279,10 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 	// Compute and set motor currents from position based PD controllers
 	coFl->motorCurrentA = ascPDmA->operator()(qmFA, rsFl->halfA.motorAngle, dqmFA, rsFl->halfA.motorVelocity);
 	coFl->motorCurrentB = ascPDmB->operator()(qmFB, rsFl->halfB.motorAngle, dqmFB, rsFl->halfB.motorVelocity);
+	
+	// Clamp the motor currents during leg swing to let the amlifiers recover for the upcoming stance.
+	coFl->motorCurrentA = clamp(coFl->motorCurrentA, -30.0, 30.0);
+	coFl->motorCurrentB = clamp(coFl->motorCurrentB, -30.0, 30.0);
 }
 
 
@@ -292,8 +296,8 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 	forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
 	// Compute conditionals for event triggers
-	isFlightLegTD = (forceFl.fz <= -forceThresholdTD) && (rFl*sin(qFl) >= rSl*sin(qSl) - positionThresholdTD);
 	isStanceLegTO = (forceSl.fz >= -forceThresholdTO);
+	isFlightLegTD = (forceFl.fz <= -forceThresholdTD) && (rFl*sin(qFl) >= rSl*sin(qSl) - positionThresholdTD);
 	isForwardStep = (rSl*cos(qSl) <= rFl*cos(qFl));
 	isBackwardStep = (rSl*cos(qSl) > rFl*cos(qFl));
 	
