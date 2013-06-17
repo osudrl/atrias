@@ -317,9 +317,6 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">P</property>
               </object>
-              <packing>
-                <property name="bottom_attach">2</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="d_lbl">
@@ -329,7 +326,7 @@
               </object>
               <packing>
                 <property name="top_attach">2</property>
-                <property name="bottom_attach">4</property>
+                <property name="bottom_attach">3</property>
               </packing>
             </child>
             <child>
@@ -508,6 +505,12 @@
                 <property name="top_attach">3</property>
                 <property name="bottom_attach">4</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
