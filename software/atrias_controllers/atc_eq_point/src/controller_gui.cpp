@@ -123,58 +123,68 @@ void controllerCallback(const atc_eq_point::controller_status &status) {
 
 //! \brief Get parameters from the server and configure GUI accordingly.
 void getParameters() {
-	// Get parameters.
-/*	nh.getParam("/atrias_gui/lhip_pos", controllerDataOut.lhip_pos);
-	nh.getParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
+	// Read in parameters from the file and set them on the GUI
+	nh.getParam("/atrias_gui/control", (int&) controllerDataOut.control);
+	control_combobox->set_active(controllerDataOut.control);
 	nh.getParam("/atrias_gui/aea", controllerDataOut.aea);
-	nh.getParam("/atrias_gui/pea", controllerDataOut.pea);
-	nh.getParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
-	nh.getParam("/atrias_gui/p_af", controllerDataOut.p_af);
-	nh.getParam("/atrias_gui/d_af", controllerDataOut.d_af);
-	nh.getParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
-	nh.getParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
-	nh.getParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
-	nh.getParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
-	nh.getParam("/atrias_gui/d_as", controllerDataOut.d_as);
-	nh.getParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
-	nh.getParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
-	nh.getParam("/atrias_gui/l_st", controllerDataOut.l_st);
-
-	// Configure the GUI.
-	lhip_pos_spinbutton->set_value(controllerDataOut.lhip_pos);
-	rhip_pos_spinbutton->set_value(controllerDataOut.rhip_pos);
 	aea_spinbutton->set_value(controllerDataOut.aea);
+	nh.getParam("/atrias_gui/pea", controllerDataOut.pea);
 	pea_spinbutton->set_value(controllerDataOut.pea);
-	l_leg_fl_spinbutton->set_value(controllerDataOut.l_leg_fl);
-	p_af_spinbutton->set_value(controllerDataOut.p_af);
-	d_af_spinbutton->set_value(controllerDataOut.d_af);
-	p_lf_spinbutton->set_value(controllerDataOut.p_lf);
-	d_lf_spinbutton->set_value(controllerDataOut.d_lf);
-	l_fl_spinbutton->set_value(controllerDataOut.l_fl);
-	l_leg_st_spinbutton->set_value(controllerDataOut.l_leg_st);
-	d_as_spinbutton->set_value(controllerDataOut.d_ls);
-	p_ls_spinbutton->set_value(controllerDataOut.p_ls);
-	d_ls_spinbutton->set_value(controllerDataOut.d_ls);
-	l_st_spinbutton->set_value(controllerDataOut.l_st);*/
+	nh.getParam("/atrias_gui/lhip_pos", controllerDataOut.lhip_pos);
+	lhip_pos_spinbutton->set_value(controllerDataOut.lhip_pos);
+	nh.getParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
+	rhip_pos_spinbutton->set_value(controllerDataOut.rhip_pos);
+	nh.getParam("/atrias_gui/leg_st", controllerDataOut.leg_st);
+	lst->set_value(controllerDataOut.leg_st);
+	nh.getParam("/atrias_gui/leg_fl", controllerDataOut.leg_fl);
+	lfl->set_value(controllerDataOut.leg_fl);
+	nh.getParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
+	pst->set_value(controllerDataOut.p_ls);
+	nh.getParam("/atrias_gui/p_fl", controllerDataOut.p_fl);
+	pfl1->set_value(controllerDataOut.p_fl);
+	nh.getParam("/atrias_gui/pfl2", controllerDataOut.pfl2);
+	pfl2->set_value(controllerDataOut.pfl2);
+	nh.getParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
+	dst->set_value(controllerDataOut.d_ls);
+	nh.getParam("/atrias_gui/d_fl", controllerDataOut.d_fl);
+	dfl1->set_value(controllerDataOut.d_fl);
+	nh.getParam("/atrias_gui/dfl2", controllerDataOut.dfl2);
+	dfl2->set_value(controllerDataOut.dfl2);
+	nh.getParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
+	thip->set_value(controllerDataOut.l_fl);
+	nh.getParam("/atrias_gui/l_st", controllerDataOut.l_st);
+	tab->set_value(controllerDataOut.l_st);
+	nh.getParam("/atrias_gui/tsw", controllerDataOut.tsw);
+	tsw->set_value(controllerDataOut.tsw);
+	nh.getParam("/atrias_gui/loc", controllerDataOut.loc);
+	loc->set_value(controllerDataOut.loc);
+	nh.getParam("/atrias_gui/d_as", controllerDataOut.d_as);
+	aover->set_value(controllerDataOut.d_as);
+	nh.getParam("/atrias_gui/rco", controllerDataOut.rco);
+	rco->set_value(controllerDataOut.rco);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-/*	nh.setParam("/atrias_gui/lhip_pos", controllerDataOut.lhip_pos);
-	nh.setParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
+	nh.setParam("/atrias_gui/control", controllerDataOut.control);
 	nh.setParam("/atrias_gui/aea", controllerDataOut.aea);
 	nh.setParam("/atrias_gui/pea", controllerDataOut.pea);
-	nh.setParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
-	nh.setParam("/atrias_gui/p_af", controllerDataOut.p_af);
-	nh.setParam("/atrias_gui/d_af", controllerDataOut.d_af);
-	nh.setParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
-	nh.setParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
-	nh.setParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
-	nh.setParam("/atrias_gui/l_leg_st", controllerDataOut.l_leg_st);
-	nh.setParam("/atrias_gui/d_as", controllerDataOut.d_as);
+	nh.setParam("/atrias_gui/lhip_pos", controllerDataOut.lhip_pos);
+	nh.setParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
+	nh.setParam("/atrias_gui/leg_st", controllerDataOut.leg_st);
+	nh.setParam("/atrias_gui/leg_fl", controllerDataOut.leg_fl);
 	nh.setParam("/atrias_gui/p_ls", controllerDataOut.p_ls);
+	nh.setParam("/atrias_gui/p_fl", controllerDataOut.p_fl);
+	nh.setParam("/atrias_gui/pfl2", controllerDataOut.pfl2);
 	nh.setParam("/atrias_gui/d_ls", controllerDataOut.d_ls);
-	nh.setParam("/atrias_gui/l_st", controllerDataOut.l_st);*/
+	nh.setParam("/atrias_gui/d_fl", controllerDataOut.d_fl);
+	nh.setParam("/atrias_gui/dfl2", controllerDataOut.dfl2);
+	nh.setParam("/atrias_gui/l_fl", controllerDataOut.l_fl);
+	nh.setParam("/atrias_gui/l_st", controllerDataOut.l_st);
+	nh.setParam("/atrias_gui/tsw", controllerDataOut.tsw);
+	nh.setParam("/atrias_gui/loc", controllerDataOut.loc);
+	nh.setParam("/atrias_gui/d_as", controllerDataOut.d_as);
+	nh.setParam("/atrias_gui/rco", controllerDataOut.rco);
 }
 
 //! \brief Update the GUI.
@@ -184,7 +194,7 @@ void guiUpdate() {
 	controllerDataOut.pea      = pea_spinbutton->get_value();
 	controllerDataOut.lhip_pos = lhip_pos_spinbutton->get_value();
 	controllerDataOut.rhip_pos = rhip_pos_spinbutton->get_value();
-	controllerDataOut.leg_st   = lst->get_value();;
+	controllerDataOut.leg_st   = lst->get_value();
 	controllerDataOut.leg_fl   = lfl->get_value();
 	controllerDataOut.p_ls     = pst->get_value();
 	controllerDataOut.p_fl     = pfl1->get_value();
