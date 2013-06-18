@@ -65,8 +65,16 @@ float32 rLegBodyVelocity
 
 float32 xPosition
 float32 xVelocity
+float32 yPosition
+float32 yVelocity
 float32 zPosition
 float32 zVelocity
+
+float32 bodyPitch
+float32 bodyPitchVelocity
+
+float32 boomAngle
+float32 boomAngleVelocity
 
 uint16  lToeSwitch
 uint16  rToeSwitch
