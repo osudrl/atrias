@@ -80,7 +80,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	aover->set_range(0, 1);
 	loc->set_range(0, 60);
 	rco->set_range(0, 1);
-	thip->set_range(-10, 10);
+	thip->set_range(0, 100);
 	tab->set_range(0, 1);
 
 	// Set default values.
