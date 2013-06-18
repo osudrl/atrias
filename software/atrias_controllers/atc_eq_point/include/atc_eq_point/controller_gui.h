@@ -30,21 +30,24 @@ Gtk::Button *gc_l_button,
 	*gc_r_button;
 
 Gtk::SpinButton *aea_spinbutton,
+	*pea_spinbutton,
 	*lhip_pos_spinbutton,
 	*rhip_pos_spinbutton,
-	*pea_spinbutton,
-	*l_leg_fl_spinbutton,
-	*p_af_spinbutton,
-	*d_af_spinbutton,
-	*p_lf_spinbutton,
-	*d_lf_spinbutton,
-	*l_fl_spinbutton,
-	*l_leg_st_spinbutton,
-	*p_as_spinbutton,
-	*d_as_spinbutton,
-	*p_ls_spinbutton,
-	*d_ls_spinbutton,
-	*l_st_spinbutton;
+	*lst,
+	*lfl,
+	*pst,
+	*pfl1,
+	*pfl2,
+	*dst,
+	*dfl1,
+	*dfl2,
+	*tsw,
+	*aover,
+	*loc,
+	*rco;
+
+Gtk::HScale *thip,
+	*tab;
 
 void controllerCallback(const atc_eq_point::controller_status &status);
 

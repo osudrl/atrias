@@ -11,6 +11,10 @@
 #include <gtkmm.h>
 #include <ros/node_handle.h>
 
+// Checks if the given GTK handle is defined, and print out a message if not.
+// Returns true if there's been an error, false if not
+#define CHECK_WIDGET(name) (!(name) && (std::cout << "Widget " << #name << " not initialized!" << std::endl, true))
+
 #ifdef __cplusplus
 extern "C" {
 #endif
