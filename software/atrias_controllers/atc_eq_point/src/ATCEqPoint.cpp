@@ -100,9 +100,9 @@ void ATCEqPoint::controller() {
 	// initial state
 	// Calculate motor angles
 	MotorAngle leftMotorAngle;
-	std::tie(leftMotorAngle.A,  leftMotorAngle.B)  = commonToolkit.legPos2MotorPos(guiIn.pea, guiIn.l_leg_st);
+	std::tie(leftMotorAngle.A,  leftMotorAngle.B)  = commonToolkit.legPos2MotorPos(guiIn.pea, guiIn.lst);
 	MotorAngle rightMotorAngle;
-	std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.aea, guiIn.l_leg_st);
+	std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.aea, guiIn.lst);
 
 	// Hip control.
 	LeftRight hipTgts;
@@ -155,8 +155,8 @@ void ATCEqPoint::controller() {
 	iPEA = guiIn.pea - guiIn.rco * 0.09 * gamma;
 	oAEA = guiIn.aea - guiIn.rco * 0.09 * gamma;
 	iAEA = guiIn.aea + guiIn.rco * 0.09 * gamma;
-	phiBs_des_i = iPEA + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
-	phiBs_des_o = oPEA + acos (guiIn.l_leg_st);							//desired motor position for stance MOTOR B
+	phiBs_des_i = iPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
+	phiBs_des_o = oPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
 
 
 	switch (guiIn.control)
@@ -270,7 +270,7 @@ void ATCEqPoint::controller() {
                         } else
                         {                                                                                                                                                                                                                                               // aea is reached once
                                 sw_flight=true;
-                                std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(iAEA,guiIn.l_leg_st);
+                                std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(iAEA,guiIn.lst);
                                 pd0Controller.D = guiIn.dst;
                                 pd0Controller.P = guiIn.pst;
                                 co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
@@ -320,13 +320,13 @@ void ATCEqPoint::controller() {
                                         l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
                                         phi_rLeg = oPEA;
                                         logOut.state=21;
-                                } else if (t<guiIn.l_fl){
+                                } else if (t<guiIn.tsw){
 										pd3Controller.P = guiIn.pfl1;
 										pd3Controller.D = guiIn.dfl1;
 										pd4Controller.P = guiIn.pfl1;
 										pd4Controller.D = guiIn.dfl1;
                                         phi_rLeg=oPEA - (t - 0.1) / (guiIn.tsw - 0.1) * (oPEA - oAEA) * (1 + guiIn.aover);
-                                        l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.tsw * M_PI);
+                                        l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
                                         logOut.state=22;
                                 } else {
 										pd3Controller.P = guiIn.pfl2;
