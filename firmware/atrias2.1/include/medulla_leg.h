@@ -13,7 +13,7 @@
 #include "adc.h"
 #include "biss_encoder.h"
 #include "quadrature_encoder.h"
-#include "ad7193.h"
+#include "adc124.h"
 
 #include "amplifier.h"
 

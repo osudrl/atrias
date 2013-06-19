@@ -13,7 +13,7 @@ medulla_state_t *leg_current_state_pdo;
 uint8_t *leg_medulla_counter_pdo;
 uint8_t *leg_error_flags_pdo;
 uint8_t *leg_limit_switch_pdo;
-int16_t *toe_sensor_pdo;
+uint16_t *toe_sensor_pdo;
 
 uint32_t *motor_encoder_pdo;
 uint16_t *motor_encoder_timestamp_pdo;
@@ -65,9 +65,10 @@ limit_sw_port_t limit_sw_port;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
 adc_port_t adc_port_a, adc_port_b;
-ad7193_t knee_adc;
+adc124_t knee_adc;
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
+uint16_t temp_adc_val;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
@@ -142,7 +143,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing knee ADC.\n");
 	#endif
-	knee_adc = ad7193_init(&PORTF,&USARTF0,toe_sensor_pdo);
+	knee_adc = adc124_init(&PORTF,&USARTF0,io_init_pin(&PORTD,4),toe_sensor_pdo,knee_force1_pdo,knee_force2_pdo,&temp_adc_val);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing motor encoder\n");
@@ -197,7 +198,7 @@ inline void leg_disable_outputs(void) {
 }
 
 void leg_update_inputs(uint8_t id) {
-	ad7193_start_read(&knee_adc);
+	adc124_start_read(&knee_adc);
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
@@ -215,7 +216,7 @@ void leg_update_inputs(uint8_t id) {
 	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
-	while (!ad7193_read_complete(&knee_adc));
+	while (!adc124_read_complete(&knee_adc));
 
 	cli();
 	last_incremental = *incremental_encoder_pdo;
@@ -265,7 +266,7 @@ void leg_update_inputs(uint8_t id) {
 	    ((leg_therm_prev_val[5]<thermistor_pdo[5]) && (thermistor_pdo[5]-leg_therm_prev_val[5] < 50)))
 		leg_therm_prev_val[5] = thermistor_pdo[5];
 
-	ad7193_process_data(&knee_adc);
+	adc124_process_data(&knee_adc);
 
 	//leg_send_current_read = true;
 }
