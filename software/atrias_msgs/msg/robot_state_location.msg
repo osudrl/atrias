@@ -8,6 +8,7 @@ float64 zVelocity
 
 # The angle of the boom. A horizontal boom has an angle of pi
 float64 boomAngle
+float64 boomAngleVelocity
 
 # The robot's body's pitch. 3 * pi/2 is vertical.
 float64 bodyPitch

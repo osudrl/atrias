@@ -127,14 +127,14 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime,
 	robotState.position.yPosition = -cos(virtualBoomAngle) * BOOM_LENGTH;
 	
 	// The rate of the boom's vertical rotation. Rad/s
-	double boomRotRate =
+	robotState.position.boomAngleVelocity =
 		((double) deltaPos) * BOOM_Z_ENCODER_RAD_PER_TICK / actualDeltaTime;
 	
 	robotState.position.zVelocity =
-		BOOM_LENGTH * boomRotRate * cos(virtualBoomAngle);
+		BOOM_LENGTH * robotState.position.boomAngleVelocity * cos(virtualBoomAngle);
 	
 	robotState.position.yVelocity =
-		BOOM_LENGTH * boomRotRate * sin(virtualBoomAngle);
+		BOOM_LENGTH * robotState.position.boomAngleVelocity * sin(virtualBoomAngle);
 	
 	zEncoderValue   = *zEncoder;
 	zTimestampValue = *zTimestamp;
