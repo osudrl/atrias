@@ -151,9 +151,9 @@ void ATCEqPoint::controller() {
 
 	// calculate circle correction for step length
 	gamma = guiIn.pea - guiIn.aea;
-	oPEA = guiIn.pea + guiIn.rco * 0.09 * gamma;
+	oPEA = guiIn.pea
 	iPEA = guiIn.pea - guiIn.rco * 0.09 * gamma;
-	oAEA = guiIn.aea - guiIn.rco * 0.09 * gamma;
+	oAEA = guiIn.aea
 	iAEA = guiIn.aea + guiIn.rco * 0.09 * gamma;
 	phiBs_des_i = iPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
 	phiBs_des_o = oPEA + acos (guiIn.lst);							//desired motor position for stance MOTOR B
