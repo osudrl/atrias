@@ -6,7 +6,7 @@ robot_state_legHalf halfA
 robot_state_legHalf halfB
 
 # Unitless -- should be processed
-int16  toeSwitch
+uint16  toeSwitch
 
 # Limit switches
 bool    legRetractSwitch
