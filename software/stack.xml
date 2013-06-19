@@ -1,8 +1,8 @@
 <stack>
-  <description brief="drl-sim">drl-sim</description>
+  <description brief="atrias">atrias</description>
   <author>Devin Koepl</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/drl-sim</url>
+  <url>http://ros.org/wiki/atrias</url>
   <depend stack="ros" />
 </stack>
