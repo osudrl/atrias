@@ -5,13 +5,13 @@
 /*------ Calibration Values for Leg 1 ------*/
 /*------------------------------------------*/
 #define LEG6_LEG_A_CALIB_VAL       264791392LL
-#define LEG6_LEG_B_CALIB_VAL       199688721LL
+#define LEG6_LEG_B_CALIB_VAL       265506465LL
 
 #define LEG6_LEG_A_RAD_PER_CNT   9.8039216e-09
 #define LEG6_LEG_B_RAD_PER_CNT  -9.8039216e-09
 
 #define LEG6_TRAN_A_CALIB_VAL      199141730LL
-#define LEG6_TRAN_B_CALIB_VAL      265693669LL
+#define LEG6_TRAN_B_CALIB_VAL      199584463LL
 
 #define LEG6_TRAN_A_RAD_PER_CNT  9.8039216e-09
 #define LEG6_TRAN_B_RAD_PER_CNT -9.8039216e-09
