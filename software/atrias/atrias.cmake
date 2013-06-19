@@ -1,3 +1,4 @@
+# Author: Soo-Hyun Yoo
 
 # Specify build targets here.
 set(ATRIAS_BUILD_GUI 1)
