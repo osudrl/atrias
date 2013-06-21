@@ -9,10 +9,13 @@
 
 // Include the ATC class
 #include <atrias_control_lib/ATC.hpp>
-// Our logging data type.
+
+// Our logging data type
 #include "atc_slip_walking/controller_log_data.h"
+
 // The type transmitted from the GUI to the controller
 #include "atc_slip_walking/controller_input.h"
+
 // The type transmitted from the controller to the GUI
 #include "atc_slip_walking/controller_status.h"
 
@@ -58,7 +61,7 @@ class ATCSlipWalking : public ATC<
         /**
           * @brief These are functions for the top-level controller.
           */
-        void updateState();
+        void updateController();
         void hipController();
         void standingController();
         void shutdownController();
@@ -79,15 +82,24 @@ class ATCSlipWalking : public ATC<
         ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
 
 
-        // Variables
-        int controllerState, walkingState; // State machines
+        /**
+          * @brief These are all the variables used by the top level controller.
+          */
+        // State machines
+        int controllerState, walkingState;
+        
+        // Walking gait definition values
+        double r0, k, dk; // Spring parameters
+        double swingLegRetraction; // The amount the leg retracts during swing
+        double pushoffForce; // Horizontal force applied during single support
+        
+        // Hip parameters
         double qLh, qRh; // Hip angles
         LeftRight toePosition; // Desired toe positions measures from boom center axis
 
         // Motor and leg variables
         double rSl, drSl, qSl, dqSl; // Stance leg states
         double rFl, drFl, qFl, dqFl; // Flight leg states
-
         double qmSA, dqmSA, qmSB, dqmSB; // Stance motor states
         double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
         LegForce forceSl, forceFl;
@@ -112,17 +124,10 @@ class ATCSlipWalking : public ATC<
         // State transistion events
         bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
 
-        // Walking gait definition values
-        double r0, k, dk; // Spring parameters
-        double swingLegRetraction; // The amount the leg retracts during swing
-
         // Misc margins, ratelimiters and other kludge values
         double forceThresholdTO, forceThresholdTD, positionThresholdTD;
         double legRateLimit, hipRateLimit, springRateLimit;
         double forceTD, forceTO, positionTD;
-        double pushoffForce; // Horizontal force applied during single support
-        //bool hipTorqueFlag; // Is triggered once trajectory is finished and stops hip from applying more torque
-
 };
 
 }
