@@ -1,4 +1,7 @@
 /**
+ * @file ATCSlipWalking.cpp
+ * @brief A Spring Loaded Inverted Pendulum (SLIP) template model based
+ * walking controller.
  * @author Mikhail Jones
  */
 
@@ -43,7 +46,9 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 }
 
 /**
- * @brief This is the main function for the top-level controller.
+ * @brief Top-level controller.
+ * 
+ * This is the main function for the top-level controller.
  * The ATC class automatically handles startup and shutdown,
  * if they are not disabled.
  */
@@ -128,7 +133,9 @@ void ATCSlipWalking::controller() {
 }
 
 /**
- * @brief This function handles all of the non-controller related
+ * @brief Update controller parameters.
+ * 
+ * This function handles all of the non-controller related
  *  updating and all communication to and from the GUI.
  */
 void ATCSlipWalking::updateController() {
@@ -181,7 +188,9 @@ void ATCSlipWalking::updateController() {
 }
 
 /**
- * @brief This function handles all hip motor commands independent of other
+ * @brief Hip position tracking controller.
+ * 
+ * This function handles all hip motor commands independent of other
  * functions. It works by computing the inverse kinematics of the robot
  * selecting hip angles that result in the desired toe positions. This keeps
  * knee torques to a minimum.
@@ -204,9 +213,12 @@ void ATCSlipWalking::hipController() {
 }
 
 /**
- * @brief This functions uses position control on the leg motors to allow the
+ * @brief Constant position standing controller.
+ * 
+ * This function uses position control on the leg motors to allow the
  * robot to stand with the torso locked. Does not work with unlocked torso.
  */
+// TODO stand up starting from rest on ground
 void ATCSlipWalking::standingController() {
     // Compute motor angles
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(qtSl, r0);
@@ -226,7 +238,9 @@ void ATCSlipWalking::standingController() {
 }
 
 /**
- * @brief This function imposes virtual dampers on each motor allowing the
+ * @brief Soft robot shutdown controller.
+ * 
+ * This function imposes virtual dampers on each motor allowing the
  * robot to safely and slowly shutdown.
  */
 void ATCSlipWalking::shutdownController() {
@@ -240,7 +254,13 @@ void ATCSlipWalking::shutdownController() {
 }
 
 /**
- * @brief A simple stance phase controller simulating a virtual spring
+ * @brief Stance leg force tracking controller.
+ * @param rsSl Stance leg robot state pointer.
+ * @param coSl Stance leg controller ouput pointer.
+ * @param ascLegForceSl Stance leg PID force controller pointer.
+ * @param ascRateLimitSr0 Rest spring length rate limiter pointer.
+ * 
+ * A simple stance phase controller simulating a virtual spring
  * between the hip and toe. Uses a force controller to then track these
  * forces that are based on leg deflection.
  */
@@ -254,7 +274,7 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 
     // Compute current ATRIAS non-linear spring constant for given leg configuration
     std::tie(k, dk) = ascCommonToolkit.legStiffness(rSl, drSl, r0Sl);
-    dk = 0.0; // TODO: set to zero for debugging to track down noise.
+    dk = 0.0; // TODO remove to verify noise issue
 
     // Define component forces and their derivatives
     forceSl.fx = -k*(rSl - r0Sl)*cos(qSl);
@@ -270,7 +290,14 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 }
 
 /**
- * @brief A position controller that tracks a cubic spline trajectory from
+ * @brief Flight leg swing position trajectory tracking controller.
+ * @param rsSl Stance leg robot state pointer.
+ * @param rsFl Flight leg robot state pointer.
+ * @param coFl Flight leg controller output pointer.
+ * @param ascPDmA Flight leg motor A PD position controller pointer.
+ * @param ascPDmB Flight leg motor B PD position controller pointer.
+ * 
+ * A position controller that tracks a cubic spline trajectory from
  * the exit conditions to the desired touchdown conditions. The touchdown
  * conditions are based on a simulated SLIP model walking gait.
  */
@@ -287,7 +314,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         qtSl = qeSl + 0.1;
     }
 
-    // Use a cubic spline interpolation to slave the flight leg angle and length to the stance leg angle
+    // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
     dqeFl = 0.0;
     dqtFl = 0.3/(qtSl - qeSl);
     std::tie(ql, dql) = ascInterpolation.cubic(qeSl, qtSl, qeFl, qtFl, dqeFl, dqtFl, qSl, dqSl);
@@ -297,7 +324,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     dreFl = 0.0;
     drtFl = 0.0;
 
-    // Switch between cubic spline depending on value of domain
+    // Piece-wise cubic spline to slave the flight leg length to the stance leg angle
     if (qSl <= (qeSl + qtSl)/2.0) {
         // Leg retraction during first half
         std::tie(rl, drl) = ascInterpolation.cubic(qeSl, (qeSl + qtSl)/2.0, reFl, rtFl, dreFl, 0.0, qSl, dqSl);
@@ -321,9 +348,18 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 }
 
 /**
- * @brief This function computes logical conditionals and uses a decision tree
+ * @brief Single support event triggers.
+ * @param rsSl Stance leg robot state pointer.
+ * @param rsFl Flight leg robot state pointer.
+ * @param ascLegForceSl Stance leg PID force controller pointer.
+ * @param ascLegForceFl Flight leg PID force controller pointer.
+ * @param ascRateLimitSr0 Stance rest spring length rate limiter pointer.
+ * @param ascRateLimitFr0 Flight rest spring length rate limiter pointer.
+ * 
+ * This function computes logical conditionals and uses a decision tree
  * to determine if a single support event has been triggered and responds accordingly.
  */
+// TODO compute conditionals with hip angle and body pitch accounted for
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute the current flight leg angle and length
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -364,7 +400,15 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 
 
 /**
- * @brief This function computes logical conditionals and uses a decision tree
+ * @brief Double support event triggers.
+ * @param rsSl Stance leg robot state pointer.
+ * @param rsFl Flight leg robot state pointer.
+ * @param ascLegForceSl Stance leg PID force controller pointer.
+ * @param ascLegForceFl Flight leg PID force controller pointer.
+ * @param ascRateLimitSr0 Stance rest spring length rate limiter pointer.
+ * @param ascRateLimitFr0 Flight rest spring length rate limiter pointer.
+ * 
+ * This function computes logical conditionals and uses a decision tree
  * to determine if a double support event has been triggered and responds accordingly.
  */
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
@@ -376,7 +420,7 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     forceFl = ascLegForceFl->compute(*rsFl, rs.position);
     forceSl = ascLegForceSl->compute(*rsSl, rs.position);
 
-    // Set debug status values
+    // Set debug status output values
     forceTD = 0.0;
     forceTO = forceFl.fz;
     positionTD = 0.0;
@@ -401,7 +445,13 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 }
 
 /**
- * @brief Updates the exit conditions upon dynamic state transitions.
+ * @brief Update exit conditions.
+ * @param rsSl Stance leg robot state pointer.
+ * @param rsFl Flight leg robot state pointer.
+ * @param ascRateLimitSr0 Stance rest spring length rate limiter pointer.
+ * @param ascRateLimitFr0 Flight rest spring length rate limiter pointer.
+ * 
+ * Updates the exit conditions upon dynamic state transitions.
  */
 void ATCSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Save the stance and flight leg exit conditions for use in leg swing trajectory generation

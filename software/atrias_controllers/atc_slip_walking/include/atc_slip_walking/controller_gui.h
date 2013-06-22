@@ -1,4 +1,5 @@
 /**
+ * @file controller_gui.hpp
  * @author Mikhail Jones
  */
 

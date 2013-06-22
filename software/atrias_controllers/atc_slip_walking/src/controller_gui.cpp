@@ -1,4 +1,5 @@
 /**
+ * @file controller_gui.cpp
  * @author Mikhail Jones
  */
 
@@ -237,6 +238,7 @@ void setParameters() {
 void guiUpdate() {
     // Main controller options
     controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
+    // TODO if not enabled switch back to standing controller.
     controllerDataOut.gait_transitions = (uint8_t)gait_transitions_combobox->get_active_row_number();
     
     // Gait options

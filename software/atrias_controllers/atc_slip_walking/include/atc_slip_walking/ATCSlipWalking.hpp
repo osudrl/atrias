@@ -1,7 +1,8 @@
 /**
+ * @file ATCSlipWalking.hpp
+ * @brief A Spring Loaded Inverted Pendulum (SLIP) template model based
+ * walking controller.
  * @author Mikhail Jones
- * @brief This walking controller is based on a Spring Loaded Inverted
- * Pendulum (SLIP) template model.
  */
 
 #ifndef ATCSlipWalking_HPP
@@ -59,8 +60,8 @@ class ATCSlipWalking : public ATC<
         void controller();
 
         /**
-          * @brief These are functions for the top-level controller.
-          */
+         * @brief These are functions for the top-level controller.
+         */
         void updateController();
         void hipController();
         void standingController();
@@ -72,8 +73,8 @@ class ATCSlipWalking : public ATC<
         void updateExitConditions(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*, ASCRateLimit*);
 
         /**
-          * @brief These are sub controllers used by the top level controller.
-          */
+         * @brief These are sub controllers used by the top level controller.
+         */
         ASCCommonToolkit ascCommonToolkit;
         ASCHipBoomKinematics ascHipBoomKinematics;
         ASCInterpolation ascInterpolation;
@@ -83,8 +84,8 @@ class ATCSlipWalking : public ATC<
 
 
         /**
-          * @brief These are all the variables used by the top level controller.
-          */
+         * @brief These are all the variables used by the top level controller.
+         */
         // State machines
         int controllerState, walkingState;
         
