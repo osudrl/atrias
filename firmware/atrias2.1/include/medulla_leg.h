@@ -26,7 +26,7 @@
 
 // Defines for which systems to check for error state
 #define ERROR_CHECK_LIMIT_SWITCH
-#define ERROR_CHECK_THERMISTORS
+//#define ERROR_CHECK_THERMISTORS
 //#define ERROR_CHECK_MOTOR_VOLTAGE
 //#define ERROR_CHECK_LOGIC_VOLTAGE
 //#define ERROR_CHECK_ENCODER
