@@ -78,43 +78,55 @@ void ATCSlipWalking::controller() {
             switch (walkingState) {
 
                 case 0: // Right leg single support (right = stance, left = flight)
-                    // Define horizontal pushoff force
-                    pushoffForce = guiIn.pushoff_force;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
+                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
+
+			  // Inject energy
+			  if (qSl <= qtSl) {
+			      co.rLeg.motorCurrentA += -guiIn.pushoff_force;
+			  	co.rLeg.motorCurrentB += -guiIn.pushoff_force;
+			  } else {
+				walkingState = (walkingState + 1) % 4;
+			  }
                     break;
 
                 case 1: // Double support (right = flight, left = stance)
-                    // Define horizontal pushoff force
-                    pushoffForce = 0.0;
-
                     // Run state specific controller and event functions
                     stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     doubleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
+
+			  // Inject energy
+			  co.lLeg.motorCurrentA += -5.0;
+                    co.lLeg.motorCurrentB += -5.0;
                     break;
 
                 case 2: // Left leg single support (right = flight, left = stance)
-                    // Define horizontal pushoff force
-                    pushoffForce = guiIn.pushoff_force;
-
                     // Run state specific controller and event functions
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
+                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
+
+			  // Inject energy
+			  if (qSl <= qtSl) {
+			      co.lLeg.motorCurrentA += -guiIn.pushoff_force;
+			  	co.lLeg.motorCurrentB += -guiIn.pushoff_force;
+			  } else {
+                        walkingState = (walkingState + 1) % 4;
+			  }
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
-                    // Define horizontal pushoff force
-                    pushoffForce = 0.0;
-
                     // Run state specific controller and event functions
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
+			  
+			  // Inject energy
+			  co.rLeg.motorCurrentA += -5.0;
+                    co.rLeg.motorCurrentB += -5.0;
                     break;
             }
             break;
@@ -282,9 +294,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.fz = k*(rSl - r0Sl)*sin(qSl);
     forceSl.dfz = drSl*sin(qSl)*k - dk*sin(qSl)*(r0Sl - rSl) + dqSl*cos(qSl)*k*(rSl - r0Sl);
 
-    // Add a horizontal force to inject energy and pushoff
-    forceSl.fx += pushoffForce;
-
     // Use force tracking controller to compute required motor currents
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
 }
@@ -310,8 +319,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
     // Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
-    if (qeSl > qtSl - 0.1) {
-        qtSl = qeSl + 0.1;
+    if (qeSl > qtSl - 0.2) {
+        qtSl = qeSl + 0.2;
     }
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
@@ -343,8 +352,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     coFl->motorCurrentB = ascPDmB->operator()(qmFB, rsFl->halfB.motorAngle, dqmFB, rsFl->halfB.motorVelocity);
 
     // Clamp the motor currents during leg swing to let the amlifiers recover for the upcoming stance.
-    coFl->motorCurrentA = clamp(coFl->motorCurrentA, -30.0, 30.0);
-    coFl->motorCurrentB = clamp(coFl->motorCurrentB, -30.0, 30.0);
+    //coFl->motorCurrentA = clamp(coFl->motorCurrentA, -30.0, 30.0);
+    //coFl->motorCurrentB = clamp(coFl->motorCurrentB, -30.0, 30.0);
 }
 
 /**
@@ -426,8 +435,8 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     positionTD = 0.0;
 
     // Compute conditionals for event triggers
-    isFlightLegTO = forceFl.fz >= -forceThresholdTO;
-    isStanceLegTO = forceSl.fz >= -forceThresholdTO;
+    isFlightLegTO = forceFl.fz >= forceThresholdTO;
+    isStanceLegTO = forceSl.fz >= forceThresholdTO;
 
     // Flight leg take off (trigger next state)
     if (isFlightLegTO || isManualFlightLegTO) {

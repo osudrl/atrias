@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("slip_leg_spinbutton", slip_leg_spinbutton);
     slip_leg_spinbutton->set_range(0.75, 0.95);
     slip_leg_spinbutton->set_increments(0.01, 0.0);
-    slip_leg_spinbutton->set_value(0.93);
+    slip_leg_spinbutton->set_value(0.92);
     gui->get_widget("stance_leg_target_spinbutton", stance_leg_target_spinbutton);
     stance_leg_target_spinbutton->set_range(M_PI/2.0, M_PI/2.0 + 0.40);
     stance_leg_target_spinbutton->set_increments(0.01, 0.0);
@@ -36,7 +36,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.15);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
-    swing_leg_retraction_spinbutton->set_value(0.12);
+    swing_leg_retraction_spinbutton->set_value(0.15);
     gui->get_widget("pushoff_force_spinbutton", pushoff_force_spinbutton);
     pushoff_force_spinbutton->set_range(-500.0, 0.0);
     pushoff_force_spinbutton->set_increments(5.0, 0.0);
@@ -46,15 +46,15 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("force_threshold_td_spinbutton", force_threshold_td_spinbutton);
     force_threshold_td_spinbutton->set_range(-100.0, 100.0);
     force_threshold_td_spinbutton->set_increments(1.0, 0.0);
-    force_threshold_td_spinbutton->set_value(40.0);
+    force_threshold_td_spinbutton->set_value(50.0);
     gui->get_widget("force_threshold_to_spinbutton", force_threshold_to_spinbutton);
     force_threshold_to_spinbutton->set_range(-100.0, 100.0);
     force_threshold_to_spinbutton->set_increments(1.0, 0.0);
-    force_threshold_to_spinbutton->set_value(0.0);
+    force_threshold_to_spinbutton->set_value(-50.0);
     gui->get_widget("position_threshold_td_spinbutton", position_threshold_td_spinbutton);
     position_threshold_td_spinbutton->set_range(0.0, 0.05);
     position_threshold_td_spinbutton->set_increments(0.001, 0.0);
-    position_threshold_td_spinbutton->set_value(0.02);
+    position_threshold_td_spinbutton->set_value(0.015);
 
     // Leg gains
     gui->get_widget("leg_pos_kp_spinbutton", leg_pos_kp_spinbutton);
@@ -76,7 +76,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     leg_for_kd_spinbutton->set_range(0.0, 50.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
-    leg_for_kd_spinbutton->set_value(2.0);
+    leg_for_kd_spinbutton->set_value(1.0);
 
     // Hip gains
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
@@ -86,7 +86,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("left_toe_pos_spinbutton", left_toe_pos_spinbutton);
     left_toe_pos_spinbutton->set_range(2.1, 2.5);
     left_toe_pos_spinbutton->set_increments(0.01, 0.0);
-    left_toe_pos_spinbutton->set_value(2.20);
+    left_toe_pos_spinbutton->set_value(2.17);
     gui->get_widget("hip_pos_kd_spinbutton", hip_pos_kd_spinbutton);
     hip_pos_kd_spinbutton->set_range(0.0, 50.0);
     hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
