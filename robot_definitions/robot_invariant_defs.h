@@ -213,4 +213,10 @@ typedef enum {
   */
 #define STARTUP_TIME                                                         4.0
 
+/**
+  * @brief The gear ratio of the X encoder
+  * Note: This is 9.6:1 (The large pulley has 96 teeth; the small pulley has 10 teeth).
+  */
+#define BOOM_X_GEAR_RATIO                                                    9.6
+
 #endif // ROBOT_INVARIANT_DEFS_H

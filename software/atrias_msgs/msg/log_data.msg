@@ -69,6 +69,8 @@ float32 yPosition
 float32 yVelocity
 float32 zPosition
 float32 zVelocity
+float32 xAngle
+float32 xAngleVelocity
 
 float32 bodyPitch
 float32 bodyPitchVelocity

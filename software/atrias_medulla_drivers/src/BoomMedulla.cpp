@@ -27,6 +27,8 @@ PDORegData BoomMedulla::getPDORegData() {
 
 void BoomMedulla::postOpInit() {
 	xEncoderDecoder.init(BOOM_ENCODER_BITS, *xEncoder, 0.0, BOOM_X_METERS_PER_TICK);
+	// Mikhail, this next line is X Angle-related
+	xAngleDecoder.init(BOOM_ENCODER_BITS, *xEncoder, 0.0, -2.0 * M_PI / (1 << BOOM_ENCODER_BITS) / BOOM_X_GEAR_RATIO);
 
 	pitchEncoderPos = (*pitchEncoder - BOOM_PITCH_VERTICAL_VALUE)
 	                  % (1 << BOOM_ENCODER_BITS);
@@ -65,6 +67,11 @@ void BoomMedulla::processXEncoder(RTT::os::TimeService::nsecs deltaTime,
 	xEncoderDecoder.update(*xEncoder, deltaTime, *xTimestamp);
 	robotState.position.xPosition = xEncoderDecoder.getPos();
 	robotState.position.xVelocity = xEncoderDecoder.getVel();
+
+	// Mikhail, these next lines are X Angle-related
+	xAngleDecoder.update(*xEncoder, deltaTime, *xTimestamp);
+	robotState.position.xAngle         = xAngleDecoder.getPos();
+	robotState.position.xAngleVelocity = xAngleDecoder.getVel();
 }
 
 void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime,
