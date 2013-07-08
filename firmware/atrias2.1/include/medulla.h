@@ -114,7 +114,7 @@ void amplifier_debug();
 void imu_debug();
 
 // Function Pointers to the individual medulla functions
-/** @brief Function called to initilize hardware
+/** @brief Function called to initialize hardware
  *
  *  This function should setup the hardware of the robot. It also needs to call
  *  the sm and pdo entry configuration functions on the given ethercat struct.  
@@ -127,7 +127,7 @@ void imu_debug();
  *  @param id The 6 bit id of the medulla
  *  @param timestamp_timer Timer to use for generating timestamps
  */
-void (*initilize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdg); 
+void (*initialize)(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer,  medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdg); 
 
 void (*enable_outputs)(void);
 void (*disable_outputs)();

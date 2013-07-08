@@ -73,7 +73,7 @@ uint16_t hip_logic_voltage_counter;
 bool hip_send_current_read;
 TC0_t *hip_timestamp_timer;
 
-void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+void hip_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	hip_thermistor_counter = 0;
 	hip_motor_voltage_counter = 0;
@@ -120,7 +120,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	adc_init_pin(&adc_port_b,7,hip_motor_voltage_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Hip] Initilize robot current monitoring pin\n");
+	printf("[Medulla Hip] Initialize robot current monitoring pin\n");
 	#endif
 	adc_init_pin(&adc_port_b,0,robot_current_50_pdo);
 	adc_init_pin(&adc_port_b,1,robot_current_600_pdo);
@@ -138,7 +138,7 @@ void hip_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initilizing amplifiers\n");
 	#endif
-	initilize_amp(false, hip_measured_current_pdo, 0);
+	initialize_amp(false, hip_measured_current_pdo, 0);
 
 	#ifdef USING_IMU
 	if (id == MEDULLA_RIGHT_HIP_ID) {
