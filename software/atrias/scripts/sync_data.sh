@@ -5,7 +5,10 @@
 # Syncs data to hurst attic network drive and moves original copies into an archive. 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 ROBOT="drl-robot"
 GUI_COMPUTER="drl-guilaptop"
 >>>>>>> Stashed changes
