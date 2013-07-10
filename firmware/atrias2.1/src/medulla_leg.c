@@ -83,7 +83,7 @@ int32_t prev_motor_position;
 uint16_t leg_knee_adc_aux4;
 uint16_t leg_therm_prev_val[6];
 
-void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
+void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
 	thermistor_counter = 0;
 	motor_voltage_counter = 0;
@@ -163,7 +163,7 @@ void leg_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing amplifiers\n");
 	#endif
-	initilize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
+	initialize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
 
 	// Start reading the ADCs

@@ -121,6 +121,8 @@ void OpsLogger::packLogData(atrias_msgs::log_data &ld) {
 	ld.yVelocity         = rs.position.yVelocity;
 	ld.zPosition         = rs.position.zPosition;
 	ld.zVelocity         = rs.position.zVelocity;
+	ld.xAngle            = rs.position.xAngle;         // Mikhail: This is an X Angle-related line
+	ld.xAngleVelocity    = rs.position.xAngleVelocity; // Mikhail: This is an X Angle-related line
 
 	ld.bodyPitch         = rs.position.bodyPitch;
 	ld.bodyPitchVelocity = rs.position.bodyPitchVelocity;

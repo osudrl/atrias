@@ -32,7 +32,7 @@ io_pin_t msync_pin;
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data);
 
 // Medulla stuff.
-void imu_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
+void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
 
 void imu_enable_outputs(void);
 void imu_disable_outputs(void);

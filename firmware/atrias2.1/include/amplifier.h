@@ -21,11 +21,11 @@
 #define AMP_CHANGE_BAUD_63 8
 #define AMP_CHANGE_BAUD_62 9
 
-/** @brief Initilizes the amplifier outputs
+/** @brief Initializes the amplifier outputs
  *
  *  @param second_amp If second_amp is true, then this sets parameters for a second amplifier with address 62
  */
-void initilize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_current);
+void initialize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_current);
 void enable_amp(bool second_amp);
 void disable_amp(bool second_amp);
 void enable_pwm();

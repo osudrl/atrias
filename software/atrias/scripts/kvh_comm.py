@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
         serWrite(cmd+newlineChar)
 
-        sleep(0.01)
+        sleep(0.02)
 
         if ser.inWaiting() > 0:
             print ser.read(ser.inWaiting())#.encode("hex")   # Hex encoding useful for debugging individual packets.

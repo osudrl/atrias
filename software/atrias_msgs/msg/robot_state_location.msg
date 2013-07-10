@@ -10,6 +10,11 @@ float64 zVelocity
 float64 boomAngle
 float64 boomAngleVelocity
 
+# Angle of the boom (relative to startup) horizontally
+# This is related to xPosition -- it derives from the same encoder
+float64 xAngle         # Mikhail, this is an X Angle-related line
+float64 xAngleVelocity # And the velocity of the previous value.
+
 # The robot's body's pitch. 3 * pi/2 is vertical.
 float64 bodyPitch
 

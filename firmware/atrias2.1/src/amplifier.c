@@ -14,13 +14,13 @@ io_pin_t amp_direction_pin;
 uint8_t amp_tx_buffer[256];
 uint8_t amp_rx_buffer[256];
 
-void initilize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_current) {
-	// Initilize the PWM and direction outputs
+void initialize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_current) {
+	// Initialize the PWM and direction outputs
 	//amp_direction_pin = io_init_pin(&PORTC,5);
 	PORTC.DIRSET = 1<<3;
-	amp_pwm_output = pwm_initilize_output(io_init_pin(&PORTC,4),pwm_div1,20000);
+	amp_pwm_output = pwm_initialize_output(io_init_pin(&PORTC,4),pwm_div1,20000);
 
-	// Initilize the amplifier communication uart at 115200 baud
+	// Initialize the amplifier communication uart at 115200 baud
 	amp_uart_port = uart_init_port(&PORTD,&USARTD0,uart_baud_115200,amp_tx_buffer,256,amp_rx_buffer,256);
 	uart_connect_port(&amp_uart_port,false);
 

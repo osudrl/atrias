@@ -16,7 +16,7 @@
 // Defines for which systems to check for error state
 #define ERROR_CHECK_LOGIC_VOLTAGE
 
-void boom_initilize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
+void boom_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog);
 void boom_enable_outputs(void);
 void boom_disable_outputs(void);
 void boom_update_inputs(uint8_t id);  /**< Function called to read all the sensors */

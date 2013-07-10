@@ -46,9 +46,14 @@ class BoomMedulla : public Medulla {
 	// The following variables are used for processing
 	uint8_t   timingCounterValue;
 
-	/** @brief This decodes the X encoder for us.
+	/** @brief This decodes the X encoder into horizontal position for us.
 	  */
 	Encoder   xEncoderDecoder;
+
+	/**
+	  * @brief This decodes the X encoder into a boom angle.
+	  */
+	Encoder   xAngleDecoder; // Mikhail: This is an X Angle-related line
 	
 	/** @brief The last value of the pitch encoder. Used to find position deltas.
 	  */

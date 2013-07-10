@@ -43,13 +43,15 @@
   */
 #define BOOM_X_METERS_PER_TICK     -0.00000937522094511213193198
 
+/** @brief The value of the boom encoder at the calibration location.
+ *
+ * This should be calibrated before BOOM_Z_CALIB_LOC!
+  */
+#define BOOM_Z_CALIB_VAL            38278
+
 /** @brief The angle of the boom at the calibration location.
   */
 #define BOOM_Z_CALIB_LOC            2.88677458279862112023
-
-/** @brief The value of the boom encoder at the calibration location.
-  */
-#define BOOM_Z_CALIB_VAL            38278
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
