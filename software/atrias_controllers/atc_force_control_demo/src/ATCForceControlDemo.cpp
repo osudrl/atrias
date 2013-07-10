@@ -46,17 +46,17 @@ void ATCForceControlDemo::controller() {
 	// Left leg controller state machine
 	switch (lLegControllerState) {
 		case 0: // Position control
-		  // Set motor angles
-		  std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(guiIn.left_leg_ang, guiIn.left_leg_len);
+			// Set motor angles
+			std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(guiIn.left_leg_ang, guiIn.left_leg_len);
 
-		  // Rate limit motor velocities
-		  qmA = ascRateLimitLmA(qmA, legRateLimit);
-		  qmB = ascRateLimitLmB(qmB, legRateLimit);
-		  dqmA = dqmB = 0.0;
+			// Rate limit motor velocities
+			qmA = ascRateLimitLmA(qmA, legRateLimit);
+			qmB = ascRateLimitLmB(qmB, legRateLimit);
+			dqmA = dqmB = 0.0;
 
-		  // Compute and set motor currents
-		  co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
-		  co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
+			// Compute and set motor currents
+			co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
+			co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
 			break;
 			
 		case 1: // Force control - constant
@@ -82,13 +82,14 @@ void ATCForceControlDemo::controller() {
 		case 3: // Position control - automated stair step
 			// Run stair step function		
 			if ((tL >= 0) && (tL < 20)) {
-				std::tie(rl, drl) = stairStep(tL, 0.90, -0.05, 20, 4);
+				std::tie(rl, drl) = stairStep(tL, guiIn.left_leg_len, -0.05, 20, 4);
 			} else if ((tL >= 20) && (tL < 24)) {
-				std::tie(rl, drl) = sinewaveSweep(tL - 20.0, 0.0, 2.0, 0.90, -0.05, 4);
+				std::tie(rl, drl) = sinewaveSweep(tL - 20.0, 0.0, 2.0, guiIn.left_leg_len, -0.05, 4);
 			} else if ((tL >= 24) && (tL < 28)) {
-				std::tie(rl, drl) = sinewaveSweep(tL - 24.0, 2.0, 0.0, 0.90, -0.05, 4);
+				std::tie(rl, drl) = sinewaveSweep(tL - 24.0, 2.0, 0.0, guiIn.left_leg_len, -0.05, 4);
 			} else {
-				rl = 0.90;
+				tL = 0.0;
+				rl = guiIn.left_leg_len;
 				drl = 0.0;
 			}
 			
@@ -155,13 +156,14 @@ void ATCForceControlDemo::controller() {
 		case 3: // Position control - automated stair step
 			// Run stair step function		
 			if ((tR >= 0) && (tR < 20)) {
-				std::tie(rl, drl) = stairStep(tR, 0.90, -0.05, 20, 4);
+				std::tie(rl, drl) = stairStep(tR, guiIn.right_leg_len, -0.05, 20, 4);
 			} else if ((tR >= 20) && (tR < 24)) {
-				std::tie(rl, drl) = sinewaveSweep(tR - 20.0, 0.0, 2.0, 0.90, -0.05, 4);
+				std::tie(rl, drl) = sinewaveSweep(tR - 20.0, 0.0, 2.0, guiIn.right_leg_len, -0.05, 4);
 			} else if ((tR >= 24) && (tR < 28)) {
-				std::tie(rl, drl) = sinewaveSweep(tR - 24.0, 2.0, 0.0, 0.90, -0.05, 4);
+				std::tie(rl, drl) = sinewaveSweep(tR - 24.0, 2.0, 0.0, guiIn.right_leg_len, -0.05, 4);
 			} else {
-				rl = 0.90;
+				tR = 0.0;
+				rl = guiIn.right_leg_len;
 				drl = 0.0;
 			}
 			
