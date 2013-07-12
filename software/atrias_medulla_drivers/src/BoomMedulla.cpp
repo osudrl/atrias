@@ -125,47 +125,53 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 	deltaPos = 
 		(deltaPos + (1 << (BOOM_ENCODER_BITS - 1))) % 
 		(1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
-	
 	zEncoderPos += deltaPos;
 	
-	// Compute the boom angle (pitch)
+	// Compute the boom angle (boom pitch)
 	robotState.position.boomAngle = 
 		zEncoderPos * BOOM_Z_ENCODER_RAD_PER_TICK + BOOM_Z_CALIB_LOC;
 	
+	// TODO: old kinematics calculations that are wrong, remove once new equations are tested!
 	// The angle of the line between the boom's pivot and the robot's origin
 	double virtualBoomAngle = 
 		robotState.position.boomAngle + atan2(BOOM_ROBOT_VERTICAL_OFFSET, BOOM_LENGTH);
-	
-	// Compute the forward kinematics to find the robot x position
-	//robotState.position.xPosition = BOOM_LENGTH * cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) + cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle)) - cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET));
-
-	// Compute forward kinematics to find robot y position
 	robotState.position.yPosition = 
 		-cos(virtualBoomAngle) * BOOM_LENGTH;
-	//robotState.position.yPosition = TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI /2.0) - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle)) + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET)) + BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle);
-	
-	// Compute the forward kinematics to find robot z position
 	robotState.position.zPosition = 
 		BOOM_HEIGHT + BOOM_LENGTH * sin(virtualBoomAngle);
-	//robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
-	
-	// Compute the boom angle velocity (pitch velocity)
-	robotState.position.boomAngleVelocity =
-		((double) deltaPos) * BOOM_Z_ENCODER_RAD_PER_TICK / actualDeltaTime;
-	
-	// Compute the forward kinematics to find robot x velocity
-	//robotState.position.xVelocity = - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.xAngle) * robotState.position.bodyPitchVelocity + cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.xAngleVelocity + cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.boomAngleVelocity - cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.xAngleVelocity) + cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.xAngleVelocity) - BOOM_LENGTH * cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.xAngleVelocity;
-
-	// Compute the forward kinematics to find the robot y velocity
-	//robotState.position.yVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * robotState.position.xAngleVelocity - BOOM_LENGTH * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.xAngleVelocity - cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity + cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * robotState.position.xAngleVelocity - sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity) - cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.xAngleVelocity + sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
 	robotState.position.yVelocity = 
 		BOOM_LENGTH * robotState.position.boomAngleVelocity * sin(virtualBoomAngle);
-
-	// Compute the forward kinematics to find the robot z velocity
-	//robotState.position.zVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (cos(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET) * robotState.position.bodyPitchVelocity - cos(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
 	robotState.position.zVelocity =
 		BOOM_LENGTH * robotState.position.boomAngleVelocity * cos(virtualBoomAngle);
 	
+	// Compute robot x position (defined at the center of the hip-torso pivot axis)
+	//robotState.position.xPosition = BOOM_LENGTH * cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) + cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle)) - cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET));
+
+	// Compute robot y position (defined at the center of the hip-torso pivot axis)
+	//robotState.position.yPosition = TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI /2.0) - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle)) + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET)) + BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle);
+	
+	// Compute robot z position (defined at the center of the hip-torso pivot axis)
+	//robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
+	
+	// Compute robot position (the arc length of radial trajectory around boom)
+	// 
+
+	// Compute the boom angle velocity (boom pitch velocity)
+	robotState.position.boomAngleVelocity =
+		((double) deltaPos) * BOOM_Z_ENCODER_RAD_PER_TICK / actualDeltaTime;
+	
+	// Compute robot x velocity (defined at the center of the hip-torso pivot axis)
+	//robotState.position.xVelocity = - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.xAngle) * robotState.position.bodyPitchVelocity + cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.xAngleVelocity + cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.boomAngleVelocity - cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.xAngleVelocity) + cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.xAngleVelocity) - BOOM_LENGTH * cos(robotState.position.xAngle) * sin(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.xAngleVelocity;
+
+	// Compute robot y velocity (defined at the center of the hip-torso pivot axis)
+	//robotState.position.yVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * robotState.position.xAngleVelocity - BOOM_LENGTH * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.xAngleVelocity - cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity + cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * robotState.position.xAngleVelocity - sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity) - cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.xAngleVelocity + sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
+
+	// Compute robot z velocity (defined at the center of the hip-torso pivot axis)
+	//robotState.position.zVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (cos(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET) * robotState.position.bodyPitchVelocity - cos(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
+	
+	// Compute robot velocity (the tangential velocity around boom)
+	//
+
 	zEncoderValue = *zEncoder;
 	zTimestampValue = *zTimestamp;
 
