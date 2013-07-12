@@ -4,15 +4,6 @@
 # Description: Organizes bagfiles into directories based on date modified. 
 # Syncs data to hurst attic network drive and moves original copies into an archive. 
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
-ROBOT="drl-robot"
-GUI_COMPUTER="drl-guilaptop"
->>>>>>> Stashed changes
-
 # Exit if any command fails
 set -e
 
@@ -23,8 +14,6 @@ OKGREEN="\033[1m\033[92m"
 WARNING="\033[1m\033[93m"
 FAIL="\033[1m\033[91m"
 ENDC="\033[0m"
-
-
 
 # Startup message
 printf "\n${OKBLUE}[Starting!]${ENDC} sync_data.sh\n\n"
