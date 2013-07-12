@@ -16,69 +16,91 @@
   * In encoder ticks.
   * Not set yet.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  300497
+#define BOOM_PITCH_VERTICAL_VALUE 	300497
 
-/** @brief The length of the boom. For Z calculations.
-  * This is measured from the center of rotation to the center of the hip's
-  * rotation on the body.
-  * Measured via measuring tape.
+
+/** @brief Boom length.
+  * Distance from boom-base pivot Z-axis to intersection of robot torso XZ-center-plane and boom Y-axis centerline.
+  * Measured from SolidWorks model. [m]
   */
-#define BOOM_LENGTH                2.006
+#define BOOM_LENGTH 			2.006
 
-/** @brief The vertical distance between the boom arm's centerline and the robot
-  * coordinate system's center (Z = 0) when the boom is level.
-  * Measured off the SolidWorks model.
+
+/** @brief Torso length.
+  * Distance from boom Y-axis intersection with robot body XZ-center-plane to hip pivot X-axis.
+  * Measured from SolidWorks model. [m]
   */
-#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434
+#define TORSO_LENGTH 			0.3434
+#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434 // REMOVE when dependency are gone
 
-/** @brief The height of the center of rotation for the boom arm, relative to
-  * robot's "ground".
-  * Measured with a measuring tape.
+
+/** @brief Boom torso offset
+  * The angular offset between the boom Y-axis centerline and the torso XZ-centerplane.
+  * Measured from SolidWorks model. [rad]
+  */
+#define BOOM_TORSO_OFFSET		1.6968
+
+
+/** @brief Boom height
+  * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
+  * Measured with a measuring tape. [m]
   */
 // 1.1247 = London height without board
 // 1.1684 = London height with board
-#define BOOM_HEIGHT                1.1684
+#define BOOM_HEIGHT 			1.1684
+
+
+/** @brief Hip length
+  * Distance from the torso-hip X-axis pivot and the XZ-centerplane of the leg assembly.
+  * Measured from SolidWorks model. [m]
+  */
+#define HIP_LENGTH			0.18
+
 
 /** @brief The meters of boom motion per encoder tick.
   * This is calculated from the boom's length, the number of encoder ticks per
   * encoder revolution, and the gear ratio between the boom and the encoder.
   */
-#define BOOM_X_METERS_PER_TICK     -0.00000937522094511213193198
+#define BOOM_X_METERS_PER_TICK     	-0.00000937522094511213193198
+
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            3.102753364
+#define BOOM_Z_CALIB_LOC            	3.102753364
+
 
 /** @brief The value of the boom encoder at the calibration location.
  *
  * This should be calibrated before BOOM_Z_CALIB_LOC!
   */
-#define BOOM_Z_CALIB_VAL            131071
+#define BOOM_Z_CALIB_VAL            	131071
 
-/** @brief The angle of the boom at the calibration location.
-  */
-#define BOOM_Z_CALIB_LOC            3.03421698321003716556104
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          5730
+#define LEFT_HIP_CALIB_VAL          	5730
+
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         4533
+#define RIGHT_HIP_CALIB_VAL         	4533
+
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           (4.555309)
+#define LEFT_HIP_CALIB_POS           	(4.555309)
+
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          4.883
+#define RIGHT_HIP_CALIB_POS          	4.883
+
 
 /** @brief Maximum motor torque for scaling
   */
 #define MTR_MAX_CURRENT                                                     60.0
 #define MTR_HIP_MAX_CURRENT                                                 60.0
+
 
 /** @brief Main motor torque limits. These are not used for scaling, just as limits.
   */
