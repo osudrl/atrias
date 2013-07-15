@@ -12,6 +12,7 @@ float64 dst
 float64 dfl1
 float64 dfl2
 float64 lfl
+float64 lot
 float64 lst
 float64 tsw
 float64 loc

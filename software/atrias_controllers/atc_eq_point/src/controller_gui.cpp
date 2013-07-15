@@ -25,6 +25,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("rightHipPos",      rhip_pos_spinbutton);
 	gui->get_widget("lst",              lst);
 	gui->get_widget("lfl",              lfl);
+	gui->get_widget("lot",              lot);
 	gui->get_widget("pst",              pst);
 	gui->get_widget("pfl1",             pfl1);
 	gui->get_widget("pfl2",             pfl2);
@@ -47,6 +48,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	    CHECK_WIDGET(rhip_pos_spinbutton) ||
 	    CHECK_WIDGET(lst)                 ||
 	    CHECK_WIDGET(lfl)                 ||
+            CHECK_WIDGET(lot)                 ||
 	    CHECK_WIDGET(pst)                 ||
 	    CHECK_WIDGET(pfl1)                ||
 	    CHECK_WIDGET(pfl2)                ||
@@ -70,6 +72,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	rhip_pos_spinbutton->set_range(2.40, 2.50);
 	lst->set_range(0.6, 0.96);
 	lfl->set_range(0.6, 0.96);
+	lot->set_range(0.0, 0.2);
 	pst->set_range(0, 6000);
 	pfl1->set_range(0, 6000);
 	pfl2->set_range(0, 6000);
@@ -91,6 +94,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	rhip_pos_spinbutton->set_value(2.45);
 	lst->set_value(0.9);
 	lfl->set_value(0.7);
+	lot->set_value(0.1);
 	pst->set_value(2000);
 	pfl1->set_value(400);
 	pfl2->set_value(200);
@@ -138,6 +142,8 @@ void getParameters() {
 	lst->set_value(controllerDataOut.lst);
 	nh.getParam("/atrias_gui/lfl",    controllerDataOut.lfl);
 	lfl->set_value(controllerDataOut.lfl);
+	nh.getParam("/atrias_gui/lot",    controllerDataOut.lot);
+	lfl->set_value(controllerDataOut.lot);
 	nh.getParam("/atrias_gui/pst", controllerDataOut.pst);
 	pst->set_value(controllerDataOut.pst);
 	nh.getParam("/atrias_gui/pfl1", controllerDataOut.pfl1);
@@ -173,6 +179,7 @@ void setParameters() {
 	nh.setParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
 	nh.setParam("/atrias_gui/lst",      controllerDataOut.lst);
 	nh.setParam("/atrias_gui/lfl",      controllerDataOut.lfl);
+	nh.setParam("/atrias_gui/lot",      controllerDataOut.lot);
 	nh.setParam("/atrias_gui/pst",      controllerDataOut.pst);
 	nh.setParam("/atrias_gui/pfl1",     controllerDataOut.pfl1);
 	nh.setParam("/atrias_gui/pfl2",     controllerDataOut.pfl2);
@@ -196,6 +203,7 @@ void guiUpdate() {
 	controllerDataOut.rhip_pos = rhip_pos_spinbutton->get_value();
 	controllerDataOut.lst      = lst->get_value();
 	controllerDataOut.lfl      = lfl->get_value();
+	controllerDataOut.lot      = lot->get_value();
 	controllerDataOut.pst      = pst->get_value();
 	controllerDataOut.pfl1     = pfl1->get_value();
 	controllerDataOut.pfl2     = pfl2->get_value();

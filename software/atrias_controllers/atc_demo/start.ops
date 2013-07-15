@@ -1,0 +1,12 @@
+# Set up the component
+import("atc_demo")
+loadComponent("ATCDemo", "ATCDemo")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCDemo")
+
+# Configure the component
+ATCDemo.configure()
+
+# Start the component
+ATCDemo.start()
