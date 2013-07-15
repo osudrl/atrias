@@ -47,7 +47,7 @@
   */
 // 1.1247 = London height without board
 // 1.1684 = London height with board
-#define BOOM_HEIGHT 			1.1684
+#define BOOM_HEIGHT 			1.1247
 
 
 /** @brief Hip length

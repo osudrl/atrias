@@ -40,7 +40,7 @@ void BoomMedulla::postOpInit() {
 	// Compensate for wraparound
 	pitchEncoderPos = 
 		(pitchEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) % 
-          (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
+		(1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	pitchEncoderValue = *pitchEncoder;
 	pitchTimestampValue = *pitchTimestamp;
@@ -54,8 +54,8 @@ void BoomMedulla::postOpInit() {
 	
 	// Compensate for wraparound
 	zEncoderPos = 
-		(zEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) %
-	     (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
+		(zEncoderPos + (1 << (BOOM_ENCODER_BITS - 1))) % 
+		(1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	zEncoderValue = *zEncoder;
 	zTimestampValue = *zTimestamp;
@@ -90,7 +90,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime, atr
 	// Compensate for rollover
 	deltaPos = 
 		(deltaPos + (1 << (BOOM_ENCODER_BITS - 1))) % 
-	     (1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
+		(1 << BOOM_ENCODER_BITS) - (1 << (BOOM_ENCODER_BITS - 1));
 	
 	pitchEncoderPos += deltaPos;
 	
@@ -135,10 +135,12 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 	// The angle of the line between the boom's pivot and the robot's origin
 	double virtualBoomAngle = 
 		robotState.position.boomAngle + atan2(BOOM_ROBOT_VERTICAL_OFFSET, BOOM_LENGTH);
+
 	robotState.position.yPosition = 
 		-cos(virtualBoomAngle) * BOOM_LENGTH;
 	robotState.position.zPosition = 
 		BOOM_HEIGHT + BOOM_LENGTH * sin(virtualBoomAngle);
+
 	robotState.position.yVelocity = 
 		BOOM_LENGTH * robotState.position.boomAngleVelocity * sin(virtualBoomAngle);
 	robotState.position.zVelocity =
@@ -151,7 +153,7 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 	//robotState.position.yPosition = TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI /2.0) - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle)) + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET)) + BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle);
 	
 	// Compute robot z position (defined at the center of the hip-torso pivot axis)
-	//robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
+	robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
 	
 	// Compute robot position (the arc length of radial trajectory around boom)
 	// 
@@ -167,7 +169,7 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 	//robotState.position.yVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * robotState.position.xAngleVelocity - BOOM_LENGTH * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.xAngleVelocity - cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.xAngle) * robotState.position.boomAngleVelocity + cos(robotState.position.xAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * robotState.position.xAngleVelocity - sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * robotState.position.bodyPitchVelocity) - cos(robotState.position.boomAngle) * cos(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.xAngleVelocity + sin(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
 
 	// Compute robot z velocity (defined at the center of the hip-torso pivot axis)
-	//robotState.position.zVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (cos(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET) * robotState.position.bodyPitchVelocity - cos(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
+	robotState.position.zVelocity = BOOM_LENGTH * cos(robotState.position.boomAngle) * robotState.position.boomAngleVelocity - TORSO_LENGTH * (cos(robotState.position.boomAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET) * robotState.position.bodyPitchVelocity - cos(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity + cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(BOOM_TORSO_OFFSET) * robotState.position.boomAngleVelocity);
 	
 	// Compute robot velocity (the tangential velocity around boom)
 	//
