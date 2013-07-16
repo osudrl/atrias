@@ -13,7 +13,6 @@ namespace controller {
 ATCDemo::ATCDemo(string name) :
     ATC(name),
     ascCommonToolkit(this, "ascCommonToolkit"),
-    ascInterpolation(this, "ascInterpolation"),
     ascPDLmA(this, "ascPDLmA"),
     ascPDLmB(this, "ascPDLmB"),
     ascPDRmA(this, "ascPDRmA"),
@@ -43,8 +42,7 @@ ATCDemo::ATCDemo(string name) :
  * if they are not disabled.
  */
 void ATCDemo::controller() {
-	// Implement your controller here. The robot state is in rs -- put the controller
-	// output in co
+	// Main state machine
 }
 
 ORO_CREATE_COMPONENT(ATCDemo)

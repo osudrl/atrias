@@ -4,16 +4,16 @@ namespace atrias {
 namespace medullaDrivers {
 
 BoomMedulla::BoomMedulla() : Medulla() {
-	pdoEntryDatas[0]  = {1, (void**) &command};
-	pdoEntryDatas[1]  = {2, (void**) &counter};
-	pdoEntryDatas[2]  = {1, (void**) &id};
-	pdoEntryDatas[3]  = {1, (void**) &state};
-	pdoEntryDatas[4]  = {1, (void**) &timingCounter};
-	pdoEntryDatas[5]  = {1, (void**) &errorFlags};
-	pdoEntryDatas[6]  = {4, (void**) &xEncoder};
-	pdoEntryDatas[7]  = {2, (void**) &xTimestamp};
-	pdoEntryDatas[8]  = {4, (void**) &pitchEncoder};
-	pdoEntryDatas[9]  = {2, (void**) &pitchTimestamp};
+	pdoEntryDatas[0] = {1, (void**) &command};
+	pdoEntryDatas[1] = {2, (void**) &counter};
+	pdoEntryDatas[2] = {1, (void**) &id};
+	pdoEntryDatas[3] = {1, (void**) &state};
+	pdoEntryDatas[4] = {1, (void**) &timingCounter};
+	pdoEntryDatas[5] = {1, (void**) &errorFlags};
+	pdoEntryDatas[6] = {4, (void**) &xEncoder};
+	pdoEntryDatas[7] = {2, (void**) &xTimestamp};
+	pdoEntryDatas[8] = {4, (void**) &pitchEncoder};
+	pdoEntryDatas[9] = {2, (void**) &pitchTimestamp};
 	pdoEntryDatas[10] = {4, (void**) &zEncoder};
 	pdoEntryDatas[11] = {2, (void**) &zTimestamp};
 	pdoEntryDatas[12] = {2, (void**) &logicVoltage};
@@ -131,7 +131,6 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 	robotState.position.boomAngle = 
 		zEncoderPos * BOOM_Z_ENCODER_RAD_PER_TICK + BOOM_Z_CALIB_LOC;
 	
-	// TODO: old kinematics calculations that are wrong, remove once new equations are tested!
 	// The angle of the line between the boom's pivot and the robot's origin
 	double virtualBoomAngle = 
 		robotState.position.boomAngle + atan2(BOOM_ROBOT_VERTICAL_OFFSET, BOOM_LENGTH);

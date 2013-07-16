@@ -25,7 +25,7 @@ class pColors:
     ENDC = '\033[0m'
 
 # Get list of files to convert.
-origFilenames = glob.glob(sys.argv[1]+"/**/*.bag")
+origFilenames = glob.glob(sys.argv[1]+"/**/**/*.bag")
 targetFilenames = [x.replace(sys.argv[1]+'/', '', 1).replace('.bag', '') for x in origFilenames]
 
 print "Files to convert:\n"

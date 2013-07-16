@@ -3,7 +3,7 @@
 
 /**
  * @file ATCDemo.hpp
- * @author Ryan Van Why
+ * @author Mikhail Jones
  * @brief A controller to demonstrate range of motion, speed, precision.
  */
 
@@ -46,7 +46,31 @@ class ATCDemo : public ATC<
 		 */
 		void controller();
 
-		// Include subcontrollers and variables here
+		/**
+		 * @brief These are sub controllers used by the top level controller.
+		 */
+		ASCCommonToolkit ascCommonToolkit;
+		//ASCHipBoomKinematics ascHipBoomKinematics;
+		//ASCInterpolation ascInterpolation;
+		//ASCLegForce ascLegForceL, ascLegForceR;
+		ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
+		ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh;
+
+		/**
+		 * @brief These are all the variables used by the top level controller.
+		 */
+ 
+		// Motor and leg variables
+		double qLh, dqLh, qRh, dqRh; // Hip motor states
+		double rLl, drLl, qLl, dqLl; // Left leg states
+		double rRl, drRl, qRl, dqRl; // Right leg states
+		double qmLA, dqmLA, qmLB, dqmLB; // Left leg motor states
+		double qmRA, dqmRA, qmRB, dqmRB; // Right leg motor states
+
+		// Misc margins, ratelimiters and other kludge values
+	      double legRateLimit, hipRateLimit; // Rate limits
+		double ql, dql, rl, drl; // Temp leg states
+
 };
 
 }
