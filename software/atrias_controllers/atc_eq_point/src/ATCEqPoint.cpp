@@ -238,7 +238,7 @@ void ATCEqPoint::controller() {
 										pd1Controller.P = guiIn.pfl1;
 										pd1Controller.D = guiIn.dfl1;
                                         //l_swing = guiIn.lst - amp * sin(t / guiIn.tsw * M_PI);
-						    l_swing = guiIn.lst - amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
+						                l_swing = guiIn.lst - amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
                                         phi_lLeg = iPEA;
                                         logOut.state=11;
                                 } else if (t<guiIn.tsw){
@@ -248,14 +248,14 @@ void ATCEqPoint::controller() {
 										pd1Controller.D = guiIn.dfl1;
 										phi_lLeg=iPEA - (t - guiIn.lot) / (guiIn.tsw - guiIn.lot) * (iPEA - iAEA) * (1 + guiIn.aover);
                                         //l_swing = guiIn.lst - amp * sin (t / guiIn.tsw * M_PI);
-						    l_swing = guiIn.lst -  amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
+						                l_swing = guiIn.lst -  amp *  ((-1) * pow(2.0 * t/guiIn.tsw - 1.0, 2.0) + 1.0);
                                         logOut.state=12;
                                 } else {
 										pd0Controller.P = guiIn.pfl2;
 										pd0Controller.D = guiIn.dfl2;
 										pd1Controller.P = guiIn.pfl2;
 										pd1Controller.D = guiIn.dfl2;
-                                        phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.lfl) * (iPEA-iAEA) * guiIn.aover;
+                                        phi_lLeg=guiIn.aea - (1 - t) / (1 - guiIn.tsw) * (iPEA-iAEA) * guiIn.aover;
                                         l_swing = guiIn.lst;
                                         logOut.state=13;
                                 }
