@@ -34,7 +34,7 @@ Gtk::SpinButton *aea_spinbutton,
 	*rhip_pos_spinbutton,
 	*pea_spinbutton,
 	*l_leg_fl_spinbutton,
-	*p_af_spinbutton,
+	*lot_spinbutton,
 	*d_af_spinbutton,
 	*p_lf_spinbutton,
 	*d_lf_spinbutton,
@@ -43,8 +43,9 @@ Gtk::SpinButton *aea_spinbutton,
 	*p_as_spinbutton,
 	*d_as_spinbutton,
 	*p_ls_spinbutton,
-	*d_ls_spinbutton,
-	*l_st_spinbutton;
+	*d_ls_spinbutton;
+
+Gtk::HScale *l_st_hscale;
 
 void controllerCallback(const atc_swalk::controller_status &status);
 

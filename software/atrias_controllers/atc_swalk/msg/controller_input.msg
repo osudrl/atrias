@@ -7,7 +7,7 @@ float64 rhip_pos
 float64 aea
 float64 pea
 float64 l_leg_fl
-float64 p_af
+float64 lot
 float64 d_af
 float64 p_lf
 float64 d_lf

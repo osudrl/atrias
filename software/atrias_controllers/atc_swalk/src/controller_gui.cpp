@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("aea_spinbutton", aea_spinbutton);
 	gui->get_widget("pea_spinbutton", pea_spinbutton);
 	gui->get_widget("l_leg_fl_spinbutton", l_leg_fl_spinbutton);
-	gui->get_widget("p_af_spinbutton", p_af_spinbutton);
+	gui->get_widget("lot_spinbutton", lot_spinbutton);
 	gui->get_widget("d_af_spinbutton", d_af_spinbutton);
 	gui->get_widget("p_lf_spinbutton", p_lf_spinbutton);
 	gui->get_widget("d_lf_spinbutton", d_lf_spinbutton);
@@ -33,19 +33,19 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("d_as_spinbutton", d_as_spinbutton);
 	gui->get_widget("p_ls_spinbutton", p_ls_spinbutton);
 	gui->get_widget("d_ls_spinbutton", d_ls_spinbutton);
-	gui->get_widget("l_st_spinbutton", l_st_spinbutton);
+	gui->get_widget("l_st_hscale", l_st_hscale);
 
 	if (control_combobox && lhip_pos_spinbutton && rhip_pos_spinbutton && gc_l_button && gc_r_button &&
 			aea_spinbutton && pea_spinbutton &&
-			l_leg_fl_spinbutton && p_af_spinbutton && d_af_spinbutton && p_lf_spinbutton && d_lf_spinbutton && l_fl_spinbutton &&
-			l_leg_st_spinbutton && d_as_spinbutton && p_ls_spinbutton && d_ls_spinbutton && l_st_spinbutton) {
+			l_leg_fl_spinbutton && lot_spinbutton && d_af_spinbutton && p_lf_spinbutton && d_lf_spinbutton && l_fl_spinbutton &&
+			l_leg_st_spinbutton && d_as_spinbutton && p_ls_spinbutton && d_ls_spinbutton && l_st_hscale) {
 		// Set ranges.
 		lhip_pos_spinbutton->set_range(2.0, 2.30);
 		rhip_pos_spinbutton->set_range(2.30, 2.60);
 		aea_spinbutton->set_range(0.5, 1.57);
 		pea_spinbutton->set_range(1.57, 2.5);
 		l_leg_fl_spinbutton->set_range(0.5, 1.0);
-		p_af_spinbutton->set_range(0, 5000);
+		lot_spinbutton->set_range(0, 1);
 		d_af_spinbutton->set_range(0, 500);
 		p_lf_spinbutton->set_range(0, 5000);
 		d_lf_spinbutton->set_range(0, 500);
@@ -54,7 +54,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		d_as_spinbutton->set_range(0, 0.5);
 		p_ls_spinbutton->set_range(0, 6000);
 		d_ls_spinbutton->set_range(0, 500);
-		l_st_spinbutton->set_range(-60, 60);
+		l_st_hscale->set_range(-60, 60);
 
 		// Set default values.
 		lhip_pos_spinbutton->set_value(2.15);
@@ -91,7 +91,7 @@ void getParameters() {
 	nh.getParam("/atrias_gui/aea", controllerDataOut.aea);
 	nh.getParam("/atrias_gui/pea", controllerDataOut.pea);
 	nh.getParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
-	nh.getParam("/atrias_gui/p_af", controllerDataOut.p_af);
+	nh.getParam("/atrias_gui/lot", controllerDataOut.lot);
 	nh.getParam("/atrias_gui/d_af", controllerDataOut.d_af);
 	nh.getParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
 	nh.getParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
@@ -108,7 +108,7 @@ void getParameters() {
 	aea_spinbutton->set_value(controllerDataOut.aea);
 	pea_spinbutton->set_value(controllerDataOut.pea);
 	l_leg_fl_spinbutton->set_value(controllerDataOut.l_leg_fl);
-	p_af_spinbutton->set_value(controllerDataOut.p_af);
+	lot_spinbutton->set_value(controllerDataOut.lot);
 	d_af_spinbutton->set_value(controllerDataOut.d_af);
 	p_lf_spinbutton->set_value(controllerDataOut.p_lf);
 	d_lf_spinbutton->set_value(controllerDataOut.d_lf);
@@ -117,7 +117,7 @@ void getParameters() {
 	d_as_spinbutton->set_value(controllerDataOut.d_ls);
 	p_ls_spinbutton->set_value(controllerDataOut.p_ls);
 	d_ls_spinbutton->set_value(controllerDataOut.d_ls);
-	l_st_spinbutton->set_value(controllerDataOut.l_st);
+	l_st_hscale->set_value(controllerDataOut.l_st);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -127,7 +127,7 @@ void setParameters() {
 	nh.setParam("/atrias_gui/aea", controllerDataOut.aea);
 	nh.setParam("/atrias_gui/pea", controllerDataOut.pea);
 	nh.setParam("/atrias_gui/l_leg_fl", controllerDataOut.l_leg_fl);
-	nh.setParam("/atrias_gui/p_af", controllerDataOut.p_af);
+	nh.setParam("/atrias_gui/lot", controllerDataOut.lot);
 	nh.setParam("/atrias_gui/d_af", controllerDataOut.d_af);
 	nh.setParam("/atrias_gui/p_lf", controllerDataOut.p_lf);
 	nh.setParam("/atrias_gui/d_lf", controllerDataOut.d_lf);
@@ -147,7 +147,7 @@ void guiUpdate() {
 	controllerDataOut.aea      = aea_spinbutton->get_value();
 	controllerDataOut.pea      = pea_spinbutton->get_value();
 	controllerDataOut.l_leg_fl = l_leg_fl_spinbutton->get_value();
-	controllerDataOut.p_af     = p_af_spinbutton->get_value();
+	controllerDataOut.lot     = lot_spinbutton->get_value();
 	controllerDataOut.d_af     = d_af_spinbutton->get_value();
 	controllerDataOut.p_lf     = p_lf_spinbutton->get_value();
 	controllerDataOut.d_lf     = d_lf_spinbutton->get_value();
@@ -156,7 +156,7 @@ void guiUpdate() {
 	controllerDataOut.d_as     = d_as_spinbutton->get_value();
 	controllerDataOut.p_ls     = p_ls_spinbutton->get_value();
 	controllerDataOut.d_ls     = d_ls_spinbutton->get_value();
-	controllerDataOut.l_st     = l_st_spinbutton->get_value();
+	controllerDataOut.l_st     = l_st_hscale->get_value();
 
 	pub.publish(controllerDataOut);
 }
