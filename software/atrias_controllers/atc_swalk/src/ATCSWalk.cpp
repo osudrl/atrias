@@ -256,12 +256,14 @@ void ATCSWalk::controller() {
                                 pd0Controller.D = guiIn.d_lf;
                                 pd1Controller.P = guiIn.p_lf;
                                 pd1Controller.D = guiIn.d_lf;
-                                if (t < 0.1){
+                                //if (t < 0.1){			13/7/22
+								if (t < guiIn.lot){
                                         l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
                                         phi_lLeg = guiIn.pea;
                                         logOut.state=11;
                                 } else if (t<guiIn.l_fl){
-                                        phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+                                        //phi_lLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);  13/7/22
+										phi_lLeg=guiIn.pea - (t - guiIn.lot) / (guiIn.l_fl - guiIn.lot) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
                                         l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
                                         logOut.state=12;
                                 } else {
@@ -327,12 +329,14 @@ void ATCSWalk::controller() {
                                 pd3Controller.D = guiIn.d_lf;
                                 pd4Controller.P = guiIn.p_lf;
                                 pd4Controller.D = guiIn.d_lf;
-                                if (t < 0.1){
+                                //if (t < 0.1){			13/7/22
+								if (t < guiIn.lot){
                                         l_swing = guiIn.l_leg_st - amp * sin(t / guiIn.l_fl * M_PI);
                                         phi_rLeg = guiIn.pea;
                                         logOut.state=21;
                                 } else if (t<guiIn.l_fl){
-                                        phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
+                                        //phi_rLeg=guiIn.pea - (t - 0.1) / (guiIn.l_fl - 0.1) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);  13/7/22
+										phi_rLeg=guiIn.pea - (t - guiIn.lot) / (guiIn.l_fl - guiIn.lot) * (guiIn.pea - guiIn.aea) * (1 + guiIn.d_as);
                                         l_swing = guiIn.l_leg_st - amp * sin (t / guiIn.l_fl * M_PI);
                                         logOut.state=22;
                                 } else {
