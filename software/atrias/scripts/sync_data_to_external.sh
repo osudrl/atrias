@@ -19,7 +19,7 @@ ENDC="\033[0m"
 printf "\n${OKBLUE}[Starting!]${ENDC} sync_data.sh\n\n"
 
 # Define computers
-ROBOT_HOSTNAME="i1000a-3"
+ROBOT_HOSTNAME="i1000a-1"
 GUI_HOSTNAME="drl-guilaptop"
 HURST="//attic.engr.oregonstate.edu/hurst"
 MOUNT_DIR="/mnt/drl"
@@ -56,7 +56,7 @@ fi
 # Already mounted
 #	printf "${FAIL}[Already mounted! Unmount and re-run]${ENDC}\n"
 #	exit 0
-								
+
 #else
 # If the mount target folder does not already exist, create it
 #	if [ ! -d "$MOUNT_DIR" ]; then
@@ -64,11 +64,11 @@ fi
 #	fi
 #	sudo chown drl:drl "$MOUNT_DIR"
 #	sudo chmod a+rw "$MOUNT_DIR"
-										
+
 	# Prompt with user info to mount
 #	echo -n "Enter your Engineering username: "
 #	read -e ENGR_USERNAME
-	
+
 	# Mount network drive
 #	sshfs "${ENGR_USERNAME}@access.engr.orst.edu:/nfs/attic/hurst" "${MOUNT_DIR}"
 
@@ -77,7 +77,7 @@ fi
 #		printf "${FAIL}[Error!]${ENDC} Cannot find the mounted drive sync directory!\n"
 #		exit 0
 #	fi
-				
+
 #fi
 #printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
@@ -103,7 +103,7 @@ for file in $file_list; do
 	# Parse out file name and path
 	file_name=$(basename "$file")
 	file_path=$(dirname "$file")
-								 
+
 	# Get the files modified date and time
 #	file_date=$(date -d @$(stat --format %Y "$file") +%F)
 	file_date=${file_name:7:10}
@@ -144,7 +144,7 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
 # Delete robot computer copies of files
 #printf "${OKGREEN}[Deleting files from robot computer...]${ENDC}\n"
-mv -i "${SORT_DIR}/*" "${SOURCE_DIR}/backup"
+mv "${SORT_DIR}/*" "${SOURCE_DIR}/backup"
 sudo rm -r "${SORT_DIR}"
 #printf "${OKGREEN}[Done!]${ENDC}\n\n"
 

@@ -51,7 +51,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		d_lf_spinbutton->set_range(0, 500);
 		l_fl_spinbutton->set_range(0, 1);
 		l_leg_st_spinbutton->set_range(0.5, 1.0);
-		d_as_spinbutton->set_range(0, 0.5);
+		d_as_spinbutton->set_range(0, 2.0);
 		p_ls_spinbutton->set_range(0, 6000);
 		d_ls_spinbutton->set_range(0, 500);
 		l_st_hscale->set_range(-60, 60);
