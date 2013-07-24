@@ -53,7 +53,7 @@ class BoomMedulla : public Medulla {
 	/**
 	  * @brief This decodes the X encoder into a boom angle.
 	  */
-	Encoder   xAngleDecoder; // Mikhail: This is an X Angle-related line
+	Encoder   xAngleDecoder;
 	
 	/** @brief The last value of the pitch encoder. Used to find position deltas.
 	  */

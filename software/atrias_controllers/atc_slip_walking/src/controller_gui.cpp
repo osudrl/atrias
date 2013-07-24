@@ -107,15 +107,18 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     walking_state_spinbutton->set_range(0, 3);
     walking_state_spinbutton->set_increments(1, 0);
     walking_state_spinbutton->set_value(0);
-    gui->get_widget("td_position_spinbutton", td_position_spinbutton);
-    td_position_spinbutton->set_range(-0.05, 0.05);
-    td_position_spinbutton->set_increments(0.001, 0.0);
-    gui->get_widget("td_force_spinbutton", td_force_spinbutton);
-    td_force_spinbutton->set_range(-100.0, 100.0);
-    td_force_spinbutton->set_increments(0.1, 0.0);
-    gui->get_widget("to_force_spinbutton", to_force_spinbutton);
-    to_force_spinbutton->set_range(-100.0, 100.0);
-    to_force_spinbutton->set_increments(0.1, 0.0);
+    gui->get_widget("stance_position_spinbutton", stance_position_spinbutton);
+    //stance_position_spinbutton->set_range(-inf, inf);
+    stance_position_spinbutton->set_increments(0.001, 0.0);
+    gui->get_widget("flight_position_spinbutton", flight_position_spinbutton);
+    //flight_position_spinbutton->set_range(-inf, inf);
+    flight_position_spinbutton->set_increments(0.001, 0.0);
+    gui->get_widget("stance_force_spinbutton", stance_force_spinbutton);
+    //stance_force_spinbutton->set_range(-inf, inf);
+    stance_force_spinbutton->set_increments(0.1, 0.0);
+    gui->get_widget("flight_force_spinbutton", flight_force_spinbutton);
+    //flight_force_spinbutton->set_range(-inf, inf);
+    flight_force_spinbutton->set_increments(0.1, 0.0);
 
     // Set up subscriber and publisher.
     sub = nh.subscribe("ATCSlipWalking_status", 0, controllerCallback);
@@ -187,12 +190,14 @@ void getParameters() {
     // Debug
     nh.getParam("/atrias_gui/walking_state", controllerDataOut.walking_state);
     walking_state_spinbutton->set_value(controllerDataOut.walking_state);
-    nh.getParam("/atrias_gui/td_position", controllerDataOut.td_position);
-    td_position_spinbutton->set_value(controllerDataOut.td_position);
-    nh.getParam("/atrias_gui/td_force", controllerDataOut.td_force);
-    td_force_spinbutton->set_value(controllerDataOut.td_force);
-    nh.getParam("/atrias_gui/to_force", controllerDataOut.to_force);
-    to_force_spinbutton->set_value(controllerDataOut.to_force);
+    nh.getParam("/atrias_gui/stance_position", controllerDataOut.stance_position);
+    stance_position_spinbutton->set_value(controllerDataOut.stance_position);
+    nh.getParam("/atrias_gui/flight_position", controllerDataOut.flight_position);
+    flight_position_spinbutton->set_value(controllerDataOut.flight_position);
+    nh.getParam("/atrias_gui/stance_force", controllerDataOut.stance_force);
+    stance_force_spinbutton->set_value(controllerDataOut.stance_force);
+    nh.getParam("/atrias_gui/flight_force", controllerDataOut.flight_force);
+    flight_force_spinbutton->set_value(controllerDataOut.flight_force);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -229,9 +234,10 @@ void setParameters() {
 
     // Debug
     nh.setParam("/atrias_gui/walking_state", controllerDataOut.walking_state);
-    nh.setParam("/atrias_gui/td_position", controllerDataOut.td_position);
-    nh.setParam("/atrias_gui/td_force", controllerDataOut.td_force);
-    nh.setParam("/atrias_gui/to_force", controllerDataOut.to_force);
+    nh.setParam("/atrias_gui/stance_position", controllerDataOut.stance_position);
+    nh.setParam("/atrias_gui/flight_position", controllerDataOut.flight_position);
+    nh.setParam("/atrias_gui/stance_force", controllerDataOut.stance_force);
+    nh.setParam("/atrias_gui/flight_force", controllerDataOut.flight_force);
 }
 
 //! \brief Update the GUI.
@@ -269,9 +275,10 @@ void guiUpdate() {
 
     // Debug
     walking_state_spinbutton->set_value(controllerDataIn.walking_state);
-    td_position_spinbutton->set_value(controllerDataIn.td_position);
-    td_force_spinbutton->set_value(controllerDataIn.td_force);
-    to_force_spinbutton->set_value(controllerDataIn.to_force);
+    stance_position_spinbutton->set_value(controllerDataIn.stance_position);
+    flight_position_spinbutton->set_value(controllerDataIn.flight_position);
+    stance_force_spinbutton->set_value(controllerDataIn.stance_force);
+    flight_force_spinbutton->set_value(controllerDataIn.flight_force);
 
     // publish the controller input
     pub.publish(controllerDataOut);
