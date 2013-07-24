@@ -32,6 +32,7 @@ float64 right_toe_pos
 uint8 flight_to
 uint8 flight_td
 float64 walking_state
-float64 td_position
-float64 td_force
-float64 to_force
+float64 stance_position
+float64 flight_position
+float64 stance_force
+float64 flight_force

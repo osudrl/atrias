@@ -44,9 +44,10 @@ Gtk::SpinButton *atrias_spring_spinbutton,
     *hip_pos_kd_spinbutton,
     *right_toe_pos_spinbutton,
     *walking_state_spinbutton,
-    *td_position_spinbutton,
-    *td_force_spinbutton,
-    *to_force_spinbutton;
+    *stance_position_spinbutton,
+    *flight_position_spinbutton,
+    *stance_force_spinbutton,
+    *flight_force_spinbutton;
 
 Gtk::Button *flight_to_button,
     *flight_td_button;

@@ -66,6 +66,7 @@ class ATCSlipWalking : public ATC<
         void hipController();
         void standingController();
         void shutdownController();
+        void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*);
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
@@ -128,7 +129,7 @@ class ATCSlipWalking : public ATC<
         // Misc margins, ratelimiters and other kludge values
         double forceThresholdTO, forceThresholdTD, positionThresholdTD;
         double legRateLimit, hipRateLimit, springRateLimit;
-        double forceTD, forceTO, positionTD;
+        double forceTD, forceTO, positionTD, positionTO;
 };
 
 }
