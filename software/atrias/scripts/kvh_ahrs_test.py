@@ -61,9 +61,7 @@ if __name__ == "__main__":
             p = l[0].split(' ')[1];
             l = l[1:]   # Pop off packet that was just read.
 
-            n = ''.join([chr(int(p[i:i+2], 16)) for i in range(4)])   # Extract appropriate bytes from packet.
-
-            f = struct.unpack('>f', n)[0]   # Interpret as big-endian float.
+            f = struct.unpack('>f', p.decode('hex'))[0]   # Interpret as big-endian float.
 
         deltaAngle += f/200
 
