@@ -24,7 +24,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("slip_leg_spinbutton", slip_leg_spinbutton);
     slip_leg_spinbutton->set_range(0.75, 0.95);
     slip_leg_spinbutton->set_increments(0.01, 0.0);
-    slip_leg_spinbutton->set_value(0.92);
+    slip_leg_spinbutton->set_value(0.9);
     gui->get_widget("stance_leg_target_spinbutton", stance_leg_target_spinbutton);
     stance_leg_target_spinbutton->set_range(M_PI/2.0, M_PI/2.0 + 0.40);
     stance_leg_target_spinbutton->set_increments(0.01, 0.0);
@@ -32,7 +32,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("flight_leg_target_spinbutton", flight_leg_target_spinbutton);
     flight_leg_target_spinbutton->set_range(M_PI/2.0 - 0.40, M_PI/2.0);
     flight_leg_target_spinbutton->set_increments(0.01, 0.0);
-    flight_leg_target_spinbutton->set_value(1.3);
+    flight_leg_target_spinbutton->set_value(1.33);
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.15);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
@@ -108,16 +108,16 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     walking_state_spinbutton->set_increments(1, 0);
     walking_state_spinbutton->set_value(0);
     gui->get_widget("left_position_spinbutton", left_position_spinbutton);
-    //left_position_spinbutton->set_range(-inf, inf);
+    left_position_spinbutton->set_range(-1, 1);
     left_position_spinbutton->set_increments(0.001, 0.0);
     gui->get_widget("right_position_spinbutton", right_position_spinbutton);
-    //right_position_spinbutton->set_range(-inf, inf);
+    right_position_spinbutton->set_range(-1, -1);
     right_position_spinbutton->set_increments(0.001, 0.0);
     gui->get_widget("left_force_spinbutton", left_force_spinbutton);
-    //left_force_spinbutton->set_range(-inf, inf);
+    left_force_spinbutton->set_range(-10000, 10000);
     left_force_spinbutton->set_increments(0.1, 0.0);
     gui->get_widget("right_force_spinbutton", right_force_spinbutton);
-    //right_force_spinbutton->set_range(-inf, inf);
+    right_force_spinbutton->set_range(-10000, 10000);
     right_force_spinbutton->set_increments(0.1, 0.0);
 
     // Set up subscriber and publisher.
