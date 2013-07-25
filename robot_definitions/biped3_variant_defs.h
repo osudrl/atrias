@@ -19,11 +19,27 @@
 #define BOOM_PITCH_VERTICAL_VALUE 	300497
 
 
+/** @brief Boom height
+  * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
+  * Measured with a measuring tape. [m]
+  */
+// 1.1247 = London height without board
+// 1.1684 = London height with board
+#define BOOM_HEIGHT 			1.1247
+
+
 /** @brief Boom length.
   * Distance from boom-base pivot Z-axis to intersection of robot torso XZ-center-plane and boom Y-axis centerline.
   * Measured from SolidWorks model. [m]
   */
 #define BOOM_LENGTH 			2.006
+
+
+/** @brief Boom torso offset
+  * The angular offset between the boom Y-axis centerline and the torso XZ-centerplane.
+  * Measured from SolidWorks model. [rad]
+  */
+#define BOOM_TORSO_OFFSET		1.6968
 
 
 /** @brief Torso length.
@@ -34,27 +50,25 @@
 #define BOOM_ROBOT_VERTICAL_OFFSET 0.3434 // REMOVE when dependency are gone
 
 
-/** @brief Boom torso offset
-  * The angular offset between the boom Y-axis centerline and the torso XZ-centerplane.
-  * Measured from SolidWorks model. [rad]
-  */
-#define BOOM_TORSO_OFFSET		1.6968
-
-
-/** @brief Boom height
-  * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
-  * Measured with a measuring tape. [m]
-  */
-// 1.1247 = London height without board
-// 1.1684 = London height with board
-#define BOOM_HEIGHT 			1.1247
-
-
 /** @brief Hip length
   * Distance from the torso-hip X-axis pivot and the XZ-centerplane of the leg assembly.
   * Measured from SolidWorks model. [m]
   */
 #define HIP_LENGTH			0.18
+
+
+/** @brief Proximal leg length
+  * Length of the proximal leg segment.
+  * Measured from SolidWorks model. [m]
+  */
+#define PROXIMAL_LEG_LENGTH		0.5
+
+
+/** @brief Distal leg length
+  * Length of the distal leg segment.
+  * Measured from SolidWorks model. [m]
+  */
+#define DISTAL_LEG_LENGTH		0.5
 
 
 /** @brief The meters of boom motion per encoder tick.

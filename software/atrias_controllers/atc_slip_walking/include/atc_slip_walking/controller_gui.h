@@ -23,7 +23,7 @@ atc_slip_walking::controller_status controllerDataIn;
 
 // GUI elements
 Gtk::ComboBox *main_controller_combobox,
-    *gait_transitions_combobox;
+    *switch_method_combobox;
     
 Gtk::SpinButton *atrias_spring_spinbutton,
     *slip_leg_spinbutton,
@@ -44,10 +44,10 @@ Gtk::SpinButton *atrias_spring_spinbutton,
     *hip_pos_kd_spinbutton,
     *right_toe_pos_spinbutton,
     *walking_state_spinbutton,
-    *stance_position_spinbutton,
-    *flight_position_spinbutton,
-    *stance_force_spinbutton,
-    *flight_force_spinbutton;
+    *left_position_spinbutton,
+    *right_position_spinbutton,
+    *left_force_spinbutton,
+    *right_force_spinbutton;
 
 Gtk::Button *flight_to_button,
     *flight_td_button;

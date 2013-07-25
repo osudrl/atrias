@@ -86,11 +86,13 @@ void ATCSlipWalking::controller() {
 
                     // Inject energy if stance leg has not reached not target angle yet	
                     if (qSl <= qtSl) {
-                        co.lLeg.motorCurrentA += -guiIn.pushoff_force;
-                        co.lLeg.motorCurrentB += -guiIn.pushoff_force;
+                        co.rLeg.motorCurrentA += -guiIn.pushoff_force;
+                        co.rLeg.motorCurrentB += -guiIn.pushoff_force;
                     // Auto switch walking state once target angle is reached (do not wait for event to occur)
                     } else {
-                        walkingState = (walkingState + 1) % 4;
+                    	if (guiIn.switch_method == 2) {
+                        	walkingState = (walkingState + 1) % 4;
+                    	}
                     }
                     break;
 
@@ -116,7 +118,9 @@ void ATCSlipWalking::controller() {
                         co.lLeg.motorCurrentB += -guiIn.pushoff_force;
                     // Auto switch walking state once target angle is reached (do not wait for event to occur)
                     } else {
-                        walkingState = (walkingState + 1) % 4;
+                    	if (guiIn.switch_method == 2) {
+                        	walkingState = (walkingState + 1) % 4;
+                    	}
                     }
                     break;
 
@@ -189,14 +193,18 @@ void ATCSlipWalking::updateController() {
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
     ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 
+    // Compute actual leg force from spring deflection and robot state
+    forceLl = ascLegForceL.compute(rs.lLeg, rs.position);
+    forceRl = ascLegForceR.compute(rs.rLeg, rs.position);
+    
     // Debug
     isManualFlightLegTO = guiIn.flight_to;
     isManualFlightLegTD = guiIn.flight_td;
     guiOut.walking_state = walkingState;
-    guiOut.stance_position = positionTO;
-    guiOut.flight_position = positionTD;
-    guiOut.stance_force = forceTO;
-    guiOut.flight_force = forceTD;
+    guiOut.left_force = forceLl.fz;
+    guiOut.right_force = forceRl.fz;
+    guiOut.right_position = BOOM_HEIGHT + BOOM_LENGTH*sin(rs.position.boomAngle) - PROXIMAL_LEG_LENGTH*(cos(rs.rLeg.hip.legBodyAngle)*sin(rs.rLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.rLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) + TORSO_LENGTH*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + DISTAL_LEG_LENGTH*(sin(rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle)*(cos(rs.position.boomAngle)*sin(rs.rLeg.halfA.legAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + cos(rs.rLeg.halfA.legAngle)*cos(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) + cos(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) - cos(rs.rLeg.halfA.legAngle - rs.rLeg.halfB.legAngle)*(cos(rs.rLeg.hip.legBodyAngle)*sin(rs.rLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.rLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.rLeg.halfA.legAngle)*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)))) + HIP_LENGTH*cos(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) - HIP_LENGTH*sin(rs.rLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET));
+    guiOut.left_position = BOOM_HEIGHT + BOOM_LENGTH*sin(rs.position.boomAngle) - PROXIMAL_LEG_LENGTH*(cos(rs.lLeg.hip.legBodyAngle)*sin(rs.lLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.lLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) + TORSO_LENGTH*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + DISTAL_LEG_LENGTH*(sin(rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle)*(cos(rs.position.boomAngle)*sin(rs.lLeg.halfA.legAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + cos(rs.lLeg.halfA.legAngle)*cos(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) + cos(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET))) - cos(rs.lLeg.halfA.legAngle - rs.lLeg.halfB.legAngle)*(cos(rs.lLeg.hip.legBodyAngle)*sin(rs.lLeg.halfA.legAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET)) - cos(rs.lLeg.halfA.legAngle)*cos(rs.position.boomAngle)*sin(rs.position.bodyPitch - (3.0*M_PI)/2.0) + sin(rs.lLeg.halfA.legAngle)*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)))) - HIP_LENGTH*cos(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*cos(BOOM_TORSO_OFFSET) + cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*sin(BOOM_TORSO_OFFSET)) + HIP_LENGTH*sin(rs.lLeg.hip.legBodyAngle)*(sin(rs.position.boomAngle)*sin(BOOM_TORSO_OFFSET) - cos(rs.position.boomAngle)*cos(rs.position.bodyPitch - (3.0*M_PI)/2.0)*cos(BOOM_TORSO_OFFSET));
     guiOut.isEnabled = isEnabled();
 }
 
@@ -291,8 +299,8 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(qSl, r0Sl);
 
     // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity);
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity);
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, 0.0, rsSl->halfA.motorVelocity) + KS*(rsSl->halfA.motorAngle - rsSl->halfA.legAngle);
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, 0.0, rsSl->halfB.motorVelocity) + KS*(rsSl->halfB.motorAngle - rsSl->halfB.legAngle);
 }
 
 
@@ -418,7 +426,6 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     forceTD = forceFl.fz;
     forceTO = forceSl.fz;
     positionTD = rSl*sin(qSl) - rFl*sin(qFl); // TODO replace with correct forward kinematics derived values
-    positionTO = 0.0;
 
     // Flight leg touch down event (trigger next state)
     if ((isFlightLegTD || isManualFlightLegTD) && isForwardStep) {
@@ -464,7 +471,6 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     forceTD = forceSl.fz;
     forceTO = forceFl.fz;
     positionTD = 0.0;
-    positionTO = 0.0;
 
     // Compute conditionals for event triggers
     isFlightLegTO = forceFl.fz >= forceThresholdTO;

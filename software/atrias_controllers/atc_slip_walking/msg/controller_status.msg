@@ -4,7 +4,7 @@ bool isEnabled
 
 # Debug
 float64 walking_state
-float64 stance_position
-float64 flight_position
-float64 stance_force
-float64 flight_force
+float64 left_position
+float64 right_position
+float64 left_force
+float64 right_force

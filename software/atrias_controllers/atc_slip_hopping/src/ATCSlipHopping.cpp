@@ -358,7 +358,7 @@ void ATCSlipHopping::ballisticFlightLegController(atrias_msgs::robot_state_leg *
 
 
 /**
- * @brief A simple constant leg position flight phase controller.
+ * @brief A simple constant leg position stance phase controller.
  */
 void ATCSlipHopping::ballisticStanceLegController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSmA, ASCRateLimit *ascRateLimitSmB) {
 	// Compute motor angles from desired leg configuration 
