@@ -48,7 +48,9 @@ if __name__ == "__main__":
     loopCount = 0
     l = ['']
     p = ''
-    f = 0.0
+    x = 0.0
+    y = 0.0
+    z = 0.0
 
     deltaAngle = 0.0
 
@@ -61,15 +63,21 @@ if __name__ == "__main__":
             p = l[0].split(' ')[1];
             l = l[1:]   # Pop off packet that was just read.
 
-            f = struct.unpack('>f', p.decode('hex'))[0]   # Interpret as big-endian float.
+            x = struct.unpack('>f', p[:8].decode('hex'))[0]   # Interpret as big-endian float.
 
-        deltaAngle += f/200
+            try:
+                y = struct.unpack('>f', p[8:16].decode('hex'))[0]   # Interpret as big-endian float.
+                z = struct.unpack('>f', p[16:].decode('hex'))[0]   # Interpret as big-endian float.
+            except:
+                pass
+
+        deltaAngle += x/200
 
         sleep(0.001)   # Something faster than 200 Hz.
 
         # Print out somewhat slowly.
         if loopCount == 0:
-            print p, "Read: %10f   Integrated: %10f" % (f, deltaAngle)
+            print p, "Read: %10f %10f %10f   Integrated: %10f" % (x, y, z, deltaAngle)
 
         loopCount = (loopCount+1) % 20
 
