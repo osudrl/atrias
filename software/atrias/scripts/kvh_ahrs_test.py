@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import serial
-from time import sleep
+from time import time
 import struct
 
 serialPort = '/dev/ttyUSB0'
@@ -54,32 +54,33 @@ if __name__ == "__main__":
 
     deltaAngle = 0.0
 
+    nextLoopTime = time()   # Don't use clock(), because it's inaccurate.
     while True:
-        d = ser.readline()   # Raw data
-        l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
+        if time() >= nextLoopTime:
+            nextLoopTime += 0.005
 
-        # If we have at least one whole packet
-        if len(l) > 1:
-            p = l[0].split(' ')[1];
-            l = l[1:]   # Pop off packet that was just read.
+            d = ser.readline()   # Raw data
+            l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
 
-            x = struct.unpack('>f', p[:8].decode('hex'))[0]   # Interpret as big-endian float.
+            # If we have at least one whole packet
+            if len(l) > 1:
+                p = l[0].split(' ')[1];
+                l = l[1:]   # Pop off packet that was just read.
 
-            try:
-                y = struct.unpack('>f', p[8:16].decode('hex'))[0]   # Interpret as big-endian float.
-                z = struct.unpack('>f', p[16:].decode('hex'))[0]   # Interpret as big-endian float.
-            except:
-                pass
+                try:
+                    x = struct.unpack('>f', p[:8].decode('hex'))[0]   # Interpret as big-endian float.
+                    y = struct.unpack('>f', p[8:16].decode('hex'))[0]   # Interpret as big-endian float.
+                    z = struct.unpack('>f', p[16:].decode('hex'))[0]   # Interpret as big-endian float.
+                except:
+                    pass
 
-        deltaAngle += x/200
+            dp = deltaAngle
+            deltaAngle = deltaAngle + x/200.0
 
-        sleep(0.001)   # Something faster than 200 Hz.
-
-        # Print out somewhat slowly.
-        if loopCount == 0:
-            print p, "Read: %10f %10f %10f   Integrated: %10f" % (x, y, z, deltaAngle)
-
-        loopCount = (loopCount+1) % 20
+            # Print out somewhat slowly.
+            loopCount = (loopCount+1) % 10
+            if loopCount == 0:
+                print p, "Read: %10f %10f %10f   Integrated: %10f" % (x, y, z, deltaAngle)
 
 
 # vim: expandtab
