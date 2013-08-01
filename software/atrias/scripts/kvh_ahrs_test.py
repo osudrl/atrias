@@ -74,8 +74,7 @@ if __name__ == "__main__":
                 except:
                     pass
 
-            dp = deltaAngle
-            deltaAngle = deltaAngle + x/200.0
+            deltaAngle += x*180/3.1415926535/200.0   # Integrate
 
             # Print out somewhat slowly.
             loopCount = (loopCount+1) % 10
