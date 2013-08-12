@@ -6,7 +6,7 @@ from time import time
 import struct
 
 serialPort = '/dev/ttyUSB0'
-baudrate = '115200'
+baudrate = '460800'
 newlineChar = '\n'
 
 # Serial write.
@@ -45,19 +45,26 @@ if __name__ == "__main__":
                     exit(1)
 
 
-    loopCount = 0
+    loopCount   = 0
+    packetCount = 0
     l = ['']
     p = ''
+    dt = 0.001   # Delta time in seconds
+
+    # Absolute angle
     x = 0.0
     y = 0.0
     z = 0.0
 
-    deltaAngle = 0.0
+    # Change in angle
+    dx = 0.0
+    dy = 0.0
+    dz = 0.0
 
     nextLoopTime = time()   # Don't use clock(), because it's inaccurate.
     while True:
         if time() >= nextLoopTime:
-            nextLoopTime += 0.005
+            nextLoopTime += dt
 
             d = ser.readline()   # Raw data
             l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
@@ -68,18 +75,23 @@ if __name__ == "__main__":
                 l = l[1:]   # Pop off packet that was just read.
 
                 try:
-                    x = struct.unpack('>f', p[:8].decode('hex'))[0]   # Interpret as big-endian float.
-                    y = struct.unpack('>f', p[8:16].decode('hex'))[0]   # Interpret as big-endian float.
-                    z = struct.unpack('>f', p[16:].decode('hex'))[0]   # Interpret as big-endian float.
+                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
+                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
+                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
                 except:
                     pass
 
-            deltaAngle += x*180/3.1415926535/200.0   # Integrate
+                x += dx   # Integrate
+                y += dy   # Integrate
+                z += dz   # Integrate
+
+                packetCount = (packetCount+1) % 1000
+
+            loopCount = (loopCount+1) % 1000
 
             # Print out somewhat slowly.
-            loopCount = (loopCount+1) % 10
-            if loopCount == 0:
-                print p, "Read: %10f %10f %10f   Integrated: %10f" % (x, y, z, deltaAngle)
+            if loopCount % 10 == 0:
+                print p, "%4i %4i Rate (rad): %10f %10f %10f   Delta angle (deg): %10f %10f %10f" % (loopCount, packetCount, dx, dy, dz, x, y, z)
 
 
 # vim: expandtab
