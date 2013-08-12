@@ -9,7 +9,7 @@ typedef enum {
 	medulla_state_halt     = 4,
 	medulla_state_error    = 5,
 	medulla_state_reset    = 6,
-	medulla_state_watchdog = 7
+	medulla_state_watchdog = 7    // Hardware watchdog, NOT EtherCAT master
 } medulla_state_t;
 
 // EtherCAT IDs
