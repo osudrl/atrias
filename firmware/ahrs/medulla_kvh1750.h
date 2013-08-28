@@ -1,0 +1,6 @@
+#ifndef MEDULLA_KVH1750_H
+#define MEDULLA_KVH1750_H
+
+
+#endif /* MEDULLA_KVH1750_H */
+
