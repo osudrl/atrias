@@ -17,7 +17,7 @@ static float w_dt[3];   /* Angular displacement vector = w * dt, where w is the 
 
 static float dcm_gyro[3][3];   /* DCM based on gyro readings, corrected with w_a. */
 static float trim_angle[3];   /* Euler angles to help trim. TODO: Figure this out properly. */
-static float dcm_trim[3][3];   /* DCM used to offset dcm_gyro to produce dcm_bg. */
+static float dcm_offset[3][3];   /* DCM used to offset dcm_gyro to produce dcm_bg (i.e., if the IMU isn't installed orthogonally in the robot). */
 static float dcm_d[3][3];   /* First used to store the change in DCM to update dcm_bg. Repurposed during orthonormalization to store the correction vectors for the i and j unit vectors. */
 static float dcm_err;   /* DCM error for which we need orthonormalization. */
 
@@ -50,7 +50,7 @@ void setup_ahrs(void)
 	for (i=0; i<3; i++) {
 		for (j=0; j<3; j++) {
 			m_init_identity(dcm_gyro);
-			m_init_identity(dcm_trim);
+			m_init_identity(dcm_offset);
 			m_init_identity(dcm_d);
 		}
 	}
@@ -67,14 +67,14 @@ void setup_ahrs(void)
 	 *
 	 * The rotational difference between the orientations of the accelerometer
 	 * (dcm_gyro) and the chassis (dcm_out) is constant and can be approximated
-	 * by another rotation matrix we will call dcm_trim, which we populate with
+	 * by another rotation matrix we will call dcm_offset, which we populate with
 	 * trim angles obtained during hover calibration. We rotate dcm_gyro by
-	 * dcm_trim to obtain dcm_out.
+	 * dcm_offset to obtain dcm_out.
 	 *
 	 * Keep in mind, however, that we still update the IMU based on dcm_gyro and
 	 * not dcm_out. This is because it is dcm_gyro we are correcting with the
 	 * accelerometer's measurement of the gravity vector, and dcm_out is only
-	 * a transformation of that DCM based on dcm_trim. We use dcm_out for
+	 * a transformation of that DCM based on dcm_offset. We use dcm_out for
 	 * flight calculations, but dcm_gyro is what we keep track of within the
 	 * IMU.
 	 *
@@ -84,17 +84,12 @@ void setup_ahrs(void)
 	 * insufficient, we can't expect software to fix everything.
 	 */
 	#ifdef ACC_WEIGHT
-	// TODO: Set trim angles.
-	//trim_angle[0] = TRIM_ANGLE_X;
-	//trim_angle[1] = TRIM_ANGLE_Y;
-
 	v_acc[0] = 0;
 	v_acc[1] = 0;
 	v_acc[2] = 1;
 	for (i=0; i<3; i++) {
 		v_acc_last[i] = v_acc[i];
 	}
-	//accVar = 100.;
 	#endif // ACC_WEIGHT
 }
 
@@ -118,11 +113,6 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	for (i=0; i<3; i++) {
 		v_acc[i] = ACC_SELF_WEIGHT * v_acc[i] + (1-ACC_SELF_WEIGHT) * v_acc_last[i];
 		v_acc_last[i] = v_acc[i];
-
-		// Kalman filtering?
-		//v_acc_last[i] = acc.get(i);
-		//kalmanUpdate(v_acc[i], accVar, v_acc_last[i], ACC_UPDATE_SIG);
-		//kalmanPredict(v_acc[i], accVar, 0.0, ACC_PREDICT_SIG);
 	}
 	#endif // ACC_SELF_WEIGHT
 	acc_scale = v_norm(v_acc);
@@ -130,10 +120,6 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	/**
 	 * Reduce accelerometer weight if the magnitude of the measured
 	 * acceleration is significantly greater than or less than 1 g.
-	 *
-	 * TODO: Magnitude of acceleration should be reported over telemetry so
-	 * the "cutoff" value (the constant before the ABS() below) for
-	 * disregaring acceleration input can be more accurately determined.
 	 */
 	#ifdef ACC_SCALE_WEIGHT
 	acc_scale = (1.0 - MIN(1.0, ACC_SCALE_WEIGHT * ABS(acc_scale - 1.0)));
@@ -176,13 +162,6 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	//              codirectional with the body's i, j, and k vectors.
 	// ========================================================================
 	#ifdef MAG_WEIGHT
-	//if (loopCount % COMM_LOOP_INTERVAL == 0) {
-	//	sp("M(");
-	//	sp(v_mag[0]); sp(", ");
-	//	sp(v_mag[1]); sp(", ");
-	//	sp(v_mag[2]);
-	//	spln(")");
-	//}
 
 	// Express J global unit vectory in BODY frame as j_gb.
 	for (i=0; i<3; i++) {
@@ -282,28 +261,8 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	m_product(dcm_d, dcm_gyro, dcm_gyro);
 	orthonormalize(dcm_gyro);
 
-	#ifdef ACC_WEIGHT
-	dcm_trim[0][0] =              1;
-	dcm_trim[0][1] =              0;
-	dcm_trim[0][2] = -trim_angle[1];
-	dcm_trim[1][0] =              0;
-	dcm_trim[1][1] =              1;
-	dcm_trim[1][2] =  trim_angle[0];
-	dcm_trim[2][0] =  trim_angle[1];
-	dcm_trim[2][1] = -trim_angle[0];
-	dcm_trim[2][2] =              1;
-
-	// Rotate dcm_gyro with dcm_trim.
-	m_product(dcm_trim, dcm_gyro, dcm_out);
-	//orthonormalize(dcm_out);   // TODO: This shouldn't be necessary.
-	#else
-	static uint8_t j;
-	for (i=0; i<3; i++) {
-		for (j=0; j<3; j++) {
-			dcm_out[i][j] = dcm_gyro[i][j];
-		}
-	}
-	#endif // ACC_WEIGHT
+	// Rotate dcm_gyro with dcm_offset.
+	m_product(dcm_offset, dcm_gyro, dcm_out);
 }
 
 void debug_ahrs(uint8_t *buffer)
