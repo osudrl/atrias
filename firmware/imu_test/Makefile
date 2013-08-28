@@ -10,14 +10,14 @@ OUTPUT = imu_test
 OUTPUT_DIR = .
 
 # Source Files
-SOURCES = imu_test.c
+SOURCES = imu_test.c ../ahrs/medulla_ahrs.c ../ahrs/medulla_ahrs_math.c ../ahrs/medulla_kvh1750.c
 
 # Medulla_lib stuff
 MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 
 # Build Options
 OBJDIR = .
-INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../atrias2.1/include ../../robot_definitions
+INCLUDE_DIRS = $(MEDULLA_LIB_DIR)/include ../atrias2.1/include ../../robot_definitions ../ahrs
 OPT = 2
 
 # AVR Dude options
