@@ -14,7 +14,7 @@ function slave = medulla_boom()
 	% Our outputs
 	Entries_RxPDO1 = [ hex2dec('5') 1  8    % Command
 	                   hex2dec('6') 1 16 ]; % Counter
-	RxPDO1 = {hex2dec('1602') Entries_RxPDO1};
+	RxPDO1 = {hex2dec('1600') Entries_RxPDO1};
 
 	% and inputs (We have several PDOs here...)
 	Entries_TxPDO1 = [ hex2dec('5') 2  8    % ID
@@ -45,7 +45,8 @@ function slave = medulla_boom()
 
 	% Distributed Clock (DC for short) configuration. We use a cycle time
 	% of 1000000 nanoseconds, with a shift of -300000 nanoseconds
-	slave.SlaveConfig.dc = hex2dec('300');
+	%slave.SlaveConfig.dc = hex2dec('300');
+	slave.SlaveConfig.dc = [hex2dec('300'), 1000000, 0, -300000, 0, 0, 0, 0, 0, 0];
 
 	% These are data types for ports on the Simulink block
 	UINT8  = 1008;
