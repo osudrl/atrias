@@ -8,6 +8,8 @@
 #include "io_pin.h"
 #include "ad7193.h" 
 
+#include <medulla_ahrs.h>
+
 //--- Define the interrupt functions ---//
 UART_USES_PORT(USARTE0)   // Debug port
 UART_USES_PORT(USARTF0)   // IMU port
@@ -98,11 +100,11 @@ int main(void) {
 
 		int a=4;
 
-		printf("%c%c%c%c%c%c%c%c%c%c%c%c\n",
+		printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
 				imu_inbuffer[a+0], imu_inbuffer[a+1], imu_inbuffer[a+2], imu_inbuffer[a+3],
 				imu_inbuffer[a+4], imu_inbuffer[a+5], imu_inbuffer[a+6], imu_inbuffer[a+7],
 				imu_inbuffer[a+8], imu_inbuffer[a+9], imu_inbuffer[a+10], imu_inbuffer[a+11]);
-		_delay_us(189);   // Use the scope to determine this number for 800 Hz operation. Yeah it's a hack.
+		_delay_us(559);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
 	}
 
 	while(1);
