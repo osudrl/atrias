@@ -49,7 +49,8 @@ if __name__ == "__main__":
     packetCount = 0
     l = ['']   # List of queued packets
     p = ''     # Packet to parse
-    dt = 0.001   # Delta time in seconds
+    dt_imu  = 0.0025   # Delta T of IMU in seconds
+    dt_read = 0.001   # Delta T of serial read loop in seconds
 
     # Absolute angle
     x = 0.0
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     nextLoopTime = time()   # Don't use clock(), because it's inaccurate.
     while True:
         if time() >= nextLoopTime:
-            nextLoopTime += dt
+            nextLoopTime += dt_read
 
             d = ser.readline()   # Raw data
             l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
@@ -75,9 +76,9 @@ if __name__ == "__main__":
                     p = l[0];
                     l = l[1:]   # Pop off packet that was just read.
 
-                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
-                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
-                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
+                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
                 except:
                     pass
 
