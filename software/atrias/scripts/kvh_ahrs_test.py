@@ -47,6 +47,7 @@ if __name__ == "__main__":
 
     loopCount   = 0
     packetCount = 0
+    errorCount  = 0   # Count number of bad packets
     l = ['']   # List of queued packets
     p = ''     # Packet to parse
     dt_imu  = 0.0025   # Delta T of IMU in seconds
@@ -76,9 +77,12 @@ if __name__ == "__main__":
                     p = l[0];
                     l = l[1:]   # Pop off packet that was just read.
 
-                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
-                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
-                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                    if len(p) == 12:
+                        dx = struct.unpack('>f',  p[:4])[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                        dy = struct.unpack('>f', p[4:8])[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                        dz = struct.unpack('>f',  p[8:])[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                    else:
+                        errorCount += 1
                 except:
                     pass
 
@@ -92,7 +96,7 @@ if __name__ == "__main__":
 
             # Print out somewhat slowly.
             if loopCount % 10 == 0:
-                print p, "%4i %4i Rate (rad): %10f %10f %10f   Delta angle (deg): %10f %10f %10f" % (loopCount, packetCount, dx, dy, dz, x, y, z)
+                print p, errorCount, "%4i %4i Rate (rad): %10f %10f %10f   Delta angle (deg): %10f %10f %10f" % (loopCount, packetCount, dx, dy, dz, x, y, z)
 
 
 # vim: expandtab
