@@ -8,6 +8,7 @@ import struct
 serialPort = '/dev/ttyUSB0'
 baudrate = '460800'
 newlineChar = '\n'
+imuMode = 'delta'   # 'delta' or 'rate'
 
 # Serial write.
 def serWrite(myStr):
@@ -78,9 +79,14 @@ if __name__ == "__main__":
                     l = l[1:]   # Pop off packet that was just read.
 
                     if len(p) == 24:
-                        dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
-                        dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
-                        dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt_imu    # Interpret as big-endian float.
+                        dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
+                        dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
+                        dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
+
+                        if imuMode == 'rate':
+                            dx *= dt_imu
+                            dy *= dt_imu
+                            dz *= dt_imu
                     else:
                         errorCount += 1
                 except:
