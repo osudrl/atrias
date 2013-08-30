@@ -71,10 +71,10 @@ if __name__ == "__main__":
 
             # If we have at least one whole packet
             if len(l) > 1:
-                p = l[0].split(' ')[1];
-                l = l[1:]   # Pop off packet that was just read.
-
                 try:
+                    p = l[0].split(' ')[1];
+                    l = l[1:]   # Pop off packet that was just read.
+
                     dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
                     dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
                     dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * dt    # Interpret as big-endian float.
