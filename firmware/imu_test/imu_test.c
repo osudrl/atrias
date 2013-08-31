@@ -23,31 +23,6 @@ ESTOP_USES_COUNTER(TCE0)
 ECAT_USES_PORT(SPIE);
 #endif
 
-// Interrupt for handling watchdog (we don't need a driver for this)
-//ISR(TCE1_OVF_vect) {
-//	WATCHDOG_TIMER.INTCTRLA = TC_OVFINTLVL_OFF_gc;
-//	estop();
-//	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK);
-//	printf("[ERROR] Watchdog timer overflow\n");
-//	while(1);
-//}
-
-// Limit Switches
-//LIMIT_SW_USES_PORT(PORTK)
-//LIMIT_SW_USES_COUNTER(TCF0)
-
-// BISS and SSI encoders use the SPI ports
-//SPI_USES_PORT(SPIC)
-//SPI_USES_PORT(SPID)
-//SPI_USES_PORT(SPIF)
-
-// Amplifier on port D0
-//UART_USES_PORT(USARTD0)
-
-// ADCs on port a and b
-//ADC_USES_PORT(ADCA)
-//ADC_USES_PORT(ADCB)
-
 
 io_pin_t debug_pin;
 
