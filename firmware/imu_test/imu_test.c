@@ -10,6 +10,8 @@
 
 #include <medulla_ahrs.h>
 
+#define IMU_MSYNC EXT   // EXT or IMU
+
 //--- Define the interrupt functions ---//
 UART_USES_PORT(USARTE0)   // Debug port
 UART_USES_PORT(USARTF0)   // IMU port
@@ -63,6 +65,7 @@ int main(void) {
 	_delay_ms(1800);   // Wait for IMU to be ready.
 
 	while (1) {
+		#if IMU_MSYNC == EXT
 		PORTF.OUT = PORTF.OUT | (1<<1);   // Pull msync pin high.
 		_delay_us(30);   // ..for at least 30 us.
 		PORTF.OUT = PORTF.OUT & ~(1<<1);   // Pull msync pin low.
@@ -80,6 +83,10 @@ int main(void) {
 				imu_inbuffer[a+4], imu_inbuffer[a+5], imu_inbuffer[a+6], imu_inbuffer[a+7],
 				imu_inbuffer[a+8], imu_inbuffer[a+9], imu_inbuffer[a+10], imu_inbuffer[a+11]);
 		_delay_us(559);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
+		#endif // IMU_MSYNC == EXT
+
+		#if IMU_MSYNC == IMU
+		#endif // IMU_MSYNC == IMU
 	}
 
 	while(1);
