@@ -5,12 +5,16 @@ import serial
 from time import time
 import struct
 
-medullaSerialPort = '/dev/ttyUSB0'
-medullaBaudrate = '460800'
-imuSerialPort = '/dev/ttyACM0'   # RS422 converter port for IMU
-imuBaudrate = '921600'   # Communicating directly with IMU because I don't have packet parsing implemented on the Medulla.
-newlineChar = '\n'
 imuMode = 'delta'   # 'delta' or 'rate'
+
+if imuMode == 'rate':
+    serialPort = '/dev/ttyUSB0'
+    baudrate = '460800'
+    packetSepChar = '\r\n'
+elif imuMode == 'delta':
+    serialPort = '/dev/ttyACM0'   # RS422 converter port for IMU
+    baudrate = '921600'   # Communicating directly with IMU because I don't have packet parsing implemented on the Medulla.
+    packetSepChar = '\xfe\x81\xff\x55'
 
 # Serial write.
 def serWrite(myStr):
@@ -24,10 +28,7 @@ def serWrite(myStr):
 if __name__ == "__main__":
     # Initialize serial connection.
     try:
-        if imuMode == 'rate':
-            ser = serial.Serial(medullaSerialPort, medullaBaudrate, timeout=0)
-        elif imuMode == 'delta':
-            ser = serial.Serial(imuSerialPort, imuBaudrate, timeout=0)
+        ser = serial.Serial(serialPort, baudrate, timeout=0)
     except serial.SerialException:
         print "Unable to open specified serial port! Exiting..."
         exit(1)
@@ -56,7 +57,7 @@ if __name__ == "__main__":
             nextLoopTime += DT_READ
 
             d = ser.readline()   # Raw data
-            l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
+            l = l[:-1] + (l[-1] + d).split(packetSepChar)   # Get packets. The last element in l may not necessarily be a whole packet.
 
             # If we have at least one whole packet
             if len(l) > 1:
@@ -64,17 +65,21 @@ if __name__ == "__main__":
                     p = l[0]
                     l = l[1:]   # Pop off packet that was just read.
 
-                    if len(p) == 24:
-                        dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
-                        dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
-                        dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
-
-                        if imuMode == 'rate':
-                            dx *= DT_IMU
-                            dy *= DT_IMU
-                            dz *= DT_IMU
-                    else:
-                        errorCount += 1
+                    # Parse gyro data as big-endian floats.
+                    if imuMode == 'rate':
+                        if len(p) == 24:
+                            dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
+                            dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
+                            dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
+                        else:
+                            errorCount += 1
+                    elif imuMode == 'delta':
+                        if len(p) == 32:
+                            dx = struct.unpack('>f',   p[:4])[0] * 180/3.1415926535
+                            dy = struct.unpack('>f',  p[4:8])[0] * 180/3.1415926535
+                            dz = struct.unpack('>f', p[8:12])[0] * 180/3.1415926535
+                        else:
+                            errorCount += 1
                 except:
                     pass
 
