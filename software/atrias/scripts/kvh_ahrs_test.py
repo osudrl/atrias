@@ -5,8 +5,10 @@ import serial
 from time import time
 import struct
 
-serialPort = '/dev/ttyUSB0'
-baudrate = '460800'
+medullaSerialPort = '/dev/ttyUSB0'
+medullaBaudrate = '460800'
+imuSerialPort = '/dev/ttyACM0'   # RS422 converter port for IMU
+imuBaudrate = '921600'   # Communicating directly with IMU because I don't have packet parsing implemented on the Medulla.
 newlineChar = '\n'
 imuMode = 'delta'   # 'delta' or 'rate'
 
@@ -20,31 +22,15 @@ def serWrite(myStr):
 
 
 if __name__ == "__main__":
-    # =========================================================================
-    # Try to initialize a serial connection. If serialPort is defined, try
-    # opening that. If it is not defined, loop through a range of integers
-    # starting from 0 and try to connect to /dev/ttyUSBX where X is the
-    # integer. In either case, process dies if serial port cannot be opened.
-    #
-    # TODO: This needs to be made more concise.
-    # =========================================================================
+    # Initialize serial connection.
     try:
-        ser = serial.Serial(serialPort, baudrate, timeout=0)
+        if imuMode == 'rate':
+            ser = serial.Serial(medullaSerialPort, medullaBaudrate, timeout=0)
+        elif imuMode == 'delta':
+            ser = serial.Serial(imuSerialPort, imuBaudrate, timeout=0)
     except serial.SerialException:
         print "Unable to open specified serial port! Exiting..."
         exit(1)
-    except AttributeError:
-        for i in range(4):
-            try:
-                ser = serial.Serial("/dev/ttyUSB"+str(i), baudrate, timeout=0)
-                print "Opened serial port at /dev/ttyUSB%d.", i
-                break
-            except serial.SerialException:
-                print "No serial at /dev/ttyUSB%d.", i
-                if i == 3:
-                    print "No serial found. Giving up!"
-                    exit(1)
-
 
     loopCount   = 0
     packetCount = 0
