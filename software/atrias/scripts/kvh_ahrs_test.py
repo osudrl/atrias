@@ -37,8 +37,8 @@ if __name__ == "__main__":
     errorCount  = 0   # Count number of bad packets
     l = ['']   # List of queued packets
     p = ''     # Packet to parse
-    dt_imu  = 0.002   # Delta T of IMU in seconds
-    dt_read = 0.001   # Delta T of serial read loop in seconds
+    DT_IMU  = 0.002   # Delta T of IMU in seconds
+    DT_READ = 0.001   # Delta T of serial read loop in seconds
 
     # Absolute angle
     x = 0.0
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     nextLoopTime = time()   # Don't use clock(), because it's inaccurate.
     while True:
         if time() >= nextLoopTime:
-            nextLoopTime += dt_read
+            nextLoopTime += DT_READ
 
             d = ser.readline()   # Raw data
             l = l[:-1] + (l[-1] + d).split("\r\n")   # Get packets. The last element in l may not necessarily be a whole packet.
@@ -61,7 +61,7 @@ if __name__ == "__main__":
             # If we have at least one whole packet
             if len(l) > 1:
                 try:
-                    p = l[0];
+                    p = l[0]
                     l = l[1:]   # Pop off packet that was just read.
 
                     if len(p) == 24:
@@ -70,9 +70,9 @@ if __name__ == "__main__":
                         dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535    # Interpret as big-endian float.
 
                         if imuMode == 'rate':
-                            dx *= dt_imu
-                            dy *= dt_imu
-                            dz *= dt_imu
+                            dx *= DT_IMU
+                            dy *= DT_IMU
+                            dz *= DT_IMU
                     else:
                         errorCount += 1
                 except:
