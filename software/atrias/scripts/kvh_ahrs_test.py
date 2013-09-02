@@ -4,6 +4,7 @@
 import serial
 from time import time
 import struct
+from math import pi
 
 imuMode = 'delta'   # 'delta' or 'rate'
 
@@ -68,16 +69,16 @@ if __name__ == "__main__":
                     # Parse gyro data as big-endian floats.
                     if imuMode == 'rate':
                         if len(p) == 24:
-                            dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
-                            dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
-                            dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/3.1415926535 * DT_IMU
+                            dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi * DT_IMU
+                            dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi * DT_IMU
+                            dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi * DT_IMU
                         else:
                             errorCount += 1
                     elif imuMode == 'delta':
                         if len(p) == 32:
-                            dx = struct.unpack('>f',   p[:4])[0] * 180/3.1415926535
-                            dy = struct.unpack('>f',  p[4:8])[0] * 180/3.1415926535
-                            dz = struct.unpack('>f', p[8:12])[0] * 180/3.1415926535
+                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi
+                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
+                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi
                         else:
                             errorCount += 1
                 except:
