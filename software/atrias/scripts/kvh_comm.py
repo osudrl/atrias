@@ -44,7 +44,7 @@ if __name__ == "__main__":
                     exit(1)
 
     while True:
-        cmd = raw_input("Command to send: ")
+        cmd = raw_input("KVH 1750 > ")
 
         if cmd == 'q':
             exit(0)
