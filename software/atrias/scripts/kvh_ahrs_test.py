@@ -40,7 +40,7 @@ if __name__ == "__main__":
     l = ['']   # List of queued packets
     p = ''     # Packet to parse
     DT_IMU  = 0.002   # Delta T of IMU in seconds
-    DT_READ = 0.001   # Delta T of serial read loop in seconds
+    DT_READ = 0.0008   # Delta T of serial read loop in seconds
 
     # Absolute angle
     x = 0.0
