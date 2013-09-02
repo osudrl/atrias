@@ -76,9 +76,9 @@ if __name__ == "__main__":
                             errorCount += 1
                     elif imuMode == 'delta':
                         if len(p) == 32:
-                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi
-                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
-                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi
+                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi * 720/692.66
+                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi * 720/692.66
+                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi * 720/692.66
                         else:
                             errorCount += 1
                 except:
@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
             # Print out somewhat slowly.
             if loopCount % 10 == 0:
-                print p, errorCount, "%4i %4i Rate (rad): %10f %10f %10f   Delta angle (deg): %10f %10f %10f" % (loopCount, packetCount, dx, dy, dz, x, y, z)
+                print "%2i %4i %4i   Rate (rad): %10f %10f %10f   Angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, dx, dy, dz, x, y, z)
 
 
 # vim: expandtab
