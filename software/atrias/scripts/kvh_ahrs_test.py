@@ -18,14 +18,6 @@ elif debugType == 'direct':
     baudrate = '921600'   # Communicating directly with IMU because I don't have packet parsing implemented on the Medulla.
     packetSepChar = '\xfe\x81\xff\x55'
 
-# Serial write.
-def serWrite(myStr):
-    try:
-        for i in range(len(myStr)):
-            ser.write(myStr[i])
-    except:
-        print "Unable to send data. Check connection."
-
 
 if __name__ == "__main__":
     # Initialize serial connection.
