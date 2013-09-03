@@ -7,16 +7,18 @@ import struct
 from math import pi
 
 debugType = 'direct'   # 'direct' or 'medulla'
-imuMode = 'delta'   # 'delta' or 'rate'
+imuMode = 'rate'   # 'delta' or 'rate'
 
 if debugType == 'medulla':
     serialPort = '/dev/ttyUSB0'
     baudrate = '460800'
     packetSepChar = '\r\n'
+    DT_IMU  = 0.002   # Delta T of IMU in seconds
 elif debugType == 'direct':
     serialPort = '/dev/ttyACM0'   # RS422 converter port for IMU
     baudrate = '921600'   # Communicating directly with IMU because I don't have packet parsing implemented on the Medulla.
     packetSepChar = '\xfe\x81\xff\x55'
+    DT_IMU  = 0.001   # Delta T of IMU in seconds
 
 
 # Initialize serial connection.
@@ -32,9 +34,8 @@ errorCount  = 0   # Count number of bad packets
 l = ['']   # List of queued packets
 p = ''     # Packet to parse
 haveNewPacket = False   # Do we have a new packet (to consider printing?)
-DT_IMU  = 0.001   # Delta T of IMU in seconds
 DT_READ = 0.0008   # Delta T of serial read loop in seconds
-imuStatus = ''
+imuStatus = 'unknown'
 
 # Absolute angle
 x = 0.0
@@ -63,23 +64,21 @@ while True:
 
                 # Parse gyro data as big-endian floats.
                 if debugType == 'medulla' and len(p) == 24:
-                    if imuMode == 'rate':
-                        dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi * DT_IMU
-                        dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi * DT_IMU
-                        dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi * DT_IMU
+                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi
+                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi
+                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi
                 elif debugType == 'direct' and len(p) == 32:
-                    if imuMode == 'rate':
-                        dx = struct.unpack('>f',   p[:4])[0] * 180/pi * DT_IMU
-                        dy = struct.unpack('>f',  p[4:8])[0] * 180/pi * DT_IMU
-                        dz = struct.unpack('>f', p[8:12])[0] * 180/pi * DT_IMU
-                    elif imuMode == 'delta':
-                        dx = struct.unpack('>f',   p[:4])[0] * 180/pi
-                        dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
-                        dz = struct.unpack('>f', p[8:12])[0] * 180/pi
+                    dx = struct.unpack('>f',   p[:4])[0] * 180/pi
+                    dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
+                    dz = struct.unpack('>f', p[8:12])[0] * 180/pi
+                    imuStatus = bin(ord(p[24]))
                 else:
                     errorCount += 1
 
-                imuStatus = bin(ord(p[24]))
+                if imuMode == 'rate':
+                    dx *= DT_IMU
+                    dy *= DT_IMU
+                    dz *= DT_IMU
 
             except:
                 pass   # Sometimes we'll mangle the first packet. Ignore this.
