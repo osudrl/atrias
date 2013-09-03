@@ -78,19 +78,19 @@ if __name__ == "__main__":
                             errorCount += 1
                     elif imuMode == 'delta':
                         if len(p) == 32:
-                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi * 720/692.66
-                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi * 720/692.66
-                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi * 720/692.66
+                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi# * 720/692.66
+                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi# * 720/692.66
+                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi# * 720/692.66
                         else:
                             errorCount += 1
                 except:
-                    pass
+                    pass   # Sometimes we'll mangle the first packet. Ignore this.
 
                 x += dx   # Integrate
                 y += dy   # Integrate
                 z += dz   # Integrate
 
-                packetCount = (packetCount+1) % 1000
+                packetCount = (packetCount+1)# % 1000
 
             else:
                 haveNewPacket = False
