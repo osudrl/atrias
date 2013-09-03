@@ -34,6 +34,7 @@ p = ''     # Packet to parse
 haveNewPacket = False   # Do we have a new packet (to consider printing?)
 DT_IMU  = 0.001   # Delta T of IMU in seconds
 DT_READ = 0.0008   # Delta T of serial read loop in seconds
+imuStatus = ''
 
 # Absolute angle
 x = 0.0
@@ -77,6 +78,9 @@ while True:
                         dz = struct.unpack('>f', p[8:12])[0] * 180/pi
                 else:
                     errorCount += 1
+
+                imuStatus = bin(ord(p[24]))
+
             except:
                 pass   # Sometimes we'll mangle the first packet. Ignore this.
 
@@ -92,7 +96,7 @@ while True:
         loopCount = loopCount+1
 
         if haveNewPacket:
-            print "%2i %8i %8i   %5s (rad): %10f %10f %10f   angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, imuMode, dx, dy, dz, x, y, z)
+            print "%2i %8i %8i %10s   %5s (rad): %10f %10f %10f   angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, imuStatus, imuMode, dx, dy, dz, x, y, z)
 
 
 # vim: expandtab
