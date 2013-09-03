@@ -81,9 +81,9 @@ if __name__ == "__main__":
                             dy = struct.unpack('>f',  p[4:8])[0] * 180/pi * DT_IMU
                             dz = struct.unpack('>f', p[8:12])[0] * 180/pi * DT_IMU
                         elif imuMode == 'delta':
-                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi# * 720/692.66
-                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi# * 720/692.66
-                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi# * 720/692.66
+                            dx = struct.unpack('>f',   p[:4])[0] * 180/pi
+                            dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
+                            dz = struct.unpack('>f', p[8:12])[0] * 180/pi
                     else:
                         errorCount += 1
                 except:
@@ -93,15 +93,14 @@ if __name__ == "__main__":
                 y += dy   # Integrate
                 z += dz   # Integrate
 
-                packetCount = (packetCount+1)# % 1000
+                packetCount = packetCount+1
 
             else:
                 haveNewPacket = False
 
-            loopCount = (loopCount+1)# % 1000
+            loopCount = loopCount+1
 
-            # Print out somewhat slowly.
-            if haveNewPacket:#loopCount % 10 == 0:
+            if haveNewPacket:
                 print "%2i %8i %8i   %5s (rad): %10f %10f %10f   angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, imuMode, dx, dy, dz, x, y, z)
 
 
