@@ -39,6 +39,7 @@ if __name__ == "__main__":
     errorCount  = 0   # Count number of bad packets
     l = ['']   # List of queued packets
     p = ''     # Packet to parse
+    haveNewPacket = False   # Do we have a new packet (to consider printing?)
     DT_IMU  = 0.002   # Delta T of IMU in seconds
     DT_READ = 0.0008   # Delta T of serial read loop in seconds
 
@@ -62,6 +63,7 @@ if __name__ == "__main__":
 
             # If we have at least one whole packet
             if len(l) > 1:
+                haveNewPacket = True
                 try:
                     p = l[0]
                     l = l[1:]   # Pop off packet that was just read.
@@ -90,11 +92,14 @@ if __name__ == "__main__":
 
                 packetCount = (packetCount+1) % 1000
 
-            loopCount = (loopCount+1) % 1000
+            else:
+                haveNewPacket = False
+
+            loopCount = (loopCount+1)# % 1000
 
             # Print out somewhat slowly.
-            if loopCount % 10 == 0:
-                print "%2i %4i %4i   Rate (rad): %10f %10f %10f   Angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, dx, dy, dz, x, y, z)
+            if haveNewPacket:#loopCount % 10 == 0:
+                print "%2i %8i %8i   %5s (rad): %10f %10f %10f   angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, imuMode, dx, dy, dz, x, y, z)
 
 
 # vim: expandtab
