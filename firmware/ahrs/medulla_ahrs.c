@@ -213,7 +213,7 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	//
 	// All of this is calculated in the BODY frame. If w is the angular
 	// velocity vector, let w_dt (w*dt) be the angular displacement vector of
-	// the DCM over a time interval dt. Let w_dt_i, w_dt_j, and w_dt_k be the
+	// the DCM over a time interval dt. Let dw_i, dw_j, and dw_k be the
 	// components of w_dt codirectional with the i, j, and k unit vectors,
 	// respectively. Also, let dr be the linear displacement vector of the DCM
 	// and dr_i, dr_j, and dr_k once again be the i, j, and k components,
