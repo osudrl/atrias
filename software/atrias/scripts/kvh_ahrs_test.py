@@ -5,9 +5,10 @@ import serial
 from time import time
 import struct
 from math import pi
+from kvh_vis import *   # DCM visualizer
 
-debugType = 'direct'   # 'direct' or 'medulla'
-imuMode = 'rate'   # 'delta' or 'rate'
+debugType = 'medulla'   # 'direct' or 'medulla'
+imuMode = 'dcm'   # 'delta', 'rate', or 'dcm'   NOTE: dcm only works with medulla.
 
 if debugType == 'medulla':
     serialPort = '/dev/ttyUSB0'
@@ -47,6 +48,14 @@ dx = 0.0
 dy = 0.0
 dz = 0.0
 
+# DCM
+dcm = [[1.0, 0.0, 0.0],
+       [0.0, 1.0, 0.0],
+       [0.0, 0.0, 1.0]]
+
+if imuMode == 'dcm':
+    setupVisualizer()
+
 nextLoopTime = time()   # Don't use clock(), because it's inaccurate.
 while True:
     if time() >= nextLoopTime:
@@ -63,10 +72,17 @@ while True:
                 l = l[1:]   # Pop off packet that was just read.
 
                 # Parse gyro data as big-endian floats.
-                if debugType == 'medulla' and len(p) == 24:
-                    dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi
-                    dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi
-                    dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi
+                if debugType == 'medulla':
+                    if imuMode == 'dcm':
+                        for i in range(3):
+                            for j in range(3):
+                                dcm[i][j] = struct.unpack('>f', p[i*3+j:i*3+j+4])[0] * 180/pi
+                        updateDCM()
+                        updateVisualizer()
+                    else:
+                        dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi
+                        dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi
+                        dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi
                 elif debugType == 'direct' and len(p) == 32:
                     dx = struct.unpack('>f',   p[:4])[0] * 180/pi
                     dy = struct.unpack('>f',  p[4:8])[0] * 180/pi
