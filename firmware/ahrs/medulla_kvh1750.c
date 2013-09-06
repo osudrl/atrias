@@ -25,6 +25,13 @@ void read_kvh(float gyr[3], float acc[3])
 
 	bytes_received = uart_received_bytes(&imu_port);
 	uart_rx_data(&imu_port, imu_inbuffer, bytes_received);   // This takes 200 us.
+
+	gyr[0] = (float) imu_inbuffer[0];
+	gyr[1] = (float) imu_inbuffer[4];
+	gyr[2] = (float) imu_inbuffer[8];
+	acc[0] = (float) imu_inbuffer[12];
+	acc[1] = (float) imu_inbuffer[16];
+	acc[2] = (float) imu_inbuffer[20];
 }
 
 void print_imu()
@@ -39,14 +46,16 @@ void print_imu()
 void print_dcm()
 {
 	static char buf[37];
-	int i, j;
+	int i, j, k;
 	for (i=0; i<3; i++) {
 		for (j=0; j<3; j++) {
-			snprintf(buf+i*3+j, 4, "%s", (char*) &dcm_out[i][j]);
+			for (k=0; k<4; k++) {
+				buf[(i*3+j)*4+k] = *(((char*) &dcm_out[i][j])+k);
+			}
 		}
 	}
 	buf[36] = '\0';
 
-	printf("%s\n", buf);
+	printf("%36s\n", buf);
 }
 
