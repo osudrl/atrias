@@ -73,13 +73,13 @@ while True:
 
                 # Parse gyro data as big-endian floats.
                 if debugType == 'medulla':
-                    if imuMode == 'dcm':
+                    if imuMode == 'dcm' and len(p) == 36:
                         for i in range(3):
                             for j in range(3):
                                 dcm[i][j] = struct.unpack('>f', p[i*3+j:i*3+j+4])[0] * 180/pi
                         updateDCM()
                         updateVisualizer()
-                    else:
+                    elif len(p) == 24:
                         dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi
                         dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi
                         dz = struct.unpack('>f',  p[16:].decode('hex'))[0] * 180/pi
