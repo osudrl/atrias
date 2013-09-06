@@ -93,7 +93,7 @@ void setup_ahrs(void)
 	#endif // ACC_WEIGHT
 }
 
-void update_ahrs(float dt, float dcm_out[3][3])
+void update_ahrs(float dt)
 {
 	static uint8_t i;
 
