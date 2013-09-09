@@ -17,8 +17,9 @@ void setup_ahrs(void);
 /**
  * @brief Update the AHRS.
  * @param dt Time interval since last update.
+ * @output dcm_out Output DCM.
  */
-void update_ahrs(float dt);
+void update_ahrs(float dt, float dcm_out[3][3]);
 
 /**
  * @brief Output debug string.
