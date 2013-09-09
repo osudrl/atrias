@@ -70,7 +70,11 @@ while True:
             try:
                 p = l[0]
                 l = l[1:]   # Pop off packet that was just read.
+            except:
+                print "Malformed packet?"
+                pass
 
+            try:
                 # Parse gyro data as big-endian floats.
                 if debugType == 'medulla':
                     if imuMode == 'dcm' and len(p) == 36:
@@ -97,6 +101,7 @@ while True:
                     dz *= DT_IMU
 
             except:
+                print "Failed to parse gyro data"
                 pass   # Sometimes we'll mangle the first packet. Ignore this.
 
             x += dx   # Integrate
@@ -112,7 +117,10 @@ while True:
 
         if haveNewPacket:
             if imuMode == 'dcm':
-                print "%2i %2i %8i %8i   DCM: [%10f %10f %10f] [%10f %10f %10f] [%10f %10f %10f]" % (errorCount, len(p), loopCount, packetCount, dcm[0][0], dcm[0][1], dcm[0][2], dcm[1][0], dcm[1][1], dcm[1][2], dcm[2][0], dcm[2][1], dcm[2][2])
+                try:
+                    print "%2i %2i %8i %8i   DCM: [%10f %10f %10f] [%10f %10f %10f] [%10f %10f %10f]" % (errorCount, len(p), loopCount, packetCount, dcm[0][0], dcm[0][1], dcm[0][2], dcm[1][0], dcm[1][1], dcm[1][2], dcm[2][0], dcm[2][1], dcm[2][2]), struct.unpack('>f', p[0:4])[0]
+                except:
+                    pass
             else:
                 print "%2i %8i %8i %10s   %5s (rad): %10f %10f %10f   angle (deg): %10f %10f %10f" % (errorCount, loopCount, packetCount, imuStatus, imuMode, dx, dy, dz, x, y, z)
 
