@@ -4,6 +4,7 @@ uint8_t unused_outbuffer[128];
 uint8_t unused_inbuffer[128];
 uint8_t imu_inbuffer[128];
 uint8_t bytes_received = 0;
+float debug_buf[10];
 
 void setup_kvh(void)
 {
@@ -16,6 +17,7 @@ void setup_kvh(void)
 
 void read_kvh(float gyr[3], float acc[3])
 {
+	int i;
 	PORTF.OUT = PORTF.OUT | (1<<1);   // Pull msync pin high.
 	_delay_us(30);   // ..for at least 30 us.
 	PORTF.OUT = PORTF.OUT & ~(1<<1);   // Pull msync pin low.
@@ -26,12 +28,17 @@ void read_kvh(float gyr[3], float acc[3])
 	bytes_received = uart_received_bytes(&imu_port);
 	uart_rx_data(&imu_port, imu_inbuffer, bytes_received);   // This takes 200 us.
 
-	gyr[0] = ((float*) imu_inbuffer)[1];
-	gyr[1] = ((float*) imu_inbuffer)[2];
-	gyr[2] = ((float*) imu_inbuffer)[3];
-	acc[0] = ((float*) imu_inbuffer)[4];
-	acc[1] = ((float*) imu_inbuffer)[5];
-	acc[2] = ((float*) imu_inbuffer)[6];
+	// Reverse order of bytes.
+	for (i=0; i<3; i++) {
+		((uint8_t*) &gyr[i])[0] = imu_inbuffer[4+4*i+3];
+		((uint8_t*) &gyr[i])[1] = imu_inbuffer[4+4*i+2];
+		((uint8_t*) &gyr[i])[2] = imu_inbuffer[4+4*i+1];
+		((uint8_t*) &gyr[i])[3] = imu_inbuffer[4+4*i+0];
+		((uint8_t*) &acc[i])[0] = imu_inbuffer[4+4*(3+i)+3];
+		((uint8_t*) &acc[i])[1] = imu_inbuffer[4+4*(3+i)+2];
+		((uint8_t*) &acc[i])[2] = imu_inbuffer[4+4*(3+i)+1];
+		((uint8_t*) &acc[i])[3] = imu_inbuffer[4+4*(3+i)+0];
+	}
 }
 
 void print_imu()
@@ -44,33 +51,27 @@ void print_imu()
 
 	static float buf[6];
 	for (i=0; i<6; i++) {
-		((uint8_t*) buf)[4*i+0] = (imu_inbuffer[4+4*i+3]);
-		((uint8_t*) buf)[4*i+1] = (imu_inbuffer[4+4*i+2]);
-		((uint8_t*) buf)[4*i+2] = (imu_inbuffer[4+4*i+1]);
-		((uint8_t*) buf)[4*i+3] = (imu_inbuffer[4+4*i+0]);
-
 		//for (j=0; j<4; j++) {
 		//	printf("%02x", ((uint8_t*) &buf[i])[j]);
 		//}
-		printf("%6i ", (int) (buf[i]*1000));
-		printf("  ");
 	}
 	printf("\n");
 }
 
-void print_dcm()
+void print_dcm(float dcm[3][3])
 {
-	static char buf[37];
-	int i, j, k;
+	static int i, j, k;
+
 	for (i=0; i<3; i++) {
 		for (j=0; j<3; j++) {
-			for (k=0; k<4; k++) {
-				buf[(i*3+j)*4+k] = *(((char*) &dcm_out[i][j])+k);
-			}
+			printf("%4d ", (int16_t) (dcm[i][j]*1000));
+			//for (k=0; k<4; k++) {
+			//	printf("%c", ((uint8_t*) dcm[i])[4*j+k]);
+			//}
 		}
 	}
-	buf[36] = '\0';
-
-	printf("%36s\n", buf);
+	printf("\n");
+	// TODO: The following kinda works, but it doesn't..
+	//printf("%s\n", buf);
 }
 
