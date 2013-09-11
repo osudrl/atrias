@@ -95,7 +95,7 @@ void setup_ahrs(void)
 
 void update_ahrs(float dt, float dcm_out[3][3])
 {
-	static uint8_t i;
+	static uint8_t i, j;
 
 	read_kvh(v_gyr, v_acc);
 
@@ -261,8 +261,16 @@ void update_ahrs(float dt, float dcm_out[3][3])
 	m_product(dcm_d, dcm_gyro, dcm_gyro);
 	orthonormalize(dcm_gyro);
 
-	// Rotate dcm_gyro with dcm_offset.
-	m_product(dcm_offset, dcm_gyro, dcm_out);
+	// If the IMU can't be configured to have a rotation offset, we can do so
+	// here.
+	//m_product(dcm_offset, dcm_gyro, dcm_out);
+
+	// But since we do, just copy dcm_gyro to dcm_out.
+	for (i=0; i<3; i++) {
+		for (j=0; j<3; j++) {
+			dcm_out[i][j] = dcm_gyro[i][j];
+		}
+	}
 }
 
 void debug_ahrs(uint8_t *buffer)
