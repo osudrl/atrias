@@ -187,6 +187,7 @@ def updateDCM(newDCM):
 
 def updateVisualizer():
     # Start event processing engine.
+    drawScene()
     glutMainLoopEvent()
 
 
