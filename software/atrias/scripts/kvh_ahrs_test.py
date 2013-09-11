@@ -80,9 +80,10 @@ while True:
                     if imuMode == 'dcm' and len(p) == 36:
                         for i in range(3):
                             for j in range(3):
-                                dcm[i][j] = struct.unpack('>f', p[i*3+j:i*3+j+4])[0] * 180/pi
+                                dcm[(i+2)%3][(j+2)%3] = struct.unpack('>f', p[4*(3*i+j):4*(3*i+j)+4][::-1])[0]
                         updateDCM(dcm)
-                        updateVisualizer()
+                        if loopCount % 50 == 0:
+                            updateVisualizer()
                     elif len(p) == 24:
                         dx = struct.unpack('>f',   p[:8].decode('hex'))[0] * 180/pi
                         dy = struct.unpack('>f', p[8:16].decode('hex'))[0] * 180/pi
@@ -118,7 +119,7 @@ while True:
         if haveNewPacket:
             if imuMode == 'dcm':
                 try:
-                    print "%2i %2i %8i %8i   DCM: [%10f %10f %10f] [%10f %10f %10f] [%10f %10f %10f]" % (errorCount, len(p), loopCount, packetCount, dcm[0][0], dcm[0][1], dcm[0][2], dcm[1][0], dcm[1][1], dcm[1][2], dcm[2][0], dcm[2][1], dcm[2][2]), struct.unpack('>f', p[0:4])[0]
+                    print "%2i %2i %8i %8i   DCM: [%10f %10f %10f] [%10f %10f %10f] [%10f %10f %10f]" % (errorCount, len(p), loopCount, packetCount, dcm[0][0], dcm[0][1], dcm[0][2], dcm[1][0], dcm[1][1], dcm[1][2], dcm[2][0], dcm[2][1], dcm[2][2])
                 except:
                     pass
             else:
