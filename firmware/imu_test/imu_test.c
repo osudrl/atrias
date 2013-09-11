@@ -12,7 +12,7 @@
 
 #define IMU_MSYNC EXT   // EXT or IMU
 #define DEBUG_PRINT DCM   // DCM or IMU
-#define DT_IMU 0.002   // 500 Hz
+#define DT_IMU 0.005   // 200 Hz
 
 //--- Define the interrupt functions ---//
 UART_USES_PORT(USARTE0)   // Debug port
@@ -29,7 +29,12 @@ ECAT_USES_PORT(SPIE);
 
 io_pin_t debug_pin;
 
+// The DCM
+float dcm[3][3];
+
 int main(void) {
+	m_init_identity(dcm);   // Initialize the DCM.
+
 	// Initilize the clock to 32 Mhz oscillator
 	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
 		PORTC.DIRSET = 1;
@@ -55,8 +60,8 @@ int main(void) {
 
 	while (1) {
 		#if IMU_MSYNC == EXT
-		update_ahrs(DT_IMU);
-		_delay_us(559);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
+		update_ahrs(DT_IMU, dcm);
+		_delay_us(2140);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
 		#endif // IMU_MSYNC == EXT
 
 		#if IMU_MSYNC == IMU
@@ -64,11 +69,11 @@ int main(void) {
 		// packets to debug.
 		#endif // IMU_MSYNC == IMU
 
-		#if DEBUG_PRINT == IMU
-		print_imu();
-		#elif DEBUG_PRINT == DCM
-		print_dcm();
-		#endif // DEBUG_PRINT
+		//#if DEBUG_PRINT == IMU
+		//print_imu();
+		//#elif DEBUG_PRINT == DCM
+		print_dcm(dcm);
+		//#endif // DEBUG_PRINT
 	}
 
 	while(1);
