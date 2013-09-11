@@ -26,12 +26,12 @@ void read_kvh(float gyr[3], float acc[3])
 	bytes_received = uart_received_bytes(&imu_port);
 	uart_rx_data(&imu_port, imu_inbuffer, bytes_received);   // This takes 200 us.
 
-	gyr[0] = (float) imu_inbuffer[0];
-	gyr[1] = (float) imu_inbuffer[4];
-	gyr[2] = (float) imu_inbuffer[8];
-	acc[0] = (float) imu_inbuffer[12];
-	acc[1] = (float) imu_inbuffer[16];
-	acc[2] = (float) imu_inbuffer[20];
+	gyr[0] = ((float*) imu_inbuffer)[1];
+	gyr[1] = ((float*) imu_inbuffer)[2];
+	gyr[2] = ((float*) imu_inbuffer)[3];
+	acc[0] = ((float*) imu_inbuffer)[4];
+	acc[1] = ((float*) imu_inbuffer)[5];
+	acc[2] = ((float*) imu_inbuffer)[6];
 }
 
 void print_imu()
