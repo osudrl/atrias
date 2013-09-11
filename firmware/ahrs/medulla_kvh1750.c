@@ -36,11 +36,26 @@ void read_kvh(float gyr[3], float acc[3])
 
 void print_imu()
 {
-	int a=4;
-	printf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+	int i, a=4;
+	printf("%02x%02x%02x%02x  %02x%02x%02x%02x  %02x%02x%02x%02x   ",
 			imu_inbuffer[a+0], imu_inbuffer[a+1], imu_inbuffer[a+2], imu_inbuffer[a+3],
 			imu_inbuffer[a+4], imu_inbuffer[a+5], imu_inbuffer[a+6], imu_inbuffer[a+7],
 			imu_inbuffer[a+8], imu_inbuffer[a+9], imu_inbuffer[a+10], imu_inbuffer[a+11]);
+
+	static float buf[6];
+	for (i=0; i<6; i++) {
+		((uint8_t*) buf)[4*i+0] = (imu_inbuffer[4+4*i+3]);
+		((uint8_t*) buf)[4*i+1] = (imu_inbuffer[4+4*i+2]);
+		((uint8_t*) buf)[4*i+2] = (imu_inbuffer[4+4*i+1]);
+		((uint8_t*) buf)[4*i+3] = (imu_inbuffer[4+4*i+0]);
+
+		//for (j=0; j<4; j++) {
+		//	printf("%02x", ((uint8_t*) &buf[i])[j]);
+		//}
+		printf("%6i ", (int) (buf[i]*1000));
+		printf("  ");
+	}
+	printf("\n");
 }
 
 void print_dcm()
