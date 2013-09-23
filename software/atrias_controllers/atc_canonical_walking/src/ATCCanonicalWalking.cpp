@@ -173,6 +173,7 @@ namespace atrias {
       logOut.rqATgt = rateLimLA(qTgt[2], rate);
       logOut.rqBTgt = rateLimLB(qTgt[3], rate);
       // @TODO: do we need to add rate limit on velocity?
+      // DRL Note: We do not see any need for a rate limit on velocity.
       
       // Command the outputs (and copy to our logging data).
       // This is where the definition of ASCPD as a functor is convenient.
