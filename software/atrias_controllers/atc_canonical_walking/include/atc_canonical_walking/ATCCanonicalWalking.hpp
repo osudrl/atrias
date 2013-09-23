@@ -79,7 +79,8 @@ namespace atrias {
        * @brief Those are top level controllers.
        */ 
       void updateController();
-      void hipController();
+      // DRL Note: I've added parameters to allow for smooth initialization and shutdown of the hips
+      void hipController(bool start, bool stop);
       void standingController();
       void stoppingController();
       void walkingController();
@@ -91,14 +92,18 @@ namespace atrias {
       // PD controllers for each motor
       ASCPD pdLA; // Left  A
       ASCPD pdLB; // Left  B
+      ASCPD pdLH; // Left  H
       ASCPD pdRA; // Right A
       ASCPD pdRB; // Right B
+      ASCPD pdRH; // Right H
 
       // Rate limiters for each motor
       ASCRateLimit rateLimLA; // Left  A
       ASCRateLimit rateLimLB; // Left  B
+      ASCRateLimit rateLimLH; // Left Hip
       ASCRateLimit rateLimRA; // Right A
       ASCRateLimit rateLimRB; // Right B
+      ASCRateLimit rateLimRH; // Right Hip
       
       /**
        * @define Transformation Matrix and Its Inverse Matrix

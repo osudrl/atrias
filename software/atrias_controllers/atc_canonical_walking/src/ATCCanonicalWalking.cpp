@@ -9,12 +9,16 @@ namespace atrias {
       ATC(name),     
       pdLA(this, "pdLA"),
       pdLB(this, "pdLB"),
+      pdLH(this, "pdLH"),
       pdRA(this, "pdRA"),
       pdRB(this, "pdRB"),
+      pdRH(this, "pdRH"),
       rateLimLA(this, "rateLimLA"),
       rateLimLB(this, "rateLimLB"),
+      rateLimLH(this, "rateLimLH"),
       rateLimRA(this, "rateLimRA"),
-      rateLimRB(this, "rateLimRB")
+      rateLimRB(this, "rateLimRB"),
+      rateLimRH(this, "rateLimRH")
     {
       // Do init here.
       // Startup is handled by the ATC class
@@ -41,8 +45,11 @@ namespace atrias {
       // Update gains, and other options
       updateController();
       
-      // Run the hip controller
-      hipController();
+      // DRL Note: This has been disabled so as to allow each controller to
+      // specify different hip controller behavior. Now the standing and walking
+      // controllers call this themselves.
+      //// Run the hip controller
+      //hipController();
       
       // Main controller state machine
       switch (controllerState) 
@@ -69,24 +76,29 @@ namespace atrias {
     
     void ATCCanonicalWalking::standingController(){
       isInitialized = true;
+
       /* The logOut class is an inherited member from ATC, and is of type
        * controller_log_data. guiIn, similarly, is of type
        * gui_to_controller
        */
-      logOut.rqATgt = rateLimRA(pos_initial[0], rate);
-      logOut.rqBTgt = rateLimRB(pos_initial[1], rate);
-      logOut.lqATgt = rateLimLA(pos_initial[2], rate);
-      logOut.lqBTgt = rateLimLB(pos_initial[3], rate);
+      logOut.rqATgt = rateLimRA(pos_initial[0] - M_PI/2, rate);
+      logOut.rqBTgt = rateLimRB(pos_initial[1] - M_PI/2, rate);
+      logOut.lqATgt = rateLimLA(pos_initial[2] - M_PI/2, rate);
+      logOut.lqBTgt = rateLimLB(pos_initial[3] - M_PI/2, rate);
       
       
       // Command the outputs (and copy to our logging data).
       // This is where the definition of ASCPD as a functor is convenient.
       // Legs
+      // DRL Note: Added conversions of target position coordinates from Dr. Grizzle's system to ours.
       co.lLeg.motorCurrentA = pdLA(logOut.lqATgt, rs.lLeg.halfA.motorAngle, 0, rs.lLeg.halfA.motorVelocity);
       co.lLeg.motorCurrentB = pdLB(logOut.lqBTgt, rs.lLeg.halfB.motorAngle, 0, rs.lLeg.halfB.motorVelocity);
       co.rLeg.motorCurrentA = pdRA(logOut.rqATgt, rs.rLeg.halfA.motorAngle, 0, rs.rLeg.halfA.motorVelocity);
       co.rLeg.motorCurrentB = pdRB(logOut.rqBTgt, rs.rLeg.halfB.motorAngle, 0, rs.rLeg.halfB.motorVelocity);
       // @TODO: control hip motors here or not?
+      // DRL Note: Inserting a call to the hip controller here, passing parameters that indicate that it
+      // should smoothly initialize the hip position.
+      hipController(true, false);
 
       // @TODO: add guiOut
 
@@ -99,6 +111,9 @@ namespace atrias {
       co.lLeg.motorCurrentB = pdLB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
       co.rLeg.motorCurrentA = pdRA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
       co.rLeg.motorCurrentB = pdRB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
+
+      // DRL Note: Added a call to the hip controller function, telling it to do hip relaxation
+      hipController(false, true);
     }
 
     void ATCCanonicalWalking::walkingController(){
@@ -167,16 +182,57 @@ namespace atrias {
       co.rLeg.motorCurrentA = pdRA(logOut.rqATgt, rs.rLeg.halfA.motorAngle, dqTgt[2], rs.rLeg.halfA.motorVelocity);
       co.rLeg.motorCurrentB = pdRB(logOut.rqBTgt, rs.rLeg.halfB.motorAngle, dqTgt[3], rs.rLeg.halfB.motorVelocity);
       // @TODO: control hip motors here or not?
+      // DRL Note: Adding a call to hipController here.
+      hipController(false, false);
 
       // @TODO: add guiOut
 
       
     }
 
-    // @TODO: Maybe we don't need to include hip controller in this controller.
-    void ATCCanonicalWalking::hipController(){
-      // Control hip motors to enforce the legs to remain roughly in the sagittal plane
-    }
+	// @TODO: Maybe we don't need to include hip controller in this controller.
+	// DRL Note: I've implemented all of this, including options used for the startup
+	// and shutdown controllers.
+	void ATCCanonicalWalking::hipController(bool start, bool stop) {
+		// We handle the stopping state first, since it's the only one that doesn't
+		// require doing the hip inverse kinematics and position control
+		if (stop) {
+			// Reset the hip rate limiters to the current hip positions
+			rateLimLH.reset(rs.lleg.hip.legBodyAngle);
+			rateLimRH.reset(rs.rleg.hip.legBodyAngle);
+
+			// Do damping on the hip angles.
+			co.lLeg.motorCurrentHip = pdLH(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
+			co.rLeg.motorCurrentHip = pdRH(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
+
+			// Quit early -- we don't need to do position control.
+		}
+
+		// Set hip controller toe positions
+		LeftRight toePosition;
+		toePosition.left = guiIn.left_toe_pos;
+		toePosition.right = guiIn.right_toe_pos;
+
+		// Compute inverse kinematics to keep lateral knee torque to a minimum
+		double lhTgt;
+		double rhTgt;
+		std::tie(lhTgt, rhTgt) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
+
+		// If we're not running the startup controller, set the hip position command directly
+		// to the desired hip angles
+		if (!start) {
+			rateLimLH.reset(lhTgt);
+			rateLimRH.reset(rhTgt);
+		}
+
+		// Do the rate limiting on hip position. The rate is currently hardcoded at .1 rad/s
+		lhTgt = rateLimLH(lhTgt, .1);
+		rhTgt = rateLimRH(rhTgt, .1);
+
+		// Do position control on the hip positions
+		co.lLeg.motorCurrentHip = pdLH(lhTgt, rs.lLeg.hip.legBodyAngle, 0.0, rs.lLeg.hip.legBodyVelocity);
+		co.rLeg.motorCurrentHip = pdRH(rhTgt, rs.rLeg.hip.legBodyAngle, 0.0, rs.rLeg.hip.legBodyVelocity);
+	}
 
     void ATCCanonicalWalking::updateController(){
       // the rate limiters if we're disabled. If not, disabling,
@@ -185,8 +241,10 @@ namespace atrias {
       if (!isEnabled()) {
 	rateLimLA.reset(rs.lLeg.halfA.rotorAngle);
 	rateLimLB.reset(rs.lLeg.halfB.rotorAngle);
+	rateLimLH.reset(rs.lLeg.hip.legBodyAngle);
 	rateLimRA.reset(rs.rLeg.halfA.rotorAngle);
 	rateLimRB.reset(rs.rLeg.halfB.rotorAngle);
+	rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
       }
       
       // Set gains
@@ -194,8 +252,14 @@ namespace atrias {
       pdLA.P = pdLB.P = pdRA.P = pdRB.P = guiIn.leg_motor_p_gain;
       pdLA.D = pdLB.D = pdRA.D = pdRB.D = guiIn.leg_motor_d_gain;
 
+      // DRL Note: Adding gain settings for hip PD controllers
+      // Hips
+      pdLH.P = PDRH.P = guiIn.hip_motor_p_gain;
+      pdLH.D = PDRH.D = guiIn.hip_motor_d_gain;
+
       // Main controller options
-      //controllerState = guiIn.main_controller;
+      // DRL Note: Re-enabling this, so the user can control the controller state.
+      controllerState = guiIn.main_controller;
     }
 
     
