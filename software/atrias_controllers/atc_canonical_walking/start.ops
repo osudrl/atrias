@@ -1,0 +1,12 @@
+# Set up the component
+import("atc_canonical_walking")
+loadComponent("ATCCanonicalWalking", "ATCCanonicalWalking")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCCanonicalWalking")
+
+# Configure the component
+ATCCanonicalWalking.configure()
+
+# Start the component
+ATCCanonicalWalking.start()

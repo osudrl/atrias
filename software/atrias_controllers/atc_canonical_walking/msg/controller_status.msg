@@ -1,0 +1,15 @@
+# For timestamps
+Header header
+
+bool isEnabled
+
+float64 motorPositionLeftA
+float64 motorPositionLeftB
+float64 motorVelocityLeftA
+float64 motorVelocityLeftB
+float64 motorPositionLeftHip
+float64 motorPositionRightA
+float64 motorPositionRightB
+float64 motorVelocityRightA
+float64 motorVelocityRightB
+float64 motorPositionRightHip
