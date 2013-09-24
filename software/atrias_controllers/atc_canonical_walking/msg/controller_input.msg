@@ -2,13 +2,3 @@ float64 leg_motor_p_gain
 float64 leg_motor_d_gain
 float64 hip_motor_p_gain
 float64 hip_motor_d_gain
-float64 des_motor_ang_left_A
-float64 des_motor_ang_left_B
-float64 des_motor_vel_left_A
-float64 des_motor_vel_left_B
-float64 des_motor_ang_left_hip
-float64 des_motor_ang_right_A
-float64 des_motor_ang_right_B
-float64 des_motor_vel_right_A
-float64 des_motor_vel_right_B
-float64 des_motor_ang_right_hip

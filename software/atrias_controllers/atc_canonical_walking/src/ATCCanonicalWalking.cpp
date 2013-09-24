@@ -20,9 +20,7 @@ namespace atrias {
       rateLimRB(this, "rateLimRB"),
       rateLimRH(this, "rateLimRH")
     {
-      // Do init here.
-      // Startup is handled by the ATC class
-      setStartupEnabled(true);
+      // DRL Note: Removed startup controller setting -- we do our own smooth startup.
 
       // set the rate limit
       rate = 1.0;
