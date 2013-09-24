@@ -205,6 +205,7 @@ namespace atrias {
 			co.rLeg.motorCurrentHip = pdRH(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
 
 			// Quit early -- we don't need to do position control.
+			return;
 		}
 
 		// Set hip controller toe positions
