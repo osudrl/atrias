@@ -23,7 +23,8 @@ namespace atrias {
       // DRL Note: Removed startup controller setting -- we do our own smooth startup.
 
       // set the rate limit
-      rate = 1.0;
+      // DRL Note: Decreased rate limit to .3 -- we'd rather initialize too slow than too fast.
+      rate = .3;
       
       // initialize the walking parameter
       init_param();
