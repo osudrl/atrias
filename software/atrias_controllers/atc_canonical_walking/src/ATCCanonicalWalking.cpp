@@ -199,8 +199,8 @@ namespace atrias {
 		// require doing the hip inverse kinematics and position control
 		if (stop) {
 			// Reset the hip rate limiters to the current hip positions
-			rateLimLH.reset(rs.lleg.hip.legBodyAngle);
-			rateLimRH.reset(rs.rleg.hip.legBodyAngle);
+			rateLimLH.reset(rs.lLeg.hip.legBodyAngle);
+			rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
 
 			// Do damping on the hip angles.
 			co.lLeg.motorCurrentHip = pdLH(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
@@ -256,12 +256,12 @@ namespace atrias {
 
       // DRL Note: Adding gain settings for hip PD controllers
       // Hips
-      pdLH.P = PDRH.P = guiIn.hip_motor_p_gain;
-      pdLH.D = PDRH.D = guiIn.hip_motor_d_gain;
+      pdLH.P = pdRH.P = guiIn.hip_motor_p_gain;
+      pdLH.D = pdRH.D = guiIn.hip_motor_d_gain;
 
       // Main controller options
       // DRL Note: Re-enabling this, so the user can control the controller state.
-      controllerState = guiIn.main_controller;
+      controllerState = (CtrlState) guiIn.main_controller;
     }
 
     
