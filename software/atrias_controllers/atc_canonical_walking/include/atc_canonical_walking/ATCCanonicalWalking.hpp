@@ -25,6 +25,7 @@
 // Our subcontroller types
 #include <asc_common_toolkit/ASCCommonToolkit.hpp>
 #include <asc_pd/ASCPD.hpp>
+#include <asc_hip_boom_kinematics/ASCHipBoomKinematics.hpp>
 #include <asc_rate_limit/ASCRateLimit.hpp>
 #define N_DOFS 5
 #define N_OUTPUTS 4
@@ -86,6 +87,8 @@ namespace atrias {
       void walkingController();
 
       // Include subcontrollers and variables here
+      // Hip inverse kinematics subcontroller
+      ASCHipBoomKinematics ascHipBoomKinematics;
       
       
 

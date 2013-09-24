@@ -6,7 +6,8 @@ namespace atrias {
    
     //Simple constructor 
     ATCCanonicalWalking::ATCCanonicalWalking(string name) :
-      ATC(name),     
+      ATC(name),
+      ascHipBoomKinematics(this, "ascHipBoomKinematics"),
       pdLA(this, "pdLA"),
       pdLB(this, "pdLB"),
       pdLH(this, "pdLH"),
