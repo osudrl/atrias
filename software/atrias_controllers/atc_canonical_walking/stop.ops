@@ -1,0 +1,4 @@
+# Shut stuff down
+ATCCanonicalWalking.stop()
+ATCCanonicalWalking.cleanup()
+unloadComponent("ATCCanonicalWalking")
