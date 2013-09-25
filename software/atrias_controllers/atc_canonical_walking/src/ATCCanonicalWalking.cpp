@@ -91,10 +91,10 @@ namespace atrias {
       // This is where the definition of ASCPD as a functor is convenient.
       // Legs
       // DRL Note: Added conversions of target position coordinates from Dr. Grizzle's system to ours.
-      co.lLeg.motorCurrentA = pdLA(logOut.lqATgt, rs.lLeg.halfA.motorAngle, 0, rs.lLeg.halfA.motorVelocity);
-      co.lLeg.motorCurrentB = pdLB(logOut.lqBTgt, rs.lLeg.halfB.motorAngle, 0, rs.lLeg.halfB.motorVelocity);
-      co.rLeg.motorCurrentA = pdRA(logOut.rqATgt, rs.rLeg.halfA.motorAngle, 0, rs.rLeg.halfA.motorVelocity);
-      co.rLeg.motorCurrentB = pdRB(logOut.rqBTgt, rs.rLeg.halfB.motorAngle, 0, rs.rLeg.halfB.motorVelocity);
+      co.lLeg.motorCurrentA = pdLA(logOut.lqATgt, rs.lLeg.halfA.motorAngle, 0, rs.lLeg.halfA.rotorVelocity);
+      co.lLeg.motorCurrentB = pdLB(logOut.lqBTgt, rs.lLeg.halfB.motorAngle, 0, rs.lLeg.halfB.rotorVelocity);
+      co.rLeg.motorCurrentA = pdRA(logOut.rqATgt, rs.rLeg.halfA.motorAngle, 0, rs.rLeg.halfA.rotorVelocity);
+      co.rLeg.motorCurrentB = pdRB(logOut.rqBTgt, rs.rLeg.halfB.motorAngle, 0, rs.rLeg.halfB.rotorVelocity);
       // @TODO: control hip motors here or not?
       // DRL Note: Inserting a call to the hip controller here, passing parameters that indicate that it
       // should smoothly initialize the hip position.
@@ -107,10 +107,10 @@ namespace atrias {
     void ATCCanonicalWalking::stoppingController(){
       // Compute and set motor currents (applies virtual dampers to all actuators)
       // @TODO: control hip motors here or not?
-      co.lLeg.motorCurrentA = pdLA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
-      co.lLeg.motorCurrentB = pdLB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
-      co.rLeg.motorCurrentA = pdRA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
-      co.rLeg.motorCurrentB = pdRB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
+      co.lLeg.motorCurrentA = pdLA(0.0, 0.0, 0.0, rs.lLeg.halfA.rotorVelocity);
+      co.lLeg.motorCurrentB = pdLB(0.0, 0.0, 0.0, rs.lLeg.halfB.rotorVelocity);
+      co.rLeg.motorCurrentA = pdRA(0.0, 0.0, 0.0, rs.rLeg.halfA.rotorVelocity);
+      co.rLeg.motorCurrentB = pdRB(0.0, 0.0, 0.0, rs.rLeg.halfB.rotorVelocity);
 
       // DRL Note: Added a call to the hip controller function, telling it to do hip relaxation
       hipController(false, true);
@@ -164,24 +164,16 @@ namespace atrias {
       // convert states
       convert2bodypitch();
 
-      /* The logOut class is an inherited member from ATC, and is of type
-       * controller_log_data. guiIn, similarly, is of type
-       * gui_to_controller
-       */
-      logOut.lqATgt = rateLimRA(qTgt[0], rate);
-      logOut.lqBTgt = rateLimRB(qTgt[1], rate);
-      logOut.rqATgt = rateLimLA(qTgt[2], rate);
-      logOut.rqBTgt = rateLimLB(qTgt[3], rate);
-      // @TODO: do we need to add rate limit on velocity?
-      // DRL Note: We do not see any need for a rate limit on velocity.
+      // DRL Note: I've removed the rate limiting since it's unnecessary and is interfered with by the
+      // rate limiter resetting used by the starting controller
       
       // Command the outputs (and copy to our logging data).
       // This is where the definition of ASCPD as a functor is convenient.
       // Legs
-      co.lLeg.motorCurrentA = pdLA(logOut.lqATgt, rs.lLeg.halfA.motorAngle, dqTgt[0], rs.lLeg.halfA.motorVelocity);
-      co.lLeg.motorCurrentB = pdLB(logOut.lqBTgt, rs.lLeg.halfB.motorAngle, dqTgt[1], rs.lLeg.halfB.motorVelocity);
-      co.rLeg.motorCurrentA = pdRA(logOut.rqATgt, rs.rLeg.halfA.motorAngle, dqTgt[2], rs.rLeg.halfA.motorVelocity);
-      co.rLeg.motorCurrentB = pdRB(logOut.rqBTgt, rs.rLeg.halfB.motorAngle, dqTgt[3], rs.rLeg.halfB.motorVelocity);
+      co.lLeg.motorCurrentA = pdLA(qTgt[0], rs.lLeg.halfA.motorAngle, dqTgt[0], rs.lLeg.halfA.rotorVelocity);
+      co.lLeg.motorCurrentB = pdLB(qTgt[1], rs.lLeg.halfB.motorAngle, dqTgt[1], rs.lLeg.halfB.rotorVelocity);
+      co.rLeg.motorCurrentA = pdRA(qTgt[2], rs.rLeg.halfA.motorAngle, dqTgt[2], rs.rLeg.halfA.rotorVelocity);
+      co.rLeg.motorCurrentB = pdRB(qTgt[3], rs.rLeg.halfB.motorAngle, dqTgt[3], rs.rLeg.halfB.rotorVelocity);
       // @TODO: control hip motors here or not?
       // DRL Note: Adding a call to hipController here.
       hipController(false, false);
@@ -195,13 +187,16 @@ namespace atrias {
 	// DRL Note: I've implemented all of this, including options used for the startup
 	// and shutdown controllers.
 	void ATCCanonicalWalking::hipController(bool start, bool stop) {
-		// We handle the stopping state first, since it's the only one that doesn't
-		// require doing the hip inverse kinematics and position control
-		if (stop) {
+		// Reset the hip rate limiters if we're in the stopping phase or the robot is disabled
+		if (!isEnabled()) {
 			// Reset the hip rate limiters to the current hip positions
 			rateLimLH.reset(rs.lLeg.hip.legBodyAngle);
 			rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
+		}
 
+		// We handle the stopping state first, since it's the only one that doesn't
+		// require doing the hip inverse kinematics and position control
+		if (stop) {
 			// Do damping on the hip angles.
 			co.lLeg.motorCurrentHip = pdLH(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
 			co.rLeg.motorCurrentHip = pdRH(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
@@ -237,18 +232,6 @@ namespace atrias {
 	}
 
     void ATCCanonicalWalking::updateController(){
-      // the rate limiters if we're disabled. If not, disabling,
-      // moving the robot or the setpoints, then enabling produces
-      // a jump.
-      if (!isEnabled()) {
-	rateLimLA.reset(rs.lLeg.halfA.rotorAngle);
-	rateLimLB.reset(rs.lLeg.halfB.rotorAngle);
-	rateLimLH.reset(rs.lLeg.hip.legBodyAngle);
-	rateLimRA.reset(rs.rLeg.halfA.rotorAngle);
-	rateLimRB.reset(rs.rLeg.halfB.rotorAngle);
-	rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
-      }
-      
       // Set gains
       // Legs
       pdLA.P = pdLB.P = pdRA.P = pdRB.P = guiIn.leg_pos_kp;
@@ -262,6 +245,15 @@ namespace atrias {
       // Main controller options
       // DRL Note: Re-enabling this, so the user can control the controller state.
       controllerState = (CtrlState) guiIn.main_controller;
+
+      // Reset the rate limiters if we're enabled and running the starting controller
+      // Otherwise, there would be a jump when entering the starting controller.
+      if (controllerState != STANDING || !isEnabled()) {
+	rateLimLA.reset(rs.lLeg.halfA.motorAngle);
+	rateLimLB.reset(rs.lLeg.halfB.motorAngle);
+	rateLimRA.reset(rs.rLeg.halfA.motorAngle);
+	rateLimRB.reset(rs.rLeg.halfB.motorAngle);
+      }
     }
 
     
