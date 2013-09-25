@@ -251,13 +251,13 @@ namespace atrias {
       
       // Set gains
       // Legs
-      pdLA.P = pdLB.P = pdRA.P = pdRB.P = guiIn.leg_motor_p_gain;
-      pdLA.D = pdLB.D = pdRA.D = pdRB.D = guiIn.leg_motor_d_gain;
+      pdLA.P = pdLB.P = pdRA.P = pdRB.P = guiIn.leg_pos_kp;
+      pdLA.D = pdLB.D = pdRA.D = pdRB.D = guiIn.leg_pos_kd;
 
       // DRL Note: Adding gain settings for hip PD controllers
       // Hips
-      pdLH.P = pdRH.P = guiIn.hip_motor_p_gain;
-      pdLH.D = pdRH.D = guiIn.hip_motor_d_gain;
+      pdLH.P = pdRH.P = guiIn.hip_pos_kp;
+      pdLH.D = pdRH.D = guiIn.hip_pos_kd;
 
       // Main controller options
       // DRL Note: Re-enabling this, so the user can control the controller state.

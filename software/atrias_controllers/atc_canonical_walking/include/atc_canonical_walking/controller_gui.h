@@ -24,6 +24,14 @@ atc_canonical_walking::controller_input controllerDataOut;
 atc_canonical_walking::controller_status controllerDataIn;
 
 // GUI elements
+Gtk::ComboBox *main_controller_combobox;
+    
+Gtk::SpinButton *leg_pos_kp_spinbutton,
+    *leg_pos_kd_spinbutton,
+    *hip_pos_kp_spinbutton,
+    *left_toe_pos_spinbutton,
+    *hip_pos_kd_spinbutton,
+    *right_toe_pos_spinbutton;
 
 void controllerCallback(const atc_canonical_walking::controller_status &status);
 
