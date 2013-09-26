@@ -102,7 +102,7 @@ enum class RtOpsEvent: RtOpsEvent_t {
     ACK_HALT,                 // Acknowledges an E_STOP command from the CM
     ACK_INVALID,              // This shouldn't ever be sent... it indicates an internal inconsistency in the state machine.
     CONTROLLER_ESTOP,         // The controller commanded an estop.
-    MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode.
+    MEDULLA_ESTOP,            // Sent when any Medulla goes into error mode. Note: As a kludge, this is also sent when a halt failure is detected.
     SAFETY,                   // Sent whenever RT Ops's safety engages. Has metadata of type RtOpsEventSafetyMetadata
     CONTROLLER_CUSTOM         // This one may be sent by controllers -- they fill in their own metadata
 };

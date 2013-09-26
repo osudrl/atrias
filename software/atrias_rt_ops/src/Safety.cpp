@@ -5,12 +5,63 @@ namespace atrias {
 namespace rtOps {
 
 Safety::Safety(RTOps* rt_ops) {
-	rtOps = rt_ops;
+	rtOps     = rt_ops;
+	isHalting = false;
+}
+
+bool Safety::motorHaltCheck(double vel, double &minVel, double &maxVel) {
+	// The rate at which we should be decelerating (rad/s/tick)
+	double decelRate = AVAIL_HALT_AMPS * ACCEL_PER_AMP * CONTROLLER_LOOP_PERIOD_NS / SECOND_IN_NANOSECONDS;
+
+	// Update velocity interval
+	minVel = std::min(minVel + decelRate, -MOTOR_VEL_MRGN);
+	maxVel = std::max(maxVel - decelRate,  MOTOR_VEL_MRGN);
+
+	// If we're not in the acceptable interval, return true.
+	if (vel < minVel)
+		return true;
+	if (vel > maxVel)
+		return true;
+
+	// We're at an acceptable velocity -- return false
+	return false;
 }
 
 double Safety::predictStop(double pos, double vel) {
 	// Derived from basic physics -- assumes constant stopping acceleration.
 	return pos + vel * abs(vel) / (2.0 * ACCEL_PER_AMP * AVAIL_HALT_AMPS);
+}
+
+bool Safety::shouldEStop() {
+	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
+
+	// If we're not in HALT, set isHalting to false then return false.
+	if (rtOps->getStateMachine()->getRtOpsState() != RtOpsState::HALT) {
+		isHalting = false;
+		return false;
+	}
+
+	// Detect the transition into halt state, so we can initialize the motor rate limits
+	if (!isHalting) {
+		// Re-initialize the acceptable halt velocity intervals
+		lAMinVel = std::min(robotState.lLeg.halfA.rotorVelocity - MOTOR_VEL_MRGN, -MOTOR_VEL_MRGN);
+		lAMaxVel = std::max(robotState.lLeg.halfA.rotorVelocity + MOTOR_VEL_MRGN,  MOTOR_VEL_MRGN);
+		lBMinVel = std::min(robotState.lLeg.halfB.rotorVelocity - MOTOR_VEL_MRGN, -MOTOR_VEL_MRGN);
+		lBMaxVel = std::max(robotState.lLeg.halfB.rotorVelocity + MOTOR_VEL_MRGN,  MOTOR_VEL_MRGN);
+		rAMinVel = std::min(robotState.rLeg.halfA.rotorVelocity - MOTOR_VEL_MRGN, -MOTOR_VEL_MRGN);
+		rAMaxVel = std::max(robotState.rLeg.halfA.rotorVelocity + MOTOR_VEL_MRGN,  MOTOR_VEL_MRGN);
+		rBMinVel = std::min(robotState.rLeg.halfB.rotorVelocity - MOTOR_VEL_MRGN, -MOTOR_VEL_MRGN);
+		rBMaxVel = std::max(robotState.rLeg.halfB.rotorVelocity + MOTOR_VEL_MRGN,  MOTOR_VEL_MRGN);
+
+		// Updating isHalting
+		isHalting = true;
+	}
+
+	// Run the halt check on each motor, and return the results.
+	return motorHaltCheck(robotState.lLeg.halfA.rotorVelocity, lAMinVel, lAMaxVel) ||
+	       motorHaltCheck(robotState.lLeg.halfB.rotorVelocity, lBMinVel, lBMaxVel) ||
+	       motorHaltCheck(robotState.rLeg.halfA.rotorVelocity, rAMinVel, rAMaxVel) ||
+	       motorHaltCheck(robotState.rLeg.halfB.rotorVelocity, rBMinVel, rBMaxVel);
 }
 
 bool Safety::shouldHalt() {
