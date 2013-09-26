@@ -194,17 +194,6 @@ namespace atrias {
 			rateLimRH.reset(rs.rLeg.hip.legBodyAngle);
 		}
 
-		// We handle the stopping state first, since it's the only one that doesn't
-		// require doing the hip inverse kinematics and position control
-		if (stop) {
-			// Do damping on the hip angles.
-			co.lLeg.motorCurrentHip = pdLH(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
-			co.rLeg.motorCurrentHip = pdRH(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
-
-			// Quit early -- we don't need to do position control.
-			return;
-		}
-
 		// Set hip controller toe positions
 		LeftRight toePosition;
 		toePosition.left = guiIn.left_toe_pos;
