@@ -19,6 +19,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("main_controller_combobox", main_controller_combobox);
 	gui->get_widget("left_toe_pos_spinbutton", left_toe_pos_spinbutton);
 	gui->get_widget("right_toe_pos_spinbutton", right_toe_pos_spinbutton);
+	gui->get_widget("tau_control_chkbtn",       tau_control_checkbutton);
+	gui->get_widget("tau_hscale",               tau_hscale);
 
 	// Set ranges
 	leg_pos_kp_spinbutton->set_range(0.0, 7500.0);
@@ -27,6 +29,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_range(0.0, 50.0);
 	left_toe_pos_spinbutton->set_range(2.1, 2.5);
 	right_toe_pos_spinbutton->set_range(2.1, 2.5);
+	tau_hscale->set_range(0.0, 1.0);
 
 	// Set increments
 	leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
@@ -35,6 +38,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_increments(1.0, 0.0);
 	left_toe_pos_spinbutton->set_increments(0.01, 0.0);
 	right_toe_pos_spinbutton->set_increments(0.01, 0.0);
+	tau_hscale->set_increments(.01, 0.0);
 
 	// Set values
 	leg_pos_kp_spinbutton->set_value(2000.0);
@@ -43,6 +47,8 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kd_spinbutton->set_value(10.0);
 	left_toe_pos_spinbutton->set_value(2.20);
 	right_toe_pos_spinbutton->set_value(2.45);
+	tau_control_checkbutton->set_active(false);
+	tau_hscale->set_value(0.0);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("ATCCanonicalWalking_status", 0, controllerCallback);
@@ -67,6 +73,10 @@ void getParameters() {
 	controllerDataOut.main_controller = (uint8_t)main_controller;
 	nh.getParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
 	nh.getParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
+	int tauMode;
+	nh.getParam("/atrias_gui/tauMode", tauMode);
+	controllerDataOut.tauMode = tauMode;
+	nh.getParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
 
 	// Configure the GUI
 	leg_pos_kp_spinbutton->set_value(controllerDataOut.leg_pos_kp);
@@ -76,6 +86,8 @@ void getParameters() {
 	main_controller_combobox->set_active(controllerDataOut.main_controller);
 	left_toe_pos_spinbutton->set_value(controllerDataOut.left_toe_pos);
 	right_toe_pos_spinbutton->set_value(controllerDataOut.right_toe_pos);
+	tau_control_checkbutton->set_active((atrias::controller::TauSource) controllerDataOut.tauMode == atrias::controller::TauSource::GUI);
+	tau_hscale->set_value(controllerDataOut.manualTau);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -87,6 +99,8 @@ void setParameters() {
 	nh.setParam("/atrias_gui/main_controller", controllerDataOut.main_controller);
 	nh.setParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
 	nh.setParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
+	nh.setParam("/atrias_gui/tauMode", controllerDataOut.tauMode);
+	nh.setParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
 }
 
 //! \brief Update the GUI.
@@ -99,6 +113,10 @@ void guiUpdate() {
 	controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
 	controllerDataOut.left_toe_pos = left_toe_pos_spinbutton->get_value();
 	controllerDataOut.right_toe_pos = right_toe_pos_spinbutton->get_value();
+	controllerDataOut.tauMode = (tau_control_checkbutton->get_active()) ?
+		(atrias::controller::TauSource_t) atrias::controller::TauSource::GUI :
+		(atrias::controller::TauSource_t) atrias::controller::TauSource::STANCE_LEG_ANGLE;
+	controllerDataOut.manualTau = tau_hscale->get_value();
 
 	// Publish
 	pub.publish(controllerDataOut);

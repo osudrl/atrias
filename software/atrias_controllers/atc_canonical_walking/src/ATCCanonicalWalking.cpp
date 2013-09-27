@@ -299,26 +299,51 @@ namespace atrias {
       
     }
     
-    /**
-     * @brief This is to compute the phase (parameterized time) 'tau'
-     */
-    double ATCCanonicalWalking::compute_tau(){	
-      //
-      double th, tau;
-      th = PI*3/2 - (xa[1]+(xa[2]+xa[3])/2);
-      tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
-      return tau;
-    }
+	/**
+	* @brief This is to compute the phase (parameterized time) 'tau'
+	*/
+	double ATCCanonicalWalking::compute_tau(){	
+		// The tau calculation depends on the tau source
+		switch ((TauSource) guiIn.tauMode) {
+			case TauSource::GUI:
+				return guiIn.manualTau;
+
+			case TauSource::STANCE_LEG_ANGLE: {
+				double th, tau;
+				th = PI*3/2 - (xa[1]+(xa[2]+xa[3])/2);
+				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+				return tau;
+			}
+
+			default:
+				// If the tau mode isn't recognized, trigger the EStop and return a dummy value.
+				commandEStop();
+				return 0.0;
+		}
+	}
     
-    /**
-     * @brief This is to compute the time derivative of 'tau'
-     */
-    double ATCCanonicalWalking::compute_dtau(){	
-      //
-      double dtau;
-      dtau = -(xa[6]+(xa[7]+xa[8])/2)/(theta_limit2-theta_limit1);
-      return dtau;
-    }
+	/**
+	* @brief This is to compute the time derivative of 'tau'
+	*/
+	double ATCCanonicalWalking::compute_dtau(){	
+		// The tau calculation depends on the tau source
+		switch ((TauSource) guiIn.tauMode) {
+			case TauSource::GUI:
+				// 0.0 -- the GUI should command steps in tau
+				return 0.0;
+
+			case TauSource::STANCE_LEG_ANGLE: {
+				double dtau;
+				dtau = -(xa[6]+(xa[7]+xa[8])/2)/(theta_limit2-theta_limit1);
+				return dtau;
+			}
+
+			default:
+				// Unrecognized tau mode should cause an EStop.
+				commandEStop();
+				return 0.0;
+		}
+	}
 
     /**
      * @brief This is to compute the desired output 'y2d'

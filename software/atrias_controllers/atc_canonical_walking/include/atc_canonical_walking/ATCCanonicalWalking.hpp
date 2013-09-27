@@ -33,6 +33,9 @@
 #define N_STATES 10
 #define N_PARAMS 5
 
+// This controller's common definitions
+#include "common.hpp"
+
 
 // Namespaces we're using
 using namespace std;

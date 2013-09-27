@@ -14,6 +14,9 @@
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
 
+// This controller's common definitions
+#include "common.hpp"
+
 // ROS
 ros::NodeHandle nh;
 ros::Subscriber sub;
@@ -32,6 +35,9 @@ Gtk::SpinButton *leg_pos_kp_spinbutton,
     *left_toe_pos_spinbutton,
     *hip_pos_kd_spinbutton,
     *right_toe_pos_spinbutton;
+
+Gtk::CheckButton *tau_control_checkbutton;
+Gtk::HScale      *tau_hscale;
 
 void controllerCallback(const atc_canonical_walking::controller_status &status);
 
