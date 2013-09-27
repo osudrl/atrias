@@ -21,6 +21,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("right_toe_pos_spinbutton", right_toe_pos_spinbutton);
 	gui->get_widget("tau_control_chkbtn",       tau_control_checkbutton);
 	gui->get_widget("tau_hscale",               tau_hscale);
+	gui->get_widget("cur_limit_spinbutton",     cur_limit_spinbutton);
 
 	// Set ranges
 	leg_pos_kp_spinbutton->set_range(0.0, 7500.0);
@@ -30,6 +31,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	left_toe_pos_spinbutton->set_range(2.1, 2.5);
 	right_toe_pos_spinbutton->set_range(2.1, 2.5);
 	tau_hscale->set_range(0.0, 1.0);
+	cur_limit_spinbutton->set_range(0.0, std::max(-1*MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD));
 
 	// Set increments
 	leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
@@ -39,6 +41,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	left_toe_pos_spinbutton->set_increments(0.01, 0.0);
 	right_toe_pos_spinbutton->set_increments(0.01, 0.0);
 	tau_hscale->set_increments(.01, 0.0);
+	cur_limit_spinbutton->set_increments(1.0, 0.0);
 
 	// Set values
 	leg_pos_kp_spinbutton->set_value(2000.0);
@@ -49,6 +52,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	right_toe_pos_spinbutton->set_value(2.45);
 	tau_control_checkbutton->set_active(false);
 	tau_hscale->set_value(0.0);
+	cur_limit_spinbutton->set_value(7.0);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("ATCCanonicalWalking_status", 0, controllerCallback);
@@ -77,6 +81,7 @@ void getParameters() {
 	nh.getParam("/atrias_gui/tauMode", tauMode);
 	controllerDataOut.tauMode = tauMode;
 	nh.getParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
+	nh.getParam("/atrias_gui/maxCurrent", controllerDataOut.maxCurrent);
 
 	// Configure the GUI
 	leg_pos_kp_spinbutton->set_value(controllerDataOut.leg_pos_kp);
@@ -88,6 +93,7 @@ void getParameters() {
 	right_toe_pos_spinbutton->set_value(controllerDataOut.right_toe_pos);
 	tau_control_checkbutton->set_active((atrias::controller::TauSource) controllerDataOut.tauMode == atrias::controller::TauSource::GUI);
 	tau_hscale->set_value(controllerDataOut.manualTau);
+	cur_limit_spinbutton->set_value(controllerDataOut.maxCurrent);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -101,6 +107,7 @@ void setParameters() {
 	nh.setParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
 	nh.setParam("/atrias_gui/tauMode", controllerDataOut.tauMode);
 	nh.setParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
+	nh.setParam("/atrias_gui/maxCurrent", controllerDataOut.maxCurrent);
 }
 
 //! \brief Update the GUI.
@@ -117,6 +124,7 @@ void guiUpdate() {
 		(atrias::controller::TauSource_t) atrias::controller::TauSource::GUI :
 		(atrias::controller::TauSource_t) atrias::controller::TauSource::STANCE_LEG_ANGLE;
 	controllerDataOut.manualTau = tau_hscale->get_value();
+	controllerDataOut.maxCurrent = cur_limit_spinbutton->get_value();
 
 	// Publish
 	pub.publish(controllerDataOut);

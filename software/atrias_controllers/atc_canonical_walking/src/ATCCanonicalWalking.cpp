@@ -72,6 +72,9 @@ namespace atrias {
 	  stoppingController();
 	  break;
 	}
+
+	// Clamp torques for safety.
+	clampTorques();
     }
     
     void ATCCanonicalWalking::standingController(){
@@ -182,6 +185,15 @@ namespace atrias {
 
       
     }
+
+	void ATCCanonicalWalking::clampTorques() {
+		co.lLeg.motorCurrentA   = clamp(co.lLeg.motorCurrentA, -guiIn.maxCurrent, guiIn.maxCurrent);
+		co.lLeg.motorCurrentB   = clamp(co.lLeg.motorCurrentB, -guiIn.maxCurrent, guiIn.maxCurrent);
+		co.lLeg.motorCurrentHip = clamp(co.lLeg.motorCurrentHip, -guiIn.maxCurrent, guiIn.maxCurrent);
+		co.rLeg.motorCurrentA   = clamp(co.rLeg.motorCurrentA, -guiIn.maxCurrent, guiIn.maxCurrent);
+		co.rLeg.motorCurrentB   = clamp(co.rLeg.motorCurrentB, -guiIn.maxCurrent, guiIn.maxCurrent);
+		co.rLeg.motorCurrentHip = clamp(co.rLeg.motorCurrentHip, -guiIn.maxCurrent, guiIn.maxCurrent);
+	}
 
 	// @TODO: Maybe we don't need to include hip controller in this controller.
 	// DRL Note: I've implemented all of this, including options used for the startup

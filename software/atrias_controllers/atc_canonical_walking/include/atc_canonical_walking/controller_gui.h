@@ -12,6 +12,7 @@
 #include <atc_canonical_walking/controller_status.h>
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
+#include <robot_variant_defs.h>
 #include <ros/ros.h>
 
 // This controller's common definitions
@@ -34,7 +35,8 @@ Gtk::SpinButton *leg_pos_kp_spinbutton,
     *hip_pos_kp_spinbutton,
     *left_toe_pos_spinbutton,
     *hip_pos_kd_spinbutton,
-    *right_toe_pos_spinbutton;
+    *right_toe_pos_spinbutton,
+    *cur_limit_spinbutton;
 
 Gtk::CheckButton *tau_control_checkbutton;
 Gtk::HScale      *tau_hscale;

@@ -89,6 +89,11 @@ namespace atrias {
       void stoppingController();
       void walkingController();
 
+      /**
+        * @brief This function places a torque limit on the output of the controller.
+        */
+      void clampTorques();
+
       // Include subcontrollers and variables here
       // Hip inverse kinematics subcontroller
       ASCHipBoomKinematics ascHipBoomKinematics;
