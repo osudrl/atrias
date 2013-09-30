@@ -33,6 +33,9 @@
 #define N_STATES 10
 #define N_PARAMS 5
 
+// This controller's common definitions
+#include "common.hpp"
+
 
 // Namespaces we're using
 using namespace std;
@@ -85,6 +88,11 @@ namespace atrias {
       void standingController();
       void stoppingController();
       void walkingController();
+
+      /**
+        * @brief This function places a torque limit on the output of the controller.
+        */
+      void clampTorques();
 
       // Include subcontrollers and variables here
       // Hip inverse kinematics subcontroller
