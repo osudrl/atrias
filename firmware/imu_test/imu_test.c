@@ -12,7 +12,7 @@
 
 #define IMU_MSYNC EXT   // EXT or IMU
 #define DEBUG_PRINT DCM   // DCM or IMU
-#define DT_IMU 0.005   // 200 Hz
+#define DT_IMU 0.0025   // 400 Hz
 
 //--- Define the interrupt functions ---//
 UART_USES_PORT(USARTE0)   // Debug port
@@ -61,7 +61,7 @@ int main(void) {
 	while (1) {
 		#if IMU_MSYNC == EXT
 		update_ahrs(DT_IMU, dcm);
-		_delay_us(2140);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
+		_delay_us(30);   // Use the scope to determine this number for 500 Hz operation. Yeah it's a hack.
 		#endif // IMU_MSYNC == EXT
 
 		#if IMU_MSYNC == IMU
@@ -74,6 +74,7 @@ int main(void) {
 		//#elif DEBUG_PRINT == DCM
 		print_dcm(dcm);
 		//#endif // DEBUG_PRINT
+		_delay_us(366);
 	}
 
 	while(1);
