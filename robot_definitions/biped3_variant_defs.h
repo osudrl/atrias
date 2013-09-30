@@ -59,16 +59,16 @@
 
 /** @brief Proximal leg length
   * Length of the proximal leg segment.
-  * Measured from SolidWorks model. [m]
+  * Measured from robot. [m]
   */
-#define PROXIMAL_LEG_LENGTH		0.5
+#define PROXIMAL_LEG_LENGTH		0.5112
 
 
 /** @brief Distal leg length
   * Length of the distal leg segment.
-  * Measured from SolidWorks model. [m]
+  * Measured from  robot. [m]
   */
-#define DISTAL_LEG_LENGTH		0.5
+#define DISTAL_LEG_LENGTH		0.508
 
 
 /** @brief The meters of boom motion per encoder tick.
@@ -93,22 +93,22 @@
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          	5730
+#define LEFT_HIP_CALIB_VAL          	5737
 
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         	4533
+#define RIGHT_HIP_CALIB_VAL         	444
 
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           	(4.555309)
+#define LEFT_HIP_CALIB_POS           	(4.55007335)
 
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          	4.883
+#define RIGHT_HIP_CALIB_POS          	4.89041256
 
 
 /** @brief Maximum motor torque for scaling
