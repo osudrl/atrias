@@ -143,6 +143,9 @@ typedef enum {
 // Acceleration of motor output in radians/s^2/amp
 #define ACCEL_PER_AMP                                                  1.7185879
 
+// Margin for error in halt motor velocity (rad/s)
+#define MOTOR_VEL_MRGN                                                       0.1
+
 // The torque constant, including 50:1 gear reduction (in Nm/A)
 #define TRQ_CONST                                                (50.0 * .0.121)
 

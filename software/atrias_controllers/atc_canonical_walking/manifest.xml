@@ -1,0 +1,17 @@
+<package>
+	<description brief="atc_canonical_walking">
+		atc_canonical_walking
+	</description>
+	<author>drl</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://atrias.googlecode.com/</url>
+	<depend package="rtt_rosnode"/>
+	<depend package="atrias_control_lib"/>
+	<depend package="atrias_shared"/>
+	<depend package="atrias_msgs"/>
+	<depend package="asc_common_toolkit"/>
+	<depend package="asc_hip_boom_kinematics"/>
+	<depend package="asc_pd"/>
+	<depend package="asc_rate_limit"/>
+</package>

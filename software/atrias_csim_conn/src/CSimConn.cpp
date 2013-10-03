@@ -15,6 +15,7 @@ CSimConn::CSimConn(std::string name) :
 
 	// Initialize the state.
 	robotState.lLeg.hip.legBodyAngle = robotState.rLeg.hip.legBodyAngle = 1.5 * M_PI;
+	robotState.position.bodyPitch    = 1.5 * M_PI;
 
 	robotState.lLeg.halfA.rotorAngle = robotState.rLeg.halfA.rotorAngle =
 	robotState.lLeg.halfA.motorAngle = robotState.rLeg.halfA.motorAngle =

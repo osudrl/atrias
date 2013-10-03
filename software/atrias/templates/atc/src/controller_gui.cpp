@@ -18,9 +18,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	// Set ranges and values here.
 
 	// Set up subscriber and publisher.
-	sub = nh.subscribe("controller_status", 0, controllerCallback);
-	pub = nh.advertise<ToSubstitutePackageName::controller_input>("controller_input", 0);
-	return false;
+	sub = nh.subscribe("ToSubstituteClassName_status", 0, controllerCallback);
+	pub = nh.advertise<ToSubstitutePackageName::controller_input>("ToSubstituteClassName_input", 0);
+	return true;
 }
 
 //! \brief Update our local copy of the controller status.
