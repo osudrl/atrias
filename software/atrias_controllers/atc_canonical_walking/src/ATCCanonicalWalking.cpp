@@ -300,6 +300,12 @@ namespace atrias {
      */
     void ATCCanonicalWalking::phi_inverse_mat(){
       int i,j;
+
+      // Clear xd
+      for (i = 0; i < N_STATES; ++i)
+      	xd[i] = 0;
+
+      // Calculate the new xd
       for(i=0; i<N_OUTPUTS; i++)
 	{
 	  for(j=0; j<N_OUTPUTS; j++ )
