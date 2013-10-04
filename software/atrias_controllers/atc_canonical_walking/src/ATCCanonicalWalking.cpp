@@ -203,7 +203,9 @@ namespace atrias {
 		if (std::abs(rs.lLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
 		    std::abs(rs.lLeg.halfB.rotorVelocity) > guiIn.maxSpeed ||
 		    std::abs(rs.rLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
-		    std::abs(rs.rLeg.halfB.rotorVelocity) > guiIn.maxSpeed)
+		    std::abs(rs.rLeg.halfB.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.lLeg.hip.legBodyVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.hip.legBodyVelocity) > guiIn.maxSpeed)
 		{
 			// Something's moving too fast -- trigger the EStop.
 			commandEStop();
