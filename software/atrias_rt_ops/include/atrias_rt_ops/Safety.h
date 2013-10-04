@@ -68,9 +68,10 @@ class Safety {
 		Safety(RTOps* rt_ops);
 
 		/** @brief This checks if the EStop should be triggered.
+		  * @param co The current controller output.
 		  * @return True if an estop is necessary, false otherwise
 		  */
-		bool shouldEStop();
+		bool shouldEStop(atrias_msgs::controller_output &co);
 		
 		/** @brief Does the halt safety check.
 		  * @return Whether or not the robot should halt.
