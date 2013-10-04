@@ -45,10 +45,10 @@ namespace atrias {
   namespace controller {
     
     static const double invT[4][4] = {
-      {1  ,   0,-1/2,   0},
-      {1  ,   0, 1/2,   0},
-      {0  ,   1,   0,-1/2},
-      {0  ,   1,   0, 1/2}};
+      {1  ,   0,-0.5,   0},
+      {1  ,   0, 0.5,   0},
+      {0  ,   1,   0,-0.5},
+      {0  ,   1,   0, 0.5}};
     /*static const double a_opt[4][5]={
       {0.29315756,-3.47513300,-0.12892990,0.61400634,3.27548479}, 	// StanceLegAngleParam
       {-0.46569548,3.05272503,-0.48594434,3.30148543,3.54487616}, 	// NonStanceLegAngleParam

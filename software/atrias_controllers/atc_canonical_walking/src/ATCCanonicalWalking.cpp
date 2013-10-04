@@ -154,7 +154,7 @@ namespace atrias {
 
       tau_d = tau + 0.007 * cnt;
       
-      if(tau_d >  0.81)	   tau_d =  0.81;
+      if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
 
       // compute desired outputs
@@ -276,8 +276,8 @@ namespace atrias {
 	    }
 	}
 
-      theta_limit1	= 1.3602;
-      theta_limit2	= 1.8282;
+      theta_limit1	= 1.3035;
+      theta_limit2	= 1.8602;
     }
     
     /**
@@ -310,10 +310,10 @@ namespace atrias {
 	{
 	  for(j=0; j<N_OUTPUTS; j++ )
 	    {
-	      xd[i+1] += invT[i][j] * y2d[j];
+              xd[i+1] += invT[i][j] * y2d[j];
 	      xd[i+6] += invT[i][j] * y2dDot[j];
-	    }
-	}
+            }
+        }
       
     }
     
@@ -328,7 +328,7 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double th, tau;
-				th = PI*3/2 - (xa[1]+(xa[2]+xa[3])/2);
+				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
 				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
 				return tau;
 			}
@@ -352,7 +352,7 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				dtau = -(xa[6]+(xa[7]+xa[8])/2)/(theta_limit2-theta_limit1);
+				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
 				return dtau;
 			}
 
@@ -394,7 +394,7 @@ namespace atrias {
 	    - param_mat[j][3] * exp(-param_mat[j][3]*tau) *
 	    ( param_mat[j][0] * cos(param_mat[j][1]*tau) +
 	      param_mat[j][2] * sin(param_mat[j][1]*tau));
-	  y2dDot[j] *= dtau;		//noted
+	  y2dDot[j] *=  dtau;		//noted
 	}
     }
     
