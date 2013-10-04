@@ -103,6 +103,12 @@ namespace atrias {
         */
       void clampTorques();
 
+      /**
+        * @brief This function checks if an EStop needs to occur (based on the limits), and triggers
+        * the estop if necessary
+        */
+      void checkLimits();
+
       // Include subcontrollers and variables here
       // Hip inverse kinematics subcontroller
       ASCHipBoomKinematics ascHipBoomKinematics;

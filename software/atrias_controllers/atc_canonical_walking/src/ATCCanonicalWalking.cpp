@@ -41,6 +41,9 @@ namespace atrias {
     void ATCCanonicalWalking::controller() {
       // The robot state is in an inherited member variable named rs
       // The controller output should be put in the inherited member co
+
+      // Run the safeties
+      checkLimits();
       
       // Update gains, and other options
       updateController();
@@ -193,6 +196,28 @@ namespace atrias {
 		co.rLeg.motorCurrentA   = clamp(co.rLeg.motorCurrentA, -guiIn.maxCurrent, guiIn.maxCurrent);
 		co.rLeg.motorCurrentB   = clamp(co.rLeg.motorCurrentB, -guiIn.maxCurrent, guiIn.maxCurrent);
 		co.rLeg.motorCurrentHip = clamp(co.rLeg.motorCurrentHip, -guiIn.maxCurrent, guiIn.maxCurrent);
+	}
+
+	void ATCCanonicalWalking::checkLimits() {
+		// Check velocity limits
+		if (std::abs(rs.lLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.lLeg.halfB.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.halfB.rotorVelocity) > guiIn.maxSpeed)
+		{
+			// Something's moving too fast -- trigger the EStop.
+			commandEStop();
+		}
+
+		// Check spring deflection limits
+		if (std::abs(rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle) > guiIn.maxDefl)
+		{
+			// We've hit a deflection limit, trigger the estop
+			commandEStop();
+		}
 	}
 
 	// @TODO: Maybe we don't need to include hip controller in this controller.
