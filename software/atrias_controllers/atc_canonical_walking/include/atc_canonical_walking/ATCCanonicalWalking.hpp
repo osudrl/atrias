@@ -45,19 +45,28 @@ namespace atrias {
   namespace controller {
     
     static const double invT[4][4] = {
-      {1  ,   0,-1/2,   0},
-      {1  ,   0, 1/2,   0},
-      {0  ,   1,   0,-1/2},
-      {0  ,   1,   0, 1/2}};
-    static const double a_opt[4][5]={
+      {1  ,   0,-0.5,   0},
+      {1  ,   0, 0.5,   0},
+      {0  ,   1,   0,-0.5},
+      {0  ,   1,   0, 0.5}};
+    /*static const double a_opt[4][5]={
       {0.29315756,-3.47513300,-0.12892990,0.61400634,3.27548479}, 	// StanceLegAngleParam
       {-0.46569548,3.05272503,-0.48594434,3.30148543,3.54487616}, 	// NonStanceLegAngleParam
       {-0.00689978,-7.58620951,0.00406186,-2.62897489,0.26955308},	// StanceKneeParam
-      {-0.89695408,6.13951996,-0.07070758,0.48012954,0.88758479}};	// NonStanceKneeParam
-    static const double x_opt[4] = {3.08386532926800,   //rLeg.halfA.motorAngle
+      {-0.89695408,6.13951996,-0.07070758,0.48012954,0.88758479}};	// NonStanceKneeParam*/
+	static const double a_opt[4][5] = {
+		{ 0.116394387170033,  -3.467546136949063,   0.034213538463841,  -1.445192186648064,   3.439393594633302}, //StanceLegAngleParam
+		{-0.427723257614939,   2.619763729741833,  -0.009254356206118,   1.202409907862916,   3.445762139089431}, //NonStanceLegAngleParam
+		{ 0.042692756463494,  -4.383527952204101,  -0.073179403713134,   0.004760038162988,   0.561572800066594}, //StanceKneeParam
+		{-0.553504773379381,   6.358603195631350,  -0.008596070574591,   0.255110219611554,   1.032421906431686}};//NonStanceKneeParam
+    /*static const double x_opt[4] = {3.08386532926800,   //rLeg.halfA.motorAngle
 			     3.07449603435955,   //rLeg.halfB.motorAngle
 			     3.43731571117661,   //lLeg.halfA.motorAngle
-			     3.69996901140680};    //lLeg.halfB.motorAngle
+			     3.69996901140680};    //lLeg.halfB.motorAngle*/
+	static const double x_opt[4] = {2.778580314948339,  //rLeg.halfA.motorAngle
+	                                3.257497448000645,  //rLeg.halfB.motorAngle
+	                                3.253655203538291,  //lLeg.halfA.motorAngle
+	                                3.857920760068379}; //lLeg.halfB.motorAngle
     
     class ATCCanonicalWalking : public ATC<
       atc_canonical_walking::controller_log_data_,
@@ -94,6 +103,12 @@ namespace atrias {
         */
       void clampTorques();
 
+      /**
+        * @brief This function checks if an EStop needs to occur (based on the limits), and triggers
+        * the estop if necessary
+        */
+      void checkLimits();
+
       // Include subcontrollers and variables here
       // Hip inverse kinematics subcontroller
       ASCHipBoomKinematics ascHipBoomKinematics;
@@ -115,6 +130,8 @@ namespace atrias {
       ASCRateLimit rateLimRA; // Right A
       ASCRateLimit rateLimRB; // Right B
       ASCRateLimit rateLimRH; // Right Hip
+      // And one for tau
+      ASCRateLimit rateLimTau;
       
       /**
        * @define Transformation Matrix and Its Inverse Matrix

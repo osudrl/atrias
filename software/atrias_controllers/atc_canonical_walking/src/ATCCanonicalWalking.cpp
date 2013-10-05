@@ -19,7 +19,8 @@ namespace atrias {
       rateLimLH(this, "rateLimLH"),
       rateLimRA(this, "rateLimRA"),
       rateLimRB(this, "rateLimRB"),
-      rateLimRH(this, "rateLimRH")
+      rateLimRH(this, "rateLimRH"),
+      rateLimTau(this, "rateLimTau")
     {
       // DRL Note: Removed startup controller setting -- we do our own smooth startup.
 
@@ -41,6 +42,9 @@ namespace atrias {
     void ATCCanonicalWalking::controller() {
       // The robot state is in an inherited member variable named rs
       // The controller output should be put in the inherited member co
+
+      // Run the safeties
+      checkLimits();
       
       // Update gains, and other options
       updateController();
@@ -154,7 +158,7 @@ namespace atrias {
 
       tau_d = tau + 0.007 * cnt;
       
-      if(tau_d >  0.81)	   tau_d =  0.81;
+      if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
 
       // compute desired outputs
@@ -193,6 +197,30 @@ namespace atrias {
 		co.rLeg.motorCurrentA   = clamp(co.rLeg.motorCurrentA, -guiIn.maxCurrent, guiIn.maxCurrent);
 		co.rLeg.motorCurrentB   = clamp(co.rLeg.motorCurrentB, -guiIn.maxCurrent, guiIn.maxCurrent);
 		co.rLeg.motorCurrentHip = clamp(co.rLeg.motorCurrentHip, -guiIn.maxCurrent, guiIn.maxCurrent);
+	}
+
+	void ATCCanonicalWalking::checkLimits() {
+		// Check velocity limits
+		if (std::abs(rs.lLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.lLeg.halfB.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.halfA.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.halfB.rotorVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.lLeg.hip.legBodyVelocity) > guiIn.maxSpeed ||
+		    std::abs(rs.rLeg.hip.legBodyVelocity) > guiIn.maxSpeed)
+		{
+			// Something's moving too fast -- trigger the EStop.
+			commandEStop();
+		}
+
+		// Check spring deflection limits
+		if (std::abs(rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle) > guiIn.maxDefl ||
+		    std::abs(rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle) > guiIn.maxDefl)
+		{
+			// We've hit a deflection limit, trigger the estop
+			commandEStop();
+		}
 	}
 
 	// @TODO: Maybe we don't need to include hip controller in this controller.
@@ -276,8 +304,8 @@ namespace atrias {
 	    }
 	}
 
-      theta_limit1	= 1.3602;
-      theta_limit2	= 1.8282;
+      theta_limit1	= 1.3035;
+      theta_limit2	= 1.8602;
     }
     
     /**
@@ -300,14 +328,20 @@ namespace atrias {
      */
     void ATCCanonicalWalking::phi_inverse_mat(){
       int i,j;
+
+      // Clear xd
+      for (i = 0; i < N_STATES; ++i)
+      	xd[i] = 0;
+
+      // Calculate the new xd
       for(i=0; i<N_OUTPUTS; i++)
 	{
 	  for(j=0; j<N_OUTPUTS; j++ )
 	    {
-	      xd[i+1] += invT[i][j] * y2d[j];
+              xd[i+1] += invT[i][j] * y2d[j];
 	      xd[i+6] += invT[i][j] * y2dDot[j];
-	    }
-	}
+            }
+        }
       
     }
     
@@ -318,12 +352,21 @@ namespace atrias {
 		// The tau calculation depends on the tau source
 		switch ((TauSource) guiIn.tauMode) {
 			case TauSource::GUI:
-				return guiIn.manualTau;
+				// Reset tau rate limiter if we're just initializing
+				if (isInitialized)
+					rateLimTau.reset(guiIn.manualTau);
+
+				return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double th, tau;
-				th = PI*3/2 - (xa[1]+(xa[2]+xa[3])/2);
+				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
 				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+
+				// Reset tau's rate limiter so it doesn't jump when going into
+				// manual tau mode
+				rateLimTau.reset(tau);
+
 				return tau;
 			}
 
@@ -346,7 +389,7 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				dtau = -(xa[6]+(xa[7]+xa[8])/2)/(theta_limit2-theta_limit1);
+				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
 				return dtau;
 			}
 
@@ -388,7 +431,7 @@ namespace atrias {
 	    - param_mat[j][3] * exp(-param_mat[j][3]*tau) *
 	    ( param_mat[j][0] * cos(param_mat[j][1]*tau) +
 	      param_mat[j][2] * sin(param_mat[j][1]*tau));
-	  y2dDot[j] *= dtau;		//noted
+	  y2dDot[j] *=  dtau;		//noted
 	}
     }
     
