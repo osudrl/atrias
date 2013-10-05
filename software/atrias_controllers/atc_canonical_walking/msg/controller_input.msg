@@ -8,6 +8,7 @@ int8    main_controller
 float64 maxCurrent
 float64 maxSpeed
 float64 maxDefl
+float64 maxTauRate
 
 # These allow the GUI to control tau
 int8    tauMode

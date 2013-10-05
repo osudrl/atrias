@@ -19,7 +19,8 @@ namespace atrias {
       rateLimLH(this, "rateLimLH"),
       rateLimRA(this, "rateLimRA"),
       rateLimRB(this, "rateLimRB"),
-      rateLimRH(this, "rateLimRH")
+      rateLimRH(this, "rateLimRH"),
+      rateLimTau(this, "rateLimTau")
     {
       // DRL Note: Removed startup controller setting -- we do our own smooth startup.
 
@@ -351,12 +352,21 @@ namespace atrias {
 		// The tau calculation depends on the tau source
 		switch ((TauSource) guiIn.tauMode) {
 			case TauSource::GUI:
-				return guiIn.manualTau;
+				// Reset tau rate limiter if we're just initializing
+				if (isInitialized)
+					rateLimTau.reset(guiIn.manualTau);
+
+				return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double th, tau;
 				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
 				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+
+				// Reset tau's rate limiter so it doesn't jump when going into
+				// manual tau mode
+				rateLimTau.reset(tau);
+
 				return tau;
 			}
 

@@ -130,6 +130,8 @@ namespace atrias {
       ASCRateLimit rateLimRA; // Right A
       ASCRateLimit rateLimRB; // Right B
       ASCRateLimit rateLimRH; // Right Hip
+      // And one for tau
+      ASCRateLimit rateLimTau;
       
       /**
        * @define Transformation Matrix and Its Inverse Matrix
