@@ -64,9 +64,9 @@ namespace atrias {
 			     3.43731571117661,   //lLeg.halfA.motorAngle
 			     3.69996901140680};    //lLeg.halfB.motorAngle*/
 	static const double x_opt[4] = {2.778580314948339,  //rLeg.halfA.motorAngle
-	                                3.257497448000645,  //rLeg.halfB.motorAngle
-	                                3.253655203538291,  //lLeg.halfA.motorAngle
-	                                3.857920760068379}; //lLeg.halfB.motorAngle
+	                                3.28092136623655,  //rLeg.halfB.motorAngle
+	                                3.25889891018307,  //lLeg.halfA.motorAngle
+	                                3.85874819261597}; //lLeg.halfB.motorAngle
     
     class ATCCanonicalWalking : public ATC<
       atc_canonical_walking::controller_log_data_,
