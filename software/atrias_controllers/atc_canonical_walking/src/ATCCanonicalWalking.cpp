@@ -304,8 +304,9 @@ namespace atrias {
 	    }
 	}
 
-      theta_limit1	= 1.3035;
-      theta_limit2	= 1.8602;
+      theta_limit1	= 1.30430989646253;	
+
+      theta_limit2	= 1.73967278131273;
     }
     
     /**
