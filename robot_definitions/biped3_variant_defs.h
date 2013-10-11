@@ -25,7 +25,8 @@
   */
 // 1.1247 = London height without board
 // 1.1684 = London height with board
-#define BOOM_HEIGHT 			1.1247
+// 1.0071 = DRL with black mats
+#define BOOM_HEIGHT 			1.0071125
 
 
 /** @brief Boom length.
@@ -80,7 +81,7 @@
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            	3.13842714
+#define BOOM_Z_CALIB_LOC            	2.951490384953993
 
 
 /** @brief The value of the boom encoder at the calibration location.
@@ -88,7 +89,7 @@
  * This should be calibrated before BOOM_Z_CALIB_LOC!
   */ 
 // 12322
-#define BOOM_Z_CALIB_VAL            	1288
+#define BOOM_Z_CALIB_VAL            	17470
 
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
