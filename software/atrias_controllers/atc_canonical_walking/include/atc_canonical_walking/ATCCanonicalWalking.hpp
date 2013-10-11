@@ -64,10 +64,10 @@ namespace atrias {
 			     3.07449603435955,   //rLeg.halfB.motorAngle
 			     3.43731571117661,   //lLeg.halfA.motorAngle
 			     3.69996901140680};    //lLeg.halfB.motorAngle*/
-  static const double x_opt[4] = {3.21936946906316,
-                                  3.90736180743071,
-                                  2.81524166673677,
-                                  3.44905381343804};
+  static const double x_opt[4] = {2.81524166673677,
+                                  3.44905381343804,
+                                  3.21936946906316,
+                                  3.90736180743071};
 
     
     class ATCCanonicalWalking : public ATC<

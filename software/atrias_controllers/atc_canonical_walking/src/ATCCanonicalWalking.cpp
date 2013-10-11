@@ -33,7 +33,7 @@ namespace atrias {
       init_pos();
       
       // initial stance leg is right leg
-      sleg = RIGHT_LEG;
+      sleg = LEFT_LEG;
       tau_prev = 0;
       cnt = 2;
       timer = 0;
@@ -133,12 +133,12 @@ namespace atrias {
       tau = compute_tau();
       
       // DEBUG STATEMENT REMOVE!!!
-      printf("%f \n", tau);
+      
       dtau = compute_dtau();
       // @TODO: time-based trajectory
       // tau = (rs.timing.controllerTime-initial_controllerTime) % PERIOD;
       // dtau = 1;
-
+      /*
       if (isInitialized) 
 	{
 	  tau_prev = tau;
@@ -158,22 +158,22 @@ namespace atrias {
 	  cnt += 1;
 	  timer  = 0; 
 	}
-
-      tau_d = tau + 0.007 * cnt;
+      */
+      tau_d = tau + 0.2;
       
       if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
-
+      //printf("%f, %f", tau,tau_d);
       // compute desired outputs
-      compute_y2d(tau_d);
-      compute_y2dDot(tau_d, dtau);
+      compute_y2d(tau);
+      compute_y2dDot(tau, dtau);
       
       // compute desired motor angles through inverse kinematics
       phi_inverse_mat();
       
       // convert states
       convert2bodypitch();
-
+      //printf("%f, %f\n",xa[1],xd[1]);
       // DRL Note: I've removed the rate limiting since it's unnecessary and is interfered with by the
       // rate limiter resetting used by the starting controller
       
@@ -307,9 +307,8 @@ namespace atrias {
 	    }
 	}
 
-      theta_limit1	= 1.30430989646253;	
-
-      theta_limit2	= 1.73967278131273;
+      theta_limit1	= 1.14753244469923;
+      theta_limit2	= 1.58289532954944;
     }
     
     /**
@@ -449,8 +448,11 @@ namespace atrias {
 	{
 	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
 	  xa[1] = rs.lLeg.halfA.motorAngle + PI/2;
+          
 	  xa[2] = rs.lLeg.halfB.motorAngle + PI/2;
-	  xa[3] = rs.rLeg.halfA.motorAngle + PI/2;
+          //printf("%6.4f %6.4f \n",rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
+          
+          xa[3] = rs.rLeg.halfA.motorAngle + PI/2;
 	  xa[4] = rs.rLeg.halfB.motorAngle + PI/2;
 	  xa[5] = rs.position.bodyPitchVelocity;
 	  xa[6] = rs.lLeg.halfA.motorVelocity;
@@ -461,7 +463,7 @@ namespace atrias {
       else 
 	{ //sleg = RIGHT_LEG
 	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
-	  xa[1] = rs.rLeg.halfA.motorAngle + PI/2;
+	  xa[1] = rs.rLeg.halfA.motorAngle + PI/2;          
 	  xa[2] = rs.rLeg.halfB.motorAngle + PI/2;
 	  xa[3] = rs.lLeg.halfA.motorAngle + PI/2;
 	  xa[4] = rs.lLeg.halfB.motorAngle + PI/2;
