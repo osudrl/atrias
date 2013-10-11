@@ -159,14 +159,14 @@ namespace atrias {
 	  timer  = 0; 
 	}
       */
-      tau_d = tau + 0.2;
+      tau_d = tau;
       
       if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
       //printf("%f, %f", tau,tau_d);
       // compute desired outputs
-      compute_y2d(tau);
-      compute_y2dDot(tau, dtau);
+      compute_y2d(tau_d);
+      compute_y2dDot(tau_d, dtau);
       
       // compute desired motor angles through inverse kinematics
       phi_inverse_mat();
