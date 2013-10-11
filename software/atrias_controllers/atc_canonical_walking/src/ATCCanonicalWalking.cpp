@@ -164,7 +164,7 @@ namespace atrias {
       
       if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
-      printf("%f", tau);
+      printf("tau: %f, dtau: %f", tau, dtau);
       // compute desired outputs
       compute_y2d(tau_d);
       compute_y2dDot(tau_d, dtau);
@@ -405,8 +405,8 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				//dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
-				dtau = 0.0;
+				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+				//dtau = 0.0;
 				return dtau;
 			}
 
@@ -498,7 +498,7 @@ namespace atrias {
       if (sleg == LEFT_LEG) 
 	{
 	  qTgt[0] = xd[1] - PI/2;   // lLeg.halfA.motorAngle
-          printf("Left Leg Angle: %f\n",qTgt[0]);
+          //          printf("Left Leg Angle: %f\n",qTgt[0]);
 	  qTgt[1] = xd[2] - PI/2;   // lLeg.halfB.motorAngle
 	  qTgt[2] = xd[3] - PI/2;   // rLeg.halfA.motorAngle
 	  qTgt[3] = xd[4] - PI/2;   // rLeg.halfB.motorAngle
