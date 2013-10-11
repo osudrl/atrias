@@ -105,6 +105,7 @@ void BoomMedulla::processPitchEncoder(RTT::os::TimeService::nsecs deltaTime, atr
 	
 	pitchEncoderValue = *pitchEncoder;
 	pitchTimestampValue = *pitchTimestamp;
+	robotState.position.pitchEncoderRaw = pitchEncoderValue;
 }
 
 void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state&   robotState) {
