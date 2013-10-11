@@ -70,6 +70,7 @@ namespace atrias {
 	  //        For initial tracking test, we will only test one step. 
 	  //        Therefore, we don't need to update stance leg for 
 	  //        initial test. This can be added later.
+          
 	  break;
 	case STOPPING:
 	  // Call Stopping controller
@@ -190,7 +191,16 @@ namespace atrias {
 
       // @TODO: add guiOut
 
-      
+      if ( (TauSource) guiIn.tauMode == TauSource::STANCE_LEG_ANGLE) 
+      {
+        if (tau_d > 0.98)
+        {
+          if (sleg == LEFT_LEG )
+            sleg = RIGHT_LEG;
+          else
+            sleg = LEFT_LEG;
+        }
+      }
     }
 
 	void ATCCanonicalWalking::clampTorques() {
