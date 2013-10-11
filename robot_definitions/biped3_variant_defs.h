@@ -14,9 +14,8 @@
 
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
-  * Not set yet.
   */
-#define BOOM_PITCH_VERTICAL_VALUE 	300497
+#define BOOM_PITCH_VERTICAL_VALUE 	45502 //TODO: Calibrate this fully (requires unlocked boom or digital level).
 
 
 /** @brief Boom height
