@@ -163,7 +163,7 @@ namespace atrias {
       
       if(tau_d >  1.0)	   tau_d =  1.0;
       if(tau_d < -0.001)   tau_d = -0.001;
-      //printf("%f, %f", tau,tau_d);
+      printf("%f", tau);
       // compute desired outputs
       compute_y2d(tau_d);
       compute_y2dDot(tau_d, dtau);
@@ -358,7 +358,10 @@ namespace atrias {
 				// Reset tau rate limiter if we're just initializing
 				if (isInitialized)
 					rateLimTau.reset(guiIn.manualTau);
-
+                                double th, tau;
+				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
+				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+                                printf("Actual Tau: %6.4f \n", tau);
 				return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
 
 			case TauSource::STANCE_LEG_ANGLE: {
@@ -447,31 +450,31 @@ namespace atrias {
       if (sleg == LEFT_LEG) 
 	{
 	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
-	  xa[1] = rs.lLeg.halfA.motorAngle + PI/2;
+	  xa[1] = rs.lLeg.halfA.legAngle + PI/2;
           
-	  xa[2] = rs.lLeg.halfB.motorAngle + PI/2;
+	  xa[2] = rs.lLeg.halfB.legAngle + PI/2;
           //printf("%6.4f %6.4f \n",rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
           
-          xa[3] = rs.rLeg.halfA.motorAngle + PI/2;
-	  xa[4] = rs.rLeg.halfB.motorAngle + PI/2;
+          xa[3] = rs.rLeg.halfA.legAngle + PI/2;
+	  xa[4] = rs.rLeg.halfB.legAngle + PI/2;
 	  xa[5] = rs.position.bodyPitchVelocity;
-	  xa[6] = rs.lLeg.halfA.motorVelocity;
-	  xa[7] = rs.lLeg.halfB.motorVelocity;
-	  xa[8] = rs.rLeg.halfA.motorVelocity;
-	  xa[9] = rs.rLeg.halfB.motorVelocity;
+	  xa[6] = rs.lLeg.halfA.legVelocity;
+	  xa[7] = rs.lLeg.halfB.legVelocity;
+	  xa[8] = rs.rLeg.halfA.legVelocity;
+	  xa[9] = rs.rLeg.halfB.legVelocity;
 	} 
       else 
 	{ //sleg = RIGHT_LEG
 	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
-	  xa[1] = rs.rLeg.halfA.motorAngle + PI/2;          
-	  xa[2] = rs.rLeg.halfB.motorAngle + PI/2;
-	  xa[3] = rs.lLeg.halfA.motorAngle + PI/2;
-	  xa[4] = rs.lLeg.halfB.motorAngle + PI/2;
+	  xa[1] = rs.rLeg.halfA.legAngle + PI/2;          
+	  xa[2] = rs.rLeg.halfB.legAngle + PI/2;
+	  xa[3] = rs.lLeg.halfA.legAngle + PI/2;
+	  xa[4] = rs.lLeg.halfB.legAngle + PI/2;
 	  xa[5] = rs.position.bodyPitchVelocity;
-	  xa[6] = rs.rLeg.halfA.motorVelocity;
-	  xa[7] = rs.rLeg.halfB.motorVelocity;
-	  xa[8] = rs.lLeg.halfA.motorVelocity;
-	  xa[9] = rs.lLeg.halfB.motorVelocity;
+	  xa[6] = rs.rLeg.halfA.legVelocity;
+	  xa[7] = rs.rLeg.halfB.legVelocity;
+	  xa[8] = rs.lLeg.halfA.legVelocity;
+	  xa[9] = rs.lLeg.halfB.legVelocity;
 	}
       // 
     }
@@ -485,6 +488,7 @@ namespace atrias {
       if (sleg == LEFT_LEG) 
 	{
 	  qTgt[0] = xd[1] - PI/2;   // lLeg.halfA.motorAngle
+          printf("Left Leg Angle: %f\n",qTgt[0]);
 	  qTgt[1] = xd[2] - PI/2;   // lLeg.halfB.motorAngle
 	  qTgt[2] = xd[3] - PI/2;   // rLeg.halfA.motorAngle
 	  qTgt[3] = xd[4] - PI/2;   // rLeg.halfB.motorAngle
