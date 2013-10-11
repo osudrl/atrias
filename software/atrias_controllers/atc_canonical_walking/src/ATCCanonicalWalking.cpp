@@ -303,12 +303,12 @@ namespace atrias {
 	{
 	  for(j=0; j<N_PARAMS; j++ )
 	    {
-	      param_mat[i][j] = a_opt[i][j];
+	      param_mat[i][j] = A_OPT[i][j];
 	    }
 	}
 
-      theta_limit1	= 1.30430989646253;
-      theta_limit2	= 1.73967278131273;
+      theta_limit1	= P_LIMITS[0];
+      theta_limit2	= P_LIMITS[1];
     }
     
     /**
@@ -322,7 +322,7 @@ namespace atrias {
 
       // This is assuming starting from right leg stance.
       for(int i=0; i<N_MOTORS; i++)
-	pos_initial[i] = x_opt[i];
+	pos_initial[i] = X_OPT[i];
       
     }
     
