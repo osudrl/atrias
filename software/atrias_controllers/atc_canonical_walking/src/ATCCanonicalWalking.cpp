@@ -131,6 +131,9 @@ namespace atrias {
 
       // compute 'tau', 'dtau'
       tau = compute_tau();
+      
+      // DEBUG STATEMENT REMOVE!!!
+      printf("%f \n", tau);
       dtau = compute_dtau();
       // @TODO: time-based trajectory
       // tau = (rs.timing.controllerTime-initial_controllerTime) % PERIOD;
@@ -162,8 +165,8 @@ namespace atrias {
       if(tau_d < -0.001)   tau_d = -0.001;
 
       // compute desired outputs
-      compute_y2d(tau);
-      compute_y2dDot(tau, dtau);
+      compute_y2d(tau_d);
+      compute_y2dDot(tau_d, dtau);
       
       // compute desired motor angles through inverse kinematics
       phi_inverse_mat();
@@ -390,7 +393,8 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+				//dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+				dtau = 0.0;
 				return dtau;
 			}
 

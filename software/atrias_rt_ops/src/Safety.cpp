@@ -52,6 +52,10 @@ bool Safety::shouldEStop(atrias_msgs::controller_output &co) {
 		return false;
 	}
 
+    // Temporary safety -- if halt mode engages, immediately trigger the estop.
+    // The amplifiers may be backwards, so letting halt mode engage isn't safe.
+	return true;
+
 	// Detect the transition into halt state, so we can initialize the motor rate limits
 	if (!isHalting) {
 		// Re-initialize the acceptable halt velocity intervals

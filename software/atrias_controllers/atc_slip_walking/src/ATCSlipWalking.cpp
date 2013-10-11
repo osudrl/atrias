@@ -146,6 +146,12 @@ void ATCSlipWalking::controller() {
             updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
             break;
     }
+
+    // Current limiters for debug
+    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -10, 10);
+    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -10, 10);
+    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -10, 10);
+    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -10, 10);
 }
 
 /**
