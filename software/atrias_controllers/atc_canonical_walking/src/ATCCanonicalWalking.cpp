@@ -161,10 +161,10 @@ namespace atrias {
 	}
       */
       tau_d = tau;
-      
-      if(tau_d >  1.0)	   tau_d =  1.0;
-      if(tau_d < -0.001)   tau_d = -0.001;
-      printf("tau: %f, dtau: %f", tau, dtau);
+      //Define a proper boundary conditions.
+      if(tau_d >  1.1)	   tau_d =  1.1;
+      if(tau_d < -0.1)   tau_d = -0.1;
+      //printf("tau: %f, dtau: %f", tau, dtau);
       // compute desired outputs
       compute_y2d(tau_d);
       compute_y2dDot(tau_d, dtau);
@@ -193,12 +193,36 @@ namespace atrias {
 
       if ( (TauSource) guiIn.tauMode == TauSource::STANCE_LEG_ANGLE) 
       {
+        /*
         if (tau_d > 0.98)
         {
           if (sleg == LEFT_LEG )
             sleg = RIGHT_LEG;
           else
             sleg = LEFT_LEG;
+        }
+        */
+        if (sleg == LEFT_LEG)
+        {
+          double len_m, len_l;
+          //compute right leg length from leg angle and motor angle
+          len_m = sqrt(0.5*(1-cos(PI-(rs.rLeg.halfB.motorAngle-rs.rLeg.halfA.motorAngle))));
+          len_l = sqrt(0.5*(1-cos(PI-(rs.rLeg.halfB.legAngle-rs.rLeg.halfA.legAngle))));
+          if ((len_m - len_l) > 0.01)
+          {
+            sleg = RIGHT_LEG;
+          }
+        }
+        else
+        {
+          double len_m, len_l;
+          //compute right leg length from leg angle and motor angle
+          len_m = sqrt(0.5*(1-cos(PI-(rs.lLeg.halfB.motorAngle-rs.lLeg.halfA.motorAngle))));
+          len_l = sqrt(0.5*(1-cos(PI-(rs.lLeg.halfB.legAngle-rs.lLeg.halfA.legAngle))));
+          if ((len_m - len_l) > 0.01)
+          {
+            sleg = LEFT_LEG;
+          }
         }
       }
     }
