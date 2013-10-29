@@ -8,7 +8,7 @@ UART_USES_PORT(USARTE0)
 
 int main(void) {
 	cpu_set_clock_source(cpu_32mhz_clock);
-	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
+	cpu_configure_interrupt_level(cpu_interrupt_level_low, true);
 
 	uint8_t outbuffer[128];
 	uint8_t inbuffer[128];
