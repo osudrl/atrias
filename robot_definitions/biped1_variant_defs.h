@@ -14,28 +14,51 @@
 
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
-  * Not set yet.
   */
 #define BOOM_PITCH_VERTICAL_VALUE  128863
 
-/** @brief The length of the boom. For Z calculations.
-  * This is measured from the center of rotation to the center of the hip's
-  * rotation on the body.
-  * Measured via measuring tape.
+/** @brief Boom height
+  * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
+  * Measured with a measuring tape. [m]
+  */
+#define BOOM_HEIGHT                0.94265
+
+/** @brief Boom length.
+  * Distance from boom-base pivot Z-axis to intersection of robot torso XZ-center-plane and boom Y-axis centerline.
+  * Measured from SolidWorks model. [m]
   */
 #define BOOM_LENGTH                2.006
 
-/** @brief The vertical distance between the boom arm's centerline and the robot
-  * coordinate system's center (Z = 0) when the boom is level.
-  * Measured off the SolidWorks model.
+/** @brief Boom torso offset
+  * The angular offset between the boom Y-axis centerline and the torso XZ-centerplane.
+  * Measured from SolidWorks model. [rad]
   */
-#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434
+#define BOOM_TORSO_OFFSET          1.6968
 
-/** @brief The height of the center of rotation for the boom arm, relative to
-  * robot's "ground".
-  * Measured with a measuring tape.
+/** @brief Torso length.
+  * Distance from boom Y-axis intersection with robot body XZ-center-plane to hip pivot X-axis.
+  * Measured from SolidWorks model. [m]
   */
-#define BOOM_HEIGHT                0.94265
+#define TORSO_LENGTH               0.3434
+#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434 // REMOVE when dependencies are gone
+
+/** @brief Hip length
+  * Distance from the torso-hip X-axis pivot and the XZ-centerplane of the leg assembly.
+  * Measured from SolidWorks model. [m]
+  */
+#define HIP_LENGTH                 0.18
+
+/** @brief Proximal leg length
+  * Length of the proximal leg segment.
+  * Measured from robot. [m]
+  */
+#define PROXIMAL_LEG_LENGTH        0.5112
+
+/** @brief Distal leg length
+  * Length of the distal leg segment.
+  * Measured from  robot. [m]
+  */
+#define DISTAL_LEG_LENGTH          0.508
 
 /** @brief The meters of boom motion per encoder tick.
   * This is calculated from the boom's length, the number of encoder ticks per
@@ -47,38 +70,38 @@
  *
  * This should be calibrated before BOOM_Z_CALIB_LOC!
   */
-#define BOOM_Z_CALIB_VAL            93063
+#define BOOM_Z_CALIB_VAL           93063
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC            2.9549347555631867989845698899
+#define BOOM_Z_CALIB_LOC           2.9549347555631867989845698899
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
-#define LEFT_HIP_CALIB_VAL          4592
+#define LEFT_HIP_CALIB_VAL         4592
 
 /** @brief The encoder value of the right hip at calibration.
   */
-#define RIGHT_HIP_CALIB_VAL         1526
+#define RIGHT_HIP_CALIB_VAL        1526
 
 /** @brief The left hip's calibration position.
   */
-#define LEFT_HIP_CALIB_POS           4.5955
+#define LEFT_HIP_CALIB_POS         4.5955
 
 /** @brief The right hip's calibration position.
   */
-#define RIGHT_HIP_CALIB_POS          4.8538
+#define RIGHT_HIP_CALIB_POS        4.8538
 
 /** @brief Maximum motor torque for scaling
   */
-#define MTR_MAX_CURRENT                                                     60.0
-#define MTR_HIP_MAX_CURRENT                                                 60.0
+#define MTR_MAX_CURRENT            60.0
+#define MTR_HIP_MAX_CURRENT        60.0
 
 /** @brief Main motor torque limits. These are not used for scaling, just as limits.
   */
-#define MAX_MTR_CURRENT_CMD                                                 60.0
-#define MIN_MTR_CURRENT_CMD                                                -60.0
-#define MAX_HIP_MTR_CURRENT_CMD                                             60.0
-#define MIN_HIP_MTR_CURRENT_CMD                                            -60.0
+#define MAX_MTR_CURRENT_CMD        60.0
+#define MIN_MTR_CURRENT_CMD        -60.0
+#define MAX_HIP_MTR_CURRENT_CMD    60.0
+#define MIN_HIP_MTR_CURRENT_CMD    -60.0
 
 #endif // ROBOT_VARIANT_DEFS_H
