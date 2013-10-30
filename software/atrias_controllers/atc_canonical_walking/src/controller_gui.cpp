@@ -32,7 +32,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kp_spinbutton->set_range(0.0, 500.0);
 	hip_pos_kd_spinbutton->set_range(0.0, 50.0);
 	left_toe_pos_spinbutton->set_range(2.1, 2.5);
-	right_toe_pos_spinbutton->set_range(2.1, 2.5);
+	right_toe_pos_spinbutton->set_range(2.4, 2.6);
 	tau_hscale->set_range(0.0, 1.0);
 	cur_limit_spinbutton->set_range(0.0, std::max(-1*MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD));
 	vel_limit_spinbutton->set_range(0.0, 8.0);
@@ -53,17 +53,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	tau_limit_spinbutton->set_increments(0.01, 0.0);
 
 	// Set values
-	leg_pos_kp_spinbutton->set_value(2000.0);
-	leg_pos_kd_spinbutton->set_value(20.0);
+	leg_pos_kp_spinbutton->set_value(600.0);
+	leg_pos_kd_spinbutton->set_value(50.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	left_toe_pos_spinbutton->set_value(2.20);
-	right_toe_pos_spinbutton->set_value(2.45);
+	right_toe_pos_spinbutton->set_value(2.50);
 	tau_control_checkbutton->set_active(false);
-	tau_hscale->set_value(1.0);
-	cur_limit_spinbutton->set_value(7.0);
-	vel_limit_spinbutton->set_value(1.0);
-	defl_limit_spinbutton->set_value(.03);
+	tau_hscale->set_value(0.0);
+	cur_limit_spinbutton->set_value(15.0);
+	vel_limit_spinbutton->set_value(6.0);
+	defl_limit_spinbutton->set_value(.15);
 	tau_limit_spinbutton->set_value(.1);
 
 	// Set up subscriber and publisher.
