@@ -8,6 +8,9 @@ robot_state_legHalf halfB
 # Unitless -- should be processed
 uint16  toeSwitch
 
+# Processed toe switch value
+bool    onGround
+
 # Limit switches
 bool    legRetractSwitch
 bool    motorRetractSwitch

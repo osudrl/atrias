@@ -47,6 +47,7 @@ void LegMedulla::postOpInit() {
 	incrementalEncoderValue          =           *incrementalEncoder;
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
+	zeroToeSensor                    =           *toeSensor;
 	updatePositionOffsets();
 }
 
@@ -189,6 +190,7 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 			robot_state.lLeg.halfB.medullaState = *state;
 			robot_state.lLeg.halfB.errorFlags   = *errorFlags;
 			robot_state.lLeg.toeSwitch          = *toeSensor;
+			robot_state.lLeg.onGround           = toeDetect();
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			robot_state.rLeg.halfA.medullaState = *state;
@@ -198,6 +200,7 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 			robot_state.rLeg.halfB.medullaState = *state;
 			robot_state.rLeg.halfB.errorFlags   = *errorFlags;
 			robot_state.rLeg.toeSwitch          = *toeSensor;
+			robot_state.rLeg.onGround           = toeDetect();
 			break;
 	}
 }
@@ -514,6 +517,11 @@ void LegMedulla::processTransmitData(atrias_msgs::controller_output& controller_
 
 uint8_t LegMedulla::getID() {
 	return *id;
+}
+
+bool LegMedulla::toeDetect() {
+	// Simple thresholding
+	return ((int16_t) *toeSensor) - zeroToeSensor > TOE_THRESH; 
 }
 
 }
