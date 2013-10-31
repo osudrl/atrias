@@ -5,11 +5,12 @@
   <object class="GtkWindow" id="status_window">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Robot Status</property>
+    <property name="type_hint">menu</property>
     <child>
       <object class="GtkTable" id="table_status">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_rows">8</property>
+        <property name="n_rows">9</property>
         <child>
           <object class="GtkExpander" id="boomExpander">
             <property name="visible">True</property>
@@ -24,7 +25,6 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="boomPosLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Position:</property>
@@ -36,7 +36,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="boomAzLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -49,7 +48,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="boomElLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -62,7 +60,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="boomVelLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Velocity:</property>
@@ -240,7 +237,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="torsoPosLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Position:</property>
@@ -252,7 +248,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="torsoZLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -265,7 +260,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="torsoYLabe">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -278,7 +272,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="torsoXLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -291,7 +284,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="torsoVelLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Velocity:</property>
@@ -444,7 +436,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="legLengthLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -457,7 +448,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="legAngleLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -470,7 +460,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="hipAngleLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -483,7 +472,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="leftLegLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -495,7 +483,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightLegLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -581,7 +568,6 @@
           <object class="GtkExpander" id="medullaExpander">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="expanded">True</property>
             <child>
               <object class="GtkTable" id="medullaTable">
                 <property name="visible">True</property>
@@ -645,7 +631,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="legAMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -658,7 +643,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="legBMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -671,7 +655,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="hipMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -684,7 +667,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="boomMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -715,7 +697,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="leftMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -727,7 +708,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightMedullaLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -823,7 +803,6 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="leftSpringLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -835,7 +814,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="springALabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -848,7 +826,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="springBLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -861,7 +838,6 @@
                 </child>
                 <child>
                   <object class="GtkEntry" id="spring_deflection_left_A_entry">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
@@ -880,7 +856,6 @@
                 </child>
                 <child>
                   <object class="GtkEntry" id="spring_deflection_left_B_entry">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
@@ -899,7 +874,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightSpringLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -911,7 +885,6 @@
                 </child>
                 <child>
                   <object class="GtkEntry" id="spring_deflection_right_A_entry">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
@@ -930,7 +903,6 @@
                 </child>
                 <child>
                   <object class="GtkEntry" id="spring_deflection_right_B_entry">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">•</property>
@@ -974,12 +946,11 @@
               <object class="GtkTable" id="motorTable">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="n_rows">4</property>
+                <property name="n_rows">7</property>
                 <property name="n_columns">5</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkEntry" id="torqueLeftADisplay">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
@@ -992,14 +963,13 @@
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
+                    <property name="right_attach">3</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="torqueLeftBDisplay">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
@@ -1012,34 +982,32 @@
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="torqueLeftHipDisplay">
-                    <property name="width_request">40</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="editable">False</property>
-                    <property name="invisible_char">•</property>
-                    <property name="invisible_char_set">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
+                    <property name="right_attach">3</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkEntry" id="torqueLeftHipDisplay">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="invisible_char">•</property>
+                    <property name="invisible_char_set">True</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkEntry" id="torqueRightADisplay">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1051,14 +1019,13 @@
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
-                    <property name="right_attach">4</property>
+                    <property name="right_attach">5</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="torqueRightBDisplay">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1070,14 +1037,13 @@
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
-                    <property name="right_attach">4</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
+                    <property name="right_attach">5</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkEntry" id="torqueRightHipDisplay">
-                    <property name="width_request">40</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
@@ -1089,86 +1055,13 @@
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
-                    <property name="right_attach">4</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueLeftA_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueLeftB_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueLeftHip_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueRightA_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">4</property>
                     <property name="right_attach">5</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueRightB_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">4</property>
-                    <property name="right_attach">5</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkProgressBar" id="motor_torqueRightHip_progress_bar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">4</property>
-                    <property name="right_attach">5</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="motorACurrentLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1181,24 +1074,10 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="motorBCurrentLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
                     <property name="label" translatable="yes">B Current:</property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="hipCurrentLabel">
-                    <property name="width_request">20</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xalign">1</property>
-                    <property name="label" translatable="yes">Hip Current:</property>
                   </object>
                   <packing>
                     <property name="top_attach">3</property>
@@ -1206,8 +1085,19 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="hipCurrentLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xalign">1</property>
+                    <property name="label" translatable="yes">Hip Current:</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="leftMotorLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -1219,7 +1109,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightMotorLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -1228,6 +1117,87 @@
                     <property name="left_attach">3</property>
                     <property name="right_attach">5</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueLeftA_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueLeftB_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueLeftHip_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueRightA_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">5</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueRightB_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">5</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="motor_torqueRightHip_progress_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">5</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
                 <child>
                   <placeholder/>
@@ -1251,7 +1221,6 @@
           <object class="GtkExpander" id="voltageExpander">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="expanded">True</property>
             <child>
               <object class="GtkTable" id="voltageTable">
                 <property name="visible">True</property>
@@ -1261,7 +1230,6 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="leftVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -1313,7 +1281,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="logicAVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1326,7 +1293,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="motorAVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1339,7 +1305,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -1391,7 +1356,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="logicBVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1444,7 +1408,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="motorBVoltageLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1527,7 +1490,6 @@
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel" id="leftToeLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Left:</property>
@@ -1539,7 +1501,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="rightToeLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Right:</property>
@@ -1551,7 +1512,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="toeContactLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1564,7 +1524,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="toePhaseLabel">
-                    <property name="width_request">20</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">1</property>
@@ -1644,6 +1603,9 @@
             <property name="top_attach">5</property>
             <property name="bottom_attach">6</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>
