@@ -162,8 +162,8 @@ namespace atrias {
       */
       tau_d = tau;
       //Define a proper boundary conditions.
-      if(tau_d >  1.1)	   tau_d =  1.1;
-      if(tau_d < -0.1)   tau_d = -0.1;
+      if(tau_d >  1.0)	   tau_d =  1.00;
+      if(tau_d < -0.001)   tau_d = -0.001;
       //printf("tau: %f, dtau: %f", tau, dtau);
       // compute desired outputs
       compute_y2d(tau_d);
@@ -193,7 +193,7 @@ namespace atrias {
 
       if ( (TauSource) guiIn.tauMode == TauSource::STANCE_LEG_ANGLE) 
       {
-        /*
+        
         if (tau_d > 0.98)
         {
           if (sleg == LEFT_LEG )
@@ -201,7 +201,7 @@ namespace atrias {
           else
             sleg = LEFT_LEG;
         }
-        */
+        /*
         if (sleg == LEFT_LEG)
         {
           double len_m, len_l;
@@ -224,6 +224,7 @@ namespace atrias {
             sleg = LEFT_LEG;
           }
         }
+        */
       }
     }
 
