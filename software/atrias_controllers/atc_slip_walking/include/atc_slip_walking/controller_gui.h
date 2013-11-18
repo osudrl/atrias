@@ -25,29 +25,23 @@ atc_slip_walking::controller_status controllerDataIn;
 Gtk::ComboBox *main_controller_combobox,
     *switch_method_combobox;
     
-Gtk::SpinButton *atrias_spring_spinbutton,
-    *slip_leg_spinbutton,
+Gtk::SpinButton *swing_leg_retraction_spinbutton,
+	*stance_leg_extension_spinbutton,
     *stance_leg_target_spinbutton,
     *flight_leg_target_spinbutton,
-    *swing_leg_retraction_spinbutton,
-    *pushoff_force_spinbutton,
-    *force_threshold_td_spinbutton,
-    *force_threshold_to_spinbutton,
-    *position_threshold_td_spinbutton,
+    *slip_leg_spinbutton,
+    *torso_angle_spinbutton,
     *leg_pos_kp_spinbutton,
+    *leg_pos_kd_spinbutton,
     *leg_for_kp_spinbutton,
     *leg_for_ki_spinbutton,
-    *leg_pos_kd_spinbutton,
     *leg_for_kd_spinbutton,
     *hip_pos_kp_spinbutton,
-    *left_toe_pos_spinbutton,
     *hip_pos_kd_spinbutton,
+    *left_toe_pos_spinbutton,
     *right_toe_pos_spinbutton,
     *walking_state_spinbutton,
-    *left_position_spinbutton,
-    *right_position_spinbutton,
-    *left_force_spinbutton,
-    *right_force_spinbutton;
+    *current_limit_spinbutton;
 
 Gtk::Button *flight_to_button,
     *flight_td_button;

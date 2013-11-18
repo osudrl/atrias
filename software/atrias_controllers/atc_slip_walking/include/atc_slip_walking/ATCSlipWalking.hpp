@@ -88,16 +88,17 @@ class ATCSlipWalking : public ATC<
         /**
          * @brief These are all the variables used by the top level controller.
          */
-        // State machines
-        int controllerState, walkingState;
+        // Controller state variables
+        int controllerState, walkingState, switchMethod;
         
         // Walking gait definition values
-        double r0, k, dk; // Spring parameters
+        double r0, fa, dfa; // Spring parameters
         double swingLegRetraction; // The amount the leg retracts during swing
-        double pushoffForce; // Horizontal force applied during single support
+        double stanceLegExtension; // The amount the leg extends during stance to inject energy
+        double torsoAngle; // Torso angle offset
         
-        // Hip parameters
-        double qLh, qRh; // Hip angles
+        // Hip state variables
+        double qLh, qRh; // Hip angles 
         LeftRight toePosition; // Desired toe positions measures from boom center axis
 
         // Motor and leg variables
@@ -118,19 +119,18 @@ class ATCSlipWalking : public ATC<
         double rtFl, drtFl, qtFl, dqtFl; // Flight leg target states
         double r0Sl;
 
-        // Temp leg parameters
+        // Temporary leg parameters
         double ql, dql, rl, drl;
 
         // Debug events
-        bool isManualFlightLegTO, isManualFlightLegTD;
+        bool isManualSwingLegTO, isManualSwingLegTD;
 
         // State transistion events
-        bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+        bool isForwardStep; // Logical preventing backstepping issues
+        double gaitParameter; // Time invariant measure of gait progress
 
         // Misc margins, ratelimiters and other kludge values
-        double forceThresholdTO, forceThresholdTD, positionThresholdTD;
-        double legRateLimit, hipRateLimit, springRateLimit;
-        double forceTD, forceTO, positionTD;
+        double currentLimit, legRateLimit, hipRateLimit, springRateLimit;
 };
 
 }
