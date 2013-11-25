@@ -17,7 +17,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("switch_method_combobox", switch_method_combobox);
     
     // Gait options
-	gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
+    gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.15);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
     swing_leg_retraction_spinbutton->set_value(0.10);
@@ -33,6 +33,10 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     flight_leg_target_spinbutton->set_range(M_PI/2.0 - 0.40, M_PI/2.0);
     flight_leg_target_spinbutton->set_increments(0.01, 0.0);
     flight_leg_target_spinbutton->set_value(1.33);
+    gui->get_widget("slip_leg_spinbutton", slip_leg_spinbutton);
+    slip_leg_spinbutton->set_range(0.65, 0.95);
+    slip_leg_spinbutton->set_increments(0.01, 0.0);
+    slip_leg_spinbutton->set_value(0.9);
     gui->get_widget("torso_angle_spinbutton", torso_angle_spinbutton);
     torso_angle_spinbutton->set_range(M_PI, 2.0*M_PI);
     torso_angle_spinbutton->set_increments(0.01, 0.0);
@@ -59,7 +63,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     leg_for_kd_spinbutton->set_range(0.0, 50.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
-    leg_for_kd_spinbutton->set_value(1.0);
+    leg_for_kd_spinbutton->set_value(10.0);
 
     // Hip gains
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
@@ -93,7 +97,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("current_limit_spinbutton", current_limit_spinbutton);
     current_limit_spinbutton->set_range(0, 60);
     current_limit_spinbutton->set_increments(1, 0);
-    current_limit_spinbutton->set_value(10);
+    current_limit_spinbutton->set_value(7);
 
     // Set up subscriber and publisher.
     sub = nh.subscribe("ATCSlipWalking_status", 0, controllerCallback);
@@ -199,7 +203,7 @@ void guiUpdate() {
     controllerDataOut.main_controller = (uint8_t)main_controller_combobox->get_active_row_number();
     // TODO if not enabled switch back to standing controller.
     controllerDataOut.switch_method = (uint8_t)switch_method_combobox->get_active_row_number();
-    
+
     // Gait options
     controllerDataOut.swing_leg_retraction = swing_leg_retraction_spinbutton->get_value();
     controllerDataOut.stance_leg_extension = stance_leg_extension_spinbutton->get_value();

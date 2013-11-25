@@ -26,7 +26,7 @@ Gtk::ComboBox *main_controller_combobox,
     *switch_method_combobox;
     
 Gtk::SpinButton *swing_leg_retraction_spinbutton,
-	*stance_leg_extension_spinbutton,
+    *stance_leg_extension_spinbutton,
     *stance_leg_target_spinbutton,
     *flight_leg_target_spinbutton,
     *slip_leg_spinbutton,

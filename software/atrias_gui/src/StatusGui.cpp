@@ -185,9 +185,9 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     motor_torqueRightHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentHip), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
     
     // Toes
-    sprintf(buffer, "%0.4u", rtCycle.robotState.lLeg.toeSwitch);
+    sprintf(buffer, "%0.4u", rtCycle.robotState.lLeg.onGround);
     leftToeDisplay->set_text(buffer);
-    sprintf(buffer, "%0.4u", rtCycle.robotState.rLeg.toeSwitch);
+    sprintf(buffer, "%0.4u", rtCycle.robotState.rLeg.onGround);
     rightToeDisplay->set_text(buffer);
 
     // Medullas
