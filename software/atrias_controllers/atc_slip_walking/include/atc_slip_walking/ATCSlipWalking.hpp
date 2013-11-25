@@ -90,13 +90,13 @@ class ATCSlipWalking : public ATC<
          */
         // Controller state variables
         int controllerState, walkingState, switchMethod;
-        
+
         // Walking gait definition values
         double r0, fa, dfa; // Spring parameters
         double swingLegRetraction; // The amount the leg retracts during swing
         double stanceLegExtension; // The amount the leg extends during stance to inject energy
         double torsoAngle; // Torso angle offset
-        
+
         // Hip state variables
         double qLh, qRh; // Hip angles 
         LeftRight toePosition; // Desired toe positions measures from boom center axis
@@ -126,7 +126,7 @@ class ATCSlipWalking : public ATC<
         bool isManualSwingLegTO, isManualSwingLegTD;
 
         // State transistion events
-        bool isForwardStep; // Logical preventing backstepping issues
+        bool isForwardStep, isTrigger; // Logical preventing backstepping issues
         double gaitParameter; // Time invariant measure of gait progress
 
         // Misc margins, ratelimiters and other kludge values
