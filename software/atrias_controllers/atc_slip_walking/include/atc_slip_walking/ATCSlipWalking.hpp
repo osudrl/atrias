@@ -130,7 +130,7 @@ class ATCSlipWalking : public ATC<
         double gaitParameter; // Time invariant measure of gait progress
 
         // Misc margins, ratelimiters and other kludge values
-        double currentLimit, legRateLimit, hipRateLimit, springRateLimit;
+        double currentLimit, legRateLimit, hipRateLimit, springRateLimit, rExtension;
 };
 
 }

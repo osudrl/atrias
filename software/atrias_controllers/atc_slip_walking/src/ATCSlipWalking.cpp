@@ -262,11 +262,11 @@ void ATCSlipWalking::shutdownController() {
  * about the hip. Can be used with mechanical motor lock device.
  */
 void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSr0) {
-    // TODO Heuristic energy injection by extending stance leg during second half of stance
-    //r0 = r0 + s*ds;
+    // Heuristic energy injection by extending leg mid way through stance.
+    rExtension = 0.0; // TODO
 
     // Rate limit change in spring rest length from current to desired
-    r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
+    r0Sl = ascRateLimitSr0->operator()(r0 + rExtension, springRateLimit);
 
     // Compute current leg angle and length
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -296,8 +296,11 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
  * forces that are based on leg deflection.
  */
 void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
+    // Heuristic energy injection by extending leg mid way through stance.
+    rExtension = 0.0; // TODO abs(gaitParameter - 0.5) * extension
+
     // Rate limit change in spring rest length from current to desired
-    r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
+    r0Sl = ascRateLimitSr0->operator()(r0 + rExtension, springRateLimit);
 
     // Compute current leg angle and length
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
