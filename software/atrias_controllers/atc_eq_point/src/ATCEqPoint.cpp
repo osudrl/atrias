@@ -20,7 +20,8 @@ ATCEqPoint::ATCEqPoint(string name) :
     pd2Controller(this, "pd2Controller"),
     pd3Controller(this, "pd3Controller"),
     pd4Controller(this, "pd4Controller"),
-    pd5Controller(this, "pd5Controller")
+    pd5Controller(this, "pd5Controller"),
+    pdTorsoController(this, "pdTorsoController")
 {
     // Initial PD controller gains
     legP = 600;
@@ -105,7 +106,7 @@ void ATCEqPoint::controller() {
     MotorAngle rightMotorAngle;
     std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.aea, guiIn.lst);
 
-    // Hip control.
+    // Hip control
     LeftRight hipTgts;
     LeftRight toePosition;
     toePosition.left  = guiIn.lhip_pos;
@@ -114,7 +115,7 @@ void ATCEqPoint::controller() {
     co.lLeg.motorCurrentHip = pd2Controller(hipTgts.left,  rs.lLeg.hip.legBodyAngle, 0, rs.lLeg.hip.legBodyVelocity);
     co.rLeg.motorCurrentHip = pd5Controller(hipTgts.right, rs.rLeg.hip.legBodyAngle, 0, rs.rLeg.hip.legBodyVelocity);
 
-    // Smoothly initialize and set state to 2.
+    // Smoothly initialize and set state to 2
     if (state == 0) {
         // Desired leg motor positions
         desiredLAState.ang = leftMotorAngle.A;
@@ -132,7 +133,7 @@ void ATCEqPoint::controller() {
         co.rLeg.motorCurrentA = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
         co.rLeg.motorCurrentB = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
 
-        // Change state if startup is no longer occurring.
+        // Change state if startup is no longer occurring
         if (!isStarting()) {
             //printf("Startup is finished\n");
             state = 2;
@@ -215,19 +216,30 @@ void ATCEqPoint::controller() {
             pd3Controller.P = guiIn.pst;
             pd4Controller.D = guiIn.dst;
             pd4Controller.P = guiIn.pst;
+            // Stance leg control
             if ((rs.rLeg.halfB.motorAngle < phiBs_des_o) && !sw_stance)
-            {   // stance leg rotate to pea
+            {   // Rotate to pea
                 // asymmetry - extend right leg
                 std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_rLeg,guiIn.lst);
                 co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0.5,rs.rLeg.halfB.motorVelocity) + (1 - guiIn.tab) * guiIn.thip;
                 co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0.5,rs.rLeg.halfA.motorVelocity) - guiIn.tab * guiIn.thip;
             } else
-            {   // if pea was reached once
+            {   // If pea was reached once
                 sw_stance=true;
                 std::tie(rightMotorAngle.A, rightMotorAngle.B) = commonToolkit.legPos2MotorPos(guiIn.pea, guiIn.lst);
                 co.rLeg.motorCurrentB = pd4Controller(rightMotorAngle.B,rs.rLeg.halfB.motorAngle,0,rs.rLeg.halfB.motorVelocity);
                 co.rLeg.motorCurrentA = pd3Controller(rightMotorAngle.A,rs.rLeg.halfA.motorAngle,0,rs.rLeg.halfA.motorVelocity);
             }
+
+            // During stance, move the the torso to a desired angle (3*pi/2 == vertical)
+            torsoTorque = pdTorsoController(guiIn.desiredTorsoAngle,rs.position.bodyPitch,0,rs.position.bodyPitchVelocity);
+            // Distribute torque between the two motors
+            co.rLeg.motorCurrentA += (1 - guiIn.tab)*torsoTorque;
+            co.rLeg.motorCurrentB += guiIn.tab*torsoTorque;
+            // TODO: Add desired torso angle to gui
+            // TODO: Set pdTorsoController gains
+            // TODO: Do the same thing for case 1
+
 
             //*flight control left leg*
             if ((t < 1) && (!sw_flight))

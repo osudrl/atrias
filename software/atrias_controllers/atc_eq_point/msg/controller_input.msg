@@ -20,3 +20,4 @@ float64 aover
 float64 rco
 float64 thip
 float64 tab
+float64 desiredTorsoAngle
