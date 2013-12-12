@@ -43,6 +43,8 @@ ATCEqPoint::ATCEqPoint(string name) :
     pd3Controller.D = legD;
     pd4Controller.D = legD;
     pd5Controller.D = hipD;
+    pdTorsoController.P = legP;
+    pdTorsoController.D = legD;
 
     // Initialize state
     state = 0;
@@ -216,6 +218,8 @@ void ATCEqPoint::controller() {
             pd3Controller.P = guiIn.pst;
             pd4Controller.D = guiIn.dst;
             pd4Controller.P = guiIn.pst;
+            pdTorsoController.P = guiIn.pst;
+            pdTorsoController.D = guiIn.dst;
             // Stance leg control
             if ((rs.rLeg.halfB.motorAngle < phiBs_des_o) && !sw_stance)
             {   // Rotate to pea
@@ -234,11 +238,9 @@ void ATCEqPoint::controller() {
             // During stance, move the the torso to a desired angle (3*pi/2 == vertical)
             torsoTorque = pdTorsoController(guiIn.desiredTorsoAngle,rs.position.bodyPitch,0,rs.position.bodyPitchVelocity);
             // Distribute torque between the two motors
-            co.rLeg.motorCurrentA += (1 - guiIn.tab)*torsoTorque;
-            co.rLeg.motorCurrentB += guiIn.tab*torsoTorque;
+            co.rLeg.motorCurrentA += guiIn.tab*torsoTorque;
+            co.rLeg.motorCurrentB += (1 - guiIn.tab)*torsoTorque;
             // TODO: Add desired torso angle to gui
-            // TODO: Set pdTorsoController gains
-            // TODO: Do the same thing for case 1
 
 
             //*flight control left leg*
@@ -306,6 +308,8 @@ void ATCEqPoint::controller() {
             pd0Controller.P = guiIn.pst;
             pd1Controller.D = guiIn.dst;
             pd1Controller.P = guiIn.pst;
+            pdTorsoController.P = guiIn.pst;
+            pdTorsoController.D = guiIn.dst;
             if ((rs.lLeg.halfB.motorAngle < phiBs_des_i) && !sw_stance)
             { // stance leg rotate to pea
                 std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,guiIn.lst);
@@ -319,6 +323,12 @@ void ATCEqPoint::controller() {
                 co.lLeg.motorCurrentA = pd0Controller(leftMotorAngle.A,rs.lLeg.halfA.motorAngle,0,rs.lLeg.halfA.motorVelocity);
                 //logOut.currState = 4;
             }
+
+            // During stance, move the the torso to a desired angle (3*pi/2 == vertical)
+            torsoTorque = pdTorsoController(guiIn.desiredTorsoAngle,rs.position.bodyPitch,0,rs.position.bodyPitchVelocity);
+            // Distribute torque between the two motors
+            co.lLeg.motorCurrentA += guiIn.tab*torsoTorque;
+            co.lLeg.motorCurrentB += (1 - guiIn.tab)*torsoTorque;
 
             //******************************************************
             if ((t < 1) && (!sw_flight))
