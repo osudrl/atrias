@@ -26,11 +26,8 @@ ATCEqPoint::ATCEqPoint(string name) :
     // Initial PD controller gains
     legP = 600;
     legD = 15;
-    // TODO: Revert for physical robot testing
-    //hipP = 150;
-    //hipD = 10;
-    hipP = 0;
-    hipD = 0;
+    hipP = 150;
+    hipD = 10;
     pd0Controller.P = legP;
     pd1Controller.P = legP;
     pd2Controller.P = hipP;
@@ -240,7 +237,6 @@ void ATCEqPoint::controller() {
             // Distribute torque between the two motors
             co.rLeg.motorCurrentA += guiIn.tab*torsoTorque;
             co.rLeg.motorCurrentB += (1 - guiIn.tab)*torsoTorque;
-            // TODO: Add desired torso angle to gui
 
 
             //*flight control left leg*
