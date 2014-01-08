@@ -38,6 +38,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("rco",              rco);
 	gui->get_widget("thip",             thip);
 	gui->get_widget("tab",              tab);
+	gui->get_widget("desiredTorsoAngle", desiredTorsoAngle);
 
 	if (CHECK_WIDGET(control_combobox)    ||
 	    CHECK_WIDGET(gc_l_button)         ||
@@ -60,6 +61,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	    CHECK_WIDGET(loc)                 ||
 	    CHECK_WIDGET(rco)                 ||
 	    CHECK_WIDGET(thip)                ||
+	    CHECK_WIDGET(desiredTorsoAngle)     ||
 	    CHECK_WIDGET(tab))
 	{
 		return false;
@@ -85,6 +87,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	rco->set_range(0, 1);
 	thip->set_range(0, 100);
 	tab->set_range(0, 1);
+	desiredTorsoAngle->set_range(PI+PI/4.0, 2.0*PI-PI/4.0);
 
 	// Set default values.
 	control_combobox->set_active(1); // Default to "Manual" mode.
@@ -107,6 +110,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	rco->set_value(0);
 	thip->set_value(0);
 	tab->set_value(0);
+	desiredTorsoAngle->set_value(3.0*PI/2.0);
 
 	// Connect buttons to functions.
 	gc_l_button->signal_pressed().connect(sigc::ptr_fun((void(*)())gc_l_pressed));
@@ -168,54 +172,58 @@ void getParameters() {
 	aover->set_value(controllerDataOut.aover);
 	nh.getParam("/atrias_gui/rco", controllerDataOut.rco);
 	rco->set_value(controllerDataOut.rco);
+	nh.getParam("/atrias_gui/desiredTorsoAngle", controllerDataOut.desiredTorsoAngle);
+	desiredTorsoAngle->set_value(controllerDataOut.desiredTorsoAngle);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
 void setParameters() {
-	nh.setParam("/atrias_gui/control",  controllerDataOut.control);
-	nh.setParam("/atrias_gui/aea",      controllerDataOut.aea);
-	nh.setParam("/atrias_gui/pea",      controllerDataOut.pea);
-	nh.setParam("/atrias_gui/lhip_pos", controllerDataOut.lhip_pos);
-	nh.setParam("/atrias_gui/rhip_pos", controllerDataOut.rhip_pos);
-	nh.setParam("/atrias_gui/lst",      controllerDataOut.lst);
-	nh.setParam("/atrias_gui/lfl",      controllerDataOut.lfl);
-	nh.setParam("/atrias_gui/lot",      controllerDataOut.lot);
-	nh.setParam("/atrias_gui/pst",      controllerDataOut.pst);
-	nh.setParam("/atrias_gui/pfl1",     controllerDataOut.pfl1);
-	nh.setParam("/atrias_gui/pfl2",     controllerDataOut.pfl2);
-	nh.setParam("/atrias_gui/dst",      controllerDataOut.dst);
-	nh.setParam("/atrias_gui/dfl1",     controllerDataOut.dfl1);
-	nh.setParam("/atrias_gui/dfl2",     controllerDataOut.dfl2);
-	nh.setParam("/atrias_gui/lfl",      controllerDataOut.lfl);
-	nh.setParam("/atrias_gui/lst",      controllerDataOut.lst);
-	nh.setParam("/atrias_gui/tsw",      controllerDataOut.tsw);
-	nh.setParam("/atrias_gui/loc",      controllerDataOut.loc);
-	nh.setParam("/atrias_gui/aover",    controllerDataOut.aover);
-	nh.setParam("/atrias_gui/rco",      controllerDataOut.rco);
+	nh.setParam("/atrias_gui/control",         controllerDataOut.control);
+	nh.setParam("/atrias_gui/aea",             controllerDataOut.aea);
+	nh.setParam("/atrias_gui/pea",             controllerDataOut.pea);
+	nh.setParam("/atrias_gui/lhip_pos",        controllerDataOut.lhip_pos);
+	nh.setParam("/atrias_gui/rhip_pos",        controllerDataOut.rhip_pos);
+	nh.setParam("/atrias_gui/lst",             controllerDataOut.lst);
+	nh.setParam("/atrias_gui/lfl",             controllerDataOut.lfl);
+	nh.setParam("/atrias_gui/lot",             controllerDataOut.lot);
+	nh.setParam("/atrias_gui/pst",             controllerDataOut.pst);
+	nh.setParam("/atrias_gui/pfl1",            controllerDataOut.pfl1);
+	nh.setParam("/atrias_gui/pfl2",            controllerDataOut.pfl2);
+	nh.setParam("/atrias_gui/dst",             controllerDataOut.dst);
+	nh.setParam("/atrias_gui/dfl1",            controllerDataOut.dfl1);
+	nh.setParam("/atrias_gui/dfl2",            controllerDataOut.dfl2);
+	nh.setParam("/atrias_gui/lfl",             controllerDataOut.lfl);
+	nh.setParam("/atrias_gui/lst",             controllerDataOut.lst);
+	nh.setParam("/atrias_gui/tsw",             controllerDataOut.tsw);
+	nh.setParam("/atrias_gui/loc",             controllerDataOut.loc);
+	nh.setParam("/atrias_gui/aover",           controllerDataOut.aover);
+	nh.setParam("/atrias_gui/rco",             controllerDataOut.rco);
+	nh.setParam("/atrias_gui/desiredTorsoAngle", controllerDataOut.desiredTorsoAngle);
 }
 
 //! \brief Update the GUI.
 void guiUpdate() {
-	controllerDataOut.control  = control_combobox->get_active_row_number();
-	controllerDataOut.aea      = aea_spinbutton->get_value();
-	controllerDataOut.pea      = pea_spinbutton->get_value();
-	controllerDataOut.lhip_pos = lhip_pos_spinbutton->get_value();
-	controllerDataOut.rhip_pos = rhip_pos_spinbutton->get_value();
-	controllerDataOut.lst      = lst->get_value();
-	controllerDataOut.lfl      = lfl->get_value();
-	controllerDataOut.lot      = lot->get_value();
-	controllerDataOut.pst      = pst->get_value();
-	controllerDataOut.pfl1     = pfl1->get_value();
-	controllerDataOut.pfl2     = pfl2->get_value();
-	controllerDataOut.dst      = dst->get_value();
-	controllerDataOut.dfl1     = dfl1->get_value();
-	controllerDataOut.dfl2     = dfl2->get_value();
-	controllerDataOut.thip     = thip->get_value();
-	controllerDataOut.tab      = tab->get_value();
-	controllerDataOut.tsw      = tsw->get_value();
-	controllerDataOut.loc      = loc->get_value();
-	controllerDataOut.aover    = aover->get_value();
-	controllerDataOut.rco      = rco->get_value();
+	controllerDataOut.control         = control_combobox->get_active_row_number();
+	controllerDataOut.aea             = aea_spinbutton->get_value();
+	controllerDataOut.pea             = pea_spinbutton->get_value();
+	controllerDataOut.lhip_pos        = lhip_pos_spinbutton->get_value();
+	controllerDataOut.rhip_pos        = rhip_pos_spinbutton->get_value();
+	controllerDataOut.lst             = lst->get_value();
+	controllerDataOut.lfl             = lfl->get_value();
+	controllerDataOut.lot             = lot->get_value();
+	controllerDataOut.pst             = pst->get_value();
+	controllerDataOut.pfl1            = pfl1->get_value();
+	controllerDataOut.pfl2            = pfl2->get_value();
+	controllerDataOut.dst             = dst->get_value();
+	controllerDataOut.dfl1            = dfl1->get_value();
+	controllerDataOut.dfl2            = dfl2->get_value();
+	controllerDataOut.thip            = thip->get_value();
+	controllerDataOut.tab             = tab->get_value();
+	controllerDataOut.tsw             = tsw->get_value();
+	controllerDataOut.loc             = loc->get_value();
+	controllerDataOut.aover           = aover->get_value();
+	controllerDataOut.rco             = rco->get_value();
+	controllerDataOut.desiredTorsoAngle = desiredTorsoAngle->get_value();
 
 	pub.publish(controllerDataOut);
 }
@@ -224,3 +232,4 @@ void guiUpdate() {
 void guiTakedown() {
 }
 
+// vim: noexpandtab

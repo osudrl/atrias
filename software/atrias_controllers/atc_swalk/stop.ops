@@ -1,5 +1,0 @@
-# Shut stuff down
-ATCSWalk.stop()
-ATCSWalk.cleanup()
-unloadComponent("ATCSWalk")
-atrias_cm.resetControllerNames()
