@@ -5,7 +5,7 @@
 
 // Include the calibration values for each leg
 #define INCLUDE_LEFT_LEG
-#include "leg1_definitions.h"
+#include "leg3_definitions.h"
 #undef INCLUDE_LEFT_LEG
 
 #define INCLUDE_RIGHT_LEG
@@ -103,5 +103,8 @@
 #define MIN_MTR_CURRENT_CMD        -60.0
 #define MAX_HIP_MTR_CURRENT_CMD    60.0
 #define MIN_HIP_MTR_CURRENT_CMD    -60.0
+
+//! The threshold (above calibrated startup value) at which the toes detect contact
+#define TOE_THRESH                  300
 
 #endif // ROBOT_VARIANT_DEFS_H
