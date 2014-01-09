@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
      * Connect buttons to functions.
      */
     log_file_chkbox->signal_toggled().connect(sigc::ptr_fun((void(*)())log_chkbox_toggled));
-    restart_button->signal_clicked().connect(sigc::ptr_fun((void(*)())restart_robot));
+    //restart_button->signal_clicked().connect(sigc::ptr_fun((void(*)())restart_robot));
     enable_button->signal_clicked().connect(sigc::ptr_fun((void(*)())enable_motors));
     disable_button->signal_clicked().connect(sigc::ptr_fun((void(*)())disable_motors));
     estop_button->signal_clicked().connect(sigc::ptr_fun((void(*)())estop_button_clicked));
