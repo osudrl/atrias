@@ -131,10 +131,10 @@ void ATCEqPoint::controller() {
         co.lLeg.motorCurrentB = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
         co.rLeg.motorCurrentA = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
         co.rLeg.motorCurrentB = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
-
+        printf("starting up\n"); 
         // Change state if startup is no longer occurring
         if (!isStarting()) {
-            //printf("Startup is finished\n");
+            printf("Startup is finished\n");
             state = 2;
             sw_flight = true;
             sw_stance = true;
