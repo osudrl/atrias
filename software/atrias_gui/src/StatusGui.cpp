@@ -196,7 +196,7 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     update_medulla_errors(rtCycle.robotState.rLeg.halfA.errorFlags,rtCycle.robotState.rLeg.halfA.limitSwitches,medullaRAError_entry);
     update_medulla_errors(rtCycle.robotState.rLeg.halfB.errorFlags,rtCycle.robotState.rLeg.halfB.limitSwitches,medullaRBError_entry);
     update_medulla_errors(rtCycle.robotState.lLeg.hip.errorFlags,rtCycle.robotState.lLeg.hip.limitSwitches,medullaLHipError_entry);
-    update_medulla_errors(rtCycle.robotState.rLeg.hip.errorFlags,rtCycle.robotState.rLeg.hip.limitSwitches,medullaLHipError_entry);
+    update_medulla_errors(rtCycle.robotState.rLeg.hip.errorFlags,rtCycle.robotState.rLeg.hip.limitSwitches,medullaRHipError_entry);
     update_medulla_errors(rtCycle.robotState.boomMedullaErrorFlags,(uint8_t) 0, medullaBoomError_entry);
 
     // Voltage
