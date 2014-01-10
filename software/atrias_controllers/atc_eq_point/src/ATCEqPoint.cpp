@@ -40,8 +40,8 @@ ATCEqPoint::ATCEqPoint(string name) :
     pd3Controller.D = legD;
     pd4Controller.D = legD;
     pd5Controller.D = hipD;
-    pdTorsoController.P = legP;
-    pdTorsoController.D = legD;
+    pdTorsoController.P = 0.0;
+    pdTorsoController.D = 0.0;
 
     // Initialize state
     state = 0;
@@ -131,10 +131,10 @@ void ATCEqPoint::controller() {
         co.lLeg.motorCurrentB = pd1Controller(desiredLBState.ang, rs.lLeg.halfB.motorAngle, desiredLBState.vel, rs.lLeg.halfB.motorVelocity);
         co.rLeg.motorCurrentA = pd3Controller(desiredRAState.ang, rs.rLeg.halfA.motorAngle, desiredRAState.vel, rs.rLeg.halfA.motorVelocity);
         co.rLeg.motorCurrentB = pd4Controller(desiredRBState.ang, rs.rLeg.halfB.motorAngle, desiredRBState.vel, rs.rLeg.halfB.motorVelocity);
-        printf("starting up\n"); 
+        //printf("starting up\n"); 
         // Change state if startup is no longer occurring
         if (!isStarting()) {
-            printf("Startup is finished\n");
+            //printf("Startup is finished\n");
             state = 2;
             sw_flight = true;
             sw_stance = true;
@@ -215,8 +215,8 @@ void ATCEqPoint::controller() {
             pd3Controller.P = guiIn.pst;
             pd4Controller.D = guiIn.dst;
             pd4Controller.P = guiIn.pst;
-            pdTorsoController.P = guiIn.pst;
-            pdTorsoController.D = guiIn.dst;
+            pdTorsoController.P = 0.0;
+            pdTorsoController.D = 0.0;
             // Stance leg control
             if ((rs.rLeg.halfB.motorAngle < phiBs_des_o) && !sw_stance)
             {   // Rotate to pea
@@ -304,8 +304,8 @@ void ATCEqPoint::controller() {
             pd0Controller.P = guiIn.pst;
             pd1Controller.D = guiIn.dst;
             pd1Controller.P = guiIn.pst;
-            pdTorsoController.P = guiIn.pst;
-            pdTorsoController.D = guiIn.dst;
+            pdTorsoController.P = 0.0;
+            pdTorsoController.D = 0.0;
             if ((rs.lLeg.halfB.motorAngle < phiBs_des_i) && !sw_stance)
             { // stance leg rotate to pea
                 std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,guiIn.lst);

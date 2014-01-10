@@ -21,7 +21,7 @@
   * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
   * Measured with a measuring tape. [m]
   */
-#define BOOM_HEIGHT                0.94265
+#define BOOM_HEIGHT                1.0287
 
 /** @brief Boom length.
   * Distance from boom-base pivot Z-axis to intersection of robot torso XZ-center-plane and boom Y-axis centerline.
@@ -70,11 +70,11 @@
  *
  * This should be calibrated before BOOM_Z_CALIB_LOC!
   */
-#define BOOM_Z_CALIB_VAL           93063
+#define BOOM_Z_CALIB_VAL           120558
 
 /** @brief The angle of the boom at the calibration location.
   */
-#define BOOM_Z_CALIB_LOC           2.9549347555631867989845698899
+#define BOOM_Z_CALIB_LOC           3.14159265359
 
 /** @brief The encoder value of the hip's absolute encoder at the calibration position.
   */
