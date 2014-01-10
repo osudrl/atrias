@@ -30,7 +30,7 @@ public:
     void update(rt_ops_cycle);
 
 private:
-    void update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry);
+    void update_medulla_errors(uint8_t errorFlags, uint8_t limitSwitches, Gtk::Entry *errorEntry);
     void update_robot_status(rt_ops_cycle);
 
     // CPU Usage variables

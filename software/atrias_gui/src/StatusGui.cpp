@@ -191,13 +191,13 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     rightToeDisplay->set_text(buffer);
 
     // Medullas
-    update_medulla_errors(rtCycle.robotState.lLeg.halfA.errorFlags,medullaLAError_entry);
-    update_medulla_errors(rtCycle.robotState.lLeg.halfB.errorFlags,medullaLBError_entry);
-    update_medulla_errors(rtCycle.robotState.rLeg.halfA.errorFlags,medullaRAError_entry);
-    update_medulla_errors(rtCycle.robotState.rLeg.halfB.errorFlags,medullaRBError_entry);
-    update_medulla_errors(rtCycle.robotState.lLeg.hip.errorFlags,medullaLHipError_entry);
-    update_medulla_errors(rtCycle.robotState.rLeg.hip.errorFlags,medullaLHipError_entry);
-    update_medulla_errors(rtCycle.robotState.boomMedullaErrorFlags,medullaBoomError_entry);
+    update_medulla_errors(rtCycle.robotState.lLeg.halfA.errorFlags,rtCycle.robotState.lLeg.halfA.limitSwitches,medullaLAError_entry);
+    update_medulla_errors(rtCycle.robotState.lLeg.halfB.errorFlags,rtCycle.robotState.lLeg.halfB.limitSwitches,medullaLBError_entry);
+    update_medulla_errors(rtCycle.robotState.rLeg.halfA.errorFlags,rtCycle.robotState.rLeg.halfA.limitSwitches,medullaRAError_entry);
+    update_medulla_errors(rtCycle.robotState.rLeg.halfB.errorFlags,rtCycle.robotState.rLeg.halfB.limitSwitches,medullaRBError_entry);
+    update_medulla_errors(rtCycle.robotState.lLeg.hip.errorFlags,rtCycle.robotState.lLeg.hip.limitSwitches,medullaLHipError_entry);
+    update_medulla_errors(rtCycle.robotState.rLeg.hip.errorFlags,rtCycle.robotState.rLeg.hip.limitSwitches,medullaLHipError_entry);
+    update_medulla_errors(rtCycle.robotState.boomMedullaErrorFlags,(uint8_t) 0, medullaBoomError_entry);
 
     // Voltage
     sprintf(buffer, "%0.4f V", rtCycle.robotState.lLeg.halfA.logicVoltage);
@@ -236,9 +236,10 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     }*/
 }
 
-void StatusGui::update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry)
+void StatusGui::update_medulla_errors(uint8_t errorFlags, uint8_t limitSwitches, Gtk::Entry *errorEntry)
 {
     Glib::ustring error;
+    // Medulla Error Flags
     if (errorFlags & medulla_error_estop)
         error += "EStop pressed, ";
     if (errorFlags & medulla_error_limit_switch)
@@ -255,6 +256,19 @@ void StatusGui::update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry
         error += "Halt mode activated, ";
     if (errorFlags & medulla_error_amplifier)
         error += "Amplifier error, ";
+    // Limit Switches
+    if (limitSwitches & limit_switch_error_positive)
+        error += "Positive limit switch, ";
+    if (limitSwitches & limit_switch_error_negative)
+        error += "Negative limit switch, ";
+    if (limitSwitches & limit_switch_error_positive_deflection)
+        error += "Positive deflection limit switch, ";
+    if (limitSwitches & limit_switch_error_negative_deflection)
+        error += "Negative deflection limit switch, ";
+    if (limitSwitches & limit_switch_error_retraction)
+        error += "Retraction limit switch, ";
+    if (limitSwitches & limit_switch_error_extension)
+        error += "Extension limit switch, ";
 
     errorEntry->set_text(error);
 }

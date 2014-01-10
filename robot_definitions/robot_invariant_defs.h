@@ -80,6 +80,16 @@ typedef enum {
 	medulla_error_amplifier     = 1<<7
 } medulla_error_t;
 
+// Limit switch errors
+typedef enum {
+	limit_switch_error_positive            = 1<<0,
+	limit_switch_error_negative            = 1<<1,
+	limit_switch_error_positive_deflection = 1<<2,
+	limit_switch_error_negative_deflection = 1<<3,
+	limit_switch_error_retraction          = 1<<4,
+	limit_switch_error_extension           = 1<<5
+} limit_switch_error_t;
+
 // Safety cut off values
 
 // Danger region for motor power
