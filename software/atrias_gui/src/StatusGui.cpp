@@ -249,6 +249,8 @@ void StatusGui::update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry
         error += "Motor loltage low, ";
     if (errorFlags & medulla_error_logic_voltage)
         error += "Logic loltage low, ";
+    if (errorFlags & medulla_error_encoder)
+    	error += "Encoder error, ";
     if (errorFlags & medulla_error_halt)
         error += "Halt mode activated, ";
     if (errorFlags & medulla_error_amplifier)
