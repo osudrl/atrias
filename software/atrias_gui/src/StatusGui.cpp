@@ -246,9 +246,9 @@ void StatusGui::update_medulla_errors(uint8_t errorFlags, Gtk::Entry *errorEntry
     if (errorFlags & medulla_error_thermistor)
         error += "Motor over temperature, ";
     if (errorFlags & medulla_error_motor_voltage)
-        error += "Motor loltage low, ";
+        error += "Motor voltage low, ";
     if (errorFlags & medulla_error_logic_voltage)
-        error += "Logic loltage low, ";
+        error += "Logic voltage low, ";
     if (errorFlags & medulla_error_encoder)
     	error += "Encoder error, ";
     if (errorFlags & medulla_error_halt)
