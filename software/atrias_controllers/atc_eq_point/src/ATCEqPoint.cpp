@@ -40,8 +40,8 @@ ATCEqPoint::ATCEqPoint(string name) :
     pd3Controller.D = legD;
     pd4Controller.D = legD;
     pd5Controller.D = hipD;
-    pdTorsoController.P = legP;
-    pdTorsoController.D = legD;
+    pdTorsoController.P = 0.0;
+    pdTorsoController.D = 0.0;
 
     // Initialize state
     state = 0;
@@ -215,8 +215,8 @@ void ATCEqPoint::controller() {
             pd3Controller.P = guiIn.pst;
             pd4Controller.D = guiIn.dst;
             pd4Controller.P = guiIn.pst;
-            pdTorsoController.P = guiIn.pst;
-            pdTorsoController.D = guiIn.dst;
+            pdTorsoController.P = 0.0;
+            pdTorsoController.D = 0.0;
             // Stance leg control
             if ((rs.rLeg.halfB.motorAngle < phiBs_des_o) && !sw_stance)
             {   // Rotate to pea
@@ -304,8 +304,8 @@ void ATCEqPoint::controller() {
             pd0Controller.P = guiIn.pst;
             pd1Controller.D = guiIn.dst;
             pd1Controller.P = guiIn.pst;
-            pdTorsoController.P = guiIn.pst;
-            pdTorsoController.D = guiIn.dst;
+            pdTorsoController.P = 0.0;
+            pdTorsoController.D = 0.0;
             if ((rs.lLeg.halfB.motorAngle < phiBs_des_i) && !sw_stance)
             { // stance leg rotate to pea
                 std::tie(leftMotorAngle.A, leftMotorAngle.B) = commonToolkit.legPos2MotorPos(phi_lLeg,guiIn.lst);

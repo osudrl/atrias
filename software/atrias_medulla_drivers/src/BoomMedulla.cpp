@@ -153,7 +153,7 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
     //robotState.position.yPosition = TORSO_LENGTH * (sin(BOOM_TORSO_OFFSET) * (cos(robotState.position.xAngle) * sin(robotState.position.bodyPitch - 3.0 * M_PI /2.0) - cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(robotState.position.boomAngle) * sin(robotState.position.xAngle)) + cos(robotState.position.boomAngle) * sin(robotState.position.xAngle) * cos(BOOM_TORSO_OFFSET)) + BOOM_LENGTH * cos(robotState.position.boomAngle) * sin(robotState.position.xAngle);
 
     // Compute robot z position (defined at the center of the hip-torso pivot axis)
-    robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
+    //robotState.position.zPosition = BOOM_HEIGHT + BOOM_LENGTH * sin(robotState.position.boomAngle) + TORSO_LENGTH * (sin(robotState.position.boomAngle) * cos(BOOM_TORSO_OFFSET) + cos(robotState.position.boomAngle) * cos(robotState.position.bodyPitch - 3.0 * M_PI / 2.0) * sin(BOOM_TORSO_OFFSET));
 
     // Compute robot position (the arc length of radial trajectory around boom)
     //
