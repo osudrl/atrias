@@ -15,7 +15,7 @@
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  128863
+#define BOOM_PITCH_VERTICAL_VALUE  45433
 
 /** @brief Boom height
   * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
@@ -105,6 +105,6 @@
 #define MIN_HIP_MTR_CURRENT_CMD    -60.0
 
 //! The threshold (above calibrated startup value) at which the toes detect contact
-#define TOE_THRESH                  300
+#define TOE_THRESH                  400
 
 #endif // ROBOT_VARIANT_DEFS_H
