@@ -48,6 +48,9 @@ void LegMedulla::postOpInit() {
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
 	zeroToeSensor                    =           *toeSensor;
+	oldToeBool                       =           false;
+	toeBool                          =           false;
+	toeCounter                       =           0;
 	updatePositionOffsets();
 }
 
@@ -520,8 +523,23 @@ uint8_t LegMedulla::getID() {
 }
 
 bool LegMedulla::toeDetect() {
-	// Simple thresholding
-	return ((int16_t) *toeSensor) - zeroToeSensor > TOE_THRESH; 
+	// Thresholding with sensor dropout detection
+	newToeBool = (((int16_t) *toeSensor) - zeroToeSensor > TOE_THRESH) && ((int16_t) *toeSensor != 4095);
+
+	// Debouncing
+	if (newToeBool == oldToeBool)
+		toeCounter += 1;
+	else
+		toeCounter = 0;
+
+	if (toeCounter >= 10) {
+		toeBool = newToeBool;
+		toeCounter = 10;
+	}
+
+	// Save the old value
+	oldToeBool = newToeBool;
+	return toeBool;
 }
 
 }
