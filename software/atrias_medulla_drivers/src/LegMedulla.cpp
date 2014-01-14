@@ -196,11 +196,11 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 			robot_state.rLeg.halfA.medullaState = *state;
 			robot_state.rLeg.halfA.errorFlags   = *errorFlags;
 			robot_state.rLeg.toeSwitch          = *toeSensor;
+			robot_state.rLeg.onGround           = toeDetect();
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			robot_state.rLeg.halfB.medullaState = *state;
 			robot_state.rLeg.halfB.errorFlags   = *errorFlags;
-			robot_state.rLeg.onGround           = toeDetect();
 			break;
 	}
 }

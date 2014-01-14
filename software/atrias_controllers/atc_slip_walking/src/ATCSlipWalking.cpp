@@ -311,9 +311,9 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 
     // Define component forces and their derivatives
     forceSl.fx = fa*cos(qSl);
-    forceSl.dfx = -dqSl*sin(qSl)*fa + dfa*cos(qSl);
+    forceSl.dfx = -dqSl*sin(qSl)*fa;// + dfa*cos(qSl);
     forceSl.fz = -fa*sin(qSl);
-    forceSl.dfz = -dqSl*cos(qSl)*fa - dfa*sin(qSl);
+    forceSl.dfz = -dqSl*cos(qSl)*fa;// - dfa*sin(qSl);
 
     // Use force tracking controller to compute required motor currents
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);

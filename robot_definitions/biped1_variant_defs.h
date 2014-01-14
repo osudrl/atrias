@@ -15,7 +15,7 @@
 /** @brief The pitch encoder's reading when the robot is vertical.
   * In encoder ticks.
   */
-#define BOOM_PITCH_VERTICAL_VALUE  128863
+#define BOOM_PITCH_VERTICAL_VALUE  45433
 
 /** @brief Boom height
   * Distance from the ground plane measured vertically to the boom-base Z-axis pivot.
