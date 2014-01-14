@@ -405,10 +405,9 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
             isTrigger = (gaitParameter >= 0.95);
             break;
     }
-    printf("isTrigger: %i\n", isTrigger);
 
     // Flight leg touch down event (trigger next state)
-    if ((isTrigger && isManualSwingLegTD) && isForwardStep) {
+    if ((isTrigger || isManualSwingLegTD) && isForwardStep) {
         // Advance the walking state machine 1 step and loop to beginning if needed
         walkingState = (walkingState + 1) % 4;
 

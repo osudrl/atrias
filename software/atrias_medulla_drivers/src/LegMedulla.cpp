@@ -532,9 +532,9 @@ bool LegMedulla::toeDetect() {
 	else
 		toeCounter = 0;
 
-	if (toeCounter >= 10) {
+	if (toeCounter >= 50) {
 		toeBool = newToeBool;
-		toeCounter = 10;
+		toeCounter = 50;
 	}
 
 	// Save the old value
