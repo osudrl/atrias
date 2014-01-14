@@ -16,7 +16,7 @@ namespace controller {
 #define L2 0.5
 
 // ATRIAS rotational spring constant [N*m/rad]
-#define KS 1895.0
+#define KS 1600.0
 
 // ATRIAS motor torque constant [N*m/A]
 #define KT 0.121
