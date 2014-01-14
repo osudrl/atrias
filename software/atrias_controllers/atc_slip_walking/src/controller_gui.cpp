@@ -28,11 +28,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("stance_leg_target_spinbutton", stance_leg_target_spinbutton);
     stance_leg_target_spinbutton->set_range(M_PI/2.0, M_PI/2.0 + 0.40);
     stance_leg_target_spinbutton->set_increments(0.01, 0.0);
-    stance_leg_target_spinbutton->set_value(1.6);
+    stance_leg_target_spinbutton->set_value(M_PI - 1.514);
     gui->get_widget("flight_leg_target_spinbutton", flight_leg_target_spinbutton);
     flight_leg_target_spinbutton->set_range(M_PI/2.0 - 0.40, M_PI/2.0);
     flight_leg_target_spinbutton->set_increments(0.01, 0.0);
-    flight_leg_target_spinbutton->set_value(1.33);
+    flight_leg_target_spinbutton->set_value(M_PI - 1.835);
     gui->get_widget("slip_leg_spinbutton", slip_leg_spinbutton);
     slip_leg_spinbutton->set_range(0.65, 0.95);
     slip_leg_spinbutton->set_increments(0.01, 0.0);
@@ -63,7 +63,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     leg_for_kd_spinbutton->set_range(0.0, 50.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
-    leg_for_kd_spinbutton->set_value(10.0);
+    leg_for_kd_spinbutton->set_value(0.0);
 
     // Hip gains
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
