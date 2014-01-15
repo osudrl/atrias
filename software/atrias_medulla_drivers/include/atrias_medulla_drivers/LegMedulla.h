@@ -84,6 +84,11 @@ class LegMedulla : public Medulla {
 	// Whether or not the encoder value for this cycle was erroneous
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
+
+	// Timing values to be used for velocity calculations.
+	// This is necessary for dealing with bad encoder values correctly
+	double          legEncoderDt;
+	double          motorEncoderDt;
 	
 	/** @brief The PDOEntryDatas array.
 	  */
