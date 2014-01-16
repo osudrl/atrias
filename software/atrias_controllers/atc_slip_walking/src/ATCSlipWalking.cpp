@@ -105,6 +105,34 @@ void ATCSlipWalking::controller() {
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
             }
+
+            // WARNING: DO NOT USE THIS WITH THE stanceController.  Things may
+            // explode.
+            // Calculate the feed-forward term
+            // Find the smaller deflection
+            qLsA = rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle;
+            qLsB = rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle;
+            qRsA = rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle;
+            qRsB = rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle;
+            if (abs(qLsA) > abs(qLsB))
+                lDeflection = -qLsB;
+            else
+                lDeflection = qLsA;
+
+            if (abs(qRsA) > abs(qRsB))
+                rDeflection = -qRsB;
+            else
+                rDeflection = qRsA;
+
+            // Feed forward scaling
+            ffScale = 0.5;
+
+            // (deflection*springConstant/gearRatio/motorTorqueConstant)
+            co.lLeg.motorCurrentA += ffScale*lDeflection*KS/KG/KT;
+            co.lLeg.motorCurrentB -= ffScale*lDeflection*KS/KG/KT;
+            co.rLeg.motorCurrentA += ffScale*rDeflection*KS/KG/KT;
+            co.rLeg.motorCurrentB -= ffScale*rDeflection*KS/KG/KT;
+
             break;
 
         case 2: // Shutdown
@@ -261,24 +289,26 @@ void ATCSlipWalking::shutdownController() {
  * about the hip. Can be used with mechanical motor lock device.
  */
 void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSr0) {
+    // Set swing leg gains
+    ascPDSmA->P = ascPDSmB->P = guiIn.leg_for_kp;
+    ascPDSmA->D = ascPDSmB->D = guiIn.leg_for_kd;
+
     // Compute current leg angle and length
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+
+    if (qSl < qtFl) {
+        // Prevent touchdown angle overshoot
+        qSl = qtFl;
+    }
 
     // Heuristic energy injection by extending leg mid way through stance.
     rExtension = 0.0; // TODO
 
     // Rate limit is based on leg configuration
-    if (qSl > M_PI/2.0) {
-        springRateLimit = 0.1;
-    } else {
-        springRateLimit = 0.0;
-    }
+    springRateLimit = 0.1;
 
     // Rate limit change in spring rest length from current to desired
     r0Sl = ascRateLimitSr0->operator()(r0 + rExtension, springRateLimit);
-
-    // Compute current leg angle and length
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 
     // Compute and set motor angles such that there is no hip torque, only
     // axial leg forces
@@ -357,8 +387,9 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
     // Error catch the dependant to avoid trajectory being flipped if master leg starts past its predicted end location
-    if (qeSl > qtSl - 0.2) {
-        qtSl = qeSl + 0.2;
+    if (qeSl > (qtSl - 0.1)) {
+        qtSl = qeSl + 0.1;
+        printf("Touched down beyond target angle\n");
     }
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
@@ -457,11 +488,12 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // Contact sensing + automatic trigger
-            isTrigger = !rsFl->onGround || (qFl >= 1.835);
+            //isTrigger = !rsFl->onGround || (qFl >= 1.835);
+            isTrigger = true; // TODO - For now no double support in auto mode
             break;
 
         case 1: // Automatic switch based on gait parameter
-            isTrigger = false; // TODO - For now no double support in auto mode
+            isTrigger = true; // TODO - For now no double support in auto mode
             break;
     }
 

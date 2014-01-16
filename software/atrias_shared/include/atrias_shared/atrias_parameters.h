@@ -19,7 +19,7 @@ namespace controller {
 #define KS 1600.0
 
 // ATRIAS motor torque constant [N*m/A]
-#define KT 0.121
+#define KT 0.09
 
 // ATRIAS leg harmonic drive gear ratio
 #define KG 50.0

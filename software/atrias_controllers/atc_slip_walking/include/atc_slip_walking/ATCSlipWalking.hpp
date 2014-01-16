@@ -97,8 +97,13 @@ class ATCSlipWalking : public ATC<
         double stanceLegExtension; // The amount the leg extends during stance to inject energy
         double torsoAngle; // Torso angle offset
 
+        // Feed-forward variables
+        double qLsA, qLsB, qRsA, qRsB;
+        double lDeflection, rDeflection;
+        double ffScale;
+
         // Hip state variables
-        double qLh, qRh; // Hip angles 
+        double qLh, qRh; // Hip angles
         LeftRight toePosition; // Desired toe positions measures from boom center axis
 
         // Motor and leg variables
