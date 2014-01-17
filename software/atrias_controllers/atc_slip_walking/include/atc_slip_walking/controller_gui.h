@@ -27,10 +27,12 @@ Gtk::ComboBox *main_controller_combobox,
     
 Gtk::SpinButton *swing_leg_retraction_spinbutton,
     *stance_leg_extension_spinbutton,
-    *stance_leg_target_spinbutton,
-    *flight_leg_target_spinbutton,
-    *slip_leg_spinbutton,
+    *leg_length_spinbutton,
     *torso_angle_spinbutton,
+    *q1_spinbutton,
+    *q2_spinbutton,
+    *q3_spinbutton,
+    *q4_spinbutton,
     *leg_pos_kp_spinbutton,
     *leg_pos_kd_spinbutton,
     *leg_for_kp_spinbutton,
@@ -40,8 +42,10 @@ Gtk::SpinButton *swing_leg_retraction_spinbutton,
     *hip_pos_kd_spinbutton,
     *left_toe_pos_spinbutton,
     *right_toe_pos_spinbutton,
-    *walking_state_spinbutton,
-    *current_limit_spinbutton;
+    *current_limit_spinbutton,
+    *velocity_limit_spinbutton,
+    *deflection_limit_spinbutton,
+    *walking_state_spinbutton;
 
 Gtk::Button *flight_to_button,
     *flight_td_button;
