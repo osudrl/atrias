@@ -435,13 +435,12 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    
+
     // Compute current torso states
     qb = rs.position.bodyPitch;
-    
-    // Convert leg angle
-    // TODO: Convert to what?
-    qSl += 3.0*M_PI/2.0 - qb;
+
+    // Convert leg angle to world coordinates
+    qSl += qb - 3.0*M_PI/2.0;
 
     // Make sure we step forward and dont trigger next state if we back step
     isForwardStep = (qSl >= ((q2 + q3)/2.0));
@@ -449,7 +448,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // Contact sensing + automatic switch
-            isTrigger = rsFl->onGround || (qSL >= q3);
+            isTrigger = rsFl->onGround || (qSl >= q3);
             break;
 
         case 1: // Automatic switch based on gait parameter
@@ -482,13 +481,13 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    
+
     // Compute current torso states
     qb = rs.position.bodyPitch;
-    
-    // Convert leg angle
-    qSl += 3.0*M_PI/2.0 - qb;
-    
+
+    // Convert leg angle to world coordinates
+    qSl += qb - 3.0*M_PI/2.0;
+
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // Contact sensing + automatic trigger
