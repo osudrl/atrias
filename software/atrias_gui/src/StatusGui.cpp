@@ -76,7 +76,7 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("motor_torqueRightA_progress_bar", motor_torqueRightA_progress_bar);
     gui->get_widget("motor_torqueRightB_progress_bar", motor_torqueRightB_progress_bar);
     gui->get_widget("motor_torqueRightHip_progress_bar", motor_torqueRightHip_progress_bar);
-    
+
     // Toes
     gui->get_widget("leftToeDisplay", leftToeDisplay);
     gui->get_widget("rightToeDisplay", rightToeDisplay);
@@ -99,7 +99,7 @@ StatusGui::StatusGui(char *path) {
     gui->get_widget("leftBMotorVoltage", leftBMotorVoltage);
     gui->get_widget("rightAMotorVoltage", rightAMotorVoltage);
     gui->get_widget("rightBMotorVoltage", rightBMotorVoltage);
-    
+
     usageIndex = 0;
 
     status_window->show_all();
@@ -125,7 +125,7 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     azVelDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f Rad/s", rtCycle.robotState.position.boomAngleVelocity);
     elVelDisplay->set_text(buffer);
-    
+
     // Torso
     sprintf(buffer, "%0.4f m", rtCycle.robotState.position.xPosition);
     xPosDisplay->set_text(buffer);
@@ -153,7 +153,7 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     leftHipAngleDisplay->set_text(buffer);
     sprintf(buffer, "%0.4f Rad", rtCycle.robotState.rLeg.hip.legBodyAngle);
     rightHipAngleDisplay->set_text(buffer);
-    
+
     // Springs
     sprintf(buffer, "%0.4f Rad", rtCycle.robotState.lLeg.halfA.motorAngle - rtCycle.robotState.lLeg.halfA.legAngle);
     spring_deflection_left_A_entry->set_text(buffer);
@@ -163,7 +163,7 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     spring_deflection_right_A_entry->set_text(buffer);
     sprintf(buffer, "%0.4f Rad", rtCycle.robotState.rLeg.halfB.motorAngle - rtCycle.robotState.rLeg.halfB.legAngle);
     spring_deflection_right_B_entry->set_text(buffer);
-    
+
     // Motors
     sprintf(buffer, "%0.4f A", rtCycle.commandedOutput.lLeg.motorCurrentA);
     torqueLeftADisplay->set_text(buffer);
@@ -183,11 +183,11 @@ void StatusGui::update_robot_status(rt_ops_cycle rtCycle) {
     sprintf(buffer, "%0.4f A", rtCycle.commandedOutput.rLeg.motorCurrentHip);
     torqueRightHipDisplay->set_text(buffer);
     motor_torqueRightHip_progress_bar->set_fraction(MIN(ABS(rtCycle.commandedOutput.rLeg.motorCurrentHip), MAX_MTR_CURRENT_CMD ) / MAX_MTR_CURRENT_CMD );
-    
+
     // Toes
-    sprintf(buffer, "%0.4u", rtCycle.robotState.lLeg.onGround);
+    sprintf(buffer, "%0.4u --> %0.1u", rtCycle.robotState.lLeg.toeSwitch, rtCycle.robotState.lLeg.onGround);
     leftToeDisplay->set_text(buffer);
-    sprintf(buffer, "%0.4u", rtCycle.robotState.rLeg.onGround);
+    sprintf(buffer, "%0.4u --> %0.1u", rtCycle.robotState.rLeg.toeSwitch, rtCycle.robotState.rLeg.onGround);
     rightToeDisplay->set_text(buffer);
 
     // Medullas
