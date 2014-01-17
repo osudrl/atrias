@@ -63,10 +63,12 @@ class ATCSlipWalking : public ATC<
         /**
          * @brief These are functions for the top-level controller.
          */
+        void checkSafeties();
         void updateController();
         void hipController();
         void standingController();
         void shutdownController();
+        void computeGaitParameter(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*);
         void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*);
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
@@ -84,7 +86,6 @@ class ATCSlipWalking : public ATC<
         ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
         ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
 
-
         /**
          * @brief These are all the variables used by the top level controller.
          */
@@ -92,15 +93,18 @@ class ATCSlipWalking : public ATC<
         int controllerState, walkingState, switchMethod;
 
         // Walking gait definition values
+        double q1, s1; // Flight leg TD angle
+        double q2, s2; // Stance leg angle during flight leg TO
+        double q3, s3; // Stance leg angle during flight leg TD
+        double q4, s4; // Stance leg TO angle
         double r0, fa, dfa; // Spring parameters
         double swingLegRetraction; // The amount the leg retracts during swing
         double stanceLegExtension; // The amount the leg extends during stance to inject energy
         double torsoAngle; // Torso angle offset
+        double rExtension; // Leg extension parameter
 
-        // Feed-forward variables
-        double qLsA, qLsB, qRsA, qRsB;
-        double lDeflection, rDeflection;
-        double ffScale;
+        // Torso state variables
+        double qb, dqb;
 
         // Hip state variables
         double qLh, qRh; // Hip angles
@@ -114,14 +118,14 @@ class ATCSlipWalking : public ATC<
         LegForce forceSl, forceFl, forceLl, forceRl;
 
         // Leg parameters at exit state (event trigger)
-        double reSl, dreSl, qeSl, dqeSl; // Stance leg exit states
-        double reFl, dreFl, qeFl, dqeFl; // Flight leg exit states
-        double reSm, qeSm; // Stance leg spring states
-        double reFm, qeFm; // Flight leg spring states
+        double reSm, qeSm; // Stance leg motor states
+        double reFm, qeFm; // Flight leg motor states
+        double rtFm, qtFm; // Flight leg motor states
+        double se; // Gait parameter at exit event
 
         // Leg parameters at target states
-        double rtSl, drtSl, qtSl, dqtSl; // Stance leg target states
-        double rtFl, drtFl, qtFl, dqtFl; // Flight leg target states
+        double rtSl, qtSl; // Stance leg target states
+        double rtFl, qtFl; // Flight leg target states
         double r0Sl;
 
         // Temporary leg parameters
@@ -132,10 +136,11 @@ class ATCSlipWalking : public ATC<
 
         // State transistion events
         bool isForwardStep, isTrigger; // Logical preventing backstepping issues
-        double gaitParameter; // Time invariant measure of gait progress
+        double s, ds; // Time invariant measure of gait progress
 
         // Misc margins, ratelimiters and other kludge values
-        double currentLimit, legRateLimit, hipRateLimit, springRateLimit, rExtension;
+        double legRateLimit, hipRateLimit, springRateLimit;
+        double currentLimit, velocityLimit, deflectionLimit;
 };
 
 }
