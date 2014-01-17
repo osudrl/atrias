@@ -112,7 +112,7 @@ class ATCSlipWalking : public ATC<
         double rFl, drFl, qFl, dqFl; // Flight leg states
         double qmSA, dqmSA, qmSB, dqmSB; // Stance motor states
         double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
-        LegForce forceSl, forceFl, forceLl, forceRl;
+        LegForce forceSl, forceFl;
 
         // Leg parameters at exit state (event trigger)
         double reSm, qeSm; // Stance leg motor states

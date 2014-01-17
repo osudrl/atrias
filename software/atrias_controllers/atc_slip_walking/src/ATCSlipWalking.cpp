@@ -121,6 +121,13 @@ void ATCSlipWalking::controller() {
             updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
             break;
     }
+
+    // Limit motor currents to GUI specified value
+    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -currentLimit, currentLimit);
+    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -currentLimit, currentLimit);
+    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -currentLimit, currentLimit);
+    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -currentLimit, currentLimit);
+
 } // controller
 
 /**
@@ -130,12 +137,6 @@ void ATCSlipWalking::controller() {
  * emergency stop if needed.
  */
 void ATCSlipWalking::checkSafeties() {
-    // Limit motor currents to GUI specified value
-    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -currentLimit, currentLimit);
-    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -currentLimit, currentLimit);
-    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -currentLimit, currentLimit);
-    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -currentLimit, currentLimit);
-
     // Trigger an E-stop if a motor velocity goes over the hardcoded limit
     if (abs(rs.lLeg.halfA.rotorVelocity) > velocityLimit ||
         abs(rs.lLeg.halfB.rotorVelocity) > velocityLimit ||
@@ -205,10 +206,6 @@ void ATCSlipWalking::updateController() {
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
     ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 
-    // Compute actual leg force from spring deflection and robot state
-    forceLl = ascLegForceL.compute(rs.lLeg, rs.position);
-    forceRl = ascLegForceR.compute(rs.rLeg, rs.position);
-
     // Debug buttons and outputs
     currentLimit = guiIn.current_limit;
     velocityLimit = guiIn.velocity_limit;
@@ -256,16 +253,16 @@ void ATCSlipWalking::standingController() {
     // Compute target motor angles
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(q3, r0);
     std::tie(qmFA, qmFB) = ascCommonToolkit.legPos2MotorPos(q1, r0);
-    
+
     // Compute current torso states
     qb = rs.position.bodyPitch;
-    dqb = rs.position. bodyPitchVelocity;
-    
-    // Convert leg angle and velocities to relative coordinates
-    qmSA -= 3.0*M_PI/2.0 - qb;
-    qmSB -= 3.0*M_PI/2.0 - qb;
-    qmFA -= 3.0*M_PI/2.0 - qb;
-    qmFB -= 3.0*M_PI/2.0 - qb;
+    dqb = rs.position.bodyPitchVelocity;
+
+    // Negate body pitch
+    qmSA -= qb - 3.0*M_PI/2.0;
+    qmSB -= qb - 3.0*M_PI/2.0;
+    qmFA -= qb - 3.0*M_PI/2.0;
+    qmFB -= qb - 3.0*M_PI/2.0;
 
     // Rate limit motor velocities
     qmSA = ascRateLimitLmA(qmSA, legRateLimit);
@@ -288,11 +285,11 @@ void ATCSlipWalking::standingController() {
  */
 void ATCSlipWalking::shutdownController() {
     // Compute and set motor currents (applies virtual dampers to all actuators)
-    co.lLeg.motorCurrentA = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
-    co.lLeg.motorCurrentB = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
+    co.lLeg.motorCurrentA   = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
+    co.lLeg.motorCurrentB   = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
     co.lLeg.motorCurrentHip = ascPDLh(0.0, 0.0, 0.0, rs.lLeg.hip.legBodyVelocity);
-    co.rLeg.motorCurrentA = ascPDRmA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
-    co.rLeg.motorCurrentB = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
+    co.rLeg.motorCurrentA   = ascPDRmA(0.0, 0.0, 0.0, rs.rLeg.halfA.motorVelocity);
+    co.rLeg.motorCurrentB   = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
     co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
 } // shutdownController
 
@@ -306,14 +303,11 @@ void ATCSlipWalking::shutdownController() {
  * A simple stance phase controller allowing only leg length 
  * forces with zero leg angle torques. Uses a position controller to 
  * keep virtual motor leg length constant while minimizing spring 
- * about the hip. Can be used with mechanical motor lock device.
+ * about the hip.
  */
 void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSr0) {
-    // Heuristic energy injection by extending leg mid way through stance.
-    rExtension = 0.0;
-
     // Rate limit change in spring rest length from current to desired
-    r0Sl = ascRateLimitSr0->operator()(r0 + rExtension, springRateLimit);
+    r0Sl = ascRateLimitSr0->operator()(r0 + stanceLegExtension, springRateLimit);
 
     // Compute current stance leg states
     std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
@@ -384,9 +378,9 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     dqb = rs.position. bodyPitchVelocity;
 
     // Convert leg angle and velocities to world coordinates
-    qSl += 3.0*M_PI/2.0 - qb;
+    qSl  += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
-    qFl += 3.0*M_PI/2.0 - qb;
+    qFl  += qb - 3.0*M_PI/2.0;
     dqFl += dqb;
 
     // Compute gait parameter and velocity
@@ -416,9 +410,9 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(dqmFA, dqmFB) = ascCommonToolkit.legVel2MotorVel(rm, dqm, drm);
 
     // Convert leg angle and velocities to relative coordinates
-    qmFA -= 3.0*M_PI/2.0 - qb;
+    qmFA  -= qb - 3.0*M_PI/2.0;
     dqmFA -= dqb;
-    qmFB -= 3.0*M_PI/2.0 - qb;
+    qmFB  -= qb - 3.0*M_PI/2.0;
     dqmFB -= dqb;
 
     // Compute and set motor currents from position based PD controllers
@@ -446,6 +440,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     qb = rs.position.bodyPitch;
     
     // Convert leg angle
+    // TODO: Convert to what?
     qSl += 3.0*M_PI/2.0 - qb;
 
     // Make sure we step forward and dont trigger next state if we back step
