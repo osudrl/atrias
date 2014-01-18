@@ -55,9 +55,6 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 void ATCSlipWalking::controller() {
     // Update GUI values, gains, and other options
     updateController();
-    
-    // Run safety checks and trigger E-stop if needed
-    checkSafeties();
 
     // Run the hip controller
     hipController();
@@ -69,7 +66,7 @@ void ATCSlipWalking::controller() {
             updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
 
             // Reset walking state parameters
-            walkingState = 1; // Double support
+            walkingState = 3; // Double support
 
             // Call standing controller
             standingController();
@@ -122,11 +119,8 @@ void ATCSlipWalking::controller() {
             break;
     }
 
-    // Limit motor currents to GUI specified value
-    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -currentLimit, currentLimit);
-    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -currentLimit, currentLimit);
-    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -currentLimit, currentLimit);
-    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -currentLimit, currentLimit);
+    // Run safety checks and trigger E-stop if needed
+    checkSafeties();
 
 } // controller
 
@@ -137,6 +131,12 @@ void ATCSlipWalking::controller() {
  * emergency stop if needed.
  */
 void ATCSlipWalking::checkSafeties() {
+    // Limit motor currents to GUI specified value
+    co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -currentLimit, currentLimit);
+    co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -currentLimit, currentLimit);
+    co.rLeg.motorCurrentA = clamp(co.rLeg.motorCurrentA, -currentLimit, currentLimit);
+    co.rLeg.motorCurrentB = clamp(co.rLeg.motorCurrentB, -currentLimit, currentLimit);
+
     // Trigger an E-stop if a motor velocity goes over the hardcoded limit
     if (abs(rs.lLeg.halfA.rotorVelocity) > velocityLimit ||
         abs(rs.lLeg.halfB.rotorVelocity) > velocityLimit ||
@@ -147,6 +147,7 @@ void ATCSlipWalking::checkSafeties() {
     {
         // Trigger E-stop
         printf("Software E-Stop triggered by motor velocity limit check.\n");
+        printf("GUI velocityLimit: %f\n", velocityLimit);
         commandEStop();
     }
 
@@ -158,6 +159,11 @@ void ATCSlipWalking::checkSafeties() {
     {
         // Trigger E-stop
         printf("Software E-Stop triggered by spring deflection limit check.\n");
+        printf("GUI deflectionLimit: %f\n", deflectionLimit);
+        printf("Spring deflection (lA): %f\n", rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle);
+        printf("Spring deflection (rA): %f\n", rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle);
+        printf("Spring deflection (lB): %f\n", rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle);
+        printf("Spring deflection (rB): %f\n", rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle);
         commandEStop();
     }
 } // checkSafeties
@@ -369,10 +375,6 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
-    // Compute current flight leg states
-    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
-    std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
-
     // Compute current torso states
     qb = rs.position.bodyPitch;
     dqb = rs.position. bodyPitchVelocity;
@@ -380,12 +382,11 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     // Convert leg angle and velocities to world coordinates
     qSl  += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
-    qFl  += qb - 3.0*M_PI/2.0;
-    dqFl += dqb;
 
     // Compute gait parameter and velocity
     s = (qSl - q2)/(q3 - q2);
-    ds = dqSl/(q3 - q2);
+    ds = 0.0;//dqSl/(q3 - q2);
+    // TODO: Fixme.  This was too twitchy.
 
     // Limit gait parameter between zero and one
     s = clamp(s, 0.0, 1.0);
