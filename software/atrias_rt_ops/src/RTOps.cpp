@@ -35,6 +35,7 @@ RTOps::RTOps(std::string name) :
 	addPort(guiCyclicOut);
 	addPort(eventOut);
 
+	eStopDiags        = new EStopDiags(this);
 	controllerLoop    = new ControllerLoop(this);
 	stateMachine      = new StateMachine(this);
 	robotStateHandler = new RobotStateHandler(this);
@@ -80,6 +81,10 @@ void RTOps::newStateCallback(atrias_msgs::robot_state state) {
 	controllerLoop->cycleLoop();
 	
 	opsLogger.logRobotState(state);
+}
+
+EStopDiags* RTOps::getEStopDiags() const {
+	return eStopDiags;
 }
 
 RobotStateHandler* RTOps::getRobotStateHandler() {
