@@ -339,13 +339,13 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     //double torsoCurrent = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
     // VPP control
     // Body angle from vertical
-    qb -= 3.0*M_PI/2.0;
+    double qT = qb - 3.0*M_PI/2.0;
     // Leg angle with respect to the world
-    ql += qb;
+    double qL = ql + qT;
     // Distance between leg pivot center and center of mass
     double rcom = 0.12; // from ATRIAS solid model
     // Solve for q (angle between the leg and the vpp)
-    double alpha1 = M_PI/2.0 + ql - qb;
+    double alpha1 = M_PI/2.0 + qL - qT;
     double C1 = pow( pow(rcom,2.0) + pow(rl,2.0) - 2.0*rcom*rl*cos(alpha1) ,0.5);
     double theta1 = asin(rcom/C1*sin(alpha1));
     double alpha2 = theta1 + alpha1 + qvpp;
@@ -362,8 +362,8 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     double torsoCurrent = torsoTorque/KG/KT;
 
     // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent/2.0;
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent/2.0;
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent;
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent;
 
 } // passiveStanceController
 
@@ -562,6 +562,11 @@ void ATCSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, at
     // Compute current rest leg angle and length
     std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
     std::tie(qeSm, reSm) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle);
+
+    // Convert leg angle to world coordinates
+    qb = rs.position.bodyPitch;
+    qeFm += qb -3.0*M_PI/2.0;
+    qeSm += qb -3.0*M_PI/2.0;
 
     // Reset rate limiters
     ascRateLimitSr0->reset(reSm);
