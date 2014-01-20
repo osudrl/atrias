@@ -324,9 +324,17 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(ql, r0Sl);
     std::tie(dqmSA, dqmSB) = ascCommonToolkit.legVel2MotorVel(r0Sl, dql, 0.0);
 
+    // Torso control
+    // HACK
+    // Compute current torso states
+    qb = rs.position.bodyPitch;
+    dqb = rs.position.bodyPitchVelocity;
+    double torsoTorque = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
+
     // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity);
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity);
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoTorque/2.0;
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoTorque/2.0;
+
 } // passiveStanceController
 
 /**
@@ -391,7 +399,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     s = clamp(s, 0.0, 1.0);
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.9, qeFm, q1, 0.0, 0.0, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 1.0, qeFm, q1, 0.0, 0.0, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
@@ -403,7 +411,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         std::tie(rm, drm) = ascInterpolation.linear(0.0, 0.7, reFm, rtFm, s, ds);
     } else {
         // Leg extension during the second half
-        std::tie(rm, drm) = ascInterpolation.cubic(0.7, 0.9, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.7, 0.95, rtFm, r0, 0.0, 0.0, s, ds);
     }
 
     // Convert desired leg angles and lengths into motor positions and velocities
