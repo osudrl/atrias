@@ -372,12 +372,12 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
  */
 void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle, rsSl->halfA.rotorVelocity, rsSl->halfB.rotorVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
-    dqb = rs.position. bodyPitchVelocity;
+    dqb = rs.position.bodyPitchVelocity;
 
     // Convert leg angle and velocities to world coordinates
     qSl  += qb - 3.0*M_PI/2.0;
@@ -385,8 +385,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 
     // Compute gait parameter and velocity
     s = (qSl - q2)/(q3 - q2);
-    ds = 0.0;//dqSl/(q3 - q2);
-    // TODO: Fixme.  This was too twitchy.
+    ds = dqSl;//dqSl/(q3 - q2);
 
     // Limit gait parameter between zero and one
     s = clamp(s, 0.0, 1.0);
@@ -398,13 +397,13 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     rtFm = r0 - swingLegRetraction;
 
     // Piece-wise cubic spline to slave the flight leg length to the stance leg angle
-    if (s <= 0.6) {
+    if (s <= 0.7) {
         // Leg retraction during first half
-        //std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.6, reFm, rtFm, 0.0, 0.0, s, ds);
-        std::tie(rm, drm) = ascInterpolation.linear(0.0, 0.6, reFm, rtFm, s, ds);
+        //std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.7, reFm, rtFm, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.linear(0.0, 0.7, reFm, rtFm, s, ds);
     } else {
         // Leg extension during the second half
-        std::tie(rm, drm) = ascInterpolation.cubic(0.6, 0.9, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.7, 0.9, rtFm, r0, 0.0, 0.0, s, ds);
     }
 
     // Convert desired leg angles and lengths into motor positions and velocities

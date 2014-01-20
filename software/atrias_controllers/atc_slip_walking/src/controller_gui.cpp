@@ -15,7 +15,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     // Main controller options
     gui->get_widget("main_controller_combobox", main_controller_combobox);
     gui->get_widget("switch_method_combobox", switch_method_combobox);
-    
+
     // Gait options
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.20);
@@ -86,7 +86,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     left_toe_pos_spinbutton->set_increments(0.01, 0.0);
     left_toe_pos_spinbutton->set_value(2.17);
     gui->get_widget("right_toe_pos_spinbutton", right_toe_pos_spinbutton);
-    right_toe_pos_spinbutton->set_range(2.1, 2.5);
+    right_toe_pos_spinbutton->set_range(2.1, 2.55);
     right_toe_pos_spinbutton->set_increments(0.01, 0.0);
     right_toe_pos_spinbutton->set_value(2.5);
     
