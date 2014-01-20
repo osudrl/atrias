@@ -42,7 +42,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
     springRateLimit = 0.3; // [m/s]
 
     // Initialize walking state
-    walkingState = 0;
+    walkingState = 3;
 }
 
 /**
@@ -212,6 +212,10 @@ void ATCSlipWalking::updateController() {
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
     ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
 
+    // Torso options
+    qvpp = guiIn.qvpp;
+    rvpp = guiIn.rvpp;
+
     // Debug buttons and outputs
     currentLimit = guiIn.current_limit;
     velocityLimit = guiIn.velocity_limit;
@@ -276,11 +280,14 @@ void ATCSlipWalking::standingController() {
     qmFA = ascRateLimitRmA(qmFA, legRateLimit);
     qmFB = ascRateLimitRmB(qmFB, legRateLimit);
 
+    // Torso control
+    double torsoCurrent = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
+
     // Compute and set motor currents
-    co.lLeg.motorCurrentA = ascPDLmA(qmSA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
-    co.lLeg.motorCurrentB = ascPDLmB(qmSB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity);
-    co.rLeg.motorCurrentA = ascPDRmA(qmFA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity);
-    co.rLeg.motorCurrentB = ascPDRmB(qmFB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity);
+    co.lLeg.motorCurrentA = ascPDLmA(qmSA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity) + torsoCurrent/2.0;
+    co.lLeg.motorCurrentB = ascPDLmB(qmSB, rs.lLeg.halfB.motorAngle, 0.0, rs.lLeg.halfB.motorVelocity) + torsoCurrent/2.0;
+    co.rLeg.motorCurrentA = ascPDRmA(qmFA, rs.rLeg.halfA.motorAngle, 0.0, rs.rLeg.halfA.motorVelocity) + torsoCurrent/2.0;
+    co.rLeg.motorCurrentB = ascPDRmB(qmFB, rs.rLeg.halfB.motorAngle, 0.0, rs.rLeg.halfB.motorVelocity) + torsoCurrent/2.0;
 } // standingController
 
 /**
@@ -325,15 +332,38 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     std::tie(dqmSA, dqmSB) = ascCommonToolkit.legVel2MotorVel(r0Sl, dql, 0.0);
 
     // Torso control
-    // HACK
     // Compute current torso states
     qb = rs.position.bodyPitch;
     dqb = rs.position.bodyPitchVelocity;
-    double torsoTorque = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
+    // PD control
+    //double torsoCurrent = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
+    // VPP control
+    // Body angle from vertical
+    qb -= 3.0*M_PI/2.0;
+    // Leg angle with respect to the world
+    ql += qb;
+    // Distance between leg pivot center and center of mass
+    double rcom = 0.12; // from ATRIAS solid model
+    // Solve for q (angle between the leg and the vpp)
+    double alpha1 = M_PI/2.0 + ql - qb;
+    double C1 = pow( pow(rcom,2.0) + pow(rl,2.0) - 2.0*rcom*rl*cos(alpha1) ,0.5);
+    double theta1 = asin(rcom/C1*sin(alpha1));
+    double alpha2 = theta1 + alpha1 + qvpp;
+    double C2 = pow( pow(rvpp,2.0) + pow(C1,2.0) - 2.0*rvpp*C1*cos(alpha2) ,0.5);
+    double theta2 = asin(rvpp/C2*sin(alpha2));
+    double q = theta1 + theta2;
+    // Error catch
+    if ((q > M_PI/2.0) || (q < -M_PI/2.0))
+        printf("VPP control error: q outside working bounds. q = %f\n", q);
+    // Torque to redirect axial leg force to VPP
+    std::tie(fa, dfa) = ascCommonToolkit.legForce(rl, drl, r0Sl);
+    double torsoTorque = rl*fa*tan(q);
+    // Convert to current (torque/gearRatio/motorTorqueConstant)
+    double torsoCurrent = torsoTorque/KG/KT;
 
     // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoTorque/2.0;
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoTorque/2.0;
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent/2.0;
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent/2.0;
 
 } // passiveStanceController
 

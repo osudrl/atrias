@@ -106,6 +106,7 @@ class ATCSlipWalking : public ATC<
         // Hip state variables
         double qLh, qRh; // Hip angles
         LeftRight toePosition; // Desired toe positions measures from boom center axis
+        double qvpp, rvpp; // VPP parameters
 
         // Motor and leg variables
         double rSl, drSl, qSl, dqSl; // Stance leg states

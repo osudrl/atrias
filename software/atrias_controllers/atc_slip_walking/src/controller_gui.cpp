@@ -40,7 +40,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("q2_spinbutton", q2_spinbutton);
     q2_spinbutton->set_range(0.0, M_PI);
     q2_spinbutton->set_increments(0.01, 0.0);
-    q2_spinbutton->set_value(1.517);    
+    q2_spinbutton->set_value(1.517);
     gui->get_widget("q3_spinbutton", q3_spinbutton);
     q3_spinbutton->set_range(0.0, M_PI);
     q3_spinbutton->set_increments(0.01, 0.0);
@@ -48,7 +48,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("q4_spinbutton", q4_spinbutton);
     q4_spinbutton->set_range(0.0, M_PI);
     q4_spinbutton->set_increments(0.01, 0.0);
-    q4_spinbutton->set_value(1.824);    
+    q4_spinbutton->set_value(1.824);
 
     // Leg gains
     gui->get_widget("leg_pos_kp_spinbutton", leg_pos_kp_spinbutton);
@@ -89,7 +89,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     right_toe_pos_spinbutton->set_range(2.1, 2.55);
     right_toe_pos_spinbutton->set_increments(0.01, 0.0);
     right_toe_pos_spinbutton->set_value(2.5);
-    
+
+    // Torso options
+    gui->get_widget("qvpp_spinbutton", qvpp_spinbutton);
+    qvpp_spinbutton->set_range(-M_PI/2.0, M_PI/2.0);
+    qvpp_spinbutton->set_increments(0.01, 0.0);
+    qvpp_spinbutton->set_value(0.0);
+    gui->get_widget("rvpp_spinbutton", rvpp_spinbutton);
+    rvpp_spinbutton->set_range(-0.5, 2.0);
+    rvpp_spinbutton->set_increments(0.01, 0.0);
+    rvpp_spinbutton->set_value(0.0);
+
     // Debug
     gui->get_widget("current_limit_spinbutton", current_limit_spinbutton);
     current_limit_spinbutton->set_range(0.0, 60.0);
@@ -136,7 +146,7 @@ void getParameters() {
     nh.getParam("/atrias_gui/switch_method", switch_method);
     controllerDataOut.switch_method = (uint8_t)switch_method;
     switch_method_combobox->set_active(controllerDataOut.switch_method);
-    
+
     // Gait options
     nh.getParam("/atrias_gui/swing_leg_retraction", controllerDataOut.swing_leg_retraction);
     swing_leg_retraction_spinbutton->set_value(controllerDataOut.swing_leg_retraction);
@@ -154,7 +164,7 @@ void getParameters() {
     q3_spinbutton->set_value(controllerDataOut.q3);
     nh.getParam("/atrias_gui/q4", controllerDataOut.q4);
     q4_spinbutton->set_value(controllerDataOut.q4);
-    
+
     // Leg gains
     nh.getParam("/atrias_gui/leg_pos_kp", controllerDataOut.leg_pos_kp);
     leg_pos_kp_spinbutton->set_value(controllerDataOut.leg_pos_kp);
@@ -166,7 +176,7 @@ void getParameters() {
     leg_for_ki_spinbutton->set_value(controllerDataOut.leg_for_ki);
     nh.getParam("/atrias_gui/leg_for_kd", controllerDataOut.leg_for_kd);
     leg_for_kd_spinbutton->set_value(controllerDataOut.leg_for_kd);
-    
+
     // Hip gains
     nh.getParam("/atrias_gui/hip_pos_kp", controllerDataOut.hip_pos_kp);
     hip_pos_kp_spinbutton->set_value(controllerDataOut.hip_pos_kp);
@@ -176,7 +186,13 @@ void getParameters() {
     left_toe_pos_spinbutton->set_value(controllerDataOut.left_toe_pos);
     nh.getParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
     right_toe_pos_spinbutton->set_value(controllerDataOut.right_toe_pos);
-    
+
+    // Torso options
+    nh.getParam("/atrias_gui/qvpp", controllerDataOut.qvpp);
+    qvpp_spinbutton->set_value(controllerDataOut.qvpp);
+    nh.getParam("/atrias_gui/rvpp", controllerDataOut.rvpp);
+    rvpp_spinbutton->set_value(controllerDataOut.rvpp);
+
     // Debug
     nh.getParam("/atrias_gui/current_limit", controllerDataOut.current_limit);
     current_limit_spinbutton->set_value(controllerDataOut.current_limit);
@@ -196,14 +212,14 @@ void setParameters() {
 
     // Gait options
     nh.setParam("/atrias_gui/swing_leg_retraction", controllerDataOut.swing_leg_retraction);
-    nh.setParam("/atrias_gui/stance_leg_extension", controllerDataOut.stance_leg_extension);    
+    nh.setParam("/atrias_gui/stance_leg_extension", controllerDataOut.stance_leg_extension);
     nh.setParam("/atrias_gui/leg_length", controllerDataOut.leg_length);
     nh.setParam("/atrias_gui/torso_angle", controllerDataOut.torso_angle);
     nh.setParam("/atrias_gui/q1", controllerDataOut.q1);
     nh.setParam("/atrias_gui/q2", controllerDataOut.q2);
     nh.setParam("/atrias_gui/q3", controllerDataOut.q3);
     nh.setParam("/atrias_gui/q4", controllerDataOut.q4);
-        
+
     // Leg gains
     nh.setParam("/atrias_gui/leg_pos_kp", controllerDataOut.leg_pos_kp);
     nh.setParam("/atrias_gui/leg_pos_kd", controllerDataOut.leg_pos_kd);
@@ -216,6 +232,10 @@ void setParameters() {
     nh.setParam("/atrias_gui/hip_pos_kd", controllerDataOut.hip_pos_kd);
     nh.setParam("/atrias_gui/left_toe_pos", controllerDataOut.left_toe_pos);
     nh.setParam("/atrias_gui/right_toe_pos", controllerDataOut.right_toe_pos);
+
+    // Torso options
+    nh.setParam("/atrias_gui/qvpp", controllerDataOut.qvpp);
+    nh.setParam("/atrias_gui/rvpp", controllerDataOut.rvpp);
 
     // Debug
     nh.setParam("/atrias_gui/current_limit", controllerDataOut.current_limit);
@@ -253,6 +273,10 @@ void guiUpdate() {
     controllerDataOut.hip_pos_kd = hip_pos_kd_spinbutton->get_value();
     controllerDataOut.left_toe_pos = left_toe_pos_spinbutton->get_value();
     controllerDataOut.right_toe_pos = right_toe_pos_spinbutton->get_value();
+
+    // Torso options
+    controllerDataOut.qvpp = qvpp_spinbutton->get_value();
+    controllerDataOut.rvpp = rvpp_spinbutton->get_value();
 
     // Debug
     controllerDataOut.current_limit = current_limit_spinbutton->get_value();

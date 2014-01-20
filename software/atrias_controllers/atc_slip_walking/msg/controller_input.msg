@@ -25,6 +25,10 @@ float64 left_toe_pos
 float64 hip_pos_kd
 float64 right_toe_pos
 
+# Torso options
+float64 qvpp
+float64 rvpp
+
 # Debug
 float64 current_limit
 float64 velocity_limit

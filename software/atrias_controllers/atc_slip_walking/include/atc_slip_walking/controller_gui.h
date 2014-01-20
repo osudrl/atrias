@@ -24,7 +24,7 @@ atc_slip_walking::controller_status controllerDataIn;
 // GUI elements
 Gtk::ComboBox *main_controller_combobox,
     *switch_method_combobox;
-    
+
 Gtk::SpinButton *swing_leg_retraction_spinbutton,
     *stance_leg_extension_spinbutton,
     *leg_length_spinbutton,
@@ -42,6 +42,8 @@ Gtk::SpinButton *swing_leg_retraction_spinbutton,
     *hip_pos_kd_spinbutton,
     *left_toe_pos_spinbutton,
     *right_toe_pos_spinbutton,
+    *qvpp_spinbutton,
+    *rvpp_spinbutton,
     *current_limit_spinbutton,
     *velocity_limit_spinbutton,
     *deflection_limit_spinbutton,
