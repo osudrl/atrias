@@ -326,27 +326,33 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dql, drl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
+    // Compute current torso states
+    qb = rs.position.bodyPitch;
+    dqb = rs.position.bodyPitchVelocity;
+    // Leg angle and angular velocity with respect to the world
+    ql += qb - 3.0*M_PI/2.0;
+    dql += dqb;
+
+    // Limit ql
+    if (ql < q1)
+        ql = q1;
+
     // Compute and set motor angles such that there is no hip torque, only
     // axial leg forces
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(ql, r0Sl);
     std::tie(dqmSA, dqmSB) = ascCommonToolkit.legVel2MotorVel(r0Sl, dql, 0.0);
 
     // Torso control
-    // Compute current torso states
-    qb = rs.position.bodyPitch;
-    dqb = rs.position.bodyPitchVelocity;
     // PD control
-    //double torsoCurrent = -(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd;
+    //double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
     // VPP control
     // Constants
     double torsoMass = 22.0; // kg
-    double rcom = 0.12; // Distance between leg pivot center and center of mass from ATRIAS solid model
+    double rcom = 0.33; // Distance between leg pivot center and center of mass from ATRIAS solid model
     // Body angle from vertical
     double qT = qb - 3.0*M_PI/2.0;
-    // Leg angle with respect to the world
-    double qL = ql + qT;
     // Solve for q (angle between the leg and the vpp)
-    double alpha1 = M_PI/2.0 + qL - qT;
+    double alpha1 = M_PI/2.0 + ql - qT;
     double C1 = pow( pow(rcom,2.0) + pow(rl,2.0) - 2.0*rcom*rl*cos(alpha1) ,0.5);
     double theta1 = asin(rcom/C1*sin(alpha1));
     double alpha2 = theta1 + alpha1 + qvpp;
@@ -359,14 +365,28 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     // Torque to redirect axial leg force to VPP
     std::tie(fa, dfa) = ascCommonToolkit.legForce(rl, drl, r0Sl);
     double torsoTorque = rl*fa*tan(q);
-    // Feed-forward term (statically stable)
-    torsoTorque += rcom*sin(qT)*torsoMass*9.81;
     // Convert to current (torque/gearRatio/motorTorqueConstant)
-    double torsoCurrent = torsoTorque/KG/KT;
+    double vppTorsoCurrent = torsoTorque/KG/KT;
+    printf("vppTorsoCurrent: %f\n", vppTorsoCurrent);
+
+    // Feed-forward term (statically stable)
+    torsoTorque = rcom*sin(qT)*torsoMass*9.81;
+    // Convert to current (torque/gearRatio/motorTorqueConstant)
+    double ffTorsoCurrent = torsoTorque/KG/KT;
+    printf("ffTorsoCurrent: %f\n", ffTorsoCurrent);
+
+    // Combine
+    double torsoCurrent = vppTorsoCurrent + ffTorsoCurrent;
+
+    // Back to relative coordinates
+    qmSA  -= qb - 3.0*M_PI/2.0;
+    dqmSA -= dqb;
+    qmSB  -= qb - 3.0*M_PI/2.0;
+    dqmSB -= dqb;
 
     // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent/2.0;
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent/2.0;
+    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent;
+    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent;
 
 } // passiveStanceController
 
@@ -432,7 +452,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     s = clamp(s, 0.0, 1.0);
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 1.0, qeFm, q1, 0.0, 0.0, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.95, qeFm, q1, 0.0, 0.0, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
