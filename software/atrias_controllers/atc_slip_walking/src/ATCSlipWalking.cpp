@@ -348,7 +348,7 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     // VPP control
     // Constants
     double torsoMass = 22.0; // kg
-    double rcom = 0.33; // Distance between leg pivot center and center of mass from ATRIAS solid model
+    double rcom = 0.15; // Distance between leg pivot center and center of mass from ATRIAS solid model
     // Body angle from vertical
     double qT = qb - 3.0*M_PI/2.0;
     // Solve for q (angle between the leg and the vpp)
