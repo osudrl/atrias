@@ -122,8 +122,14 @@ void ATCSlipWalking::controller() {
     // Run safety checks and trigger E-stop if needed
     checkSafeties();
 
-    // Log data
-    logOut.walkingState = walkingState;
+    // Make the gradients between the logged walking states unique
+    if (walkingState == 2) {
+        logOut.walkingState = 3;
+    } else if (walkingState == 3) {
+        logOut.walkingState = 6;
+    } else {
+        logOut.walkingState = walkingState;
+    }
 
 } // controller
 
