@@ -346,6 +346,7 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     // PD control
     //double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
     // VPP control
+    /*
     // Constants
     double torsoMass = 22.0; // kg
     double rcom = 0.15; // Distance between leg pivot center and center of mass from ATRIAS solid model
@@ -377,6 +378,9 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
 
     // Combine
     double torsoCurrent = vppTorsoCurrent + ffTorsoCurrent;
+    */
+    // No torso control
+    double torsoCurrent = 0.0;
 
     // Back to relative coordinates
     qmSA  -= qb - 3.0*M_PI/2.0;
@@ -496,8 +500,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
  */
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
+    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.rotorAngle, rsFl->halfB.rotorAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -543,7 +547,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
  */
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
