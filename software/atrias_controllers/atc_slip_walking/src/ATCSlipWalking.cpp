@@ -173,7 +173,7 @@ void ATCSlipWalking::checkSafeties() {
         printf("Spring deflection (rA): %f\n", rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle);
         printf("Spring deflection (lB): %f\n", rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle);
         printf("Spring deflection (rB): %f\n", rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle);
-        commandEStop();
+        //commandEStop();
     }
 } // checkSafeties
 
@@ -465,19 +465,26 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     s = clamp(s, 0.0, 1.0);
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, 0.0, 0.0, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.95, qeFm, q1, 0.0, 0.0, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
 
     // Piece-wise cubic spline to slave the flight leg length to the stance leg angle
-    if (s <= 0.7) {
-        // Leg retraction during first half
-        //std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.7, reFm, rtFm, 0.0, 0.0, s, ds);
-        std::tie(rm, drm) = ascInterpolation.linear(0.0, 0.7, reFm, rtFm, s, ds);
-    } else {
-        // Leg extension during the second half
+    if (s < 0.25) {
+        // Leg retraction
+        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.25, reFm, rtFm, 0.0, 0.0, s, ds);
+        //std::tie(rm, drm) = ascInterpolation.linear(0.0, 0.25, reFm, rtFm, s, ds);
+    } else if ((s >= 0.25) && (s <= 0.7)) {
+        rm = rtFm;
+        drm = 0.0;
+    } else if (s > 0.7) {
+        // Leg extension
         std::tie(rm, drm) = ascInterpolation.cubic(0.7, 0.95, rtFm, r0, 0.0, 0.0, s, ds);
+    } else {
+        printf("Leg retraction error.  s = %f\n", s);
+        rm = rtFm;
+        drm = 0.0;
     }
 
     // Convert desired leg angles and lengths into motor positions and velocities
@@ -509,8 +516,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
  */
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
-    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.rotorAngle, rsFl->halfB.rotorAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -556,7 +563,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
  */
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
