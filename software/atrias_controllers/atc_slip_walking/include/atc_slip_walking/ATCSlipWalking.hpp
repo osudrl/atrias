@@ -115,10 +115,17 @@ class ATCSlipWalking : public ATC<
         double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
         LegForce forceSl, forceFl;
 
+        // Spring variables
+        double qLsA, qLsB, qRsA, qRsB;
+        double lDeflection, rDeflection;
+
+        // Feed-forward scaling
+        double ffScale;
+
         // Leg parameters at exit state (event trigger)
         double reSm, qeSm; // Stance leg motor states
         double reFm, qeFm; // Flight leg motor states
-        
+
         // Leg parameters at target states
         double rtFm, r0Sl; // Only length as angle is in q(1:4)
 
@@ -128,7 +135,7 @@ class ATCSlipWalking : public ATC<
 
         // State transistion events
         bool isForwardStep, isTrigger; // Logical preventing backstepping issues
-        
+
         // Misc margins, ratelimiters and other debug values
         double legRateLimit, hipRateLimit, springRateLimit;
         double currentLimit, velocityLimit, deflectionLimit;
