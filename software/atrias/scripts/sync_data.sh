@@ -141,8 +141,11 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
 
 
-# Delete robot computer copies of files
+# "Delete" the files from the robot computer, moving them to a backup location
+# So the backup folder can just be deleted to clear out files, create it if
+# it does not already exist
 printf "${OKGREEN}[Deleting files from robot computer...]${ENDC}\n"
+mkdir -p "${SOURCE_DIR}/backup"
 mv ${SORT_DIR}/* "${SOURCE_DIR}/backup"
 sudo rm -r "$SORT_DIR"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
