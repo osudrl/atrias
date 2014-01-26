@@ -119,6 +119,32 @@ void ATCSlipWalking::controller() {
             break;
     }
 
+    // WARNING: DO NOT USE THIS WITH THE stanceController.  Things may explode.
+    // Calculate the feed-forward term
+    // Find the smaller deflection
+    qLsA = rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle;
+    qLsB = rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle;
+    qRsA = rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle;
+    qRsB = rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle;
+    if (abs(qLsA) > abs(qLsB))
+        lDeflection = -qLsB;
+    else
+        lDeflection = qLsA;
+
+    if (abs(qRsA) > abs(qRsB))
+        rDeflection = -qRsB;
+    else
+        rDeflection = qRsA;
+
+    // Feed forward scaling
+    ffScale = 1.0;
+
+    // (deflection*springConstant/gearRatio/motorTorqueConstant)
+    co.lLeg.motorCurrentA += ffScale*lDeflection*KS/KG/KT;
+    co.lLeg.motorCurrentB -= ffScale*lDeflection*KS/KG/KT;
+    co.rLeg.motorCurrentA += ffScale*rDeflection*KS/KG/KT;
+    co.rLeg.motorCurrentB -= ffScale*rDeflection*KS/KG/KT;
+
     // Run safety checks and trigger E-stop if needed
     checkSafeties();
 
