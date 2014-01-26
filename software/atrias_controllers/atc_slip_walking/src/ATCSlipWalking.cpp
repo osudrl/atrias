@@ -576,7 +576,9 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
             break;
 
         case 1: // Automatic switch based on gait parameter
-            isTrigger = (qSl >= q3);
+            // Stance leg must be ready to take off, and flight leg ready to
+            // touch down
+            isTrigger = (qSl >= q3) && (qFl < q2);
             break;
     }
 
