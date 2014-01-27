@@ -18,7 +18,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     // Gait options
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
-    swing_leg_retraction_spinbutton->set_range(0.0, 0.20);
+    swing_leg_retraction_spinbutton->set_range(0.0, 0.30);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
     swing_leg_retraction_spinbutton->set_value(0.15);
     gui->get_widget("stance_leg_extension_spinbutton", stance_leg_extension_spinbutton);
