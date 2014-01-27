@@ -379,7 +379,7 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
 
     // Torso control
     // PD control
-    //double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
+    double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
     // VPP control
     /*
     // Constants
@@ -415,7 +415,7 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     double torsoCurrent = vppTorsoCurrent + ffTorsoCurrent;
     */
     // No torso control
-    double torsoCurrent = 0.0;
+    //double torsoCurrent = 0.0;
 
     // Back to relative coordinates
     qmSA  -= qb - 3.0*M_PI/2.0;
@@ -491,26 +491,27 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     s = clamp(s, 0.0, 1.0);
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.95, qeFm, q1, 0.0, 0.0, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.95, qeFm, q1, -0.3, 0.3, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
 
-    // Piece-wise cubic spline to slave the flight leg length to the stance leg angle
-    /*
-    // Sine wave(ish)
-    if (s < 0.5) {
+    // Leg retraction
+    //rm = r0 - swingLegRetraction*4.0*(s-pow(s,2.0));
+    //drm = -swingLegRetraction*4.0*(1.0-2.0*s);
+    // Cubic spline
+    if (s < 0.6) {
         // Leg retraction
-        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, 0.0, 0.0, s, ds);
-    } else if (s >= 0.5) {
+        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.6, reFm, rtFm, -0.5, 0.0, s, ds);
+    } else if (s >= 0.6) {
         // Leg extension
-        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.95, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.6, 0.95, rtFm, r0, 0.0, 0.0, s, ds);
     } else {
         printf("Leg retraction error.  s = %f\n", s);
         rm = rtFm;
         drm = 0.0;
     }
-    */
+    /*
     // Square wave
     if (s < 0.2) {
         // Leg retraction
@@ -526,6 +527,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         rm = rtFm;
         drm = 0.0;
     }
+    */
 
     // Convert desired leg angles and lengths into motor positions and velocities
     std::tie(qmFA, qmFB) = ascCommonToolkit.legPos2MotorPos(qm, rm);
@@ -577,7 +579,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
         case 1: // Automatic switch based on gait parameter
             // Stance leg must be ready to take off, and flight leg ready to
             // touch down
-            isTrigger = (qSl >= q3) && (qFl < q1);
+            isTrigger = (qSl >= q3) && (qFl < q2);
             break;
     }
 
