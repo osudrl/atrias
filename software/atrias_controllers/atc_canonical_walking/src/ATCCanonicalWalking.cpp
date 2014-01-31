@@ -338,11 +338,10 @@ namespace atrias {
 	{
 	  for(j=0; j<N_PARAMS; j++ )
 	    {
-	      param_mat[i][j] = A_OPT[i+1][j];
+	      param_mat[i][j] = A_OPT[i][j];
 	    }
 	}
-      vhip = A_OPT[0][0];
-      phip0 = A_OPT[0][1];
+      
       theta_limit1	= P_LIMITS[0];
       theta_limit2	= P_LIMITS[1];
     }
@@ -403,7 +402,8 @@ namespace atrias {
     case TauSource::STANCE_LEG_ANGLE: {
       double th, tau;
       th = PI - (xa[0]+(xa[1]+xa[2])/2);
-      tau = (th-phip0)/vhip;
+      tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+      
 
       // Reset tau's rate limiter so it doesn't jump when going into
       // manual tau mode
@@ -431,7 +431,7 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				dtau = -(xa[5]+(xa[6]+xa[7])/2)/vhip;
+				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
 				//dtau = 0.0;
 				return dtau;
 			}
