@@ -106,7 +106,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     current_limit_spinbutton->set_increments(5.0, 0.0);
     current_limit_spinbutton->set_value(15.0);
     gui->get_widget("velocity_limit_spinbutton", velocity_limit_spinbutton);
-    velocity_limit_spinbutton->set_range(0.0, 8.0);
+    velocity_limit_spinbutton->set_range(0.0, 15.0);
     velocity_limit_spinbutton->set_increments(0.5, 0.0);
     velocity_limit_spinbutton->set_value(6.0);
     gui->get_widget("deflection_limit_spinbutton", deflection_limit_spinbutton);
