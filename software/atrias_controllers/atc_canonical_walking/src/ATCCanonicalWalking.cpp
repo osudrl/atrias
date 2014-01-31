@@ -4,7 +4,7 @@
 namespace atrias {
   namespace controller {
    
-    //Simple constructor 
+  //Simple constructor 
     ATCCanonicalWalking::ATCCanonicalWalking(string name) :
       ATC(name),
       ascHipBoomKinematics(this, "ascHipBoomKinematics"),
@@ -338,10 +338,11 @@ namespace atrias {
 	{
 	  for(j=0; j<N_PARAMS; j++ )
 	    {
-	      param_mat[i][j] = A_OPT[i][j];
+	      param_mat[i][j] = A_OPT[i+1][j];
 	    }
 	}
-
+      vhip = A_OPT[0][0];
+      phip0 = A_OPT[0][1];
       theta_limit1	= P_LIMITS[0];
       theta_limit2	= P_LIMITS[1];
     }
@@ -383,40 +384,40 @@ namespace atrias {
       
     }
     
-	/**
-	* @brief This is to compute the phase (parameterized time) 'tau'
-	*/
-	double ATCCanonicalWalking::compute_tau(){	
-		// The tau calculation depends on the tau source
-		switch ((TauSource) guiIn.tauMode) {
-			case TauSource::GUI:
-				// Reset tau rate limiter if we're just initializing
-				if (isInitialized)
-					rateLimTau.reset(guiIn.manualTau);
-                                double th, tau;
-				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
-				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
-                                printf("Actual Tau: %6.4f \n", tau);
-				return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
+  /**
+   * @brief This is to compute the phase (parameterized time) 'tau'
+   */
+  double ATCCanonicalWalking::compute_tau(){	
+    // The tau calculation depends on the tau source
+    switch ((TauSource) guiIn.tauMode) {
+    case TauSource::GUI:
+      // Reset tau rate limiter if we're just initializing
+      if (isInitialized)
+        rateLimTau.reset(guiIn.manualTau);
+      double th, tau;
+      th = PI - (xa[0]+(xa[1]+xa[2])/2);
+      tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+      printf("Actual Tau: %6.4f \n", tau);
+      return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
 
-			case TauSource::STANCE_LEG_ANGLE: {
-				double th, tau;
-				th = PI*3/2 - (xa[0]+(xa[1]+xa[2])/2);
-				tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+    case TauSource::STANCE_LEG_ANGLE: {
+      double th, tau;
+      th = PI - (xa[0]+(xa[1]+xa[2])/2);
+      tau = (th-phip)/vhip;
 
-				// Reset tau's rate limiter so it doesn't jump when going into
-				// manual tau mode
-				rateLimTau.reset(tau);
+      // Reset tau's rate limiter so it doesn't jump when going into
+      // manual tau mode
+      rateLimTau.reset(tau);
 
-				return tau;
-			}
+      return tau;
+    }
 
-			default:
-				// If the tau mode isn't recognized, trigger the EStop and return a dummy value.
-				commandEStop();
-				return 0.0;
-		}
-	}
+    default:
+      // If the tau mode isn't recognized, trigger the EStop and return a dummy value.
+      commandEStop();
+      return 0.0;
+    }
+  }
     
 	/**
 	* @brief This is to compute the time derivative of 'tau'
@@ -430,7 +431,7 @@ namespace atrias {
 
 			case TauSource::STANCE_LEG_ANGLE: {
 				double dtau;
-				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+				dtau = -(xa[5]+(xa[6]+xa[7])/2)/vhip;
 				//dtau = 0.0;
 				return dtau;
 			}
@@ -454,7 +455,11 @@ namespace atrias {
 	  y2d[j] = exp(-param_mat[j][3]*tau) * 
 	    (param_mat[j][0] * cos(param_mat[j][1]*tau) + 
 	     param_mat[j][2] * sin(param_mat[j][1]*tau)) + 
-	    param_mat[j][4];
+	    param_mat[j][4] * cos(param_mat[j][5]*tau) + 
+            (2*param_mat[j][3]*param_mat[j][4]*param_mat[j][5])/
+            (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
+             pow(param_mat[j][5],2)) * sin(param_mat[5]*tau) + 
+            param_mat[j][6];
 	}
     }
     
@@ -472,7 +477,11 @@ namespace atrias {
 	      param_mat[j][0] * param_mat[j][1]*sin(param_mat[j][1]*tau))
 	    - param_mat[j][3] * exp(-param_mat[j][3]*tau) *
 	    ( param_mat[j][0] * cos(param_mat[j][1]*tau) +
-	      param_mat[j][2] * sin(param_mat[j][1]*tau));
+	      param_mat[j][2] * sin(param_mat[j][1]*tau)) - 
+            param_mat[j][4] * param_mat[j][5] * sin(param_mat[j][5]*tau) + 
+            (2*param_mat[j][3]*param_mat[j][4]*pow(param_mat[j][5],2))/
+            (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
+             pow(param_mat[j][5],2)) * sin(param_mat[5]*tau);
 	  y2dDot[j] *=  dtau;		//noted
 	}
     }
