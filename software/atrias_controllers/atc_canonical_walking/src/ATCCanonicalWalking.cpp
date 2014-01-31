@@ -403,7 +403,7 @@ namespace atrias {
     case TauSource::STANCE_LEG_ANGLE: {
       double th, tau;
       th = PI - (xa[0]+(xa[1]+xa[2])/2);
-      tau = (th-phip)/vhip;
+      tau = (th-phip0)/vhip;
 
       // Reset tau's rate limiter so it doesn't jump when going into
       // manual tau mode
@@ -458,7 +458,7 @@ namespace atrias {
 	    param_mat[j][4] * cos(param_mat[j][5]*tau) + 
             (2*param_mat[j][3]*param_mat[j][4]*param_mat[j][5])/
             (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
-             pow(param_mat[j][5],2)) * sin(param_mat[5]*tau) + 
+             pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau) + 
             param_mat[j][6];
 	}
     }
@@ -481,7 +481,7 @@ namespace atrias {
             param_mat[j][4] * param_mat[j][5] * sin(param_mat[j][5]*tau) + 
             (2*param_mat[j][3]*param_mat[j][4]*pow(param_mat[j][5],2))/
             (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
-             pow(param_mat[j][5],2)) * sin(param_mat[5]*tau);
+             pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau);
 	  y2dDot[j] *=  dtau;		//noted
 	}
     }
