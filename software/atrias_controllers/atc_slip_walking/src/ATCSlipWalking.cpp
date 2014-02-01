@@ -77,31 +77,31 @@ void ATCSlipWalking::controller() {
             switch (walkingState) {
                 case 0: // Right leg single support (right = stance, left = flight)
                     legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
-                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
+                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
 
                 case 1: // Double support (right = flight, left = stance)
-                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
-                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
+                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
+                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     doubleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
                     break;
 
                 case 2: // Left leg single support (right = flight, left = stance)
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
-                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
+                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
-                    //stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    //stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
-                    passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
+                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
+                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
             }
@@ -119,6 +119,7 @@ void ATCSlipWalking::controller() {
             break;
     }
 
+    /*
     // WARNING: DO NOT USE THIS WITH THE stanceController.  Things may explode.
     // Calculate the feed-forward term
     // Find the smaller deflection
@@ -144,6 +145,7 @@ void ATCSlipWalking::controller() {
     co.lLeg.motorCurrentB -= ffScale*lDeflection*KS/KG/KT;
     co.rLeg.motorCurrentA += ffScale*rDeflection*KS/KG/KT;
     co.rLeg.motorCurrentB -= ffScale*rDeflection*KS/KG/KT;
+    */
 
     // Run safety checks and trigger E-stop if needed
     checkSafeties();
@@ -444,8 +446,25 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     // Rate limit change in spring rest length from current to desired
     r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
+    // Compute current stance leg states
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+
+    // Compute current torso states
+    qb = rs.position.bodyPitch;
+    dqb = rs.position.bodyPitchVelocity;
+
+    // Convert leg angle and velocities to world coordinates
+    qSl  += qb - 3.0*M_PI/2.0;
+    dqSl += dqb;
+
+    /*
     // Compute current ATRIAS non-linear spring force for given leg configuration
     std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
+    */
+    // Compute current linear spring force
+    fa = (r0Sl-rSl)*6500.0;
+    dfa = -6500.0;
 
     // Define component forces and their derivatives
     forceSl.fx = fa*cos(qSl);
