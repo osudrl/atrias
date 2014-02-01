@@ -13,6 +13,10 @@ ASCLegForce::ASCLegForce(AtriasController *parent, string name) :
     ki = 0.0;
     kd = 5.0;
 
+    // Initialize integral error terms
+    eiA = 0.0;
+    eiB = 0.0;
+
     // Anti wind-up limit for integral error term
     antiWindup = 5.0;
 }

@@ -463,18 +463,24 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
     */
     // Compute current linear spring force
-    fa = (r0Sl-rSl)*6500.0;
-    dfa = -6500.0;
+    fa = (r0Sl-rSl)*12000.0;
+    dfa = -12000.0;
 
     // Define component forces and their derivatives
     forceSl.fx = fa*cos(qSl);
-    forceSl.dfx = -dqSl*sin(qSl)*fa;// + dfa*cos(qSl);
+    forceSl.dfx = -dqSl*sin(qSl)*fa + dfa*cos(qSl);
     forceSl.fz = -fa*sin(qSl);
-    forceSl.dfz = -dqSl*cos(qSl)*fa;// - dfa*sin(qSl);
+    forceSl.dfz = -dqSl*cos(qSl)*fa - dfa*sin(qSl);
 
     // Use force tracking controller to compute required motor currents
     // Force controller has built into world coordinate conversion
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
+
+    // PD past q1
+    if (qSl < q1) {
+        coSl->motorCurrentA += 10.0;
+        coSl->motorCurrentB += 10.0;
+    }
 } // stanceController
 
 /**
@@ -491,8 +497,8 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
  */
 void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
-    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle, rsSl->halfA.rotorVelocity, rsSl->halfB.rotorVelocity);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -510,7 +516,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     s = clamp(s, 0.0, 1.0);
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.95, qeFm, q1, -0.3, 0.3, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, -0.3, 0.3, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
@@ -524,7 +530,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.6, reFm, rtFm, -0.5, 0.0, s, ds);
     } else if (s >= 0.6) {
         // Leg extension
-        std::tie(rm, drm) = ascInterpolation.cubic(0.6, 0.95, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.6, 0.90, rtFm, r0, 0.0, 0.0, s, ds);
     } else {
         printf("Leg retraction error.  s = %f\n", s);
         rm = rtFm;
@@ -577,8 +583,8 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
  */
 void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
-    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.rotorAngle, rsFl->halfB.rotorAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -626,7 +632,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
  */
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.rotorAngle, rsSl->halfB.rotorAngle);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
