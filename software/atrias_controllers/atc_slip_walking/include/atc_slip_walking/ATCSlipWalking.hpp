@@ -93,7 +93,7 @@ class ATCSlipWalking : public ATC<
 
         // Walking gait definition values
         double q1, q2, q3, q4;
-        double s, ds; // Time invariant measure of gait progress
+        double s, ds, sPrev; // Time invariant measure of gait progress
         double r0, fa, dfa; // Spring parameters
         double swingLegRetraction; // The amount the leg retracts during swing
         double stanceLegExtension; // The amount the leg extends during stance to inject energy

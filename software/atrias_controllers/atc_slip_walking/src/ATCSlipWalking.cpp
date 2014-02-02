@@ -43,6 +43,10 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 
     // Initialize walking state
     walkingState = 3;
+
+    // Initialize the flight leg variable
+    s = 0.0;
+    sPrev = 0.0;
 }
 
 /**
@@ -478,8 +482,8 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 
     // PD past q1
     if (qSl < q1) {
-        coSl->motorCurrentA += 10.0;
-        coSl->motorCurrentB += 10.0;
+        coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
+        coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
     }
 } // stanceController
 
@@ -515,6 +519,14 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     // Limit gait parameter between zero and one
     s = clamp(s, 0.0, 1.0);
 
+    // Make s only increase
+    if (s < sPrev) {
+        s = sPrev;
+        ds = 0.0;
+    } else {
+        sPrev = s;
+    }
+
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
     std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, -0.3, 0.3, s, ds);
 
@@ -525,12 +537,12 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     //rm = r0 - swingLegRetraction*4.0*(s-pow(s,2.0));
     //drm = -swingLegRetraction*4.0*(1.0-2.0*s);
     // Cubic spline
-    if (s < 0.6) {
+    if (s < 0.5) {
         // Leg retraction
-        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.6, reFm, rtFm, -0.5, 0.0, s, ds);
-    } else if (s >= 0.6) {
+        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, -0.5, 0.0, s, ds);
+    } else if (s >= 0.5) {
         // Leg extension
-        std::tie(rm, drm) = ascInterpolation.cubic(0.6, 0.90, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.90, rtFm, r0, 0.0, 0.0, s, ds);
     } else {
         printf("Leg retraction error.  s = %f\n", s);
         rm = rtFm;
@@ -604,7 +616,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
         case 1: // Automatic switch based on gait parameter
             // Stance leg must be ready to take off, and flight leg ready to
             // touch down
-            isTrigger = (qSl >= q3) && (qFl < q2);
+            isTrigger = (qSl >= q3) && (qFl <= (q1+0.02));
             break;
     }
 
@@ -679,6 +691,10 @@ void ATCSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, at
     qb = rs.position.bodyPitch;
     qeFm += qb -3.0*M_PI/2.0;
     qeSm += qb -3.0*M_PI/2.0;
+
+    // Reset the flight leg variable
+    s = 0.0;
+    sPrev = 0.0;
 
     // Reset rate limiters
     ascRateLimitSr0->reset(reSm);
