@@ -18,9 +18,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 
     // Gait options
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
-    swing_leg_retraction_spinbutton->set_range(0.0, 0.30);
+    swing_leg_retraction_spinbutton->set_range(0.0, 0.35);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
-    swing_leg_retraction_spinbutton->set_value(0.15);
+    swing_leg_retraction_spinbutton->set_value(0.20);
     gui->get_widget("stance_leg_extension_spinbutton", stance_leg_extension_spinbutton);
     stance_leg_extension_spinbutton->set_range(0.0, 0.05);
     stance_leg_extension_spinbutton->set_increments(0.01, 0.0);
@@ -108,11 +108,11 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("velocity_limit_spinbutton", velocity_limit_spinbutton);
     velocity_limit_spinbutton->set_range(0.0, 15.0);
     velocity_limit_spinbutton->set_increments(0.5, 0.0);
-    velocity_limit_spinbutton->set_value(6.0);
+    velocity_limit_spinbutton->set_value(12.0);
     gui->get_widget("deflection_limit_spinbutton", deflection_limit_spinbutton);
     deflection_limit_spinbutton->set_range(0.0, 0.3);
     deflection_limit_spinbutton->set_increments(0.05, 0.0);
-    deflection_limit_spinbutton->set_value(0.15);
+    deflection_limit_spinbutton->set_value(0.25);
     gui->get_widget("walking_state_spinbutton", walking_state_spinbutton);
     walking_state_spinbutton->set_range(0, 3);
     walking_state_spinbutton->set_increments(1, 0);
