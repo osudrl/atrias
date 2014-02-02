@@ -517,7 +517,9 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     ds = dqSl;//dqSl/(q3 - q2);
 
     // Limit gait parameter between zero and one
-    s = clamp(s, 0.0, 1.0);
+    s  = clamp(s, 0.0, 1.0);
+    // Limit the derivative between zero and one rad/s
+    ds = clamp(s, 0.0, 1.0);
 
     // Make s only increase
     if (s < sPrev) {
@@ -528,7 +530,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     }
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, -0.3, 0.3, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, 1.0, 1.0, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
@@ -539,7 +541,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     // Cubic spline
     if (s < 0.5) {
         // Leg retraction
-        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, -0.5, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, -1.0, 0.0, s, ds);
     } else if (s >= 0.5) {
         // Leg extension
         std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.90, rtFm, r0, 0.0, 0.0, s, ds);
