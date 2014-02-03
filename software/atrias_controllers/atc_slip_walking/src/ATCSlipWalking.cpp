@@ -462,13 +462,13 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     qSl  += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
 
-    /*
     // Compute current ATRIAS non-linear spring force for given leg configuration
     std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
-    */
+    /*
     // Compute current linear spring force
     fa = (r0Sl-rSl)*12000.0;
     dfa = -12000.0;
+    */
 
     // Define component forces and their derivatives
     forceSl.fx = fa*cos(qSl);
@@ -530,7 +530,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     }
 
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
-    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, 1.0, 1.0, s, ds);
+    std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, -0.5, 1.0, s, ds);
 
     // Compute leg retraction target length
     rtFm = r0 - swingLegRetraction;
@@ -544,7 +544,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, -1.0, 0.0, s, ds);
     } else if (s >= 0.5) {
         // Leg extension
-        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.90, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.9, rtFm, r0, 0.0, 0.0, s, ds);
     } else {
         printf("Leg retraction error.  s = %f\n", s);
         rm = rtFm;
