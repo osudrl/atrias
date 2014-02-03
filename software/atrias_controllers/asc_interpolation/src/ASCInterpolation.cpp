@@ -89,7 +89,7 @@ std::tuple<double, double> ASCInterpolation::cubic(double x1, double x2, double 
 	a3 = y1;
 	s = (x - x1)/(x2 - x1);
 	y = a0*s*s*s + a1*s*s + a2*s + a3;
-  dy = dx*dy1 + (3.0*dx*pow(x - x1, 2.0)*(2.0*y2 - 2.0*y1 + (dy1 + dy2)*(x1 - x2)))/pow(x1 - x2, 3.0) - (2.0*dx*(x1 - x)*(3.0*y2 - 3.0*y1 + (dy1 + dy2)*(x1 - x2) + dy1*(x1 - x2)))/pow(x1 - x2, 2.0);
+  dy = dx*(-3.0*a0*pow(x - x1, 2.0)/pow(x1 - x2, 3.0) + 2.0*a1*(x - x1)/pow(x1 - x2, 2.0) - a2/(x1 - x2));
 	
 	// Set the log data
 	log_out.data.cubic_y = y;
