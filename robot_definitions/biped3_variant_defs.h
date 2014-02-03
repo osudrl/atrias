@@ -105,6 +105,6 @@
 #define MIN_HIP_MTR_CURRENT_CMD    -60.0
 
 //! The threshold (above calibrated startup value) at which the toes detect contact
-#define TOE_THRESH                  300
+#define TOE_THRESH                  500
 
 #endif // ROBOT_VARIANT_DEFS_H

@@ -48,6 +48,11 @@ void LegMedulla::postOpInit() {
 	incrementalEncoderTimestampValue =           *incrementalEncoderTimestamp;
 	timingCounterValue               =           *timingCounter;
 	zeroToeSensor                    =           *toeSensor;
+	oldToeBool                       =           false;
+	toeBool                          =           false;
+	toeCounter                       =           0;
+	legEncoderDt                     =           0;
+	motorEncoderDt                   =           0;
 	updatePositionOffsets();
 }
 
@@ -195,12 +200,12 @@ void LegMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 		case MEDULLA_RIGHT_LEG_A_ID:
 			robot_state.rLeg.halfA.medullaState = *state;
 			robot_state.rLeg.halfA.errorFlags   = *errorFlags;
+			robot_state.rLeg.toeSwitch          = *toeSensor;
+			robot_state.rLeg.onGround           = toeDetect();
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			robot_state.rLeg.halfB.medullaState = *state;
 			robot_state.rLeg.halfB.errorFlags   = *errorFlags;
-			robot_state.rLeg.toeSwitch          = *toeSensor;
-			robot_state.rLeg.onGround           = toeDetect();
 			break;
 	}
 }
@@ -289,54 +294,50 @@ void LegMedulla::processPositions(atrias_msgs::robot_state& robotState) {
 }
 
 void LegMedulla::processVelocities(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState) {
+	// Update the delta time values.
+	motorEncoderDt += (((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+	legEncoderDt += (((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
 			if (!skipMotorEncoder) {
 				// The division by 32 million translates timer ticks from the microcontroller into seconds
 				robotState.lLeg.halfA.motorVelocity =
-					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_A_RAD_PER_CNT  /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_A_RAD_PER_CNT  / motorEncoderDt;
 			}
 			if (!skipLegEncoder) {
 				robotState.lLeg.halfA.legVelocity   =
-					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_A_RAD_PER_CNT   /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_A_RAD_PER_CNT   / legEncoderDt;
 			}
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
 			if (!skipMotorEncoder) {
 				robotState.lLeg.halfB.motorVelocity =
-					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_B_RAD_PER_CNT  /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * LEFT_TRAN_B_RAD_PER_CNT  / motorEncoderDt;
 			}
 			if (!skipLegEncoder) {
 				robotState.lLeg.halfB.legVelocity   =
-					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_B_RAD_PER_CNT   /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * LEFT_LEG_B_RAD_PER_CNT   / legEncoderDt;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
 			if (!skipMotorEncoder) {
 				robotState.rLeg.halfA.motorVelocity =
-					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_A_RAD_PER_CNT /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_A_RAD_PER_CNT / motorEncoderDt;
 			}
 			if (!skipLegEncoder) {
 				robotState.rLeg.halfA.legVelocity   =
-					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_A_RAD_PER_CNT  /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   - legEncoderTimestampValue))   / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_A_RAD_PER_CNT  / legEncoderDt;
 			}
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
 			if (!skipMotorEncoder) {
 				robotState.rLeg.halfB.motorVelocity =
-					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_B_RAD_PER_CNT /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*motorEncoderTimestamp - motorEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *motorEncoder) - motorEncoderValue)) * RIGHT_TRAN_B_RAD_PER_CNT / motorEncoderDt;
 			}
 			if (!skipLegEncoder) {
 				robotState.rLeg.halfB.legVelocity   =
-					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  /
-					(((double) deltaTime) / 1000000000.0 + ((double) (*legEncoderTimestamp   -   legEncoderTimestampValue)) / MEDULLA_TIMER_FREQ);
+					((double) (((int64_t) *legEncoder)   - legEncoderValue))   * RIGHT_LEG_B_RAD_PER_CNT  / legEncoderDt;
 			}
 			break;
 	}
@@ -345,6 +346,16 @@ void LegMedulla::processVelocities(RTT::os::TimeService::nsecs deltaTime, atrias
 	motorEncoderTimestampValue = *motorEncoderTimestamp;
 	legEncoderValue          = (int64_t) *legEncoder;
 	legEncoderTimestampValue = *legEncoderTimestamp;
+
+	// If the encoder values were good, then update the timestamp for the next
+	// cycle; otherwise, keep it the same so the next velocity measurement
+	// occurs over multiple timesteps
+	if (!skipMotorEncoder) {
+		motorEncoderDt = 0;
+	}
+	if (!skipLegEncoder) {
+		legEncoderDt = 0;
+	}
 }
 
 void LegMedulla::processThermistors(atrias_msgs::robot_state& robotState) {
@@ -520,8 +531,23 @@ uint8_t LegMedulla::getID() {
 }
 
 bool LegMedulla::toeDetect() {
-	// Simple thresholding
-	return ((int16_t) *toeSensor) - zeroToeSensor > TOE_THRESH; 
+	// Thresholding with sensor dropout detection
+	newToeBool = (((int16_t) *toeSensor) - zeroToeSensor > TOE_THRESH) && ((int16_t) *toeSensor != 4095);
+
+	// Debouncing
+	if (newToeBool == oldToeBool)
+		toeCounter += 1;
+	else
+		toeCounter = 0;
+
+	if (toeCounter >= 50) {
+		toeBool = newToeBool;
+		toeCounter = 50;
+	}
+
+	// Save the old value
+	oldToeBool = newToeBool;
+	return toeBool;
 }
 
 }

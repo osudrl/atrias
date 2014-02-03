@@ -31,7 +31,7 @@
 #define N_OUTPUTS 4
 #define N_MOTORS 4
 #define N_STATES 10
-#define N_PARAMS 5
+#define N_PARAMS 7
 
 // This controller's common definitions
 #include "common.hpp"
@@ -44,38 +44,32 @@ using namespace std;
 namespace atrias {
   namespace controller {
     
-    static const double invT[4][4] = {
+    static const double invT[N_OUTPUTS][N_MOTORS] = {
       {1  ,   0,-0.5,   0},
       {1  ,   0, 0.5,   0},
       {0  ,   1,   0,-0.5},
       {0  ,   1,   0, 0.5}};
-    /*static const double a_opt[4][5]={
-      {0.29315756,-3.47513300,-0.12892990,0.61400634,3.27548479}, 	// StanceLegAngleParam
-      {-0.46569548,3.05272503,-0.48594434,3.30148543,3.54487616}, 	// NonStanceLegAngleParam
-      {-0.00689978,-7.58620951,0.00406186,-2.62897489,0.26955308},	// StanceKneeParam
-      {-0.89695408,6.13951996,-0.07070758,0.48012954,0.88758479}};	// NonStanceKneeParam*/
-  static const double A_OPT[4][5] = {
-    {0.248512858247841,-3.39335181019614,-0.0163865306283763,-0.0161095385771100,3.18641985200738},
-    {-0.370490553532757,2.86858524711937,-0.0602155737210637,0.963486942161812,3.30629398292850},
-    {0.0292758253139001,-3.54972463250612,0.0101264641672405,-0.829717852159709,0.646266366816021},
-    {-0.398734024325334,6.20218454808675,0.0132145034062032,0.220442502179595,0.991477968113867}};
 
+  static const double A_OPT[N_OUTPUTS][N_PARAMS] = {
+    {-0.736161278360887, 0.961510947720295, -0.413424812367597, -0.858161335466444, -0.368316576417735, 0.966380044897140, 4.43338169569222},
+    {0.0501656493234942, -6.48163761335499, 0.00452655285232430, -2.14544557461930, 3.10484245312387, 0.292105419792362, -0.0330223138401500},
+    {0.0484985385586293, -6.49331108676484, 0.0580716551334495, 1.51540530652115, -0.104805942438701, 1.35779738351759,	0.805864557226697},
+    {0.00512349687595841, 9.35839616583717, 0.000524376303916196, -3.20225377630263, -17.4079015060045,	0.0998240233357460, 18.1843538215796}};
 
 
   /*static const double x_opt[4] = {3.08386532926800,   //rLeg.halfA.motorAngle
 			     3.07449603435955,   //rLeg.halfB.motorAngle
 			     3.43731571117661,   //lLeg.halfA.motorAngle
 			     3.69996901140680};    //lLeg.halfB.motorAngle*/
-  static const double X_OPT[4] = {2.64074720276561,
-                                  3.23462125837183,
-                                  3.10031827396828,
-                                  3.77213759883105};
+  static const double X_OPT[4] = { 2.73119439729408,
+                                   3.51277219589154,
+                                   2.95407609889802,
+                                   3.70368410536918};
+  
+  
 
 
-
-
-
-  static const double P_LIMITS[2] = {1.29700756020712,1.80927739148630};
+  static const double P_LIMITS[2] = {-0.205696528273924,0.0469866454729351};
 
 
 
@@ -162,6 +156,9 @@ namespace atrias {
       // define varibles
       double theta_limit1;  // Initial phase (or parameterized time)
       double theta_limit2;  // Final phase (or parameterized time)
+      
+      double vhip;          // desired hip velocity
+      double phip0;         // initial hip position
 
       double param_mat[N_OUTPUTS][N_PARAMS];  // The parameter matrix of Canonical Walking Function.
 

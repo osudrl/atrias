@@ -76,10 +76,19 @@ class LegMedulla : public Medulla {
 	uint8_t         timingCounterValue;
 	double          legPositionOffset;
 	int16_t         zeroToeSensor;
+	bool            newToeBool;
+	bool            oldToeBool;
+	bool            toeBool;
+	uint16_t        toeCounter;
 	
 	// Whether or not the encoder value for this cycle was erroneous
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
+
+	// Timing values to be used for velocity calculations.
+	// This is necessary for dealing with bad encoder values correctly
+	double          legEncoderDt;
+	double          motorEncoderDt;
 	
 	/** @brief The PDOEntryDatas array.
 	  */
