@@ -13,12 +13,8 @@ ASCInterpolation::ASCInterpolation(AtriasController *parent, string name) :
 
 std::tuple<double, double> ASCInterpolation::linear(double x1, double x2, double y1, double y2, double x, double dx) {
 
-	// Limit range since curve fit is only valid within range TODO: can reduce to single clamped statement once Ryan has updated clamp define
-	if (x1 < x2) {
-		x = clamp(x, x1, x2);
-	} else if (x2 < x1) {
-		x = clamp(x, x2, x1);
-	}
+	// Limit range since curve fit is only valid within range
+	 x = clamp(x, x1, x2);
 	
 	// Interpolate
 	y = (x - x1)*(y2 - y1)/(x2 - x1) + y1;
@@ -39,17 +35,9 @@ std::tuple<double, double> ASCInterpolation::linear(double x1, double x2, double
 
 double ASCInterpolation::bilinear(double x1, double x2, double y1, double y2, double z11, double z21, double z12, double z22, double x, double y) {
 
-	// Limit range since curve fit is only valid within range TODO: can reduce to single clamped statement once Ryan has updated clamp define
-	if (x1 < x2) {
-		x = clamp(x, x1, x2);
-	} else if (x2 < x1) {
-		x = clamp(x, x2, x1);
-	}
-	if (y1 < y2) {
-		y = clamp(y, y1, y2);
-	} else if (y2 < y1) {
-		y = clamp(y, y2, y1);
-	}
+	// Limit range since curve fit is only valid within range
+	 x = clamp(x, x1, x2);
+	 y = clamp(y, y1, y2);
 	
 	// Interpolate
 	z = (1.0/(x2 - x1)*(y2 - y1))*(z11*(x2 - x)*(y2 - y) + z21*(x - x1)*(y2 - y) + z12*(x2 - x)*(y - y1) + z22*(x - x1)*(y - y1));
@@ -67,12 +55,8 @@ double ASCInterpolation::bilinear(double x1, double x2, double y1, double y2, do
 
 std::tuple<double, double> ASCInterpolation::cosine(double x1, double x2, double y1, double y2, double x, double dx) {
 
-	// Limit range since curve fit is only valid within range TODO: can reduce to single clamped statement once Ryan has updated clamp define
-	if (x1 < x2) {
-		x = clamp(x, x1, x2);
-	} else if (x2 < x1) {
-		x = clamp(x, x2, x1);
-	}
+	// Limit range since curve fit is only valid within range
+	 x = clamp(x, x1, x2);
 	
 	// Interpolate
 	s = (1.0 - cos((x - x1)/(x2 - x1)*PI))/2.0;
@@ -95,12 +79,8 @@ std::tuple<double, double> ASCInterpolation::cosine(double x1, double x2, double
 
 std::tuple<double, double> ASCInterpolation::cubic(double x1, double x2, double y1, double y2, double dy1, double dy2, double x, double dx) {
 
-	// Limit range since curve fit is only valid within range TODO: can reduce to single clamped statement once Ryan has updated clamp define
-	if (x1 < x2) {
-		x = clamp(x, x1, x2);
-	} else if (x2 < x1) {
-		x = clamp(x, x2, x1);
-	}
+	// Limit range since curve fit is only valid within range
+	 x = clamp(x, x1, x2);
 
 	// Interpolate
 	a0 = 2.0*(y1 - y2) + (dy1 + dy2)*(x2 - x1);
