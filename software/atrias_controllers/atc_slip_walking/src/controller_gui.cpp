@@ -20,7 +20,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("swing_leg_retraction_spinbutton", swing_leg_retraction_spinbutton);
     swing_leg_retraction_spinbutton->set_range(0.0, 0.35);
     swing_leg_retraction_spinbutton->set_increments(0.01, 0.0);
-    swing_leg_retraction_spinbutton->set_value(0.20);
+    swing_leg_retraction_spinbutton->set_value(0.15);
     gui->get_widget("stance_leg_extension_spinbutton", stance_leg_extension_spinbutton);
     stance_leg_extension_spinbutton->set_range(0.0, 0.05);
     stance_leg_extension_spinbutton->set_increments(0.01, 0.0);
@@ -36,25 +36,25 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("q1_spinbutton", q1_spinbutton);
     q1_spinbutton->set_range(0.0, M_PI);
     q1_spinbutton->set_increments(0.01, 0.0);
-    q1_spinbutton->set_value(1.307);
+    q1_spinbutton->set_value(1.144);
     gui->get_widget("q2_spinbutton", q2_spinbutton);
     q2_spinbutton->set_range(0.0, M_PI);
     q2_spinbutton->set_increments(0.01, 0.0);
-    q2_spinbutton->set_value(1.517);
+    q2_spinbutton->set_value(1.297);
     gui->get_widget("q3_spinbutton", q3_spinbutton);
     q3_spinbutton->set_range(0.0, M_PI);
     q3_spinbutton->set_increments(0.01, 0.0);
-    q3_spinbutton->set_value(1.625);
+    q3_spinbutton->set_value(1.845);
     gui->get_widget("q4_spinbutton", q4_spinbutton);
     q4_spinbutton->set_range(0.0, M_PI);
     q4_spinbutton->set_increments(0.01, 0.0);
-    q4_spinbutton->set_value(1.824);
+    q4_spinbutton->set_value(1.998);
 
     // Leg gains
     gui->get_widget("leg_pos_kp_spinbutton", leg_pos_kp_spinbutton);
     leg_pos_kp_spinbutton->set_range(0.0, 1000.0);
     leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
-    leg_pos_kp_spinbutton->set_value(600.0);
+    leg_pos_kp_spinbutton->set_value(500.0);
     gui->get_widget("leg_pos_kd_spinbutton", leg_pos_kd_spinbutton);
     leg_pos_kd_spinbutton->set_range(0.0, 100.0);
     leg_pos_kd_spinbutton->set_increments(1.0, 0.0);
