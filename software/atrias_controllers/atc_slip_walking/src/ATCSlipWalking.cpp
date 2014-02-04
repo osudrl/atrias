@@ -514,12 +514,11 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
 
     // Compute gait parameter and velocity
     s = (qSl - q2)/(q3 - q2);
-    ds = dqSl;//dqSl/(q3 - q2);
+    //ds = dqSl;///(q3 - q2);
+    ds = 1.5;
 
     // Limit gait parameter between zero and one
-    s  = clamp(s, 0.0, 1.0);
-    // Limit the derivative between zero and one rad/s
-    ds = clamp(s, 0.0, 1.0);
+    //s  = clamp(s, 0.0, 1.0);
 
     // Make s only increase
     if (s < sPrev) {
