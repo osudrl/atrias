@@ -386,40 +386,6 @@ void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl,
     // Torso control
     // PD control
     double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
-    // VPP control
-    /*
-    // Constants
-    double torsoMass = 22.0; // kg
-    double rcom = 0.15; // Distance between leg pivot center and center of mass from ATRIAS solid model
-    // Body angle from vertical
-    double qT = qb - 3.0*M_PI/2.0;
-    // Solve for q (angle between the leg and the vpp)
-    double alpha1 = M_PI/2.0 + ql - qT;
-    double C1 = pow( pow(rcom,2.0) + pow(rl,2.0) - 2.0*rcom*rl*cos(alpha1) ,0.5);
-    double theta1 = asin(rcom/C1*sin(alpha1));
-    double alpha2 = theta1 + alpha1 + qvpp;
-    double C2 = pow( pow(rvpp,2.0) + pow(C1,2.0) - 2.0*rvpp*C1*cos(alpha2) ,0.5);
-    double theta2 = asin(rvpp/C2*sin(alpha2));
-    double q = theta1 + theta2;
-    // Error catch
-    if ((q > M_PI/2.0) || (q < -M_PI/2.0))
-        printf("VPP control error: q outside working bounds. q = %f\n", q);
-    // Torque to redirect axial leg force to VPP
-    std::tie(fa, dfa) = ascCommonToolkit.legForce(rl, drl, r0Sl);
-    double torsoTorque = rl*fa*tan(q);
-    // Convert to current (torque/gearRatio/motorTorqueConstant)
-    double vppTorsoCurrent = torsoTorque/KG/KT;
-    printf("vppTorsoCurrent: %f\n", vppTorsoCurrent);
-
-    // Feed-forward term (statically stable)
-    torsoTorque = rcom*sin(qT)*torsoMass*9.81;
-    // Convert to current (torque/gearRatio/motorTorqueConstant)
-    double ffTorsoCurrent = torsoTorque/KG/KT;
-    printf("ffTorsoCurrent: %f\n", ffTorsoCurrent);
-
-    // Combine
-    double torsoCurrent = vppTorsoCurrent + ffTorsoCurrent;
-    */
     // No torso control
     //double torsoCurrent = 0.0;
 
@@ -471,10 +437,34 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     */
 
     // Define component forces and their derivatives
-    forceSl.fx = fa*cos(qSl);
-    forceSl.dfx = -dqSl*sin(qSl)*fa + dfa*cos(qSl);
-    forceSl.fz = -fa*sin(qSl);
-    forceSl.dfz = -dqSl*cos(qSl)*fa - dfa*sin(qSl);
+    forceSl.fx  =  fa*cos(qSl);
+    forceSl.dfx = -fa*sin(qSl)*dqSl + dfa*cos(qSl);
+    forceSl.fz  = -fa*sin(qSl);
+    forceSl.dfz = -fa*cos(qSl)*dqSl - dfa*sin(qSl);
+
+    // Torso control
+    // VPP control
+    // Distance between leg pivot center and center of mass from ATRIAS solid model
+    rcom = 0.15;
+    // Angle between axial leg force and desired ground reaction force
+    q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
+    dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
+    // Error catch
+    if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
+        printf("VPP control error: q outside working bounds. q = %f\n", q);
+        q = 0.0;
+        dq = 0.0;
+    }
+    // Tangential toe force to redirect axial leg force to VPP
+    ft = fa*tan(q);
+    // Derivative of the tangential toe force
+    dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1);
+
+    // Add torso control
+    forceSl.fx  += -ft*sin(qSl);
+    forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
+    forceSl.fz  +=  ft*cos(qSl);
+    forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
 
     // Use force tracking controller to compute required motor currents
     // Force controller has built into world coordinate conversion

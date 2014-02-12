@@ -100,8 +100,11 @@ class ATCSlipWalking : public ATC<
         double torsoAngle; // Torso angle offset
         double rExtension; // Leg extension parameter
 
-        // Torso state variables
+        // Torso state variables and control
         double qb, dqb;
+        double rcom;
+        double q, dq;
+        double ft, dft;
 
         // Hip state variables
         double qLh, qRh; // Hip angles
