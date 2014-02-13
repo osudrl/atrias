@@ -442,6 +442,7 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.fz  = -fa*sin(qSl);
     forceSl.dfz = -fa*cos(qSl)*dqSl - dfa*sin(qSl);
 
+    /*
     // Torso control
     // VPP control
     // Distance between leg pivot center and center of mass from ATRIAS solid model
@@ -465,6 +466,7 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
     forceSl.fz  +=  ft*cos(qSl);
     forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
+    */
 
     // Use force tracking controller to compute required motor currents
     // Force controller has built into world coordinate conversion
