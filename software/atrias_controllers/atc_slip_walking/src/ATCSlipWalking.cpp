@@ -123,34 +123,6 @@ void ATCSlipWalking::controller() {
             break;
     }
 
-    /*
-    // WARNING: DO NOT USE THIS WITH THE stanceController.  Things may explode.
-    // Calculate the feed-forward term
-    // Find the smaller deflection
-    qLsA = rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle;
-    qLsB = rs.lLeg.halfB.motorAngle - rs.lLeg.halfB.legAngle;
-    qRsA = rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle;
-    qRsB = rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle;
-    if (abs(qLsA) > abs(qLsB))
-        lDeflection = -qLsB;
-    else
-        lDeflection = qLsA;
-
-    if (abs(qRsA) > abs(qRsB))
-        rDeflection = -qRsB;
-    else
-        rDeflection = qRsA;
-
-    // Feed forward scaling
-    ffScale = 1.0;
-
-    // (deflection*springConstant/gearRatio/motorTorqueConstant)
-    co.lLeg.motorCurrentA += ffScale*lDeflection*KS/KG/KT;
-    co.lLeg.motorCurrentB -= ffScale*lDeflection*KS/KG/KT;
-    co.rLeg.motorCurrentA += ffScale*rDeflection*KS/KG/KT;
-    co.rLeg.motorCurrentB -= ffScale*rDeflection*KS/KG/KT;
-    */
-
     // Run safety checks and trigger E-stop if needed
     checkSafeties();
 
@@ -353,7 +325,7 @@ void ATCSlipWalking::shutdownController() {
  * @param coSl Stance leg controller ouput pointer.
  * @param ascPDSmA Stance leg motor A PD position controller pointer.
  * @param ascPDSmB Stance leg motor B PD position controller pointer.
- * 
+ *
  * A simple stance phase controller allowing only leg length 
  * forces with zero leg angle torques. Uses a position controller to 
  * keep virtual motor leg length constant while minimizing spring 
@@ -442,7 +414,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.fz  = -fa*sin(qSl);
     forceSl.dfz = -fa*cos(qSl)*dqSl - dfa*sin(qSl);
 
-    /*
     // Torso control
     // VPP control
     // Distance between leg pivot center and center of mass from ATRIAS solid model
@@ -466,7 +437,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
     forceSl.fz  +=  ft*cos(qSl);
     forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
-    */
 
     // Use force tracking controller to compute required motor currents
     // Force controller has built into world coordinate conversion
