@@ -447,6 +447,9 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
         coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
         coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
     }
+
+    // Log values (The function that calls this last gets to save the data)
+    logOut.q = q;
 } // stanceController
 
 /**
