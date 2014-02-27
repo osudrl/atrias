@@ -328,24 +328,28 @@ namespace atrias {
     /**
      * @brief This is to initialize the walking parameters.
      */
-    void ATCCanonicalWalking::init_param(){
-      // @TODO: We might need to figure out a proper way to initialize 
-      //        parameter in the case it changes frequently.
-      //        2 possible options: 1) From config file or 
-      //                            2) From GUI input
-      int i,j;
-      for(i=0; i<N_OUTPUTS; i++)
-	{
-	  for(j=0; j<N_PARAMS; j++ )
-	    {
-	      param_mat[i][j] = A_OPT[i][j];
-	    }
-	}
-      
-      theta_limit1	= P_LIMITS[0];
-      theta_limit2	= P_LIMITS[1];
+  void ATCCanonicalWalking::init_param(){
+    // @TODO: We might need to figure out a proper way to initialize 
+    //        parameter in the case it changes frequently.
+    //        2 possible options: 1) From config file or 
+    //                            2) From GUI input
+    int i,j;
+    for(i=0; i<N_OUTPUTS; i++)
+    {
+      for(j=0; j<N_PARAMS; j++ )
+      {
+        param_mat[i][j] = A_OPT[i][j];
+      }
+      for(j=0; j<N_PARAMS-1; j++)
+      {
+        diff_param_mat[i][j] = D_OPT[i][j];
+      }
     }
+    theta_limit1	= P_LIMITS[0];
+    theta_limit2	= P_LIMITS[1];
+  }
     
+      
     /**
      * @brief This is to set the initial position for walking.
      */
@@ -373,75 +377,75 @@ namespace atrias {
 
       // Calculate the new xd
       for(i=0; i<N_OUTPUTS; i++)
-	{
-	  for(j=0; j<N_OUTPUTS; j++ )
-	    {
-              xd[i+1] += invT[i][j] * y2d[j];
-	      xd[i+6] += invT[i][j] * y2dDot[j];
-            }
+      {
+        for(j=0; j<N_OUTPUTS; j++ )
+        {
+          xd[i+1] += invT[i][j] * y2d[j];
+          xd[i+6] += invT[i][j] * y2dDot[j];
         }
+      }
       
     }
     
-  /**
-   * @brief This is to compute the phase (parameterized time) 'tau'
-   */
-  double ATCCanonicalWalking::compute_tau(){	
-    // The tau calculation depends on the tau source
-    switch ((TauSource) guiIn.tauMode) {
-    case TauSource::GUI:
-      // Reset tau rate limiter if we're just initializing
-      if (isInitialized)
-        rateLimTau.reset(guiIn.manualTau);
-      double th, tau;
-      th = PI - (xa[0]+(xa[1]+xa[2])/2);
-      tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
-      printf("Actual Tau: %6.4f \n", tau);
-      return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
+    /**
+     * @brief This is to compute the phase (parameterized time) 'tau'
+     */
+    double ATCCanonicalWalking::compute_tau(){	
+      // The tau calculation depends on the tau source
+      switch ((TauSource) guiIn.tauMode) {
+      case TauSource::GUI:
+        // Reset tau rate limiter if we're just initializing
+        if (isInitialized)
+          rateLimTau.reset(guiIn.manualTau);
+        double th, tau;
+        th = PI - (xa[0]+(xa[1]+xa[2])/2);
+        tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+        printf("Actual Tau: %6.4f \n", tau);
+        return rateLimTau(guiIn.manualTau, guiIn.maxTauRate);
 
-    case TauSource::STANCE_LEG_ANGLE: {
-      double th, tau;
-      th = PI - (xa[0]+(xa[1]+xa[2])/2);
-      tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
+      case TauSource::STANCE_LEG_ANGLE: {
+        double th, tau;
+        th = PI - (xa[0]+(xa[1]+xa[2])/2);
+        tau = (th-theta_limit1)/(theta_limit2-theta_limit1);
       
 
-      // Reset tau's rate limiter so it doesn't jump when going into
-      // manual tau mode
-      rateLimTau.reset(tau);
+        // Reset tau's rate limiter so it doesn't jump when going into
+        // manual tau mode
+        rateLimTau.reset(tau);
 
-      return tau;
-    }
+        return tau;
+      }
 
-    default:
-      // If the tau mode isn't recognized, trigger the EStop and return a dummy value.
-      commandEStop();
-      return 0.0;
+      default:
+        // If the tau mode isn't recognized, trigger the EStop and return a dummy value.
+        commandEStop();
+        return 0.0;
+      }
     }
-  }
     
-	/**
-	* @brief This is to compute the time derivative of 'tau'
-	*/
-	double ATCCanonicalWalking::compute_dtau(){	
-		// The tau calculation depends on the tau source
-		switch ((TauSource) guiIn.tauMode) {
-			case TauSource::GUI:
-				// 0.0 -- the GUI should command steps in tau
-				return 0.0;
+    /**
+     * @brief This is to compute the time derivative of 'tau'
+     */
+    double ATCCanonicalWalking::compute_dtau(){	
+      // The tau calculation depends on the tau source
+      switch ((TauSource) guiIn.tauMode) {
+      case TauSource::GUI:
+        // 0.0 -- the GUI should command steps in tau
+        return 0.0;
 
-			case TauSource::STANCE_LEG_ANGLE: {
-				double dtau;
-				dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
-				//dtau = 0.0;
-				return dtau;
-			}
+      case TauSource::STANCE_LEG_ANGLE: {
+        double dtau;
+        dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+        //dtau = 0.0;
+        return dtau;
+      }
 
-			default:
-				// Unrecognized tau mode should cause an EStop.
-				commandEStop();
-				return 0.0;
-		}
-	}
+      default:
+        // Unrecognized tau mode should cause an EStop.
+        commandEStop();
+        return 0.0;
+      }
+    }
 
     /**
      * @brief This is to compute the desired output 'y2d'
@@ -450,17 +454,25 @@ namespace atrias {
     void ATCCanonicalWalking::compute_y2d(double tau){
       // y2d = exp(-a4*t) * (a1*cos(a2*t)+a3*sin(a2*t)) + a5;
       //
+      double *a;
       for(int j=0; j<N_OUTPUTS; j++)
-	{ 
-	  y2d[j] = exp(-param_mat[j][3]*tau) * 
-	    (param_mat[j][0] * cos(param_mat[j][1]*tau) + 
-	     param_mat[j][2] * sin(param_mat[j][1]*tau)) + 
-	    param_mat[j][4] * cos(param_mat[j][5]*tau) + 
-            (2*param_mat[j][3]*param_mat[j][4]*param_mat[j][5])/
-            (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
-             pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau) + 
-            param_mat[j][6];
-	}
+      { 
+        /*
+          y2d[j] = exp(-param_mat[j][3]*tau) * 
+          (param_mat[j][0] * cos(param_mat[j][1]*tau) + 
+          param_mat[j][2] * sin(param_mat[j][1]*tau)) + 
+          param_mat[j][4] * cos(param_mat[j][5]*tau) + 
+          (2*param_mat[j][3]*param_mat[j][4]*param_mat[j][5])/
+          (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
+          pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau) + 
+          param_mat[j][6];
+        */
+        a = param_mat[j];
+        y2d[j] = param_mat[j][0] * pow((1-tau),6) + 6*param_mat[j][1]*tau*pow(1-tau,5) + 
+          15*param_mat[j][2]*pow(tau,2)*pow(1-tau,4) + 20*param_mat[j][3]*pow(tau,3)*pow(1-tau,3) + 
+          15*param_mat[j][4]*pow(tau,4)*pow(1-tau,2) + 6*param_mat[j][5]*pow(tau,5)*(1-tau) + 
+          param_mat[j][6]*pow(tau,6);
+      }
     }
     
     /**
@@ -471,19 +483,25 @@ namespace atrias {
     void ATCCanonicalWalking::compute_y2dDot(double tau, double dtau){
       // 
       for(int j=0; j<N_OUTPUTS; j++)
-	{ 
-	  y2dDot[j] =	exp(-param_mat[j][3]*tau) * 
-	    ( param_mat[j][1] * param_mat[j][2]*cos(param_mat[j][1]*tau)- 
-	      param_mat[j][0] * param_mat[j][1]*sin(param_mat[j][1]*tau))
-	    - param_mat[j][3] * exp(-param_mat[j][3]*tau) *
-	    ( param_mat[j][0] * cos(param_mat[j][1]*tau) +
-	      param_mat[j][2] * sin(param_mat[j][1]*tau)) - 
-            param_mat[j][4] * param_mat[j][5] * sin(param_mat[j][5]*tau) + 
-            (2*param_mat[j][3]*param_mat[j][4]*pow(param_mat[j][5],2))/
-            (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
-             pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau);
-	  y2dDot[j] *=  dtau;		//noted
-	}
+      { 
+        /*
+          y2dDot[j] =	exp(-param_mat[j][3]*tau) * 
+          ( param_mat[j][1] * param_mat[j][2]*cos(param_mat[j][1]*tau)- 
+          param_mat[j][0] * param_mat[j][1]*sin(param_mat[j][1]*tau))
+          - param_mat[j][3] * exp(-param_mat[j][3]*tau) *
+          ( param_mat[j][0] * cos(param_mat[j][1]*tau) +
+          param_mat[j][2] * sin(param_mat[j][1]*tau)) - 
+          param_mat[j][4] * param_mat[j][5] * sin(param_mat[j][5]*tau) + 
+          (2*param_mat[j][3]*param_mat[j][4]*pow(param_mat[j][5],2))/
+          (pow(param_mat[j][3],2)+pow(param_mat[j][1],2)-
+          pow(param_mat[j][5],2)) * sin(param_mat[j][5]*tau);
+        */
+        y2dDot[j] = diff_param_mat[j][0] * pow((1-tau),5) + 5*diff_param_mat[j][1]*tau*pow(1-tau,4) + 
+          10*diff_param_mat[j][2]*pow(tau,2)*pow(1-tau,3) + 10*diff_param_mat[j][3]*pow(tau,3)*pow(1-tau,2) + 
+          5*diff_param_mat[j][4]*pow(tau,4)*(1-tau) +
+          diff_param_mat[j][5]*pow(tau,5);
+        y2dDot[j] *=  dtau;		//noted
+      }
     }
     
     /**
@@ -492,34 +510,34 @@ namespace atrias {
     void  ATCCanonicalWalking::convert2torso(){
       //
       if (sleg == LEFT_LEG) 
-	{
-	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
-	  xa[1] = rs.lLeg.halfA.legAngle + PI/2;
+      {
+        xa[0] = rs.position.bodyPitch - 3 * PI/2;
+        xa[1] = rs.lLeg.halfA.legAngle + PI/2;
           
-	  xa[2] = rs.lLeg.halfB.legAngle + PI/2;
-          //printf("%6.4f %6.4f \n",rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
+        xa[2] = rs.lLeg.halfB.legAngle + PI/2;
+        //printf("%6.4f %6.4f \n",rs.lLeg.halfA.motorAngle, rs.lLeg.halfB.motorAngle);
           
-          xa[3] = rs.rLeg.halfA.legAngle + PI/2;
-	  xa[4] = rs.rLeg.halfB.legAngle + PI/2;
-	  xa[5] = rs.position.bodyPitchVelocity;
-	  xa[6] = rs.lLeg.halfA.legVelocity;
-	  xa[7] = rs.lLeg.halfB.legVelocity;
-	  xa[8] = rs.rLeg.halfA.legVelocity;
-	  xa[9] = rs.rLeg.halfB.legVelocity;
-	} 
+        xa[3] = rs.rLeg.halfA.legAngle + PI/2;
+        xa[4] = rs.rLeg.halfB.legAngle + PI/2;
+        xa[5] = rs.position.bodyPitchVelocity;
+        xa[6] = rs.lLeg.halfA.legVelocity;
+        xa[7] = rs.lLeg.halfB.legVelocity;
+        xa[8] = rs.rLeg.halfA.legVelocity;
+        xa[9] = rs.rLeg.halfB.legVelocity;
+      } 
       else 
-	{ //sleg = RIGHT_LEG
-	  xa[0] = rs.position.bodyPitch - 3 * PI/2;
-	  xa[1] = rs.rLeg.halfA.legAngle + PI/2;          
-	  xa[2] = rs.rLeg.halfB.legAngle + PI/2;
-	  xa[3] = rs.lLeg.halfA.legAngle + PI/2;
-	  xa[4] = rs.lLeg.halfB.legAngle + PI/2;
-	  xa[5] = rs.position.bodyPitchVelocity;
-	  xa[6] = rs.rLeg.halfA.legVelocity;
-	  xa[7] = rs.rLeg.halfB.legVelocity;
-	  xa[8] = rs.lLeg.halfA.legVelocity;
-	  xa[9] = rs.lLeg.halfB.legVelocity;
-	}
+      { //sleg = RIGHT_LEG
+        xa[0] = rs.position.bodyPitch - 3 * PI/2;
+        xa[1] = rs.rLeg.halfA.legAngle + PI/2;          
+        xa[2] = rs.rLeg.halfB.legAngle + PI/2;
+        xa[3] = rs.lLeg.halfA.legAngle + PI/2;
+        xa[4] = rs.lLeg.halfB.legAngle + PI/2;
+        xa[5] = rs.position.bodyPitchVelocity;
+        xa[6] = rs.rLeg.halfA.legVelocity;
+        xa[7] = rs.rLeg.halfB.legVelocity;
+        xa[8] = rs.lLeg.halfA.legVelocity;
+        xa[9] = rs.lLeg.halfB.legVelocity;
+      }
       // 
     }
     
@@ -530,35 +548,35 @@ namespace atrias {
     void ATCCanonicalWalking::convert2bodypitch(){
       //
       if (sleg == LEFT_LEG) 
-	{
-	  qTgt[0] = xd[1] - PI/2;   // lLeg.halfA.motorAngle
-          //          printf("Left Leg Angle: %f\n",qTgt[0]);
-	  qTgt[1] = xd[2] - PI/2;   // lLeg.halfB.motorAngle
-	  qTgt[2] = xd[3] - PI/2;   // rLeg.halfA.motorAngle
-	  qTgt[3] = xd[4] - PI/2;   // rLeg.halfB.motorAngle
-	  dqTgt[0] = xd[6];         // lLeg.halfA.motorVelocity
-	  dqTgt[1] = xd[7];         // lLeg.halfB.motorVelocity
-	  dqTgt[2] = xd[8];         // rLeg.halfA.motorVelocity
-	  dqTgt[3] = xd[9];         // rLeg.halfB.motorVelocity
-	} 
+      {
+        qTgt[0] = xd[1] - PI/2;   // lLeg.halfA.motorAngle
+        //          printf("Left Leg Angle: %f\n",qTgt[0]);
+        qTgt[1] = xd[2] - PI/2;   // lLeg.halfB.motorAngle
+        qTgt[2] = xd[3] - PI/2;   // rLeg.halfA.motorAngle
+        qTgt[3] = xd[4] - PI/2;   // rLeg.halfB.motorAngle
+        dqTgt[0] = xd[6];         // lLeg.halfA.motorVelocity
+        dqTgt[1] = xd[7];         // lLeg.halfB.motorVelocity
+        dqTgt[2] = xd[8];         // rLeg.halfA.motorVelocity
+        dqTgt[3] = xd[9];         // rLeg.halfB.motorVelocity
+      } 
       else 
-	{ //sleg = RIGHT_LEG
-	  qTgt[0] = xd[3] - PI/2;   // lLeg.halfA.motorAngle
-	  qTgt[1] = xd[4] - PI/2;   // lLeg.halfB.motorAngle
-	  qTgt[2] = xd[1] - PI/2;   // rLeg.halfA.motorAngle
-	  qTgt[3] = xd[2] - PI/2;   // rLeg.halfB.motorAngle
-	  dqTgt[0] = xd[8];         // lLeg.halfA.motorVelocity
-	  dqTgt[1] = xd[9];         // lLeg.halfB.motorVelocity
-	  dqTgt[2] = xd[6];         // rLeg.halfA.motorVelocity
-	  dqTgt[3] = xd[7];         // rLeg.halfB.motorVelocity
-	}
+      { //sleg = RIGHT_LEG
+        qTgt[0] = xd[3] - PI/2;   // lLeg.halfA.motorAngle
+        qTgt[1] = xd[4] - PI/2;   // lLeg.halfB.motorAngle
+        qTgt[2] = xd[1] - PI/2;   // rLeg.halfA.motorAngle
+        qTgt[3] = xd[2] - PI/2;   // rLeg.halfB.motorAngle
+        dqTgt[0] = xd[8];         // lLeg.halfA.motorVelocity
+        dqTgt[1] = xd[9];         // lLeg.halfB.motorVelocity
+        dqTgt[2] = xd[6];         // rLeg.halfA.motorVelocity
+        dqTgt[3] = xd[7];         // rLeg.halfB.motorVelocity
+      }
       // 
     }
     
     
     ORO_CREATE_COMPONENT(ATCCanonicalWalking)
     
-  }
+      }
 }
 
 
