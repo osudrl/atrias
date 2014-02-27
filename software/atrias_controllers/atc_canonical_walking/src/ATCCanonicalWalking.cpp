@@ -136,6 +136,11 @@ namespace atrias {
       // DEBUG STATEMENT REMOVE!!!
       
       dtau = compute_dtau();
+
+      // Log out newly-calculated tau values
+      logOut.tau  = tau;
+      logOut.dtau = dtau;
+
       // @TODO: time-based trajectory
       // tau = (rs.timing.controllerTime-initial_controllerTime) % PERIOD;
       // dtau = 1;
@@ -435,8 +440,8 @@ namespace atrias {
 
       case TauSource::STANCE_LEG_ANGLE: {
         double dtau;
-        dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
-        //dtau = 0.0;
+        //dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+        dtau = 2.0;
         return dtau;
       }
 
