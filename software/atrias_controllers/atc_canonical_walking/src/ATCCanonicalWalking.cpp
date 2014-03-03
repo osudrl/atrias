@@ -440,8 +440,9 @@ namespace atrias {
 
       case TauSource::STANCE_LEG_ANGLE: {
         double dtau;
-        dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
+        //dtau = -(xa[5]+(xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
         //dtau = 2.0;
+        dtau = -((xa[6]+xa[7])/2)/(theta_limit2-theta_limit1);
         return dtau;
       }
 
