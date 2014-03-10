@@ -402,11 +402,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 
     // Compute current ATRIAS non-linear spring force for given leg configuration
     std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
-    /*
-    // Compute current linear spring force
-    fa = (r0Sl-rSl)*12000.0;
-    dfa = -12000.0;
-    */
 
     // Define component forces and their derivatives
     forceSl.fx  =  fa*cos(qSl);
@@ -439,8 +434,10 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
 
     // Use force tracking controller to compute required motor currents
-    // Force controller has built into world coordinate conversion
+    // Force controller has built-in world coordinate conversion
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
+    // Log the forces that it thinks it's applying
+    ascLegForceSl->compute(forceSl, *rsSl, rs.position);
 
     // PD past q1
     if (qSl < q1) {
