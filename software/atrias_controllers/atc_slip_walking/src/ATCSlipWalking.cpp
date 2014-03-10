@@ -437,7 +437,7 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     // Force controller has built-in world coordinate conversion
     std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
     // Log the forces that it thinks it's applying
-    ascLegForceSl->compute(forceSl, *rsSl, rs.position);
+    ascLegForceSl->compute(*rsSl, rs.position);
 
     // PD past q1
     if (qSl < q1) {
