@@ -419,13 +419,13 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     // Error catch
     if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
         printf("VPP control error: q outside working bounds. q = %f\n", q);
-        q = 0.0;
+        q  = 0.0;
         dq = 0.0;
     }
     // Tangential toe force to redirect axial leg force to VPP
     ft = fa*tan(q);
     // Derivative of the tangential toe force
-    dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1);
+    dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
 
     // Add torso control
     forceSl.fx  += -ft*sin(qSl);
@@ -446,7 +446,8 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     }
 
     // Log values (The function that calls this last gets to save the data)
-    logOut.q = q;
+    logOut.q  = q;
+    logOut.fa = fa;
 } // stanceController
 
 /**
