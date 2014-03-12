@@ -588,9 +588,6 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     if ((isTrigger || isManualSwingLegTD) && isForwardStep) {
         // Advance the walking state machine 1 step and loop to beginning if needed
         walkingState = (walkingState + 1) % 4;
-
-        // Save the stance and flight leg exit conditions
-        updateExitConditions(rsSl, rsFl, ascRateLimitSr0, ascRateLimitFr0);
     }
 } // singleSupportEvents
 
@@ -632,38 +629,15 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
         // Advance the walking state machine 1 step and loop to beginning if needed
         walkingState = (walkingState + 1) % 4;
 
-        // Save the stance and flight leg exit conditions
-        updateExitConditions(rsSl, rsFl, ascRateLimitSr0, ascRateLimitFr0);
+        // Reset the flight leg rest leg length to neutral
+        ascRateLimitFr0->reset(r0);
+
+        // Reset the flight leg variable
+        s = 0.0;
+        sPrev = 0.0;
     }
 } // doubleSupportEvents
 
-/**
- * @brief Update exit conditions.
- * @param rsSl Stance leg robot state pointer.
- * @param rsFl Flight leg robot state pointer.
- * @param ascRateLimitSr0 Stance rest spring length rate limiter pointer.
- * @param ascRateLimitFr0 Flight rest spring length rate limiter pointer.
- * 
- * Updates the exit conditions upon dynamic state transitions.
- */
-void ATCSlipWalking::updateExitConditions(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
-    // Compute current rest leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
-    std::tie(qeSm, reSm) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle);
-
-    // Convert leg angle to world coordinates
-    qb = rs.position.bodyPitch;
-    qeFm += qb -3.0*M_PI/2.0;
-    qeSm += qb -3.0*M_PI/2.0;
-
-    // Reset the flight leg variable
-    s = 0.0;
-    sPrev = 0.0;
-
-    // Reset rate limiters
-    ascRateLimitSr0->reset(reSm);
-    ascRateLimitFr0->reset(reFm);
-} // updateExitConditions
 
 ORO_CREATE_COMPONENT(ATCSlipWalking)
 
