@@ -66,10 +66,8 @@ void ATCSlipWalking::controller() {
     // Main controller state machine
     switch (controllerState) {
         case 0: // Stand upright in place
-            // Save the stance and flight leg exit conditions (right = stance, left = flight)
-            updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
-
-            // Reset walking state parameters
+            // Reset walking control variables (right = stance, left = flight)
+            resetFlightLegParameters(&rs.lLeg, &ascRateLimitLr0);
             walkingState = 3; // Double support
 
             // Call standing controller
@@ -115,11 +113,9 @@ void ATCSlipWalking::controller() {
             // Call shutdown controller
             shutdownController();
 
-            // Reset walking state parameters
-            walkingState = 0; // Right leg single support
-
-            // Save the stance and flight leg exit conditions (right = stance, left = flight)
-            updateExitConditions(&rs.rLeg, &rs.lLeg, &ascRateLimitRr0, &ascRateLimitLr0);
+            // Reset walking control variables (right = stance, left = flight)
+            resetFlightLegParameters(&rs.lLeg, &ascRateLimitLr0);
+            walkingState = 3; // Double support
             break;
     }
 
@@ -494,7 +490,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     // Use a cubic spline interpolation to slave the flight leg angle to the stance leg angle
     std::tie(qm, dqm) = ascInterpolation.cubic(0.0, 0.90, qeFm, q1, -0.5, 1.0, s, ds);
 
-    // Compute leg retraction target length
+    // Compute target leg retraction length
     rtFm = r0 - swingLegRetraction;
 
     // Leg retraction
@@ -629,14 +625,22 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
         // Advance the walking state machine 1 step and loop to beginning if needed
         walkingState = (walkingState + 1) % 4;
 
-        // Reset the flight leg rest leg length to neutral
-        ascRateLimitFr0->reset(r0);
-
-        // Reset the flight leg variable
-        s = 0.0;
-        sPrev = 0.0;
+        // Reset flight control variables
+        resetFlightLegParameters(rsFl, ascRateLimitFr0);
     }
 } // doubleSupportEvents
+
+void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitFr0) {
+    // Reset the flight leg rest leg length to neutral
+    ascRateLimitFr0->reset(r0);
+
+    // Reset the flight leg progression variable
+    s = 0.0;
+    sPrev = 0.0;
+
+    // Compute initial flight leg angle and length
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
+}
 
 
 ORO_CREATE_COMPONENT(ATCSlipWalking)
