@@ -502,7 +502,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
         std::tie(rm, drm) = ascInterpolation.cubic(0.0, 0.5, reFm, rtFm, -1.0, 0.0, s, ds);
     } else if (s >= 0.5) {
         // Leg extension
-        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.9, rtFm, r0, 0.0, 0.0, s, ds);
+        std::tie(rm, drm) = ascInterpolation.cubic(0.5, 0.85, rtFm, r0, 0.0, 0.0, s, ds);
     } else {
         printf("Leg retraction error.  s = %f\n", s);
         rm = rtFm;
