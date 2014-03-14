@@ -272,10 +272,11 @@ void ATCSlipWalking::standingController() {
     dqb = rs.position.bodyPitchVelocity;
 
     // Negate body pitch
-    qmSA -= qb - 3.0*M_PI/2.0;
-    qmSB -= qb - 3.0*M_PI/2.0;
-    qmFA -= qb - 3.0*M_PI/2.0;
-    qmFB -= qb - 3.0*M_PI/2.0;
+    // TODO: Relative coordinate test
+    //qmSA -= qb - 3.0*M_PI/2.0;
+    //qmSB -= qb - 3.0*M_PI/2.0;
+    //qmFA -= qb - 3.0*M_PI/2.0;
+    //qmFB -= qb - 3.0*M_PI/2.0;
 
     // Rate limit motor velocities
     qmSA = ascRateLimitLmA(qmSA, legRateLimit);
@@ -375,6 +376,10 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     // Log the forces that it thinks it's applying
     ascLegForceSl->compute(*rsSl, rs.position);
 
+    // Convert leg angle and velocities to torso coordinates
+    // TODO: Relative coordinate test
+    qSl  -= qb - 3.0*M_PI/2.0;
+    dqSl -= dqb;
     // PD past q1
     if (qSl < q1) {
         coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
@@ -408,8 +413,9 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     dqb = rs.position.bodyPitchVelocity;
 
     // Convert leg angle and velocities to world coordinates
-    qSl  += qb - 3.0*M_PI/2.0;
-    dqSl += dqb;
+    // TODO: Relative coordinate test
+    //qSl  += qb - 3.0*M_PI/2.0;
+    //dqSl += dqb;
 
     // Compute gait parameter and velocity
     s = (qSl - q2)/(q3 - q2);
@@ -471,10 +477,11 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
     std::tie(dqmFA, dqmFB) = ascCommonToolkit.legVel2MotorVel(rm, dqm, drm);
 
     // Convert leg angle and velocities to relative coordinates
-    qmFA  -= qb - 3.0*M_PI/2.0;
-    dqmFA -= dqb;
-    qmFB  -= qb - 3.0*M_PI/2.0;
-    dqmFB -= dqb;
+    // TODO: Relative coordinate test
+    //qmFA  -= qb - 3.0*M_PI/2.0;
+    //dqmFA -= dqb;
+    //qmFB  -= qb - 3.0*M_PI/2.0;
+    //dqmFB -= dqb;
 
     // Compute and set motor currents from position based PD controllers
     coFl->motorCurrentA = ascPDmA->operator()(qmFA, rsFl->halfA.motorAngle, dqmFA, rsFl->halfA.motorVelocity);
@@ -502,7 +509,9 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     qb = rs.position.bodyPitch;
 
     // Convert leg angle to world coordinates
-    qSl += qb - 3.0*M_PI/2.0;
+    // TODO: Relative coordinate test
+    //qSl += qb - 3.0*M_PI/2.0;
+    //qFl += qb - 3.0*M_PI/2.0;
 
     // Make sure we step forward and dont trigger next state if we back step
     isForwardStep = (qFl <= q2);
@@ -547,7 +556,8 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     qb = rs.position.bodyPitch;
 
     // Convert leg angle to world coordinates
-    qSl += qb - 3.0*M_PI/2.0;
+    // TODO: Relative coordinate test
+    //qSl += qb - 3.0*M_PI/2.0;
 
     // Handle different trigger methods
     switch (switchMethod) {
@@ -580,6 +590,9 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
 
     // Compute initial flight leg angle and length
     std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
+    // Convert to world coordinates
+    // TODO: Relative coordinate test
+    //qeFm += qb - 3.0*M_PI/2.0;
 }
 
 
