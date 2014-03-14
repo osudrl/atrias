@@ -68,7 +68,6 @@ class ATCSlipWalking : public ATC<
         void hipController();
         void standingController();
         void shutdownController();
-        void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*);
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
@@ -125,7 +124,6 @@ class ATCSlipWalking : public ATC<
         double rtFm, r0Sl; // Only length as angle is in q(1:4)
 
         // Temporary state parameters
-        double ql, dql, rl, drl;
         double qm, dqm, rm, drm;
 
         // State transistion events

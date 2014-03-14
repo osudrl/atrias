@@ -80,30 +80,24 @@ void ATCSlipWalking::controller() {
                 case 0: // Right leg single support (right = stance, left = flight)
                     legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
                     stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     singleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
 
                 case 1: // Double support (right = flight, left = stance)
                     stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
-                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     doubleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
                     break;
 
                 case 2: // Left leg single support (right = flight, left = stance)
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
                     singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &ascLegForceR, &ascRateLimitLr0, &ascRateLimitRr0);
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    //passiveStanceController(&rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB, &ascRateLimitLr0);
-                    //passiveStanceController(&rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB, &ascRateLimitRr0);
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascLegForceR, &ascLegForceL, &ascRateLimitRr0, &ascRateLimitLr0);
                     break;
             }
@@ -167,7 +161,7 @@ void ATCSlipWalking::checkSafeties() {
         abs(rs.rLeg.halfB.motorAngle - rs.rLeg.halfB.legAngle) > deflectionLimit)
     {
         // Trigger E-stop
-        printf("Software E-Stop triggered by spring deflection limit check.\n");
+        //printf("Software E-Stop triggered by spring deflection limit check.\n");
         printf("GUI deflectionLimit: %f\n", deflectionLimit);
         printf("Spring deflection (lA): %f\n", rs.lLeg.halfA.motorAngle - rs.lLeg.halfA.legAngle);
         printf("Spring deflection (rA): %f\n", rs.rLeg.halfA.motorAngle - rs.rLeg.halfA.legAngle);
@@ -314,60 +308,6 @@ void ATCSlipWalking::shutdownController() {
     co.rLeg.motorCurrentB   = ascPDRmB(0.0, 0.0, 0.0, rs.rLeg.halfB.motorVelocity);
     co.rLeg.motorCurrentHip = ascPDRh(0.0, 0.0, 0.0, rs.rLeg.hip.legBodyVelocity);
 } // shutdownController
-
-/**
- * @brief Stance leg passive controller.
- * @param rsSl Stance leg robot state pointer.
- * @param coSl Stance leg controller ouput pointer.
- * @param ascPDSmA Stance leg motor A PD position controller pointer.
- * @param ascPDSmB Stance leg motor B PD position controller pointer.
- *
- * A simple stance phase controller allowing only leg length 
- * forces with zero leg angle torques. Uses a position controller to 
- * keep virtual motor leg length constant while minimizing spring 
- * about the hip.
- */
-void ATCSlipWalking::passiveStanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCPD *ascPDSmA, ASCPD *ascPDSmB, ASCRateLimit *ascRateLimitSr0) {
-    // Rate limit change in spring rest length from current to desired
-    r0Sl = ascRateLimitSr0->operator()(r0 + stanceLegExtension, springRateLimit);
-
-    // Compute current stance leg states
-    std::tie(ql, rl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    std::tie(dql, drl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
-
-    // Compute current torso states
-    qb = rs.position.bodyPitch;
-    dqb = rs.position.bodyPitchVelocity;
-    // Leg angle and angular velocity with respect to the world
-    ql += qb - 3.0*M_PI/2.0;
-    dql += dqb;
-
-    // Limit ql
-    if (ql < q1)
-        ql = q1;
-
-    // Compute and set motor angles such that there is no hip torque, only
-    // axial leg forces
-    std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(ql, r0Sl);
-    std::tie(dqmSA, dqmSB) = ascCommonToolkit.legVel2MotorVel(r0Sl, dql, 0.0);
-
-    // Torso control
-    // PD control
-    double torsoCurrent = (-(torsoAngle - qb)*guiIn.leg_pos_kp - (0.0 - dqb)*guiIn.leg_pos_kd)/2.0;
-    // No torso control
-    //double torsoCurrent = 0.0;
-
-    // Back to relative coordinates
-    qmSA  -= qb - 3.0*M_PI/2.0;
-    dqmSA -= dqb;
-    qmSB  -= qb - 3.0*M_PI/2.0;
-    dqmSB -= dqb;
-
-    // Compute and set motor currents from position based PD controllers
-    coSl->motorCurrentA = ascPDSmA->operator()(qmSA, rsSl->halfA.motorAngle, dqmSA, rsSl->halfA.motorVelocity) + torsoCurrent;
-    coSl->motorCurrentB = ascPDSmB->operator()(qmSB, rsSl->halfB.motorAngle, dqmSB, rsSl->halfB.motorVelocity) + torsoCurrent;
-
-} // passiveStanceController
 
 /**
  * @brief Stance leg force tracking controller.
