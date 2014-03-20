@@ -110,7 +110,8 @@ typedef enum {
 #define MOTOR_VOLTAGE_C_CAL                                               3600.0
 
 //Robot current offset and gain
-#define ROBOT_CURRENT_50A_OFFSET                                            3750
+#define ROBOT_CURRENT_NEG_50A_OFFSET                                        3405
+#define ROBOT_CURRENT_POS_50A_OFFSET                                        3699
 #define ROBOT_CURRENT_600A_OFFSET                                            188
 #define ROBOT_CURRENT_50A_GAIN                                         0.0109479
 #define ROBOT_CURRENT_600A_GAIN                                        0.7536839
