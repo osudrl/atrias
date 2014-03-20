@@ -56,7 +56,7 @@ void ATCMotorSinWave::controller() {
     // Set resonable center positions
     centerAAngle = M_PI/4;
     centerBAngle = 3*M_PI/4;
-    q += centerAAngle;
+    q += centerBAngle;
 
     // Set the PD gains
     // Left leg
