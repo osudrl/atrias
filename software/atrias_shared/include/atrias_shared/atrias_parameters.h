@@ -16,16 +16,16 @@ namespace controller {
 #define L2 0.5
 
 // ATRIAS rotational spring constant [N*m/rad]
-#define KS 1895.0
+#define KS 1600.0
 
 // ATRIAS motor torque constant [N*m/A]
-#define KT 0.0987
+#define KT 0.121
 
 // ATRIAS leg harmonic drive gear ratio
 #define KG 50.0
 
 // ATRIAS mass [kg]
-#define M 59.94
+#define M 59.9
 
 // Gravity [m/sec^2]
 #define G 9.81

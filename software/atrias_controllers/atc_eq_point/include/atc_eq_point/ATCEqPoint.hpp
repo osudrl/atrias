@@ -73,6 +73,7 @@ class ATCEqPoint : public ATC<controller_log_data_, controller_input_, controlle
 		ASCPD pd3Controller; // Right A
 		ASCPD pd4Controller; // Right B
 		ASCPD pd5Controller; // Right Hip
+		ASCPD pdTorsoController; // Torso
 
 		// PD gains for convenience (these are not set by the GUI)
 		double legP, legD, hipP, hipD;
@@ -104,6 +105,7 @@ class ATCEqPoint : public ATC<controller_log_data_, controller_input_, controlle
 		double  iAEA;
 		double  oAEA;
 		double  gamma;
+		double  torsoTorque;
 
 		// Whether we are in idle mode (so the robot can't re-enable)
 		bool idle_mode;

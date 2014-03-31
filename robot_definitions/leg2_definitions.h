@@ -4,17 +4,17 @@
 /*------------------------------------------*/
 /*------ Calibration Values for Leg 2 ------*/
 /*------------------------------------------*/
-#define LEG2_LEG_A_CALIB_VAL       173160978LL
-#define LEG2_LEG_B_CALIB_VAL       264651797LL
+#define LEG2_LEG_A_CALIB_VAL       263935840LL
+#define LEG2_LEG_B_CALIB_VAL       261914899LL
 
-#define LEG2_LEG_A_RAD_PER_CNT  -9.8039216e-09
+#define LEG2_LEG_A_RAD_PER_CNT   9.8039216e-09
 #define LEG2_LEG_B_RAD_PER_CNT  -9.8039216e-09
 
-#define LEG2_TRAN_A_CALIB_VAL      197923274LL
-#define LEG2_TRAN_B_CALIB_VAL      142195192LL
+#define LEG2_TRAN_A_CALIB_VAL      142278000LL
+#define LEG2_TRAN_B_CALIB_VAL      142215958LL
 
-#define LEG2_TRAN_A_RAD_PER_CNT   9.8039216e-09
-#define LEG2_TRAN_B_RAD_PER_CNT   9.8039216e-09
+#define LEG2_TRAN_A_RAD_PER_CNT -9.8039216e-09
+#define LEG2_TRAN_B_RAD_PER_CNT  9.8039216e-09
 
 #define LEG2_MOTOR_A_DIRECTION            -1.0
 #define LEG2_MOTOR_B_DIRECTION             1.0

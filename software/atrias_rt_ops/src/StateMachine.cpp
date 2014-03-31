@@ -13,6 +13,7 @@ StateMachine::StateMachine(RTOps* rt_ops) {
 void StateMachine::eStop(RtOpsEvent event) {
 	setState(RtOpsState::E_STOP);
 	rtOps->getOpsLogger()->sendEvent(event);
+	rtOps->getEStopDiags()->printEStop(event);
 }
 
 void StateMachine::setState(RtOpsState new_state) {
@@ -86,7 +87,7 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 			if (controllerOutput.command == medulla_state_error)
 				eStop(RtOpsEvent::CONTROLLER_ESTOP);
 
-			if (rtOps->getSafety()->shouldEStop()) {
+			if (rtOps->getSafety()->shouldEStop(controllerOutput)) {
 				// This is a bit of a kludge -- send the MEDULLA_ESTOP event to tell the GUI and CM that
 				// it's enterinng ESTOP state.
 				eStop(RtOpsEvent::MEDULLA_ESTOP);

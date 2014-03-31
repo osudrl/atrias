@@ -1,0 +1,12 @@
+# Set up the component
+import("atc_stabilized_standing")
+loadComponent("ATCStabilizedStanding", "ATCStabilizedStanding")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCStabilizedStanding")
+
+# Configure the component
+ATCStabilizedStanding.configure()
+
+# Start the component
+ATCStabilizedStanding.start()

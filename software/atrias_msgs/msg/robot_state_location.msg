@@ -23,3 +23,4 @@ float64 bodyPitchVelocity
 
 # Raw encoder counts
 int32   zEncoderRaw
+int32   pitchEncoderRaw

@@ -1,0 +1,12 @@
+# Set up the component
+import("atc_deadbeat_control")
+loadComponent("ATCDeadbeatControl", "ATCDeadbeatControl")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "ATCDeadbeatControl")
+
+# Configure the component
+ATCDeadbeatControl.configure()
+
+# Start the component
+ATCDeadbeatControl.start()

@@ -62,7 +62,7 @@ void ATCForceControlDemo::controller() {
 		case 1: // Force control - constant
 			// Get component forces
 			legForce.fx = guiIn.left_fx;
-			legForce.fz = 0.0;
+			legForce.fz = guiIn.left_fz;
 			legForce.dfx = 0.0;
 			legForce.dfz = 0.0;
 	
@@ -136,7 +136,7 @@ void ATCForceControlDemo::controller() {
 		case 1: // Force control - constant
 			// Get component forces
 			legForce.fx = guiIn.right_fx;
-			legForce.fz = 0.0;
+			legForce.fz = guiIn.right_fz;
 			legForce.dfx = 0.0;
 			legForce.dfz = 0.0;
 	

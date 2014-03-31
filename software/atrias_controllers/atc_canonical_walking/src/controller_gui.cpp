@@ -22,6 +22,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	gui->get_widget("tau_control_chkbtn",       tau_control_checkbutton);
 	gui->get_widget("tau_hscale",               tau_hscale);
 	gui->get_widget("cur_limit_spinbutton",     cur_limit_spinbutton);
+	gui->get_widget("vel_limit_spinbutton",     vel_limit_spinbutton);
+	gui->get_widget("defl_limit_spinbutton",    defl_limit_spinbutton);
+	gui->get_widget("tau_limit_spinbutton",     tau_limit_spinbutton);
 
 	// Set ranges
 	leg_pos_kp_spinbutton->set_range(0.0, 7500.0);
@@ -29,9 +32,12 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	hip_pos_kp_spinbutton->set_range(0.0, 500.0);
 	hip_pos_kd_spinbutton->set_range(0.0, 50.0);
 	left_toe_pos_spinbutton->set_range(2.1, 2.5);
-	right_toe_pos_spinbutton->set_range(2.1, 2.5);
+	right_toe_pos_spinbutton->set_range(2.4, 2.6);
 	tau_hscale->set_range(0.0, 1.0);
 	cur_limit_spinbutton->set_range(0.0, std::max(-1*MIN_MTR_CURRENT_CMD, MAX_MTR_CURRENT_CMD));
+	vel_limit_spinbutton->set_range(0.0, 8.0);
+	defl_limit_spinbutton->set_range(0.0, 1.9);
+	tau_limit_spinbutton->set_range(0.0, 5.0);
 
 	// Set increments
 	leg_pos_kp_spinbutton->set_increments(10.0, 0.0);
@@ -42,17 +48,23 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 	right_toe_pos_spinbutton->set_increments(0.01, 0.0);
 	tau_hscale->set_increments(.01, 0.0);
 	cur_limit_spinbutton->set_increments(1.0, 0.0);
+	vel_limit_spinbutton->set_increments(0.1, 0.0);
+	defl_limit_spinbutton->set_increments(0.1, 0.0);
+	tau_limit_spinbutton->set_increments(0.01, 0.0);
 
 	// Set values
-	leg_pos_kp_spinbutton->set_value(2000.0);
-	leg_pos_kd_spinbutton->set_value(20.0);
+	leg_pos_kp_spinbutton->set_value(600.0);
+	leg_pos_kd_spinbutton->set_value(50.0);
 	hip_pos_kp_spinbutton->set_value(150.0);
 	hip_pos_kd_spinbutton->set_value(10.0);
 	left_toe_pos_spinbutton->set_value(2.20);
-	right_toe_pos_spinbutton->set_value(2.45);
+	right_toe_pos_spinbutton->set_value(2.50);
 	tau_control_checkbutton->set_active(false);
 	tau_hscale->set_value(0.0);
-	cur_limit_spinbutton->set_value(7.0);
+	cur_limit_spinbutton->set_value(15.0);
+	vel_limit_spinbutton->set_value(6.0);
+	defl_limit_spinbutton->set_value(.15);
+	tau_limit_spinbutton->set_value(.1);
 
 	// Set up subscriber and publisher.
 	sub = nh.subscribe("ATCCanonicalWalking_status", 0, controllerCallback);
@@ -82,6 +94,9 @@ void getParameters() {
 	controllerDataOut.tauMode = tauMode;
 	nh.getParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
 	nh.getParam("/atrias_gui/maxCurrent", controllerDataOut.maxCurrent);
+	nh.getParam("/atrias_gui/maxSpeed",   controllerDataOut.maxSpeed);
+	nh.getParam("/atrias_gui/maxDefl",    controllerDataOut.maxDefl);
+	nh.getParam("/atrias_gui/maxTauRate", controllerDataOut.maxTauRate);
 
 	// Configure the GUI
 	leg_pos_kp_spinbutton->set_value(controllerDataOut.leg_pos_kp);
@@ -94,6 +109,9 @@ void getParameters() {
 	tau_control_checkbutton->set_active((atrias::controller::TauSource) controllerDataOut.tauMode == atrias::controller::TauSource::GUI);
 	tau_hscale->set_value(controllerDataOut.manualTau);
 	cur_limit_spinbutton->set_value(controllerDataOut.maxCurrent);
+	vel_limit_spinbutton->set_value(controllerDataOut.maxSpeed);
+	defl_limit_spinbutton->set_value(controllerDataOut.maxDefl);
+	tau_limit_spinbutton->set_value(controllerDataOut.maxTauRate);
 }
 
 //! \brief Set parameters on server according to current GUI settings.
@@ -108,6 +126,9 @@ void setParameters() {
 	nh.setParam("/atrias_gui/tauMode", controllerDataOut.tauMode);
 	nh.setParam("/atrias_gui/manualTau", controllerDataOut.manualTau);
 	nh.setParam("/atrias_gui/maxCurrent", controllerDataOut.maxCurrent);
+	nh.setParam("/atrias_gui/maxSpeed", controllerDataOut.maxSpeed);
+	nh.setParam("/atrias_gui/maxDefl", controllerDataOut.maxDefl);
+	nh.setParam("/atrias_gui/maxTauRate", controllerDataOut.maxTauRate);
 }
 
 //! \brief Update the GUI.
@@ -125,6 +146,9 @@ void guiUpdate() {
 		(atrias::controller::TauSource_t) atrias::controller::TauSource::STANCE_LEG_ANGLE;
 	controllerDataOut.manualTau = tau_hscale->get_value();
 	controllerDataOut.maxCurrent = cur_limit_spinbutton->get_value();
+	controllerDataOut.maxSpeed = vel_limit_spinbutton->get_value();
+	controllerDataOut.maxDefl = defl_limit_spinbutton->get_value();
+	controllerDataOut.maxTauRate = tau_limit_spinbutton->get_value();
 
 	// Publish
 	pub.publish(controllerDataOut);

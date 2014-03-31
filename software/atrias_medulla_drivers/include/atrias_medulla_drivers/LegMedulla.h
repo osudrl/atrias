@@ -75,10 +75,20 @@ class LegMedulla : public Medulla {
 	uint16_t        incrementalEncoderTimestampValue;
 	uint8_t         timingCounterValue;
 	double          legPositionOffset;
+	int16_t         zeroToeSensor;
+	bool            newToeBool;
+	bool            oldToeBool;
+	bool            toeBool;
+	uint16_t        toeCounter;
 	
 	// Whether or not the encoder value for this cycle was erroneous
 	bool            skipMotorEncoder;
 	bool            skipLegEncoder;
+
+	// Timing values to be used for velocity calculations.
+	// This is necessary for dealing with bad encoder values correctly
+	double          legEncoderDt;
+	double          motorEncoderDt;
 	
 	/** @brief The PDOEntryDatas array.
 	  */
@@ -137,6 +147,11 @@ class LegMedulla : public Medulla {
 	  * @param deltaTime The time between the DC clock signals for the last and this cycle.
 	  */
 	void         processIncrementalEncoders(RTT::os::TimeService::nsecs deltaTime, atrias_msgs::robot_state& robotState);
+
+	/** @brief Detects whether the toe is on the ground, based on its force reading.
+	  * @return True if it is, false if it isn't
+	  */
+	bool         toeDetect();
 	
 	/** @brief Updates the value of legPositionOffset and incrementalEncoderStart.
 	  */

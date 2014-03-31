@@ -43,7 +43,8 @@ endif(ATRIAS_BUILD_GUI)
 
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
-	orocos_component(motor_sin_wave_controller src/controller_component.cpp)
+	orocos_component(ATCMotorSinWave src/ATCMotorSinWave.cpp)
+	target_link_libraries(ATCMotorSinWave ControlLib-${OROCOS_TARGET})
 	ros_generate_rtt_typekit(atc_motor_sin_wave)
 endif(ATRIAS_BUILD_CONTROLLERS)
 

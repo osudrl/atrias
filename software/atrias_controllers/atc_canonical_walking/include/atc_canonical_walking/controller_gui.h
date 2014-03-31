@@ -36,7 +36,10 @@ Gtk::SpinButton *leg_pos_kp_spinbutton,
     *left_toe_pos_spinbutton,
     *hip_pos_kd_spinbutton,
     *right_toe_pos_spinbutton,
-    *cur_limit_spinbutton;
+    *cur_limit_spinbutton,
+    *vel_limit_spinbutton,
+    *defl_limit_spinbutton,
+    *tau_limit_spinbutton;
 
 Gtk::CheckButton *tau_control_checkbutton;
 Gtk::HScale      *tau_hscale;

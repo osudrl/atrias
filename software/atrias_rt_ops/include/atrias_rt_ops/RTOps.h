@@ -28,6 +28,8 @@ class RTOps;
 #include <atrias_msgs/rt_ops_event.h>
 #include <atrias_shared/globals.h>
 
+// This component (RT Ops)'s includes
+#include "atrias_rt_ops/EStopDiags.hpp"
 #include "atrias_rt_ops/TimestampHandler.h"
 #include "atrias_rt_ops/RobotStateHandler.h"
 #include "atrias_rt_ops/ControllerLoop.h"
@@ -56,6 +58,10 @@ class RTOps : public RTT::TaskContext {
 		/** @brief This is the port over which events are sent.
 		  */
 		RTT::OutputPort<atrias_msgs::rt_ops_event>  eventOut;
+
+		/** @brief This prints out diagnostic information when estops occur
+		  */
+		EStopDiags*                                 eStopDiags;
 		
 		/** @brief Handles our timestamps for us
 		  */
@@ -121,6 +127,11 @@ class RTOps : public RTT::TaskContext {
 		  * The communicator controls the timing of the system through this function.
 		  */
 		void               newStateCallback(atrias_msgs::robot_state);
+
+		/** @brief Returns a pointer to the EStopDiags instance
+		  * @return A pointer to the main EStopDiags instance
+		  */
+		EStopDiags*        getEStopDiags() const;
 		
 		/** @brief Grabs a pointer to the RobotStateHandler.
 		  * @return A pointer to the RobotStateHandler.

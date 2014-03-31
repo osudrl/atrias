@@ -1,12 +1,12 @@
 # Set up the component
 import("atc_joint_position")
-loadComponent("controller", "ATCJointPosition")
+loadComponent("ATCJointPosition", "ATCJointPosition")
 
 # Connect RTOps with this controller (so they can see each other's operations)
-connectPeers("atrias_rt", "controller")
+connectPeers("atrias_rt", "ATCJointPosition")
 
 # Configure the component
-controller.configure()
+ATCJointPosition.configure()
 
 # Start the component
-controller.start()
+ATCJointPosition.start()

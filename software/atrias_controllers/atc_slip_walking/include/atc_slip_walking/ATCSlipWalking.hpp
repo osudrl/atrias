@@ -63,16 +63,16 @@ class ATCSlipWalking : public ATC<
         /**
          * @brief These are functions for the top-level controller.
          */
+        void checkSafeties();
         void updateController();
         void hipController();
         void standingController();
         void shutdownController();
-        void passiveStanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*, ASCRateLimit*);
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
         void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
-        void updateExitConditions(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*, ASCRateLimit*);
+        void resetFlightLegParameters(atrias_msgs::robot_state_leg*, ASCRateLimit*);
 
         /**
          * @brief These are sub controllers used by the top level controller.
@@ -84,53 +84,55 @@ class ATCSlipWalking : public ATC<
         ASCPD ascPDLmA, ascPDLmB, ascPDRmA, ascPDRmB, ascPDLh, ascPDRh;
         ASCRateLimit ascRateLimitLmA, ascRateLimitLmB, ascRateLimitRmA, ascRateLimitRmB, ascRateLimitLh, ascRateLimitRh, ascRateLimitLr0, ascRateLimitRr0;
 
-
         /**
          * @brief These are all the variables used by the top level controller.
          */
-        // State machines
-        int controllerState, walkingState;
-        
+        // Controller state variables
+        int controllerState, walkingState, switchMethod;
+
         // Walking gait definition values
-        double r0, k, dk; // Spring parameters
+        double q1, q2, q3, q4;
+        double s, ds, sPrev; // Time invariant measure of gait progress
+        double r0, fa, dfa; // Spring parameters
         double swingLegRetraction; // The amount the leg retracts during swing
-        double pushoffForce; // Horizontal force applied during single support
-        
-        // Hip parameters
+        double stanceLegExtension; // The amount the leg extends during stance to inject energy
+        double torsoAngle; // Torso angle offset
+        double rExtension; // Leg extension parameter
+
+        // Torso state variables and control
+        double qb, dqb;
+        double rcom;
+        double q, dq;
+        double ft, dft;
+
+        // Hip state variables
         double qLh, qRh; // Hip angles
         LeftRight toePosition; // Desired toe positions measures from boom center axis
+        double qvpp, rvpp; // VPP parameters
 
         // Motor and leg variables
         double rSl, drSl, qSl, dqSl; // Stance leg states
         double rFl, drFl, qFl, dqFl; // Flight leg states
         double qmSA, dqmSA, qmSB, dqmSB; // Stance motor states
         double qmFA, dqmFA, qmFB, dqmFB; // Flight motor states
-        LegForce forceSl, forceFl, forceLl, forceRl;
+        LegForce forceSl;
 
         // Leg parameters at exit state (event trigger)
-        double reSl, dreSl, qeSl, dqeSl; // Stance leg exit states
-        double reFl, dreFl, qeFl, dqeFl; // Flight leg exit states
-        double reSm, qeSm; // Stance leg spring states
-        double reFm, qeFm; // Flight leg spring states
+        double reFm, qeFm; // Flight leg motor states
 
         // Leg parameters at target states
-        double rtSl, drtSl, qtSl, dqtSl; // Stance leg target states
-        double rtFl, drtFl, qtFl, dqtFl; // Flight leg target states
-        double r0Sl;
+        double rtFm, r0Sl; // Only length as angle is in q(1:4)
 
-        // Temp leg parameters
-        double ql, dql, rl, drl;
-
-        // Debug events
-        bool isManualFlightLegTO, isManualFlightLegTD;
+        // Temporary state parameters
+        double qm, dqm, rm, drm;
 
         // State transistion events
-        bool isStanceLegTO, isFlightLegTO, isFlightLegTD, isForwardStep, isBackwardStep;
+        bool isForwardStep, isTrigger; // Logical preventing backstepping issues
 
-        // Misc margins, ratelimiters and other kludge values
-        double forceThresholdTO, forceThresholdTD, positionThresholdTD;
+        // Misc margins, ratelimiters and other debug values
         double legRateLimit, hipRateLimit, springRateLimit;
-        double forceTD, forceTO, positionTD;
+        double currentLimit, velocityLimit, deflectionLimit;
+        bool isManualSwingLegTO, isManualSwingLegTD;
 };
 
 }

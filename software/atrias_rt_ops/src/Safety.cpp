@@ -32,14 +32,29 @@ double Safety::predictStop(double pos, double vel) {
 	return pos + vel * abs(vel) / (2.0 * ACCEL_PER_AMP * AVAIL_HALT_AMPS);
 }
 
-bool Safety::shouldEStop() {
+bool Safety::shouldEStop(atrias_msgs::controller_output &co) {
 	atrias_msgs::robot_state robotState = rtOps->getRobotStateHandler()->getRobotState();
+
+	// Check if there are any NaN or Inf values in co. If so, estop
+	if (!std::isfinite(co.lLeg.motorCurrentA)   ||
+	    !std::isfinite(co.lLeg.motorCurrentB)   ||
+	    !std::isfinite(co.lLeg.motorCurrentHip) ||
+	    !std::isfinite(co.rLeg.motorCurrentA)   ||
+	    !std::isfinite(co.rLeg.motorCurrentB)   ||
+	    !std::isfinite(co.rLeg.motorCurrentHip))
+	{
+		return true;
+	}
 
 	// If we're not in HALT, set isHalting to false then return false.
 	if (rtOps->getStateMachine()->getRtOpsState() != RtOpsState::HALT) {
 		isHalting = false;
 		return false;
 	}
+
+    // Temporary safety -- if halt mode engages, immediately trigger the estop.
+    // The amplifiers may be backwards, so letting halt mode engage isn't safe.
+	return true;
 
 	// Detect the transition into halt state, so we can initialize the motor rate limits
 	if (!isHalting) {

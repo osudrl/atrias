@@ -81,7 +81,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
 		smooth_hip_motion_checkbutton->set_active();
 
 		// Set up subscriber and publisher.
-		pub = nh.advertise<atc_joint_position::controller_input>("controller_input", 0);
+		pub = nh.advertise<atc_joint_position::controller_input>("ATCJointPosition_input", 0);
 		return true;
 	}
 	return false;

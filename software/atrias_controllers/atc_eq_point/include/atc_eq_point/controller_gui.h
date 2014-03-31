@@ -13,6 +13,7 @@
 #include <atrias_shared/gui_library.h>
 #include <robot_invariant_defs.h>
 #include <ros/ros.h>
+#include <atrias_shared/atrias_parameters.h>
 
 // ROS
 ros::NodeHandle nh;
@@ -45,7 +46,8 @@ Gtk::SpinButton *aea_spinbutton,
 	*tsw,
 	*aover,
 	*loc,
-	*rco;
+	*rco,
+	*desiredTorsoAngle;
 
 Gtk::HScale *thip,
 	*tab;
