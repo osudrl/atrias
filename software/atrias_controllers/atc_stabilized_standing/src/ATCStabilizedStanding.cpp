@@ -5,7 +5,7 @@ namespace atrias {
 namespace controller {
 
 ATCStabilizedStanding::ATCStabilizedStanding(string name) :
-    ATC(name)
+    ATC(name),
     ascCommonToolkit(this, "ascCommonToolkit"),
     ascHipBoomKinematics(this, "ascHipBoomKinematics"),
     ascPDLmA(this, "ascPDLmA"),
@@ -55,7 +55,7 @@ void ATCStabilizedStanding::controller() {
 
         case 1: // Stabilized standing
             // Stablilized single leg standing controller
-        	stabilizationController();
+            stabilizationController();
             break;
 
         case 2: // Shutdown
@@ -77,7 +77,7 @@ void ATCStabilizedStanding::controller() {
 void ATCStabilizedStanding::updateController() {
     // If we are disabled or the controller has been switched, reset rate limiters
     if (!(isEnabled()) || !(controllerState == guiIn.main_controller)) {
-    	ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
+        ascRateLimitLh.reset(rs.lLeg.hip.legBodyAngle);
         ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
         ascRateLimitLmB.reset(rs.lLeg.halfB.motorAngle);
         ascRateLimitRh.reset(rs.rLeg.hip.legBodyAngle);
@@ -128,7 +128,7 @@ void ATCStabilizedStanding::checkSafeties() {
         // Trigger E-stop
         printf("Software E-Stop triggered by spring deflection limit check.\n");
         printf("GUI deflectionLimit: %f\n", deflectionLimit);
-		commandEStop();
+        commandEStop();
     } // if
 } // checkSafeties
 
@@ -142,8 +142,8 @@ void ATCStabilizedStanding::checkSafeties() {
  */
 void ATCStabilizedStanding::hipController() {
     // Set hip controller toe positions
-    toePosition.left = guiIn.left_toe_pos;
-    toePosition.right = guiIn.right_toe_pos;
+    toePosition.left = 2.17;
+    toePosition.right = 2.5;
 
     // Compute inverse kinematics to keep lateral knee torque to a minimum
     std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
@@ -190,7 +190,7 @@ void ATCStabilizedStanding::startupController() {
 void ATCStabilizedStanding::stabilizationController() {
 	// Reset control inputs U = [tauLmA, tauLmB, tauRmA, tauRmB]
     for (i=0; i<4; ++i) {
-    	U[i] = UStar[i];
+        U[i] = UStar[i];
     } // for (i)
 
     // Reset states X = [qt, qLmA, qLmB, qRlA, qRlB, qRmA, qRmB]
@@ -209,12 +209,12 @@ void ATCStabilizedStanding::stabilizationController() {
     X[12] = 3.0*M_PI/2.0 - rs.rLeg.halfB.rotorAngle;
     X[13] = - rs.rLeg.halfB.rotorVelocity;
 
-	// Compute control inputs
-	for(i=0; i<4; i++) {
-		for(j=0; j<14; j++) {
-			U[i] += K[i][j] * (XStar[j] - X[j]);
-		} // for (j)
-	} // for (i)
+    // Compute control inputs
+    for(i=0; i<4; i++) {
+        for(j=0; j<14; j++) {
+            U[i] += K[i][j] * (XStar[j] - X[j]);
+        } // for (j)
+    } // for (i)
 
     // Set motor currents [tauLmA, tauLmB, tauRmA, tauRmB]
     co.lLeg.motorCurrentA = U[1]/50/0.0987;
