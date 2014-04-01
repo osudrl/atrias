@@ -3,7 +3,7 @@ uint8 main_controller
 
 # Leg Gains
 float64 leg_pos_kp
-float64 leg_for_kp
+float64 leg_pos_kd
 
 # Hip Gains
 float64 hip_pos_kp
