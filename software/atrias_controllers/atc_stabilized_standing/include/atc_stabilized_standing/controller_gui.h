@@ -1,8 +1,8 @@
 /*
  * controller_gui.h
  *
- *  Created on: May 5, 2012
- *      Author: Michael Anderson
+ *  Created on: April 1, 2014
+ *      Author: Mikhail S. Jones
  */
 
 #ifndef CONTROLLER_GUI_H_
