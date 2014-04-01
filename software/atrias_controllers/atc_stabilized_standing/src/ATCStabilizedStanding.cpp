@@ -27,9 +27,15 @@ ATCStabilizedStanding::ATCStabilizedStanding(string name) :
   // Set hard coded limits
   legMotorRateLimit = 0.5; // [rad/s]
   hipMotorRateLimit = 0.5; // [rad/s]
-  currentLimit = 30.0; // [amps]
+  currentLimit = 10.0; // [amps]
   deflectionLimit = 0.3; // [rad]
-  velocityLimit = 6.0; // [rad/s]
+  velocityLimit = 8.0; // [rad/s]
+
+  // Set hard coded PD gains
+  ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = 400.0;
+  ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = 50.0;
+  ascPDLh.P = ascPDRh.P = 150.0;
+  ascPDLh.D = ascPDRh.D = 10.0;
 }
 
 /**
@@ -165,7 +171,7 @@ void ATCStabilizedStanding::hipController() {
  */
 void ATCStabilizedStanding::startupController() {
   // Compute target motor angles
-  std::tie(qmLA, qmLB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, 0.9);
+  std::tie(qmLA, qmLB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, 0.8);
   std::tie(qmRA, qmRB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, 0.9);
 
   // Rate limit motor velocities
@@ -189,7 +195,7 @@ void ATCStabilizedStanding::startupController() {
  */
 void ATCStabilizedStanding::stabilizationController() {
   // Reset control inputs U = [tauLmA, tauLmB, tauRmA, tauRmB]
-  for (i=0; i<4; ++i) {
+  for (i=0; i<4; i++) {
     U[i] = UStar[i];
   } // for(i)
 
@@ -216,11 +222,16 @@ void ATCStabilizedStanding::stabilizationController() {
     } // for(j)
   } // for(i)
 
+  // DEBUG STATEMENTS
+  //for (j=0; j<14; j++) {
+  //  printf("XStar[%i] = %f,\tX[%i] = %f\n", j, XStar[j], j, X[j]);
+  //} // for(i)
+
   // Set motor currents [tauLmA, tauLmB, tauRmA, tauRmB]
-  co.lLeg.motorCurrentA = U[1]/50/0.0987;
-  co.lLeg.motorCurrentB = U[2]/50/0.0987;
-  co.rLeg.motorCurrentA = U[3]/50/0.0987;
-  co.rLeg.motorCurrentB = U[4]/50/0.0987;
+  co.lLeg.motorCurrentA = -U[1]/50.0/0.0987;
+  co.lLeg.motorCurrentB = -U[2]/50.0/0.0987;
+  co.rLeg.motorCurrentA = -U[3]/50.0/0.0987;
+  co.rLeg.motorCurrentB = -U[4]/50.0/0.0987;
 } // stabilizationController
 
 /**
