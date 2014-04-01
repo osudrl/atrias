@@ -6,7 +6,6 @@ namespace controller {
 
 ATCStabilizedStanding::ATCStabilizedStanding(string name) :
   ATC(name),
-  ascCommonToolkit(this, "ascCommonToolkit"),
   ascHipBoomKinematics(this, "ascHipBoomKinematics"),
   ascPDLmA(this, "ascPDLmA"),
   ascPDLmB(this, "ascPDLmB"),
@@ -25,17 +24,8 @@ ATCStabilizedStanding::ATCStabilizedStanding(string name) :
   setStartupEnabled(true);
 
   // Set hard coded limits
-  legMotorRateLimit = 0.5; // [rad/s]
-  hipMotorRateLimit = 0.5; // [rad/s]
-  currentLimit = 10.0; // [amps]
-  deflectionLimit = 0.3; // [rad]
-  velocityLimit = 8.0; // [rad/s]
-
-  // Set hard coded PD gains
-  ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = 400.0;
-  ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = 50.0;
-  ascPDLh.P = ascPDRh.P = 150.0;
-  ascPDLh.D = ascPDRh.D = 10.0;
+  legMotorRateLimit = 0.25;
+  hipMotorRateLimit = 0.25;
 }
 
 /**
@@ -60,7 +50,7 @@ void ATCStabilizedStanding::controller() {
       break;
 
     case 1: // Stabilized standing
-      // Stablilized single leg standing controller
+      // Stabilized single leg standing controller
       stabilizationController();
       break;
 
@@ -93,6 +83,19 @@ void ATCStabilizedStanding::updateController() {
 
   // Main controller options
   controllerState = guiIn.main_controller;
+
+  // Set leg PD gains
+  ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
+  ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = guiIn.leg_pos_kd;
+
+  // Set hip PD gains
+  ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
+  ascPDLh.D = ascPDRh.D = guiIn.hip_pos_kd;
+
+  // Set safeties
+  currentLimit = guiIn.current_limit;
+  deflectionLimit = guiIn.deflection_limit;
+  velocityLimit = guiIn.velocity_limit;
 
   // Return is enabled
   guiOut.isEnabled = isEnabled();
@@ -148,8 +151,8 @@ void ATCStabilizedStanding::checkSafeties() {
  */
 void ATCStabilizedStanding::hipController() {
   // Set hip controller toe positions
-  toePosition.left = 2.17;
-  toePosition.right = 2.5;
+  toePosition.left = guiIn.left_toe_pos;
+  toePosition.right = guiIn.right_toe_pos;
 
   // Compute inverse kinematics to keep lateral knee torque to a minimum
   std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
@@ -170,15 +173,11 @@ void ATCStabilizedStanding::hipController() {
  * robot to stand with the torso locked.
  */
 void ATCStabilizedStanding::startupController() {
-  // Compute target motor angles
-  std::tie(qmLA, qmLB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, 0.8);
-  std::tie(qmRA, qmRB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, 0.9);
-
   // Rate limit motor velocities
-  qmLA = ascRateLimitLmA(qmLA, legMotorRateLimit);
-  qmLB = ascRateLimitLmB(qmLB, legMotorRateLimit);
-  qmRA = ascRateLimitRmA(qmRA, legMotorRateLimit);
-  qmRB = ascRateLimitRmB(qmRB, legMotorRateLimit);
+  qmLA = ascRateLimitLmA(XStar[2], legMotorRateLimit);
+  qmLB = ascRateLimitLmB(XStar[4], legMotorRateLimit);
+  qmRA = ascRateLimitRmA(XStar[10], legMotorRateLimit);
+  qmRB = ascRateLimitRmB(XStar[12], legMotorRateLimit);
 
   // Compute and set motor currents
   co.lLeg.motorCurrentA = ascPDLmA(qmLA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);
@@ -222,16 +221,11 @@ void ATCStabilizedStanding::stabilizationController() {
     } // for(j)
   } // for(i)
 
-  // DEBUG STATEMENTS
-  //for (j=0; j<14; j++) {
-  //  printf("XStar[%i] = %f,\tX[%i] = %f\n", j, XStar[j], j, X[j]);
-  //} // for(i)
-
   // Set motor currents [tauLmA, tauLmB, tauRmA, tauRmB]
-  co.lLeg.motorCurrentA = -U[1]/50.0/0.0987;
-  co.lLeg.motorCurrentB = -U[2]/50.0/0.0987;
-  co.rLeg.motorCurrentA = -U[3]/50.0/0.0987;
-  co.rLeg.motorCurrentB = -U[4]/50.0/0.0987;
+  co.lLeg.motorCurrentA = -U[0]/50.0/0.0987;
+  co.lLeg.motorCurrentB = -U[1]/50.0/0.0987;
+  co.rLeg.motorCurrentA = -U[2]/50.0/0.0987;
+  co.rLeg.motorCurrentB = -U[3]/50.0/0.0987;
 } // stabilizationController
 
 /**
