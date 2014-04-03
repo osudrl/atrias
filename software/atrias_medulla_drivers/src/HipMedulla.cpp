@@ -149,7 +149,7 @@ void HipMedulla::processReceiveData(atrias_msgs::robot_state& robot_state) {
 	switch(*id) {
 		case MEDULLA_LEFT_HIP_ID:
 			hip_ptr = &(robot_state.lLeg.hip);
-			robot_state.currentPositive = -1.0*((double)(*currentPositive - ROBOT_CURRENT_POS_50A_OFFSET))*ROBOT_CURRENT_50A_GAIN;
+			robot_state.currentPositive = ((double)(*currentPositive - ROBOT_CURRENT_POS_50A_OFFSET))*ROBOT_CURRENT_50A_GAIN;
 			robot_state.currentNegative = ((double)(*currentNegative - ROBOT_CURRENT_NEG_50A_OFFSET))*ROBOT_CURRENT_50A_GAIN;
 			break;
 		case MEDULLA_RIGHT_HIP_ID:
