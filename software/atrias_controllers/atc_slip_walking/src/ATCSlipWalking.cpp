@@ -2,7 +2,7 @@
  * @file ATCSlipWalking.cpp
  * @brief A Spring Loaded Inverted Pendulum (SLIP) template model based
  * walking controller.
- * @author Mikhail Jones
+ * @author Mikhail Jones and Andrew Peekema
  */
 
 #include "atc_slip_walking/ATCSlipWalking.hpp"
@@ -325,14 +325,14 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(qSl, rSl)   = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
     dqb = rs.position.bodyPitchVelocity;
 
-    // Convert leg angle and velocities to world coordinates
+    // Convert leg angle and velocity to world coordinates
     qSl  += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
 
@@ -381,10 +381,6 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
         coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
         coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
     }
-
-    // Log values (The function that calls this last gets to save the data)
-    logOut.q  = q;
-    logOut.fa = fa;
 } // stanceController
 
 /**
@@ -511,8 +507,8 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 
     // Handle different trigger methods
     switch (switchMethod) {
-        case 0: // Contact sensing + automatic switch
-            isTrigger = rsFl->onGround || (qSl >= q3);
+        case 0: // TODO: Fix when toe sensors work
+            isTrigger = (qSl >= q3) && (qFl <= q2);
             break;
 
         case 1: // Automatic switch based on gait parameter
@@ -543,18 +539,24 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
  */
 void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCLegForce *ascLegForceSl, ASCLegForce *ascLegForceFl, ASCRateLimit *ascRateLimitSr0, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(qSl, rSl)   = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
+    dqb = rs.position.bodyPitchVelocity;
 
-    // Convert leg angle to world coordinates
+    // Convert leg angle and velocity to world coordinates
     qSl += qb - 3.0*M_PI/2.0;
+    dqSl += dqb;
+
+    // Compute current ATRIAS non-linear spring force for given leg configuration
+    std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
 
     // Handle different trigger methods
     switch (switchMethod) {
-        case 0: // Contact sensing + automatic trigger
-            isTrigger = !rsFl->onGround || (qSl >= q2);
+        case 0: // When the axial leg force is less than zero
+            isTrigger = (fa < 0);
             break;
 
         case 1: // Automatic switch based on gait parameter
