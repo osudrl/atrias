@@ -70,7 +70,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
     leg_for_kd_spinbutton->set_range(0.0, 20.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
-    leg_for_kd_spinbutton->set_value(0.0);
+    leg_for_kd_spinbutton->set_value(10.0);
 
     // Hip gains
     gui->get_widget("hip_pos_kp_spinbutton", hip_pos_kp_spinbutton);
@@ -94,17 +94,17 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     gui->get_widget("qvpp_spinbutton", qvpp_spinbutton);
     qvpp_spinbutton->set_range(-M_PI/2.0, M_PI/2.0);
     qvpp_spinbutton->set_increments(0.01, 0.0);
-    qvpp_spinbutton->set_value(0.0);
+    qvpp_spinbutton->set_value(-0.25);
     gui->get_widget("rvpp_spinbutton", rvpp_spinbutton);
     rvpp_spinbutton->set_range(-0.5, 2.0);
     rvpp_spinbutton->set_increments(0.01, 0.0);
-    rvpp_spinbutton->set_value(0.0);
+    rvpp_spinbutton->set_value(0.4);
 
     // Debug
     gui->get_widget("current_limit_spinbutton", current_limit_spinbutton);
     current_limit_spinbutton->set_range(0.0, 60.0);
     current_limit_spinbutton->set_increments(5.0, 0.0);
-    current_limit_spinbutton->set_value(15.0);
+    current_limit_spinbutton->set_value(60.0);
     gui->get_widget("velocity_limit_spinbutton", velocity_limit_spinbutton);
     velocity_limit_spinbutton->set_range(0.0, 15.0);
     velocity_limit_spinbutton->set_increments(0.5, 0.0);
