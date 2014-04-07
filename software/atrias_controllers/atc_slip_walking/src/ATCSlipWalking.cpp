@@ -541,6 +541,8 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Compute current stance leg states
     std::tie(qSl, rSl)   = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+    std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+    std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -549,13 +551,15 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Convert leg angle and velocity to world coordinates
     qSl += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
+    qFl += qb - 3.0*M_PI/2.0;
+    dqFl += dqb;
 
     // Compute current ATRIAS non-linear spring force for given leg configuration
-    std::tie(fa, dfa) = ascCommonToolkit.legForce(rSl, drSl, r0Sl);
+    std::tie(fa, dfa) = ascCommonToolkit.legForce(rFl, drFl, r0Sl);
 
     // Handle different trigger methods
     switch (switchMethod) {
-        case 0: // When the axial leg force is less than zero
+        case 0: // When the takeoff ("flight") axial leg force is less than zero
             isTrigger = (fa < 0);
             break;
 
