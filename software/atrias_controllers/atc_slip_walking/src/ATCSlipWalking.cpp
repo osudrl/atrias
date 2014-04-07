@@ -559,8 +559,8 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 
     // Handle different trigger methods
     switch (switchMethod) {
-        case 0: // When the takeoff ("flight") axial leg force is less than zero
-            isTrigger = (fa < 0);
+        case 0: // When the takeoff ("flight") axial leg force is less than...
+            isTrigger = (fa <= 200.0);
             break;
 
         case 1: // Automatic switch based on gait parameter
