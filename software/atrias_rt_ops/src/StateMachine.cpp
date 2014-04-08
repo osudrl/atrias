@@ -91,11 +91,13 @@ medulla_state_t StateMachine::calcState(atrias_msgs::controller_output controlle
 				// This is a bit of a kludge -- send the MEDULLA_ESTOP event to tell the GUI and CM that
 				// it's enterinng ESTOP state.
 				eStop(RtOpsEvent::MEDULLA_ESTOP);
+				printf("Software safety estop\n");
 				return medulla_state_error;
 			}
 			
 			if (rtOps->getSafety()->shouldHalt()) {
 				setState(RtOpsState::HALT);
+				printf("Software safety halt\n");
 				return medulla_state_halt;
 			}
 			
@@ -123,6 +125,7 @@ void StateMachine::newCMState(RtOpsState new_state) {
 		case RtOpsState::ENABLED:
 			if (rtOps->getSafety()->shouldHalt())
 				new_state = RtOpsState::DISABLED;
+				printf("Software safety halt\n");
 			
 			break;
 			
