@@ -111,9 +111,9 @@ typedef enum {
 
 //Robot current offset and gain
 #define ROBOT_CURRENT_NEG_50A_OFFSET                                        3405
-#define ROBOT_CURRENT_POS_50A_OFFSET                                        3699
+#define ROBOT_CURRENT_POS_50A_OFFSET                                        1252
 #define ROBOT_CURRENT_600A_OFFSET                                            188
-#define ROBOT_CURRENT_50A_GAIN                                         0.0109479
+#define ROBOT_CURRENT_50A_GAIN                                            0.0225
 #define ROBOT_CURRENT_600A_GAIN                                        0.7536839
 
 // Loop period for main RT operations

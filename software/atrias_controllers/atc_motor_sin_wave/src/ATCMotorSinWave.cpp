@@ -56,7 +56,7 @@ void ATCMotorSinWave::controller() {
     // Set resonable center positions
     centerAAngle = M_PI/4;
     centerBAngle = 3*M_PI/4;
-    q += centerBAngle;
+    //q += centerAAngle;
 
     // Set the PD gains
     // Left leg
@@ -76,31 +76,31 @@ void ATCMotorSinWave::controller() {
 
     // Left Leg
     // Calculate motorA current
-    targetPos = centerAAngle;
+    targetPos = centerAAngle + q;
     currentPos = rs.lLeg.halfA.motorAngle;
-    targetVel = 0.0;
+    targetVel = dq;
     currentVel = rs.lLeg.halfA.motorVelocity;
     co.lLeg.motorCurrentA = pd0Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate motorB current
-    targetPos = centerBAngle;
+    targetPos = centerBAngle + q;
     currentPos = rs.lLeg.halfB.motorAngle;
-    targetVel = 0.0;
+    targetVel = dq;
     currentVel = rs.lLeg.halfB.motorVelocity;
     co.lLeg.motorCurrentB = pd1Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Right Leg
     // Calculate motorA current
-    targetPos = centerAAngle;
+    targetPos = centerAAngle - q;
     currentPos = rs.rLeg.halfA.motorAngle;
-    targetVel = 0.0;
+    targetVel = -dq;
     currentVel = rs.rLeg.halfA.motorVelocity;
     co.rLeg.motorCurrentA = pd2Controller(targetPos, currentPos, targetVel, currentVel);
 
     // Calculate motorB current
-    targetPos = q;
+    targetPos = centerBAngle - q;
     currentPos = rs.rLeg.halfB.motorAngle;
-    targetVel = dq;
+    targetVel = -dq;
     currentVel = rs.rLeg.halfB.motorVelocity;
     co.rLeg.motorCurrentB = pd3Controller(targetPos, currentPos, targetVel, currentVel);
 
