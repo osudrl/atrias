@@ -551,9 +551,9 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
 
     // Convert leg angle and velocity to world coordinates
     qSl += qb - 3.0*M_PI/2.0;
-    qSm += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
     qFl += qb - 3.0*M_PI/2.0;
+    qFm += qb - 3.0*M_PI/2.0;
     dqFl += dqb;
 
     // Compute current ATRIAS non-linear spring force for given leg configuration
@@ -564,7 +564,7 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // When the takeoff ("flight") radial leg deflection is less than ... meters
-            isTrigger = (rFdefl <= 0.0002);
+            isTrigger = (rFdefl <= 0.0005);
             break;
 
         case 1: // Automatic switch based on gait parameter
