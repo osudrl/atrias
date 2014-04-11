@@ -140,8 +140,6 @@ class ATCSlipWalking : public ATC<
         // Toe switch variables
         deque<double> rFilteredToe;
         deque<double> lFilteredToe;
-        //deque<double> rToeThreshold;
-        //deque<double> lToeThreshold;
 
         // Misc margins, ratelimiters and other debug values
         double legRateLimit, hipRateLimit, springRateLimit;

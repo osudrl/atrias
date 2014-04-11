@@ -49,8 +49,8 @@ ATCSlipWalking::ATCSlipWalking(string name) :
     sPrev = 0.0;
 
     // Initialize toe filter
-    rFilteredToe.assign (120,4095.0);  // 120 doubles with a value of 4095
-    lFilteredToe.assign (120,4095.0);
+    rFilteredToe.assign (120,5000.0);  // 120 doubles with a value of 5000
+    lFilteredToe.assign (120,5000.0);
 }
 
 /**
@@ -563,7 +563,9 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // When the takeoff ("flight") radial leg deflection is less than ... meters
-            isTrigger = (rFdefl <= 0.0005);
+            //isTrigger = (rFdefl <= 0.005);
+            // TODO: Replace this when done testing touchdown sensor
+            isTrigger = (qSl >= q2);
             break;
 
         case 1: // Automatic switch based on gait parameter
@@ -593,7 +595,7 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
     sPrev = 0.0;
 
     // Compute initial flight leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
     // Convert to world coordinates
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
@@ -602,10 +604,10 @@ bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque
 {
     // Touchdown detection
     // Make a baseline by averaging previous values, ignoring the first 20
-    double baseline = accumulate(filteredToe->begin()+20, filteredToe->end(), 0.0)/filteredToe->size();
+    double baseline = accumulate(filteredToe->begin()+20.0, filteredToe->end(), 0.0)/(filteredToe->size()-20.0);
 
-    // The threshold for stance is 200 over the baseline reading
-    double threshold = 200.0 + baseline;
+    // The threshold for stance is 500 over the baseline reading
+    double threshold = 500.0 + baseline;
 
     // If the toe switch is above the threshold
     if (((double) rsFl->toeSwitch) > threshold) {
@@ -616,20 +618,21 @@ bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque
     return false;
 } // detectStance
 
-void ATCSlipWalking::updateToeFilter(uint16_t toe, std::deque<double> *filteredToe)
+void ATCSlipWalking::updateToeFilter(uint16_t newToe, std::deque<double> *filteredToe)
 {
-    // toe: New toe measurement
+    // newToe: New toe measurement
     // filteredToe: A bunch of filtered measurements
+    double toe = (double) newToe; // double precision container for newToe
 
     // Filter to remove bad data
     // If the data is the maximum or minimum the ADC outputs, ignore it
     double prevToe = filteredToe->front();
-    if ((toe == 4095) || (toe == 0)) {
+    if ((newToe == 4095) || (newToe == 0)) {
         toe = prevToe;
     }
-    toe = (double) toe; // Make sure toe is double precision
-    // If the data jumps by more than 1000, ignore it
-    if (fabs(prevToe - toe) > 1000.0) {
+
+    // If the data jumps by more than 1000 and we're not starting up, ignore it
+    if ((fabs(prevToe - toe) > 1000.0) && (filteredToe->back() != 5000.0)) {
         toe = prevToe;
     }
 
@@ -637,7 +640,8 @@ void ATCSlipWalking::updateToeFilter(uint16_t toe, std::deque<double> *filteredT
     // Remove the oldest value
     filteredToe->pop_back();
     // Calculate the average of the 5 most recent values
-    double average = (accumulate(filteredToe->begin(), filteredToe->begin()+5, 0.0) + toe)/(filteredToe->size() + 1.0);
+    double average = (accumulate(filteredToe->begin(), filteredToe->begin()+4, 0.0) + toe)/5.0;
+
     // Store it
     filteredToe->push_front (average);
 } // updateToeFilter
