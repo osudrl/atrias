@@ -73,12 +73,12 @@ class ATCSlipWalking : public ATC<
         void standingController();
         void shutdownController();
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
-        void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, deque*);
+        void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, std::deque<double>*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
         void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*);
         void resetFlightLegParameters(atrias_msgs::robot_state_leg*, ASCRateLimit*);
-        bool detectStance(atrias_msgs::robot_state_leg*, deque*);
-        void updateToeFilter(uint16, deque*);
+        bool detectStance(atrias_msgs::robot_state_leg*, std::deque<double>*);
+        void updateToeFilter(uint16_t, std::deque<double>*);
 
         /**
          * @brief These are sub controllers used by the top level controller.

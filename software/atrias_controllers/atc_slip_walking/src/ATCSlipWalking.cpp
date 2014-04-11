@@ -100,7 +100,7 @@ void ATCSlipWalking::controller() {
                 case 2: // Left leg single support (right = flight, left = stance)
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
                     stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    singleSupportEvents(&rs.lLeg, &rs.rLeg, &ascLegForceL, &rFilteredToe);
+                    singleSupportEvents(&rs.lLeg, &rs.rLeg, &rFilteredToe);
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
@@ -494,7 +494,7 @@ void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atri
  * This function computes logical conditionals and uses a decision tree
  * to determine if a single support event has been triggered and responds accordingly.
  */
-void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl) {
+void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, std::deque<double>* filteredToe) {
     // Compute current stance leg states
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
@@ -593,12 +593,12 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
     sPrev = 0.0;
 
     // Compute initial flight leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
     // Convert to world coordinates
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
 
-bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, deque *filteredToe)
+bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque<double> *filteredToe)
 {
     // Touchdown detection
     // Make a baseline by averaging previous values, ignoring the first 20
@@ -608,14 +608,15 @@ bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, deque *fil
     double threshold = 200.0 + baseline;
 
     // If the toe switch is above the threshold
-    if (((double) rsFl.toeSwitch) > threshold) {
+    if (((double) rsFl->toeSwitch) > threshold) {
         return true;  // The leg is in stance
-    } else {
-        return false; // The leg is in flight
     }
+
+    // The leg is in flight
+    return false;
 } // detectStance
 
-void ATCSlipWalking::updateToeFilter(uint16 toe, deque *filteredToe)
+void ATCSlipWalking::updateToeFilter(uint16_t toe, std::deque<double> *filteredToe)
 {
     // toe: New toe measurement
     // filteredToe: A bunch of filtered measurements
@@ -623,12 +624,12 @@ void ATCSlipWalking::updateToeFilter(uint16 toe, deque *filteredToe)
     // Filter to remove bad data
     // If the data is the maximum or minimum the ADC outputs, ignore it
     double prevToe = filteredToe->front();
-    if (toe == 4095) || (toe == 0) {
+    if ((toe == 4095) || (toe == 0)) {
         toe = prevToe;
     }
     toe = (double) toe; // Make sure toe is double precision
     // If the data jumps by more than 1000, ignore it
-    if fabs(prevToe - toe) > 1000.0 {
+    if (fabs(prevToe - toe) > 1000.0) {
         toe = prevToe;
     }
 
