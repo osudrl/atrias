@@ -64,7 +64,7 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
 limit_sw_port_t limit_sw_port;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
-adc_port_t adc_port_a, adc_port_b;
+//adc_port_t adc_port_a, adc_port_b;
 adc124_t knee_adc;
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
@@ -121,24 +121,24 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing ADC ports\n");
 	#endif
-	adc_port_a = adc_init_port(&ADCA);
-	adc_port_b = adc_init_port(&ADCB);
+	//adc_port_a = adc_init_port(&ADCA);
+	//adc_port_b = adc_init_port(&ADCB);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing Thermistor ADC pins\n");
 	#endif
-	adc_init_pin(&adc_port_a,1,thermistor_pdo+0);
-	adc_init_pin(&adc_port_a,2,thermistor_pdo+1);
-	adc_init_pin(&adc_port_a,3,thermistor_pdo+2);
-	adc_init_pin(&adc_port_a,4,thermistor_pdo+3);
-	adc_init_pin(&adc_port_a,5,thermistor_pdo+4);
-	adc_init_pin(&adc_port_a,6,thermistor_pdo+5);
+//	adc_init_pin(&adc_port_a,1,thermistor_pdo+0);
+//	adc_init_pin(&adc_port_a,2,thermistor_pdo+1);
+//	adc_init_pin(&adc_port_a,3,thermistor_pdo+2);
+//	adc_init_pin(&adc_port_a,4,thermistor_pdo+3);
+//	adc_init_pin(&adc_port_a,5,thermistor_pdo+4);
+//	adc_init_pin(&adc_port_a,6,thermistor_pdo+5);
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing voltage monitoring pins\n");
 	#endif
-	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
-	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
+//	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
+//	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing knee ADC.\n");
@@ -167,11 +167,11 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 
 
 	// Start reading the ADCs
-	adc_start_read(&adc_port_a);
-	adc_start_read(&adc_port_b);
+//	adc_start_read(&adc_port_a);
+//	adc_start_read(&adc_port_b);
 
-	while (!adc_read_complete(&adc_port_a));
-	while (!adc_read_complete(&adc_port_b));
+//	while (!adc_read_complete(&adc_port_a));
+//	while (!adc_read_complete(&adc_port_b));
 
 	leg_therm_prev_val[0] = thermistor_pdo[0];
 	leg_therm_prev_val[1] = thermistor_pdo[1];
@@ -198,10 +198,9 @@ inline void leg_disable_outputs(void) {
 }
 
 void leg_update_inputs(uint8_t id) {
-//	adc124_start_read(&knee_adc);
 	// Start reading the ADCs
-	adc_start_read(&adc_port_a);
-	adc_start_read(&adc_port_b);
+//	adc_start_read(&adc_port_a);
+//	adc_start_read(&adc_port_b);
 	
 	// Start reading from the encoders
 	biss_encoder_start_reading(&motor_encoder);
@@ -212,11 +211,11 @@ void leg_update_inputs(uint8_t id) {
 
 
 	// now wait for things to complete
-	while (!adc_read_complete(&adc_port_a));
-	while (!adc_read_complete(&adc_port_b));
+//	while (!adc_read_complete(&adc_port_a));
+//	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
-//	while (!adc124_read_complete(&knee_adc));
+
 
 	cli();
 	last_incremental = *incremental_encoder_pdo;
@@ -266,7 +265,9 @@ void leg_update_inputs(uint8_t id) {
 	    ((leg_therm_prev_val[5]<thermistor_pdo[5]) && (thermistor_pdo[5]-leg_therm_prev_val[5] < 50)))
 		leg_therm_prev_val[5] = thermistor_pdo[5];
 
-//	adc124_process_data(&knee_adc);
+	adc124_start_read(&knee_adc);
+	while (!adc124_read_complete(&knee_adc));
+	adc124_process_data(&knee_adc);
 
 	//leg_send_current_read = true;
 }
