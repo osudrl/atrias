@@ -506,7 +506,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     qSl += qb - 3.0*M_PI/2.0;
     qFl += qb - 3.0*M_PI/2.0;
 
-    // Make sure we step forward and dont trigger next state if we back step
+    // Make sure we step forward and don't trigger next state if we back step
     isForwardStep = (qFl <= M_PI/2.0);
 
     // Handle different trigger methods
@@ -571,8 +571,11 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
             break;
     }
 
+    // Make sure the flight leg is at a reasonable angle to takeoff
+    isForwardStep = (qFl >= M_PI/2.0);
+
     // Flight leg take off (trigger next state)
-    if (isTrigger || isManualSwingLegTO) {
+    if ((isTrigger || isManualSwingLegTO) && isForwardStep) {
         // Advance the walking state machine 1 step and loop to beginning if needed
         walkingState = (walkingState + 1) % 4;
 
@@ -590,7 +593,7 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
     sPrev = 0.0;
 
     // Compute initial flight leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
     // Convert to world coordinates
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
