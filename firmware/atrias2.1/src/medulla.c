@@ -33,14 +33,14 @@ SPI_USES_PORT(SPIF)
 UART_USES_PORT(USARTD0)
 
 // ADCs on port a and b
-ADC_USES_PORT(ADCA)
-ADC_USES_PORT(ADCB)
+//ADC_USES_PORT(ADCA)
+//ADC_USES_PORT(ADCB)
 
-#ifdef ENABLE_IMU
-UART_USES_PORT(USARTF0)   // KVH 1750
-#else
+//#ifdef ENABLE_IMU
+//UART_USES_PORT(USARTF0)   // KVH 1750
+//#else
 ADC124_USES_PORT(USARTF0)
-#endif
+//#endif
 
 
 int main(void) {
@@ -54,6 +54,7 @@ int main(void) {
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
 	cpu_configure_interrupt_level(cpu_interrupt_level_high, true);
 	cpu_configure_interrupt_level(cpu_interrupt_level_low, true);
+	cpu_configure_round_robin_scheduling(true);
 	sei();
 
 	// Initialize the LED port
