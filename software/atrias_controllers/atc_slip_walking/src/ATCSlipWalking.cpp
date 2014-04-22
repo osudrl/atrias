@@ -631,16 +631,17 @@ void ATCSlipWalking::updateToeFilter(uint16_t newToe, std::deque<double> *filter
         toe = prevToe;
     }
 
-    // If the data jumps by more than 1000 and we're not starting up, ignore it
-    if ((fabs(prevToe - toe) > 1000.0) && (filteredToe->back() != 5000.0)) {
+    // If the data jumps by more than 1500 and we're not starting up, ignore it
+    if ((fabs(prevToe - toe) > 1500.0) && (filteredToe->back() != 5000.0)) {
         toe = prevToe;
     }
 
     // Rolling average
     // Remove the oldest value
     filteredToe->pop_back();
-    // Calculate the average of the 5 most recent values
-    double average = (accumulate(filteredToe->begin(), filteredToe->begin()+4, 0.0) + toe)/5.0;
+    // Calculate the average of the 3 most recent values
+    int nSamples = 3;
+    double average = (accumulate(filteredToe->begin(), filteredToe->begin()+nSamples-1, 0.0) + toe)/((double)nSamples);
 
     // Store it
     filteredToe->push_front (average);
