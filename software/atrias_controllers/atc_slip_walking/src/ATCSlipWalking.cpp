@@ -563,9 +563,7 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     // Handle different trigger methods
     switch (switchMethod) {
         case 0: // When the takeoff ("flight") radial leg deflection is less than ... meters
-            //isTrigger = (rFdefl <= 0.005);
-            // TODO: Replace this when done testing touchdown sensor
-            isTrigger = (qSl >= q2);
+            isTrigger = (rFdefl <= 0.005);
             break;
 
         case 1: // Automatic switch based on gait parameter
