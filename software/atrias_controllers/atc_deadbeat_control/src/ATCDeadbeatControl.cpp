@@ -451,14 +451,14 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
 
     v0 = pow(pow(rSl*dqSl,2)+pow(drSl,2),0.5);
     //v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
-    if abs(qSl-3.14159/2.0)<0.015
+    if (abs(qSl-3.14159/2.0) < 0.015)
     {
-        if v0>1
+        if (v0>1)
         {
             v0 = 1.0;
         }
 
-        if v0<0.4
+        if (v0<0.4)
         {
             v0 = 0.4;
         }
@@ -474,7 +474,7 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
         PoincareSecUpdateFlag = 1;
 
 
-    }else if PoincareSecUpdateFlag!=1
+    }else if (PoincareSecUpdateFlag!=1)
     {
         v0 = 0.5;
 
@@ -489,7 +489,7 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
     }
 
     // To reach the ground ASAP
-    //if qSl>q3
+    //if (qSl>q3)
     //{
     //    q2 = 3.14159 / 2.0;
     //}
