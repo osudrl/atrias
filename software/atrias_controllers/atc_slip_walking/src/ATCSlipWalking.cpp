@@ -604,8 +604,8 @@ bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque
     // Make a baseline by averaging previous values, ignoring the first 20
     double baseline = accumulate(filteredToe->begin()+20.0, filteredToe->end(), 0.0)/(filteredToe->size()-20.0);
 
-    // The threshold for stance is 500 over the baseline reading
-    double threshold = 500.0 + baseline;
+    // The threshold for stance is 600 over the baseline reading
+    double threshold = 600.0 + baseline;
 
     // If the toe switch is above the threshold
     if (((double) rsFl->toeSwitch) > threshold) {
