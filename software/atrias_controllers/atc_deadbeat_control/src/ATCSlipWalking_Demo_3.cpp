@@ -1,19 +1,18 @@
 /**
- * @file ATCDeadbeatControl.cpp
+ * @file ATCSlipWalking.cpp
  * @brief A Spring Loaded Inverted Pendulum (SLIP) template model based
  * walking controller.
- * @author (based on the code from Mikhail Jones and Andrew Peekema)
+ * @author Mikhail Jones and Andrew Peekema
  */
 
-
-#include "atc_deadbeat_control/ATCDeadbeatControl.hpp"
+#include "atc_slip_walking/ATCSlipWalking.hpp"
 
 // The namespaces this controller resides in
 namespace atrias {
 namespace controller {
 
-ATCDeadbeatControl::ATCDeadbeatControl(string name) :
-     ATC(name),
+ATCSlipWalking::ATCSlipWalking(string name) :
+    ATC(name),
     ascCommonToolkit(this, "ascCommonToolkit"),
     ascHipBoomKinematics(this, "ascHipBoomKinematics"),
     ascInterpolation(this, "ascInterpolation"),
@@ -34,7 +33,6 @@ ATCDeadbeatControl::ATCDeadbeatControl(string name) :
     ascRateLimitLr0(this, "ascRateLimitLr0"),
     ascRateLimitRr0(this, "ascRateLimitRr0")
 {
-     // Do init here.
     // Startup is handled by the ATC class
     setStartupEnabled(true);
 
@@ -53,19 +51,8 @@ ATCDeadbeatControl::ATCDeadbeatControl(string name) :
     // Initialize toe filter
     rFilteredToe.assign (120,5000.0);  // 120 doubles with a value of 5000
     lFilteredToe.assign (120,5000.0);
-
-
-    PoincareSecUpdateFlag=0; // To check for the right angles
-
-    q1 = -0.639203343*pow(0.5,3) + 1.50730784*pow(0.5,2) - 1.030411268*0.5 + 1.411227299;
-
-    q2 = -0.708299727*pow(0.5,3) + 1.704598815*pow(0.5,2) -1.1412168*0.5 + 1.566854326;
-
-    q3 = 0.708299726*pow(0.5,3)	-1.704598815*pow(0.5,2) + 1.1412168*0.5 + 1.574738327;
-
-    q4 = 0.639203343*pow(0.5,3)	-1.50730784*pow(0.5,2) + 1.030411268*0.5 + 1.730365355;
-
 }
+
 /**
  * @brief Top-level controller.
  *
@@ -73,7 +60,7 @@ ATCDeadbeatControl::ATCDeadbeatControl(string name) :
  * The ATC class automatically handles startup and shutdown,
  * if they are not disabled.
  */
-void ATCDeadbeatControl::controller() {
+void ATCSlipWalking::controller() {
     // Update GUI values, gains, and other options
     updateController();
 
@@ -145,11 +132,6 @@ void ATCDeadbeatControl::controller() {
     } else {
         logOut.walkingState = walkingState;
     }
-    logOut.v0 = v0;
-    logOut.q1 = q1;
-    logOut.q2 = q2;
-    logOut.q3 = q3;
-    logOut.q4 = q4;
 
 } // controller
 
@@ -159,7 +141,7 @@ void ATCDeadbeatControl::controller() {
  * This function performs various safety checks and triggers a software
  * emergency stop if needed.
  */
-void ATCDeadbeatControl::checkSafeties() {
+void ATCSlipWalking::checkSafeties() {
     // Limit motor currents to GUI specified value
     co.lLeg.motorCurrentA = clamp(co.lLeg.motorCurrentA, -currentLimit, currentLimit);
     co.lLeg.motorCurrentB = clamp(co.lLeg.motorCurrentB, -currentLimit, currentLimit);
@@ -203,7 +185,7 @@ void ATCDeadbeatControl::checkSafeties() {
  * This function handles all of the non-controller related
  *  updating and all communication to and from the GUI.
  */
-void ATCDeadbeatControl::updateController() {
+void ATCSlipWalking::updateController() {
     // If we are disabled or the controller has been switched, reset rate limiters
     if (!(isEnabled()) || !(controllerState == guiIn.main_controller)) {
         ascRateLimitLmA.reset(rs.lLeg.halfA.motorAngle);
@@ -225,11 +207,10 @@ void ATCDeadbeatControl::updateController() {
     stanceLegExtension = guiIn.stance_leg_extension;
     r0 = guiIn.leg_length;
     torsoAngle = guiIn.torso_angle;
-    // Hamid {The bellow values are commented}
-    //q1 = guiIn.q1;
-    //q2 = guiIn.q2;
-    //q3 = guiIn.q3;
-    //q4 = guiIn.q4;
+    q1 = guiIn.q1;
+    q2 = guiIn.q2;
+    q3 = guiIn.q3;
+    q4 = guiIn.q4;
 
     // Leg gains
     ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
@@ -266,7 +247,7 @@ void ATCDeadbeatControl::updateController() {
  * selecting hip angles that result in the desired toe positions. This keeps
  * knee torques to a minimum.
  */
-void ATCDeadbeatControl::hipController() {
+void ATCSlipWalking::hipController() {
     // Set hip controller toe positions
     toePosition.left = guiIn.left_toe_pos;
     toePosition.right = guiIn.right_toe_pos;
@@ -289,7 +270,7 @@ void ATCDeadbeatControl::hipController() {
  * This function uses position control on the leg motors to allow the
  * robot to stand with the torso locked.
  */
-void ATCDeadbeatControl::standingController() {
+void ATCSlipWalking::standingController() {
     // Compute target motor angles
     std::tie(qmSA, qmSB) = ascCommonToolkit.legPos2MotorPos(q3, r0);
     std::tie(qmFA, qmFB) = ascCommonToolkit.legPos2MotorPos(q1, r0);
@@ -326,7 +307,7 @@ void ATCDeadbeatControl::standingController() {
  * This function imposes virtual dampers on each motor allowing the
  * robot to safely and slowly shutdown.
  */
-void ATCDeadbeatControl::shutdownController() {
+void ATCSlipWalking::shutdownController() {
     // Compute and set motor currents (applies virtual dampers to all actuators)
     co.lLeg.motorCurrentA   = ascPDLmA(0.0, 0.0, 0.0, rs.lLeg.halfA.motorVelocity);
     co.lLeg.motorCurrentB   = ascPDLmB(0.0, 0.0, 0.0, rs.lLeg.halfB.motorVelocity);
@@ -347,7 +328,7 @@ void ATCDeadbeatControl::shutdownController() {
  * between the hip and toe. Uses a force controller to then track these
  * forces that are based on leg deflection.
  */
-void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
+void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
     // Rate limit change in spring rest length from current to desired
     r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
@@ -377,20 +358,14 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     // Distance between leg pivot center and center of mass from ATRIAS solid model
     rcom = 0.15;
     // Angle between axial leg force and desired ground reaction force
-    q = 0.0;
-    dq = 0.0;
-    // Hamid {VPP parameters:
-    //q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
-    //dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
+    q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
+    dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
     // Error catch
-    //if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
-    //    printf("VPP control error: q outside working bounds. q = %f\n", q);
-    //    q  = 0.0;
-    //    dq = 0.0;
-    //}
-    // }Hamid
-
-
+    if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
+        printf("VPP control error: q outside working bounds. q = %f\n", q);
+        q  = 0.0;
+        dq = 0.0;
+    }
     // Tangential toe force to redirect axial leg force to VPP
     ft = fa*tan(q);
     // Derivative of the tangential toe force
@@ -428,7 +403,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
  * the exit conditions to the desired touchdown conditions. The touchdown
  * conditions are based on a simulated SLIP model walking gait.
  */
-void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
+void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
     // Compute current stance leg states
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
@@ -441,13 +416,13 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
     // double v0
     // int PoincareSecUpdateFlag
     //
-    //}  Done
+    //}
 
     // Define at the top of the code:{ for the initialization
     // PoincareSecUpdateFlag=0;
     // q1=   q2=    q3=     q4=    because it can start from Double Stance phase
-    //}  Done
-    // Remove the gui input changes for q1~q4     >>> Done
+    //}
+    // Remove the gui input changes for q1~q4
 
     v0 = pow(pow(rSl*dqSl,2)+pow(drSl,2),0.5);
     //v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
@@ -495,6 +470,9 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
     //}
 
     //Hamid }
+
+
+
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -582,7 +560,7 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
  * This function computes logical conditionals and uses a decision tree
  * to determine if a single support event has been triggered and responds accordingly.
  */
-void ATCDeadbeatControl::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, std::deque<double>* filteredToe) {
+void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, std::deque<double>* filteredToe) {
     // Compute current stance leg states
     std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(qFl, rFl) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
@@ -626,7 +604,7 @@ void ATCDeadbeatControl::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl,
  * This function computes logical conditionals and uses a decision tree
  * to determine if a double support event has been triggered and responds accordingly.
  */
-void ATCDeadbeatControl::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitFr0) {
+void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitFr0) {
     // Compute current stance leg states
     std::tie(qSl, rSl)   = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
@@ -672,7 +650,7 @@ void ATCDeadbeatControl::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl,
     }
 } // doubleSupportEvents
 
-void ATCDeadbeatControl::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitFr0) {
+void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl, ASCRateLimit *ascRateLimitFr0) {
     // Reset the flight leg rest leg length to neutral
     ascRateLimitFr0->reset(r0);
 
@@ -686,7 +664,7 @@ void ATCDeadbeatControl::resetFlightLegParameters(atrias_msgs::robot_state_leg *
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
 
-bool ATCDeadbeatControl::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque<double> *filteredToe)
+bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque<double> *filteredToe)
 {
     // Touchdown detection
     // Make a baseline by averaging previous values, ignoring the first 20
@@ -704,7 +682,7 @@ bool ATCDeadbeatControl::detectStance(atrias_msgs::robot_state_leg *rsFl, std::d
     return false;
 } // detectStance
 
-void ATCDeadbeatControl::updateToeFilter(uint16_t newToe, std::deque<double> *filteredToe)
+void ATCSlipWalking::updateToeFilter(uint16_t newToe, std::deque<double> *filteredToe)
 {
     // newToe: New toe measurement
     // filteredToe: A bunch of filtered measurements
@@ -733,7 +711,7 @@ void ATCDeadbeatControl::updateToeFilter(uint16_t newToe, std::deque<double> *fi
     filteredToe->push_front (average);
 } // updateToeFilter
 
-ORO_CREATE_COMPONENT(ATCDeadbeatControl)
+ORO_CREATE_COMPONENT(ATCSlipWalking)
 
-}
-}
+} // controller
+} // atrias

@@ -29,5 +29,6 @@ endif(ATRIAS_BUILD_GUI)
 # Find RTT libraries and build Orocos Component.
 if(ATRIAS_BUILD_CONTROLLERS)
 	orocos_component(ATCDeadbeatControl src/ATCDeadbeatControl.cpp)
+	target_link_libraries(ATCDeadbeatControl ControlLib-${OROCOS_TARGET})
 	ros_generate_rtt_typekit(atc_deadbeat_control)
 endif(ATRIAS_BUILD_CONTROLLERS)

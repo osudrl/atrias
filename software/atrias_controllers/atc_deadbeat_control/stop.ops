@@ -2,3 +2,4 @@
 controller.stop()
 controller.cleanup()
 unloadComponent("ATCDeadbeatControl")
+atrias_cm.resetControllerNames()
