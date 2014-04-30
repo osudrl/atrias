@@ -2,3 +2,4 @@
 controller.stop()
 controller.cleanup()
 unloadComponent("ToSubstituteClassName")
+atrias_cm.resetControllerNames()
