@@ -405,8 +405,8 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
  */
 void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
-    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle, rsSl->halfA.motorVelocity, rsSl->halfB.motorVelocity);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -544,7 +544,6 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
     std::tie(qFl, rFl)   = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
     std::tie(dqFl, drFl) = ascCommonToolkit.motorVel2LegVel(rsFl->halfA.legAngle, rsFl->halfB.legAngle, rsFl->halfA.legVelocity, rsFl->halfB.legVelocity);
-    std::tie(qFm, rFm)   = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -554,7 +553,6 @@ void ATCSlipWalking::doubleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
     qSl += qb - 3.0*M_PI/2.0;
     dqSl += dqb;
     qFl += qb - 3.0*M_PI/2.0;
-    qFm += qb - 3.0*M_PI/2.0;
     dqFl += dqb;
 
     // Compute the takeoff leg radial deflection
@@ -593,7 +591,7 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
     sPrev = 0.0;
 
     // Compute initial flight leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
     // Convert to world coordinates
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
