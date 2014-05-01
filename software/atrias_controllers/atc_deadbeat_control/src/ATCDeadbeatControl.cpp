@@ -380,21 +380,37 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     q = 0.0;
     dq = 0.0;
     // Hamid {VPP parameters:
-    q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
-    dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
+    //q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
+    //dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
     // Error catch
-    if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
-        printf("VPP control error: q outside working bounds. q = %f\n", q);
-        q  = 0.0;
-        dq = 0.0;
+    //if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
+    //    printf("VPP control error: q outside working bounds. q = %f\n", q);
+    //    q  = 0.0;
+    //    dq = 0.0;
+    //}
+    v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
+
+
+    if (v0>0.8)
+    {
+        ft = 0.0;
+        dft = 0.0;
+    }else
+    {
+        if (v0<0.3)
+        {
+            v0 = 0.3;
+        }
+        ft = rvpp*(0.8-v0);
+        dft = qvpp;
     }
 
 
 
     // Tangential toe force to redirect axial leg force to VPP
-    ft = fa*tan(q);
+    //ft = fa*tan(q);
     // Derivative of the tangential toe force
-    dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
+    //dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
 
     // Add torso control
     forceSl.fx  += -ft*sin(qSl);
