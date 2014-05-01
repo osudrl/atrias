@@ -65,6 +65,9 @@ ATCDeadbeatControl::ATCDeadbeatControl(string name) :
 
     q4 = 0.639203343*pow(0.5,3)	-1.50730784*pow(0.5,2) + 1.030411268*0.5 + 1.730365355;
 
+    ft = 0.0;
+    dft = 0.0;
+
 }
 /**
  * @brief Top-level controller.
@@ -390,20 +393,34 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     //}
     v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
 
+    E_ref = 520.0;
+    E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
 
-    if (v0>0.8)
+    if (abs(qSl-3.14159/2.0) < 0.015)
     {
-        ft = 0.0;
-        dft = 0.0;
-    }else
-    {
-        if (v0<0.3)
-        {
-            v0 = 0.3;
-        }
-        ft = rvpp*(0.8-v0);
-        dft = qvpp;
+       ft = rvpp*abs(E_ref - E_current)/10.0;
+       if (abs(ft)>200)
+       {
+           ft = 0.0;
+           dft = 0.0;
+       }
+
     }
+
+
+    //if (v0>0.8)
+    //{
+    //    ft = 0.0;
+    //    dft = 0.0;
+    //}else
+    //{
+    //    if (v0<0.3)
+    //   {
+    //        v0 = 0.3;
+    //    }
+    //    ft = rvpp*(0.8-v0);
+    //    dft = qvpp;
+    //}
 
 
 
