@@ -398,7 +398,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
     if (abs(qSl-3.14159/2.0) < 0.015)
     {
-       ft = rvpp*abs(E_ref - E_current)/10.0;
+    //   ft = rvpp*abs(E_ref - E_current)/10.0;
        if (abs(ft)>200)
        {
            ft = 0.0;
@@ -408,19 +408,19 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     }
 
 
-    //if (v0>0.8)
-    //{
-    //    ft = 0.0;
-    //    dft = 0.0;
-    //}else
-    //{
-    //    if (v0<0.3)
-    //   {
-    //        v0 = 0.3;
-    //    }
-    //    ft = rvpp*(0.8-v0);
-    //    dft = qvpp;
-    //}
+    if (v0>0.8)
+    {
+        ft = 0.0;
+        dft = 0.0;
+    }else
+    {
+        if (v0<0.3)
+       {
+            v0 = 0.3;
+        }
+        ft = rvpp*(0.8-v0);
+        dft = qvpp;
+    }
 
 
 
