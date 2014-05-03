@@ -358,6 +358,9 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     std::tie(qSl, rSl)   = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
     std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
 
+    // Compute the motor velocities projected in the leg direction   Hamid
+    std::tie(dqmSl, drmSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle, rsSl->halfA.motorVelocity, rsSl->halfB.motorVelocity);
+
     // Compute current torso states
     qb = rs.position.bodyPitch;
     dqb = rs.position.bodyPitchVelocity;
@@ -393,34 +396,67 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     //}
     v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
 
-    E_ref = 520.0;
-    E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
 
-    if (abs(qSl-3.14159/2.0) < 0.015)
-    {
-    //   ft = rvpp*abs(E_ref - E_current)/10.0;
-       if (abs(ft)>200)
+   E_ref = 520.0;
+   E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
+
+   ft = 0.0;
+   dft = 0.0;
+
+   if (abs(E_current-E_ref)>25)
+   {
+       // Currently I do not have a good energy removal policy
+       ft = 0.0;
+       dft = 0.0;
+   }else
+   {
+       if (walkingState==0 || walkingState==2)
        {
-           ft = 0.0;
-           dft = 0.0;
+          //ft = abs(fa)*rvpp*abs(E_ref - E_current)/1000.0;
+          if (drmSl<0)
+          {
+              ft = -rvpp*(E_current - E_ref)*drmSl;
+          }else
+          {
+              ft = -rvpp*(E_current - E_ref)*drmSl;
+
+          }
+
+
+          if (abs(ft)>200)
+          {
+              ft = 0.0;
+              dft = 0.0;
+          }
+
        }
+   }
 
-    }
+    //if (abs(qSl-3.14159/2.0) < 0.015)
+    //{
+    //   ft = rvpp*abs(E_ref - E_current)/10.0;
+    //   if (abs(ft)>200)
+    //   {
+     //      ft = 0.0;
+     //      dft = 0.0;
+     //  }
+
+    //}
 
 
-    if (v0>0.8)
-    {
-        ft = 0.0;
-        dft = 0.0;
-    }else
-    {
-        if (v0<0.3)
-       {
-            v0 = 0.3;
-        }
-        ft = rvpp*(0.8-v0);
-        dft = qvpp;
-    }
+    //if (v0>0.8)
+    //{
+    //    ft = 0.0;
+    //    dft = 0.0;
+    //}else
+    //{
+    //    if (v0<0.3)
+    //   {
+    //        v0 = 0.3;
+    //    }
+    //    ft = rvpp*(0.8-v0);
+    //    dft = qvpp;
+    //}
 
 
 
@@ -430,10 +466,17 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     //dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
 
     // Add torso control
-    forceSl.fx  += -ft*sin(qSl);
-    forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
-    forceSl.fz  +=  ft*cos(qSl);
-    forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
+    //forceSl.fx  += -ft*sin(qSl);
+    //forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
+    //forceSl.fz  +=  ft*cos(qSl);ft = -rvpp*(E_current - E_ref)*drmSl;
+    //forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
+
+
+    forceSl.fx  +=  ft*cos(qSl);
+    forceSl.dfx += -ft*sin(qSl)*dqSl + dft*cos(qSl);
+    forceSl.fz  += -ft*sin(qSl);
+    forceSl.dfz += -ft*cos(qSl)*dqSl - dft*sin(qSl);
+
 
     // Use force tracking controller to compute required motor currents
     // Force controller has built-in world coordinate conversion

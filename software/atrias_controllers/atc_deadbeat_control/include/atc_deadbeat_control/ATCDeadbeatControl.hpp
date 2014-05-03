@@ -122,6 +122,7 @@ class ATCDeadbeatControl : public ATC<
         double qFm, rFm;             // Flight motor states
         double rFdefl;               // Flight leg radial deflection
         LegForce forceSl;
+        double dqmSl, drmSl;
 
         // Leg parameters at exit state (event trigger)
         double reFm, qeFm; // Flight leg motor states
