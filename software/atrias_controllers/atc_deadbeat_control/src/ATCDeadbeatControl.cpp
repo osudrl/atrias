@@ -397,8 +397,24 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
 
 
-   E_ref = 515.0;
-   E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
+   E_ref = qvpp;
+
+   double SpringWork;
+   double rSl_inc;
+   double fa1, dfa1;
+
+   SpringWork=0.0;
+   rSl_inc = (r0Sl-rSl)/1000.0;
+
+   for (rSl_hst=r0Sl-0.00001; rSl_hst>rSl; rSl_hst=rSl_hst-rSl_inc)
+   {
+       std::tie(fa1, dfa1) = ascCommonToolkit.legForce(rSl_hst, drSl, r0Sl);
+       SpringWork = SpringWork + fa1*rSl_inc;
+
+   }
+
+   //E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
+   E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
 
    ft = 0.0;
    dft = 0.0;
@@ -412,6 +428,10 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
    {
        if (walkingState==0 || walkingState==2)
        {
+           if (qSl>3.14159/2.0)
+           {
+
+
           //ft = abs(fa)*rvpp*abs(E_ref - E_current)/1000.0;
           //if (drmSl<0)
           //{
@@ -424,7 +444,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
           //}
 
-
+           }
           if (abs(ft)>500)
           {
               ft = 0.0;
