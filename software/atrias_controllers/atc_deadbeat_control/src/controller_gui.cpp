@@ -100,9 +100,9 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     qvpp_spinbutton->set_increments(1.0, 0.0);
     qvpp_spinbutton->set_value(0.0);
     gui->get_widget("rvpp_spinbutton", rvpp_spinbutton);
-    rvpp_spinbutton->set_range(0.0, 5000.0);
-    rvpp_spinbutton->set_increments(10.0, 0.0);
-    rvpp_spinbutton->set_value(100.0);
+    rvpp_spinbutton->set_range(0.0, 1.0);
+    rvpp_spinbutton->set_increments(0.01, 0.0);
+    rvpp_spinbutton->set_value(0.0);
 
     // Debug
     gui->get_widget("current_limit_spinbutton", current_limit_spinbutton);

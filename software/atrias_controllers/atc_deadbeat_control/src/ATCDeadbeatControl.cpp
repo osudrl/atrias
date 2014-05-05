@@ -397,7 +397,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
 
 
-   E_ref = 520.0;
+   E_ref = 515.0;
    E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
 
    ft = 0.0;
@@ -413,17 +413,19 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
        if (walkingState==0 || walkingState==2)
        {
           //ft = abs(fa)*rvpp*abs(E_ref - E_current)/1000.0;
-          if (drmSl<0)
-          {
-              ft = -rvpp*(E_current - E_ref)*drmSl;
-          }else
-          {
-              ft = -rvpp*(E_current - E_ref)*drmSl;
+          //if (drmSl<0)
+          //{
+              //ft = -rvpp*(E_current - E_ref)*drmSl;
+              ft = -rvpp*(E_current - E_ref)*fa;
+              dft = 0.0;
+          //}else
+          //{
+              //ft = -rvpp*(E_current - E_ref)*drmSl;
 
-          }
+          //}
 
 
-          if (abs(ft)>200)
+          if (abs(ft)>500)
           {
               ft = 0.0;
               dft = 0.0;
