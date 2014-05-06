@@ -5,6 +5,7 @@
  * http://www.zorc.breitbandkatze.de/crc.html
  */
 
+crc_t crc_table[256];
 const uint8_t CRC_ORDER = 32;
 const crc_t CRC_HIGHBIT = (crc_t) (1UL << 31);
 const crc_t CRC_POLY = (crc_t) (0x04c11db7);
