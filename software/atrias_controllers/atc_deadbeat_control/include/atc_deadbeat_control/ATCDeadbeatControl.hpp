@@ -102,6 +102,7 @@ class ATCDeadbeatControl : public ATC<
         double v0; //CoM velocity magnitude  (Hamid)
         int PoincareSecUpdateFlag; //Flag to check if the system has the right angles to follow  (Hamid)
         double E_ref, E_current;
+        double SpringWork;
 
         // Torso state variables and control
         double qb, dqb;

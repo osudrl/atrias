@@ -153,6 +153,9 @@ void ATCDeadbeatControl::controller() {
     logOut.q2 = q2;
     logOut.q3 = q3;
     logOut.q4 = q4;
+    logOut.E_ref = E_ref;
+    logOut.E_current = E_current;
+    logOut.SpringWork = SpringWork;
 
 } // controller
 
@@ -399,7 +402,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
    E_ref = qvpp;
 
-   double SpringWork;
+   //double SpringWork;
    double rSl_inc;
    double fa1, dfa1;
 
@@ -428,24 +431,24 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
    {
        if (walkingState==0 || walkingState==2)
        {
-           if (qSl>3.14159/2.0)
-           {
+           //if (qSl>3.14159/2.0)
+           //{
 
 
           //ft = abs(fa)*rvpp*abs(E_ref - E_current)/1000.0;
           //if (drmSl<0)
           //{
               //ft = -rvpp*(E_current - E_ref)*drmSl;
-              ft = -rvpp*(E_current - E_ref)*fa;
-              dft = 0.0;
+              dft = -rvpp*(E_current - E_ref)*fa;
+              //dft = 0.0;
           //}else
           //{
               //ft = -rvpp*(E_current - E_ref)*drmSl;
 
           //}
 
-           }
-          if (abs(ft)>500)
+           //}
+          if (abs(dft)>5000.0)
           {
               ft = 0.0;
               dft = 0.0;
