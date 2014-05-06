@@ -36,19 +36,33 @@ UART_USES_PORT(USARTD0)
 //ADC_USES_PORT(ADCA)
 //ADC_USES_PORT(ADCB)
 
-//#ifdef ENABLE_IMU
-//UART_USES_PORT(USARTF0)   // KVH 1750
-//#else
-ADC124_USES_PORT(USARTF0)
-//#endif
+// TODO(yoos): Shouldn't this logic depend on DIP switch config?
+#ifdef ENABLE_IMU
+UART_USES_PORT(USARTF0)   // KVH 1750
+#else
+ADC124_USES_PORT(USARTF0)   // Knee ADC
+#endif
 
 
 int main(void) {
+#ifdef ENABLE_IMU
+	// Enable external 16 MHz oscillator.
+	OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
+	               OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
+	OSC.CTRL |= OSC_XOSCEN_bm;                   /* Start XTAL */
+	while (!(OSC.STATUS & OSC_XOSCRDY_bm));      /* Wait until crystal ready */
+	OSC.PLLCTRL = OSC_PLLSRC_XOSC_gc | 0x2;      /* XTAL->PLL, 2x multiplier */
+	OSC.CTRL |= OSC_PLLEN_bm;                    /* Start PLL */
+	while (!(OSC.STATUS & OSC_PLLRDY_bm));       /* Wait until PLL ready */
+	CCP = CCP_IOREG_gc;                          /* Allow changing CLK.CTRL */
+	CLK.CTRL = CLK_SCLKSEL_PLL_gc;               /* Use PLL output as clock */
+#else
 	// Initialize the clock to 32 Mhz oscillator
 	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
 		PORTC.DIRSET = 1;
 		PORTC.OUTSET = 1;
 	}
+#endif
 
 	// Configure and enable all the interrupts
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
@@ -72,7 +86,7 @@ int main(void) {
 	}
 
 	// Check if we are in IMU debug mode
-	if (medulla_id == MEDULLA_IMU_DEBUG_ID) {
+	if (true) {//(medulla_id == MEDULLA_IMU_DEBUG_ID) {
 		imu_debug();
 	}
 
@@ -493,16 +507,19 @@ void amplifier_debug() {
 void imu_debug() {
 	uint8_t computer_port_tx[32];
 	uint8_t computer_port_rx[32];
-	uint8_t imu_port_tx[32];
-	uint8_t imu_port_rx[32];
-	uint8_t data_buffer[32];
+	uint8_t imu_port_tx[36];
+	uint8_t imu_port_rx[36];
+	uint8_t data_buffer[64];
 	uint8_t data_size;
 
 	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 32, computer_port_rx, 32);
 	uart_connect_port(&computer_port,false);
 
-	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 32, imu_port_rx, 32);
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_460800, imu_port_tx, 36, imu_port_rx, 36);
 	uart_connect_port(&imu_port,false);
+
+	//data_size = 32;   // Anything greater, and the Medulla mashes bytes. What gives?
+	//memcpy(data_buffer, "UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_", data_size);
 
 	while (1) {
 		// Get the data from the computer and send to imu
@@ -510,7 +527,7 @@ void imu_debug() {
 		uart_tx_data(&imu_port,data_buffer,data_size);
 
 		// Get data from imu and send it to the computer
-		data_size = uart_rx_data(&imu_port,data_buffer,32);
+		data_size = uart_rx_data(&imu_port,data_buffer,36);
 		uart_tx_data(&computer_port,data_buffer,data_size);
 
 	}
