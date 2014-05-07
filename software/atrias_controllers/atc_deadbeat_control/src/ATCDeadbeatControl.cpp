@@ -403,7 +403,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
    E_ref = qvpp;
 
    //double SpringWork;
-   double rSl_inc;
+   double rSl_inc, rSl_hst;
    double fa1, dfa1;
 
    SpringWork=0.0;
