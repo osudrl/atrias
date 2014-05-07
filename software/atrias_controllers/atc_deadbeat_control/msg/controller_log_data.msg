@@ -10,5 +10,6 @@ float64 q4
 float64 E_ref
 float64 E_current
 float64 SpringWork
+float64 ft
 
 

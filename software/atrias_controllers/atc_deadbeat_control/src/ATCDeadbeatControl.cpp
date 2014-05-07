@@ -103,25 +103,25 @@ void ATCDeadbeatControl::controller() {
             switch (walkingState) {
                 case 0: // Right leg single support (right = stance, left = flight)
                     legSwingController(&rs.rLeg, &rs.lLeg, &co.lLeg, &ascPDLmA, &ascPDLmB);
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    stanceController(&rs.rLeg, &rs.lLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     singleSupportEvents(&rs.rLeg, &rs.lLeg, &lFilteredToe);
                     break;
 
                 case 1: // Double support (right = flight, left = stance)
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    stanceController(&rs.rLeg, &rs.lLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    stanceController(&rs.lLeg, &rs.rLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     doubleSupportEvents(&rs.lLeg, &rs.rLeg, &ascRateLimitRr0);
                     break;
 
                 case 2: // Left leg single support (right = flight, left = stance)
                     legSwingController(&rs.lLeg, &rs.rLeg, &co.rLeg, &ascPDRmA, &ascPDRmB);
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    stanceController(&rs.lLeg, &rs.rLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
                     singleSupportEvents(&rs.lLeg, &rs.rLeg, &rFilteredToe);
                     break;
 
                 case 3: // Double support (right = stance, left = flight)
-                    stanceController(&rs.lLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
-                    stanceController(&rs.rLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
+                    stanceController(&rs.lLeg, &rs.rLeg, &co.lLeg, &ascLegForceL, &ascRateLimitLr0);
+                    stanceController(&rs.rLeg, &rs.lLeg, &co.rLeg, &ascLegForceR, &ascRateLimitRr0);
                     doubleSupportEvents(&rs.rLeg, &rs.lLeg, &ascRateLimitLr0);
                     break;
             }
@@ -156,6 +156,7 @@ void ATCDeadbeatControl::controller() {
     logOut.E_ref = E_ref;
     logOut.E_current = E_current;
     logOut.SpringWork = SpringWork;
+    logOut.ft = ft;
 
 } // controller
 
@@ -353,7 +354,7 @@ void ATCDeadbeatControl::shutdownController() {
  * between the hip and toe. Uses a force controller to then track these
  * forces that are based on leg deflection.
  */
-void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
+void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coSl, ASCLegForce *ascLegForceSl, ASCRateLimit *ascRateLimitSr0) {
     // Rate limit change in spring rest length from current to desired
     r0Sl = ascRateLimitSr0->operator()(r0, springRateLimit);
 
@@ -402,19 +403,30 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
    E_ref = qvpp;
 
-   //double SpringWork;
-   double rSl_inc, rSl_hst;
-   double fa1, dfa1;
+   SpringWork = 0.0;
+   SpringWork = 0.5*1600*pow(((rsSl->halfA.legAngle)-(rsSl->halfA.motorAngle)),2) + 0.5*1600*pow(((rsSl->halfB.legAngle)-(rsSl->halfB.motorAngle)),2);
 
-   SpringWork=0.0;
-   rSl_inc = (r0Sl-rSl)/1000.0;
-
-   for (rSl_hst=r0Sl-0.00001; rSl_hst>rSl; rSl_hst=rSl_hst-rSl_inc)
+   if (walkingState==1 || walkingState==3)
    {
-       std::tie(fa1, dfa1) = ascCommonToolkit.legForce(rSl_hst, drSl, r0Sl);
-       SpringWork = SpringWork + fa1*rSl_inc;
+       SpringWork += 0.5*1600*pow(((rsFl->halfA.legAngle)-(rsFl->halfA.motorAngle)),2) + 0.5*1600*pow(((rsFl->halfB.legAngle)-(rsFl->halfB.motorAngle)),2);
 
    }
+
+
+   //double rSl_inc, rSl_hst;
+   //double fa1, dfa1;
+
+   //SpringWork=0.0;
+   //rSl_inc = (r0Sl-rSl)/1000.0;
+
+   //for (rSl_hst=r0Sl-0.00001; rSl_hst>rSl; rSl_hst=rSl_hst-rSl_inc)
+   //{
+   //    std::tie(fa1, dfa1) = ascCommonToolkit.legForce(rSl_hst, drSl, r0Sl);
+   //    SpringWork = SpringWork + fa1*rSl_inc;
+   //
+   //}
+
+
 
    //E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
    E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
@@ -422,15 +434,15 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
    ft = 0.0;
    dft = 0.0;
 
-   if (abs(E_current-E_ref)>25)
+   if (abs(E_current-E_ref)>35)
    {
        // Currently I do not have a good energy removal policy
        ft = 0.0;
        dft = 0.0;
    }else
    {
-       if (walkingState==0 || walkingState==2)
-       {
+
+
            //if (qSl>3.14159/2.0)
            //{
 
@@ -439,7 +451,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
           //if (drmSl<0)
           //{
               //ft = -rvpp*(E_current - E_ref)*drmSl;
-              dft = -rvpp*(E_current - E_ref)*fa;
+              ft = -rvpp*(E_current - E_ref)*fa;
               //dft = 0.0;
           //}else
           //{
@@ -448,13 +460,13 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
           //}
 
            //}
-          if (abs(dft)>5000.0)
+          if (abs(ft)>500.0)
           {
               ft = 0.0;
               dft = 0.0;
           }
 
-       }
+
    }
 
     //if (abs(qSl-3.14159/2.0) < 0.015)
