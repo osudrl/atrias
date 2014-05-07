@@ -67,7 +67,7 @@ class ATCDeadbeatControl : public ATC<
         void hipController();
         void standingController();
         void shutdownController();
-        void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
+        void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
         void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, std::deque<double>*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
         void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*);
