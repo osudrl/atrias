@@ -412,7 +412,6 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
    }
 
-
    //double rSl_inc, rSl_hst;
    //double fa1, dfa1;
 
@@ -429,12 +428,13 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
 
    //E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
-   E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
+   //E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
+   E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rs.position.zPosition);
 
    ft = 0.0;
    dft = 0.0;
 
-   if (abs(E_current-E_ref)>35)
+   if (abs(E_current-E_ref)>45)
    {
        // Currently I do not have a good energy removal policy
        ft = 0.0;
@@ -460,9 +460,14 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
           //}
 
            //}
-          if (abs(ft)>500.0)
+          if ((ft)>500.0)
           {
-              ft = 0.0;
+
+              ft = 500.0;
+              dft = 0.0;
+          }else if (ft<-500.0)
+          {
+              ft = -500.0;
               dft = 0.0;
           }
 
