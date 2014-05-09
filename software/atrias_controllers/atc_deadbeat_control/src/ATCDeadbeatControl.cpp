@@ -475,6 +475,14 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
    }
 
+   if (walkingState==1 || walkingState==3)
+   {
+        dft = 0.0;
+    }
+
+
+
+
     //if (abs(qSl-3.14159/2.0) < 0.015)
     //{
     //   ft = rvpp*abs(E_ref - E_current)/10.0;
