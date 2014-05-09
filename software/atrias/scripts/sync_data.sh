@@ -152,8 +152,7 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 # it does not already exist
 printf "${OKGREEN}[Cleaning up robot computer logfiles...]${ENDC}\n"
 mkdir -p "${SOURCE_DIR}/backup"
-# TODO: make this move agnostic to existing directories
-mv ${SORT_DIR}/* "${SOURCE_DIR}/backup"
+cp -r ${SORT_DIR}/* "${SOURCE_DIR}/backup"
 sudo rm -r "$SORT_DIR"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
 
