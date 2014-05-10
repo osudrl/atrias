@@ -428,9 +428,9 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
 
    //E_current = 0.5 * 58.0 * pow(v0,2) + 0.5 * 14000.0 * pow((r0Sl-rSl),2) + 58.0 * 9.81 * (rSl*sin(qSl));
-   //E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
+   E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rSl*sin(qSl));
 
-   E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rs.position.zPosition);
+   // E_current = 0.5 * 58.0 * pow(v0,2) + SpringWork + 58.0 * 9.81 * (rs.position.zPosition);  // due to ground level changes, this is not a good measure
 
    ft = 0.0;
    dft = 0.0;
@@ -452,7 +452,8 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
           //if (drmSl<0)
           //{
               //ft = -rvpp*(E_current - E_ref)*drmSl;
-             dft = -rvpp*(E_current - E_ref)*fa*10.0;
+             //dft = -rvpp*(E_current - E_ref)*fa*10.0; 
+             ft = -rvpp*(E_current - E_ref)*fa;
               //dft = 0.0;
           //}else
           //{
@@ -461,24 +462,25 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
           //}
 
            //}
-          if ((dft)>15000.0)
+          if ((ft)>500.0)
           {
 
-              ft = 0.0;
-              dft = 15000.0;
-          }else if (dft<-15000.0)
+              ft = 500.0;
+              dft = 0.0;
+          }else if (ft<-500.0)
           {
-              ft = 0.0;
-              dft = -15000.0;
+              ft = -500.0;
+              dft = 0.0;
           }
 
 
    }
 
-   if (walkingState==1 || walkingState==3)
-   {
-        dft = 0.0;
-    }
+   //if (walkingState==1 || walkingState==3)
+   //{
+   //     ft = 0.0;
+   //     dft = 0.0;
+   // }
 
 
 
@@ -519,7 +521,7 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
     // Add torso control
     //forceSl.fx  += -ft*sin(qSl);
     //forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
-    //forceSl.fz  +=  ft*cos(qSl);ft = -rvpp*(E_current - E_ref)*drmSl;
+    //forceSl.fz  +=  ft*cos(qSl);
     //forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
 
 
