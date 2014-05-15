@@ -515,7 +515,7 @@ void imu_debug() {
 	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 32, computer_port_rx, 32);
 	uart_connect_port(&computer_port,false);
 
-	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_460800, imu_port_tx, 36, imu_port_rx, 36);
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 36, imu_port_rx, 36);
 	uart_connect_port(&imu_port,false);
 
 	//data_size = 32;   // Anything greater, and the Medulla mashes bytes. What gives?
