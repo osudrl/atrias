@@ -40,7 +40,6 @@
   * Measured from SolidWorks model. [m]
   */
 #define TORSO_LENGTH               0.3434
-#define BOOM_ROBOT_VERTICAL_OFFSET 0.3434 // REMOVE when dependencies are gone
 
 /** @brief Hip length
   * Distance from the torso-hip X-axis pivot and the XZ-centerplane of the leg assembly.
