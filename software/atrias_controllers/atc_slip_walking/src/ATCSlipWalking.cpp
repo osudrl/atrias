@@ -55,7 +55,7 @@ ATCSlipWalking::ATCSlipWalking(string name) :
 
 /**
  * @brief Top-level controller.
- * 
+ *
  * This is the main function for the top-level controller.
  * The ATC class automatically handles startup and shutdown,
  * if they are not disabled.
@@ -137,7 +137,7 @@ void ATCSlipWalking::controller() {
 
 /**
  * @brief Run safety checks.
- * 
+ *
  * This function performs various safety checks and triggers a software
  * emergency stop if needed.
  */
@@ -181,7 +181,7 @@ void ATCSlipWalking::checkSafeties() {
 
 /**
  * @brief Update controller parameters.
- * 
+ *
  * This function handles all of the non-controller related
  *  updating and all communication to and from the GUI.
  */
@@ -215,9 +215,11 @@ void ATCSlipWalking::updateController() {
     // Leg gains
     ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
     ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = guiIn.leg_pos_kd;
-    ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
-    ascLegForceL.ki = ascLegForceR.ki = guiIn.leg_for_ki;
-    ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
+    k1_11 = guiIn.leg_for_kd;
+    k1_22 = guiIn.leg_for_kd;
+    k2_11 = guiIn.leg_for_kp;
+    k2_22 = guiIn.leg_for_kp;
+    // TODO: guiIn.leg_for_ki is unused and should be removed
 
     // Hip gains
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
@@ -241,7 +243,7 @@ void ATCSlipWalking::updateController() {
 
 /**
  * @brief Hip position tracking controller.
- * 
+ *
  * This function handles all hip motor commands independent of other
  * functions. It works by computing the inverse kinematics of the robot
  * selecting hip angles that result in the desired toe positions. This keeps
@@ -266,7 +268,7 @@ void ATCSlipWalking::hipController() {
 
 /**
  * @brief Constant position standing controller.
- * 
+ *
  * This function uses position control on the leg motors to allow the
  * robot to stand with the torso locked.
  */
@@ -303,7 +305,7 @@ void ATCSlipWalking::standingController() {
 
 /**
  * @brief Soft robot shutdown controller.
- * 
+ *
  * This function imposes virtual dampers on each motor allowing the
  * robot to safely and slowly shutdown.
  */
@@ -323,7 +325,7 @@ void ATCSlipWalking::shutdownController() {
  * @param coSl Stance leg controller ouput pointer.
  * @param ascLegForceSl Stance leg PID force controller pointer.
  * @param ascRateLimitSr0 Rest spring length rate limiter pointer.
- * 
+ *
  * A simple stance phase controller simulating a virtual spring
  * between the hip and toe. Uses a force controller to then track these
  * forces that are based on leg deflection.
@@ -378,10 +380,9 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
 
     // Use force tracking controller to compute required motor currents
-    // Force controller has built-in world coordinate conversion
-    std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
+    std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = legForceControl(forceSl, *rsSl, rs.position);
     // Log the forces that it thinks it's applying
-    ascLegForceSl->compute(*rsSl, rs.position);
+    //ascLegForceSl->compute(*rsSl, rs.position);
 
     // If the stance leg angle is past q1, use PD control to keep it from
     // swinging more forward
@@ -398,7 +399,7 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
  * @param coFl Flight leg controller output pointer.
  * @param ascPDmA Flight leg motor A PD position controller pointer.
  * @param ascPDmB Flight leg motor B PD position controller pointer.
- * 
+ *
  * A position controller that tracks a cubic spline trajectory from
  * the exit conditions to the desired touchdown conditions. The touchdown
  * conditions are based on a simulated SLIP model walking gait.
@@ -534,7 +535,7 @@ void ATCSlipWalking::singleSupportEvents(atrias_msgs::robot_state_leg *rsSl, atr
  * @param rsSl Stance leg robot state pointer.
  * @param rsFl Flight leg robot state pointer.
  * @param ascRateLimitFr0 Flight rest spring length rate limiter pointer.
- * 
+ *
  * This function computes logical conditionals and uses a decision tree
  * to determine if a double support event has been triggered and responds accordingly.
  */
@@ -694,13 +695,6 @@ std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, at
     const double c6 = c3;     // Motor damping
     const double ks = KS;     // Spring constant (N/rad)
     const double cS = 1.49;   // Spring damping (N*s/rad)
-
-    // Control gains
-    // TODO: put this into the GUI
-    double k1_11 = 10.0;
-    double k1_22 = k1_11;
-    double k2_11 = 100.0;
-    double k2_22 = k2_11;
 
     // Compute the desired torque using feedback linearization.  Used MATLAB for the derivation; code available here: https://github.com/andrewPeekema/atriasLeg
     double tauA = (1.0/(r2*r2)*(I3*(ks*ks)*q1*r1*-4.0-I3*(ks*ks)*q2*r1*4.0+I3*(ks*ks)*q3*r1*4.0+I3*(ks*ks)*q1*r2*cos(q2)*4.0-I3*(ks*ks)*q6*r2*cos(q2)*4.0-(ks*ks)*m*q1*r1*(r2*r2)*2.0-(ks*ks)*m*q2*r1*(r2*r2)*2.0+(ks*ks)*m*q3*r1*(r2*r2)*2.0-I3*cS*dq1*ks*r1*4.0-I3*cS*dq2*ks*r1*4.0+I3*cS*dq3*ks*r1*4.0+FxDes*I3*g*m*r1*(r2*r2)+I3*cS*dq1*ks*r2*cos(q2)*4.0-I3*cS*dq6*ks*r2*cos(q2)*4.0+c3*dq3*ks*m*r1*(r2*r2)*2.0-cS*dq1*ks*m*r1*(r2*r2)*2.0-cS*dq2*ks*m*r1*(r2*r2)*2.0+cS*dq3*ks*m*r1*(r2*r2)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1)*2.0+(ks*ks)*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0+(ks*ks)*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0-(ks*ks)*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1+q2*2.0)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1-q2)-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q2*2.0)+FxDes*I3*cS*dq1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*cS*dq2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*cS*dq3*r1*r2*cos(q1+q2)*4.0-FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0)-FyDes*I3*g*m*r1*(r2*r2)*sin(q2*2.0)+FyDes*I3*cS*dq1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*cS*dq2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*cS*dq3*r1*r2*sin(q1+q2)*4.0+FxDes*I3*ks*q1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*ks*q2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*ks*q3*r1*r2*cos(q1+q2)*4.0+FyDes*I3*ks*q1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*ks*q2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*ks*q3*r1*r2*sin(q1+q2)*4.0+FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0+q2*2.0)-I3*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2)*4.0-I3*g*ks*m*r1*r2*cos(q1+q2)*2.0-c3*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq1*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq2*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-cS*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0-FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0+FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0+q2*2.0)+I3*dq1*k1_11*ks*m*r1*(r2*r2)*2.0+I3*dq2*k1_11*ks*m*r1*(r2*r2)*2.0-I3*dq3*k1_11*ks*m*r1*(r2*r2)*2.0+FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*2.0+I3*k2_11*ks*m*q1*r1*(r2*r2)*2.0+I3*k2_11*ks*m*q2*r1*(r2*r2)*2.0-I3*k2_11*ks*m*q3*r1*(r2*r2)*2.0-FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*2.0+FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1+q2*2.0)*2.0-I3*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0-I3*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0+I3*g*ks*m*r1*r2*cos(q1-q2)*2.0+FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1+q2)*4.0-FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0+FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1+q2)*4.0-FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1-q2)*4.0+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)-FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1-q2)*4.0+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-I3*dq1*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq2*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*dq3*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2*2.0)*4.0-I3*k2_11*ks*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*k2_11*ks*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*k2_11*ks*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0)*(-1.0/2.0))/(ks*m*r1*(cos(q2*2.0)-1.0));

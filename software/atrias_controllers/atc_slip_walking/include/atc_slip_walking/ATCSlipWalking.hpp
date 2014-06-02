@@ -125,6 +125,7 @@ class ATCSlipWalking : public ATC<
         double qFm, rFm;             // Flight motor states
         double rFdefl;               // Flight leg radial deflection
         LegForce forceSl;
+        double k1_11, k1_22, k2_11, k2_22;  // Feedback linearization force control gains
 
         // Leg parameters at exit state (event trigger)
         double reFm, qeFm; // Flight leg motor states
