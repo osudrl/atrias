@@ -386,10 +386,11 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
 
     // If the stance leg angle is past q1, use PD control to keep it from
     // swinging more forward
-    if (qSl < q1) {
-        coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
-        coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
-    }
+    // TODO: Uncomment this once force control debugging is complete
+    //if (qSl < q1) {
+    //    coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
+    //    coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
+    //}
 } // stanceController
 
 /**
@@ -684,17 +685,17 @@ std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, at
     double dq6 = -dqmB;
 
     // Constants and ATRIAS parameters
-    const double g  = G;      // Gravity (m/s^2)
-    const double r1 = L1;     // Length of link 1 (m)
-    const double r2 = L2;     // Length of link 2
-    const double m  = M;      // Mass of ATRIAS (kg)
-    const double I  = 0.0019; // Rotor inertia (kg*m^2)
-    const double I3 = I*KG;   // Rotor inertia (as seen by the output)
-    const double I6 = I3;     // Rotor inertia
-    const double c3 = 19.0;   // Motor damping (as seen by the output) (N*s/rad)
-    const double c6 = c3;     // Motor damping
-    const double ks = KS;     // Spring constant (N/rad)
-    const double cS = 1.49;   // Spring damping (N*s/rad)
+    const double g  = G;       // Gravity (m/s^2)
+    const double r1 = L1;      // Length of link 1 (m)
+    const double r2 = L2;      // Length of link 2
+    const double m  = M;       // Mass of ATRIAS (kg)
+    const double I  = 0.0019;  // Rotor inertia (kg*m^2)
+    const double I3 = I*KG*KG; // Rotor inertia (as seen by the output)
+    const double I6 = I3;      // Rotor inertia
+    const double c3 = 19.0;    // Motor damping (as seen by the output) (N*m*s/rad)
+    const double c6 = c3;      // Motor damping
+    const double ks = KS;      // Spring constant (N/rad)
+    const double cS = 1.49;    // Spring damping (N*m*s/rad)
 
     // Compute the desired torque using feedback linearization.  Used MATLAB for the derivation; code available here: https://github.com/andrewPeekema/atriasLeg
     double tauA = (1.0/(r2*r2)*(I3*(ks*ks)*q1*r1*-4.0-I3*(ks*ks)*q2*r1*4.0+I3*(ks*ks)*q3*r1*4.0+I3*(ks*ks)*q1*r2*cos(q2)*4.0-I3*(ks*ks)*q6*r2*cos(q2)*4.0-(ks*ks)*m*q1*r1*(r2*r2)*2.0-(ks*ks)*m*q2*r1*(r2*r2)*2.0+(ks*ks)*m*q3*r1*(r2*r2)*2.0-I3*cS*dq1*ks*r1*4.0-I3*cS*dq2*ks*r1*4.0+I3*cS*dq3*ks*r1*4.0+FxDes*I3*g*m*r1*(r2*r2)+I3*cS*dq1*ks*r2*cos(q2)*4.0-I3*cS*dq6*ks*r2*cos(q2)*4.0+c3*dq3*ks*m*r1*(r2*r2)*2.0-cS*dq1*ks*m*r1*(r2*r2)*2.0-cS*dq2*ks*m*r1*(r2*r2)*2.0+cS*dq3*ks*m*r1*(r2*r2)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1)*2.0+(ks*ks)*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0+(ks*ks)*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0-(ks*ks)*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1+q2*2.0)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1-q2)-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q2*2.0)+FxDes*I3*cS*dq1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*cS*dq2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*cS*dq3*r1*r2*cos(q1+q2)*4.0-FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0)-FyDes*I3*g*m*r1*(r2*r2)*sin(q2*2.0)+FyDes*I3*cS*dq1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*cS*dq2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*cS*dq3*r1*r2*sin(q1+q2)*4.0+FxDes*I3*ks*q1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*ks*q2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*ks*q3*r1*r2*cos(q1+q2)*4.0+FyDes*I3*ks*q1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*ks*q2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*ks*q3*r1*r2*sin(q1+q2)*4.0+FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0+q2*2.0)-I3*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2)*4.0-I3*g*ks*m*r1*r2*cos(q1+q2)*2.0-c3*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq1*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq2*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-cS*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0-FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0+FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0+q2*2.0)+I3*dq1*k1_11*ks*m*r1*(r2*r2)*2.0+I3*dq2*k1_11*ks*m*r1*(r2*r2)*2.0-I3*dq3*k1_11*ks*m*r1*(r2*r2)*2.0+FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*2.0+I3*k2_11*ks*m*q1*r1*(r2*r2)*2.0+I3*k2_11*ks*m*q2*r1*(r2*r2)*2.0-I3*k2_11*ks*m*q3*r1*(r2*r2)*2.0-FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*2.0+FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1+q2*2.0)*2.0-I3*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0-I3*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0+I3*g*ks*m*r1*r2*cos(q1-q2)*2.0+FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1+q2)*4.0-FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0+FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1+q2)*4.0-FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1-q2)*4.0+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)-FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1-q2)*4.0+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-I3*dq1*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq2*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*dq3*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2*2.0)*4.0-I3*k2_11*ks*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*k2_11*ks*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*k2_11*ks*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0)*(-1.0/2.0))/(ks*m*r1*(cos(q2*2.0)-1.0));
