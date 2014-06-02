@@ -444,16 +444,16 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
    {
 
 
-           //if (qSl>3.14159/2.0)
-           //{
+           if (qSl>3.14159/2.0)
+           {
 
 
           //ft = abs(fa)*rvpp*abs(E_ref - E_current)/1000.0;
           //if (drmSl<0)
           //{
               //ft = -rvpp*(E_current - E_ref)*drmSl;
-             //dft = -rvpp*(E_current - E_ref)*fa*10.0; 
-             ft = -rvpp*(E_current - E_ref)*fa;
+             dft = -rvpp*(E_current - E_ref)*fa*abs(cos(qSl))*10.0; 
+             //ft = -rvpp*(E_current - E_ref)*fa;
               //dft = 0.0;
           //}else
           //{
@@ -461,16 +461,16 @@ void ATCDeadbeatControl::stanceController(atrias_msgs::robot_state_leg *rsSl, at
 
           //}
 
-           //}
-          if ((ft)>500.0)
+          }
+          if ((dft)>5000.0)
           {
 
-              ft = 500.0;
-              dft = 0.0;
-          }else if (ft<-500.0)
+              ft = 0.0;
+              dft = 5000.0;
+          }else if (dft<-5000.0)
           {
-              ft = -500.0;
-              dft = 0.0;
+              ft = 0.0;
+              dft = -5000.0;
           }
 
 
@@ -579,6 +579,7 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
     // Remove the gui input changes for q1~q4     >>> Done
 
     v0 = pow(pow(rSl*dqSl,2)+pow(drSl,2),0.5);
+    v0 = 0.75;
     //v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
     if (abs(qSl-3.14159/2.0) < 0.015)
     {
@@ -616,6 +617,8 @@ void ATCDeadbeatControl::legSwingController(atrias_msgs::robot_state_leg *rsSl, 
         q4 = 0.639203343*pow(v0,3)	-1.50730784*pow(v0,2) + 1.030411268*v0 + 1.730365355;
 
     }
+
+    v0 = pow(pow(rSl*dqSl,2)+pow(drSl,2),0.5);
 
     // To reach the ground ASAP
     //if (qSl>q3)
