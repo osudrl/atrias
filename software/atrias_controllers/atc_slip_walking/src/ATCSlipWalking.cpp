@@ -383,8 +383,8 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     // Log the forces that it thinks it's applying
     ascLegForceSl->compute(*rsSl, rs.position);
 
-    // Convert leg angle and velocities to torso coordinates
-    // PD past q1
+    // If the stance leg angle is past q1, use PD control to keep it from
+    // swinging more forward
     if (qSl < q1) {
         coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
         coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
@@ -644,6 +644,75 @@ void ATCSlipWalking::updateToeFilter(uint16_t newToe, std::deque<double> *filter
     // Store it
     filteredToe->push_front (average);
 } // updateToeFilter
+
+std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
+    // Unpack parameters
+    double FxDes = legForce.fx;
+    double FyDes = legForce.fz;
+    double qlA   = leg.halfA.legAngle;
+    double qlB   = leg.halfB.legAngle;
+    double qmA   = leg.halfA.motorAngle;
+    double qmB   = leg.halfB.motorAngle;
+    double qb    = position.bodyPitch;
+    double dqlA  = leg.halfA.legVelocity;
+    double dqlB  = leg.halfB.legVelocity;
+    double dqmA  = leg.halfA.motorVelocity;
+    double dqmB  = leg.halfB.motorVelocity;
+    double dqb   = position.bodyPitchVelocity;
+
+    // Remove torso tilt (Convert to world coordinates)
+    qlA  += qb - 3.0*M_PI/2.0;
+    qlB  += qb - 3.0*M_PI/2.0;
+    qmA  += qb - 3.0*M_PI/2.0;
+    qmB  += qb - 3.0*M_PI/2.0;
+    dqlA += dqb;
+    dqlB += dqb;
+    dqmA += dqb;
+    dqmB += dqb;
+
+    // Convert to simulation coordinates
+    // Angles (rad)
+    double q1 = qlA;
+    double q2 = qlB - qlA;
+    double q3 = M_PI - qmA;
+    double q6 = M_PI - qmB;
+    // Angular velocities (rad/s)
+    double dq1 = dqlA;
+    double dq2 = dqlB - dqlA;
+    double dq3 = -dqmA;
+    double dq6 = -dqmB;
+
+    // Constants and ATRIAS parameters
+    const double g  = G;      // Gravity (m/s^2)
+    const double r1 = L1;     // Length of link 1 (m)
+    const double r2 = L2;     // Length of link 2
+    const double m  = M;      // Mass of ATRIAS (kg)
+    const double I  = 0.0019; // Rotor inertia (kg*m^2)
+    const double I3 = I*KG;   // Rotor inertia (as seen by the output)
+    const double I6 = I3;     // Rotor inertia
+    const double c3 = 19.0;   // Motor damping (as seen by the output) (N*s/rad)
+    const double c6 = c3;     // Motor damping
+    const double ks = KS;     // Spring constant (N/rad)
+    const double cS = 1.49;   // Spring damping (N*s/rad)
+
+    // Control gains
+    // TODO: put this into the GUI
+    double k1_11 = 10.0;
+    double k1_22 = k1_11;
+    double k2_11 = 100.0;
+    double k2_22 = k2_11;
+
+    // Compute the desired torque using feedback linearization.  Used MATLAB for the derivation; code available here: https://github.com/andrewPeekema/atriasLeg
+    double tauA = (1.0/(r2*r2)*(I3*(ks*ks)*q1*r1*-4.0-I3*(ks*ks)*q2*r1*4.0+I3*(ks*ks)*q3*r1*4.0+I3*(ks*ks)*q1*r2*cos(q2)*4.0-I3*(ks*ks)*q6*r2*cos(q2)*4.0-(ks*ks)*m*q1*r1*(r2*r2)*2.0-(ks*ks)*m*q2*r1*(r2*r2)*2.0+(ks*ks)*m*q3*r1*(r2*r2)*2.0-I3*cS*dq1*ks*r1*4.0-I3*cS*dq2*ks*r1*4.0+I3*cS*dq3*ks*r1*4.0+FxDes*I3*g*m*r1*(r2*r2)+I3*cS*dq1*ks*r2*cos(q2)*4.0-I3*cS*dq6*ks*r2*cos(q2)*4.0+c3*dq3*ks*m*r1*(r2*r2)*2.0-cS*dq1*ks*m*r1*(r2*r2)*2.0-cS*dq2*ks*m*r1*(r2*r2)*2.0+cS*dq3*ks*m*r1*(r2*r2)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1)*2.0+(ks*ks)*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0+(ks*ks)*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0-(ks*ks)*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1+q2*2.0)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1-q2)-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q2*2.0)+FxDes*I3*cS*dq1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*cS*dq2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*cS*dq3*r1*r2*cos(q1+q2)*4.0-FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0)-FyDes*I3*g*m*r1*(r2*r2)*sin(q2*2.0)+FyDes*I3*cS*dq1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*cS*dq2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*cS*dq3*r1*r2*sin(q1+q2)*4.0+FxDes*I3*ks*q1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*ks*q2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*ks*q3*r1*r2*cos(q1+q2)*4.0+FyDes*I3*ks*q1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*ks*q2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*ks*q3*r1*r2*sin(q1+q2)*4.0+FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0+q2*2.0)-I3*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2)*4.0-I3*g*ks*m*r1*r2*cos(q1+q2)*2.0-c3*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq1*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq2*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-cS*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0-FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0+FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0+q2*2.0)+I3*dq1*k1_11*ks*m*r1*(r2*r2)*2.0+I3*dq2*k1_11*ks*m*r1*(r2*r2)*2.0-I3*dq3*k1_11*ks*m*r1*(r2*r2)*2.0+FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*2.0+I3*k2_11*ks*m*q1*r1*(r2*r2)*2.0+I3*k2_11*ks*m*q2*r1*(r2*r2)*2.0-I3*k2_11*ks*m*q3*r1*(r2*r2)*2.0-FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*2.0+FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1+q2*2.0)*2.0-I3*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0-I3*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0+I3*g*ks*m*r1*r2*cos(q1-q2)*2.0+FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1+q2)*4.0-FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0+FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1+q2)*4.0-FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1-q2)*4.0+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)-FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1-q2)*4.0+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-I3*dq1*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq2*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*dq3*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2*2.0)*4.0-I3*k2_11*ks*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*k2_11*ks*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*k2_11*ks*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0)*(-1.0/2.0))/(ks*m*r1*(cos(q2*2.0)-1.0));
+    double tauB = (1.0/(r1*r1)*(I6*(ks*ks)*q1*r2*2.0-I6*(ks*ks)*q6*r2*2.0-I6*(ks*ks)*q1*r1*cos(q2)*2.0-I6*(ks*ks)*q2*r1*cos(q2)*2.0+I6*(ks*ks)*q3*r1*cos(q2)*2.0+(ks*ks)*m*q1*(r1*r1)*r2-(ks*ks)*m*q6*(r1*r1)*r2+I6*cS*dq1*ks*r2*2.0-I6*cS*dq6*ks*r2*2.0-I6*cS*dq1*ks*r1*cos(q2)*2.0-I6*cS*dq2*ks*r1*cos(q2)*2.0+I6*cS*dq3*ks*r1*cos(q2)*2.0-c6*dq6*ks*m*(r1*r1)*r2+cS*dq1*ks*m*(r1*r1)*r2-cS*dq6*ks*m*(r1*r1)*r2-(ks*ks)*m*q1*(r1*r1)*r2*cos(q2*2.0)+(ks*ks)*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*cS*dq1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*cS*dq2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*cS*dq3*(r1*r1)*cos(q1)*cos(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q1)-FxDes*I6*g*m*(r1*r1)*r2*pow(cos(q1),2.0)+FyDes*I6*cS*dq1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*cS*dq2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*cS*dq3*(r1*r1)*cos(q2)*sin(q1)*2.0+FxDes*I6*ks*q1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*ks*q2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*ks*q3*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*g*m*(r1*r1)*r2*sin(q1*2.0)*(1.0/2.0)+FyDes*I6*ks*q1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*ks*q2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*ks*q3*(r1*r1)*cos(q2)*sin(q1)*2.0-I6*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2)*2.0-I6*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2)*2.0-FxDes*I6*cS*dq1*r1*r2*cos(q1)*2.0+FxDes*I6*cS*dq6*r1*r2*cos(q1)*2.0+c6*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-cS*dq1*ks*m*(r1*r1)*r2*cos(q2*2.0)+cS*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-FyDes*I6*cS*dq1*r1*r2*sin(q1)*2.0+FyDes*I6*cS*dq6*r1*r2*sin(q1)*2.0-FxDes*I6*ks*q1*r1*r2*cos(q1)*2.0+FxDes*I6*ks*q6*r1*r2*cos(q1)*2.0-I6*dq1*k1_22*ks*m*(r1*r1)*r2+I6*dq6*k1_22*ks*m*(r1*r1)*r2-FyDes*I6*ks*q1*r1*r2*sin(q1)*2.0+FyDes*I6*ks*q6*r1*r2*sin(q1)*2.0+I6*g*ks*m*r1*r2*cos(q1)-I6*k2_22*ks*m*q1*(r1*r1)*r2+I6*k2_22*ks*m*q6*(r1*r1)*r2-I6*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2*2.0)-I6*g*ks*m*r1*r2*cos(q1+q2*2.0)-FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q1)+FxDes*I6*k2_22*m*(r1*r1*r1)*r2*sin(q1)+FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-FxDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q1)+FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-I6*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2)*4.0+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*cos(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FxDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*sin(q1)+FyDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+FyDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+I6*dq1*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)-I6*dq6*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)+I6*k2_22*ks*m*q1*(r1*r1)*r2*cos(q2*2.0)-I6*k2_22*ks*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*cos(q1)+FyDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*sin(q1)-FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)+FxDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*4.0-FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FyDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*4.0))/(ks*m*r2*(cos(q2*2.0)-1.0));
+
+    // Convert desired torque to current using the gear ratio (KG) and torque constant (KT)
+    double curA = tauA/KG/KT;
+    double curB = tauB/KG/KT;
+
+    // Return the motor current
+    return std::make_tuple(curA, curB);
+}
 
 ORO_CREATE_COMPONENT(ATCSlipWalking)
 

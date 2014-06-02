@@ -79,6 +79,7 @@ class ATCSlipWalking : public ATC<
         void resetFlightLegParameters(atrias_msgs::robot_state_leg*, ASCRateLimit*);
         bool detectStance(atrias_msgs::robot_state_leg*, std::deque<double>*);
         void updateToeFilter(uint16_t, std::deque<double>*);
+        std::tuple<double, double> legForceControl(LegForce, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location);
 
         /**
          * @brief These are sub controllers used by the top level controller.
