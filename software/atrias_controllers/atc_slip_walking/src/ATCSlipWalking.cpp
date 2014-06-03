@@ -674,12 +674,12 @@ std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, at
 
     // Convert to simulation coordinates
     // Angles (rad)
-    double q1 = qlA;
+    double q1 = M_PI - qlB;
     double q2 = qlB - qlA;
     double q3 = M_PI - qmA;
     double q6 = M_PI - qmB;
     // Angular velocities (rad/s)
-    double dq1 = dqlA;
+    double dq1 = -dqlB;
     double dq2 = dqlB - dqlA;
     double dq3 = -dqmA;
     double dq6 = -dqmB;
@@ -697,28 +697,28 @@ std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, at
     const double ks = KS;      // Spring constant (N/rad)
     const double cS = 1.49;    // Spring damping (N*m*s/rad)
 
-    // TODO: Compute the desired torque using feedback linearization.  Used
-    // MATLAB for the derivation; code available here:
+    // Compute the desired torque using feedback linearization.  Used MATLAB
+    // for the derivation; code available here:
     // https://github.com/andrewPeekema/atriasLeg
+    double tauA = ;
+    double tauB = ;
 
-    // TODO: Replace position control with torque control when finished testing
-    // Desired motor angles
-    double q3des = 3.0*M_PI/4.0;
-    double q6des = M_PI/4.0;
+    //// Desired motor angles
+    //double q3des = 3.0*M_PI/4.0;
+    //double q6des = M_PI/4.0;
 
-    // Compute the desired torque for a fixed motor position
-    // TODO: Check if the ks and/or cS terms should flip signs
+    //// Compute the desired torque for a fixed motor position
     //double tauA = c3*dq3 - cS*dq1 - cS*dq2 + cS*dq3 - ks*q1 - ks*q2 + ks*q3 - I3*dq3*k1_11 - I3*k2_11*q3 + I3*k2_11*q3des;
     //double tauB = c6*dq6 - cS*dq1 + cS*dq6          - ks*q1 + ks*q6         - I6*dq6*k1_22 - I6*k2_22*q6 + I6*k2_22*q6des;
-
-    // PD control
-    double tauA = -I3*dq3*k1_11 + I3*k2_11*(q3des-q3);
-    double tauB = -I6*dq6*k1_22 + I6*k2_22*(q6des-q6);
 
     // Convert desired torque to current using the gear ratio (KG) and torque
     // constant (KT)
     double curA = tauA/KG/KT;
     double curB = tauB/KG/KT;
+
+    // Z-direction is opposite in simulation
+    curA = -curA;
+    curB = -curB;
 
     // Return the motor current
     return std::make_tuple(curA, curB);
