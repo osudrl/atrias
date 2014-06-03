@@ -705,9 +705,15 @@ std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, at
     // Desired motor angles
     double q3des = 3.0*M_PI/4.0;
     double q6des = M_PI/4.0;
+
     // Compute the desired torque for a fixed motor position
-    double tauA = c3*dq3-cS*dq1-cS*dq2+cS*dq3-ks*q1-ks*q2+ks*q3-I3*dq3*k1_11-I3*k2_11*q3+I3*k2_11*q3des;
-    double tauB = c6*dq6-cS*dq1+cS*dq6-ks*q1+ks*q6-I6*dq6*k1_22-I6*k2_22*q6+I6*k2_22*q6des;
+    // TODO: Check if the ks and/or cS terms should flip signs
+    //double tauA = c3*dq3 - cS*dq1 - cS*dq2 + cS*dq3 - ks*q1 - ks*q2 + ks*q3 - I3*dq3*k1_11 - I3*k2_11*q3 + I3*k2_11*q3des;
+    //double tauB = c6*dq6 - cS*dq1 + cS*dq6          - ks*q1 + ks*q6         - I6*dq6*k1_22 - I6*k2_22*q6 + I6*k2_22*q6des;
+
+    // PD control
+    double tauA = -I3*dq3*k1_11 + I3*k2_11*(q3des-q3);
+    double tauB = -I6*dq6*k1_22 + I6*k2_22*(q6des-q6);
 
     // Convert desired torque to current using the gear ratio (KG) and torque
     // constant (KT)
