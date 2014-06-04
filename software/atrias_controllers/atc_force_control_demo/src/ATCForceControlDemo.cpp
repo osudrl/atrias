@@ -28,8 +28,8 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	setStartupEnabled(true);
 	
 	// Set leg motor rate limit
-	legRateLimit = 0.2;
-	hipRateLimit = 0.2;
+	legRateLimit = 0.5; // [rad/s]
+	hipRateLimit = 0.5; // [rad/s]
 	
 	// Reset automated test counters
 	tL = tR = 0.0;
@@ -248,8 +248,8 @@ void ATCForceControlDemo::updateState() {
 
 void ATCForceControlDemo::hipController() {
 	// Set hip controller toe positions
-	toePosition.left = 2.15;//guiIn.left_toe_pos;
-	toePosition.right = 2.45;//guiIn.right_toe_pos;
+	toePosition.left = 2.17;//guiIn.left_toe_pos;
+	toePosition.right = 2.5;//guiIn.right_toe_pos;
 	
 	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
