@@ -68,7 +68,7 @@ bool guiInit(Glib::RefPtr<Gtk::Builder> gui) {
     leg_for_ki_spinbutton->set_increments(10.0, 0.0);
     leg_for_ki_spinbutton->set_value(0.0);
     gui->get_widget("leg_for_kd_spinbutton", leg_for_kd_spinbutton);
-    leg_for_kd_spinbutton->set_range(0.0, 20.0);
+    leg_for_kd_spinbutton->set_range(0.0, 50.0);
     leg_for_kd_spinbutton->set_increments(1.0, 0.0);
     leg_for_kd_spinbutton->set_value(10.0);
 
