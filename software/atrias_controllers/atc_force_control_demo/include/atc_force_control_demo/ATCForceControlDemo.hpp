@@ -104,3 +104,5 @@ class ATCForceControlDemo : public ATC<
 }
 
 #endif // ATC_FORCE_CONTROL_DEMO_HPP
+
+// vim: noexpandtab
