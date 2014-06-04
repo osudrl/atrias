@@ -62,6 +62,7 @@ class ATCForceControlDemo : public ATC<
 		std::tuple<double, double> sinewave(double, double, double, double);
 		std::tuple<double, double> stairStep(double, double, double, double, double);
 		std::tuple<double, double> sinewaveSweep(double, double, double, double, double, double);
+        std::tuple<double, double> legForceControl(LegForce, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location);
 			
 		/**
 		  * @brief These are sub controllers used by the top level controller.
@@ -88,6 +89,9 @@ class ATCForceControlDemo : public ATC<
 		
 		// Time counters
 		double tL, tR;
+
+		// Feedback linearization gains
+		double k1_11, k1_22, k2_11, k2_22;
 		
 		// Leg forces
 		LegForce legForce;		
