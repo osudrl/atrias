@@ -58,28 +58,29 @@ void ATCForceControlDemo::controller() {
 			co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
 			co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
 			break;
-			
+
 		case 1: // Force control - constant
 			// Get component forces
 			legForce.fx = guiIn.left_fx;
 			legForce.fz = guiIn.left_fz;
 			legForce.dfx = 0.0;
 			legForce.dfz = 0.0;
-	
+
 			// Compute and set motor current values
 			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
 			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;
-			
+
 		case 2: // Force control - sinewave
 			// Run sinewave function
 			legForce.fx = 0.0; legForce.dfx = 0.0;
 			std::tie(legForce.fz, legForce.dfz) = sinewave(tL, guiIn.left_offz, guiIn.left_ampz, guiIn.left_freqz);
-			
+
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;
-		
+
 		case 3: // Position control - automated stair step
 			// Run stair step function		
 			if ((tL >= 0) && (tL < 20)) {
@@ -93,28 +94,29 @@ void ATCForceControlDemo::controller() {
 				rl = guiIn.left_leg_len;
 				drl = 0.0;
 			}
-			
+
 		  // Set motor angles
 		  std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, rl);
 		  dqmA = 0.0; dqmB = 0.0;
-		  
+
 		  // Compute and set motor currents
 		  co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
 		  co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
 			break;
-			
+
 		case 4: // Force control - automated stair step
 			// Run stair step function
 			legForce.fx = 0.0; legForce.dfx = 0.0;
 			if ((tL >= 0) && (tL < 20)) {
-				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, 0, -400, 20, 4);
+				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, 20.0, -400, 20, 4);
 			} else {
-				legForce.fz = 0.0;
+				legForce.fz = 20.0;
 				legForce.dfz = 0.0;
 			}
-				
+
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;		
 	}
 	
@@ -239,7 +241,7 @@ void ATCForceControlDemo::updateState() {
 	// Set leg motor force control PID gains
 	ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
 	ascLegForceL.ki = ascLegForceR.ki = 0.0;
-	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;	
+	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
 
 	// Set feedback linearization force control gains
 	k1_11 = k1_22 = guiIn.leg_for_kd;
@@ -253,8 +255,8 @@ void ATCForceControlDemo::updateState() {
 
 void ATCForceControlDemo::hipController() {
 	// Set hip controller toe positions
-	toePosition.left = 2.17;//guiIn.left_toe_pos;
-	toePosition.right = 2.5;//guiIn.right_toe_pos;
+	toePosition.left = 2.17;
+	toePosition.right = 2.5;
 	
 	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
@@ -385,6 +387,10 @@ std::tuple<double, double> ATCForceControlDemo::legForceControl(LegForce legForc
     //printf("tauA: %f\n", tauA);
     //printf("tauB: %f\n", tauB);
     //printf("\n");
+
+    // Log the desired forces
+    logOut.fxDes = FxDes;
+    logOut.fzDes = FyDes;
 
     // Return the motor current
     return std::make_tuple(curA, curB);
