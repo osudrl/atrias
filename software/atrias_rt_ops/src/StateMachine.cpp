@@ -123,9 +123,10 @@ void StateMachine::newCMState(RtOpsState new_state) {
 			break;
 			
 		case RtOpsState::ENABLED:
-			if (rtOps->getSafety()->shouldHalt())
+			if (rtOps->getSafety()->shouldHalt()) {
 				new_state = RtOpsState::DISABLED;
 				printf("Software safety halt\n");
+			}
 			
 			break;
 			

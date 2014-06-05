@@ -174,10 +174,10 @@ void ATCStabilizedStanding::hipController() {
  */
 void ATCStabilizedStanding::startupController() {
   // Rate limit motor velocities
-  qmLA = ascRateLimitLmA(XStar[2], legMotorRateLimit);
-  qmLB = ascRateLimitLmB(XStar[4], legMotorRateLimit);
-  qmRA = ascRateLimitRmA(XStar[10], legMotorRateLimit);
-  qmRB = ascRateLimitRmB(XStar[12], legMotorRateLimit);
+  qmLA = ascRateLimitLmA(3.0*M_PI/2.0 - XStar[2], legMotorRateLimit);
+  qmLB = ascRateLimitLmB(3.0*M_PI/2.0 - XStar[4], legMotorRateLimit);
+  qmRA = ascRateLimitRmA(3.0*M_PI/2.0 - XStar[10], legMotorRateLimit);
+  qmRB = ascRateLimitRmB(3.0*M_PI/2.0 - XStar[12], legMotorRateLimit);
 
   // Compute and set motor currents
   co.lLeg.motorCurrentA = ascPDLmA(qmLA, rs.lLeg.halfA.motorAngle, 0.0, rs.lLeg.halfA.motorVelocity);

@@ -28,8 +28,8 @@ ATCForceControlDemo::ATCForceControlDemo(string name) :
 	setStartupEnabled(true);
 	
 	// Set leg motor rate limit
-	legRateLimit = 0.2;
-	hipRateLimit = 0.2;
+	legRateLimit = 0.5; // [rad/s]
+	hipRateLimit = 0.5; // [rad/s]
 	
 	// Reset automated test counters
 	tL = tR = 0.0;
@@ -58,27 +58,29 @@ void ATCForceControlDemo::controller() {
 			co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
 			co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
 			break;
-			
+
 		case 1: // Force control - constant
 			// Get component forces
 			legForce.fx = guiIn.left_fx;
 			legForce.fz = guiIn.left_fz;
 			legForce.dfx = 0.0;
 			legForce.dfz = 0.0;
-	
+
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;
-			
+
 		case 2: // Force control - sinewave
 			// Run sinewave function
 			legForce.fx = 0.0; legForce.dfx = 0.0;
 			std::tie(legForce.fz, legForce.dfz) = sinewave(tL, guiIn.left_offz, guiIn.left_ampz, guiIn.left_freqz);
-			
+
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;
-		
+
 		case 3: // Position control - automated stair step
 			// Run stair step function		
 			if ((tL >= 0) && (tL < 20)) {
@@ -92,28 +94,29 @@ void ATCForceControlDemo::controller() {
 				rl = guiIn.left_leg_len;
 				drl = 0.0;
 			}
-			
+
 		  // Set motor angles
 		  std::tie(qmA, qmB) = ascCommonToolkit.legPos2MotorPos(M_PI/2.0, rl);
 		  dqmA = 0.0; dqmB = 0.0;
-		  
+
 		  // Compute and set motor currents
 		  co.lLeg.motorCurrentA = ascPDLmA(qmA, rs.lLeg.halfA.motorAngle, dqmA, rs.lLeg.halfA.motorVelocity);
 		  co.lLeg.motorCurrentB = ascPDLmB(qmB, rs.lLeg.halfB.motorAngle, dqmB, rs.lLeg.halfB.motorVelocity);
 			break;
-			
+
 		case 4: // Force control - automated stair step
 			// Run stair step function
 			legForce.fx = 0.0; legForce.dfx = 0.0;
 			if ((tL >= 0) && (tL < 20)) {
-				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, 0, -400, 20, 4);
+				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, 20.0, -400, 20, 4);
 			} else {
-				legForce.fz = 0.0;
+				legForce.fz = 20.0;
 				legForce.dfz = 0.0;
 			}
-				
+
 			// Compute and set motor current values
-			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			//std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = ascLegForceL.control(legForce, rs.lLeg, rs.position);
+			std::tie(co.lLeg.motorCurrentA, co.lLeg.motorCurrentB) = legForceControl(legForce, rs.lLeg, rs.position);
 			break;		
 	}
 	
@@ -238,7 +241,11 @@ void ATCForceControlDemo::updateState() {
 	// Set leg motor force control PID gains
 	ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
 	ascLegForceL.ki = ascLegForceR.ki = 0.0;
-	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;	
+	ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
+
+	// Set feedback linearization force control gains
+	k1_11 = k1_22 = guiIn.leg_for_kd;
+	k2_11 = k2_22 = k1_11*k1_11;
 
 	// Compute actual leg force from spring deflection
 	ascLegForceL.compute(rs.lLeg, rs.position);
@@ -248,8 +255,8 @@ void ATCForceControlDemo::updateState() {
 
 void ATCForceControlDemo::hipController() {
 	// Set hip controller toe positions
-	toePosition.left = 2.15;//guiIn.left_toe_pos;
-	toePosition.right = 2.45;//guiIn.right_toe_pos;
+	toePosition.left = 2.17;
+	toePosition.right = 2.5;
 	
 	// Compute inverse kinematics to keep lateral knee torque to a minimum
 	std::tie(qLh, qRh) = ascHipBoomKinematics.iKine(toePosition, rs.lLeg, rs.rLeg, rs.position);
@@ -298,8 +305,101 @@ std::tuple<double, double> ATCForceControlDemo::sinewaveSweep(double t, double o
 	return std::make_tuple(y, dy);
 }
 
+std::tuple<double, double> ATCForceControlDemo::legForceControl(LegForce legForce, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
+    // Unpack parameters
+    double FxDes = -legForce.fx;
+    double FyDes = -legForce.fz;
+    double qlA   = leg.halfA.legAngle;
+    double qlB   = leg.halfB.legAngle;
+    double qmA   = leg.halfA.motorAngle;
+    double qmB   = leg.halfB.motorAngle;
+    double qb    = position.bodyPitch;
+    double dqlA  = leg.halfA.legVelocity;
+    double dqlB  = leg.halfB.legVelocity;
+    double dqmA  = leg.halfA.motorVelocity;
+    double dqmB  = leg.halfB.motorVelocity;
+    double dqb   = position.bodyPitchVelocity;
+
+    // Remove torso tilt (Convert to world coordinates)
+    qlA  += qb - 3.0*M_PI/2.0;
+    qlB  += qb - 3.0*M_PI/2.0;
+    qmA  += qb - 3.0*M_PI/2.0;
+    qmB  += qb - 3.0*M_PI/2.0;
+    dqlA += dqb;
+    dqlB += dqb;
+    dqmA += dqb;
+    dqmB += dqb;
+
+    // Convert to simulation coordinates
+    // Angles (rad)
+    double q1 = M_PI - qlB;
+    double q2 = qlB - qlA;
+    double q3 = M_PI - qmA;
+    double q6 = M_PI - qmB;
+    // Angular velocities (rad/s)
+    double dq1 = -dqlB;
+    double dq2 = dqlB - dqlA;
+    double dq3 = -dqmA;
+    double dq6 = -dqmB;
+
+    // Constants and ATRIAS parameters
+    const double g  = G;       // Gravity (m/s^2)
+    const double r1 = L1;      // Length of link 1 (m)
+    const double r2 = L2;      // Length of link 2
+    const double m  = M;       // Mass of ATRIAS (kg)
+    const double I  = 0.0019;  // Rotor inertia (kg*m^2)
+    const double I3 = I*KG*KG; // Rotor inertia (as seen by the output)
+    const double I6 = I3;      // Rotor inertia
+    const double c3 = 19.0;    // Motor damping (as seen by the output) (N*m*s/rad)
+    const double c6 = c3;      // Motor damping
+    const double ks = KS;      // Spring constant (N/rad)
+    const double cS = 1.49;    // Spring damping (N*m*s/rad)
+
+    // Compute the desired torque using feedback linearization.  Used MATLAB
+    // for the derivation; code available here:
+    // https://github.com/andrewPeekema/atriasLeg
+    double tauA = (1.0/(r2*r2)*(I3*(ks*ks)*q1*r1*-4.0-I3*(ks*ks)*q2*r1*4.0+I3*(ks*ks)*q3*r1*4.0+I3*(ks*ks)*q1*r2*cos(q2)*4.0-I3*(ks*ks)*q6*r2*cos(q2)*4.0-(ks*ks)*m*q1*r1*(r2*r2)*2.0-(ks*ks)*m*q2*r1*(r2*r2)*2.0+(ks*ks)*m*q3*r1*(r2*r2)*2.0-I3*cS*dq1*ks*r1*4.0-I3*cS*dq2*ks*r1*4.0+I3*cS*dq3*ks*r1*4.0+FxDes*I3*g*m*r1*(r2*r2)+I3*cS*dq1*ks*r2*cos(q2)*4.0-I3*cS*dq6*ks*r2*cos(q2)*4.0+c3*dq3*ks*m*r1*(r2*r2)*2.0-cS*dq1*ks*m*r1*(r2*r2)*2.0-cS*dq2*ks*m*r1*(r2*r2)*2.0+cS*dq3*ks*m*r1*(r2*r2)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1)*2.0+(ks*ks)*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0+(ks*ks)*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0-(ks*ks)*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1+q2*2.0)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1-q2)-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q2*2.0)+FxDes*I3*cS*dq1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*cS*dq2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*cS*dq3*r1*r2*cos(q1+q2)*4.0-FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0)-FyDes*I3*g*m*r1*(r2*r2)*sin(q2*2.0)+FyDes*I3*cS*dq1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*cS*dq2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*cS*dq3*r1*r2*sin(q1+q2)*4.0+FxDes*I3*ks*q1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*ks*q2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*ks*q3*r1*r2*cos(q1+q2)*4.0+FyDes*I3*ks*q1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*ks*q2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*ks*q3*r1*r2*sin(q1+q2)*4.0+FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0+q2*2.0)-I3*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2)*4.0-I3*g*ks*m*r1*r2*cos(q1+q2)*2.0-c3*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq1*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq2*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-cS*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0-FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0+FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0+q2*2.0)+I3*dq1*k1_11*ks*m*r1*(r2*r2)*2.0+I3*dq2*k1_11*ks*m*r1*(r2*r2)*2.0-I3*dq3*k1_11*ks*m*r1*(r2*r2)*2.0+FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*2.0+I3*k2_11*ks*m*q1*r1*(r2*r2)*2.0+I3*k2_11*ks*m*q2*r1*(r2*r2)*2.0-I3*k2_11*ks*m*q3*r1*(r2*r2)*2.0-FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*2.0+FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1+q2*2.0)*2.0-I3*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0-I3*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0+I3*g*ks*m*r1*r2*cos(q1-q2)*2.0+FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1+q2)*4.0-FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0+FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1+q2)*4.0-FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1-q2)*4.0+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)-FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1-q2)*4.0+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-I3*dq1*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq2*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*dq3*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2*2.0)*4.0-I3*k2_11*ks*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*k2_11*ks*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*k2_11*ks*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0)*(-1.0/2.0))/(ks*m*r1*(cos(q2*2.0)-1.0));
+    double tauB = (1.0/(r1*r1)*(I6*(ks*ks)*q1*r2*2.0-I6*(ks*ks)*q6*r2*2.0-I6*(ks*ks)*q1*r1*cos(q2)*2.0-I6*(ks*ks)*q2*r1*cos(q2)*2.0+I6*(ks*ks)*q3*r1*cos(q2)*2.0+(ks*ks)*m*q1*(r1*r1)*r2-(ks*ks)*m*q6*(r1*r1)*r2+I6*cS*dq1*ks*r2*2.0-I6*cS*dq6*ks*r2*2.0-I6*cS*dq1*ks*r1*cos(q2)*2.0-I6*cS*dq2*ks*r1*cos(q2)*2.0+I6*cS*dq3*ks*r1*cos(q2)*2.0-c6*dq6*ks*m*(r1*r1)*r2+cS*dq1*ks*m*(r1*r1)*r2-cS*dq6*ks*m*(r1*r1)*r2-(ks*ks)*m*q1*(r1*r1)*r2*cos(q2*2.0)+(ks*ks)*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*cS*dq1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*cS*dq2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*cS*dq3*(r1*r1)*cos(q1)*cos(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q1)-FxDes*I6*g*m*(r1*r1)*r2*pow(cos(q1),2.0)+FyDes*I6*cS*dq1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*cS*dq2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*cS*dq3*(r1*r1)*cos(q2)*sin(q1)*2.0+FxDes*I6*ks*q1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*ks*q2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*ks*q3*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*g*m*(r1*r1)*r2*sin(q1*2.0)*(1.0/2.0)+FyDes*I6*ks*q1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*ks*q2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*ks*q3*(r1*r1)*cos(q2)*sin(q1)*2.0-I6*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2)*2.0-I6*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2)*2.0-FxDes*I6*cS*dq1*r1*r2*cos(q1)*2.0+FxDes*I6*cS*dq6*r1*r2*cos(q1)*2.0+c6*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-cS*dq1*ks*m*(r1*r1)*r2*cos(q2*2.0)+cS*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-FyDes*I6*cS*dq1*r1*r2*sin(q1)*2.0+FyDes*I6*cS*dq6*r1*r2*sin(q1)*2.0-FxDes*I6*ks*q1*r1*r2*cos(q1)*2.0+FxDes*I6*ks*q6*r1*r2*cos(q1)*2.0-I6*dq1*k1_22*ks*m*(r1*r1)*r2+I6*dq6*k1_22*ks*m*(r1*r1)*r2-FyDes*I6*ks*q1*r1*r2*sin(q1)*2.0+FyDes*I6*ks*q6*r1*r2*sin(q1)*2.0+I6*g*ks*m*r1*r2*cos(q1)-I6*k2_22*ks*m*q1*(r1*r1)*r2+I6*k2_22*ks*m*q6*(r1*r1)*r2-I6*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2*2.0)-I6*g*ks*m*r1*r2*cos(q1+q2*2.0)-FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q1)+FxDes*I6*k2_22*m*(r1*r1*r1)*r2*sin(q1)+FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-FxDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q1)+FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-I6*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2)*4.0+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*cos(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FxDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*sin(q1)+FyDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+FyDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+I6*dq1*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)-I6*dq6*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)+I6*k2_22*ks*m*q1*(r1*r1)*r2*cos(q2*2.0)-I6*k2_22*ks*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*cos(q1)+FyDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*sin(q1)-FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)+FxDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*4.0-FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FyDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*4.0))/(ks*m*r2*(cos(q2*2.0)-1.0));
+
+    //// Desired motor angles
+    //double q3des = 3.0*M_PI/4.0;
+    //double q6des = M_PI/4.0;
+
+    //// Compute the desired torque for a fixed motor position
+    //double tauA = c3*dq3 - cS*dq1 - cS*dq2 + cS*dq3 - ks*q1 - ks*q2 + ks*q3 - I3*dq3*k1_11 - I3*k2_11*q3 + I3*k2_11*q3des;
+    //double tauB = c6*dq6 - cS*dq1 + cS*dq6          - ks*q1 + ks*q6         - I6*dq6*k1_22 - I6*k2_22*q6 + I6*k2_22*q6des;
+
+    // Convert desired torque to current using the gear ratio (KG) and torque
+    // constant (KT)
+    double curA = tauA/KG/KT;
+    double curB = tauB/KG/KT;
+
+    // Z-direction is opposite in simulation
+    curA = -curA;
+    curB = -curB;
+
+    //printf("FxDes: %f\n", FxDes);
+    //printf("FyDes: %f\n", FyDes);
+    //printf("q1: %f\n", q1);
+    //printf("q2: %f\n", q2);
+    //printf("q3: %f\n", q3);
+    //printf("q6: %f\n", q6);
+    //printf("tauA: %f\n", tauA);
+    //printf("tauB: %f\n", tauB);
+    //printf("\n");
+
+    // Log the desired forces
+    logOut.fxDes = FxDes;
+    logOut.fzDes = FyDes;
+
+    // Return the motor current
+    return std::make_tuple(curA, curB);
+}
+
 // We need to make top-level controllers components
 ORO_CREATE_COMPONENT(ATCForceControlDemo)
 
 }
 }
+
+// vim: noexpandtab

@@ -29,11 +29,15 @@
 #include <asc_rate_limit/ASCRateLimit.hpp>
 
 // Datatypes
+#include <deque>
 #include <robot_invariant_defs.h>
 #include <robot_variant_defs.h>
 #include <atrias_msgs/robot_state.h>
 #include <atrias_shared/controller_structs.h>
 #include <atrias_shared/atrias_parameters.h>
+
+// Functions
+#include <numeric>  // std::accumulate
 
 // Namespaces we're using
 using namespace std;
@@ -69,10 +73,13 @@ class ATCSlipWalking : public ATC<
         void standingController();
         void shutdownController();
         void stanceController(atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCLegForce*, ASCRateLimit*);
-        void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
+        void singleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, std::deque<double>*);
         void legSwingController(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, atrias_msgs::controller_output_leg*, ASCPD*, ASCPD*);
-        void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCLegForce*, ASCLegForce*, ASCRateLimit*, ASCRateLimit*);
+        void doubleSupportEvents(atrias_msgs::robot_state_leg*, atrias_msgs::robot_state_leg*, ASCRateLimit*);
         void resetFlightLegParameters(atrias_msgs::robot_state_leg*, ASCRateLimit*);
+        bool detectStance(atrias_msgs::robot_state_leg*, std::deque<double>*);
+        void updateToeFilter(uint16_t, std::deque<double>*);
+        std::tuple<double, double> legForceControl(LegForce, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location);
 
         /**
          * @brief These are sub controllers used by the top level controller.
@@ -118,6 +125,7 @@ class ATCSlipWalking : public ATC<
         double qFm, rFm;             // Flight motor states
         double rFdefl;               // Flight leg radial deflection
         LegForce forceSl;
+        double k1_11, k1_22, k2_11, k2_22;  // Feedback linearization force control gains
 
         // Leg parameters at exit state (event trigger)
         double reFm, qeFm; // Flight leg motor states
@@ -130,6 +138,10 @@ class ATCSlipWalking : public ATC<
 
         // State transistion events
         bool isForwardStep, isTrigger; // Logical preventing backstepping issues
+
+        // Toe switch variables
+        deque<double> rFilteredToe;
+        deque<double> lFilteredToe;
 
         // Misc margins, ratelimiters and other debug values
         double legRateLimit, hipRateLimit, springRateLimit;
