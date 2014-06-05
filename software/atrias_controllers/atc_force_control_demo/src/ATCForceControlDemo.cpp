@@ -108,9 +108,9 @@ void ATCForceControlDemo::controller() {
 			// Run stair step function
 			legForce.fx = 0.0; legForce.dfx = 0.0;
 			if ((tL >= 0) && (tL < 20)) {
-				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, 20.0, -400, 20, 4);
+				std::tie(legForce.fz, legForce.dfz) = stairStep(tL, -20.0, -400, 20, 4);
 			} else {
-				legForce.fz = 20.0;
+				legForce.fz = -20.0;
 				legForce.dfz = 0.0;
 			}
 
