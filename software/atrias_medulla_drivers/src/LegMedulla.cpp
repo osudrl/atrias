@@ -474,16 +474,16 @@ void LegMedulla::processLimitSwitches(atrias_msgs::robot_state& robotState, bool
 void LegMedulla::processStrainGauges(atrias_msgs::robot_state& robotState) {
 	switch (*id) {
 		case MEDULLA_LEFT_LEG_A_ID:
-			robotState.lLeg.halfA.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			robotState.lLeg.halfA.kneeForce = ((int32_t) *kneeForce1);// - ((int32_t) *kneeForce2);
 			break;
 		case MEDULLA_LEFT_LEG_B_ID:
-			robotState.lLeg.halfB.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			robotState.lLeg.halfB.kneeForce = ((int32_t) *kneeForce1);// - ((int32_t) *kneeForce2);
 			break;
 		case MEDULLA_RIGHT_LEG_A_ID:
-			robotState.rLeg.halfA.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			robotState.rLeg.halfA.kneeForce = ((int32_t) *kneeForce1);// - ((int32_t) *kneeForce2);
 			break;
 		case MEDULLA_RIGHT_LEG_B_ID:
-			robotState.rLeg.halfB.kneeForce = ((int32_t) *kneeForce1) - ((int32_t) *kneeForce2);
+			robotState.rLeg.halfB.kneeForce = ((int32_t) *kneeForce1);// - ((int32_t) *kneeForce2);
 			break;
 	}
 
