@@ -215,13 +215,9 @@ void ATCSlipWalking::updateController() {
     // Leg gains
     ascPDLmA.P = ascPDLmB.P = ascPDRmA.P = ascPDRmB.P = guiIn.leg_pos_kp;
     ascPDLmA.D = ascPDLmB.D = ascPDRmA.D = ascPDRmB.D = guiIn.leg_pos_kd;
-    k1_11 = guiIn.leg_for_kd;
-    k1_22 = guiIn.leg_for_kd;
-    //k2_11 = guiIn.leg_for_kp;
-    //k2_22 = guiIn.leg_for_kp;
-    k2_11 = k1_11*k1_11;
-    k2_22 = k1_22*k1_22;
-    // TODO: guiIn.leg_for_ki is unused and should be removed
+    ascLegForceL.kp = ascLegForceR.kp = guiIn.leg_for_kp;
+    ascLegForceL.ki = ascLegForceR.ki = guiIn.leg_for_ki;
+    ascLegForceL.kd = ascLegForceR.kd = guiIn.leg_for_kd;
 
     // Hip gains
     ascPDLh.P = ascPDRh.P = guiIn.hip_pos_kp;
@@ -357,42 +353,42 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
     forceSl.fz  = -fa*sin(qSl);
     forceSl.dfz = -fa*cos(qSl)*dqSl - dfa*sin(qSl);
 
-    //// Torso control
-    //// VPP control
-    //// Distance between leg pivot center and center of mass from ATRIAS solid model
-    //rcom = 0.12;
-    //// Angle between axial leg force and desired ground reaction force
-    //q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
-    //dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
-    //// Error catch
-    //if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
-    //    printf("VPP control error: q outside working bounds. q = %f\n", q);
-    //    q  = 0.0;
-    //    dq = 0.0;
-    //}
-    //// Tangential toe force to redirect axial leg force to VPP
-    //ft = fa*tan(q);
-    //// Derivative of the tangential toe force
-    //dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
+    // Torso control
+    // VPP control
+    // Distance between leg pivot center and center of mass from ATRIAS solid model
+    rcom = 0.15;
+    // Angle between axial leg force and desired ground reaction force
+    q = asin(rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0))+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0));
+    dq = (rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0)+(rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*1.0/sqrt(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)-rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/pow(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)+rvpp*sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*(dqSl-dqb+(rcom*cos(qSl-qb)*(dqSl-dqb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)-rcom*sin(qSl-qb)*1.0/pow(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0,3.0/2.0)*(drSl*rSl*2.0-drSl*rcom*cos(qSl-qb)*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rcom*rcom)*pow(sin(qSl-qb),2.0))/(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)+1.0))*2.0+rSl*rcom*sin(qSl-qb)*(dqSl-dqb)*2.0)*(1.0/2.0))*1.0/sqrt(-((rvpp*rvpp)*pow(sin(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0))),2.0))/(rSl*rSl+rcom*rcom+rvpp*rvpp-rSl*rcom*cos(qSl-qb)*2.0-rvpp*cos(qSl-qb+qvpp+asin(rcom*sin(qSl-qb)*1.0/sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)))*sqrt(rSl*rSl+rcom*rcom-rSl*rcom*cos(qSl-qb)*2.0)*2.0)+1.0);
+    // Error catch
+    if ((q > M_PI/2.0) || (q < -M_PI/2.0)) {
+        printf("VPP control error: q outside working bounds. q = %f\n", q);
+        q  = 0.0;
+        dq = 0.0;
+    }
+    // Tangential toe force to redirect axial leg force to VPP
+    ft = fa*tan(q);
+    // Derivative of the tangential toe force
+    dft = dfa*tan(q) + fa*dq*(pow(tan(q),2.0)+1.0);
 
-    //// Add torso control
-    //forceSl.fx  += -ft*sin(qSl);
-    //forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
-    //forceSl.fz  +=  ft*cos(qSl);
-    //forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
+    // Add torso control
+    forceSl.fx  += -ft*sin(qSl);
+    forceSl.dfx += -ft*cos(qSl)*dqSl - dft*sin(qSl);
+    forceSl.fz  +=  ft*cos(qSl);
+    forceSl.dfz += -ft*sin(qSl)*dqSl + dft*cos(qSl);
 
     // Use force tracking controller to compute required motor currents
-    std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = legForceControl(forceSl, *rsSl, rs.position);
+    // Force controller has built-in world coordinate conversion
+    std::tie(coSl->motorCurrentA, coSl->motorCurrentB) = ascLegForceSl->control(forceSl, *rsSl, rs.position);
     // Log the forces that it thinks it's applying
-    //ascLegForceSl->compute(*rsSl, rs.position);
+    ascLegForceSl->compute(*rsSl, rs.position);
 
-    // If the stance leg angle is past q1, use PD control to keep it from
-    // swinging more forward
-    // TODO: Uncomment this once force control debugging is complete
-    //if (qSl < q1) {
-    //    coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
-    //    coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
-    //}
+    // Convert leg angle and velocities to torso coordinates
+    // PD past q1
+    if (qSl < q1) {
+        coSl->motorCurrentA += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
+        coSl->motorCurrentB += (q1-qSl)*guiIn.leg_pos_kp + (0.0-dqSl)*guiIn.leg_pos_kd;
+    }
 } // stanceController
 
 /**
@@ -409,8 +405,74 @@ void ATCSlipWalking::stanceController(atrias_msgs::robot_state_leg *rsSl, atrias
  */
 void ATCSlipWalking::legSwingController(atrias_msgs::robot_state_leg *rsSl, atrias_msgs::robot_state_leg *rsFl, atrias_msgs::controller_output_leg *coFl, ASCPD *ascPDmA, ASCPD *ascPDmB) {
     // Compute current stance leg states
-    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle);
-    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.motorAngle, rsSl->halfB.motorAngle, rsSl->halfA.motorVelocity, rsSl->halfB.motorVelocity);
+    std::tie(qSl, rSl) = ascCommonToolkit.motorPos2LegPos(rsSl->halfA.legAngle, rsSl->halfB.legAngle);
+    std::tie(dqSl, drSl) = ascCommonToolkit.motorVel2LegVel(rsSl->halfA.legAngle, rsSl->halfB.legAngle, rsSl->halfA.legVelocity, rsSl->halfB.legVelocity);
+
+
+    // Hamid {
+    // look at the functions in ascCommonToolkit
+
+    // Define in hpp file:{
+    // double v0
+    // int PoincareSecUpdateFlag
+    //
+    //}
+
+    // Define at the top of the code:{ for the initialization
+    // PoincareSecUpdateFlag=0;
+    // q1=   q2=    q3=     q4=    because it can start from Double Stance phase
+    //}
+    // Remove the gui input changes for q1~q4
+
+    v0 = pow(pow(rSl*dqSl,2)+pow(drSl,2),0.5);
+    //v0 = pow(pow(rs.position.xVelocity,2)+pow(rs.position.yVelocity,2)+pow(rs.position.zVelocity,2),0.5);
+    if abs(qSl-3.14159/2.0)<0.015
+    {
+        if v0>1
+        {
+            v0 = 1.0;
+        }
+
+        if v0<0.4
+        {
+            v0 = 0.4;
+        }
+
+        q1 = -0.639203343*pow(v0,3) + 1.50730784 * pow(v0,2) - 1.030411268*v0 + 1.411227299;
+
+        q2 = -0.708299727*pow(v0,3)	+ 1.704598815*pow(v0,2) - 1.1412168*v0 + 1.566854326;
+
+        q3 = 0.708299726*pow(v0,3) - 1.704598815*pow(v0,2) + 1.1412168*v0 + 1.574738327;
+
+        q4 = 0.639203343*pow(v0,3) - 1.50730784*pow(v0,2) + 1.030411268*v0 + 1.730365355;
+
+        PoincareSecUpdateFlag = 1;
+
+
+    }else if PoincareSecUpdateFlag!=1
+    {
+        v0 = 0.5;
+
+        q1 = -0.639203343*pow(v0,3) + 1.50730784*pow(v0,2) - 1.030411268*v0 + 1.411227299;
+
+        q2 = -0.708299727*pow(v0,3)	+ 1.704598815*pow(v0,2) -1.1412168*v0 + 1.566854326;
+
+        q3 = 0.708299726*pow(v0,3)	-1.704598815*pow(v0,2) + 1.1412168*v0 + 1.574738327;
+
+        q4 = 0.639203343*pow(v0,3)	-1.50730784*pow(v0,2) + 1.030411268*v0 + 1.730365355;
+
+    }
+
+    // To reach the ground ASAP
+    //if qSl>q3
+    //{
+    //    q2 = 3.14159 / 2.0;
+    //}
+
+    //Hamid }
+
+
+
 
     // Compute current torso states
     qb = rs.position.bodyPitch;
@@ -597,7 +659,7 @@ void ATCSlipWalking::resetFlightLegParameters(atrias_msgs::robot_state_leg *rsFl
     sPrev = 0.0;
 
     // Compute initial flight leg angle and length
-    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.motorAngle, rsFl->halfB.motorAngle);
+    std::tie(qeFm, reFm) = ascCommonToolkit.motorPos2LegPos(rsFl->halfA.legAngle, rsFl->halfB.legAngle);
     // Convert to world coordinates
     qeFm += qb - 3.0*M_PI/2.0;
 } // resetFlightLegParameters
@@ -608,8 +670,8 @@ bool ATCSlipWalking::detectStance(atrias_msgs::robot_state_leg *rsFl, std::deque
     // Make a baseline by averaging previous values, ignoring the first 20
     double baseline = accumulate(filteredToe->begin()+20.0, filteredToe->end(), 0.0)/(filteredToe->size()-20.0);
 
-    // The threshold for stance is 600 over the baseline reading
-    double threshold = 600.0 + baseline;
+    // The threshold for stance is 500 over the baseline reading
+    double threshold = 500.0 + baseline;
 
     // If the toe switch is above the threshold
     if (((double) rsFl->toeSwitch) > threshold) {
@@ -648,93 +710,6 @@ void ATCSlipWalking::updateToeFilter(uint16_t newToe, std::deque<double> *filter
     // Store it
     filteredToe->push_front (average);
 } // updateToeFilter
-
-std::tuple<double, double> ATCSlipWalking::legForceControl(LegForce legForce, atrias_msgs::robot_state_leg leg, atrias_msgs::robot_state_location position) {
-    // Unpack parameters
-    double FxDes = -legForce.fx;
-    double FyDes = -legForce.fz;
-    double qlA   = leg.halfA.legAngle;
-    double qlB   = leg.halfB.legAngle;
-    double qmA   = leg.halfA.motorAngle;
-    double qmB   = leg.halfB.motorAngle;
-    double qb    = position.bodyPitch;
-    double dqlA  = leg.halfA.legVelocity;
-    double dqlB  = leg.halfB.legVelocity;
-    double dqmA  = leg.halfA.motorVelocity;
-    double dqmB  = leg.halfB.motorVelocity;
-    double dqb   = position.bodyPitchVelocity;
-
-    // Remove torso tilt (Convert to world coordinates)
-    qlA  += qb - 3.0*M_PI/2.0;
-    qlB  += qb - 3.0*M_PI/2.0;
-    qmA  += qb - 3.0*M_PI/2.0;
-    qmB  += qb - 3.0*M_PI/2.0;
-    dqlA += dqb;
-    dqlB += dqb;
-    dqmA += dqb;
-    dqmB += dqb;
-
-    // Convert to simulation coordinates
-    // Angles (rad)
-    double q1 = M_PI - qlB;
-    double q2 = qlB - qlA;
-    double q3 = M_PI - qmA;
-    double q6 = M_PI - qmB;
-    // Angular velocities (rad/s)
-    double dq1 = -dqlB;
-    double dq2 = dqlB - dqlA;
-    double dq3 = -dqmA;
-    double dq6 = -dqmB;
-
-    // Constants and ATRIAS parameters
-    const double g  = G;       // Gravity (m/s^2)
-    const double r1 = L1;      // Length of link 1 (m)
-    const double r2 = L2;      // Length of link 2
-    const double m  = M;       // Mass of ATRIAS (kg)
-    const double I  = 0.0019;  // Rotor inertia (kg*m^2)
-    const double I3 = I*KG*KG; // Rotor inertia (as seen by the output)
-    const double I6 = I3;      // Rotor inertia
-    const double c3 = 19.0;    // Motor damping (as seen by the output) (N*m*s/rad)
-    const double c6 = c3;      // Motor damping
-    const double ks = KS;      // Spring constant (N/rad)
-    const double cS = 1.49;    // Spring damping (N*m*s/rad)
-
-    // Compute the desired torque using feedback linearization.  Used MATLAB
-    // for the derivation; code available here:
-    // https://github.com/andrewPeekema/atriasLeg
-    double tauA = (1.0/(r2*r2)*(I3*(ks*ks)*q1*r1*-4.0-I3*(ks*ks)*q2*r1*4.0+I3*(ks*ks)*q3*r1*4.0+I3*(ks*ks)*q1*r2*cos(q2)*4.0-I3*(ks*ks)*q6*r2*cos(q2)*4.0-(ks*ks)*m*q1*r1*(r2*r2)*2.0-(ks*ks)*m*q2*r1*(r2*r2)*2.0+(ks*ks)*m*q3*r1*(r2*r2)*2.0-I3*cS*dq1*ks*r1*4.0-I3*cS*dq2*ks*r1*4.0+I3*cS*dq3*ks*r1*4.0+FxDes*I3*g*m*r1*(r2*r2)+I3*cS*dq1*ks*r2*cos(q2)*4.0-I3*cS*dq6*ks*r2*cos(q2)*4.0+c3*dq3*ks*m*r1*(r2*r2)*2.0-cS*dq1*ks*m*r1*(r2*r2)*2.0-cS*dq2*ks*m*r1*(r2*r2)*2.0+cS*dq3*ks*m*r1*(r2*r2)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1)*2.0+(ks*ks)*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0+(ks*ks)*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0-(ks*ks)*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1)*2.0-FxDes*I3*cS*dq1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*cS*dq6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*cS*dq1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*cS*dq6*(r2*r2)*sin(q1+q2*2.0)*2.0-FxDes*I3*ks*q1*(r2*r2)*cos(q1+q2*2.0)*2.0+FxDes*I3*ks*q6*(r2*r2)*cos(q1+q2*2.0)*2.0-FyDes*I3*ks*q1*(r2*r2)*sin(q1+q2*2.0)*2.0+FyDes*I3*ks*q6*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1-q2)-FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0)-FxDes*I3*g*m*r1*(r2*r2)*cos(q2*2.0)+FxDes*I3*cS*dq1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*cS*dq2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*cS*dq3*r1*r2*cos(q1+q2)*4.0-FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0)-FyDes*I3*g*m*r1*(r2*r2)*sin(q2*2.0)+FyDes*I3*cS*dq1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*cS*dq2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*cS*dq3*r1*r2*sin(q1+q2)*4.0+FxDes*I3*ks*q1*r1*r2*cos(q1+q2)*4.0+FxDes*I3*ks*q2*r1*r2*cos(q1+q2)*4.0-FxDes*I3*ks*q3*r1*r2*cos(q1+q2)*4.0+FyDes*I3*ks*q1*r1*r2*sin(q1+q2)*4.0+FyDes*I3*ks*q2*r1*r2*sin(q1+q2)*4.0-FyDes*I3*ks*q3*r1*r2*sin(q1+q2)*4.0+FyDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FyDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*cos(q1-q2)*2.0+FxDes*I3*g*m*r1*(r2*r2)*cos(q1*2.0+q2*2.0)-I3*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2)*4.0-I3*g*ks*m*r1*r2*cos(q1+q2)*2.0-c3*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq1*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+cS*dq2*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-cS*dq3*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-FxDes*I3*(dq1*dq1)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0-FxDes*I3*(dq2*dq2)*m*r1*(r2*r2*r2)*sin(q1-q2)*2.0+FyDes*I3*g*m*r1*(r2*r2)*sin(q1*2.0+q2*2.0)+I3*dq1*k1_11*ks*m*r1*(r2*r2)*2.0+I3*dq2*k1_11*ks*m*r1*(r2*r2)*2.0-I3*dq3*k1_11*ks*m*r1*(r2*r2)*2.0+FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*2.0+I3*k2_11*ks*m*q1*r1*(r2*r2)*2.0+I3*k2_11*ks*m*q2*r1*(r2*r2)*2.0-I3*k2_11*ks*m*q3*r1*(r2*r2)*2.0-FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*2.0+FyDes*I3*k2_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*k2_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1+q2*2.0)*2.0-I3*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0-I3*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2*2.0)*2.0+I3*g*ks*m*r1*r2*cos(q1-q2)*2.0+FxDes*I3*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1+q2*2.0)*2.0-FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1+q2)*4.0-FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0-FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2)*2.0+FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1+q2)*4.0-FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0-FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2)*2.0+FyDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*cos(q1-q2)*4.0+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1-q2)+FxDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)+FxDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*cos(q1+q2*3.0)-FxDes*I3*dq1*dq2*m*r1*(r2*r2*r2)*sin(q1-q2)*4.0+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1-q2)+FyDes*I3*dq1*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)+FyDes*I3*dq2*k1_11*m*r1*(r2*r2*r2)*sin(q1+q2*3.0)-I3*dq1*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq2*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*dq3*k1_11*ks*m*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2*2.0)*4.0-I3*k2_11*ks*m*q1*r1*(r2*r2)*cos(q2*2.0)*2.0-I3*k2_11*ks*m*q2*r1*(r2*r2)*cos(q2*2.0)*2.0+I3*k2_11*ks*m*q3*r1*(r2*r2)*cos(q2*2.0)*2.0)*(-1.0/2.0))/(ks*m*r1*(cos(q2*2.0)-1.0));
-    double tauB = (1.0/(r1*r1)*(I6*(ks*ks)*q1*r2*2.0-I6*(ks*ks)*q6*r2*2.0-I6*(ks*ks)*q1*r1*cos(q2)*2.0-I6*(ks*ks)*q2*r1*cos(q2)*2.0+I6*(ks*ks)*q3*r1*cos(q2)*2.0+(ks*ks)*m*q1*(r1*r1)*r2-(ks*ks)*m*q6*(r1*r1)*r2+I6*cS*dq1*ks*r2*2.0-I6*cS*dq6*ks*r2*2.0-I6*cS*dq1*ks*r1*cos(q2)*2.0-I6*cS*dq2*ks*r1*cos(q2)*2.0+I6*cS*dq3*ks*r1*cos(q2)*2.0-c6*dq6*ks*m*(r1*r1)*r2+cS*dq1*ks*m*(r1*r1)*r2-cS*dq6*ks*m*(r1*r1)*r2-(ks*ks)*m*q1*(r1*r1)*r2*cos(q2*2.0)+(ks*ks)*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*cS*dq1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*cS*dq2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*cS*dq3*(r1*r1)*cos(q1)*cos(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q1)-FxDes*I6*g*m*(r1*r1)*r2*pow(cos(q1),2.0)+FyDes*I6*cS*dq1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*cS*dq2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*cS*dq3*(r1*r1)*cos(q2)*sin(q1)*2.0+FxDes*I6*ks*q1*(r1*r1)*cos(q1)*cos(q2)*2.0+FxDes*I6*ks*q2*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*ks*q3*(r1*r1)*cos(q1)*cos(q2)*2.0-FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*g*m*(r1*r1)*r2*sin(q1*2.0)*(1.0/2.0)+FyDes*I6*ks*q1*(r1*r1)*cos(q2)*sin(q1)*2.0+FyDes*I6*ks*q2*(r1*r1)*cos(q2)*sin(q1)*2.0-FyDes*I6*ks*q3*(r1*r1)*cos(q2)*sin(q1)*2.0-I6*(dq1*dq1)*ks*m*r1*(r2*r2)*sin(q2)*2.0-I6*(dq2*dq2)*ks*m*r1*(r2*r2)*sin(q2)*2.0-FxDes*I6*cS*dq1*r1*r2*cos(q1)*2.0+FxDes*I6*cS*dq6*r1*r2*cos(q1)*2.0+c6*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-cS*dq1*ks*m*(r1*r1)*r2*cos(q2*2.0)+cS*dq6*ks*m*(r1*r1)*r2*cos(q2*2.0)-FyDes*I6*cS*dq1*r1*r2*sin(q1)*2.0+FyDes*I6*cS*dq6*r1*r2*sin(q1)*2.0-FxDes*I6*ks*q1*r1*r2*cos(q1)*2.0+FxDes*I6*ks*q6*r1*r2*cos(q1)*2.0-I6*dq1*k1_22*ks*m*(r1*r1)*r2+I6*dq6*k1_22*ks*m*(r1*r1)*r2-FyDes*I6*ks*q1*r1*r2*sin(q1)*2.0+FyDes*I6*ks*q6*r1*r2*sin(q1)*2.0+I6*g*ks*m*r1*r2*cos(q1)-I6*k2_22*ks*m*q1*(r1*r1)*r2+I6*k2_22*ks*m*q6*(r1*r1)*r2-I6*(dq1*dq1)*ks*m*(r1*r1)*r2*sin(q2*2.0)-I6*g*ks*m*r1*r2*cos(q1+q2*2.0)-FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q1)+FxDes*I6*k2_22*m*(r1*r1*r1)*r2*sin(q1)+FyDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-FxDes*I6*k2_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q1)+FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*sin(q1)-FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)-I6*dq1*dq2*ks*m*r1*(r2*r2)*sin(q2)*4.0+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*cos(q1)+FxDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FxDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*2.0+FyDes*I6*(dq1*dq1)*m*(r1*r1*r1)*r2*sin(q2*2.0)*sin(q1)+FyDes*I6*(dq1*dq1)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+FyDes*I6*(dq2*dq2)*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*2.0+I6*dq1*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)-I6*dq6*k1_22*ks*m*(r1*r1)*r2*cos(q2*2.0)+I6*k2_22*ks*m*q1*(r1*r1)*r2*cos(q2*2.0)-I6*k2_22*ks*m*q6*(r1*r1)*r2*cos(q2*2.0)+FxDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*cos(q1)+FyDes*I6*g*m*(r1*r1)*r2*cos(q1+q2*2.0)*sin(q1)-FxDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*cos(q1)+FxDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*cos(q1)*sin(q2)*4.0-FyDes*I6*dq1*k1_22*m*(r1*r1*r1)*r2*cos(q2*2.0)*sin(q1)+FyDes*I6*dq1*dq2*m*(r1*r1)*(r2*r2)*sin(q1)*sin(q2)*4.0))/(ks*m*r2*(cos(q2*2.0)-1.0));
-
-    //// Desired motor angles
-    //double q3des = 3.0*M_PI/4.0;
-    //double q6des = M_PI/4.0;
-
-    //// Compute the desired torque for a fixed motor position
-    //double tauA = c3*dq3 - cS*dq1 - cS*dq2 + cS*dq3 - ks*q1 - ks*q2 + ks*q3 - I3*dq3*k1_11 - I3*k2_11*q3 + I3*k2_11*q3des;
-    //double tauB = c6*dq6 - cS*dq1 + cS*dq6          - ks*q1 + ks*q6         - I6*dq6*k1_22 - I6*k2_22*q6 + I6*k2_22*q6des;
-
-    // Convert desired torque to current using the gear ratio (KG) and torque
-    // constant (KT)
-    double curA = tauA/KG/KT;
-    double curB = tauB/KG/KT;
-
-    // Z-direction is opposite in simulation
-    curA = -curA;
-    curB = -curB;
-
-    //printf("FxDes: %f\n", FxDes);
-    //printf("FyDes: %f\n", FyDes);
-    //printf("q1: %f\n", q1);
-    //printf("q2: %f\n", q2);
-    //printf("q3: %f\n", q3);
-    //printf("q6: %f\n", q6);
-    //printf("tauA: %f\n", tauA);
-    //printf("tauB: %f\n", tauB);
-    //printf("\n");
-
-    // Return the motor current
-    return std::make_tuple(curA, curB);
-}
 
 ORO_CREATE_COMPONENT(ATCSlipWalking)
 

@@ -108,12 +108,12 @@ void boom_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer
 
 inline void boom_enable_outputs(void) {
 	// Pull sync pin low
-	io_set_direction(sync_pin,io_output);
+	PORTB.DIRSET = 1;
 }
 
 inline void boom_disable_outputs(void) {
 	// Pull sync pin high
-	io_set_direction(sync_pin,io_input);
+	PORTB.DIRCLR = 1;
 }
 
 void boom_update_inputs(uint8_t id) {

@@ -287,3 +287,4 @@ void guiTakedown() {
 	// Stuff
 } // guiTakedown
 
+// vim: noexpandtab
