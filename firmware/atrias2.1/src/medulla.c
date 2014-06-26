@@ -56,6 +56,7 @@ int main(void) {
 	while (!(OSC.STATUS & OSC_PLLRDY_bm));       /* Wait until PLL ready */
 	CCP = CCP_IOREG_gc;                          /* Allow changing CLK.CTRL */
 	CLK.CTRL = CLK_SCLKSEL_PLL_gc;               /* Use PLL output as clock */
+	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_RED;
 #else
 	// Initialize the clock to 32 Mhz oscillator
 	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
@@ -86,7 +87,7 @@ int main(void) {
 	}
 
 	// Check if we are in IMU debug mode
-	if (true) {//(medulla_id == MEDULLA_IMU_DEBUG_ID) {
+	if (medulla_id == MEDULLA_IMU_DEBUG_ID) {
 		imu_debug();
 	}
 
@@ -505,31 +506,54 @@ void amplifier_debug() {
 }
 
 void imu_debug() {
-	uint8_t computer_port_tx[32];
-	uint8_t computer_port_rx[32];
-	uint8_t imu_port_tx[36];
-	uint8_t imu_port_rx[36];
-	uint8_t data_buffer[64];
+	uint8_t csize = 80;
+	uint8_t isize = 80;
+	uint8_t computer_port_tx[csize];
+	uint8_t computer_port_rx[csize];
+	uint8_t imu_port_tx[isize];
+	uint8_t imu_port_rx[isize];
+	uint8_t data_buffer[isize];
 	uint8_t data_size;
+	uint8_t print_buffer[csize];
 
-	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 32, computer_port_rx, 32);
+	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, csize, computer_port_rx, csize);
 	uart_connect_port(&computer_port,false);
 
-	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 36, imu_port_rx, 36);
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, isize, imu_port_rx, isize);
 	uart_connect_port(&imu_port,false);
 
-	//data_size = 32;   // Anything greater, and the Medulla mashes bytes. What gives?
+	io_pin_t msync_pin = io_init_pin(&PORTF, 1);
+	PORTF.DIR = PORTF.DIR | (1<<1);
+
+	//data_size = 1;   // Anything greater, and the Medulla mashes bytes. What gives?
 	//memcpy(data_buffer, "UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_", data_size);
 
+	// Flush buffer.
+	uart_rx_data(&imu_port, data_buffer, uart_received_bytes(&imu_port));
+
+	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_BLUE;
 	while (1) {
-		// Get the data from the computer and send to imu
-		data_size = uart_rx_data(&computer_port,data_buffer,32);
-		uart_tx_data(&imu_port,data_buffer,data_size);
+		// Trigger MSync
+		//PORTF.OUT = PORTF.OUT | (1<<1);
+		//_delay_us(30);
+		//io_set_output(msync_pin, io_low);
 
-		// Get data from imu and send it to the computer
-		data_size = uart_rx_data(&imu_port,data_buffer,36);
-		uart_tx_data(&computer_port,data_buffer,data_size);
+		// To IMU
+		//data_size = uart_rx_data(&computer_port,data_buffer,32);   // 32 is arbitrary
+		//uart_tx_data(&imu_port,data_buffer,data_size);
 
+		// From IMU
+		_delay_us(100);
+		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
+		uint8_t i;
+		for (i=0; i<data_size; i++) {
+			sprintf(print_buffer[2*i], "%x", data_buffer[i]);
+		}
+		print_buffer[72] = '\r';
+		print_buffer[73] = '\n';
+		uart_tx_data(&computer_port,print_buffer,80);
+
+		_delay_ms(500);
 	}
 
 }
