@@ -36,7 +36,7 @@ if __name__ == "__main__":
             exit(0)
         if cmd == "=config,1":
             in_config = True
-            ser.flush()
+            ser.read(ser.inWaiting())
         if cmd == "=config,0":
             in_config = False
 
