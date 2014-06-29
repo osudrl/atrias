@@ -60,3 +60,4 @@ void controllerCallback(const atc_force_control_demo::controller_status &status)
 
 #endif /* CONTROLLER_GUI_H_ */
 
+// vim: noexpandtab

@@ -1,4 +1,5 @@
 # Shut stuff down
-controller.stop()
-controller.cleanup()
+ToSubstituteClassName.stop()
+ToSubstituteClassName.cleanup()
 unloadComponent("ToSubstituteClassName")
+atrias_cm.resetControllerNames()

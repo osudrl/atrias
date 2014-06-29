@@ -1,4 +1,5 @@
 # Shut stuff down
-controller.stop()
-controller.cleanup()
+ATCDeadbeatControl.stop()
+ATCDeadbeatControl.cleanup()
 unloadComponent("ATCDeadbeatControl")
+atrias_cm.resetControllerNames()

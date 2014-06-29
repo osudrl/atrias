@@ -79,6 +79,7 @@ class ATCSlipWalking : public ATC<
         void resetFlightLegParameters(atrias_msgs::robot_state_leg*, ASCRateLimit*);
         bool detectStance(atrias_msgs::robot_state_leg*, std::deque<double>*);
         void updateToeFilter(uint16_t, std::deque<double>*);
+        std::tuple<double, double> legForceControl(LegForce, atrias_msgs::robot_state_leg, atrias_msgs::robot_state_location);
 
         /**
          * @brief These are sub controllers used by the top level controller.
@@ -124,6 +125,7 @@ class ATCSlipWalking : public ATC<
         double qFm, rFm;             // Flight motor states
         double rFdefl;               // Flight leg radial deflection
         LegForce forceSl;
+        double k1_11, k1_22, k2_11, k2_22;  // Feedback linearization force control gains
 
         // Leg parameters at exit state (event trigger)
         double reFm, qeFm; // Flight leg motor states
