@@ -549,6 +549,7 @@ void imu_debug() {
 		for (i=0; i<bts; i++) {
 			print_buffer[i] = 0;
 		}
+		while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
 		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
 
 		// Print hexdump
