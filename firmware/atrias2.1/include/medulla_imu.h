@@ -15,8 +15,8 @@
 #include "io_pin.h"
 #include "uart.h"
 
-#define KVH_TX_BUFFER_LENGTH 100
-#define KVH_RX_BUFFER_LENGTH 100
+#define KVH_TX_BUFFER_LENGTH 250
+#define KVH_RX_BUFFER_LENGTH 250
 
 #ifndef ENABLE_ECAT
 uint8_t dummy_pdo[36];
