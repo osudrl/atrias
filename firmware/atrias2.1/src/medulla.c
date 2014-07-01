@@ -506,8 +506,9 @@ void amplifier_debug() {
 }
 
 void imu_debug() {
-	uint8_t csize = 80;
-	uint8_t isize = 80;
+	uint8_t bts = 120;   // Number of bytes to send with uart_tx_data. Must divide evenly into UART buffer size. Otherwise, weird UART bug. Actual number here is irrelevant.
+	uint8_t csize = bts*2;
+	uint8_t isize = bts*2;
 	uint8_t computer_port_tx[csize];
 	uint8_t computer_port_rx[csize];
 	uint8_t imu_port_tx[isize];
@@ -533,28 +534,34 @@ void imu_debug() {
 
 	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_BLUE;
 	while (1) {
-		// Trigger MSync
-		//PORTF.OUT = PORTF.OUT | (1<<1);
-		//_delay_us(30);
-		//io_set_output(msync_pin, io_low);
-
-		// To IMU
-		//data_size = uart_rx_data(&computer_port,data_buffer,32);   // 32 is arbitrary
-		//uart_tx_data(&imu_port,data_buffer,data_size);
-
-		// From IMU
-		_delay_us(100);
-		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
 		uint8_t i;
-		for (i=0; i<data_size; i++) {
-			sprintf(print_buffer[2*i], "%x", data_buffer[i]);
+
+		// Trigger MSync
+		PORTF.OUT |= (1<<1);
+		_delay_us(30);
+		PORTF.OUT &= ~(1<<1);
+
+		// To IMU (I wish I could do this, but enabling it here makes RX from IMU not work)
+		//data_size = uart_rx_data(&computer_port,data_buffer,32);   // 32 is arbitrary
+		//uart_tx_data(&imu_port,data_buffer,bts);
+
+		// Clear buffers.
+		for (i=0; i<bts; i++) {
+			print_buffer[i] = 0;
 		}
-		print_buffer[72] = '\r';
-		print_buffer[73] = '\n';
-		uart_tx_data(&computer_port,print_buffer,80);
+		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
 
-		_delay_ms(500);
+		// Print hexdump
+		sprintf(print_buffer, "%3d: ", data_buffer[29]);
+		for (i=0; i<36; i++) {
+			sprintf(print_buffer+10+2*i, "%02x", data_buffer[i]);
+		}
+		print_buffer[bts-2] = '\r';
+		print_buffer[bts-1] = '\n';
+
+		uart_tx_data(&computer_port,print_buffer,bts);
+
+		_delay_ms(100);
 	}
-
 }
 
