@@ -1,9 +1,8 @@
 #ifndef _CRC_H
 #define _CRC_H
 
-#include "/usr/avr/include/stdio.h"
-//#include <stdio.h>
-//#include <stdint.h>
+#include <stdio.h>
+#include <stdint.h>
 
 typedef uint32_t crc_t;   /* KVH IMU has 32-bit CRC */
 crc_t crc_table[256];
