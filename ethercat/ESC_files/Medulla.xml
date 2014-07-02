@@ -973,7 +973,7 @@
 						<DataType>INT</DataType>
 					</Entry>
 					<Entry>
-						<Index>#x0003</Index>
+						<Index>#x0007</Index>
 						<SubIndex>16</SubIndex>
 						<BitLen>32</BitLen>
 						<Name>CRC</Name>
