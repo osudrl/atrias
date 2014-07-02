@@ -41,22 +41,24 @@ int main(int argc, char ** argv) {
 	unsigned int status_off;
 	unsigned int sequence_off;
 	unsigned int temp_off;
+	unsigned int crc_off;
 	ec_pdo_entry_reg_t entry_regs[] = { 
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 1,  &command_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x6, 2,  &input_counter_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 3,  &ID_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 4,  &state_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 5,  &output_counter_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 6,  &error_flags_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 7,  &rot_x_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 8,  &rot_y_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 9,  &rot_z_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 10,  &accel_x_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 11,  &accel_y_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 12,  &accel_z_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 13,  &status_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 14,  &sequence_off, NULL},
-		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x3, 15,  &temp_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x6, 1,  &input_counter_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 2,  &ID_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 3,  &state_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 4,  &output_counter_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 5,  &error_flags_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 1,  &rot_x_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 2,  &rot_y_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 3,  &rot_z_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 4,  &accel_x_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 5,  &accel_y_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x8, 6,  &accel_z_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 6,  &status_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 7,  &sequence_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x3, 1,  &temp_off, NULL},
+		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 1,  &crc_off, NULL},
 		{0, 0,      0x00,         0x00, 0x0, 0x0,           NULL, NULL}};
 	if (ecrt_domain_reg_pdo_entry_list(domain, entry_regs)) {
 		perror("ecrt_domain_reg_pdo_entry_list() failed");
@@ -86,6 +88,7 @@ int main(int argc, char ** argv) {
 	uint8_t*       status        = (uint8_t*)      (domain_pd + status_off);
 	uint8_t*       sequence      = (uint8_t*)      (domain_pd + sequence_off);
 	int16_t*       temp          = (int16_t*)      (domain_pd + temp_off);
+	uint32_t*      crc           = (uint32_t*)     (domain_pd + crc_off);
 	
 	(*command) = 0;
 	char input;
@@ -111,7 +114,7 @@ int main(int argc, char ** argv) {
 //		else
 //`			*command = 2;
 		(*input_counter) = (*input_counter)++;
-		printf("counter: %d Stat: %x Seq: %3d Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z);
+		printf("counter: %d Stat: %x Seq: %3d Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
 		
 		clock_gettime(CLOCK_REALTIME, &cur_time);
 		ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
