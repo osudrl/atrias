@@ -40,7 +40,7 @@ typedef enum {
 #define MEDULLA_HIP_RX_PDO_COUNT                                               3
 #define MEDULLA_BOOM_TX_PDO_COUNT                                             11
 #define MEDULLA_BOOM_RX_PDO_COUNT                                              2
-#define MEDULLA_IMU_TX_PDO_COUNT                                              13
+#define MEDULLA_IMU_TX_PDO_COUNT                                              14
 #define MEDULLA_IMU_RX_PDO_COUNT                                               2
 
 // Medulla IDs
