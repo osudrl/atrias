@@ -131,9 +131,9 @@ void imu_update_inputs(uint8_t id) {
 	// right way to do this, but this doesn't work right now.
 	//while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
 
-	// Instead, we can just wait for the worst case delay until beginning of
-	// IMU packet transmission from this point (around 80 us). Not waiting here
-	// long enough will cause packet corruption.
+	// Instead, we can just wait for the worst case delay between TOV_Out
+	// assertion and the beginning of IMU packet transmission (around 80 us).
+	// Not waiting here long enough will cause packet corruption.
 	_delay_us(70);
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
