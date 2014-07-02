@@ -1,4 +1,5 @@
 #include <medulla_imu.h>
+#include <crc.h>
 
 //--- Define interrupt functions ---//
 
@@ -22,11 +23,15 @@ uint32_t *ZAccel_pdo;
 uint8_t  *Status_pdo;
 uint8_t  *Seq_pdo;
 int16_t  *Temp_pdo;
+uint32_t  *CRC_pdo;
 
-ecat_pdo_entry_t imu_rx_pdos[] = {{((void**)(&imu_command_state_pdo)),1},
-	{((void**)(&imu_counter_pdo)),2}};
+ecat_pdo_entry_t imu_rx_pdos[] = {
+	{((void**)(&imu_command_state_pdo)),1},
+	{((void**)(&imu_counter_pdo)),2}
+};
 
-ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
+ecat_pdo_entry_t imu_tx_pdos[] = {
+	{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&imu_current_state_pdo)),1},
 	{((void**)(&imu_medulla_counter_pdo)),1},
 	{((void**)(&imu_error_flags_pdo)),1},
@@ -38,7 +43,9 @@ ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&ZAccel_pdo)),4},
 	{((void**)(&Status_pdo)),1},
 	{((void**)(&Seq_pdo)),1},
-	{((void**)(&Temp_pdo)),2}};
+	{((void**)(&Temp_pdo)),2},
+	{((void**)(&CRC_pdo)),4}
+};
 
 void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 	*imu_error_flags_pdo = 0;
@@ -96,6 +103,13 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	*imu_medulla_id_pdo = id;
 	*commanded_state = imu_command_state_pdo;
 	*current_state = imu_current_state_pdo;
+
+	crc_generate_table();
+	uint8_t i;
+	for (i=0; i<20; i++) {
+		printf("CRC table entry %02d: %08x\n", i, crc_table[i]);
+	}
+	printf("CRC %08x compare result: %1x\n", crc_calc("123456789", 9), is_packet_good(0xcbf43926, crc_calc("123456789", 9)));
 }
 
 void imu_enable_outputs(void) {}
@@ -103,14 +117,20 @@ void imu_enable_outputs(void) {}
 void imu_disable_outputs(void) {}
 
 void imu_update_inputs(uint8_t id) {
+	static counter = 0;
+
+	// Flush buffer.
+	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+
 	// Trigger Master Sync
-	//io_set_output(msync_pin, io_high);
-	PORTF.OUT = PORTF.OUT | (1<<1);   // TODO: Why doen't the above (commented) line work?
+	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
 	_delay_us(30);   // This should be at least 30 us.
-	io_set_output(msync_pin, io_low);
+	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
 
 	while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+
+	/* TODO(yoos): Check CRC and edit Seq if necessary. */
 
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
 	populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
@@ -122,13 +142,28 @@ void imu_update_inputs(uint8_t id) {
 	*Status_pdo = imu_packet[28];   // Status
 	*Seq_pdo = imu_packet[29];   // Seq
 	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
+	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
 
 	//float arst = 12.0;
 	//memcpy(ZAngDelta_pdo, &arst, sizeof(float));
 
 
 	#ifdef DEBUG_HIGH
-	//printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
+	if (counter == 0) {
+		printf("[Medulla IMU] Seq: %3u   Gyro: %08lx %08lx %08lx   Acc: %08lx %08lx %08lx  Status: %2x  Temp: %2d  CRC: %08lx\n",
+				*Seq_pdo,
+				*XAngDelta_pdo,
+				*YAngDelta_pdo,
+				*ZAngDelta_pdo,
+				*XAccel_pdo,
+				*YAccel_pdo,
+				*ZAccel_pdo,
+				*Status_pdo,
+				*Temp_pdo,
+				*CRC_pdo
+				);
+	}
+	counter = (counter+1) % 1;
 	#endif // DEBUG_HIGH
 }
 
@@ -157,6 +192,7 @@ void imu_reset_error(void) {
 	*imu_error_flags_pdo = 0;
 }
 
+/* NOTE this obviously assumes 4-byte block */
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data) {
 	*(((uint8_t*)data)+3) = *(data_byte++);
 	*(((uint8_t*)data)+2) = *(data_byte++);
