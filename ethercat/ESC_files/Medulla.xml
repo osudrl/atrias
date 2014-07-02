@@ -972,6 +972,13 @@
 						<Name>Temperature</Name>
 						<DataType>INT</DataType>
 					</Entry>
+					<Entry>
+						<Index>#x0003</Index>
+						<SubIndex>16</SubIndex>
+						<BitLen>32</BitLen>
+						<Name>CRC</Name>
+						<DataType>UDINT</DataType>
+					</Entry>
 				</TxPdo>
 				<Dc UnknownFRMW="0" Unknown64Bit="0">
 					<OpMode>
