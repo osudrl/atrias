@@ -122,15 +122,22 @@ void imu_update_inputs(uint8_t id) {
 	// Flush buffer.
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
-	// Trigger Master Sync
+	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
 	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
 	_delay_us(30);   // This should be at least 30 us.
 	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
 
-	while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
+	// right way to do this, but this doesn't work right now.
+	//while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+
+	// Instead, we can just wait for the worst case delay until beginning of
+	// IMU packet transmission from this point (around 80 us). Not waiting here
+	// long enough will cause packet corruption.
+	_delay_us(70);
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
-	/* TODO(yoos): Check CRC and edit Seq if necessary. */
+	/* TODO(yoos): Check CRC and set Seq to 255 if packet is corrupt. */
 
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
 	populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
