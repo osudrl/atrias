@@ -107,9 +107,9 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	crc_generate_table();
 	uint8_t i;
 	for (i=0; i<20; i++) {
-		printf("CRC table entry %02d: %08x\n", i, crc_table[i]);
+		printf("CRC table entry %02d: %08lx\n", i, crc_table[i]);
 	}
-	printf("CRC %08x compare result: %1x\n", crc_calc("123456789", 9), is_packet_good(0xcbf43926, crc_calc("123456789", 9)));
+	printf("CRC %08lx compare result: %1x\n", crc_calc("123456789", 9), is_packet_good(0xcbf43926, crc_calc("123456789", 9)));
 }
 
 void imu_enable_outputs(void) {}
@@ -163,7 +163,7 @@ void imu_update_inputs(uint8_t id) {
 				*CRC_pdo
 				);
 	}
-	counter = (counter+1) % 1;
+	counter = (counter+1) % 100;
 	#endif // DEBUG_HIGH
 }
 
