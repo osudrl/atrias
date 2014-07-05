@@ -29,7 +29,7 @@ typedef enum {
 #define MEDULLA_HIP_OUTPUTS_SIZE                                               7
 #define MEDULLA_BOOM_INPUTS_SIZE                                              24
 #define MEDULLA_BOOM_OUTPUTS_SIZE                                              3
-#define MEDULLA_IMU_INPUTS_SIZE                                               32
+#define MEDULLA_IMU_INPUTS_SIZE                                               36
 #define MEDULLA_IMU_OUTPUTS_SIZE                                               3
 
 // Number of PDO entries in each direction for each Medulla type
