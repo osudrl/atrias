@@ -15,6 +15,15 @@
 #include "io_pin.h"
 #include "uart.h"
 
+#define ERROR_FLAG_DUP_PACKET 0
+#define ERROR_FLAG_BAD_CRC 1
+//#define ERROR_FLAG_UNDEFINED 2
+//#define ERROR_FLAG_UNDEFINED 3
+//#define ERROR_FLAG_UNDEFINED 4
+//#define ERROR_FLAG_UNDEFINED 5
+//#define ERROR_FLAG_UNDEFINED 6
+//#define ERROR_FLAG_UNDEFINED 7
+
 #define KVH_TX_BUFFER_LENGTH 250
 #define KVH_RX_BUFFER_LENGTH 250
 
