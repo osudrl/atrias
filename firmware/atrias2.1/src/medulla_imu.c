@@ -54,8 +54,6 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
 	#endif
 
-	//#ifdef ENABLE_ECAT
-
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing sync managers\n");
 	#endif // DEBUG_HIGH
@@ -65,25 +63,6 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla IMU] Initilizing PDO entries\n");
 	#endif // DEBUG_HIGH
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
-
-	//#else
-
-	// TODO: I want to enable the below debug printf, but the Medulla is silly
-	// and will freeze up if I print too much.
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla IMU] Initilizing dummy PDO entries\n");
-	//#endif // DEBUG_HIGH
-	//XAngDelta_pdo  = dummy_pdo+4;
-	//YAngDelta_pdo = dummy_pdo+8;
-	//ZAngDelta_pdo = dummy_pdo+12;
-	//XAccel_pdo = dummy_pdo+16;
-	//YAccel_pdo = dummy_pdo+20;
-	//ZAccel_pdo = dummy_pdo+24;
-	//Status_pdo = dummy_pdo+28;
-	//Seq_pdo = dummy_pdo+29;
-	//Temp_pdo = dummy_pdo+30;
-
-	//#endif // ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing UART\n");
@@ -95,8 +74,7 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla IMU] Initilizing Master Sync pin\n");
 	#endif
 	msync_pin = io_init_pin(&PORTF, 1);
-	//io_set_direction(msync_pin, io_output);
-	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Why doesn't the above (commented) line work?
+	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction().
 
 	*master_watchdog = imu_counter_pdo;
 	*packet_counter = imu_medulla_counter_pdo;
