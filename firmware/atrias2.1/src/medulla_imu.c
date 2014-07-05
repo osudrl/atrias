@@ -105,11 +105,13 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	*current_state = imu_current_state_pdo;
 
 	crc_generate_table();
+	#ifdef DEBUG_HIGH
 	uint8_t i;
 	for (i=0; i<20; i++) {
 		printf("CRC table entry %02d: %08lx\n", i, crc_table[i]);
 	}
 	printf("CRC %08lx compare result: %1x\n", crc_calc("123456789", 9), is_packet_good(0xcbf43926, crc_calc("123456789", 9)));
+	#endif
 }
 
 void imu_enable_outputs(void) {}
@@ -124,7 +126,7 @@ void imu_update_inputs(uint8_t id) {
 
 	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
 	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
-	_delay_us(30);   // This should be at least 30 us.
+	_delay_us(50);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 50 instead.
 	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
 
 	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
@@ -134,10 +136,8 @@ void imu_update_inputs(uint8_t id) {
 	// Instead, we can just wait for the worst case delay between TOV_Out
 	// assertion and the beginning of IMU packet transmission (around 80 us).
 	// Not waiting here long enough will cause packet corruption.
-	_delay_us(70);
+	_delay_us(60);
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
-
-	/* TODO(yoos): Check CRC and set Seq to 255 if packet is corrupt. */
 
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
 	populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
@@ -151,12 +151,10 @@ void imu_update_inputs(uint8_t id) {
 	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
 	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
 
-	//float arst = 12.0;
-	//memcpy(ZAngDelta_pdo, &arst, sizeof(float));
-
-
 	#ifdef DEBUG_HIGH
-	if (counter == 0) {
+	// NOTE this will corrupt IMU packets at 1 kHz! You know, real-time and
+	// yadda yadda.
+	if (counter == -1) {
 		printf("[Medulla IMU] Seq: %3u   Gyro: %08lx %08lx %08lx   Acc: %08lx %08lx %08lx  Status: %2x  Temp: %2d  CRC: %08lx\n",
 				*Seq_pdo,
 				*XAngDelta_pdo,
@@ -170,7 +168,7 @@ void imu_update_inputs(uint8_t id) {
 				*CRC_pdo
 				);
 	}
-	counter = (counter+1) % 100;
+	counter = (counter+1) % 10;
 	#endif // DEBUG_HIGH
 }
 
@@ -188,6 +186,33 @@ inline void imu_estop(void) {
 }
 
 bool imu_check_error(uint8_t id) {
+	static uint8_t last_seq = 0;
+	static uint8_t bad_seq_counter = 0;
+
+	// Check for duplicate packet by comparing sequence number.
+	if (*Seq_pdo == last_seq) {
+		#ifdef DEBUG_HIGH
+		printf(".");
+		#endif
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_DUP_PACKET);
+		bad_seq_counter++;
+	}
+	else if (bad_seq_counter > 0) {
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_DUP_PACKET);
+		bad_seq_counter--;
+	}
+	last_seq = *Seq_pdo;
+
+	// Check CRC
+	// TODO(yoos)
+
+	// Complain if we're duplicating more than half of the packets.
+	if (bad_seq_counter == 100) {
+		#ifdef DEBUG_LOW || DEBUG_HIGH
+		printf("[Medulla IMU] Duplicate packet error.\n");
+		#endif
+		return true;
+	}
 	return false;
 }
 
