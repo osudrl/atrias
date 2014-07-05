@@ -5,6 +5,8 @@
 #include <time.h>
 #include <string.h>
 
+/* The following should match the ID and product code (specific to type of
+ * Medulla) in ESI config file. */
 #define VENDOR_ID    0x060F
 #define PRODUCT_CODE 0x0006
 

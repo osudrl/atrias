@@ -59,17 +59,18 @@ int main(int argc, char ** argv) {
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x5, 7,  &sequence_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x3, 1,  &temp_off, NULL},
 		{0, 0, VENDOR_ID, PRODUCT_CODE, 0x7, 1,  &crc_off, NULL},
-		{0, 0,      0x00,         0x00, 0x0, 0x0,           NULL, NULL}};
+		{0, 0,      0x00,         0x00, 0x0, 0x0,           NULL, NULL}
+	};
 	if (ecrt_domain_reg_pdo_entry_list(domain, entry_regs)) {
 		perror("ecrt_domain_reg_pdo_entry_list() failed");
 		ecrt_release_master(ec_master);
 		return 4;
 	}
 	if (ecrt_master_activate(ec_master)) {
-	perror("ecrt_master_activate() failed");
-	ecrt_release_master(ec_master);
-	return 5;
-}	
+		perror("ecrt_master_activate() failed");
+		ecrt_release_master(ec_master);
+		return 5;
+	}
 
 	uint8_t* domain_pd = ecrt_domain_data(domain);
 	
@@ -107,15 +108,15 @@ int main(int argc, char ** argv) {
 	*input_counter = 0;
 	int  count = 0;
 	while (!done) {
-//		if ((count) <10) {
-	//		*command = 6;
+		// Set command input.
+		if ((count) <10) {
+			*command = 6;
 			count++;
-//		}
-//		else
-//`			*command = 2;
-		(*input_counter) = (*input_counter)++;
-		printf("counter: %d Stat: %x Seq: %3d Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
-		
+		}
+		else
+			*command = 2;
+		(*input_counter) = (*input_counter)+1;
+
 		clock_gettime(CLOCK_REALTIME, &cur_time);
 		ecrt_master_application_time(ec_master, EC_NEWTIMEVAL2NANO(cur_time));
 		ecrt_master_sync_reference_clock(ec_master);
@@ -125,6 +126,8 @@ int main(int argc, char ** argv) {
 		usleep(300);
 		ecrt_master_receive(ec_master);
 		ecrt_domain_process(domain);
+
+		printf("counter: %3d Stat: %x Seq: %3u Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
 		wait_time.tv_nsec = LOOP_PERIOD_NS - (cur_time.tv_nsec % LOOP_PERIOD_NS);
 		nanosleep(&wait_time, NULL);
 	}
