@@ -108,13 +108,13 @@ int main(int argc, char ** argv) {
 	*input_counter = 0;
 	int  count = 0;
 	while (!done) {
-		// Set command input.
+		// Set command input. TODO(yoos): The counter was meant to reset the Medulla state before setting it to run, but it's useless due to the delay between the EtherCAT PREOP and OP states.
 		if ((count) <10) {
-			*command = 6;
+			*command = 6;   // Reset
 			count++;
 		}
 		else
-			*command = 2;
+			*command = 2;   // Run
 		(*input_counter) = (*input_counter)+1;
 
 		clock_gettime(CLOCK_REALTIME, &cur_time);
@@ -127,8 +127,27 @@ int main(int argc, char ** argv) {
 		ecrt_master_receive(ec_master);
 		ecrt_domain_process(domain);
 
-		printf("counter: %3d Stat: %x Seq: %3u Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
+		// Count number of errors
+		static uint16_t seq_err_count = 0;
+		seq_err_count += *error_flags & (1<<0);
+		printf("%5u, ", seq_err_count);
+
+		//printf("counter: %3d eflags: %2x Stat: %2x Seq: %3u Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
+
+		// CSV
+		printf("%3d, %2x, %2x, %3u, %u, %+10f, %+10f, %+10f, %+10f, %+10f, %+10f, %08x\n", *counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
+
+		// Visual sequence counter
+		//int vis_counter;
+		//for (vis_counter=0; vis_counter<*sequence; vis_counter++) {
+		//	printf(".");
+		//}
+		//printf("\n");
+
 		wait_time.tv_nsec = LOOP_PERIOD_NS - (cur_time.tv_nsec % LOOP_PERIOD_NS);
+		if (*status != 0x77 && *status != 0) {
+			printf("\n%x %x %x %x\n\n", *status, *sequence, *temp, *crc);
+		}
 		nanosleep(&wait_time, NULL);
 	}
 	
