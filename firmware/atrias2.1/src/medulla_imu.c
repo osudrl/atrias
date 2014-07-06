@@ -193,10 +193,10 @@ bool imu_check_error(uint8_t id) {
 	// will very likely coincide with a bad sequence number, for which we
 	// already have a counter.
 	if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_DUP_PACKET);
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_BAD_CRC);
 	}
 	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_DUP_PACKET);
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_BAD_CRC);
 	}
 
 	// Check that we see the expected header. Because we clear the UART buffer
