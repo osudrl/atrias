@@ -86,6 +86,12 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 # Sort files by date
 printf "${OKGREEN}[Sorting files by date...]${ENDC}\n"
 
+# Make sure the old sort directory doesn't exist
+if [ ! -z "$(ls ${SORT_DIR})" ]; then
+	printf "${FAIL}[Cleanup the existing sort directory]${ENDC}\n"
+	exit 0
+fi
+
 # Reset sorted file counter
 sorted_count=0
 
@@ -144,9 +150,9 @@ printf "${OKGREEN}[Done!]${ENDC}\n\n"
 # "Delete" the files from the robot computer, moving them to a backup location
 # So the backup folder can just be deleted to clear out files, create it if
 # it does not already exist
-printf "${OKGREEN}[Deleting files from robot computer...]${ENDC}\n"
+printf "${OKGREEN}[Cleaning up robot computer logfiles...]${ENDC}\n"
 mkdir -p "${SOURCE_DIR}/backup"
-mv ${SORT_DIR}/* "${SOURCE_DIR}/backup"
+cp -r ${SORT_DIR}/* "${SOURCE_DIR}/backup"
 sudo rm -r "$SORT_DIR"
 printf "${OKGREEN}[Done!]${ENDC}\n\n"
 

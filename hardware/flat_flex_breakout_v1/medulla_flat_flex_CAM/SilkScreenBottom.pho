@@ -1,0 +1,106 @@
+*
+*
+G04 PADS 9.3.1 Build Number: 456998 generated Gerber (RS-274-X) file*
+G04 PC Version=2.1*
+*
+%IN "medulla_flat_flex.pcb"*%
+*
+%MOIN*%
+*
+%FSLAX35Y35*%
+*
+*
+*
+*
+G04 PC Standard Apertures*
+*
+*
+G04 Thermal Relief Aperture macro.*
+%AMTER*
+1,1,$1,0,0*
+1,0,$1-$2,0,0*
+21,0,$3,$4,0,0,45*
+21,0,$3,$4,0,0,135*
+%
+*
+*
+G04 Annular Aperture macro.*
+%AMANN*
+1,1,$1,0,0*
+1,0,$2,0,0*
+%
+*
+*
+G04 Odd Aperture macro.*
+%AMODD*
+1,1,$1,0,0*
+1,0,$1-0.005,0,0*
+%
+*
+*
+G04 PC Custom Aperture Macros*
+*
+*
+*
+*
+*
+*
+G04 PC Aperture Table*
+*
+%ADD010C,0.001*%
+%ADD022C,0.005*%
+%ADD033C,0.00787*%
+*
+*
+*
+*
+G04 PC Circuitry*
+G04 Layer Name medulla_flat_flex.pcb - circuitry*
+%LPD*%
+*
+*
+G04 PC Custom Flashes*
+G04 Layer Name medulla_flat_flex.pcb - flashes*
+%LPD*%
+*
+*
+G04 PC Circuitry*
+G04 Layer Name medulla_flat_flex.pcb - circuitry*
+%LPD*%
+*
+G54D10*
+G54D22*
+G01X180123Y152494D02*
+Y149994D01*
+X180237Y149525*
+X180351Y149369*
+X180578Y149213*
+X180805*
+X181033Y149369*
+X181146Y149525*
+X181260Y149994*
+Y150306*
+X178873Y152494D02*
+X177623D01*
+X178305Y151244*
+X177964*
+X177737Y151088*
+X177623Y150931*
+X177510Y150463*
+Y150150*
+X177623Y149681*
+X177851Y149369*
+X178192Y149213*
+X178533*
+X178873Y149369*
+X178987Y149525*
+X179101Y149838*
+G54D33*
+X190559Y101921D02*
+Y194343D01*
+X188398Y196504*
+X171961*
+Y101921*
+X190559*
+X0Y0D02*
+M02*

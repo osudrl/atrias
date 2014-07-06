@@ -134,7 +134,7 @@ void BoomMedulla::processZEncoder(RTT::os::TimeService::nsecs deltaTime, atrias_
 
     // The angle of the line between the boom's pivot and the robot's origin
     double virtualBoomAngle =
-        robotState.position.boomAngle + atan2(BOOM_ROBOT_VERTICAL_OFFSET, BOOM_LENGTH);
+        robotState.position.boomAngle + atan2(TORSO_LENGTH, BOOM_LENGTH);
 
     robotState.position.yPosition =
         -cos(virtualBoomAngle) * BOOM_LENGTH;

@@ -1,0 +1,117 @@
+*
+*
+G04 PADS 9.3.1 Build Number: 456998 generated Gerber (RS-274-X) file*
+G04 PC Version=2.1*
+*
+%IN "flat_flex_sensors.pcb"*%
+*
+%MOIN*%
+*
+%FSLAX35Y35*%
+*
+*
+*
+*
+G04 PC Standard Apertures*
+*
+*
+G04 Thermal Relief Aperture macro.*
+%AMTER*
+1,1,$1,0,0*
+1,0,$1-$2,0,0*
+21,0,$3,$4,0,0,45*
+21,0,$3,$4,0,0,135*
+%
+*
+*
+G04 Annular Aperture macro.*
+%AMANN*
+1,1,$1,0,0*
+1,0,$2,0,0*
+%
+*
+*
+G04 Odd Aperture macro.*
+%AMODD*
+1,1,$1,0,0*
+1,0,$1-0.005,0,0*
+%
+*
+*
+G04 PC Custom Aperture Macros*
+*
+*
+*
+*
+*
+*
+G04 PC Aperture Table*
+*
+%ADD010C,0.001*%
+%ADD056C,0.07*%
+%ADD057C,0.11039*%
+%ADD059R,0.02181X0.06512*%
+*
+*
+*
+*
+G04 PC Circuitry*
+G04 Layer Name flat_flex_sensors.pcb - circuitry*
+%LPD*%
+*
+*
+G04 PC Custom Flashes*
+G04 Layer Name flat_flex_sensors.pcb - flashes*
+%LPD*%
+*
+*
+G04 PC Circuitry*
+G04 Layer Name flat_flex_sensors.pcb - circuitry*
+%LPD*%
+*
+G54D10*
+G54D56*
+G01X195472Y189567D03*
+Y179724D03*
+Y169882D03*
+X185630Y189567D03*
+Y179724D03*
+Y169882D03*
+X175787Y189567D03*
+Y179724D03*
+Y169882D03*
+X165945Y189567D03*
+Y179724D03*
+Y169882D03*
+X156102Y189567D03*
+Y179724D03*
+Y169882D03*
+X146260Y189567D03*
+Y179724D03*
+Y169882D03*
+G54D57*
+X115748Y115748D03*
+Y151181D03*
+X143307Y214173D03*
+X198425D03*
+G54D59*
+X181654Y154213D03*
+X179685D03*
+X177717D03*
+X175748D03*
+X173780D03*
+X171811D03*
+X169843D03*
+X167874D03*
+X165906D03*
+X163937D03*
+X161969D03*
+X160000D03*
+X158031D03*
+X156063D03*
+X154094D03*
+X152126D03*
+X150157D03*
+X148189D03*
+X0Y0D02*
+M02*
