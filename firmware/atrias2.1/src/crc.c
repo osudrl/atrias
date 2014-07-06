@@ -3,9 +3,7 @@
 /*
  * CRC lookup table generator and calculator adapted from
  * http://www.zorc.breitbandkatze.de/crc.html
- */
-
-/*
+ *
  * The KVH 1750 uses all of the header, data, status, sequence number, and
  * temperature in its calculation of the CRC. The following parameters are
  * used (refer to p. 12 of the External Electrical Signaling Interface Control
@@ -17,6 +15,8 @@
  *   XOR In:      0xffffffff
  *   Reflect Out: False
  *   XOR Out:     0x0000
+ *
+ * For other CRC configurations, refer to the URL above.
  */
 const uint8_t CRC_ORDER = 32;
 const crc_t CRC_HIGHBIT = (crc_t) (1UL << 31);
