@@ -189,8 +189,15 @@ bool imu_check_error(uint8_t id) {
 		return true;
 	}
 
-	// Check CRC
-	// TODO(yoos)
+	// Check CRC. Just set the error flag and don't complain here, as a bad CRC
+	// will very likely coincide with a bad sequence number, for which we
+	// already have a counter.
+	if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_DUP_PACKET);
+	}
+	else {
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_DUP_PACKET);
+	}
 
 	// Check that we see the expected header. Because we clear the UART buffer
 	// before triggering MSync, I can't imagine how we would ever encounter
