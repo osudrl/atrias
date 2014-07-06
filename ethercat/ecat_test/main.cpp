@@ -132,10 +132,10 @@ int main(int argc, char ** argv) {
 		seq_err_count += *error_flags & (1<<0);
 		printf("%5u, ", seq_err_count);
 
-		//printf("counter: %3d eflags: %2x Stat: %2x Seq: %3u Temp: %u RX: %+10f RY: %+10f RZ: %+10f AX: %+10f AY: %+10f AZ: %+10f CRC: %08x\n",*counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
+		//printf("counter: %3d eflags: %2x Stat: %2x Seq: %3u Temp: %u RX: %+.20f RY: %+.20f RZ: %+.20f AX: %+.20f AY: %+.20f AZ: %+.20f CRC: %08x\n",*counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
 
 		// CSV
-		printf("%3d, %2x, %2x, %3u, %u, %+10f, %+10f, %+10f, %+10f, %+10f, %+10f, %08x\n", *counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
+		printf("%3d, %2x, %2x, %3u, %u, %+.20f, %+.20f, %+.20f, %+.20f, %+.20f, %+.20f, %08x\n", *counter, *error_flags, *status, *sequence, *temp, *rot_x, *rot_y, *rot_z, *accel_x, *accel_y, *accel_z, *crc);
 
 		// Visual sequence counter
 		//int vis_counter;
