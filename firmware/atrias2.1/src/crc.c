@@ -5,6 +5,19 @@
  * http://www.zorc.breitbandkatze.de/crc.html
  */
 
+/*
+ * The KVH 1750 uses all of the header, data, status, sequence number, and
+ * temperature in its calculation of the CRC. The following parameters are
+ * used (refer to p. 12 of the External Electrical Signaling Interface Control
+ * Document):
+ *
+ *   Width:       32
+ *   Poly:        0x04c11db7
+ *   Reflect In:  False
+ *   XOR In:      0xffffffff
+ *   Reflect Out: False
+ *   XOR Out:     0x0000
+ */
 const uint8_t CRC_ORDER = 32;
 const crc_t CRC_HIGHBIT = (crc_t) (1UL << 31);
 const crc_t CRC_POLY = (crc_t) (0x04c11db7);
