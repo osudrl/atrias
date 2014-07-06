@@ -104,7 +104,7 @@ void imu_update_inputs(uint8_t id) {
 
 	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
 	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
-	_delay_us(50);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 50 instead.
+	_delay_us(60);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 60 instead.
 	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
 
 	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
