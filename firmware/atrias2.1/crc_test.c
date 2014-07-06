@@ -1,14 +1,6 @@
 #include <stdio.h>
 #include <crc.h>
 
-void print_crc_table()
-{
-	int i;
-	for (i=0; i<20; i++) {
-		printf("CRC table entry %3d: %8x\n", i, crc_table[i]);
-	}
-}
-
 int main(void)
 {
 	crc_generate_table();

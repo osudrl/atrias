@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 typedef uint32_t crc_t;   /* KVH IMU has 32-bit CRC */
-crc_t crc_table[256];
 
 void crc_generate_table(void);
 crc_t crc_calc(uint8_t *packet, uint8_t num_bytes);

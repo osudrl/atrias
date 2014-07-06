@@ -18,6 +18,7 @@
  *
  * For other CRC configurations, refer to the URL above.
  */
+crc_t crc_table[256];
 const uint8_t CRC_ORDER = 32;
 const crc_t CRC_HIGHBIT = (crc_t) (1UL << 31);
 const crc_t CRC_POLY = (crc_t) (0x04c11db7);
@@ -69,4 +70,12 @@ uint8_t is_packet_good(crc_t my_crc, crc_t kvh_crc)
 	return (my_crc == kvh_crc);
 }
 
+void print_crc_table()
+{
+	int i;
+	printf("CRC table entries:\n");
+	for (i=0; i<256; i++) {
+		printf("%08lx\n", crc_table[i]);
+	}
+}
 
