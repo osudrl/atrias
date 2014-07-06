@@ -70,7 +70,7 @@ uint8_t is_packet_good(crc_t my_crc, crc_t kvh_crc)
 	return (my_crc == kvh_crc);
 }
 
-void print_crc_table()
+void crc_print_table()
 {
 	int i;
 	printf("CRC table entries:\n");
