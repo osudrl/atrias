@@ -181,9 +181,6 @@ bool imu_check_error(uint8_t id) {
 	}
 	last_seq = *Seq_pdo;
 
-	// Check CRC
-	// TODO(yoos)
-
 	// Complain if we're duplicating more than half of the packets.
 	if (bad_seq_counter == 100) {
 		#ifdef DEBUG_LOW || DEBUG_HIGH
@@ -191,6 +188,22 @@ bool imu_check_error(uint8_t id) {
 		#endif
 		return true;
 	}
+
+	// Check CRC
+	// TODO(yoos)
+
+	// Check that we see the expected header. Because we clear the UART buffer
+	// before triggering MSync, I can't imagine how we would ever encounter
+	// this failure mode, so if we do, something really bad must be going on,
+	// so complain.
+	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
+		#ifdef DEBUG_LOW || DEBUG_HIGH
+		printf("[Medulla IMU] Malformed packet header error.\n");
+		#endif
+		*imu_error_flags_pdo &= (1<<ERROR_FLAG_MALFORMED_HEADER);
+		return true;
+	}
+
 	return false;
 }
 
