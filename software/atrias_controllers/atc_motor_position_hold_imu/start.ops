@@ -1,0 +1,10 @@
+# Set up the top controller
+import("atc_motor_position_hold_imu")
+loadComponent("controller", "ATCMP")
+
+# Connect RTOps with this controller (so they can see each other's operations)
+connectPeers("atrias_rt", "controller")
+
+# Start components
+controller.configure()
+controller.start()
