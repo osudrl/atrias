@@ -49,7 +49,7 @@ class ImuMedulla : public Medulla {
 
 	/** @brief The PDOEntryDatas array.
 	  */
-	PDOEntryData pdoEntryDatas[MEDULLA_IMU_TX_PDO_COUNT+MEDULLA_IMU_RX_PDO_COUNT];
+	PDOEntryData pdoEntryData[MEDULLA_IMU_TX_PDO_COUNT+MEDULLA_IMU_RX_PDO_COUNT];
 
 	/**
 	 * @brief Decodes and stores the new values from the IMU.
