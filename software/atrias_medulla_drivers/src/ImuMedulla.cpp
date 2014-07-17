@@ -5,24 +5,24 @@ namespace medullaDrivers {
 
 ImuMedulla::ImuMedulla() : Medulla() {
 	// Inputs
-	pdoEntryData[0] = {1, (void**) &command};
-	pdoEntryData[1] = {2, (void**) &counter};
+	pdoEntryDatas[0] = {1, (void**) &command};
+	pdoEntryDatas[1] = {2, (void**) &counter};
 
 	// Outputs
-	pdoEntryData[2] = {1, (void**) &id};
-	pdoEntryData[3] = {1, (void**) &state};
-	pdoEntryData[4] = {1, (void**) &timingCounter};
-	pdoEntryData[5] = {1, (void**) &errorFlags};
-	pdoEntryData[6] = {4, (void**) &gyrX};
-	pdoEntryData[7] = {4, (void**) &gyrY};
-	pdoEntryData[8] = {4, (void**) &gyrZ};
-	pdoEntryData[9] = {4, (void**) &accX};
-	pdoEntryData[10] = {4, (void**) &accY};
-	pdoEntryData[11] = {4, (void**) &accZ};
-	pdoEntryData[12] = {1, (void**) &status};
-	pdoEntryData[13] = {1, (void**) &seq};
-	pdoEntryData[14] = {2, (void**) &temperature};
-	pdoEntryData[15] = {4, (void**) &crc};
+	pdoEntryDatas[2] = {1, (void**) &id};
+	pdoEntryDatas[3] = {1, (void**) &state};
+	pdoEntryDatas[4] = {1, (void**) &timingCounter};
+	pdoEntryDatas[5] = {1, (void**) &errorFlags};
+	pdoEntryDatas[6] = {4, (void**) &gyrX};
+	pdoEntryDatas[7] = {4, (void**) &gyrY};
+	pdoEntryDatas[8] = {4, (void**) &gyrZ};
+	pdoEntryDatas[9] = {4, (void**) &accX};
+	pdoEntryDatas[10] = {4, (void**) &accY};
+	pdoEntryDatas[11] = {4, (void**) &accZ};
+	pdoEntryDatas[12] = {1, (void**) &status};
+	pdoEntryDatas[13] = {1, (void**) &seq};
+	pdoEntryDatas[14] = {2, (void**) &temperature};
+	pdoEntryDatas[15] = {4, (void**) &crc};
 }
 
 PDORegData ImuMedulla::getPDORegData() {
