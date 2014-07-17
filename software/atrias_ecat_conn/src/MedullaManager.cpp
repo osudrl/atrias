@@ -77,7 +77,7 @@ void MedullaManager::initBoomMedulla(ec_slavet slave) {
 void MedullaManager::initImuMedulla(ec_slavet slave) {
 	delete(imu);
 	imu = new medullaDrivers::ImuMedulla();
-	fillInPDORegData(boom->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	fillInPDORegData(imu->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
 	imu->postOpInit();
 	log(RTT::Info) << "IMU medulla identified. ID: " <<
 		(int) imu->getID() << RTT::endlog();
