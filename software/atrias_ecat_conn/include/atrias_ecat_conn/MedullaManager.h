@@ -37,7 +37,7 @@ class MedullaManager {
 	medullaDrivers::LegMedulla*  rLegA;
 	medullaDrivers::LegMedulla*  rLegB;
 	medullaDrivers::BoomMedulla* boom;
-	medullaDrivres::ImuMedulla*  imu;
+	medullaDrivers::ImuMedulla*  imu;
 	medullaDrivers::HipMedulla*  lLegHip;
 	medullaDrivers::HipMedulla*  rLegHip;
 	
