@@ -97,7 +97,6 @@ void imu_enable_outputs(void) {}
 void imu_disable_outputs(void) {}
 
 void imu_update_inputs(uint8_t id) {
-	static uint8_t counter = 0;
 	static uint8_t last_seq = 0;
 
 	// Flush buffer.
@@ -152,7 +151,7 @@ void imu_update_inputs(uint8_t id) {
 
 	// Check that we see the expected header.
 	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
-		#ifdef DEBUG_LOW || DEBUG_HIGH
+		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
 		printf("[Medulla IMU] Malformed packet header error.\n");
 		#endif
 		*imu_error_flags_pdo &= (1<<ERROR_FLAG_MALFORMED_HEADER);
@@ -201,7 +200,7 @@ bool imu_check_error(uint8_t id) {
 	if ((*imu_error_flags_pdo >> ERROR_FLAG_DUP_PACKET) & 1) {
 		bad_seq_counter++;
 		if (bad_seq_counter == 100) {
-			#ifdef DEBUG_LOW || DEBUG_HIGH
+			#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
 			printf("[Medulla IMU] Duplicate packet error.\n");
 			#endif
 			return true;
