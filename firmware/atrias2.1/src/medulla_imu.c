@@ -97,7 +97,7 @@ void imu_enable_outputs(void) {}
 void imu_disable_outputs(void) {}
 
 void imu_update_inputs(uint8_t id) {
-	static counter = 0;
+	static uint8_t counter = 0;
 	static uint8_t last_seq = 0;
 
 	// Flush buffer.
