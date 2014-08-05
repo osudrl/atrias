@@ -84,17 +84,8 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 
 	crc_generate_table();
 	#ifdef DEBUG_HIGH
-	uint8_t i;
-	for (i=0; i<20; i++) {
-		printf("CRC table entry %02d: %08lx\n", i, crc_table[i]);
-	}
-
-	// Test CRC with packet from IMU.
-	uint8_t str[] = {0xfe,0x81,0xff,0x55,0xb6,0x06,0xd8,0x1e,0xb6,0xc4,0x94,0x0f,0x36,0xd9,0x5a,0x83,0x3c,0x61,0xad,0x86,0x3b,0xe5,0xd0,0x86,0x3f,0x7f,0xdc,0xd4,0x77,0x72,0x00,0x26};
-	uint32_t crc = 0xc0f2d540;
-	uint8_t len = 32;
-
-	printf("CRC %08lx compare result: %1x\n", crc_calc(str, len), is_packet_good(crc_calc(str, len), crc));
+	crc_debug_print_table();
+	crc_debug_check_crc();
 	#endif
 }
 
