@@ -17,9 +17,11 @@ float64 xAngleVelocity
 
 # The robot's body's pitch. 3 * pi/2 is vertical.
 float64 bodyPitch
+float64 imuPitch   # Calculated from IMU Z axis.
 
 # How fast we are pitching
 float64 bodyPitchVelocity
+float64 imuPitchVelocity
 
 # Raw encoder counts
 int32   zEncoderRaw

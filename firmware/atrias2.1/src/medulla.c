@@ -36,19 +36,34 @@ UART_USES_PORT(USARTD0)
 //ADC_USES_PORT(ADCA)
 //ADC_USES_PORT(ADCB)
 
-//#ifdef ENABLE_IMU
-//UART_USES_PORT(USARTF0)   // KVH 1750
-//#else
-ADC124_USES_PORT(USARTF0)
-//#endif
+// TODO(yoos): Shouldn't this logic depend on DIP switch config?
+#ifdef ENABLE_IMU
+UART_USES_PORT(USARTF0)   // KVH 1750
+#else
+ADC124_USES_PORT(USARTF0)   // Knee ADC
+#endif
 
 
 int main(void) {
+#ifdef ENABLE_IMU
+	// Enable external 16 MHz oscillator.
+	OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
+	               OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
+	OSC.CTRL |= OSC_XOSCEN_bm;                   /* Start XTAL */
+	while (!(OSC.STATUS & OSC_XOSCRDY_bm));      /* Wait until crystal ready */
+	OSC.PLLCTRL = OSC_PLLSRC_XOSC_gc | 0x2;      /* XTAL->PLL, 2x multiplier */
+	OSC.CTRL |= OSC_PLLEN_bm;                    /* Start PLL */
+	while (!(OSC.STATUS & OSC_PLLRDY_bm));       /* Wait until PLL ready */
+	CCP = CCP_IOREG_gc;                          /* Allow changing CLK.CTRL */
+	CLK.CTRL = CLK_SCLKSEL_PLL_gc;               /* Use PLL output as clock */
+	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_RED;
+#else
 	// Initialize the clock to 32 Mhz oscillator
 	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
 		PORTC.DIRSET = 1;
 		PORTC.OUTSET = 1;
 	}
+#endif
 
 	// Configure and enable all the interrupts
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
@@ -491,29 +506,63 @@ void amplifier_debug() {
 }
 
 void imu_debug() {
-	uint8_t computer_port_tx[32];
-	uint8_t computer_port_rx[32];
-	uint8_t imu_port_tx[32];
-	uint8_t imu_port_rx[32];
-	uint8_t data_buffer[32];
+	uint8_t bts = 120;   // Number of bytes to send with uart_tx_data. Must divide evenly into UART buffer size. Otherwise, weird UART bug. Actual number here is irrelevant.
+	uint8_t csize = bts*2;
+	uint8_t isize = bts*2;
+	uint8_t computer_port_tx[csize];
+	uint8_t computer_port_rx[csize];
+	uint8_t imu_port_tx[isize];
+	uint8_t imu_port_rx[isize];
+	uint8_t data_buffer[isize];
 	uint8_t data_size;
+	uint8_t print_buffer[csize];
 
-	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, 32, computer_port_rx, 32);
+	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, csize, computer_port_rx, csize);
 	uart_connect_port(&computer_port,false);
 
-	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, 32, imu_port_rx, 32);
+	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, isize, imu_port_rx, isize);
 	uart_connect_port(&imu_port,false);
 
+	io_pin_t msync_pin = io_init_pin(&PORTF, 1);
+	PORTF.DIR = PORTF.DIR | (1<<1);
+
+	//data_size = 1;   // Anything greater, and the Medulla mashes bytes. What gives?
+	//memcpy(data_buffer, "UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_UUU_", data_size);
+
+	// Flush buffer.
+	uart_rx_data(&imu_port, data_buffer, uart_received_bytes(&imu_port));
+
+	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_BLUE;
 	while (1) {
-		// Get the data from the computer and send to imu
-		data_size = uart_rx_data(&computer_port,data_buffer,32);
-		uart_tx_data(&imu_port,data_buffer,data_size);
+		uint8_t i;
 
-		// Get data from imu and send it to the computer
-		data_size = uart_rx_data(&imu_port,data_buffer,32);
-		uart_tx_data(&computer_port,data_buffer,data_size);
+		// Trigger MSync
+		PORTF.OUT |= (1<<1);
+		_delay_us(30);
+		PORTF.OUT &= ~(1<<1);
 
+		// To IMU (I wish I could do this, but enabling it here makes RX from IMU not work)
+		//data_size = uart_rx_data(&computer_port,data_buffer,32);   // 32 is arbitrary
+		//uart_tx_data(&imu_port,data_buffer,bts);
+
+		// Clear buffers.
+		for (i=0; i<bts; i++) {
+			print_buffer[i] = 0;
+		}
+		while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
+
+		// Print hexdump
+		sprintf(print_buffer, "%3d: ", data_buffer[29]);
+		for (i=0; i<36; i++) {
+			sprintf(print_buffer+10+2*i, "%02x", data_buffer[i]);
+		}
+		print_buffer[bts-2] = '\r';
+		print_buffer[bts-1] = '\n';
+
+		uart_tx_data(&computer_port,print_buffer,bts);
+
+		_delay_ms(100);
 	}
-
 }
 

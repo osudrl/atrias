@@ -15,12 +15,17 @@
 #include "io_pin.h"
 #include "uart.h"
 
-#define KVH_TX_BUFFER_LENGTH 100
-#define KVH_RX_BUFFER_LENGTH 100
+#define ERROR_FLAG_KVH_SEQ 0
+#define ERROR_FLAG_KVH_CRC 1
+#define ERROR_FLAG_KVH_HEADER 2
+//#define ERROR_FLAG_UNDEFINED 3
+//#define ERROR_FLAG_UNDEFINED 4
+//#define ERROR_FLAG_UNDEFINED 5
+//#define ERROR_FLAG_UNDEFINED 6
+//#define ERROR_FLAG_UNDEFINED 7
 
-#ifndef ENABLE_ECAT
-uint8_t dummy_pdo[36];
-#endif // ENABLE_ECAT
+#define KVH_TX_BUFFER_LENGTH 250
+#define KVH_RX_BUFFER_LENGTH 250
 
 // KVH stuff. TODO: Move this to own header file.
 uint8_t imu_tx_buffer[KVH_TX_BUFFER_LENGTH];

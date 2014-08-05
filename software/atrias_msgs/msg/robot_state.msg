@@ -19,6 +19,7 @@ float64 currentPositive
 float64 currentNegative
 
 robot_state_location position
+robot_state_imu imu
 
 uint8   boomMedullaState
 float64 boomLogicVoltage

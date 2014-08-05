@@ -1,4 +1,5 @@
 #include <medulla_imu.h>
+#include <crc.h>
 
 //--- Define interrupt functions ---//
 
@@ -22,11 +23,15 @@ uint32_t *ZAccel_pdo;
 uint8_t  *Status_pdo;
 uint8_t  *Seq_pdo;
 int16_t  *Temp_pdo;
+uint32_t  *CRC_pdo;
 
-ecat_pdo_entry_t imu_rx_pdos[] = {{((void**)(&imu_command_state_pdo)),1},
-	{((void**)(&imu_counter_pdo)),2}};
+ecat_pdo_entry_t imu_rx_pdos[] = {
+	{((void**)(&imu_command_state_pdo)),1},
+	{((void**)(&imu_counter_pdo)),2}
+};
 
-ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
+ecat_pdo_entry_t imu_tx_pdos[] = {
+	{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&imu_current_state_pdo)),1},
 	{((void**)(&imu_medulla_counter_pdo)),1},
 	{((void**)(&imu_error_flags_pdo)),1},
@@ -38,7 +43,9 @@ ecat_pdo_entry_t imu_tx_pdos[] = {{((void**)(&imu_medulla_id_pdo)),1},
 	{((void**)(&ZAccel_pdo)),4},
 	{((void**)(&Status_pdo)),1},
 	{((void**)(&Seq_pdo)),1},
-	{((void**)(&Temp_pdo)),2}};
+	{((void**)(&Temp_pdo)),2},
+	{((void**)(&CRC_pdo)),4}
+};
 
 void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 	*imu_error_flags_pdo = 0;
@@ -46,8 +53,6 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
 	#endif
-
-	//#ifdef ENABLE_ECAT
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing sync managers\n");
@@ -59,25 +64,6 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#endif // DEBUG_HIGH
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
 
-	//#else
-
-	// TODO: I want to enable the below debug printf, but the Medulla is silly
-	// and will freeze up if I print too much.
-	//#ifdef DEBUG_HIGH
-	//printf("[Medulla IMU] Initilizing dummy PDO entries\n");
-	//#endif // DEBUG_HIGH
-	//XAngDelta_pdo  = dummy_pdo+4;
-	//YAngDelta_pdo = dummy_pdo+8;
-	//ZAngDelta_pdo = dummy_pdo+12;
-	//XAccel_pdo = dummy_pdo+16;
-	//YAccel_pdo = dummy_pdo+20;
-	//ZAccel_pdo = dummy_pdo+24;
-	//Status_pdo = dummy_pdo+28;
-	//Seq_pdo = dummy_pdo+29;
-	//Temp_pdo = dummy_pdo+30;
-
-	//#endif // ENABLE_ECAT
-
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initilizing UART\n");
 	#endif
@@ -88,14 +74,19 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla IMU] Initilizing Master Sync pin\n");
 	#endif
 	msync_pin = io_init_pin(&PORTF, 1);
-	//io_set_direction(msync_pin, io_output);
-	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Why doesn't the above (commented) line work?
+	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction().
 
 	*master_watchdog = imu_counter_pdo;
 	*packet_counter = imu_medulla_counter_pdo;
 	*imu_medulla_id_pdo = id;
 	*commanded_state = imu_command_state_pdo;
 	*current_state = imu_current_state_pdo;
+
+	crc_generate_table();
+	#ifdef DEBUG_HIGH
+	crc_debug_print_table();
+	crc_debug_check_crc();
+	#endif
 }
 
 void imu_enable_outputs(void) {}
@@ -103,13 +94,24 @@ void imu_enable_outputs(void) {}
 void imu_disable_outputs(void) {}
 
 void imu_update_inputs(uint8_t id) {
-	// Trigger Master Sync
-	//io_set_output(msync_pin, io_high);
-	PORTF.OUT = PORTF.OUT | (1<<1);   // TODO: Why doen't the above (commented) line work?
-	_delay_us(30);   // This should be at least 30 us.
-	io_set_output(msync_pin, io_low);
+	static uint8_t last_seq = 0;
 
-	while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+	// Flush buffer.
+	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+
+	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
+	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
+	_delay_us(60);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 60 instead.
+	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
+
+	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
+	// right way to do this, but this doesn't work right now.
+	//while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+
+	// Instead, we can just wait for the worst case delay between TOV_Out
+	// assertion and the beginning of IMU packet transmission (around 80 us).
+	// Not waiting here long enough will cause packet corruption.
+	_delay_us(60);
 	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
 
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
@@ -122,13 +124,53 @@ void imu_update_inputs(uint8_t id) {
 	*Status_pdo = imu_packet[28];   // Status
 	*Seq_pdo = imu_packet[29];   // Seq
 	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
+	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
 
-	//float arst = 12.0;
-	//memcpy(ZAngDelta_pdo, &arst, sizeof(float));
+	// Check for duplicate and skipped packets by comparing sequence numbers.
+	if (*Seq_pdo != ((last_seq+1) % 128)) {
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_SEQ);
+	}
+	else {
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_SEQ);
+	}
+	last_seq = *Seq_pdo;
 
+	// Check CRC.
+	if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_CRC);
+	}
+	else {
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_CRC);
+	}
 
+	// Check that we see the expected header.
+	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_HEADER);
+	}
+	else {
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_HEADER);
+	}
+
+	// Realtime-killing debug
 	#ifdef DEBUG_HIGH
-	//printf("[Medulla IMU] Seq: %u\n", *Seq_pdo);
+	// NOTE this will corrupt IMU packets at 1 kHz! You know, real-time and
+	// yadda yadda.
+	static uint8_t counter = 0;
+	if (counter == -1) {
+		printf("[Medulla IMU] Seq: %3u   Gyro: %08lx %08lx %08lx   Acc: %08lx %08lx %08lx  Status: %2x  Temp: %2d  CRC: %08lx\n",
+				*Seq_pdo,
+				*XAngDelta_pdo,
+				*YAngDelta_pdo,
+				*ZAngDelta_pdo,
+				*XAccel_pdo,
+				*YAccel_pdo,
+				*ZAccel_pdo,
+				*Status_pdo,
+				*Temp_pdo,
+				*CRC_pdo
+				);
+	}
+	counter = (counter+1) % 10;
 	#endif // DEBUG_HIGH
 }
 
@@ -146,6 +188,46 @@ inline void imu_estop(void) {
 }
 
 bool imu_check_error(uint8_t id) {
+	static uint8_t bad_seq_counter = 0;
+
+	// Count duplicate packets and complain if we're duplicating more than
+	// half.
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_SEQ) & 1) {
+		bad_seq_counter++;
+		#ifdef DEBUG_HIGH
+		printf(".");
+		#endif
+		if (bad_seq_counter == 100) {
+			#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
+			printf("[Medulla IMU] Unexpected sequence number.\n");
+			#endif
+			return true;
+		}
+	}
+	else if (bad_seq_counter > 0) {
+		bad_seq_counter--;
+	}
+
+	// On bad CRC, just set the error flag and don't complain here, as it will
+	// very likely coincide with a bad sequence number, for which we already
+	// have a counter. Print debug if level is high.
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_CRC) & 1) {
+		#if defined(DEBUG_HIGH)
+		printf("[Medulla IMU] Bad CRC.\n");
+		#endif
+	}
+
+	// Check that we see the expected header. Because we clear the UART buffer
+	// before triggering MSync, I can't imagine how we would ever encounter
+	// this failure mode, so if we do, something really bad must be going on,
+	// so complain.
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_HEADER) & 1) {
+		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
+		printf("[Medulla IMU] Malformed packet header.\n");
+		#endif
+		return true;
+	}
+
 	return false;
 }
 
@@ -157,6 +239,7 @@ void imu_reset_error(void) {
 	*imu_error_flags_pdo = 0;
 }
 
+/* NOTE this obviously assumes 4-byte block */
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data) {
 	*(((uint8_t*)data)+3) = *(data_byte++);
 	*(((uint8_t*)data)+2) = *(data_byte++);

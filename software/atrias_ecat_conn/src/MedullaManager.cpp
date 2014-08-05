@@ -22,6 +22,7 @@ MedullaManager::MedullaManager() {
 	rLegA   = NULL;
 	rLegB   = NULL;
 	boom    = NULL;
+	imu     = NULL;
 	lLegHip = NULL;
 	rLegHip = NULL;
 }
@@ -32,6 +33,7 @@ MedullaManager::~MedullaManager() {
 	delete(rLegA);
 	delete(rLegB);
 	delete(boom);
+	delete(imu);
 	delete(lLegHip);
 	delete(rLegHip);
 }
@@ -70,6 +72,15 @@ void MedullaManager::initBoomMedulla(ec_slavet slave) {
 	boom->postOpInit();
 	log(RTT::Info) << "Boom medulla identified. ID: " <<
 		(int) boom->getID() << RTT::endlog();
+}
+
+void MedullaManager::initImuMedulla(ec_slavet slave) {
+	delete(imu);
+	imu = new medullaDrivers::ImuMedulla();
+	fillInPDORegData(imu->getPDORegData(), (uint8_t*) slave.outputs, (uint8_t*) slave.inputs);
+	imu->postOpInit();
+	log(RTT::Info) << "IMU medulla identified. ID: " <<
+		(int) imu->getID() << RTT::endlog();
 }
 
 void MedullaManager::initHipMedulla(ec_slavet slave) {
@@ -172,6 +183,11 @@ void MedullaManager::medullasInit(ec_slavet slaves[], int slavecount) {
 				initBoomMedulla(slaves[i]);
 				break;
 			}
+
+			case MEDULLA_IMU_PRODUCT_CODE: {
+				initImuMedulla(slaves[i]);
+				break;
+			}
 			
 			case MEDULLA_HIP_PRODUCT_CODE: {
 				initHipMedulla(slaves[i]);
@@ -209,6 +225,8 @@ void MedullaManager::processReceiveData() {
 		rLegB->processReceiveData(robotState);
 	if (boom)
 		boom->processReceiveData(robotState);
+	if (imu)
+		imu->processReceiveData(robotState);
 	if (lLegHip)
 		lLegHip->processReceiveData(robotState);
 	if (rLegHip)
@@ -226,6 +244,8 @@ void MedullaManager::processTransmitData(atrias_msgs::controller_output& control
 		rLegB->processTransmitData(controller_output);
 	if (boom)
 		boom->processTransmitData(controller_output);
+	if (imu)
+		imu->processTransmitData(controller_output);
 	if (lLegHip)
 		lLegHip->processTransmitData(controller_output);
 	if (rLegHip)

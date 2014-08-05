@@ -21,6 +21,7 @@ extern "C" {
 #include <atrias_msgs/controller_output.h>
 #include <atrias_shared/globals.h>
 #include <atrias_medulla_drivers/BoomMedulla.h>
+#include <atrias_medulla_drivers/ImuMedulla.h>
 #include <atrias_medulla_drivers/LegMedulla.h>
 #include <atrias_medulla_drivers/HipMedulla.h>
 #include <atrias_medulla_drivers/Medulla.h>
@@ -36,6 +37,7 @@ class MedullaManager {
 	medullaDrivers::LegMedulla*  rLegA;
 	medullaDrivers::LegMedulla*  rLegB;
 	medullaDrivers::BoomMedulla* boom;
+	medullaDrivers::ImuMedulla*  imu;
 	medullaDrivers::HipMedulla*  lLegHip;
 	medullaDrivers::HipMedulla*  rLegHip;
 	
@@ -57,6 +59,11 @@ class MedullaManager {
 	  * @param slave The ECat slave for this Medulla.
 	  */
 	void initBoomMedulla(ec_slavet slave);
+	
+	/** @brief Initialize the IMU medulla.
+	  * @param slave The ECat slave for this Medulla.
+	  */
+	void initImuMedulla(ec_slavet slave);
 	
 	/** @brief Initializes a hip medulla.
 	  * @param slave The ECat slave for this hip.
