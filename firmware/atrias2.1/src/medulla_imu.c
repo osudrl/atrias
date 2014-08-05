@@ -148,9 +148,6 @@ void imu_update_inputs(uint8_t id) {
 
 	// Check that we see the expected header.
 	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
-		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
-		printf("[Medulla IMU] Malformed packet header error.\n");
-		#endif
 		*imu_error_flags_pdo |= (1<<ERROR_FLAG_MALFORMED_HEADER);
 	}
 	else {
@@ -222,6 +219,9 @@ bool imu_check_error(uint8_t id) {
 	// this failure mode, so if we do, something really bad must be going on,
 	// so complain.
 	if ((*imu_error_flags_pdo >> ERROR_FLAG_MALFORMED_HEADER) & 1) {
+		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
+		printf("[Medulla IMU] Malformed packet header error.\n");
+		#endif
 		return true;
 	}
 
