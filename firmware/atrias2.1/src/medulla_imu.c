@@ -126,32 +126,29 @@ void imu_update_inputs(uint8_t id) {
 	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
 	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
 
-	// Check for duplicate packet by comparing sequence number.
-	if (*Seq_pdo == last_seq) {
-		#ifdef DEBUG_HIGH
-		printf(".");
-		#endif
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_DUP_PACKET);
+	// Check for duplicate and skipped packets by comparing sequence numbers.
+	if (*Seq_pdo != ((last_seq+1) % 128)) {
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_SEQ);
 	}
 	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_DUP_PACKET);
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_SEQ);
 	}
 	last_seq = *Seq_pdo;
 
 	// Check CRC.
 	if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_BAD_CRC);
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_CRC);
 	}
 	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_BAD_CRC);
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_CRC);
 	}
 
 	// Check that we see the expected header.
 	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_MALFORMED_HEADER);
+		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_HEADER);
 	}
 	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_MALFORMED_HEADER);
+		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_HEADER);
 	}
 
 	// Realtime-killing debug
@@ -195,8 +192,11 @@ bool imu_check_error(uint8_t id) {
 
 	// Count duplicate packets and complain if we're duplicating more than
 	// half.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_DUP_PACKET) & 1) {
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_SEQ) & 1) {
 		bad_seq_counter++;
+		#ifdef DEBUG_HIGH
+		printf(".");
+		#endif
 		if (bad_seq_counter == 100) {
 			#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
 			printf("[Medulla IMU] Duplicate packet error.\n");
@@ -210,15 +210,18 @@ bool imu_check_error(uint8_t id) {
 
 	// On bad CRC, just set the error flag and don't complain here, as it will
 	// very likely coincide with a bad sequence number, for which we already
-	// have a counter.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_BAD_CRC) & 1) {
+	// have a counter. Print debug if level is high.
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_CRC) & 1) {
+		#if defined(DEBUG_HIGH)
+		printf("[Medulla IMU] Bad CRC.\n");
+		#endif
 	}
 
 	// Check that we see the expected header. Because we clear the UART buffer
 	// before triggering MSync, I can't imagine how we would ever encounter
 	// this failure mode, so if we do, something really bad must be going on,
 	// so complain.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_MALFORMED_HEADER) & 1) {
+	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_HEADER) & 1) {
 		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
 		printf("[Medulla IMU] Malformed packet header error.\n");
 		#endif

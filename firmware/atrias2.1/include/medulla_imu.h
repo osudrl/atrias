@@ -15,9 +15,9 @@
 #include "io_pin.h"
 #include "uart.h"
 
-#define ERROR_FLAG_DUP_PACKET 0
-#define ERROR_FLAG_BAD_CRC 1
-#define ERROR_FLAG_MALFORMED_HEADER 2
+#define ERROR_FLAG_KVH_SEQ 0
+#define ERROR_FLAG_KVH_CRC 1
+#define ERROR_FLAG_KVH_HEADER 2
 //#define ERROR_FLAG_UNDEFINED 3
 //#define ERROR_FLAG_UNDEFINED 4
 //#define ERROR_FLAG_UNDEFINED 5
