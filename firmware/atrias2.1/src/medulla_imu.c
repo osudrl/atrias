@@ -199,7 +199,7 @@ bool imu_check_error(uint8_t id) {
 		#endif
 		if (bad_seq_counter == 100) {
 			#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
-			printf("[Medulla IMU] Duplicate packet error.\n");
+			printf("[Medulla IMU] Unexpected sequence number.\n");
 			#endif
 			return true;
 		}
@@ -223,7 +223,7 @@ bool imu_check_error(uint8_t id) {
 	// so complain.
 	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_HEADER) & 1) {
 		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
-		printf("[Medulla IMU] Malformed packet header error.\n");
+		printf("[Medulla IMU] Malformed packet header.\n");
 		#endif
 		return true;
 	}
