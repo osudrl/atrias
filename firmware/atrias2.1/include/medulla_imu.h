@@ -34,6 +34,7 @@ uint8_t imu_packet[36];
 uart_port_t imu_port;
 io_pin_t msync_pin;
 
+void imu_clear_buffer(void);
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data);
 
 // Medulla stuff.

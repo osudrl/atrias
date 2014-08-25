@@ -239,6 +239,10 @@ void imu_reset_error(void) {
 	*imu_error_flags_pdo = 0;
 }
 
+void imu_clear_buffer(void) {
+	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+}
+
 /* NOTE this obviously assumes 4-byte block */
 void populate_byte_to_data(const uint8_t* data_byte, uint32_t* data) {
 	*(((uint8_t*)data)+3) = *(data_byte++);

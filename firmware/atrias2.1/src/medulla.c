@@ -447,6 +447,13 @@ int main(void) {
 
 
 		}
+
+		// Keep IMU buffer clear. The IMU in external MSync mode will send data
+		// every 2s if the MSync pin is left untriggered. Maybe there's
+		// a better place to put this; we didn't think too hard about it.
+		else if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
+			imu_clear_buffer();
+		}
 		
 		// We should only feed the watchdog when the DC is not running if we are in idle
 		if (*current_state == medulla_state_idle)
