@@ -67,6 +67,7 @@ uint8_t hip_imu_pace_flag;
 uint8_t hip_damping_cnt;
 
 // variables for filtering thermistor and voltage values
+uint8_t limit_switch_counter;
 uint8_t hip_thermistor_counter;
 uint16_t hip_motor_voltage_counter;
 uint16_t hip_logic_voltage_counter;
@@ -99,6 +100,7 @@ void hip_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	printf("[Medulla Hip] Initializing limit switches\n");
 	#endif
 	hip_limit_sw_port = limit_sw_init_port(&PORTK,0,&TCF0,hip_estop);
+	limit_switch_counter = 0;
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Hip] Initializing ADC ports\n");
@@ -177,7 +179,15 @@ void hip_update_inputs(uint8_t id) {
 	renishaw_ssi_encoder_start_reading(&hip_encoder);
 
 	// while we are waiting for things to complete, get the limit switch state
-	*hip_limit_switch_pdo = limit_sw_get_port(&hip_limit_sw_port);
+	if (limit_sw_get_port(&limit_sw_port)) {
+		limit_switch_counter ++;
+	}
+	else if (limit_switch_counter > 0)
+		limit_switch_counter --;
+
+	// Only report debounced data
+	if (limit_switch_counter > 50)
+		*hip_limit_switch_pdo = limit_sw_get_port(&hip_limit_sw_port);
 
 	// now wait for things to complete
 	while (!adc_read_complete(&adc_port_a));

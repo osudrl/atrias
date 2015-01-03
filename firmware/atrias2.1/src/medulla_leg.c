@@ -207,8 +207,15 @@ void leg_update_inputs(uint8_t id) {
 	biss_encoder_start_reading(&leg_encoder);
 
 	// while we are waiting for things to complete, get the limit switch state
-	*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
+	if (limit_sw_get_port(&limit_sw_port)) {
+		limit_switch_counter ++;
+	}
+	else if (limit_switch_counter > 0)
+		limit_switch_counter --;
 
+	// Only report debounced data
+	if (limit_switch_counter > 50)
+		*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
 
 	// now wait for things to complete
 	while (!adc_read_complete(&adc_port_a));
@@ -316,12 +323,6 @@ void leg_wait_loop() {
 
 bool leg_check_error(uint8_t id) {
 	#ifdef ERROR_CHECK_LIMIT_SWITCH
-	if (limit_sw_get_port(&limit_sw_port)) {
-		limit_switch_counter ++;
-	}
-	else if (limit_switch_counter > 0)
-		limit_switch_counter --;
-	
 	if (limit_switch_counter > 50) {
 		#if defined DEBUG_LOW || DEBUG_HIGH
 		printf("[Medulla Leg] Limit switch error: %d\n",limit_sw_get_port(&limit_sw_port));
