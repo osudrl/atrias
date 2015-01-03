@@ -51,27 +51,27 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	*imu_error_flags_pdo = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing IMU with ID: %04x\n",id);
+	printf("[Medulla IMU] Initializing IMU with ID: %04x\n",id);
 	#endif
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing sync managers\n");
+	printf("[Medulla IMU] Initializing sync managers\n");
 	#endif // DEBUG_HIGH
 	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_IMU_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_IMU_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing PDO entries\n");
+	printf("[Medulla IMU] Initializing PDO entries\n");
 	#endif // DEBUG_HIGH
 	ecat_configure_pdo_entries(ecat_slave, imu_rx_pdos, MEDULLA_IMU_RX_PDO_COUNT, imu_tx_pdos, MEDULLA_IMU_TX_PDO_COUNT);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing UART\n");
+	printf("[Medulla IMU] Initializing UART\n");
 	#endif
 	imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH);
 	uart_connect_port(&imu_port, false);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla IMU] Initilizing Master Sync pin\n");
+	printf("[Medulla IMU] Initializing Master Sync pin\n");
 	#endif
 	msync_pin = io_init_pin(&PORTF, 1);
 	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction().

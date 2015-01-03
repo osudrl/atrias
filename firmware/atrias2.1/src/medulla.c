@@ -99,24 +99,24 @@ int main(void) {
 		uart_connect_port(&debug_port, true);
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla] Initilizing Medulla\n");
+	printf("[Medulla] Initializing Medulla\n");
 	#endif
 
-	// Initilizing EStop
+	// Initializing EStop
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing E-Stop\n");
+	printf("[Medulla] Initializing E-Stop\n");
 	#endif
 	estop_port = estop_init_port(io_init_pin(&PORTJ,6),io_init_pin(&PORTJ,7),&TCE0,main_estop);
 
-	// Initilizing timestamp counter
+	// Initializing timestamp counter
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing timestamp counter\n");
+	printf("[Medulla] Initializing timestamp counter\n");
 	#endif
 	TIMESTAMP_COUNTER.CTRLA = TC_CLKSEL_DIV2_gc;
 
 	// Initialize the EtherCAT
 	#ifdef DEBUG_HIGH
-	printf("[Medulla] Initilizing EtherCAT\n");
+	printf("[Medulla] Initializing EtherCAT\n");
 	#endif
 	ecat_port = ecat_init_slave(&PORTE,&SPIE,io_init_pin(&PORTE,0),io_init_pin(&PORTE,1));
 	// set the the IRQ pin so it sets the IRQ flags on the falling edge so we can check that for the DC clock
@@ -230,7 +230,7 @@ int main(void) {
 	// and enable the estop initialize the estop
 	estop_enable_port(&estop_port);
 
-	#if defined DEUBG_LOW || defined DEBUG_HIGH
+	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla] Starting state machine\n");
 	printf("[State Machine] Entering state: Idle\n");
 	#endif
@@ -244,7 +244,7 @@ int main(void) {
 		if (PORTE.INTFLAGS & PORT_INT0IF_bm) {
 			TIMESTAMP_COUNTER.CNT = 0; // First thing after finding a falling clock edge, clear the timestamp counter.
 			PORTE.INTFLAGS = PORT_INT0IF_bm; // Now that we noticed DC clock, clear the interrupt flag
-			// This is the signal to read all the sensors and run the state mechine
+			// This is the signal to read all the sensors and run the state machine
 			// Update the inputs
 			update_inputs(medulla_id);
 
@@ -272,7 +272,7 @@ int main(void) {
 
 				if (*commanded_state == medulla_state_run) {
 					*current_state = medulla_state_init;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					printf("[State Machine] Entering state: Init\n");
 					#endif
 				}
@@ -293,7 +293,7 @@ int main(void) {
 						printf("[Medulla] E-Stop pressed\n");
 					*current_state = medulla_state_error;
 					estop_timeout_counter = 0;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					printf("[State Machine] Entering state: Error\n");
 					#endif
 				}
@@ -301,7 +301,7 @@ int main(void) {
 					// The robot is in a fit state to enter run, arm the robot
 					enable_outputs();
 					*current_state = medulla_state_run;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					printf("[State Machine] Entering state: Run\n");
 					#endif
 					continue;
@@ -359,7 +359,7 @@ int main(void) {
 					continue;
 				}
 
-				#if defined DEUBG_LOW || defined DEBUG_HIGH
+				#if defined DEBUG_LOW || defined DEBUG_HIGH
 				if (*current_state == medulla_state_stop)
 					printf("[State Machine] Entering state: Stop\n");
 				if (*current_state == medulla_state_halt)
@@ -377,7 +377,7 @@ int main(void) {
 				// So we disable the outputs and return to idle
 				disable_outputs();
 				*current_state = medulla_state_idle;
-				#if defined DEUBG_LOW || defined DEBUG_HIGH
+				#if defined DEBUG_LOW || defined DEBUG_HIGH
 				printf("[State Machine] Entering state: Idle\n");
 				#endif
 				continue;
@@ -391,7 +391,7 @@ int main(void) {
 					*current_state = medulla_state_error;
 					disable_outputs();
 					estop_timeout_counter = 0;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					printf("[State Machine] Entering state: Error\n");
 					#endif
 
@@ -404,7 +404,7 @@ int main(void) {
 						disable_outputs();
 						estop_timeout_counter = 0;
 					}
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					if (*current_state == medulla_state_error)
 						printf("[State Machine] Entering state: Error\n");
 					#endif
@@ -423,7 +423,7 @@ int main(void) {
 				reset_error();
 				master_watchdog_errors = 0;
 				*current_state = medulla_state_idle;
-				#if defined DEUBG_LOW || defined DEBUG_HIGH
+				#if defined DEBUG_LOW || defined DEBUG_HIGH
 				printf("[State Machine] Entering state: Idle\n");
 				#endif
 				continue;
@@ -439,7 +439,7 @@ int main(void) {
 				// If the commanded state is reset and the reset timeout has passed
 				if ((*commanded_state == medulla_state_reset) && (estop_timeout_counter > ESTOP_TIMEOUT_LENGTH)) {
 					*current_state = medulla_state_reset;
-					#if defined DEUBG_LOW || defined DEBUG_HIGH
+					#if defined DEBUG_LOW || defined DEBUG_HIGH
 					printf("[State Machine] Entering state: Reset\n");
 					#endif
 				}

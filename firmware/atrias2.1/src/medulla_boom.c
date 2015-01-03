@@ -54,46 +54,46 @@ void boom_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer
 	boom_damping_cnt = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing boom with ID: %04x\n",id);
+	printf("[Medulla Boom] Initializing boom with ID: %04x\n",id);
 	#endif
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing sync managers\n");
+	printf("[Medulla Boom] Initializing sync managers\n");
 	#endif
 	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_BOOM_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_BOOM_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing PDO entries\n");
+	printf("[Medulla Boom] Initializing PDO entries\n");
 	#endif
 	ecat_configure_pdo_entries(ecat_slave, boom_rx_pdos, MEDULLA_BOOM_RX_PDO_COUNT, boom_tx_pdos, MEDULLA_BOOM_TX_PDO_COUNT); 
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing ADC port\n");
+	printf("[Medulla Boom] Initializing ADC port\n");
 	#endif
 	adc_port_b = adc_init_port(&ADCB);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing voltage monitoring pins\n");
+	printf("[Medulla Boom] Initializing voltage monitoring pins\n");
 	#endif
 	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing X encoder\n");
+	printf("[Medulla Boom] Initializing X encoder\n");
 	#endif
 	x_encoder = hengstler_ssi_encoder_init(&PORTC,&SPIC,timestamp_timer,x_encoder_pdo,x_encoder_timestamp_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing pitch encoder\n");
+	printf("[Medulla Boom] Initializing pitch encoder\n");
 	#endif
 	pitch_encoder = hengstler_ssi_encoder_init(&PORTD,&SPID,timestamp_timer,pitch_encoder_pdo,pitch_encoder_timestamp_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing Z encoder\n");
+	printf("[Medulla Boom] Initializing Z encoder\n");
 	#endif
 	z_encoder = hengstler_ssi_encoder_init(&PORTF,&SPIF,timestamp_timer,z_encoder_pdo,z_encoder_timestamp_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Boom] Initilizing force plate sync output");
+	printf("[Medulla Boom] Initializing force plate sync output");
 	#endif
 	sync_pin = io_init_pin(&PORTB,0);
 	io_set_direction(sync_pin, io_input);

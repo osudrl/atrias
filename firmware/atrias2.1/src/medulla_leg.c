@@ -94,21 +94,21 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing leg with ID: %04x\n",id);
+	printf("[Medulla Leg] Initializing leg with ID: %04x\n",id);
 	#endif
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing sync managers\n");
+	printf("[Medulla Leg] Initializing sync managers\n");
 	#endif
 	ecat_init_sync_managers(ecat_slave, rx_sm_buffer, MEDULLA_LEG_OUTPUTS_SIZE, 0x1000, tx_sm_buffer, MEDULLA_LEG_INPUTS_SIZE, 0x2000);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing PDO entries\n");
+	printf("[Medulla Leg] Initializing PDO entries\n");
 	#endif
 	ecat_configure_pdo_entries(ecat_slave, leg_rx_pdos, MEDULLA_LEG_RX_PDO_COUNT, leg_tx_pdos, MEDULLA_LEG_TX_PDO_COUNT-5); 
 
-	#ifdef DEUBG_HIGH
-	printf("[Medulla Leg] Initilizing limit switches\n");
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Leg] Initializing limit switches\n");
 	#endif
 	switch (id) {
 		case MEDULLA_LEFT_LEG_A_ID: limit_sw_port = limit_sw_init_port(&PORTK,MEDULLA_LLEG_ASIDE_LSW_MASK,&TCF0,leg_estop); break;
@@ -119,13 +119,13 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	limit_switch_counter = 0;
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing ADC ports\n");
+	printf("[Medulla Leg] Initializing ADC ports\n");
 	#endif
 	adc_port_a = adc_init_port(&ADCA);
 	adc_port_b = adc_init_port(&ADCB);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing Thermistor ADC pins\n");
+	printf("[Medulla Leg] Initializing Thermistor ADC pins\n");
 	#endif
 	adc_init_pin(&adc_port_a,1,thermistor_pdo+0);
 	adc_init_pin(&adc_port_a,2,thermistor_pdo+1);
@@ -135,33 +135,33 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	adc_init_pin(&adc_port_a,6,thermistor_pdo+5);
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing voltage monitoring pins\n");
+	printf("[Medulla Leg] Initializing voltage monitoring pins\n");
 	#endif
 	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
 	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing knee ADC.\n");
+	printf("[Medulla Leg] Initializing knee ADC.\n");
 	#endif
 	knee_adc = adc124_init(&PORTF,&USARTF0,io_init_pin(&PORTD,4),toe_sensor_pdo,knee_force1_pdo,knee_force2_pdo,&temp_adc_val);
 	
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing motor encoder\n");
+	printf("[Medulla Leg] Initializing motor encoder\n");
 	#endif
 	motor_encoder = biss_encoder_init(&PORTC,&SPIC,timestamp_timer,32,motor_encoder_pdo,motor_encoder_timestamp_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing leg encoder\n");
+	printf("[Medulla Leg] Initializing leg encoder\n");
 	#endif
 	leg_encoder = biss_encoder_init(&PORTD,&SPID,timestamp_timer,32,leg_encoder_pdo,leg_encoder_timestamp_pdo);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing incremental encoder\n");
+	printf("[Medulla Leg] Initializing incremental encoder\n");
 	#endif
 	inc_encoder = quadrature_encoder_init(io_init_pin(&PORTD,0),io_init_pin(&PORTD,5),false,&TCF1,16384);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initilizing amplifiers\n");
+	printf("[Medulla Leg] Initializing amplifiers\n");
 	#endif
 	initialize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
