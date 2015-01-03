@@ -64,11 +64,8 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
 limit_sw_port_t limit_sw_port;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
-#ifdef ENABLE_THERMISTORS
 adc_port_t adc_port_a, adc_port_b;
-#else
 adc124_t knee_adc;
-#endif
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
 uint16_t temp_adc_val;
@@ -121,8 +118,6 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	}
 	limit_switch_counter = 0;
 	
-	#ifdef ENABLE_THERMISTORS
-	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing ADC ports\n");
 	#endif
@@ -145,14 +140,10 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	adc_init_pin(&adc_port_b,6,logic_voltage_pdo);
 	adc_init_pin(&adc_port_b,7,motor_voltage_pdo);
 	
-	#endif
-	
-	#ifndef ENABLE_THERMISTORS
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing knee ADC.\n");
 	#endif
 	knee_adc = adc124_init(&PORTF,&USARTF0,io_init_pin(&PORTD,4),toe_sensor_pdo,knee_force1_pdo,knee_force2_pdo,&temp_adc_val);
-	#endif
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initilizing motor encoder\n");
@@ -174,14 +165,12 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#endif
 	initialize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
-	#ifdef ENABLE_THERMISTORS
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
 
 	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
-	#endif
 
 	leg_therm_prev_val[0] = thermistor_pdo[0];
 	leg_therm_prev_val[1] = thermistor_pdo[1];
@@ -209,11 +198,9 @@ inline void leg_disable_outputs(void) {
 
 void leg_update_inputs(uint8_t id) {
 
-	#ifdef ENABLE_THERMISTORS
 	// Start reading the ADCs
 	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
-	#endif
 	
 	// Start reading from the encoders
 	biss_encoder_start_reading(&motor_encoder);
@@ -224,10 +211,8 @@ void leg_update_inputs(uint8_t id) {
 
 
 	// now wait for things to complete
-	#ifdef ENABLE_THERMISTORS
 	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
-	#endif
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
 
@@ -280,15 +265,11 @@ void leg_update_inputs(uint8_t id) {
 	    ((leg_therm_prev_val[5]<thermistor_pdo[5]) && (thermistor_pdo[5]-leg_therm_prev_val[5] < 50)))
 		leg_therm_prev_val[5] = thermistor_pdo[5];
 
-	#ifndef ENABLE_THERMISTORS
 	adc124_start_read(&knee_adc);
 	while (!adc124_read_complete(&knee_adc));
 	adc124_process_data(&knee_adc);
-	#endif
 
-	#ifdef ENABLE_THERMISTORS
 	leg_send_current_read = true;
-	#endif
 }
 
 bool leg_run_halt(uint8_t id) {

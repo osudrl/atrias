@@ -18,7 +18,6 @@ MEDULLA_LIB_DIR = ../../../medulla/firmware/medulla_lib
 DEBUG_LEVEL = -DDEBUG_LOW
 #DEBUG_LEVEL = -DDEBUG_HIGH
 ENABLE_ECAT = -DENABLE_ECAT
-ENABLE_THERMISTORS = -DENABLE_THERMISTORS
 #ENABLE_IMU = -DENABLE_IMU
 
 # Build Options
@@ -34,7 +33,7 @@ PORT = usb
 CFLAGS  = -DF_CPU=$(F_CPU)UL
 CFLAGS += $(DEBUG_LEVEL)
 CFLAGS += $(ENABLE_IMU)
-CFLAGS += $(ENABLE_THERMISTORS)
+CFLAGS += $(ENABLE_ECAT)
 CFLAGS += -O$(OPT)
 CFLAGS += -fshort-enums
 CFLAGS += -Wall
@@ -46,7 +45,7 @@ CFLAGS += -lm
 
 # avr-libc version > 1.7.0?
 # TODO(yoos): This doesn't actually work.
-ifeq "$(shell expr `gcc -dumpversion` \> 1.7.0)" "1"
+ifeq "$(shell expr `avr-gcc -dumpversion` \> 1.7.0)" "1"
 	CFLAGS += -D__DELAY_BACKWARD_COMPATIBLE__
 endif
 
