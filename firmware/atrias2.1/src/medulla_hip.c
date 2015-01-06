@@ -179,7 +179,7 @@ void hip_update_inputs(uint8_t id) {
 	renishaw_ssi_encoder_start_reading(&hip_encoder);
 
 	// while we are waiting for things to complete, get the limit switch state
-	if (limit_sw_get_port(&limit_sw_port)) {
+	if (limit_sw_get_port(&hip_limit_sw_port)) {
 		limit_switch_counter ++;
 	}
 	else if (limit_switch_counter > 0)
