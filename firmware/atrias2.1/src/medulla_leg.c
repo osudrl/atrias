@@ -64,7 +64,9 @@ ecat_pdo_entry_t leg_tx_pdos[] = {{((void**)(&leg_medulla_id_pdo)),1},
 limit_sw_port_t limit_sw_port;
 biss_encoder_t leg_encoder, motor_encoder;
 quadrature_encoder_t inc_encoder;
-adc_port_t adc_port_a, adc_port_b;
+adc_port_t adc_port_b;
+ac_port_t ac_port_a;
+dac_port_t dac_port_a;
 adc124_t knee_adc;
 uint8_t leg_damping_cnt;
 int32_t last_incremental;
@@ -72,7 +74,7 @@ uint16_t temp_adc_val;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
-uint8_t thermistor_counter;
+uint8_t thermistor_counters[7];
 uint16_t motor_voltage_counter;
 uint16_t logic_voltage_counter;
 uint8_t motor_encoder_error_counter;
@@ -81,17 +83,28 @@ bool leg_send_current_read;
 TC0_t *leg_timestamp_timer;
 int32_t prev_motor_position;
 uint16_t leg_knee_adc_aux4;
-uint16_t leg_therm_prev_val[6];
 
 void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter, TC0_t *timestamp_timer, uint16_t **master_watchdog) {
 
-	thermistor_counter = 0;
+	thermistor_counters[0] = 0;
+	thermistor_counters[1] = 0;
+	thermistor_counters[2] = 0;
+	thermistor_counters[3] = 0;
+	thermistor_counters[4] = 0;
+	thermistor_counters[5] = 0;
+	thermistor_counters[6] = 0;
 	motor_voltage_counter = 0;
 	logic_voltage_counter = 0;
 	leg_timestamp_timer = timestamp_timer;
 	*leg_error_flags_pdo = 0;
 	leg_damping_cnt = 0;
 
+	*(thermistor_pdo + 0) = 0;
+	*(thermistor_pdo + 1) = 0;
+	*(thermistor_pdo + 2) = 0;
+	*(thermistor_pdo + 3) = 0;
+	*(thermistor_pdo + 4) = 0;
+	*(thermistor_pdo + 5) = 0;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla Leg] Initializing leg with ID: %04x\n",id);
@@ -121,18 +134,20 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initializing ADC ports\n");
 	#endif
-	adc_port_a = adc_init_port(&ADCA);
 	adc_port_b = adc_init_port(&ADCB);
 
 	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initializing Thermistor ADC pins\n");
+	printf("[Medulla Leg] Initializing Analog Comparators\n");
 	#endif
-	adc_init_pin(&adc_port_a,1,thermistor_pdo+0);
-	adc_init_pin(&adc_port_a,2,thermistor_pdo+1);
-	adc_init_pin(&adc_port_a,3,thermistor_pdo+2);
-	adc_init_pin(&adc_port_a,4,thermistor_pdo+3);
-	adc_init_pin(&adc_port_a,5,thermistor_pdo+4);
-	adc_init_pin(&adc_port_a,6,thermistor_pdo+5);
+	ac_port_a = ac_init_port(&ACA);
+	ac_set_pins(&ac_port_a, 1, 2);
+
+	#ifdef DEBUG_HIGH
+	printf("[Medulla Leg] Initializing DAC port\n");
+	#endif
+	dac_port_a = dac_init_port(&DACA);
+	dac_set_value(&dac_port_a, THERMISTOR_MAX_VAL/2);
+	dac_set_calibration(&dac_port_a, 0, 0); // Currently uncalibrated
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initializing voltage monitoring pins\n");
@@ -166,18 +181,9 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	initialize_amp(true, measured_current_amp1_pdo, measured_current_amp2_pdo);
 
 	// Start reading the ADCs
-	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
 
-	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
-
-	leg_therm_prev_val[0] = thermistor_pdo[0];
-	leg_therm_prev_val[1] = thermistor_pdo[1];
-	leg_therm_prev_val[2] = thermistor_pdo[2];
-	leg_therm_prev_val[3] = thermistor_pdo[3];
-	leg_therm_prev_val[4] = thermistor_pdo[4];
-	leg_therm_prev_val[5] = thermistor_pdo[5];
 
 	*master_watchdog = leg_counter_pdo;
 	*packet_counter = leg_medulla_counter_pdo;
@@ -199,7 +205,6 @@ inline void leg_disable_outputs(void) {
 void leg_update_inputs(uint8_t id) {
 
 	// Start reading the ADCs
-	adc_start_read(&adc_port_a);
 	adc_start_read(&adc_port_b);
 	
 	// Start reading from the encoders
@@ -218,7 +223,6 @@ void leg_update_inputs(uint8_t id) {
 		*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
 
 	// now wait for things to complete
-	while (!adc_read_complete(&adc_port_a));
 	while (!adc_read_complete(&adc_port_b));
  	while (!biss_encoder_read_complete(&motor_encoder));
 	while (!biss_encoder_read_complete(&leg_encoder));
@@ -247,30 +251,6 @@ void leg_update_inputs(uint8_t id) {
 		*leg_error_flags_pdo |= medulla_error_encoder;
 		leg_encoder_error_counter++;
 	}
-
-	if (((leg_therm_prev_val[0]>thermistor_pdo[0]) && (leg_therm_prev_val[0]-thermistor_pdo[0] < 50)) ||
-	    ((leg_therm_prev_val[0]<thermistor_pdo[0]) && (thermistor_pdo[0]-leg_therm_prev_val[0] < 50)))
-		leg_therm_prev_val[0] = thermistor_pdo[0];
-
-	if (((leg_therm_prev_val[1]>thermistor_pdo[1]) && (leg_therm_prev_val[1]-thermistor_pdo[1] < 50)) ||
-	    ((leg_therm_prev_val[1]<thermistor_pdo[1]) && (thermistor_pdo[1]-leg_therm_prev_val[1] < 50)))
-		leg_therm_prev_val[1] = thermistor_pdo[1];
-
-	if (((leg_therm_prev_val[2]>thermistor_pdo[2]) && (leg_therm_prev_val[2]-thermistor_pdo[2] < 50)) ||
-	    ((leg_therm_prev_val[2]<thermistor_pdo[2]) && (thermistor_pdo[2]-leg_therm_prev_val[2] < 50)))
-		leg_therm_prev_val[2] = thermistor_pdo[2];
-
-	if (((leg_therm_prev_val[3]>thermistor_pdo[3]) && (leg_therm_prev_val[3]-thermistor_pdo[3] < 1000)) ||
-	    ((leg_therm_prev_val[3]<thermistor_pdo[3]) && (thermistor_pdo[3]-leg_therm_prev_val[3] < 1000)))
-		leg_therm_prev_val[3] = thermistor_pdo[3];
-
-	if (((leg_therm_prev_val[4]>thermistor_pdo[4]) && (leg_therm_prev_val[4]-thermistor_pdo[4] < 50)) ||
-	    ((leg_therm_prev_val[4]<thermistor_pdo[4]) && (thermistor_pdo[4]-leg_therm_prev_val[4] < 50)))
-		leg_therm_prev_val[4] = thermistor_pdo[4];
-
-	if (((leg_therm_prev_val[5]>thermistor_pdo[5]) && (leg_therm_prev_val[5]-thermistor_pdo[5] < 50)) ||
-	    ((leg_therm_prev_val[5]<thermistor_pdo[5]) && (thermistor_pdo[5]-leg_therm_prev_val[5] < 50)))
-		leg_therm_prev_val[5] = thermistor_pdo[5];
 
 	adc124_start_read(&knee_adc);
 	while (!adc124_read_complete(&knee_adc));
@@ -333,23 +313,35 @@ bool leg_check_error(uint8_t id) {
 	#endif
 
 	#ifdef ERROR_CHECK_THERMISTORS
-	// Do filtering on thermistor values 
-	if ((leg_therm_prev_val[0] < THERMISTOR_MAX_VAL) ||
-        (leg_therm_prev_val[1] < THERMISTOR_MAX_VAL) ||
-        (leg_therm_prev_val[2] < THERMISTOR_MAX_VAL) ||
-        (leg_therm_prev_val[3] < THERMISTOR_MAX_VAL) ||
-        (leg_therm_prev_val[4] < THERMISTOR_MAX_VAL) ||
-        (leg_therm_prev_val[5] < THERMISTOR_MAX_VAL)) {
-		thermistor_counter++;
+	// Do filtering on thermistor values
+	// Check comparator zero first
+	if (ac_check_value(&ac_port_a, 0)) {
+		thermistor_counters[ac_port_a.pin_0]++;
 	}
-	else if (thermistor_counter > 0)
-		thermistor_counter--;
-	if (thermistor_counter > 100) {
+	else if (thermistor_counters[ac_port_a.pin_0] > 0)
+		thermistor_counters[ac_port_a.pin_0]--;
+	if (thermistor_counters[ac_port_a.pin_0] > 100) {
 		#if defined DEBUG_LOW || DEBUG_HIGH	
 		printf("[Medulla Leg] Thermistor error.\n");
 		#endif
+		*(thermistor_pdo + ac_port_a.pin_0 - 1) = 1;
 		*leg_error_flags_pdo |= medulla_error_thermistor;
-		//return true;
+		return true;
+	}
+
+	// Now check comparator one
+	if (ac_check_value(&ac_port_a, 1)) {
+		thermistor_counters[ac_port_a.pin_1]++;
+	}
+	else if (thermistor_counters[ac_port_a.pin_1] > 0)
+		thermistor_counters[ac_port_a.pin_1]--;
+	if (thermistor_counters[ac_port_a.pin_1] > 100) {
+		#if defined DEBUG_LOW || DEBUG_HIGH	
+		printf("[Medulla Leg] Thermistor error.\n");
+		#endif
+		*(thermistor_pdo + ac_port_a.pin_1 - 1) = 1;
+		*leg_error_flags_pdo |= medulla_error_thermistor;
+		return true;
 	}
 	#endif
 
@@ -480,17 +472,23 @@ bool leg_check_halt(uint8_t id) {
 
 void leg_reset_error() {
 	*leg_error_flags_pdo = 0;
-	thermistor_counter = 0;
 	motor_voltage_counter = 0;
 	logic_voltage_counter = 0;
 	motor_encoder_error_counter = 0;
 	leg_encoder_error_counter = 0;
 	leg_damping_cnt = 0;
-	leg_therm_prev_val[0] = thermistor_pdo[0];
-	leg_therm_prev_val[1] = thermistor_pdo[1];
-	leg_therm_prev_val[2] = thermistor_pdo[2];
-	leg_therm_prev_val[3] = thermistor_pdo[3];
-	leg_therm_prev_val[4] = thermistor_pdo[4];
-	leg_therm_prev_val[5] = thermistor_pdo[5];
+	thermistor_counters[0] = 0;
+	thermistor_counters[1] = 0;
+	thermistor_counters[2] = 0;
+	thermistor_counters[3] = 0;
+	thermistor_counters[4] = 0;
+	thermistor_counters[5] = 0;
+	thermistor_counters[6] = 0;
+	*(thermistor_pdo + 0) = 0;
+	*(thermistor_pdo + 1) = 0;
+	*(thermistor_pdo + 2) = 0;
+	*(thermistor_pdo + 3) = 0;
+	*(thermistor_pdo + 4) = 0;
+	*(thermistor_pdo + 5) = 0;
 }
 

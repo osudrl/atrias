@@ -33,7 +33,7 @@ SPI_USES_PORT(SPIF)
 UART_USES_PORT(USARTD0)
 
 // ADCs on port a and b
-ADC_USES_PORT(ADCA)
+//ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
 
 // TODO(yoos): Shouldn't this logic depend on DIP switch config?
