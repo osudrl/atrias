@@ -74,7 +74,9 @@ uint16_t temp_adc_val;
 
 // variables for filtering thermistor and voltage values
 uint8_t limit_switch_counter;
-uint8_t thermistor_counters[7];
+uint8_t thermistor_counters[6];
+uint8_t therm_1;
+uint8_t therm_2;
 uint16_t motor_voltage_counter;
 uint16_t logic_voltage_counter;
 uint8_t motor_encoder_error_counter;
@@ -92,19 +94,13 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	thermistor_counters[3] = 0;
 	thermistor_counters[4] = 0;
 	thermistor_counters[5] = 0;
-	thermistor_counters[6] = 0;
 	motor_voltage_counter = 0;
 	logic_voltage_counter = 0;
 	leg_timestamp_timer = timestamp_timer;
 	*leg_error_flags_pdo = 0;
 	leg_damping_cnt = 0;
-
-	*(thermistor_pdo + 0) = 0;
-	*(thermistor_pdo + 1) = 0;
-	*(thermistor_pdo + 2) = 0;
-	*(thermistor_pdo + 3) = 0;
-	*(thermistor_pdo + 4) = 0;
-	*(thermistor_pdo + 5) = 0;
+	therm_1 = 0; // Zero indexed thermistor position
+	therm_2 = 1;
 
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla Leg] Initializing leg with ID: %04x\n",id);
@@ -139,15 +135,14 @@ void leg_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initializing Analog Comparators\n");
 	#endif
-	ac_port_a = ac_init_port(&ACA);
-	ac_set_pins(&ac_port_a, 1, 2);
-
-	#ifdef DEBUG_HIGH
-	printf("[Medulla Leg] Initializing DAC port\n");
-	#endif
-	dac_port_a = dac_init_port(&DACA);
-	dac_set_value(&dac_port_a, THERMISTOR_MAX_VAL/2);
-	dac_set_calibration(&dac_port_a, 0, 0); // Currently uncalibrated
+	ac_port_a = ac_init_port(&ACA, THERMISTOR_MAX_VAL_SCALER);
+	ac_set_pins(&ac_port_a, therm_1 + 1, therm_2 + 1);
+	thermistor_pdo[0] = 0;
+	thermistor_pdo[1] = 0;
+	thermistor_pdo[2] = 0;
+	thermistor_pdo[3] = 0;
+	thermistor_pdo[4] = 0;
+	thermistor_pdo[5] = 0;
 	
 	#ifdef DEBUG_HIGH
 	printf("[Medulla Leg] Initializing voltage monitoring pins\n");
@@ -316,33 +311,41 @@ bool leg_check_error(uint8_t id) {
 	// Do filtering on thermistor values
 	// Check comparator zero first
 	if (ac_check_value(&ac_port_a, 0)) {
-		thermistor_counters[ac_port_a.pin_0]++;
+		thermistor_counters[therm_1]++;
 	}
-	else if (thermistor_counters[ac_port_a.pin_0] > 0)
-		thermistor_counters[ac_port_a.pin_0]--;
-	if (thermistor_counters[ac_port_a.pin_0] > 100) {
+	else if (thermistor_counters[therm_1] > 0)
+		thermistor_counters[therm_1]--;
+	if (thermistor_counters[therm_1] > 100) {
 		#if defined DEBUG_LOW || DEBUG_HIGH	
 		printf("[Medulla Leg] Thermistor error.\n");
 		#endif
-		*(thermistor_pdo + ac_port_a.pin_0 - 1) = 1;
+		thermistor_pdo[therm_1] = 1;
 		*leg_error_flags_pdo |= medulla_error_thermistor;
 		return true;
 	}
 
 	// Now check comparator one
 	if (ac_check_value(&ac_port_a, 1)) {
-		thermistor_counters[ac_port_a.pin_1]++;
+		thermistor_counters[therm_2]++;
 	}
-	else if (thermistor_counters[ac_port_a.pin_1] > 0)
-		thermistor_counters[ac_port_a.pin_1]--;
-	if (thermistor_counters[ac_port_a.pin_1] > 100) {
+	else if (thermistor_counters[therm_2] > 0)
+		thermistor_counters[therm_2]--;
+	if (thermistor_counters[therm_2] > 100) {
 		#if defined DEBUG_LOW || DEBUG_HIGH	
 		printf("[Medulla Leg] Thermistor error.\n");
 		#endif
-		*(thermistor_pdo + ac_port_a.pin_1 - 1) = 1;
+		thermistor_pdo[therm_2] = 1;
 		*leg_error_flags_pdo |= medulla_error_thermistor;
 		return true;
 	}
+
+	// Increment the pins
+	therm_1 = (therm_1 + 2) % 6;
+	therm_2 = (therm_2 + 2) % 6;
+
+	// Set Mux
+	// The plus one accounts for the non zero indexed thermistor port.
+	ac_set_pins(&ac_port_a, therm_1 + 1, therm_2 + 1);
 	#endif
 
 	#ifdef ERROR_CHECK_MOTOR_VOLTAGE
@@ -483,12 +486,11 @@ void leg_reset_error() {
 	thermistor_counters[3] = 0;
 	thermistor_counters[4] = 0;
 	thermistor_counters[5] = 0;
-	thermistor_counters[6] = 0;
-	*(thermistor_pdo + 0) = 0;
-	*(thermistor_pdo + 1) = 0;
-	*(thermistor_pdo + 2) = 0;
-	*(thermistor_pdo + 3) = 0;
-	*(thermistor_pdo + 4) = 0;
-	*(thermistor_pdo + 5) = 0;
+	thermistor_pdo[0] = 0;
+	thermistor_pdo[1] = 0;
+	thermistor_pdo[2] = 0;
+	thermistor_pdo[3] = 0;
+	thermistor_pdo[4] = 0;
+	thermistor_pdo[5] = 0;
 }
 
