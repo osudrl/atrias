@@ -110,7 +110,7 @@ typedef enum {
   * This is a minimum scaler level for the comparator, but it
   * relates to the maximum temp.
   */
-#define THERMISTOR_MAX_VAL_SCALER                                             10
+#define THERMISTOR_MAX_VAL_SCALER                                             4
 
 #define MOTOR_VOLTAGE_C_OFFSET                                            1300.0
 #define MOTOR_VOLTAGE_V_CAL                                                 60.2
