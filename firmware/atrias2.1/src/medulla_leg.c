@@ -216,6 +216,8 @@ void leg_update_inputs(uint8_t id) {
 	// Only report debounced data
 	if (limit_switch_counter > 50)
 		*leg_limit_switch_pdo = limit_sw_get_port(&limit_sw_port);
+	else
+		*leg_limit_switch_pdo = 0;
 
 	// now wait for things to complete
 	while (!adc_read_complete(&adc_port_b));
