@@ -67,14 +67,17 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initializing UART\n");
 	#endif
-	imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH);
+	//imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH); // old sg
+	imu_port = uart_init_port(&PORTD, &USARTD0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH); // IMU communication over amplifier port
 	uart_connect_port(&imu_port, false);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initializing Master Sync pin\n");
 	#endif
-	msync_pin = io_init_pin(&PORTF, 1);
-	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction().
+	msync_pin = io_init_pin(&PORTF, 1); // old sg
+	//msync_pin = io_init_pin(&PORTH, 7); // IMU Master Sync. NOTE: THIS DOESN'T MATCH THE SCHEMATIC!!!?!?!????
+	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction(). // old sg
+	//PORTH.DIR = PORTH.DIR | (1<<7);
 
 	*master_watchdog = imu_counter_pdo;
 	*packet_counter = imu_medulla_counter_pdo;
@@ -97,12 +100,20 @@ void imu_update_inputs(uint8_t id) {
 	static uint8_t last_seq = 0;
 
 	// Flush buffer.
-	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+	uint16_t recv_bytes = uart_received_bytes(&imu_port);
+	if (recv_bytes <= 36) {
+		uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+	} else {
+		uart_rx_data(&imu_port, imu_packet, 36);
+	}
 
 	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
-	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output.
+	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output. // old sg
+	//PORTH.OUT |= (1<<7);
+	while (recv_bytes > 36);
 	_delay_us(60);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 60 instead.
-	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library.
+	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library. // old sg
+	//PORTH.OUT &= ~(1<<7);
 
 	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
 	// right way to do this, but this doesn't work right now.
@@ -112,38 +123,53 @@ void imu_update_inputs(uint8_t id) {
 	// assertion and the beginning of IMU packet transmission (around 80 us).
 	// Not waiting here long enough will cause packet corruption.
 	_delay_us(60);
-	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+	recv_bytes =  uart_received_bytes(&imu_port);
+	if (recv_bytes == 36) {
+		uart_rx_data(&imu_port, imu_packet, recv_bytes);
+	} else if (recv_bytes > 36) {
+		uart_rx_data(&imu_port, imu_packet, 36);
+	}
 
 	// Populate data from IMU. Refer to p. 10 in manual for data locations.
-	populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
-	populate_byte_to_data(&(imu_packet[8]), YAngDelta_pdo);   // YAngDelta
-	populate_byte_to_data(&(imu_packet[12]), ZAngDelta_pdo);   // ZAngDelta
-	populate_byte_to_data(&(imu_packet[16]), XAccel_pdo);   // XAccel
-	populate_byte_to_data(&(imu_packet[20]), YAccel_pdo);   // YAccel
-	populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);   // ZAccel
-	*Status_pdo = imu_packet[28];   // Status
-	*Seq_pdo = imu_packet[29];   // Seq
-	*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
-	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
+	//uint32_t imu_header;
+	//populate_byte_to_data(&(imu_packet[4]), &imu_header);
+	//if ((uint32_t) imu_packet[0] == 0x55ff81fe) {
+	//if (imu_header == 0xfe81ff55) {
+	if (imu_packet[0] == 0xfe && imu_packet[1] == 0x81 && imu_packet[2] == 0xff && imu_packet[3] == 0x55) {
+		populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
+		populate_byte_to_data(&(imu_packet[8]), YAngDelta_pdo);   // YAngDelta
+		populate_byte_to_data(&(imu_packet[12]), ZAngDelta_pdo);   // ZAngDelta
+		populate_byte_to_data(&(imu_packet[16]), XAccel_pdo);   // XAccel
+		populate_byte_to_data(&(imu_packet[20]), YAccel_pdo);   // YAccel
+		populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);   // ZAccel
+		*Status_pdo = imu_packet[28];   // Status
+		*Seq_pdo = imu_packet[29];   // Seq
+		*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
+		populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
+		//populate_byte_to_data(&(imu_packet[0]), CRC_pdo);   // CRC
+	}
 
-	// Check for duplicate and skipped packets by comparing sequence numbers.
+	//*Status_pdo = imu_packet[0];
+	//*Seq_pdo = imu_packet[3];
+
+	/*// Check for duplicate and skipped packets by comparing sequence numbers.
 	if (*Seq_pdo != ((last_seq+1) % 128)) {
 		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_SEQ);
 	}
 	else {
 		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_SEQ);
 	}
-	last_seq = *Seq_pdo;
+	last_seq = *Seq_pdo;*/
 
 	// Check CRC.
-	if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
+	/*if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
 		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_CRC);
 	}
 	else {
 		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_CRC);
-	}
+	}*/
 
-	// Check that we see the expected header.
+	/*// Check that we see the expected header.
 	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
 		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_HEADER);
 	}
@@ -171,7 +197,7 @@ void imu_update_inputs(uint8_t id) {
 				);
 	}
 	counter = (counter+1) % 10;
-	#endif // DEBUG_HIGH
+	#endif // DEBUG_HIGH*/
 }
 
 bool imu_run_halt(uint8_t id)
@@ -188,7 +214,8 @@ inline void imu_estop(void) {
 }
 
 bool imu_check_error(uint8_t id) {
-	static uint8_t bad_seq_counter = 0;
+	return false;
+	/*static uint8_t bad_seq_counter = 0;
 
 	// Count duplicate packets and complain if we're duplicating more than
 	// half.
@@ -228,7 +255,7 @@ bool imu_check_error(uint8_t id) {
 		return true;
 	}
 
-	return false;
+	return false;*/
 }
 
 bool imu_check_halt(uint8_t id) {
@@ -240,7 +267,11 @@ void imu_reset_error(void) {
 }
 
 void imu_clear_buffer(void) {
-	uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
+	uint16_t recv_bytes =  uart_received_bytes(&imu_port);
+	if (recv_bytes > 36) {
+		recv_bytes = 36;
+	}
+	uart_rx_data(&imu_port, imu_packet, recv_bytes);
 }
 
 /* NOTE this obviously assumes 4-byte block */

@@ -38,13 +38,14 @@ ADC_USES_PORT(ADCB)
 
 // TODO(yoos): Shouldn't this logic depend on DIP switch config?
 #ifdef ENABLE_IMU
-UART_USES_PORT(USARTF0)   // KVH 1750
+//UART_USES_PORT(USARTF0)   // KVH 1750
 #else
 ADC124_USES_PORT(USARTF0)   // Knee ADC
 #endif
 
 
 int main(void) {
+	// TODO: Make this depend on the DIP switch config.
 #ifdef ENABLE_IMU
 	// Enable external 16 MHz oscillator.
 	OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
