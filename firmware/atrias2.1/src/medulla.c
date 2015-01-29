@@ -37,34 +37,37 @@ ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
 
 // TODO(yoos): Shouldn't this logic depend on DIP switch config?
-#ifdef ENABLE_IMU
 //UART_USES_PORT(USARTF0)   // KVH 1750
-#else
 ADC124_USES_PORT(USARTF0)   // Knee ADC
-#endif
 
 
 int main(void) {
+	// Initialize the id DIP switches
+	PORTCFG.MPCMASK =  MEDULLA_ID_MASK;
+	MEDULLA_ID_PORT.PIN0CTRL = PORT_OPC_PULLUP_gc;
+	_delay_ms(1);
+	medulla_id = MEDULLA_ID_PORT.IN & MEDULLA_ID_MASK;
+
 	// TODO: Make this depend on the DIP switch config.
-#ifdef ENABLE_IMU
-	// Enable external 16 MHz oscillator.
-	OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
-	               OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
-	OSC.CTRL |= OSC_XOSCEN_bm;                   /* Start XTAL */
-	while (!(OSC.STATUS & OSC_XOSCRDY_bm));      /* Wait until crystal ready */
-	OSC.PLLCTRL = OSC_PLLSRC_XOSC_gc | 0x2;      /* XTAL->PLL, 2x multiplier */
-	OSC.CTRL |= OSC_PLLEN_bm;                    /* Start PLL */
-	while (!(OSC.STATUS & OSC_PLLRDY_bm));       /* Wait until PLL ready */
-	CCP = CCP_IOREG_gc;                          /* Allow changing CLK.CTRL */
-	CLK.CTRL = CLK_SCLKSEL_PLL_gc;               /* Use PLL output as clock */
-	LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_RED;
-#else
-	// Initialize the clock to 32 Mhz oscillator
-	if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
-		PORTC.DIRSET = 1;
-		PORTC.OUTSET = 1;
+	if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
+		// Enable external 16 MHz oscillator.
+		OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
+			       OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
+		OSC.CTRL |= OSC_XOSCEN_bm;                   /* Start XTAL */
+		while (!(OSC.STATUS & OSC_XOSCRDY_bm));      /* Wait until crystal ready */
+		OSC.PLLCTRL = OSC_PLLSRC_XOSC_gc | 0x2;      /* XTAL->PLL, 2x multiplier */
+		OSC.CTRL |= OSC_PLLEN_bm;                    /* Start PLL */
+		while (!(OSC.STATUS & OSC_PLLRDY_bm));       /* Wait until PLL ready */
+		CCP = CCP_IOREG_gc;                          /* Allow changing CLK.CTRL */
+		CLK.CTRL = CLK_SCLKSEL_PLL_gc;               /* Use PLL output as clock */
+		LED_PORT.OUT = (LED_PORT.OUT & ~LED_MASK) | LED_GREEN | LED_RED;
+	} else {
+		// Initialize the clock to 32 Mhz oscillator
+		if(cpu_set_clock_source(cpu_32mhz_clock) == false) {
+			PORTC.DIRSET = 1;
+			PORTC.OUTSET = 1;
+		}
 	}
-#endif
 
 	// Configure and enable all the interrupts
 	cpu_configure_interrupt_level(cpu_interrupt_level_medium, true);
@@ -75,12 +78,6 @@ int main(void) {
 
 	// Initialize the LED port
 	LED_PORT.DIRSET = LED_MASK;
-
-	// Initialize the id DIP switches
-	PORTCFG.MPCMASK =  MEDULLA_ID_MASK;
-	MEDULLA_ID_PORT.PIN0CTRL = PORT_OPC_PULLUP_gc;
-	_delay_ms(1);
-	medulla_id = MEDULLA_ID_PORT.IN & MEDULLA_ID_MASK;
 
 	// Check if we are in the amplifier debug mode
 	if (medulla_id == MEDULLA_AMPLIFIER_DEBUG) {
