@@ -22,8 +22,9 @@
 #define KVH_MSG_SIZE 36
 #define IMU_TX_BUF_SZ (KVH_MSG_SIZE+1)
 #define IMU_RX_BUF_SZ (KVH_MSG_SIZE+1)
-//#define IMU_TX_BUF_SZ 250
-//#define IMU_RX_BUF_SZ 250
+
+// We also need to (separately) know the size of the data to be CRC'd
+#define CRC_PAYLD_SZ (KVH_MSG_SIZE-4)
 
 // KVH stuff.
 uint8_t imu_tx_buffer[IMU_TX_BUF_SZ];
