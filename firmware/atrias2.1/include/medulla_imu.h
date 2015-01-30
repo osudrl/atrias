@@ -15,8 +15,9 @@
 #include "io_pin.h"
 #include "uart.h"
 
-#define ERROR_FLAG_KVH_HEADER 0
-#define ERROR_FLAG_KVH_CRC 1
+#define ERROR_FLAG_PAYLD_SZ (1<<0)
+#define ERROR_FLAG_HEADER   (1<<1)
+#define ERROR_FLAG_CRC      (1<<2)
 
 // Message and buffer sizes. Note that the UART driver ignores 1 byte of the buffer (bug?), so we'll add 1 to the buffer size to compensate.
 #define KVH_MSG_SIZE 36

@@ -71,8 +71,8 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initializing Master Sync pin\n");
 	#endif
-	io_init_pin(&PORTF, 1); // This is the clock pin for the strain gauge connector (currently wired to the IMU master sync pin)
-	PORTF.DIR = PORTF.DIR | (1<<1);     // TODO: Fix GPIO library and use io_set_direction().
+	io_init_pin(&PORTF, 1);         // This is the clock pin for the strain gauge connector (currently wired to the IMU master sync pin)
+	PORTF.DIR = PORTF.DIR | (1<<1); // TODO: Fix GPIO library and use io_set_direction().
 
 	*master_watchdog     = imu_counter_pdo;
 	*packet_counter      = imu_medulla_counter_pdo;
@@ -95,19 +95,15 @@ void imu_process_data(void) {
 	// First verify that the header is intact. If not, then the data was bad and we should leave that data as-is.
 	// This will be caught on the master because the sequence value will stay the same
 	if (imu_packet[0] != 0xFE || imu_packet[1] != 0x81 || imu_packet[2] != 0xFF || imu_packet[3] != 0x55) {
-		*imu_error_flags_pdo = 2;
+		*imu_error_flags_pdo |= ERROR_FLAG_HEADER;
 		return;
-	} else {
-		*imu_error_flags_pdo = 0;
 	}
-
-	// TODO: Better error flags handling
 
 	// Also check if the CRC matches the expected value
 	populate_byte_to_data(&(imu_packet[32]), CRC_pdo);
 
 	if (!is_packet_good(crc_calc(imu_packet, CRC_PAYLD_SZ), *CRC_pdo)) {
-		*imu_error_flags_pdo = 3;
+		*imu_error_flags_pdo |= ERROR_FLAG_CRC;
 		return;
 	}
 
@@ -130,19 +126,18 @@ void imu_update_inputs(uint8_t id) {
 
 	// Receive the data sent during the last iteration.
 	// Check that we've received the correct amount of data.
-	// TODO: Set an error flag if not enough data was received.
 	if (uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE) == KVH_MSG_SIZE) {
 		// We have received (at least) the right amount of data, go ahead and process it.
 		imu_process_data();
 	} else {
-		*imu_error_flags_pdo = 1;
+		*imu_error_flags_pdo |= ERROR_FLAG_PAYLD_SZ;
 	}
 }
 
 void imu_post_ecat(void) {
 	// Trigger Master Sync. This will cause the IMU to output data for the next iteration
 	PORTF.OUT |= (1<<1);  // TODO: Fix GPIO library so we can use io_set_output.
-	_delay_us(40);        // Soo-Hyun thinks the xMega libraries have trouble sleeping for 30 microseconds, so here's 40 instead. TODO: Verify this.
+	_delay_us(40);        // The KVH manual requires at least 30 microseconds. I'll do 40 here just to be safe.
 	PORTF.OUT &= ~(1<<1); // TODO: Fix GPIO library.
 }
 
