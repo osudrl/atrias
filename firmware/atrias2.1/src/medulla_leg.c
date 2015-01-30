@@ -256,6 +256,8 @@ void leg_update_inputs(uint8_t id) {
 	leg_send_current_read = true;
 }
 
+void leg_post_ecat(void) {}
+
 bool leg_run_halt(uint8_t id) {
 	leg_damping_cnt += 1;
 	static int32_t diff = 0;

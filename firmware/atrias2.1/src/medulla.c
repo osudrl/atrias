@@ -36,8 +36,7 @@ UART_USES_PORT(USARTD0)
 ADC_USES_PORT(ADCA)
 ADC_USES_PORT(ADCB)
 
-// TODO(yoos): Shouldn't this logic depend on DIP switch config?
-//UART_USES_PORT(USARTF0)   // KVH 1750
+// Strain gauge ADC
 ADC124_USES_PORT(USARTF0)   // Knee ADC
 
 
@@ -48,8 +47,8 @@ int main(void) {
 	_delay_ms(1);
 	medulla_id = MEDULLA_ID_PORT.IN & MEDULLA_ID_MASK;
 
-	// TODO: Make this depend on the DIP switch config.
-	if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
+	//if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
+	if (true) {
 		// Enable external 16 MHz oscillator.
 		OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
 			       OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
@@ -121,7 +120,6 @@ int main(void) {
 	PORTE.PIN1CTRL = PORT_ISC_FALLING_gc;
 	PORTE.INT0MASK = 0b10;
 
-//	medulla_id = 1;
 	#if defined DEBUG_HIGH || defined DEBUG_LOW
 	printf("[Medulla] Medulla ID is: %02x, ", medulla_id);
 	#endif
@@ -137,6 +135,7 @@ int main(void) {
 			update_inputs = leg_update_inputs;
 			run_halt = leg_run_halt;
 			update_outputs = leg_update_outputs;
+			post_ecat      = leg_post_ecat;
 			estop = leg_estop;
 			check_error = leg_check_error;
 			check_halt = leg_check_halt;
@@ -154,6 +153,7 @@ int main(void) {
 			update_inputs = hip_update_inputs;
 			run_halt = hip_run_halt;
 			update_outputs = hip_update_outputs;
+			post_ecat      = hip_post_ecat;
 			estop = hip_estop;
 			check_error = hip_check_error;
 			check_halt = hip_check_halt;
@@ -171,6 +171,7 @@ int main(void) {
 			update_inputs = boom_update_inputs;
 			run_halt = boom_run_halt;
 			update_outputs = boom_update_outputs;
+			post_ecat      = boom_post_ecat;
 			estop = boom_estop;
 			check_error = boom_check_error;
 			check_halt = boom_check_halt;
@@ -188,6 +189,7 @@ int main(void) {
 			update_inputs = imu_update_inputs;
 			run_halt = imu_run_halt;
 			update_outputs = imu_update_outputs;
+			post_ecat      = imu_post_ecat;
 			estop = imu_estop;
 			check_error = imu_check_error;
 			check_halt = imu_check_halt;
@@ -254,6 +256,9 @@ int main(void) {
 
 			// Read new commands from the ethercat slave
 			ecat_read_rx_sm(&ecat_port);
+
+			// Do any more tasks the Medulla wants to do
+			post_ecat();
 	
 			// As long as we get the DC clock we can always feed the watchdog
 			WATCHDOG_TIMER_RESET;
@@ -444,15 +449,14 @@ int main(void) {
 			}
 
 
-		}
+		}/* else if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
+			uint16_t recv_bytes =  uart_received_bytes(&imu_port);
+			if (recv_bytes > 36) {
+				recv_bytes = 36;
+			}
+			uart_rx_data(&imu_port, imu_packet, recv_bytes);
+		}*/
 
-		// Keep IMU buffer clear. The IMU in external MSync mode will send data
-		// every 2s if the MSync pin is left untriggered. Maybe there's
-		// a better place to put this; we didn't think too hard about it.
-		else if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
-			imu_clear_buffer();
-		}
-		
 		// We should only feed the watchdog when the DC is not running if we are in idle
 		if (*current_state == medulla_state_idle)
 			WATCHDOG_TIMER_RESET;
@@ -519,7 +523,7 @@ void imu_debug() {
 	uint8_t imu_port_tx[isize];
 	uint8_t imu_port_rx[isize];
 	uint8_t data_buffer[isize];
-	uint8_t data_size;
+	//uint8_t data_size;
 	uint8_t print_buffer[csize];
 
 	uart_port_t computer_port = uart_init_port(&PORTE, &USARTE0, uart_baud_115200, computer_port_tx, csize, computer_port_rx, csize);
@@ -528,7 +532,7 @@ void imu_debug() {
 	uart_port_t imu_port  = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_port_tx, isize, imu_port_rx, isize);
 	uart_connect_port(&imu_port,false);
 
-	io_pin_t msync_pin = io_init_pin(&PORTF, 1);
+	io_init_pin(&PORTF, 1);
 	PORTF.DIR = PORTF.DIR | (1<<1);
 
 	//data_size = 1;   // Anything greater, and the Medulla mashes bytes. What gives?
@@ -555,12 +559,12 @@ void imu_debug() {
 			print_buffer[i] = 0;
 		}
 		while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
-		data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
+		//data_size = uart_rx_data(&imu_port,data_buffer,36);   // 36 bytes per IMU packet
 
 		// Print hexdump
-		sprintf(print_buffer, "%3d: ", data_buffer[29]);
+		//sprintf(print_buffer, "%3d: ", data_buffer[29]);
 		for (i=0; i<36; i++) {
-			sprintf(print_buffer+10+2*i, "%02x", data_buffer[i]);
+			//sprintf(print_buffer+10+2*i, "%02x", data_buffer[i]);
 		}
 		print_buffer[bts-2] = '\r';
 		print_buffer[bts-1] = '\n';

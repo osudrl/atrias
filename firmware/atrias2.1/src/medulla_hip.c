@@ -218,6 +218,8 @@ void hip_update_inputs(uint8_t id) {
 	#endif
 }
 
+void hip_post_ecat(void) {}
+
 bool hip_run_halt(uint8_t id) {
 	hip_damping_cnt += 1;
 	if (hip_damping_cnt > 100)

@@ -1,5 +1,5 @@
 #include <medulla_imu.h>
-#include <crc.h>
+//#include <crc.h>
 
 //--- Define interrupt functions ---//
 
@@ -48,8 +48,6 @@ ecat_pdo_entry_t imu_tx_pdos[] = {
 };
 
 void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer, uint8_t *rx_sm_buffer, medulla_state_t **commanded_state, medulla_state_t **current_state, uint8_t **packet_counter,TC0_t *timestamp_timer, uint16_t **master_watchdog) {
-	*imu_error_flags_pdo = 0;
-
 	#if defined DEBUG_LOW || defined DEBUG_HIGH
 	printf("[Medulla IMU] Initializing IMU with ID: %04x\n",id);
 	#endif
@@ -67,28 +65,26 @@ void imu_initialize(uint8_t id, ecat_slave_t *ecat_slave, uint8_t *tx_sm_buffer,
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initializing UART\n");
 	#endif
-	//imu_port = uart_init_port(&PORTF, &USARTF0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH); // old sg
-	imu_port = uart_init_port(&PORTD, &USARTD0, uart_baud_921600, imu_tx_buffer, KVH_TX_BUFFER_LENGTH, imu_rx_buffer, KVH_RX_BUFFER_LENGTH); // IMU communication over amplifier port
+	imu_port = uart_init_port(&PORTD, &USARTD0, uart_baud_921600, imu_tx_buffer, IMU_TX_BUF_SZ, imu_rx_buffer, IMU_RX_BUF_SZ); // IMU communication over amplifier port
 	uart_connect_port(&imu_port, false);
 
 	#ifdef DEBUG_HIGH
 	printf("[Medulla IMU] Initializing Master Sync pin\n");
 	#endif
-	msync_pin = io_init_pin(&PORTF, 1); // old sg
-	//msync_pin = io_init_pin(&PORTH, 7); // IMU Master Sync. NOTE: THIS DOESN'T MATCH THE SCHEMATIC!!!?!?!????
-	PORTF.DIR = PORTF.DIR | (1<<1);   // TODO: Fix GPIO library and use io_set_direction(). // old sg
-	//PORTH.DIR = PORTH.DIR | (1<<7);
+	io_init_pin(&PORTF, 1); // This is the clock pin for the strain gauge connector (currently wired to the IMU master sync pin)
+	PORTF.DIR = PORTF.DIR | (1<<1);     // TODO: Fix GPIO library and use io_set_direction().
 
-	*master_watchdog = imu_counter_pdo;
-	*packet_counter = imu_medulla_counter_pdo;
-	*imu_medulla_id_pdo = id;
-	*commanded_state = imu_command_state_pdo;
-	*current_state = imu_current_state_pdo;
+	//*imu_error_flags_pdo = 0;
+	*master_watchdog     = imu_counter_pdo;
+	*packet_counter      = imu_medulla_counter_pdo;
+	*imu_medulla_id_pdo  = id;
+	*commanded_state     = imu_command_state_pdo;
+	*current_state       = imu_current_state_pdo;
 
-	crc_generate_table();
+	//crc_generate_table();
 	#ifdef DEBUG_HIGH
-	crc_debug_print_table();
-	crc_debug_check_crc();
+	//crc_debug_print_table();
+	//crc_debug_check_crc();
 	#endif
 }
 
@@ -96,108 +92,59 @@ void imu_enable_outputs(void) {}
 
 void imu_disable_outputs(void) {}
 
+void imu_process_data(void) {
+	// First verify that the header is intact. If not, then the data was bad and we should leave that data as-is.
+	// This will be caught on the master because the sequence value will stay the same
+	//if (imu_packet[0] != 0xFE || imu_packet[1] != 0x81 || imu_packet[2] != 0xFF || imu_packet[3] != 0x55) {
+	//	return;
+	//}
+
+	// TODO: CRC check
+
+	// The data seems good. Populate the PDOs
+	populate_byte_to_data(&(imu_packet[4]),  XAngDelta_pdo);                  // XAngDelta
+	populate_byte_to_data(&(imu_packet[8]),  YAngDelta_pdo);                  // YAngDelta
+	populate_byte_to_data(&(imu_packet[12]), ZAngDelta_pdo);                  // ZAngDelta
+	populate_byte_to_data(&(imu_packet[16]), XAccel_pdo);                     // XAccel
+	populate_byte_to_data(&(imu_packet[20]), YAccel_pdo);                     // YAccel
+	populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);                     // ZAccel
+	*Status_pdo = imu_packet[28];                                             // Status
+	*Seq_pdo    = imu_packet[29];                                             // Seq
+	*Temp_pdo   = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
+}
+
 void imu_update_inputs(uint8_t id) {
-	static uint8_t last_seq = 0;
-
-	// Flush buffer.
-	uint16_t recv_bytes = uart_received_bytes(&imu_port);
-	if (recv_bytes <= 36) {
-		uart_rx_data(&imu_port, imu_packet, uart_received_bytes(&imu_port));
-	} else {
-		uart_rx_data(&imu_port, imu_packet, 36);
+	// Receive the data sent during the last iteration.
+	// Check that we've received the correct amount of data.
+	// TODO: Set an error flag if not enough data was received.
+	//printf("%d ", uart_received_bytes(&imu_port));
+	uint16_t bytes = uart_received_bytes(&imu_port);
+	//int recv_bytes = uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE);
+	int recv_bytes = uart_rx_data(&imu_port, imu_packet, bytes);
+	*Status_pdo = bytes;
+	*Seq_pdo = recv_bytes;
+	//if (uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE) == KVH_MSG_SIZE) {
+	if (recv_bytes == KVH_MSG_SIZE) {
+		// We have received (at least) the right amount of data, go ahead and process it.
+		//imu_process_data();
+		*Seq_pdo = 38;
 	}
+	//printf("%d\n", recv_bytes);
 
-	// Trigger Master Sync. IMU will assert TOV_Out 300 ns after this.
-	PORTF.OUT |= (1<<1);   // TODO: Fix GPIO library so we can use io_set_output. // old sg
-	//PORTH.OUT |= (1<<7);
-	while (recv_bytes > 36);
-	_delay_us(60);   // This should be at least 30 us. I think the Medulla has trouble actually waiting 30 us, so here's 60 instead.
-	PORTF.OUT &= ~(1<<1);   // TODO: Fix GPIO library. // old sg
-	//PORTH.OUT &= ~(1<<7);
+	/*
+	// Trigger Master Sync. This will cause the IMU to output data for the next iteration
+	PORTF.OUT |= (1<<1);  // TODO: Fix GPIO library so we can use io_set_output.
+	_delay_us(40);        // Soo-Hyun thinks the xMega libraries have trouble sleeping for 30 microseconds, so here's 40 instead. TODO: Verify this.
+	PORTF.OUT &= ~(1<<1); // TODO: Fix GPIO library.
 
-	// TODO(yoos): Waiting for the buffer to fill up with 36 bytes would be the
-	// right way to do this, but this doesn't work right now.
-	//while (uart_received_bytes(&imu_port) < 36);   // Wait for entire packet.
+	_delay_us(500);*/
+}
 
-	// Instead, we can just wait for the worst case delay between TOV_Out
-	// assertion and the beginning of IMU packet transmission (around 80 us).
-	// Not waiting here long enough will cause packet corruption.
-	_delay_us(60);
-	recv_bytes =  uart_received_bytes(&imu_port);
-	if (recv_bytes == 36) {
-		uart_rx_data(&imu_port, imu_packet, recv_bytes);
-	} else if (recv_bytes > 36) {
-		uart_rx_data(&imu_port, imu_packet, 36);
-	}
-
-	// Populate data from IMU. Refer to p. 10 in manual for data locations.
-	//uint32_t imu_header;
-	//populate_byte_to_data(&(imu_packet[4]), &imu_header);
-	//if ((uint32_t) imu_packet[0] == 0x55ff81fe) {
-	//if (imu_header == 0xfe81ff55) {
-	if (imu_packet[0] == 0xfe && imu_packet[1] == 0x81 && imu_packet[2] == 0xff && imu_packet[3] == 0x55) {
-		populate_byte_to_data(&(imu_packet[4]), XAngDelta_pdo);   // XAngDelta
-		populate_byte_to_data(&(imu_packet[8]), YAngDelta_pdo);   // YAngDelta
-		populate_byte_to_data(&(imu_packet[12]), ZAngDelta_pdo);   // ZAngDelta
-		populate_byte_to_data(&(imu_packet[16]), XAccel_pdo);   // XAccel
-		populate_byte_to_data(&(imu_packet[20]), YAccel_pdo);   // YAccel
-		populate_byte_to_data(&(imu_packet[24]), ZAccel_pdo);   // ZAccel
-		*Status_pdo = imu_packet[28];   // Status
-		*Seq_pdo = imu_packet[29];   // Seq
-		*Temp_pdo = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
-		populate_byte_to_data(&(imu_packet[32]), CRC_pdo);   // CRC
-		//populate_byte_to_data(&(imu_packet[0]), CRC_pdo);   // CRC
-	}
-
-	//*Status_pdo = imu_packet[0];
-	//*Seq_pdo = imu_packet[3];
-
-	/*// Check for duplicate and skipped packets by comparing sequence numbers.
-	if (*Seq_pdo != ((last_seq+1) % 128)) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_SEQ);
-	}
-	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_SEQ);
-	}
-	last_seq = *Seq_pdo;*/
-
-	// Check CRC.
-	/*if (!is_packet_good(crc_calc(imu_packet, 32), *CRC_pdo)) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_CRC);
-	}
-	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_CRC);
-	}*/
-
-	/*// Check that we see the expected header.
-	if ((uint32_t) imu_packet[0] != 0xfe81ff55) {
-		*imu_error_flags_pdo |= (1<<ERROR_FLAG_KVH_HEADER);
-	}
-	else {
-		*imu_error_flags_pdo &= ~(1<<ERROR_FLAG_KVH_HEADER);
-	}
-
-	// Realtime-killing debug
-	#ifdef DEBUG_HIGH
-	// NOTE this will corrupt IMU packets at 1 kHz! You know, real-time and
-	// yadda yadda.
-	static uint8_t counter = 0;
-	if (counter == -1) {
-		printf("[Medulla IMU] Seq: %3u   Gyro: %08lx %08lx %08lx   Acc: %08lx %08lx %08lx  Status: %2x  Temp: %2d  CRC: %08lx\n",
-				*Seq_pdo,
-				*XAngDelta_pdo,
-				*YAngDelta_pdo,
-				*ZAngDelta_pdo,
-				*XAccel_pdo,
-				*YAccel_pdo,
-				*ZAccel_pdo,
-				*Status_pdo,
-				*Temp_pdo,
-				*CRC_pdo
-				);
-	}
-	counter = (counter+1) % 10;
-	#endif // DEBUG_HIGH*/
+void imu_post_ecat(void) {
+	// Trigger Master Sync. This will cause the IMU to output data for the next iteration
+	PORTF.OUT |= (1<<1);  // TODO: Fix GPIO library so we can use io_set_output.
+	_delay_us(40);        // Soo-Hyun thinks the xMega libraries have trouble sleeping for 30 microseconds, so here's 40 instead. TODO: Verify this.
+	PORTF.OUT &= ~(1<<1); // TODO: Fix GPIO library.
 }
 
 bool imu_run_halt(uint8_t id)
@@ -215,47 +162,6 @@ inline void imu_estop(void) {
 
 bool imu_check_error(uint8_t id) {
 	return false;
-	/*static uint8_t bad_seq_counter = 0;
-
-	// Count duplicate packets and complain if we're duplicating more than
-	// half.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_SEQ) & 1) {
-		bad_seq_counter++;
-		#ifdef DEBUG_HIGH
-		printf(".");
-		#endif
-		if (bad_seq_counter == 100) {
-			#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
-			printf("[Medulla IMU] Unexpected sequence number.\n");
-			#endif
-			return true;
-		}
-	}
-	else if (bad_seq_counter > 0) {
-		bad_seq_counter--;
-	}
-
-	// On bad CRC, just set the error flag and don't complain here, as it will
-	// very likely coincide with a bad sequence number, for which we already
-	// have a counter. Print debug if level is high.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_CRC) & 1) {
-		#if defined(DEBUG_HIGH)
-		printf("[Medulla IMU] Bad CRC.\n");
-		#endif
-	}
-
-	// Check that we see the expected header. Because we clear the UART buffer
-	// before triggering MSync, I can't imagine how we would ever encounter
-	// this failure mode, so if we do, something really bad must be going on,
-	// so complain.
-	if ((*imu_error_flags_pdo >> ERROR_FLAG_KVH_HEADER) & 1) {
-		#if defined(DEBUG_LOW) || defined(DEBUG_HIGH)
-		printf("[Medulla IMU] Malformed packet header.\n");
-		#endif
-		return true;
-	}
-
-	return false;*/
 }
 
 bool imu_check_halt(uint8_t id) {
@@ -264,14 +170,6 @@ bool imu_check_halt(uint8_t id) {
 
 void imu_reset_error(void) {
 	*imu_error_flags_pdo = 0;
-}
-
-void imu_clear_buffer(void) {
-	uint16_t recv_bytes =  uart_received_bytes(&imu_port);
-	if (recv_bytes > 36) {
-		recv_bytes = 36;
-	}
-	uart_rx_data(&imu_port, imu_packet, recv_bytes);
 }
 
 /* NOTE this obviously assumes 4-byte block */

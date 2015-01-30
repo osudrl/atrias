@@ -37,6 +37,7 @@ void hip_disable_outputs(void);
 void hip_update_inputs(uint8_t id);  /**< Function called to read all the sensors */
 bool hip_run_halt(uint8_t id);       /**< Runs the halt controller. Returns true if the controller wants to continue running */ 
 void hip_update_outputs(uint8_t id); /**< Called to update motor outputs */
+void hip_post_ecat(void);            /**< Called after the EtherCAT update */
 void hip_estop(void);                /**< Called to when estop happens, should send 0 torques to motor */
 bool hip_check_error(uint8_t id);    /**< Checks sensor readings to decide if estop should happen, returns true if there should be an error */
 bool hip_check_halt(uint8_t id);     /**< Checks sensors to determine if medulla should go into halt state, returns true if medulla should go into halt */

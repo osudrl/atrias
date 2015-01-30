@@ -22,6 +22,7 @@ void boom_disable_outputs(void);
 void boom_update_inputs(uint8_t id);  /**< Function called to read all the sensors */
 bool boom_run_halt(uint8_t id);       /**< Runs the halt controller. Returns true if the controller wants to continue running */ 
 void boom_update_outputs(uint8_t id); /**< Called to update motor outputs */
+void boom_post_ecat(void);            /**< Called after the EtherCAT update */
 void boom_estop(void);                /**< Called to when estop happens, should send 0 torques to motor */
 bool boom_check_error(uint8_t id);    /**< Checks sensor readings to decide if estop should happen, returns true if there should be an error */
 bool boom_check_halt(uint8_t id);     /**< Checks sensors to determine if medulla should go into halt state, returns true if medulla should go into halt */

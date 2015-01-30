@@ -139,6 +139,8 @@ void boom_update_inputs(uint8_t id) {
 //	printf("%lu\n",*x_encoder_pdo);
 }
 
+void boom_post_ecat(void) {}
+
 bool boom_run_halt(uint8_t id) {
 	boom_damping_cnt += 1;
 	if (boom_damping_cnt > 100)
