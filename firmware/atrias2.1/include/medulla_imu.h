@@ -45,7 +45,7 @@ void imu_disable_outputs(void);
 void imu_update_inputs(uint8_t id);
 bool imu_run_halt(uint8_t id);
 void imu_update_outputs(uint8_t id);
-void boom_post_ecat(void);
+void imu_post_ecat(void);
 void imu_estop(void);
 bool imu_check_error(uint8_t id);
 bool imu_check_halt(uint8_t id);

@@ -95,9 +95,12 @@ void imu_disable_outputs(void) {}
 void imu_process_data(void) {
 	// First verify that the header is intact. If not, then the data was bad and we should leave that data as-is.
 	// This will be caught on the master because the sequence value will stay the same
-	//if (imu_packet[0] != 0xFE || imu_packet[1] != 0x81 || imu_packet[2] != 0xFF || imu_packet[3] != 0x55) {
-	//	return;
-	//}
+	if (imu_packet[0] != 0xFE || imu_packet[1] != 0x81 || imu_packet[2] != 0xFF || imu_packet[3] != 0x55) {
+		*imu_error_flags_pdo = 2;
+		return;
+	} else {
+		*imu_error_flags_pdo = 0;
+	}
 
 	// TODO: CRC check
 
@@ -111,6 +114,7 @@ void imu_process_data(void) {
 	*Status_pdo = imu_packet[28];                                             // Status
 	*Seq_pdo    = imu_packet[29];                                             // Seq
 	*Temp_pdo   = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
+	*Status_pdo = 38;
 }
 
 void imu_update_inputs(uint8_t id) {
@@ -118,26 +122,18 @@ void imu_update_inputs(uint8_t id) {
 	// Check that we've received the correct amount of data.
 	// TODO: Set an error flag if not enough data was received.
 	//printf("%d ", uart_received_bytes(&imu_port));
-	uint16_t bytes = uart_received_bytes(&imu_port);
+	//uint16_t bytes = uart_received_bytes(&imu_port);
 	//int recv_bytes = uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE);
-	int recv_bytes = uart_rx_data(&imu_port, imu_packet, bytes);
-	*Status_pdo = bytes;
-	*Seq_pdo = recv_bytes;
-	//if (uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE) == KVH_MSG_SIZE) {
-	if (recv_bytes == KVH_MSG_SIZE) {
+	//int recv_bytes = uart_rx_data(&imu_port, imu_packet, bytes);
+	//*Status_pdo = bytes;
+	//*Seq_pdo = recv_bytes;
+	if (uart_rx_data(&imu_port, imu_packet, KVH_MSG_SIZE) == KVH_MSG_SIZE) {
+	//if (recv_bytes == KVH_MSG_SIZE) {
 		// We have received (at least) the right amount of data, go ahead and process it.
-		//imu_process_data();
-		*Seq_pdo = 38;
+		imu_process_data();
+	} else {
+		*imu_error_flags_pdo = 1;
 	}
-	//printf("%d\n", recv_bytes);
-
-	/*
-	// Trigger Master Sync. This will cause the IMU to output data for the next iteration
-	PORTF.OUT |= (1<<1);  // TODO: Fix GPIO library so we can use io_set_output.
-	_delay_us(40);        // Soo-Hyun thinks the xMega libraries have trouble sleeping for 30 microseconds, so here's 40 instead. TODO: Verify this.
-	PORTF.OUT &= ~(1<<1); // TODO: Fix GPIO library.
-
-	_delay_us(500);*/
 }
 
 void imu_post_ecat(void) {
