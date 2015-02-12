@@ -117,7 +117,6 @@ void imu_process_data(void) {
 	*Status_pdo = imu_packet[28];                                             // Status
 	*Seq_pdo    = imu_packet[29];                                             // Seq
 	*Temp_pdo   = ((int16_t)imu_packet[30])<<8 | ((int16_t)imu_packet[31]);   // Temp
-	*Status_pdo = 38;
 }
 
 void imu_update_inputs(uint8_t id) {
