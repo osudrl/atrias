@@ -178,6 +178,10 @@ typedef enum {
   */
 #define MTR_MAX_COUNT                                                      19900
 
+/** @brief Maximum count for the duty cycle modulation timer on the Medulla
+  */
+#define AMC_PWM_PERIOD_TICKS                                               20000
+
 // Limits the maximum adjustment that may be applied to the leg position when the spring deflections
 // are zeroed during initialization (in radians).
 #define MAX_LEG_POS_ADJUSTMENT                                               0.1

@@ -1,5 +1,6 @@
 #include "amplifier.h"
 #include "util/delay.h"
+#include "robot_invariant_defs.h"
 
 uint16_t amp_write_command = 0xF;
 uint16_t amp_enable_command = 0x00;
@@ -18,7 +19,7 @@ void initialize_amp(bool second_amp, int16_t *amp_63_current, int16_t *amp_62_cu
 	// Initialize the PWM and direction outputs
 	//amp_direction_pin = io_init_pin(&PORTC,5);
 	PORTC.DIRSET = 1<<3;
-	amp_pwm_output = pwm_initialize_output(io_init_pin(&PORTC,4),pwm_div1,20000);
+	amp_pwm_output = pwm_initialize_output(io_init_pin(&PORTC,4),pwm_div1,AMC_PWM_PERIOD_TICKS);
 
 	// Initialize the amplifier communication uart at 115200 baud
 	amp_uart_port = uart_init_port(&PORTD,&USARTD0,uart_baud_115200,amp_tx_buffer,256,amp_rx_buffer,256);
