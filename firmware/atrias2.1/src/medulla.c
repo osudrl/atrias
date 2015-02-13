@@ -47,8 +47,7 @@ int main(void) {
 	_delay_ms(1);
 	medulla_id = MEDULLA_ID_PORT.IN & MEDULLA_ID_MASK;
 
-	//if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
-	if (true) {
+	if ((medulla_id & MEDULLA_ID_PREFIX_MASK) == MEDULLA_IMU_ID_PREFIX) {
 		// Enable external 16 MHz oscillator.
 		OSC.XOSCCTRL = OSC_FRQRANGE_12TO16_gc |      /* Configure for 16 MHz */
 			       OSC_XOSCSEL_XTAL_16KCLK_gc;   /* Set startup time */
